@@ -1,0 +1,41 @@
+{
+  "rawId": "d9e0858e-de38-48fd-9bf4-ec7f3adc5342",
+  "status": "failed",
+  "updatedAt": "2026-10-05T13:01:03.877Z",
+  "history": [
+    {
+      "at": "2026-10-05T12:56:30.538Z",
+      "from": "unprocessed",
+      "to": "processing",
+      "reason": "AI 整理已启动",
+      "jobId": "311e82ca-4180-472e-a556-39260541a72a"
+    },
+    {
+      "at": "2026-10-05T12:56:30.824Z",
+      "from": "processing",
+      "to": "unprocessed",
+      "reason": "AI 整理已取消，晚到的结果不会写入草稿"
+    },
+    {
+      "at": "2026-10-05T13:01:03.869Z",
+      "from": "unprocessed",
+      "to": "processing",
+      "reason": "AI 整理已启动",
+      "jobId": "6d1200bb-fc0e-4dd9-8a77-d7957997c166"
+    },
+    {
+      "at": "2026-10-05T13:01:03.877Z",
+      "from": "processing",
+      "to": "failed",
+      "reason": "提取失败：LLM_AUTH_FAILED"
+    }
+  ],
+  "jobId": "6d1200bb-fc0e-4dd9-8a77-d7957997c166",
+  "revertStatus": "unprocessed",
+  "lastError": {
+    "code": "LLM_AUTH_FAILED",
+    "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：independent fixture authentication rejected）（第 1 段）",
+    "at": "2026-10-05T13:01:03.877Z",
+    "retryable": false
+  }
+}

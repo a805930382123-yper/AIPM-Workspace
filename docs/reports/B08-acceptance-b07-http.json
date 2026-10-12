@@ -1,0 +1,189 @@
+{
+  "clientDate": "2026-10-08",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-h0i2xn",
+  "provider": "unconfigured; no model calls",
+  "checks": [
+    {
+      "id": "E07-01-full-fields-long-text-and-validation",
+      "result": "PASS",
+      "evidence": {
+        "promptId": "178a86dd-ec8e-46c2-8e02-323f631d9f36",
+        "characters": 17509,
+        "strictRejections": 12
+      }
+    },
+    {
+      "id": "E07-02-search-filters-and-global-counts",
+      "result": "PASS",
+      "evidence": {
+        "total": 3,
+        "combinedId": "4e397048-6eb6-4162-9c0a-29637ca47ce0"
+      }
+    },
+    {
+      "id": "E07-03-immutable-history-no-op-and-restart",
+      "result": "PASS",
+      "evidence": {
+        "promptId": "992637c1-74ac-4627-916e-acafbc9f479a",
+        "version": 3,
+        "v1": {
+          "version": 1,
+          "savedAt": "2026-10-08T12:34:28.458Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "992637c1-74ac-4627-916e-acafbc9f479a",
+            "name": "版本记录",
+            "category": "customer",
+            "scenario": "客户拜访",
+            "body": "第1版正文",
+            "variables": [],
+            "inputRequirements": "输入客户资料",
+            "outputRequirements": "输出问题清单",
+            "relatedWikiIds": [],
+            "examples": "\n 示例 \n",
+            "tags": [
+              "访谈"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T12:34:28.458Z",
+            "updatedAt": "2026-10-08T12:34:28.458Z",
+            "version": 1,
+            "source": "manual"
+          }
+        }
+      }
+    },
+    {
+      "id": "E07-04-concurrency-and-stable-create-retry",
+      "result": "PASS",
+      "evidence": {
+        "statuses": [
+          200,
+          409
+        ],
+        "version": 2,
+        "reused": true
+      }
+    },
+    {
+      "id": "E07-05-literal-values-and-read-only-render",
+      "result": "PASS",
+      "evidence": {
+        "promptId": "3391a6d6-85a3-435f-a19b-43fca9042f3c",
+        "rendered": " \n$& $1 \\ \n {{指标}} | $& $1 \\ \n {{指标}} | 0 | {{}} | {{bad\nname}} | {{ {{inner}} }}\n尾",
+        "wholeRootUnchanged": true
+      }
+    },
+    {
+      "id": "E07-07-delete-recycle-and-real-counts",
+      "result": "PASS",
+      "evidence": {
+        "removedId": "b82ec539-6dd3-4da7-ab8d-efb7c86a6dea",
+        "countBefore": 8,
+        "countAfter": 7
+      }
+    },
+    {
+      "id": "E07-08-dangling-wiki-still-usable",
+      "result": "PASS",
+      "evidence": {
+        "promptId": "5c5cd597-a2b3-47d9-9316-49dbaa2f9b5c",
+        "wikiId": "ce54046d-dab6-4dde-a149-ec2b2e434cec",
+        "link": "missing",
+        "knowledgeUnchangedAfterExplicitDeletion": true
+      }
+    },
+    {
+      "id": "E07-09-independent-markdown-read",
+      "result": "PASS",
+      "evidence": {
+        "promptId": "a2488c82-573d-4d0b-b743-73d853c9c427",
+        "metadata": {
+          "id": "a2488c82-573d-4d0b-b743-73d853c9c427",
+          "name": "导出 : \"标题\"",
+          "category": "customer",
+          "categoryLabel": "客户",
+          "scenario": "客户拜访",
+          "variables": [
+            "客户名称"
+          ],
+          "tags": [
+            "访谈"
+          ],
+          "favorite": false,
+          "source": "manual",
+          "version": 1,
+          "createdAt": "2026-10-08T12:34:29.612Z",
+          "updatedAt": "2026-10-08T12:34:29.612Z",
+          "relatedWiki": []
+        },
+        "verbatimBody": true
+      }
+    },
+    {
+      "id": "E07-10-real-storage-failures-and-recovery",
+      "result": "PASS",
+      "evidence": {
+        "promptId": "09953d9f-5742-4cd0-a0d2-23c9cd198de2",
+        "failures": 3,
+        "finalVersion": 2
+      }
+    },
+    {
+      "id": "E07-12-no-LLM-and-knowledge-stat-isolation",
+      "result": "PASS",
+      "evidence": {
+        "promptBefore": 10,
+        "promptDuring": 11,
+        "noProviderRequests": true
+      }
+    },
+    {
+      "id": "E07-extra-damaged-record-valid-counting",
+      "result": "PASS"
+    }
+  ],
+  "damagedActual": {
+    "direct": {
+      "status": 500,
+      "json": {
+        "error": {
+          "code": "CORRUPT_PROMPT",
+          "message": "Prompt 文件 c9da3da3-8168-4957-aa0e-b00d66cdb465 内容不完整或与文件名不一致，已保留原文件，请人工检查。",
+          "details": {
+            "id": "c9da3da3-8168-4957-aa0e-b00d66cdb465"
+          }
+        }
+      },
+      "text": "{\"error\":{\"code\":\"CORRUPT_PROMPT\",\"message\":\"Prompt 文件 c9da3da3-8168-4957-aa0e-b00d66cdb465 内容不完整或与文件名不一致，已保留原文件，请人工检查。\",\"details\":{\"id\":\"c9da3da3-8168-4957-aa0e-b00d66cdb465\"}}}"
+    },
+    "count": 10
+  },
+  "services": [
+    {
+      "pid": 26000,
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52293 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-h0i2xn)\n"
+    },
+    {
+      "pid": 32528,
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52293 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-h0i2xn)\n"
+    },
+    {
+      "pid": 21024,
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52293 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-h0i2xn)\n"
+    },
+    {
+      "pid": 22008,
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52293 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-h0i2xn)\n"
+    }
+  ],
+  "durationMs": 1869,
+  "summary": {
+    "pass": 11,
+    "fail": 0
+  }
+}

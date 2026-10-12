@@ -1,0 +1,968 @@
+{
+  "clientDate": "2026-10-07",
+  "startedAt": "2026-10-07T06:49:09.658Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu",
+  "provider": "independent HTTP fake; real AI quality BLOCKED",
+  "checks": [
+    {
+      "id": "E05-01-five-dimensions",
+      "result": "PASS",
+      "evidence": [
+        {
+          "id": "e940e940-3a4b-4879-b238-4297854625ae",
+          "expected": "title",
+          "score": 0.72,
+          "matches": [
+            {
+              "dimension": "title",
+              "score": 1,
+              "reason": "标题规范化后完全相同"
+            }
+          ]
+        },
+        {
+          "id": "36f71817-a210-42b8-a9dd-92c0025a068c",
+          "expected": "aliases",
+          "score": 0.78,
+          "matches": [
+            {
+              "dimension": "aliases",
+              "score": 0.92,
+              "reason": "建议标题与既有别名重合"
+            },
+            {
+              "dimension": "aliases",
+              "score": 1,
+              "reason": "建议标题或别名与既有别名重合"
+            }
+          ]
+        },
+        {
+          "id": "0aa7fc1a-a241-4a0c-b699-0b935aec58b7",
+          "expected": "category",
+          "score": 0.04,
+          "matches": [
+            {
+              "dimension": "category",
+              "score": 0.08,
+              "reason": "分类相同（单独命中权重很低）"
+            }
+          ]
+        },
+        {
+          "id": "adfbb831-c101-40a4-9d65-d9e22acd4f71",
+          "expected": "tags",
+          "score": 0.16,
+          "matches": [
+            {
+              "dimension": "tags",
+              "score": 0.2,
+              "reason": "共享标签：onlytag"
+            }
+          ]
+        },
+        {
+          "id": "1bef6232-1abc-4324-ba55-506d1048ced6",
+          "expected": "content",
+          "score": 0.5045161290322581,
+          "matches": [
+            {
+              "dimension": "content",
+              "score": 0.7419354838709677,
+              "reason": "正文二元片段相似度 74%"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E05-02-explicit-create-and-defer",
+      "result": "PASS",
+      "evidence": {
+        "denied": {
+          "error": {
+            "code": "WIKI_TITLE_CONFLICT",
+            "message": "标题或别名「铺货率」已被现有 Wiki「铺货率」（542c80a8-449f-41d2-b508-afe1b4bf5944）占用；请改名，或返回审核页选择“更新已有页”“仍创建新页”或“暂不处理”。显式新建会生成独立页面，关联链接可能产生歧义。",
+            "details": {
+              "title": "铺货率",
+              "existingId": "542c80a8-449f-41d2-b508-afe1b4bf5944",
+              "existingTitle": "铺货率",
+              "batch": "B05"
+            }
+          }
+        },
+        "deferConfirm": {
+          "error": {
+            "code": "DECISION_MISMATCH",
+            "message": "「铺货率」已保存为暂不处理，不能作为新建页提交。",
+            "details": {
+              "pageId": "3fceef48-2375-4506-9248-ed69e4f9cf5c",
+              "decision": "defer"
+            }
+          }
+        },
+        "created": {
+          "operationId": "9964c90b-fa62-4331-bb33-db64d7abf20c",
+          "status": "completed",
+          "reused": false,
+          "sourceReused": false,
+          "sourceId": "7f045e52-5f7b-4af6-98f4-6d3391ab5952",
+          "wikiIds": [
+            "b1493de4-5de9-4e02-8ad5-fbe10b1ab672"
+          ],
+          "sourceReuseId": null,
+          "writtenWikiIds": [
+            "7f045e52-5f7b-4af6-98f4-6d3391ab5952",
+            "b1493de4-5de9-4e02-8ad5-fbe10b1ab672"
+          ],
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-07T06:49:11.532Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-07T06:49:11.538Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-07T06:49:11.554Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-07T06:49:11.560Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-07T06:49:11.580Z"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "E05-03-update-cancel-edit-confirm",
+      "result": "PASS",
+      "evidence": {
+        "workflowId": "9cf0221b-d393-44e8-9c63-b8b99c7a99e1",
+        "committed": {
+          "workflow": {
+            "id": "9cf0221b-d393-44e8-9c63-b8b99c7a99e1",
+            "kind": "update",
+            "status": "confirmed",
+            "revision": 3,
+            "createdAt": "2026-10-07T06:49:12.675Z",
+            "updatedAt": "2026-10-07T06:49:12.763Z",
+            "provider": {
+              "name": "openai-compatible",
+              "model": "independent-b05-fake"
+            },
+            "rawSnapshots": [
+              {
+                "id": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "title": "验收资料 来源B",
+                "bodySha256": "5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a"
+              }
+            ],
+            "targetWikiId": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5",
+            "baseRevision": 1,
+            "baseWiki": {
+              "title": "铺货率",
+              "type": "metric",
+              "category": "metric",
+              "sources": [
+                "cea1dd84-938e-4a5d-bab6-64664ec76726"
+              ],
+              "tags": [
+                "门店覆盖"
+              ],
+              "aliases": [
+                "Distribution Rate"
+              ],
+              "knowledge_status": "source_supported",
+              "confidence": "medium",
+              "source_level": "B",
+              "review_status": "reviewed",
+              "id": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5",
+              "domain": "fmcg",
+              "created": "2026-10-07T06:49:12.494Z",
+              "updated": "2026-10-07T06:49:12.494Z",
+              "revision": 1,
+              "body": "## 来源事实\n来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。\n## AI推断\n旧推断\n## 待确认问题\n旧问题"
+            },
+            "inputDraft": {
+              "draftId": "9d50cc8a-0af8-4d75-a407-c62dcad9ab47",
+              "pageId": "6acd1442-2e68-4b78-8dbf-95bb5629a2df",
+              "revision": 2
+            },
+            "sections": {
+              "existing": "## 来源事实\n来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。\n## AI推断\n旧推断\n## 待确认问题\n旧问题",
+              "newSource": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+              "suggestedAdditions": [
+                "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "人工增加的说明"
+              ],
+              "conflicts": [
+                "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。"
+              ],
+              "inferences": [
+                "AI推断：差异可能源于销售活跃程度，待验证"
+              ],
+              "openQuestions": [
+                "请业务确认两种分子定义以及适用范围"
+              ],
+              "agreement": [
+                "两个来源一致采用目标门店作为分母、自然月作为周期"
+              ],
+              "sourceList": [
+                {
+                  "id": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                  "title": "验收资料 来源B"
+                }
+              ]
+            },
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "rawId": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "conflicts",
+                "text": "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。",
+                "rawId": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "agreement",
+                "text": "两个来源一致采用目标门店作为分母、自然月作为周期",
+                "rawId": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              }
+            ],
+            "title": "铺货率 人工审核更名",
+            "category": "metric",
+            "sources": [
+              "cea1dd84-938e-4a5d-bab6-64664ec76726",
+              "c6e0394f-edf9-4d26-8687-78c3b71137e4"
+            ],
+            "commitOperationId": "8d229db9-a302-446c-8142-e635d26a2dfa",
+            "committedWikiId": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5"
+          },
+          "wikiId": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5",
+          "reused": false,
+          "operationId": "8d229db9-a302-446c-8142-e635d26a2dfa"
+        },
+        "reused": {
+          "workflow": {
+            "id": "9cf0221b-d393-44e8-9c63-b8b99c7a99e1",
+            "kind": "update",
+            "status": "confirmed",
+            "revision": 3,
+            "createdAt": "2026-10-07T06:49:12.675Z",
+            "updatedAt": "2026-10-07T06:49:12.763Z",
+            "provider": {
+              "name": "openai-compatible",
+              "model": "independent-b05-fake"
+            },
+            "rawSnapshots": [
+              {
+                "id": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "title": "验收资料 来源B",
+                "bodySha256": "5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a"
+              }
+            ],
+            "targetWikiId": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5",
+            "baseRevision": 1,
+            "baseWiki": {
+              "title": "铺货率",
+              "type": "metric",
+              "category": "metric",
+              "sources": [
+                "cea1dd84-938e-4a5d-bab6-64664ec76726"
+              ],
+              "tags": [
+                "门店覆盖"
+              ],
+              "aliases": [
+                "Distribution Rate"
+              ],
+              "knowledge_status": "source_supported",
+              "confidence": "medium",
+              "source_level": "B",
+              "review_status": "reviewed",
+              "id": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5",
+              "domain": "fmcg",
+              "created": "2026-10-07T06:49:12.494Z",
+              "updated": "2026-10-07T06:49:12.494Z",
+              "revision": 1,
+              "body": "## 来源事实\n来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。\n## AI推断\n旧推断\n## 待确认问题\n旧问题"
+            },
+            "inputDraft": {
+              "draftId": "9d50cc8a-0af8-4d75-a407-c62dcad9ab47",
+              "pageId": "6acd1442-2e68-4b78-8dbf-95bb5629a2df",
+              "revision": 2
+            },
+            "sections": {
+              "existing": "## 来源事实\n来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。\n## AI推断\n旧推断\n## 待确认问题\n旧问题",
+              "newSource": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+              "suggestedAdditions": [
+                "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "人工增加的说明"
+              ],
+              "conflicts": [
+                "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。"
+              ],
+              "inferences": [
+                "AI推断：差异可能源于销售活跃程度，待验证"
+              ],
+              "openQuestions": [
+                "请业务确认两种分子定义以及适用范围"
+              ],
+              "agreement": [
+                "两个来源一致采用目标门店作为分母、自然月作为周期"
+              ],
+              "sourceList": [
+                {
+                  "id": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                  "title": "验收资料 来源B"
+                }
+              ]
+            },
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "rawId": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "conflicts",
+                "text": "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。",
+                "rawId": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "agreement",
+                "text": "两个来源一致采用目标门店作为分母、自然月作为周期",
+                "rawId": "c6e0394f-edf9-4d26-8687-78c3b71137e4",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              }
+            ],
+            "title": "铺货率 人工审核更名",
+            "category": "metric",
+            "sources": [
+              "cea1dd84-938e-4a5d-bab6-64664ec76726",
+              "c6e0394f-edf9-4d26-8687-78c3b71137e4"
+            ],
+            "commitOperationId": "8d229db9-a302-446c-8142-e635d26a2dfa",
+            "committedWikiId": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5"
+          },
+          "wikiId": "ce093ab7-644a-46d4-be1e-25aac6fbb6d5",
+          "reused": true,
+          "operationId": "8d229db9-a302-446c-8142-e635d26a2dfa"
+        },
+        "updatedRevision": 2
+      }
+    },
+    {
+      "id": "E05-04-stale-target-and-cancel",
+      "result": "PASS",
+      "evidence": {
+        "stale": {
+          "error": {
+            "code": "REVISION_CONFLICT",
+            "message": "目标 Wiki 已被修改，旧预览不能覆盖新版本。",
+            "details": {
+              "currentRevision": 2
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "E05-05-synthesis-source-resolution",
+      "result": "PASS",
+      "evidence": {
+        "duplicate": {
+          "error": {
+            "code": "SYNTHESIS_REQUIRES_TWO_SOURCES",
+            "message": "综合至少需要两条不同 Raw 来源。"
+          }
+        },
+        "committed": {
+          "workflow": {
+            "id": "bec46baa-9050-47c7-bbd6-440dd8d8f53d",
+            "kind": "synthesis",
+            "status": "confirmed",
+            "revision": 3,
+            "createdAt": "2026-10-07T06:49:14.464Z",
+            "updatedAt": "2026-10-07T06:49:15.116Z",
+            "provider": {
+              "name": "openai-compatible",
+              "model": "independent-b05-fake"
+            },
+            "rawSnapshots": [
+              {
+                "id": "a8537083-b834-4a62-b076-b0b873fd123c",
+                "title": "验收资料 综合来源A",
+                "bodySha256": "a8e91eae6cde02e45857b0fc2178c222c1f9227ebde06247e8d105143621cbf6"
+              },
+              {
+                "id": "e1bc67d4-346f-422e-be59-40af5ffc6c8f",
+                "title": "验收资料 综合来源B",
+                "bodySha256": "5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a"
+              }
+            ],
+            "title": "人工综合标题",
+            "category": "metric",
+            "sources": [
+              "a8537083-b834-4a62-b076-b0b873fd123c",
+              "e1bc67d4-346f-422e-be59-40af5ffc6c8f"
+            ],
+            "sections": {
+              "suggestedAdditions": [
+                "来源B补充公式：铺货率=有销售门店数/目标门店数"
+              ],
+              "conflicts": [
+                "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。"
+              ],
+              "inferences": [
+                "AI推断：差异可能源于销售活跃程度，待验证"
+              ],
+              "openQuestions": [
+                "请业务确认两种分子定义以及适用范围",
+                "人工追加问题"
+              ],
+              "agreement": [
+                "两个来源一致采用目标门店作为分母、自然月作为周期"
+              ],
+              "sourceList": [
+                {
+                  "id": "a8537083-b834-4a62-b076-b0b873fd123c",
+                  "title": "验收资料 综合来源A"
+                },
+                {
+                  "id": "e1bc67d4-346f-422e-be59-40af5ffc6c8f",
+                  "title": "验收资料 综合来源B"
+                }
+              ]
+            },
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "rawId": "e1bc67d4-346f-422e-be59-40af5ffc6c8f",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "conflicts",
+                "text": "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。",
+                "rawId": "e1bc67d4-346f-422e-be59-40af5ffc6c8f",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "agreement",
+                "text": "两个来源一致采用目标门店作为分母、自然月作为周期",
+                "rawId": "e1bc67d4-346f-422e-be59-40af5ffc6c8f",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              }
+            ],
+            "commitOperationId": "d81bea6f-2d08-4a4c-8adb-c2b05292ba67",
+            "committedWikiId": "3e59e558-6c19-48b8-8aca-5dbaaf67c329"
+          },
+          "wikiId": "3e59e558-6c19-48b8-8aca-5dbaaf67c329",
+          "reused": false,
+          "operationId": "d81bea6f-2d08-4a4c-8adb-c2b05292ba67"
+        },
+        "sources": [
+          "a8537083-b834-4a62-b076-b0b873fd123c",
+          "e1bc67d4-346f-422e-be59-40af5ffc6c8f"
+        ]
+      }
+    },
+    {
+      "id": "E05-06-fault-recovery-idempotency",
+      "result": "PASS",
+      "evidence": {
+        "failed": {
+          "error": {
+            "code": "WORKFLOW_COMMIT_PENDING",
+            "message": "提交操作 e15c0fdf-7499-46cc-afbc-545ffaf970a1 遇到磁盘错误；已写入 3 个页面，恢复清单已保留。请查看提交状态，不要重试创建。",
+            "details": {
+              "operationId": "e15c0fdf-7499-46cc-afbc-545ffaf970a1",
+              "writtenIds": [
+                "085eccdd-290f-47cd-a2b4-b471039810f3",
+                "10136905-867a-4c00-bce6-09183ccec83a",
+                "9ab4b082-0a03-48f0-af8c-3f132c4d8113"
+              ],
+              "recoverable": true
+            }
+          }
+        },
+        "operationId": "e15c0fdf-7499-46cc-afbc-545ffaf970a1",
+        "before": [
+          "085eccdd-290f-47cd-a2b4-b471039810f3",
+          "10136905-867a-4c00-bce6-09183ccec83a",
+          "9ab4b082-0a03-48f0-af8c-3f132c4d8113"
+        ],
+        "after": [
+          "085eccdd-290f-47cd-a2b4-b471039810f3",
+          "10136905-867a-4c00-bce6-09183ccec83a",
+          "9ab4b082-0a03-48f0-af8c-3f132c4d8113"
+        ],
+        "status": {
+          "operationId": "e15c0fdf-7499-46cc-afbc-545ffaf970a1",
+          "status": "completed",
+          "wikiId": "9ab4b082-0a03-48f0-af8c-3f132c4d8113",
+          "workflowId": "65c73e1e-85db-46d8-a67b-61a37815cad2",
+          "writtenIds": [
+            "085eccdd-290f-47cd-a2b4-b471039810f3",
+            "10136905-867a-4c00-bce6-09183ccec83a",
+            "9ab4b082-0a03-48f0-af8c-3f132c4d8113"
+          ],
+          "error": "Independent B05 acceptance EIO",
+          "recoverable": false
+        }
+      }
+    },
+    {
+      "id": "E05-08-invalid-provider-and-missing-config",
+      "result": "PASS",
+      "evidence": {
+        "invalid": {
+          "error": {
+            "code": "LLM_INVALID_JSON",
+            "message": "Provider 返回的内容不是合法 JSON，未创建草稿。"
+          }
+        },
+        "missing": {
+          "error": {
+            "code": "LLM_NOT_CONFIGURED",
+            "message": "产品 Provider 未配置，无法生成知识草稿。请在设置中配置服务端 Provider 后重试。"
+          }
+        },
+        "realProvider": "BLOCKED: no actual config"
+      }
+    },
+    {
+      "id": "E05-06b-recovery-protects-human-edit",
+      "result": "PASS",
+      "evidence": {
+        "failed": {
+          "error": {
+            "code": "WORKFLOW_COMMIT_PENDING",
+            "message": "提交操作 4ffd9c85-3e46-470b-a854-3771c16f2f3e 遇到磁盘错误；已写入 2 个页面，恢复清单已保留。请查看提交状态，不要重试创建。",
+            "details": {
+              "operationId": "4ffd9c85-3e46-470b-a854-3771c16f2f3e",
+              "writtenIds": [
+                "a7cdf0c6-e401-4127-8ee6-5a4a7055191c",
+                "fb2633c3-35e1-4793-82cc-b4f46e2842b9"
+              ],
+              "recoverable": true
+            }
+          }
+        },
+        "manualRevision": 3,
+        "restoredRevision": 3,
+        "status": {
+          "operationId": "4ffd9c85-3e46-470b-a854-3771c16f2f3e",
+          "status": "conflict",
+          "wikiId": "fb2633c3-35e1-4793-82cc-b4f46e2842b9",
+          "workflowId": "eedeac9a-802e-48b5-818a-4d20e188e6cf",
+          "writtenIds": [
+            "a7cdf0c6-e401-4127-8ee6-5a4a7055191c",
+            "fb2633c3-35e1-4793-82cc-b4f46e2842b9"
+          ],
+          "error": "目标页面已出现新版本，恢复已停止以保护人工编辑。",
+          "recoverable": false
+        },
+        "before": {
+          "logs\\wiki.jsonl": "bfac592da4d1ec196593b871e08791b85519399b29e0453a46afce00f76dd6bf",
+          "raw\\reports\\364cda6d-ad45-4d3a-af99-2d5898020a79.md": "8b9271f6d18b277e901bb33b7d45870a9546755f34b8faa3b533f9803732c621",
+          "raw\\reports\\438dc888-83d4-4322-a7e0-99d7d0c633ee.md": "bd7a3d753867482b92abffe7e1edfb28dddb7c24106f452e5c9b31560e8f0010",
+          "wiki\\a7cdf0c6-e401-4127-8ee6-5a4a7055191c.md": "1f81aaa311cc3d0de60c650aeb33f80f8dea3f1a9f30ee72d2d5b33189bcbbf4",
+          "wiki\\fb2633c3-35e1-4793-82cc-b4f46e2842b9.md": "ad02e9e10615d03b55250172f47b209d405323b7277b9eed19e6b41368ce2ff5",
+          "wiki\\index.md": "5690ed0fb7e9a0f0fdaf2c25ff6468280b8125b0213cd301575e1c804e319ff8"
+        },
+        "after": {
+          "logs\\wiki.jsonl": "bfac592da4d1ec196593b871e08791b85519399b29e0453a46afce00f76dd6bf",
+          "raw\\reports\\364cda6d-ad45-4d3a-af99-2d5898020a79.md": "8b9271f6d18b277e901bb33b7d45870a9546755f34b8faa3b533f9803732c621",
+          "raw\\reports\\438dc888-83d4-4322-a7e0-99d7d0c633ee.md": "bd7a3d753867482b92abffe7e1edfb28dddb7c24106f452e5c9b31560e8f0010",
+          "wiki\\a7cdf0c6-e401-4127-8ee6-5a4a7055191c.md": "1f81aaa311cc3d0de60c650aeb33f80f8dea3f1a9f30ee72d2d5b33189bcbbf4",
+          "wiki\\fb2633c3-35e1-4793-82cc-b4f46e2842b9.md": "ad02e9e10615d03b55250172f47b209d405323b7277b9eed19e6b41368ce2ff5",
+          "wiki\\index.md": "5690ed0fb7e9a0f0fdaf2c25ff6468280b8125b0213cd301575e1c804e319ff8"
+        }
+      }
+    },
+    {
+      "id": "E05-09-schema-and-evidence-rejection",
+      "result": "PASS",
+      "evidence": [
+        {
+          "status": 502,
+          "body": {
+            "error": {
+              "code": "LLM_SCHEMA_INVALID",
+              "message": "Provider 返回的综合标题或分类不符合 Wiki Schema，未生成草稿。"
+            }
+          }
+        },
+        {
+          "status": 502,
+          "body": {
+            "error": {
+              "code": "LLM_SCHEMA_INVALID",
+              "message": "Provider 返回的综合标题或分类不符合 Wiki Schema，未生成草稿。"
+            }
+          }
+        },
+        {
+          "status": 502,
+          "body": {
+            "error": {
+              "code": "EVIDENCE_INVALID",
+              "message": "Provider 的 suggestedAdditions 引用无法在指定 Raw 原文中定位，未生成草稿。"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "E05-11-completed-retry-after-human-edit",
+      "result": "PASS",
+      "evidence": {
+        "original": {
+          "workflow": {
+            "id": "2be3930f-be9f-4432-b113-7852498d232b",
+            "kind": "synthesis",
+            "status": "confirmed",
+            "revision": 2,
+            "createdAt": "2026-10-07T06:49:19.532Z",
+            "updatedAt": "2026-10-07T06:49:19.571Z",
+            "provider": {
+              "name": "openai-compatible",
+              "model": "independent-b05-fake"
+            },
+            "rawSnapshots": [
+              {
+                "id": "9558b4f5-99e4-4f6b-98f2-fc196ac2146c",
+                "title": "验收资料 重试A",
+                "bodySha256": "a8e91eae6cde02e45857b0fc2178c222c1f9227ebde06247e8d105143621cbf6"
+              },
+              {
+                "id": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "title": "验收资料 重试B",
+                "bodySha256": "5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a"
+              }
+            ],
+            "title": "验收资料 多来源铺货率综合",
+            "category": "metric",
+            "sources": [
+              "9558b4f5-99e4-4f6b-98f2-fc196ac2146c",
+              "fbb69037-85a2-47e8-bb28-26a183ed6e83"
+            ],
+            "sections": {
+              "suggestedAdditions": [
+                "来源B补充公式：铺货率=有销售门店数/目标门店数"
+              ],
+              "conflicts": [
+                "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。"
+              ],
+              "inferences": [
+                "AI推断：差异可能源于销售活跃程度，待验证"
+              ],
+              "openQuestions": [
+                "请业务确认两种分子定义以及适用范围"
+              ],
+              "agreement": [
+                "两个来源一致采用目标门店作为分母、自然月作为周期"
+              ],
+              "sourceList": [
+                {
+                  "id": "9558b4f5-99e4-4f6b-98f2-fc196ac2146c",
+                  "title": "验收资料 重试A"
+                },
+                {
+                  "id": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                  "title": "验收资料 重试B"
+                }
+              ]
+            },
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "rawId": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "conflicts",
+                "text": "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。",
+                "rawId": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "agreement",
+                "text": "两个来源一致采用目标门店作为分母、自然月作为周期",
+                "rawId": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              }
+            ],
+            "commitOperationId": "b4c16899-1b0c-450f-a32a-d3477fc614b1",
+            "committedWikiId": "739d3e4e-33a8-4f71-aa5e-7bbee32683f7"
+          },
+          "wikiId": "739d3e4e-33a8-4f71-aa5e-7bbee32683f7",
+          "reused": false,
+          "operationId": "b4c16899-1b0c-450f-a32a-d3477fc614b1"
+        },
+        "repeated": {
+          "workflow": {
+            "id": "2be3930f-be9f-4432-b113-7852498d232b",
+            "kind": "synthesis",
+            "status": "confirmed",
+            "revision": 2,
+            "createdAt": "2026-10-07T06:49:19.532Z",
+            "updatedAt": "2026-10-07T06:49:19.571Z",
+            "provider": {
+              "name": "openai-compatible",
+              "model": "independent-b05-fake"
+            },
+            "rawSnapshots": [
+              {
+                "id": "9558b4f5-99e4-4f6b-98f2-fc196ac2146c",
+                "title": "验收资料 重试A",
+                "bodySha256": "a8e91eae6cde02e45857b0fc2178c222c1f9227ebde06247e8d105143621cbf6"
+              },
+              {
+                "id": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "title": "验收资料 重试B",
+                "bodySha256": "5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a"
+              }
+            ],
+            "title": "验收资料 多来源铺货率综合",
+            "category": "metric",
+            "sources": [
+              "9558b4f5-99e4-4f6b-98f2-fc196ac2146c",
+              "fbb69037-85a2-47e8-bb28-26a183ed6e83"
+            ],
+            "sections": {
+              "suggestedAdditions": [
+                "来源B补充公式：铺货率=有销售门店数/目标门店数"
+              ],
+              "conflicts": [
+                "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。"
+              ],
+              "inferences": [
+                "AI推断：差异可能源于销售活跃程度，待验证"
+              ],
+              "openQuestions": [
+                "请业务确认两种分子定义以及适用范围"
+              ],
+              "agreement": [
+                "两个来源一致采用目标门店作为分母、自然月作为周期"
+              ],
+              "sourceList": [
+                {
+                  "id": "9558b4f5-99e4-4f6b-98f2-fc196ac2146c",
+                  "title": "验收资料 重试A"
+                },
+                {
+                  "id": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                  "title": "验收资料 重试B"
+                }
+              ]
+            },
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "来源B补充公式：铺货率=有销售门店数/目标门店数",
+                "rawId": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "conflicts",
+                "text": "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。",
+                "rawId": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              },
+              {
+                "section": "agreement",
+                "text": "两个来源一致采用目标门店作为分母、自然月作为周期",
+                "rawId": "fbb69037-85a2-47e8-bb28-26a183ed6e83",
+                "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+                "start": 0,
+                "end": 41
+              }
+            ],
+            "commitOperationId": "b4c16899-1b0c-450f-a32a-d3477fc614b1",
+            "committedWikiId": "739d3e4e-33a8-4f71-aa5e-7bbee32683f7"
+          },
+          "wikiId": "739d3e4e-33a8-4f71-aa5e-7bbee32683f7",
+          "reused": true,
+          "operationId": "b4c16899-1b0c-450f-a32a-d3477fc614b1"
+        }
+      }
+    },
+    {
+      "id": "E05-12-revalidate-actual-raw-body",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "body": {
+          "error": {
+            "code": "RAW_CHANGED",
+            "message": "来源 76696c78-210f-4840-8ac0-e5495b89e3dc 已变化或校验值与实际正文不一致，提交已取消。"
+          }
+        }
+      }
+    }
+  ],
+  "services": [
+    {
+      "pid": 31028,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\1",
+      "base": "http://127.0.0.1:63118",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63118 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\1)\n"
+    },
+    {
+      "pid": 31496,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\2",
+      "base": "http://127.0.0.1:63133",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63133 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\2)\n"
+    },
+    {
+      "pid": 37784,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\3",
+      "base": "http://127.0.0.1:63186",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63186 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\3)\n"
+    },
+    {
+      "pid": 37504,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\4",
+      "base": "http://127.0.0.1:63251",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63251 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\4)\n"
+    },
+    {
+      "pid": 36528,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\5",
+      "base": "http://127.0.0.1:63299",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63299 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\5)\n"
+    },
+    {
+      "pid": 34908,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\5",
+      "base": "http://127.0.0.1:63332",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63332 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\5)\n"
+    },
+    {
+      "pid": 37356,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\6",
+      "base": "http://127.0.0.1:63360",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63360 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\6)\n"
+    },
+    {
+      "pid": 32696,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\6",
+      "base": "http://127.0.0.1:63390",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63390 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\6)\n"
+    },
+    {
+      "pid": 36848,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\7",
+      "base": "http://127.0.0.1:63415",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63415 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\7)\n"
+    },
+    {
+      "pid": 34224,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\7",
+      "base": "http://127.0.0.1:63443",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63443 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\7)\n"
+    },
+    {
+      "pid": 37548,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\8",
+      "base": "http://127.0.0.1:63458",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63458 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\8)\n"
+    },
+    {
+      "pid": 35464,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\8",
+      "base": "http://127.0.0.1:63475",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63475 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\8)\n"
+    },
+    {
+      "pid": 22288,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\9",
+      "base": "http://127.0.0.1:63489",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63489 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\9)\n"
+    },
+    {
+      "pid": 29344,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\10",
+      "base": "http://127.0.0.1:63508",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63508 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\10)\n"
+    },
+    {
+      "pid": 33228,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\11",
+      "base": "http://127.0.0.1:63532",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63532 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-WDDpDu\\11)\n"
+    }
+  ],
+  "durationMs": 10509,
+  "summary": {
+    "pass": 11,
+    "fail": 0
+  }
+}

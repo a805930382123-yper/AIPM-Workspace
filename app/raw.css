@@ -1,0 +1,56 @@
+/* B03: Raw 文件导入、原件信息、删除确认与重新导入的补充样式。 */
+.detail-actions .action-group { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.detail-actions .text-button.danger { color: #a4544a; }
+.detail-actions .text-button.danger:hover:not(:disabled) { color: #8c3f36; }
+.detail-actions .text-button:disabled { color: #b6bec8; cursor: default; }
+
+.detail-asset { margin: 0 0 18px; padding: 14px 16px; border: 1px solid #e6ebf1; border-radius: 6px; background: #fafbfd; }
+.detail-asset-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; color: #4c5d72; font-size: 11px; font-weight: 650; }
+.retained-badge { padding: 3px 7px; border: 1px solid #cfe0d5; border-radius: 4px; color: #4b7b60; background: #f1f8f3; font-size: 10px; font-weight: 600; }
+.detail-asset .metadata-grid { margin: 0; padding: 0; border: 0; gap: 13px 20px; }
+.extract-note { margin: 11px 0 0; color: #7d8899; font-size: 10px; line-height: 1.65; }
+.notice-warn { margin: 9px 0 0; padding: 8px 10px; border: 1px solid #ecdcc4; border-radius: 5px; color: #8a6a3a; background: #fdf8f1; font-size: 10px; line-height: 1.6; }
+
+.dialog-tabs { display: flex; gap: 6px; margin: 0 26px; padding-top: 16px; }
+.dialog-tab { flex: 1; min-height: 34px; border: 1px solid #dce2e9; border-radius: 6px; color: #5b6b80; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+.dialog-tab:hover { background: #f7f9fb; }
+.dialog-tab.active { border-color: #244b7d; color: #244b7d; background: #eef3f9; }
+.dialog-tab small { display: block; margin-top: 2px; color: #97a2b0; font-size: 9px; font-weight: 400; }
+.dialog-tab.active small { color: #6d87a8; }
+
+.file-picker { display: flex; flex-direction: column; gap: 7px; padding: 14px 15px; border: 1px dashed #cfd8e3; border-radius: 6px; background: #fbfcfe; }
+.file-picker input[type="file"] { width: 100%; height: auto; padding: 0; border: 0; background: transparent; font-size: 12px; }
+.file-picker .field-hint { text-align: left; }
+.file-picked { display: flex; align-items: center; gap: 9px; margin-top: 2px; color: #4c5d72; font-size: 11px; }
+.file-picked b { font-weight: 600; overflow-wrap: anywhere; }
+.file-picked span { color: #94a0ae; font-size: 10px; }
+.reimport-hint { margin: 13px 0 0; padding: 9px 11px; border-radius: 5px; color: #5f6f83; background: #f4f7fa; font-size: 10px; line-height: 1.65; }
+
+.form-error p { margin: 6px 0 0; line-height: 1.65; }
+.form-error .error-code { color: #8f4034; font-family: Consolas, monospace; font-size: 10px; }
+.form-error .retained-note { color: #7c6a4e; overflow-wrap: anywhere; }
+.form-error .error-actions { margin-top: 10px; }
+.form-error .error-actions .secondary-button { min-height: 30px; }
+
+.result-panel { margin: 17px 26px 0; padding: 16px 17px; border: 1px solid #cfe0d5; border-radius: 7px; background: #f7fbf8; }
+.result-head { display: flex; align-items: center; gap: 9px; color: #2f6448; font-size: 13px; font-weight: 650; }
+.result-head.bad { color: #9b4539; }
+.result-dot { width: 8px; height: 8px; border-radius: 50%; background: #4f8a68; }
+.result-head.bad .result-dot { background: #bb6a5d; }
+.result-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+.result-list li { display: flex; gap: 8px; color: #4f5f73; font-size: 11px; line-height: 1.6; }
+.result-list li > span:first-child { flex: 0 0 74px; color: #8d98a6; }
+.result-list code { color: #55677d; font-family: Consolas, monospace; font-size: 10px; overflow-wrap: anywhere; }
+.result-panel .dialog-footer { margin: 15px -17px -16px; padding: 12px 17px; border-top: 1px solid #e2ede6; }
+.dialog-footer .footer-note { color: #97a2b0; font-size: 10px; }
+
+.reference-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; max-height: 190px; overflow: auto; }
+.reference-list li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #e6ebf1; border-radius: 5px; background: #fff; font-size: 11px; color: #4c5d72; }
+.reference-list li code { margin-left: auto; color: #97a2b0; font-family: Consolas, monospace; font-size: 9px; }
+.delete-copy { margin: 15px 26px 0; color: #5f6f83; font-size: 11px; line-height: 1.7; }
+.delete-copy strong { color: #8c3f36; }
+.delete-panel { margin: 13px 26px 0; padding: 12px 14px; border: 1px solid #ecdcc4; border-radius: 6px; background: #fdf9f3; color: #7c6437; font-size: 10px; line-height: 1.7; }
+.delete-panel b { color: #6c5527; }
+.import-dialog .delete-footer { margin: 18px 0 0; padding: 13px 26px; border-radius: 0 0 8px 8px; }
+.danger-button { border-color: #a4544a; background: #a4544a; }
+.danger-button:hover:not(:disabled) { background: #8c3f36; }

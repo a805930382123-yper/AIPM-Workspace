@@ -1,0 +1,120 @@
+{
+  "at": "2026-10-12T13:25:38.230Z",
+  "meaning": "Evidence integrity; M04 conclusion also requires independent standards/spec review and acceptance report",
+  "checks": [
+    {
+      "id": "frozen-product-tests-user-data-history",
+      "verified": true,
+      "details": {
+        "product": 82,
+        "unit": 47,
+        "workspace": 3,
+        "protected": 1080
+      }
+    },
+    {
+      "id": "full-quality-no-skips",
+      "verified": true,
+      "details": {
+        "buildPassed": true,
+        "unitPass": 193
+      }
+    },
+    {
+      "id": "http-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 21,
+        "servicesClosed": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "component-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 7,
+        "servicesClosed": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "deep-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 11,
+        "servicesClosed": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "edges-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 5,
+        "servicesClosed": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "api-regression-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 23,
+        "servicesClosed": true,
+        "providerCalls": "see individual checks"
+      }
+    },
+    {
+      "id": "backup-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 5,
+        "servicesClosed": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "b05-regression-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 11,
+        "servicesClosed": true,
+        "providerCalls": "see individual checks"
+      }
+    },
+    {
+      "id": "b06-regression-actual-results",
+      "verified": true,
+      "details": {
+        "pass": 15,
+        "servicesClosed": true,
+        "providerCalls": "see individual checks"
+      }
+    },
+    {
+      "id": "actual-browser-isolation-and-Raw-retention",
+      "verified": true,
+      "details": {
+        "browserPass": 8,
+        "expectedRawFilesAdded": 2,
+        "archiveDeletedRawRetained": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "browser-own-ports-closed",
+      "verified": true,
+      "details": {
+        "ports": [
+          56903,
+          56911,
+          56912
+        ],
+        "closed": true
+      }
+    }
+  ],
+  "verified": 12,
+  "failed": 0
+}

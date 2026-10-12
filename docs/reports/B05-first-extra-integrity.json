@@ -1,0 +1,39 @@
+{
+  "clientDate": "2026-10-07",
+  "startedAt": "2026-10-07T05:37:56.118Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-KLlqkB",
+  "provider": "independent HTTP fake; real AI quality BLOCKED",
+  "checks": [
+    {
+      "id": "E05-11-completed-retry-after-human-edit",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"WORKFLOW_COMMIT_PENDING\",\"message\":\"原提交尚未完成，请查看提交状态。\",\"details\":{\"operationId\":\"52af7849-e52e-4afa-a42d-7afedc663329\",\"writtenIds\":[\"83c6ac7c-b7c9-4a65-a319-97891a3ae39e\",\"d246ef2f-9e6b-4aa6-9064-7a53c868f9d9\",\"c5cff708-5245-4764-bbc2-840b1af92e82\"]}}}\n    at confirm (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:44:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:188:53\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:19:41)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:183:3"
+    },
+    {
+      "id": "E05-12-revalidate-actual-raw-body",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"workflow\":{\"id\":\"75609498-0602-4720-8e95-cdf67b6a628c\",\"kind\":\"synthesis\",\"status\":\"confirmed\",\"revision\":2,\"createdAt\":\"2026-10-07T05:37:57.222Z\",\"updatedAt\":\"2026-10-07T05:37:57.265Z\",\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b05-fake\"},\"rawSnapshots\":[{\"id\":\"d4dfe394-15c6-4ecb-b691-58c841f963ba\",\"title\":\"验收资料 原文完整性A\",\"bodySha256\":\"a8e91eae6cde02e45857b0fc2178c222c1f9227ebde06247e8d105143621cbf6\"},{\"id\":\"e0f43645-a372-4a11-9b59-8a1a9c9f985d\",\"title\":\"验收资料 原文完整性B\",\"bodySha256\":\"5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a\"}],\"title\":\"验收资料 多来源铺货率综合\",\"category\":\"metric\",\"sources\":[\"d4dfe394-15c6-4ecb-b691-58c841f963ba\",\"e0f43645-a372-4a11-9b59-8a1a9c9f985d\"],\"sections\":{\"suggestedAdditions\":[\"来源B补充公式：铺货率=有销售门店数/目标门店数\"],\"conflicts\":[\"来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。\"],\"inferences\":[\"AI推断：差异可能源于销售活跃程度，待验证\"],\"openQuestions\":[\"请业务确认两种分子定义以及适用范围\"],\"agreement\":[\"两个来源一致采用目标门店作为分母、自然月作为周期\"],\"sourceList\":[{\"id\":\"d4dfe394-15c6-4ecb-b691-58c841f963ba\",\"title\":\"验收资料 原文完整性A\"},{\"id\":\"e0f43645-a372-4a11-9b59-8a1a9c9f985d\",\"title\":\"验收资料 原文完整性B\"}]},\"evidence\":[{\"section\":\"suggestedAdditions\",\"text\":\"来源B补充公式：铺货率=有销售门店数/目标门店数\",\"rawId\":\"e0f43645-a372-4a11-9b59-8a1a9c9f985d\",\"quote\":\"来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。\",\"start\":0,\"end\":41},{\"section\":\"conflicts\",\"text\":\"来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。\",\"rawId\":\"e0f43645-a372-4a11-9b59-8a1a9c9f985d\",\"quote\":\"来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。\",\"start\":0,\"end\":41},{\"section\":\"agreement\",\"text\":\"两个来源一致采用目标门店作为分母、自然月作为周期\",\"rawId\":\"e0f43645-a372-4a11-9b59-8a1a9c9f985d\",\"quote\":\"来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。\",\"start\":0,\"end\":41}],\"commitOperationId\":\"288662b0-afbe-4aeb-b07b-641c2c3fc03a\",\"committedWikiId\":\"9fbf3a8f-eae1-49d6-a2c4-f0fa0a148ea4\"},\"wikiId\":\"9fbf3a8f-eae1-49d6-a2c4-f0fa0a148ea4\",\"reused\":false,\"operationId\":\"288662b0-afbe-4aeb-b07b-641c2c3fc03a\"}\n\n201 !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:199:12\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:19:41)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:192:3"
+    }
+  ],
+  "services": [
+    {
+      "pid": 36816,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-KLlqkB\\1",
+      "base": "http://127.0.0.1:63879",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63879 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-KLlqkB\\1)\n"
+    },
+    {
+      "pid": 37840,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-KLlqkB\\2",
+      "base": "http://127.0.0.1:63887",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:63887 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-KLlqkB\\2)\n"
+    }
+  ],
+  "durationMs": 1181,
+  "summary": {
+    "pass": 0,
+    "fail": 2
+  }
+}

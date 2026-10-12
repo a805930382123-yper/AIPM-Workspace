@@ -1,0 +1,334 @@
+{
+  "config": {
+    "provider": "openai-compatible",
+    "baseUrlHost": null,
+    "model": null,
+    "keyConfigured": false,
+    "keyMask": "••••••••••••",
+    "configured": false,
+    "source": "none",
+    "missing": [
+      "FMCG_LLM_BASE_URL",
+      "FMCG_LLM_MODEL",
+      "FMCG_LLM_API_KEY"
+    ],
+    "configFile": "E:\\AI\\Work\\AIPM Workspace\\.env.local",
+    "envNames": {
+      "baseUrl": "FMCG_LLM_BASE_URL",
+      "model": "FMCG_LLM_MODEL",
+      "apiKey": "FMCG_LLM_API_KEY"
+    }
+  },
+  "stats": {
+    "rawCount": 2,
+    "wikiCount": 4,
+    "thisWeekNewCount": 6,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 0,
+    "weekStartsOn": "2026-10-05"
+  },
+  "raw": {
+    "items": [
+      {
+        "title": "B04返修UI-部分选择链接",
+        "sourceType": "article",
+        "sourceName": "独立复验fake来源",
+        "tags": [],
+        "id": "f5ed34fa-cbd8-4007-903b-2eb8958ed251",
+        "importedAt": "2026-10-05T14:55:48.081Z",
+        "status": "unprocessed",
+        "bodySha256": "55320438b82609db52a1fe87e3d8ace845185a29c197f11c435b0c417aa9a693",
+        "body": "部分选择应只建立已创建知识的链接。\n未选建议以待处理文本保留。"
+      },
+      {
+        "title": "B04返修UI-编辑确认",
+        "sourceType": "article",
+        "sourceName": "独立复验fake非生产资料",
+        "author": "独立测试作者",
+        "url": "https://example.test/b04-recheck",
+        "tags": [],
+        "id": "e9831976-895a-49ec-8837-2f5b4fd3051e",
+        "importedAt": "2026-10-05T14:52:58.403Z",
+        "status": "unprocessed",
+        "bodySha256": "3641005336c08a620067761adc24ba1afeaad733c792dcc85e5303ce0c37f447",
+        "body": "渠道库存周转为38天。\n应分别核对渠道动销与经销商库存。\n"
+      }
+    ]
+  },
+  "drafts": {
+    "items": [
+      {
+        "id": "1f1df8a2-fcb7-413d-8346-43aff7eeacad",
+        "rawId": "f5ed34fa-cbd8-4007-903b-2eb8958ed251",
+        "rawTitle": "B04返修UI-部分选择链接",
+        "status": "confirmed",
+        "revision": 2,
+        "createdAt": "2026-10-05T14:56:01.393Z",
+        "updatedAt": "2026-10-05T14:56:02.423Z",
+        "jobId": "21fda7e5-6fa0-433d-ad70-faa1347ef225",
+        "title": "B04返修UI-部分选择链接-来源摘要",
+        "pageCount": 2,
+        "selectedCount": 1,
+        "commitOperationId": "f209a385-7e7f-4455-9b01-5b562ba5e212"
+      },
+      {
+        "id": "57f263eb-5163-4c68-ae6c-00a6d9603ba0",
+        "rawId": "e9831976-895a-49ec-8837-2f5b4fd3051e",
+        "rawTitle": "B04返修UI-编辑确认",
+        "status": "confirmed",
+        "revision": 3,
+        "createdAt": "2026-10-05T14:53:09.76Z",
+        "updatedAt": "2026-10-05T14:54:51.098Z",
+        "jobId": "512a7b8a-a19f-4edb-ba3e-554fef0e4143",
+        "title": "B04返修UI-编辑确认-来源摘要",
+        "pageCount": 2,
+        "selectedCount": 1,
+        "commitOperationId": "c1228e9c-0b5c-4fac-a7f7-5897dfaaaa5a"
+      }
+    ]
+  },
+  "wiki": {
+    "items": [
+      {
+        "domain": "fmcg",
+        "created": "2026-10-05T14:56:02.379Z",
+        "updated": "2026-10-05T14:56:02.379Z",
+        "revision": 1,
+        "aliases": [],
+        "tags": [],
+        "id": "ade46cdb-a9ba-427c-9c4d-a148a4714582",
+        "title": "返修实际创建的人工改名页",
+        "type": "concept",
+        "category": "channel",
+        "sources": [
+          "f5ed34fa-cbd8-4007-903b-2eb8958ed251"
+        ],
+        "knowledge_status": "ai_organized",
+        "confidence": "medium",
+        "source_level": "C",
+        "review_status": "unreviewed",
+        "body": "## 一句话说明\n\n渠道概念的独立测试定义\n\n## 来源事实\n\n- 部分选择应只建立已创建知识的链接。（证据 e1）\n\n## AI 整理\n\n- 这是明确标注的独立fake整理\n\n## AI 推断\n\n- 这是待人工审阅的fake推断\n\n## 待确认问题\n\n- 需要人工确认\n\n## 来源证据\n\n- e1｜原文 [0, 17)：部分选择应只建立已创建知识的链接。\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[B04返修UI-部分选择链接-来源摘要]]（Raw f5ed34fa-cbd8-4007-903b-2eb8958ed251）\n"
+      },
+      {
+        "domain": "fmcg",
+        "created": "2026-10-05T14:56:02.379Z",
+        "updated": "2026-10-05T14:56:02.379Z",
+        "revision": 1,
+        "aliases": [],
+        "tags": [],
+        "id": "a98b9774-5b1a-4a49-9d34-1804e1e9b93d",
+        "title": "B04返修UI-部分选择链接-来源摘要",
+        "type": "source",
+        "category": "other",
+        "sources": [
+          "f5ed34fa-cbd8-4007-903b-2eb8958ed251"
+        ],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C",
+        "review_status": "unreviewed",
+        "body": "## 来源信息\n\n- 来源类型：网页文章（article）\n- 来源名称：独立复验fake来源\n- 作者：未提供（作者）\n- 原发布日期：未提供（原发布日期）\n- 原始链接：未提供（原始链接）\n- Raw：B04返修UI-部分选择链接（f5ed34fa-cbd8-4007-903b-2eb8958ed251）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n仅测试人工审核门禁，不代表真实AI输出。\n\n## Key Takeaways\n\n- 渠道概念的独立测试定义\n\n## 涉及概念\n\n- [[返修实际创建的人工改名页]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 部分选择应只建立已创建知识的链接。\n\n## 待验证内容\n\n- 需要人工确认\n\n## 本次未创建的建议（未选中，待处理）\n\n- B04返修UI-部分选择链接-库存概念（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- B04返修UI-部分选择链接（Raw f5ed34fa-cbd8-4007-903b-2eb8958ed251）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n"
+      },
+      {
+        "domain": "fmcg",
+        "created": "2026-10-05T14:54:51.055Z",
+        "updated": "2026-10-05T14:54:51.055Z",
+        "revision": 1,
+        "aliases": [],
+        "tags": [],
+        "id": "ec704bca-0196-42a3-8bf9-e9510c25d5ec",
+        "title": "返修人工Source标题",
+        "type": "source",
+        "category": "other",
+        "sources": [
+          "e9831976-895a-49ec-8837-2f5b4fd3051e"
+        ],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "A",
+        "review_status": "unreviewed",
+        "body": "## 来源信息\n\n- 来源类型：网页文章（article）\n- 来源名称：独立复验fake非生产资料\n- 作者：独立测试作者\n- 原发布日期：未提供（原发布日期）\n- 原始链接：https://example.test/b04-recheck\n- Raw：B04返修UI-编辑确认（e9831976-895a-49ec-8837-2f5b4fd3051e）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n仅测试人工审核门禁，不代表真实AI输出。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- B04返修UI-编辑确认-渠道概念（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- B04返修UI-编辑确认-库存概念（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- B04返修UI-编辑确认（Raw e9831976-895a-49ec-8837-2f5b4fd3051e）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n\n## 人工复验备注\n人工Source正文应在保存和确认后保留。"
+      },
+      {
+        "domain": "fmcg",
+        "created": "2026-10-05T14:54:51.055Z",
+        "updated": "2026-10-05T14:54:51.055Z",
+        "revision": 1,
+        "aliases": [],
+        "tags": [],
+        "id": "0d2e682f-04df-4fae-99c1-dcef9e91de48",
+        "title": "返修直接确认人工知识标题",
+        "type": "concept",
+        "category": "channel",
+        "sources": [
+          "e9831976-895a-49ec-8837-2f5b4fd3051e"
+        ],
+        "knowledge_status": "ai_organized",
+        "confidence": "medium",
+        "source_level": "C",
+        "review_status": "unreviewed",
+        "body": "## 一句话说明\n\n返修人工定义必须进入正式知识页\n\n## 来源事实\n\n- 渠道库存周转为38天。（证据 e1）\n\n## AI 整理\n\n- 这是明确标注的独立fake整理\n\n## AI 推断\n\n- 这是待人工审阅的fake推断\n\n## 待确认问题\n\n- 需要人工确认\n\n## 来源证据\n\n- e1｜原文 [0, 11)：渠道库存周转为38天。\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[返修人工Source标题]]（Raw e9831976-895a-49ec-8837-2f5b4fd3051e）\n"
+      }
+    ],
+    "categoryCounts": {
+      "industry_basics": 0,
+      "category": 0,
+      "channel": 2,
+      "sales": 0,
+      "store": 0,
+      "distributor": 0,
+      "supply_chain": 0,
+      "product": 0,
+      "metric": 0,
+      "ai_application": 0,
+      "company_business": 0,
+      "customer": 0,
+      "other": 2
+    }
+  },
+  "states": {
+    "items": [
+      {
+        "rawId": "e9831976-895a-49ec-8837-2f5b4fd3051e",
+        "status": "generated",
+        "updatedAt": "2026-10-05T14:54:51.101Z",
+        "history": [
+          {
+            "at": "2026-10-05T14:53:09.71Z",
+            "from": "unprocessed",
+            "to": "processing",
+            "reason": "AI 整理已启动",
+            "jobId": "512a7b8a-a19f-4edb-ba3e-554fef0e4143"
+          },
+          {
+            "at": "2026-10-05T14:53:09.769Z",
+            "from": "processing",
+            "to": "pending_confirmation",
+            "reason": "提取完成，等待人工审核",
+            "jobId": "512a7b8a-a19f-4edb-ba3e-554fef0e4143",
+            "draftId": "57f263eb-5163-4c68-ae6c-00a6d9603ba0"
+          },
+          {
+            "at": "2026-10-05T14:54:51.101Z",
+            "from": "pending_confirmation",
+            "to": "generated",
+            "reason": "AI 提取结果已确认写入 Wiki",
+            "draftId": "57f263eb-5163-4c68-ae6c-00a6d9603ba0"
+          }
+        ],
+        "jobId": "512a7b8a-a19f-4edb-ba3e-554fef0e4143",
+        "revertStatus": "unprocessed",
+        "draftId": "57f263eb-5163-4c68-ae6c-00a6d9603ba0",
+        "generatedWikiIds": [
+          "ec704bca-0196-42a3-8bf9-e9510c25d5ec",
+          "0d2e682f-04df-4fae-99c1-dcef9e91de48"
+        ],
+        "confirmedOperationId": "c1228e9c-0b5c-4fac-a7f7-5897dfaaaa5a"
+      },
+      {
+        "rawId": "f5ed34fa-cbd8-4007-903b-2eb8958ed251",
+        "status": "generated",
+        "updatedAt": "2026-10-05T14:56:02.426Z",
+        "history": [
+          {
+            "at": "2026-10-05T14:56:01.381Z",
+            "from": "unprocessed",
+            "to": "processing",
+            "reason": "AI 整理已启动",
+            "jobId": "21fda7e5-6fa0-433d-ad70-faa1347ef225"
+          },
+          {
+            "at": "2026-10-05T14:56:01.4Z",
+            "from": "processing",
+            "to": "pending_confirmation",
+            "reason": "提取完成，等待人工审核",
+            "jobId": "21fda7e5-6fa0-433d-ad70-faa1347ef225",
+            "draftId": "1f1df8a2-fcb7-413d-8346-43aff7eeacad"
+          },
+          {
+            "at": "2026-10-05T14:56:02.426Z",
+            "from": "pending_confirmation",
+            "to": "generated",
+            "reason": "AI 提取结果已确认写入 Wiki",
+            "draftId": "1f1df8a2-fcb7-413d-8346-43aff7eeacad"
+          }
+        ],
+        "jobId": "21fda7e5-6fa0-433d-ad70-faa1347ef225",
+        "revertStatus": "unprocessed",
+        "draftId": "1f1df8a2-fcb7-413d-8346-43aff7eeacad",
+        "generatedWikiIds": [
+          "a98b9774-5b1a-4a49-9d34-1804e1e9b93d",
+          "ade46cdb-a9ba-427c-9c4d-a148a4714582"
+        ],
+        "confirmedOperationId": "f209a385-7e7f-4455-9b01-5b562ba5e212"
+      }
+    ]
+  },
+  "hashes": [
+    {
+      "path": "drafts\\1f1df8a2-fcb7-413d-8346-43aff7eeacad.json",
+      "sha256": "38e35f488f50d38f55e5b269cd76facd57ed854507afa7aad02980da30aa3fca"
+    },
+    {
+      "path": "drafts\\57f263eb-5163-4c68-ae6c-00a6d9603ba0.json",
+      "sha256": "eee5b86b64cc84887c0b6a1a45313c2484876dfc69d1f3b222f7c5a64a1428b6"
+    },
+    {
+      "path": "knowledge\\logs\\wiki.jsonl",
+      "sha256": "7d0ca2d900e1dc92bf4c9345c0a7e0e81644ae21d9a608471c8ba3215a7af3d6"
+    },
+    {
+      "path": "knowledge\\raw\\articles\\e9831976-895a-49ec-8837-2f5b4fd3051e.md",
+      "sha256": "0d2335db1f47db0d1f36818e3142c4aaed858bffa931083b24191d6f11347f55"
+    },
+    {
+      "path": "knowledge\\raw\\articles\\f5ed34fa-cbd8-4007-903b-2eb8958ed251.md",
+      "sha256": "b5083cd79919157978ea3991cf6905e7298477d81981e6724a40624cb6b34858"
+    },
+    {
+      "path": "knowledge\\wiki\\0d2e682f-04df-4fae-99c1-dcef9e91de48.md",
+      "sha256": "248eb0abd6b5e0e2097e487f7bc9988d4415c37192a78dbdc82b7ec7ba5cabad"
+    },
+    {
+      "path": "knowledge\\wiki\\a98b9774-5b1a-4a49-9d34-1804e1e9b93d.md",
+      "sha256": "212e5ac240f057fd040cf68b695210319762ca8918f713238662a78f6d63723f"
+    },
+    {
+      "path": "knowledge\\wiki\\ade46cdb-a9ba-427c-9c4d-a148a4714582.md",
+      "sha256": "199e15a57037bd3488bd59e01861ab01c22e7c7fe778a5934aad8290cdddb601"
+    },
+    {
+      "path": "knowledge\\wiki\\ec704bca-0196-42a3-8bf9-e9510c25d5ec.md",
+      "sha256": "5340e57cf71a3479e4935d07bdc7e7468cc7c8cda2bdfe2e14e3724b1ce48147"
+    },
+    {
+      "path": "knowledge\\wiki\\index.md",
+      "sha256": "acffce35e21e355224738273cce7772fbdc483cd2447a09c5080e4ab3c222d5e"
+    },
+    {
+      "path": "state\\extraction-jobs\\21fda7e5-6fa0-433d-ad70-faa1347ef225.json",
+      "sha256": "ab1dd01fb819a6d31015a6332d4bca9ed4720331c79bfffb67febb85e63476d1"
+    },
+    {
+      "path": "state\\extraction-jobs\\512a7b8a-a19f-4edb-ba3e-554fef0e4143.json",
+      "sha256": "a5909c905489b424b538ecd28e791ccd77ff21fdf9eb58a91439c2d76a0151d9"
+    },
+    {
+      "path": "state\\raw-processing\\e9831976-895a-49ec-8837-2f5b4fd3051e.json",
+      "sha256": "7c2e28dbc4d0f6907eddba0e3115da4c4d68fb631d64354700cee0fe1463a627"
+    },
+    {
+      "path": "state\\raw-processing\\f5ed34fa-cbd8-4007-903b-2eb8958ed251.json",
+      "sha256": "16f244a04e94a0e02e6b7a6f57425088120de7ce9c5c64f6b64d5b1f7ea72f18"
+    },
+    {
+      "path": "state\\wiki-commits\\c1228e9c-0b5c-4fac-a7f7-5897dfaaaa5a.json",
+      "sha256": "a5e9374bff6d43ed8ec36cb5718c01510de98ee689225a0d81ee40dacbb2d523"
+    },
+    {
+      "path": "state\\wiki-commits\\f209a385-7e7f-4455-9b01-5b562ba5e212.json",
+      "sha256": "ed2dd98f0be873ae5026de26b8574cf807e654eec2416f3567fb76b74be18e0c"
+    }
+  ]
+}

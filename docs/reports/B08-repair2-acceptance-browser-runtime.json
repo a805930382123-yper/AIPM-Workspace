@@ -1,0 +1,563 @@
+{
+  "provider": "independent fake, not real AI quality",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-QiszFl",
+  "events": [],
+  "httpRequests": [
+    {
+      "at": "2026-10-08T13:07:20.721Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:20.724Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B08浏览器来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B08浏览器来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\",\"importedAt\":\"2026-10-08T13:06:53.059Z\",\"status\":\"unprocessed\",\"bodySha256\":\"65f4b4f1edb4c86b974e699dec4025d878234b41b4a8e57db3cf3b6a3c31d4eb\",\"body\":\"浏览器测试原文不得改写。\"}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:20.733Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:20.734Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":2,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T13:06:53.098Z\",\"action\":\"create\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"title\":\"库存周转未选页\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T13:06:53.079Z\",\"action\":\"create\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:20.735Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B08浏览器来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B08浏览器来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\",\"importedAt\":\"2026-10-08T13:06:53.059Z\",\"status\":\"unprocessed\",\"bodySha256\":\"65f4b4f1edb4c86b974e699dec4025d878234b41b4a8e57db3cf3b6a3c31d4eb\",\"body\":\"浏览器测试原文不得改写。\"}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:20.745Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":2,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T13:06:53.098Z\",\"action\":\"create\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"title\":\"库存周转未选页\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T13:06:53.079Z\",\"action\":\"create\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.542Z",
+      "method": "GET",
+      "url": "/api/prompts/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"categories\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\",\"help\":\"学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\"},{\"id\":\"business_analysis\",\"label\":\"业务分析\",\"help\":\"分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\"},{\"id\":\"customer\",\"label\":\"客户\",\"help\":\"面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\"},{\"id\":\"product\",\"label\":\"产品\",\"help\":\"产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\"},{\"id\":\"ai\",\"label\":\"AI\",\"help\":\"用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\"},{\"id\":\"office\",\"label\":\"日常办公\",\"help\":\"日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\"}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.547Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"库存周转未选页\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.089Z\",\"updated\":\"2026-10-08T13:06:53.089Z\",\"revision\":1,\"body\":\"未选内容B08_BROWSER_UNSELECTED不得进入调用。\"},{\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.070Z\",\"updated\":\"2026-10-08T13:06:53.070Z\",\"revision\":1,\"body\":\"经销商订货访谈必要背景B08_BROWSER_SELECTED；需核对客户角色与审批节点。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.548Z",
+      "method": "GET",
+      "url": "/api/prompts/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"categories\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\",\"help\":\"学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\"},{\"id\":\"business_analysis\",\"label\":\"业务分析\",\"help\":\"分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\"},{\"id\":\"customer\",\"label\":\"客户\",\"help\":\"面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\"},{\"id\":\"product\",\"label\":\"产品\",\"help\":\"产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\"},{\"id\":\"ai\",\"label\":\"AI\",\"help\":\"用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\"},{\"id\":\"office\",\"label\":\"日常办公\",\"help\":\"日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\"}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.556Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"库存周转未选页\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.089Z\",\"updated\":\"2026-10-08T13:06:53.089Z\",\"revision\":1,\"body\":\"未选内容B08_BROWSER_UNSELECTED不得进入调用。\"},{\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.070Z\",\"updated\":\"2026-10-08T13:06:53.070Z\",\"revision\":1,\"body\":\"经销商订货访谈必要背景B08_BROWSER_SELECTED；需核对客户角色与审批节点。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.638Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":2,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.650Z",
+      "method": "GET",
+      "url": "/api/prompts/23f91c42-2a62-4ad2-856b-2931d4780bcf",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"prompt\":{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},\"wikiLinks\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.650Z",
+      "method": "GET",
+      "url": "/api/prompts/23f91c42-2a62-4ad2-856b-2931d4780bcf/versions",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-08T13:06:53.124Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.124Z\",\"version\":1,\"source\":\"manual\"}},{\"version\":2,\"savedAt\":\"2026-10-08T13:06:53.129Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"}}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.806Z",
+      "method": "GET",
+      "url": "/api/prompt-ai/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}],\"checks\":[{\"id\":\"goal\",\"label\":\"任务目标\"},{\"id\":\"role\",\"label\":\"角色\"},{\"id\":\"context\",\"label\":\"业务背景\"},{\"id\":\"input\",\"label\":\"输入资料\"},{\"id\":\"tasks\",\"label\":\"执行步骤\"},{\"id\":\"constraints\",\"label\":\"约束条件\"},{\"id\":\"output\",\"label\":\"输出格式\"},{\"id\":\"fact_inference\",\"label\":\"事实与推断\"},{\"id\":\"anti_fabrication\",\"label\":\"防止虚构\"}],\"budgets\":{\"task\":10000,\"briefField\":10000,\"briefTotal\":30000,\"selectedWiki\":6,\"perWikiChars\":3000,\"totalWikiChars\":12000,\"body\":100000,\"timeoutMs\":60000,\"maxOutputBytes\":524288}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.810Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"库存周转未选页\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.089Z\",\"updated\":\"2026-10-08T13:06:53.089Z\",\"revision\":1,\"body\":\"未选内容B08_BROWSER_UNSELECTED不得进入调用。\"},{\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.070Z\",\"updated\":\"2026-10-08T13:06:53.070Z\",\"revision\":1,\"body\":\"经销商订货访谈必要背景B08_BROWSER_SELECTED；需核对客户角色与审批节点。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.811Z",
+      "method": "GET",
+      "url": "/api/prompt-ai/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}],\"checks\":[{\"id\":\"goal\",\"label\":\"任务目标\"},{\"id\":\"role\",\"label\":\"角色\"},{\"id\":\"context\",\"label\":\"业务背景\"},{\"id\":\"input\",\"label\":\"输入资料\"},{\"id\":\"tasks\",\"label\":\"执行步骤\"},{\"id\":\"constraints\",\"label\":\"约束条件\"},{\"id\":\"output\",\"label\":\"输出格式\"},{\"id\":\"fact_inference\",\"label\":\"事实与推断\"},{\"id\":\"anti_fabrication\",\"label\":\"防止虚构\"}],\"budgets\":{\"task\":10000,\"briefField\":10000,\"briefTotal\":30000,\"selectedWiki\":6,\"perWikiChars\":3000,\"totalWikiChars\":12000,\"body\":100000,\"timeoutMs\":60000,\"maxOutputBytes\":524288}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.812Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":2,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.819Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"库存周转未选页\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.089Z\",\"updated\":\"2026-10-08T13:06:53.089Z\",\"revision\":1,\"body\":\"未选内容B08_BROWSER_UNSELECTED不得进入调用。\"},{\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.070Z\",\"updated\":\"2026-10-08T13:06:53.070Z\",\"revision\":1,\"body\":\"经销商订货访谈必要背景B08_BROWSER_SELECTED；需核对客户角色与审批节点。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:35.820Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":2,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.105Z",
+      "method": "POST",
+      "url": "/api/prompt-ai/brief",
+      "status": 201,
+      "requestBody": "{\"task\":\"生成经销商访谈提纲，明确事实与推断\",\"template\":\"customer_interview\"}",
+      "body": "{\"draftId\":\"ad471b9d-7d87-4de9-b8cb-0d0b00a82c48\",\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"wikiCandidates\":[{\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"title\":\"库存周转未选页\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"selected\":false},{\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"selected\":false}],\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"}}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.359Z",
+      "method": "POST",
+      "url": "/api/prompt-ai/generate",
+      "status": 201,
+      "requestBody": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWikiIds\":[]}",
+      "body": "{\"draftId\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"preview\":{\"name\":\"隔离生成预览\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false},\"relatedWiki\":[],\"contextBudget\":{\"maxPerWiki\":3000,\"maxTotal\":12000,\"used\":0},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"}}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.651Z",
+      "method": "POST",
+      "url": "/api/prompt-ai/drafts/7c62d4d8-ce4d-45eb-bc3d-d86a4693711f/confirm",
+      "status": 201,
+      "requestBody": "{\"requestId\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"mode\":\"new\",\"input\":{\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false}}",
+      "body": "{\"prompt\":{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"},\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.659Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.659Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"},{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":3,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.660Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B08浏览器来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B08浏览器来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\",\"importedAt\":\"2026-10-08T13:06:53.059Z\",\"status\":\"unprocessed\",\"bodySha256\":\"65f4b4f1edb4c86b974e699dec4025d878234b41b4a8e57db3cf3b6a3c31d4eb\",\"body\":\"浏览器测试原文不得改写。\"}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:36.666Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":3,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T13:06:53.098Z\",\"action\":\"create\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"title\":\"库存周转未选页\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T13:06:53.079Z\",\"action\":\"create\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:37.213Z",
+      "method": "GET",
+      "url": "/api/prompts/7c62d4d8-ce4d-45eb-bc3d-d86a4693711f",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"prompt\":{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"},\"wikiLinks\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:37.214Z",
+      "method": "GET",
+      "url": "/api/prompts/7c62d4d8-ce4d-45eb-bc3d-d86a4693711f/versions",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-08T13:07:36.646Z\",\"changeSource\":\"ai_generated\",\"snapshot\":{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"}}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:37.499Z",
+      "method": "GET",
+      "url": "/api/prompts/7c62d4d8-ce4d-45eb-bc3d-d86a4693711f/versions/1",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-08T13:07:36.646Z\",\"changeSource\":\"ai_generated\",\"snapshot\":{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"}}}"
+    },
+    {
+      "at": "2026-10-08T13:07:54.944Z",
+      "method": "GET",
+      "url": "/api/prompts/3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"prompt\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"},\"wikiLinks\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:54.944Z",
+      "method": "GET",
+      "url": "/api/prompts/3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0/versions",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-08T13:06:53.112Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.112Z\",\"version\":1,\"source\":\"manual\"}},{\"version\":2,\"savedAt\":\"2026-10-08T13:06:53.118Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.217Z",
+      "method": "GET",
+      "url": "/api/prompts/3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0/versions/2",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"version\":{\"version\":2,\"savedAt\":\"2026-10-08T13:06:53.118Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.527Z",
+      "method": "GET",
+      "url": "/api/prompt-ai/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}],\"checks\":[{\"id\":\"goal\",\"label\":\"任务目标\"},{\"id\":\"role\",\"label\":\"角色\"},{\"id\":\"context\",\"label\":\"业务背景\"},{\"id\":\"input\",\"label\":\"输入资料\"},{\"id\":\"tasks\",\"label\":\"执行步骤\"},{\"id\":\"constraints\",\"label\":\"约束条件\"},{\"id\":\"output\",\"label\":\"输出格式\"},{\"id\":\"fact_inference\",\"label\":\"事实与推断\"},{\"id\":\"anti_fabrication\",\"label\":\"防止虚构\"}],\"budgets\":{\"task\":10000,\"briefField\":10000,\"briefTotal\":30000,\"selectedWiki\":6,\"perWikiChars\":3000,\"totalWikiChars\":12000,\"body\":100000,\"timeoutMs\":60000,\"maxOutputBytes\":524288}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.531Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"库存周转未选页\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.089Z\",\"updated\":\"2026-10-08T13:06:53.089Z\",\"revision\":1,\"body\":\"未选内容B08_BROWSER_UNSELECTED不得进入调用。\"},{\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.070Z\",\"updated\":\"2026-10-08T13:06:53.070Z\",\"revision\":1,\"body\":\"经销商订货访谈必要背景B08_BROWSER_SELECTED；需核对客户角色与审批节点。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.531Z",
+      "method": "GET",
+      "url": "/api/prompt-ai/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}],\"checks\":[{\"id\":\"goal\",\"label\":\"任务目标\"},{\"id\":\"role\",\"label\":\"角色\"},{\"id\":\"context\",\"label\":\"业务背景\"},{\"id\":\"input\",\"label\":\"输入资料\"},{\"id\":\"tasks\",\"label\":\"执行步骤\"},{\"id\":\"constraints\",\"label\":\"约束条件\"},{\"id\":\"output\",\"label\":\"输出格式\"},{\"id\":\"fact_inference\",\"label\":\"事实与推断\"},{\"id\":\"anti_fabrication\",\"label\":\"防止虚构\"}],\"budgets\":{\"task\":10000,\"briefField\":10000,\"briefTotal\":30000,\"selectedWiki\":6,\"perWikiChars\":3000,\"totalWikiChars\":12000,\"body\":100000,\"timeoutMs\":60000,\"maxOutputBytes\":524288}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.532Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"},{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":3,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.538Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"库存周转未选页\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.089Z\",\"updated\":\"2026-10-08T13:06:53.089Z\",\"revision\":1,\"body\":\"未选内容B08_BROWSER_UNSELECTED不得进入调用。\"},{\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T13:06:53.070Z\",\"updated\":\"2026-10-08T13:06:53.070Z\",\"revision\":1,\"body\":\"经销商订货访谈必要背景B08_BROWSER_SELECTED；需核对客户角色与审批节点。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.539Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"},{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"},{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":3,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:55.809Z",
+      "method": "POST",
+      "url": "/api/prompt-ai/optimize",
+      "status": 201,
+      "requestBody": "{\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"supplement\":\"\",\"targetPromptId\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"baseVersion\":2}",
+      "body": "{\"draftId\":\"41ade0b9-406f-45ad-972c-de3f25090075\",\"originalBody\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"checks\":[{\"id\":\"goal\",\"label\":\"任务目标\",\"status\":\"present\",\"evidence\":\"原文提出业务分析目标\"},{\"id\":\"role\",\"label\":\"角色\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"context\",\"label\":\"业务背景\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"input\",\"label\":\"输入资料\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"tasks\",\"label\":\"执行步骤\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"constraints\",\"label\":\"约束条件\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"output\",\"label\":\"输出格式\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"fact_inference\",\"label\":\"事实与推断\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"},{\"id\":\"anti_fabrication\",\"label\":\"防止虚构\",\"status\":\"missing\",\"evidence\":\"原文未说明此维度\"}],\"improvements\":[{\"dimensionId\":\"role\",\"issue\":\"缺少role\",\"action\":\"补充role的具体要求\"},{\"dimensionId\":\"context\",\"issue\":\"缺少context\",\"action\":\"补充context的具体要求\"},{\"dimensionId\":\"input\",\"issue\":\"缺少input\",\"action\":\"补充input的具体要求\"},{\"dimensionId\":\"tasks\",\"issue\":\"缺少tasks\",\"action\":\"补充tasks的具体要求\"},{\"dimensionId\":\"constraints\",\"issue\":\"缺少constraints\",\"action\":\"补充constraints的具体要求\"},{\"dimensionId\":\"output\",\"issue\":\"缺少output\",\"action\":\"补充output的具体要求\"},{\"dimensionId\":\"fact_inference\",\"issue\":\"缺少fact_inference\",\"action\":\"补充fact_inference的具体要求\"},{\"dimensionId\":\"anti_fabrication\",\"issue\":\"缺少anti_fabrication\",\"action\":\"补充anti_fabrication的具体要求\"}],\"preview\":{\"name\":\"隔离优化预览\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false},\"target\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"version\":2,\"relatedWikiIds\":[]},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"}}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.107Z",
+      "method": "POST",
+      "url": "/api/prompt-ai/drafts/41ade0b9-406f-45ad-972c-de3f25090075/confirm",
+      "status": 201,
+      "requestBody": "{\"requestId\":\"64fe772e-45b8-4e4a-83ec-c9ee6987159f\",\"mode\":\"version\",\"input\":{\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false}}",
+      "body": "{\"prompt\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:07:56.103Z\",\"version\":3,\"source\":\"manual\"},\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.114Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.116Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:07:56.103Z\",\"version\":3,\"source\":\"manual\"},{\"id\":\"7c62d4d8-ce4d-45eb-bc3d-d86a4693711f\",\"name\":\"B08最终生成来源标签\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 首行\\n角色：快消行业产品经理\\n目标：了解订货业务流程\\n约束：不虚构经营数据；区分事实、推断和待确认问题\\n输入：{{客户名称}}\\n背景：\\n尾部 \",\"variables\":[\"客户名称\"],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:07:36.646Z\",\"updatedAt\":\"2026-10-08T13:07:36.646Z\",\"version\":1,\"source\":\"ai_generated\"},{\"id\":\"23f91c42-2a62-4ad2-856b-2931d4780bcf\",\"name\":\"B08切换手动乙\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\"乙第二版无变量原文\",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.124Z\",\"updatedAt\":\"2026-10-08T13:06:53.129Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":3,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.116Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B08浏览器来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B08浏览器来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"1ccc4268-58e1-492a-afed-333e4f2aeb5c\",\"importedAt\":\"2026-10-08T13:06:53.059Z\",\"status\":\"unprocessed\",\"bodySha256\":\"65f4b4f1edb4c86b974e699dec4025d878234b41b4a8e57db3cf3b6a3c31d4eb\",\"body\":\"浏览器测试原文不得改写。\"}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.123Z",
+      "method": "GET",
+      "url": "/api/prompts/3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"prompt\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:07:56.103Z\",\"version\":3,\"source\":\"manual\"},\"wikiLinks\":[]}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.123Z",
+      "method": "GET",
+      "url": "/api/prompts/3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0/versions",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-08T13:06:53.112Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.112Z\",\"version\":1,\"source\":\"manual\"}},{\"version\":2,\"savedAt\":\"2026-10-08T13:06:53.118Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"甲第二版场景\",\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:06:53.118Z\",\"version\":2,\"source\":\"manual\"}},{\"version\":3,\"savedAt\":\"2026-10-08T13:07:56.103Z\",\"changeSource\":\"ai_optimized\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:07:56.103Z\",\"version\":3,\"source\":\"manual\"}}]}"
+    },
+    {
+      "at": "2026-10-08T13:07:56.123Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":3,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T13:06:53.098Z\",\"action\":\"create\",\"id\":\"88a6b9d1-c8e6-475b-90b8-85ac37005629\",\"title\":\"库存周转未选页\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T13:06:53.079Z\",\"action\":\"create\",\"id\":\"56a14071-cd91-40b1-a68f-28e3cd996f68\",\"title\":\"经销商订货访谈\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T13:08:18.883Z",
+      "method": "GET",
+      "url": "/api/prompts/3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0/versions/3",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"version\":{\"version\":3,\"savedAt\":\"2026-10-08T13:07:56.103Z\",\"changeSource\":\"ai_optimized\",\"snapshot\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"name\":\"B08原始手动甲\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" 原目标： 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \\n补充：\\n步骤：还原流程；说明待确认问题。\\n不得虚构；区分事实和推断。 \",\"variables\":[],\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false,\"createdAt\":\"2026-10-08T13:06:53.112Z\",\"updatedAt\":\"2026-10-08T13:07:56.103Z\",\"version\":3,\"source\":\"manual\"}}}"
+    }
+  ],
+  "uiLogs": "\n  VITE v6.4.3  ready in 328 ms\n\n  ➜  Local:   http://127.0.0.1:59805/\n",
+  "url": "http://127.0.0.1:59805/",
+  "api": "http://127.0.0.1:59795",
+  "proxy": "http://127.0.0.1:59804",
+  "clipboardUrl": "http://127.0.0.1:59804/clipboard-target",
+  "aId": "3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0",
+  "bId": "23f91c42-2a62-4ad2-856b-2931d4780bcf",
+  "rawId": "1ccc4268-58e1-492a-afed-333e4f2aeb5c",
+  "wikiIds": [
+    "56a14071-cd91-40b1-a68f-28e3cd996f68",
+    "88a6b9d1-c8e6-475b-90b8-85ac37005629"
+  ],
+  "apiPid": 36608,
+  "uiPid": 33032,
+  "beforeKnowledge": {
+    "logs\\wiki.jsonl": "99422d49dd7f3ada81575713ca56019225e367522c1fb956ff2b164b2bae9937",
+    "raw\\reports\\1ccc4268-58e1-492a-afed-333e4f2aeb5c.md": "a200e56ab96335125256456b1584ccdde346cbd13c6bc01d5cfc98195596dd79",
+    "wiki\\56a14071-cd91-40b1-a68f-28e3cd996f68.md": "06bac1b3ae3772c5fa6022556dea862e13fe905f5b65444e51c1ff802f536256",
+    "wiki\\88a6b9d1-c8e6-475b-90b8-85ac37005629.md": "a1eca37f9264b286e654cd8dfc63eebf03ce32ab8ca96d038ab6e9d6aca2d40b",
+    "wiki\\index.md": "c5f7e0627ce6d6d5919f6fc9c3fde211f5b8c2740a6600b035adc10e5284c412"
+  },
+  "beforePrompts": {
+    "23f91c42-2a62-4ad2-856b-2931d4780bcf.json": "426e56c503545e400adabc7d8acca7bb5cdf53aab64b5d94a3d81e47deeafa50",
+    "3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0.json": "bd26a180e34b1704e66086cb17796fbb5fb7eecfd8d5cc4dfb5da7e6dbc8bb82"
+  },
+  "stopFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-QiszFl\\.stop-b08-browser",
+  "afterKnowledge": {
+    "logs\\wiki.jsonl": "99422d49dd7f3ada81575713ca56019225e367522c1fb956ff2b164b2bae9937",
+    "raw\\reports\\1ccc4268-58e1-492a-afed-333e4f2aeb5c.md": "a200e56ab96335125256456b1584ccdde346cbd13c6bc01d5cfc98195596dd79",
+    "wiki\\56a14071-cd91-40b1-a68f-28e3cd996f68.md": "06bac1b3ae3772c5fa6022556dea862e13fe905f5b65444e51c1ff802f536256",
+    "wiki\\88a6b9d1-c8e6-475b-90b8-85ac37005629.md": "a1eca37f9264b286e654cd8dfc63eebf03ce32ab8ca96d038ab6e9d6aca2d40b",
+    "wiki\\index.md": "c5f7e0627ce6d6d5919f6fc9c3fde211f5b8c2740a6600b035adc10e5284c412"
+  },
+  "afterPrompts": {
+    "23f91c42-2a62-4ad2-856b-2931d4780bcf.json": "426e56c503545e400adabc7d8acca7bb5cdf53aab64b5d94a3d81e47deeafa50",
+    "3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0.json": "8ffbcc5e375e0ef31c5ba633a9266e5640750a496ec519e8463805d6034a11d2",
+    "7c62d4d8-ce4d-45eb-bc3d-d86a4693711f.json": "2738eb9551907358a9c589ae7447d370bc527007adb962c45911df528665a4ec"
+  },
+  "finalPrompts": {
+    "items": [
+      {
+        "id": "3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0",
+        "name": "B08原始手动甲",
+        "category": "customer",
+        "scenario": "经销商访谈",
+        "body": " 原目标： 帮我分析订货流程，说明哪里适合 AI。\n原文首尾保留 \n补充：\n步骤：还原流程；说明待确认问题。\n不得虚构；区分事实和推断。 ",
+        "variables": [],
+        "inputRequirements": "提供访谈记录",
+        "outputRequirements": "流程和待确认问题",
+        "relatedWikiIds": [],
+        "examples": "访谈示例",
+        "tags": [
+          "验收",
+          "访谈"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T13:06:53.112Z",
+        "updatedAt": "2026-10-08T13:07:56.103Z",
+        "version": 3,
+        "source": "manual"
+      },
+      {
+        "id": "7c62d4d8-ce4d-45eb-bc3d-d86a4693711f",
+        "name": "B08最终生成来源标签",
+        "category": "customer",
+        "scenario": "经销商访谈",
+        "body": " 首行\n角色：快消行业产品经理\n目标：了解订货业务流程\n约束：不虚构经营数据；区分事实、推断和待确认问题\n输入：{{客户名称}}\n背景：\n尾部 ",
+        "variables": [
+          "客户名称"
+        ],
+        "inputRequirements": "提供访谈记录",
+        "outputRequirements": "流程和待确认问题",
+        "relatedWikiIds": [],
+        "examples": "访谈示例",
+        "tags": [
+          "验收",
+          "访谈"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T13:07:36.646Z",
+        "updatedAt": "2026-10-08T13:07:36.646Z",
+        "version": 1,
+        "source": "ai_generated"
+      },
+      {
+        "id": "23f91c42-2a62-4ad2-856b-2931d4780bcf",
+        "name": "B08切换手动乙",
+        "category": "customer",
+        "scenario": "经销商访谈",
+        "body": "乙第二版无变量原文",
+        "variables": [],
+        "inputRequirements": "提供访谈记录",
+        "outputRequirements": "流程和待确认问题",
+        "relatedWikiIds": [],
+        "examples": "访谈示例",
+        "tags": [
+          "验收",
+          "访谈"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T13:06:53.124Z",
+        "updatedAt": "2026-10-08T13:06:53.129Z",
+        "version": 2,
+        "source": "manual"
+      }
+    ],
+    "categoryCounts": {
+      "industry_learning": 0,
+      "business_analysis": 0,
+      "customer": 3,
+      "product": 0,
+      "ai": 0,
+      "office": 0
+    }
+  },
+  "providerRequests": [
+    {
+      "at": "2026-10-08T13:07:36.098Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"生成经销商访谈提纲，明确事实与推断\",\"template\":\"customer_interview\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T13:07:36.355Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T13:07:55.806Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\" 帮我分析订货流程，说明哪里适合 AI。\\n原文首尾保留 \",\"supplement\":\"\",\"target\":{\"id\":\"3bb1f08e-8a9b-4b8c-b4fd-5f2ba42cb7c0\",\"version\":2,\"relatedWikiIds\":[]},\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    }
+  ],
+  "closed": {
+    "api": true,
+    "ui": true,
+    "proxy": true,
+    "fake": true
+  }
+}

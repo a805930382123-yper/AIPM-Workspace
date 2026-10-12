@@ -1,0 +1,321 @@
+{
+  "at": "2026-10-12T12:53:50.157Z",
+  "kind": "jsdom React with actual isolated product HTTP, NOT real browser",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-LMkfMm",
+  "durationMs": 1378,
+  "checks": [
+    {
+      "id": "C01-first-import-enables-Raw-registration",
+      "result": "PASS",
+      "actual": {
+        "serverImports": 1,
+        "optionCount": 1,
+        "confirmDisabled": false,
+        "registerDisabled": true
+      }
+    },
+    {
+      "id": "C02-work-save-updates-Raw-form-revision",
+      "result": "PASS",
+      "actual": {
+        "submittedRevision": 4,
+        "currentRevision": 6,
+        "rawLinks": 1,
+        "alert": null
+      }
+    },
+    {
+      "id": "C03-archive-delete-can-explicitly-preserve-Raw",
+      "result": "PASS",
+      "actual": {
+        "rawConfirmControls": 1,
+        "submittedFields": [
+          "baseRevision",
+          "confirm",
+          "confirmLocalMinutes",
+          "confirmRawReferences"
+        ],
+        "alert": null,
+        "remains": false
+      }
+    },
+    {
+      "id": "C04-failed-registration-retry-after-refresh",
+      "result": "PASS",
+      "actual": {
+        "status": "linked",
+        "alert": null
+      }
+    },
+    {
+      "id": "C05-unlink-cancel-and-confirm-preserve-Raw",
+      "result": "PASS",
+      "actual": {
+        "cancelPreserved": true,
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "C07-history-back-late-registration-cannot-select-old-meeting",
+      "result": "FAIL",
+      "actual": {
+        "currentTitle": "HISTORY-A",
+        "AActuallyRegistered": 1
+      },
+      "error": "Late A response must not undo browser-back navigation\n+ actual - expected\n\n+ 'HISTORY-A'\n- 'HISTORY-B'\n           ^\n"
+    },
+    {
+      "id": "C06-Provider-and-browser-storage-isolation",
+      "result": "PASS",
+      "actual": {
+        "providerCalls": 0,
+        "browserStoredBodies": false
+      }
+    }
+  ],
+  "summary": {
+    "pass": 6,
+    "fail": 1
+  },
+  "requests": [
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1757d023-cbb1-4039-80a1-3511d1709e7d",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1757d023-cbb1-4039-80a1-3511d1709e7d/minutes/import",
+      "method": "POST",
+      "body": {
+        "baseRevision": 2,
+        "requestId": "66462c63-a474-4c89-be76-55f093396ab2",
+        "text": "# first original"
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1757d023-cbb1-4039-80a1-3511d1709e7d",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/3e078d05-895a-4121-b0ae-27471c318b60",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/3e078d05-895a-4121-b0ae-27471c318b60/minutes/364b61c6-5306-42ad-bc3b-820085bd2987",
+      "method": "PATCH",
+      "body": {
+        "baseRevision": 3,
+        "editable_minutes": "# edited work"
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/3e078d05-895a-4121-b0ae-27471c318b60",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/3e078d05-895a-4121-b0ae-27471c318b60/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 4,
+        "requestId": "f1be18ed-19a5-4bb3-b8f7-96d1fdfe47b3",
+        "import_id": "364b61c6-5306-42ad-bc3b-820085bd2987",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/3e078d05-895a-4121-b0ae-27471c318b60",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/4578e125-52c0-4b6c-b3fa-28d1fff57737",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/4578e125-52c0-4b6c-b3fa-28d1fff57737",
+      "method": "DELETE",
+      "body": {
+        "baseRevision": 5,
+        "confirm": true,
+        "confirmLocalMinutes": true,
+        "confirmRawReferences": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/906e749b-d1f8-48f3-9559-00b577dddb23",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/906e749b-d1f8-48f3-9559-00b577dddb23/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 4,
+        "requestId": "ea996ccb-17cc-40c4-8cc8-32c9b4f8fc5a",
+        "import_id": "2ac200cb-9999-4fc6-a3c6-c1becb224619",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/906e749b-d1f8-48f3-9559-00b577dddb23",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1df65b5c-60ff-44db-80e0-bd1e948ee949",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1df65b5c-60ff-44db-80e0-bd1e948ee949/raw-links/39ada3de-1af8-475c-861b-d0b77937f1b9",
+      "method": "DELETE",
+      "body": {
+        "baseRevision": 5,
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1df65b5c-60ff-44db-80e0-bd1e948ee949",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/21dd0891-0372-4891-b8ea-960ad99e731a",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/f22ccf90-ec8a-4a79-b455-388d53899ff2",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/21dd0891-0372-4891-b8ea-960ad99e731a",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/21dd0891-0372-4891-b8ea-960ad99e731a/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 3,
+        "requestId": "64007368-664a-46f3-b935-a3f6a6c616f2",
+        "import_id": "adab86db-f52e-4eb2-a2e7-edc34efaf7a2",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/f22ccf90-ec8a-4a79-b455-388d53899ff2",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/21dd0891-0372-4891-b8ea-960ad99e731a",
+      "method": "GET"
+    }
+  ],
+  "providerCalls": 0,
+  "servicesClosed": true
+}

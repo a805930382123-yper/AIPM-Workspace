@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-11T16:10:53.722Z",
+  "originalEvidencePreserved": true,
+  "dispositions": [
+    {
+      "id": "B02-dedicated-Sensitive-local-grant",
+      "disposition": "INVALID_OBSERVATION",
+      "reason": "测试未完成独立确认，403是正确结果",
+      "replacedBy": "B02b-dedicated-local-grant-success"
+    },
+    {
+      "id": "B04-original-text-no-HTML-execution",
+      "disposition": "INVALID_OBSERVATION",
+      "reason": "浏览器textarea提交LF，初次错误比较CRLF夹具",
+      "replacedBy": "B04a-original-text-as-submitted-by-browser-textarea"
+    },
+    {
+      "id": "B17-user-click-safe-HTTPS-new-tab",
+      "disposition": "INVALID_OBSERVATION",
+      "reason": "弹出标签创建前过早采样",
+      "replacedBy": "B17a-HTTPS-popup-observed-after-creation"
+    },
+    {
+      "id": "B32-clear-confirm-removes-all-local-versions",
+      "disposition": "INVALID_OBSERVATION",
+      "reason": "清空尚未完成时采样",
+      "replacedBy": "B32a-clear-completion-confirmed"
+    },
+    {
+      "id": "B33-after-clear-revoke-and-cloud-succeeds",
+      "disposition": "INVALID_OBSERVATION",
+      "reason": "保存尚未完成时采样，原PASS也排除",
+      "replacedBy": "B33a-cloud-revoke-completion-confirmed"
+    }
+  ],
+  "defect": {
+    "id": "F03-04-policy-copy-still-denies-delivered-import",
+    "disposition": "CLOSED",
+    "verifiedBy": "B13-policy-copy-F03-04-closed"
+  },
+  "validCount": 37
+}

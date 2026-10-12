@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-08",
+  "provider": "independent fake; real quality BLOCKED",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-hdfZDT",
+  "checks": [
+    {
+      "id": "F08-02-original-and-confirmed-version",
+      "result": "PASS",
+      "original": " 帮我分析订货流程，说明哪里适合 AI。\n原文首尾保留 ",
+      "current": " 用户编辑优化版本三\n目标：核对订货审批事实；未知必须说明。\n材料 {{客户名称}}\n尾部 ",
+      "oldVersionsRetained": true,
+      "initialObservation": "INVALID_EXPECTATION: 独立验收从JSON包裹文件读取.body/.version，正确位置是.current.body/.current.version；原断言FAIL保留记录，按实际结构与已保存DOM核对。",
+      "savedVersion": 3
+    },
+    {
+      "id": "F08-02-next-optimization-latest-base",
+      "result": "PASS",
+      "request": {
+        "body": " 用户编辑优化版本三\n目标：核对订货审批事实；未知必须说明。\n材料 {{客户名称}}\n尾部 ",
+        "supplement": "返修复验：审批异常表",
+        "targetPromptId": "7dec7c01-490c-4181-8518-33094696b151",
+        "baseVersion": 3
+      }
+    },
+    {
+      "id": "F08-03-selected-detail-history-refresh",
+      "result": "PASS",
+      "evidence": "返回Library无需重选：同一甲当前第3版、用户优化正文及三条历史、source manual/changeSource ai_optimized"
+    },
+    {
+      "id": "F08-02-optimized-new-original-controls",
+      "result": "PASS"
+    },
+    {
+      "id": "E08-07-confirmed-preview-copy-paste",
+      "result": "PASS",
+      "actual": " 返修优化新正文\n{{门店名称}}\n尾部 "
+    },
+    {
+      "id": "F08-02-new-asset-next-optimization-base",
+      "result": "PASS",
+      "request": {
+        "body": " 返修优化新正文\n{{门店名称}}\n尾部 ",
+        "supplement": "对新资产再优化",
+        "targetPromptId": "9e30753e-4bac-4946-8048-691672754a75",
+        "baseVersion": 1
+      }
+    },
+    {
+      "id": "F08-03-late-confirm-new-generator-isolation",
+      "result": "PASS"
+    },
+    {
+      "id": "F08-03-late-confirm-library-count-and-item",
+      "result": "PASS",
+      "evidence": "无整页刷新，全部4且迟到新项可见，新任务不变"
+    },
+    {
+      "id": "E08-02-03-edited-brief-wiki-after-repair",
+      "result": "PASS",
+      "draftId": "864e0d0d-3f54-463c-9dde-c2165632015a"
+    },
+    {
+      "id": "E08-08-F08-03-partial-commit-error-refresh",
+      "result": "PASS",
+      "response": {
+        "error": {
+          "code": "PROMPT_COMMITTED_DRAFT_RECOVERY",
+          "message": "Prompt 已保存，但草稿确认标记没有落盘；正式记录未丢失。请保留此草稿并用相同请求内容重试以完成对账。",
+          "details": {
+            "committed": true,
+            "promptId": "864e0d0d-3f54-463c-9dde-c2165632015a",
+            "version": 1,
+            "recoveryHint": "retry_same_payload"
+          }
+        }
+      },
+      "initialObservation": "INVALID_EXPECTATION: 验收过滤器仅找带?的URL，实际空过滤是/api/prompts；原first count undefined，修正按已录制时间线核查。",
+      "refresh": {
+        "at": "2026-10-08T12:59:44.483Z",
+        "url": "/api/prompts",
+        "count": 5
+      }
+    },
+    {
+      "id": "E08-08-partial-commit-ui-stable-retry",
+      "result": "PASS",
+      "requestId": "864e0d0d-3f54-463c-9dde-c2165632015a"
+    },
+    {
+      "id": "E08-05-generated-history-change-source",
+      "result": "FAIL",
+      "defect": "F08-05",
+      "evidence": "服务端首版changeSource=ai_generated，实际历史行和历史详情修改来源空白；app/api.ts union/labels未加入ai_generated"
+    },
+    {
+      "id": "E08-10-overlapping-brief-busy-owner",
+      "result": "INVALID_EXPECTATION",
+      "evidence": "第一次AX明确显示disabled正在整理；下一工具才断言时超过代理18秒自动释放租期，已转Brief。保留无效时机，以下同一调用内重测。"
+    },
+    {
+      "id": "E08-10-overlapping-brief-latest-response",
+      "result": "PASS"
+    },
+    {
+      "id": "E08-10-late-error-new-task",
+      "result": "PASS"
+    },
+    {
+      "id": "E08-10-overlapping-brief-busy-owner-valid",
+      "result": "PASS",
+      "dom": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:52601/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t37 text entry area (settable) 你想让 AI 帮你完成什么工作？, Value: 第二任务重新检查\n~\t\t\t49 button (disabled) 正在整理…\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:52601/"
+    },
+    {
+      "id": "E08-11-repair1-restart-persistence",
+      "result": "PASS"
+    }
+  ],
+  "notes": [
+    "首次文件结构断言、空过滤URL断言已更正，并保留initialObservation；另一次busy断言跨工具超过代理租期，INVALID_EXPECTATION保留，同一调用内重测PASS。"
+  ],
+  "knowledgeUnchanged": true
+}

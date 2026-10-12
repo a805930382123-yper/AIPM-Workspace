@@ -1,0 +1,135 @@
+{
+  "assets": {
+    "items": [
+      {
+        "id": "58b31a68-9ee7-434f-92ab-9ce8c4d9dea4",
+        "fileName": "zh-report.pdf",
+        "format": "pdf",
+        "declaredExtension": ".pdf",
+        "byteSize": 40990,
+        "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+        "storedFile": "58b31a68-9ee7-434f-92ab-9ce8c4d9dea4.pdf",
+        "createdAt": "2026-10-05T09:08:36.646Z",
+        "status": "parsed",
+        "rawId": "35021656-f283-4d5b-9368-39e1ce907e7d",
+        "parser": "pdfjs-dist 6.4.299",
+        "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+      },
+      {
+        "id": "1e1253f3-4ab8-4ebd-aa95-757006425862",
+        "fileName": "fake-pdf.pdf",
+        "format": "pdf",
+        "declaredExtension": ".pdf",
+        "byteSize": 63,
+        "sha256": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3",
+        "storedFile": "1e1253f3-4ab8-4ebd-aa95-757006425862.pdf",
+        "createdAt": "2026-10-05T09:06:23.299Z",
+        "status": "parse_failed",
+        "failure": {
+          "code": "FORMAT_MISMATCH",
+          "message": "扩展名是 .pdf，但文件内容不是PDF 文档；已拒绝导入。",
+          "at": "2026-10-05T09:06:23.305Z"
+        }
+      },
+      {
+        "id": "249c246c-c68e-4f6b-9dc2-dce7475a9de3",
+        "fileName": "zh-report.docx",
+        "format": "docx",
+        "declaredExtension": ".docx",
+        "byteSize": 36888,
+        "sha256": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+        "storedFile": "249c246c-c68e-4f6b-9dc2-dce7475a9de3.docx",
+        "createdAt": "2026-10-05T09:05:39.934Z",
+        "status": "parsed",
+        "rawId": "0568023c-a33a-4ff5-8e62-2182d5530348",
+        "parser": "mammoth 1.13.0",
+        "extractionNote": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。"
+      }
+    ]
+  },
+  "raw": {
+    "items": [
+      {
+        "title": "B03独立浏览器-PDF关闭后刷新",
+        "sourceType": "article",
+        "sourceName": "zh-report",
+        "tags": [],
+        "assetId": "58b31a68-9ee7-434f-92ab-9ce8c4d9dea4",
+        "assetFileName": "zh-report.pdf",
+        "assetFormat": "pdf",
+        "assetByteSize": 40990,
+        "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+        "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+        "id": "35021656-f283-4d5b-9368-39e1ce907e7d",
+        "importedAt": "2026-10-05T09:08:37.578Z",
+        "status": "unprocessed",
+        "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+        "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+      },
+      {
+        "title": "fake-pdf",
+        "sourceType": "article",
+        "sourceName": "fake-pdf",
+        "tags": [],
+        "id": "12edb6a7-9d3f-4354-a6d8-c09ba2dd9cb3",
+        "importedAt": "2026-10-05T09:06:47.733Z",
+        "status": "unprocessed",
+        "bodySha256": "f3c499575bd8fc3ef09ef7b5fb46415dde42c8d29eb442d2b9a78cc6414eb5b5",
+        "body": "这是解析失败后用户粘贴的补救正文。"
+      },
+      {
+        "title": "zh-report",
+        "sourceType": "article",
+        "sourceName": "zh-report",
+        "tags": [],
+        "assetId": "249c246c-c68e-4f6b-9dc2-dce7475a9de3",
+        "assetFileName": "zh-report.docx",
+        "assetFormat": "docx",
+        "assetByteSize": 36888,
+        "assetSha256": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+        "extractionNote": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。",
+        "id": "0568023c-a33a-4ff5-8e62-2182d5530348",
+        "importedAt": "2026-10-05T09:05:40.007Z",
+        "status": "unprocessed",
+        "bodySha256": "93adbf94016a4df938d04237c5cdb51c52254c2f00f96c015d3e8ca754b558c1",
+        "body": "经销商库存周转动销分析报告\n\n报告编号：FMCG-B03-001\n\n一、背景\n\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n\n二、结论\n\n建议将安全库存下调 10%，并每周复核补货节奏。\n\n"
+      },
+      {
+        "title": "B03独立浏览器-双标签",
+        "sourceType": "article",
+        "sourceName": "独立验收资料",
+        "tags": [
+          "渠道、库存"
+        ],
+        "id": "2e4f8030-8575-4272-a344-7150a562a10c",
+        "importedAt": "2026-10-05T09:01:24.1Z",
+        "status": "unprocessed",
+        "bodySha256": "117ddae3f7c5f5c091d18447caa403b77426de89a3d6dbb9682228f68b67a316",
+        "body": "重新导入的验收正文"
+      },
+      {
+        "title": "B03独立浏览器-双标签",
+        "sourceType": "article",
+        "sourceName": "独立验收资料",
+        "tags": [
+          "渠道",
+          "库存"
+        ],
+        "id": "5df045b1-ebc8-49bc-959e-e273a03051a3",
+        "importedAt": "2026-10-05T09:01:08.971Z",
+        "status": "unprocessed",
+        "bodySha256": "902b7735d19270a6b93b06b195370a62be5e65b7a1c04eea66d82833db594749",
+        "body": "  独立验收原文\n渠道和库存。\n"
+      }
+    ]
+  },
+  "stats": {
+    "rawCount": 5,
+    "wikiCount": 1,
+    "thisWeekNewCount": 6,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 0,
+    "weekStartsOn": "2026-10-05"
+  }
+}

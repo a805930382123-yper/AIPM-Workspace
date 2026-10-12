@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-12T12:27:22.403Z",
+  "meaning": "Evidence integrity only; product M04 remains FAIL",
+  "checks": [
+    {
+      "id": "frozen-product-tests-user-data-history",
+      "verified": true,
+      "details": {
+        "product": 82,
+        "unit": 47,
+        "workspace": 3,
+        "protected": 1070
+      }
+    },
+    {
+      "id": "quality-183-tests-no-skips",
+      "verified": true,
+      "details": {
+        "buildPassed": true,
+        "unitPass": 183
+      }
+    },
+    {
+      "id": "HTTP-negative-evidence-is-real",
+      "verified": true,
+      "details": {
+        "productPass": 14,
+        "productFail": 7,
+        "providerTrapReached": 1,
+        "restrictedWikiReadStatus": 200,
+        "manifestStatusAtObservation": "committing",
+        "manifestStatusAfterServicesClosed": "completed"
+      }
+    },
+    {
+      "id": "component-negative-evidence-not-browser",
+      "verified": true,
+      "details": {
+        "productPass": 2,
+        "productFail": 4
+      }
+    },
+    {
+      "id": "browser-defect-and-isolated-services",
+      "verified": true,
+      "details": {
+        "browserFailureConfirmed": true,
+        "servicesClosed": true,
+        "providerCalls": 0,
+        "expectedRawFilesAdded": 1,
+        "failedDeleteDidNotChangeMeeting": true,
+        "meetingSHA256": "3455d2b1c9a5e455ba6e49edea2ea87992cfca6b079947fc4e098f565e036271"
+      }
+    },
+    {
+      "id": "browser-ports-closed",
+      "verified": true,
+      "details": {
+        "ports": [
+          63754,
+          63762,
+          63763
+        ],
+        "closed": true
+      }
+    }
+  ],
+  "verified": 6,
+  "failed": 0
+}

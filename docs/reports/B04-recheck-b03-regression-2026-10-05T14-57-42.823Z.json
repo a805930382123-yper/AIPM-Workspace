@@ -1,0 +1,569 @@
+{
+  "startedAt": "2026-10-05T14:57:42.825Z",
+  "node": "v25.2.1",
+  "startup": "node --import tsx server/index.ts",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7",
+  "version": {
+    "README.md": "814b4c5d1317e3f73db70e4c358486ada4b5bcc30e2f473c54a4fb19128042cd",
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+    "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+    "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+    "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+    "app/pages/DraftReviewPage.tsx": "c0a8673286cb286ee869f82ca687b784d01bcb1e64d18e834cf4163596cb3e44",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+    "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/llm-api.ts": "07229db6ed0558e8d88463120f45e7172b1233cf1b1d2dfb1b403178e867a237",
+    "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+    "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+    "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/jobs.ts": "e4b0ac53979515c61bb435429135fa935e33de79a38364ae43e1974c1e036b86",
+    "services/llm/provider.ts": "c24e5117c4d4c2fdd2a2f4e60845241e2cde1abd7ba3c50ab618cb33ec4f0d37",
+    "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+    "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+    "services/llm/service.ts": "69fdbae6804db9546143c6b0e657a1392126a69cb1f07641730bdce2d40c9245",
+    "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+    "services/storage/files.ts": "bf17c152f39528a5213e20666ffcee18bd54dc3a0f7f88a76131bd3e74bfd92f",
+    "services/wiki/commits.ts": "0be885b6686e8d846e24fe2b78c9c3b5622c5cf9402e6d5c4e3209357b007ca2",
+    "services/wiki/drafts.ts": "b0f8484546e2b7bfa1362f015307f31986f296e651428e74cb590a7aa65885c0",
+    "services/wiki/render.ts": "7b9261a5de96c5a579c03ee7ff558a173db7f15c89dec86b7070012678c2578e",
+    "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+    "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+  },
+  "checks": [
+    {
+      "id": "E03-01-real-four-formats-bytes-body-metadata",
+      "status": "PASS",
+      "elapsedMs": 1131,
+      "evidence": [
+        {
+          "name": "zh-report.md",
+          "rawId": "6b85ff35-f423-40eb-a196-d98da912a435",
+          "assetId": "2acf5b78-8e82-41f1-9227-fd743ec3bed8",
+          "chars": 151,
+          "bodySha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "assetSha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "parser": "utf-8-strict",
+          "note": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。"
+        },
+        {
+          "name": "zh-notes.txt",
+          "rawId": "d0b36150-8dec-433e-a37c-6211a85bbedb",
+          "assetId": "77e8450b-cba5-4d1f-a477-bb95369875d5",
+          "chars": 78,
+          "bodySha256": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+          "assetSha256": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+          "parser": "utf-8-strict",
+          "note": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。"
+        },
+        {
+          "name": "zh-report.docx",
+          "rawId": "3ca3b302-f41c-4240-a227-98bde85361f6",
+          "assetId": "ef469718-7472-4228-b65a-97d34bd60b9b",
+          "chars": 103,
+          "bodySha256": "93adbf94016a4df938d04237c5cdb51c52254c2f00f96c015d3e8ca754b558c1",
+          "assetSha256": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+          "parser": "mammoth 1.13.0",
+          "note": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。"
+        },
+        {
+          "name": "zh-report.pdf",
+          "rawId": "122dfef7-323c-4c66-a3e7-02727a75e6ed",
+          "assetId": "48728a03-430f-4bfb-9a9e-468a7c54a9a1",
+          "chars": 96,
+          "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+          "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+          "parser": "pdfjs-dist 6.4.299",
+          "note": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+        }
+      ]
+    },
+    {
+      "id": "E03-09-delete-references-reimport",
+      "status": "PASS",
+      "elapsedMs": 94,
+      "evidence": {
+        "wikiId": "32337e76-0ebb-4c79-aba8-8959e2c46380",
+        "blocked": {
+          "status": 409,
+          "json": {
+            "error": {
+              "code": "RAW_REFERENCED",
+              "message": "这条原始资料仍被 1 条正式 Wiki 引用，删除已取消。请先在知识库中解除这些页面的来源引用。",
+              "details": {
+                "references": [
+                  {
+                    "id": "32337e76-0ebb-4c79-aba8-8959e2c46380",
+                    "title": "独立Wiki",
+                    "type": "concept"
+                  }
+                ]
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"RAW_REFERENCED\",\"message\":\"这条原始资料仍被 1 条正式 Wiki 引用，删除已取消。请先在知识库中解除这些页面的来源引用。\",\"details\":{\"references\":[{\"id\":\"32337e76-0ebb-4c79-aba8-8959e2c46380\",\"title\":\"独立Wiki\",\"type\":\"concept\"}]}}}",
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "285",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Mon, 05 Oct 2026 14:57:44 GMT",
+            "etag": "W/\"11d-M+lnZy+GSnNMApcL+bxxZx0D+rc\"",
+            "keep-alive": "timeout=5"
+          }
+        },
+        "deleted": {
+          "status": 200,
+          "json": {
+            "id": "e0e92bd2-4370-4ca9-8cce-c00e1dcf5f5c",
+            "title": "独立验收 ../ <script>标题",
+            "assetId": "26c3b538-3ab4-40cf-b644-da4bbac85be7",
+            "assetRetained": true,
+            "warnings": []
+          },
+          "text": "{\"id\":\"e0e92bd2-4370-4ca9-8cce-c00e1dcf5f5c\",\"title\":\"独立验收 ../ <script>标题\",\"assetId\":\"26c3b538-3ab4-40cf-b644-da4bbac85be7\",\"assetRetained\":true,\"warnings\":[]}",
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "171",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Mon, 05 Oct 2026 14:57:44 GMT",
+            "etag": "W/\"ab-eCA1jzSl8VW49kytaW5hUN8DeI4\"",
+            "keep-alive": "timeout=5"
+          }
+        },
+        "asset": {
+          "id": "26c3b538-3ab4-40cf-b644-da4bbac85be7",
+          "fileName": "zh-report.md",
+          "format": "markdown",
+          "declaredExtension": ".md",
+          "byteSize": 337,
+          "sha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "storedFile": "26c3b538-3ab4-40cf-b644-da4bbac85be7.md",
+          "createdAt": "2026-10-05T14:57:44.654Z",
+          "status": "detached",
+          "rawId": "e0e92bd2-4370-4ca9-8cce-c00e1dcf5f5c",
+          "parser": "utf-8-strict",
+          "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。",
+          "detachedAt": "2026-10-05T14:57:44.671Z"
+        }
+      }
+    },
+    {
+      "id": "E03-10-concurrent-wiki-create-update-raw-delete-no-dangling",
+      "status": "PASS",
+      "elapsedMs": 536,
+      "evidence": [
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 400,
+            "error": "INVALID_SOURCE"
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          },
+          {
+            "status": 200
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          },
+          {
+            "status": 201
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          },
+          {
+            "status": 200
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "E03-12-cross-file-association-write-failure-no-success",
+      "status": "PASS",
+      "elapsedMs": 4180,
+      "evidence": {
+        "response": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "IMPORT_LINK_PENDING",
+              "message": "正文已写入正式 Raw（id 4b2dd9a4-622d-4a46-834e-70a506249a97），原件已保留（assetId 554ae66f-34c6-487b-aba3-c1ed560e8411，40990 字节，SHA-256 525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1），但原件关联记录写入失败：EISDIR: illegal operation on a directory, read。工作台会在此目录下次启动时自动补齐该关联；请不要重复导入同一文件，也不要手工移动 knowledge/raw/assets 中的文件。",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "rawId": "4b2dd9a4-622d-4a46-834e-70a506249a97",
+                "assetId": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+                "format": "pdf",
+                "fileName": "cross.pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "cause": "EISDIR: illegal operation on a directory, read",
+                "raw": {
+                  "title": "独立验收 ../ <script>标题",
+                  "sourceType": "report",
+                  "sourceName": "独立原件",
+                  "author": "验收作者",
+                  "publishedAt": "2026-10-03",
+                  "url": "https://example.com/report",
+                  "tags": [
+                    "中文标签",
+                    "渠道"
+                  ],
+                  "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。",
+                  "assetId": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+                  "assetFileName": "cross.pdf",
+                  "assetFormat": "pdf",
+                  "assetByteSize": 40990,
+                  "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                  "extractionParser": "pdfjs-dist 6.4.299",
+                  "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+                  "id": "4b2dd9a4-622d-4a46-834e-70a506249a97",
+                  "importedAt": "2026-10-05T14:57:46.808Z",
+                  "status": "unprocessed",
+                  "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23"
+                },
+                "asset": {
+                  "id": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+                  "fileName": "cross.pdf",
+                  "format": "pdf",
+                  "declaredExtension": ".pdf",
+                  "byteSize": 40990,
+                  "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                  "storedFile": "554ae66f-34c6-487b-aba3-c1ed560e8411.pdf",
+                  "createdAt": "2026-10-05T14:57:45.897Z",
+                  "status": "stored"
+                }
+              }
+            }
+          }
+        },
+        "raw": {
+          "items": [
+            {
+              "title": "独立验收 ../ <script>标题",
+              "sourceType": "report",
+              "sourceName": "独立原件",
+              "author": "验收作者",
+              "publishedAt": "2026-10-03",
+              "url": "https://example.com/report",
+              "tags": [
+                "中文标签",
+                "渠道"
+              ],
+              "assetId": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+              "assetFileName": "cross.pdf",
+              "assetFormat": "pdf",
+              "assetByteSize": 40990,
+              "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+              "extractionParser": "pdfjs-dist 6.4.299",
+              "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+              "id": "4b2dd9a4-622d-4a46-834e-70a506249a97",
+              "importedAt": "2026-10-05T14:57:46.808Z",
+              "status": "unprocessed",
+              "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+              "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+            }
+          ]
+        },
+        "intercepted": "554ae66f-34c6-487b-aba3-c1ed560e8411.json",
+        "recordBefore": {
+          "id": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+          "fileName": "cross.pdf",
+          "format": "pdf",
+          "declaredExtension": ".pdf",
+          "byteSize": 40990,
+          "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+          "storedFile": "554ae66f-34c6-487b-aba3-c1ed560e8411.pdf",
+          "createdAt": "2026-10-05T14:57:45.897Z",
+          "status": "stored"
+        },
+        "blockedRestartAssets": {
+          "items": []
+        },
+        "afterRestart": {
+          "raw": {
+            "items": [
+              {
+                "title": "独立验收 ../ <script>标题",
+                "sourceType": "report",
+                "sourceName": "独立原件",
+                "author": "验收作者",
+                "publishedAt": "2026-10-03",
+                "url": "https://example.com/report",
+                "tags": [
+                  "中文标签",
+                  "渠道"
+                ],
+                "assetId": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+                "assetFileName": "cross.pdf",
+                "assetFormat": "pdf",
+                "assetByteSize": 40990,
+                "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "extractionParser": "pdfjs-dist 6.4.299",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+                "id": "4b2dd9a4-622d-4a46-834e-70a506249a97",
+                "importedAt": "2026-10-05T14:57:46.808Z",
+                "status": "unprocessed",
+                "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+                "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+              }
+            ]
+          },
+          "assets": {
+            "items": [
+              {
+                "id": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+                "fileName": "cross.pdf",
+                "format": "pdf",
+                "declaredExtension": ".pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "storedFile": "554ae66f-34c6-487b-aba3-c1ed560e8411.pdf",
+                "createdAt": "2026-10-05T14:57:45.897Z",
+                "status": "parsed",
+                "rawId": "4b2dd9a4-622d-4a46-834e-70a506249a97",
+                "parser": "pdfjs-dist 6.4.299",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+              }
+            ]
+          }
+        },
+        "secondRestart": {
+          "assets": {
+            "items": [
+              {
+                "id": "554ae66f-34c6-487b-aba3-c1ed560e8411",
+                "fileName": "cross.pdf",
+                "format": "pdf",
+                "declaredExtension": ".pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "storedFile": "554ae66f-34c6-487b-aba3-c1ed560e8411.pdf",
+                "createdAt": "2026-10-05T14:57:45.897Z",
+                "status": "parsed",
+                "rawId": "4b2dd9a4-622d-4a46-834e-70a506249a97",
+                "parser": "pdfjs-dist 6.4.299",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+              }
+            ]
+          },
+          "rawCount": 1,
+          "files": {
+            "assets/554ae66f-34c6-487b-aba3-c1ed560e8411.json": "7de6f93e55608cac5e1ba2c27c97ec4243aa7f40f3d28ea1c2baa7cb3e9fae58",
+            "assets/554ae66f-34c6-487b-aba3-c1ed560e8411.pdf": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+            "reports/4b2dd9a4-622d-4a46-834e-70a506249a97.md": "efba474556685745de59ac7cc15ab52728d48bba824e92bf9ed37aca4f9d662a"
+          }
+        },
+        "explicitDuplicate": {
+          "rawId": "94c65613-944d-4c40-9514-31d0b2c1f632",
+          "assetId": "5294717b-d8ce-4c75-9533-b0d591a28b5e"
+        }
+      }
+    },
+    {
+      "id": "E03-15-delete-detach-write-failure-startup-repair",
+      "status": "PASS",
+      "elapsedMs": 1899,
+      "evidence": {
+        "response": {
+          "status": 200,
+          "json": {
+            "id": "7707d096-798e-4fca-9f39-371588e8062b",
+            "title": "独立验收 ../ <script>标题",
+            "assetId": "94e30689-b39a-4381-9ca1-408ee737a06f",
+            "assetRetained": true,
+            "warnings": [
+              "原件记录（assetId 94e30689-b39a-4381-9ca1-408ee737a06f）的删除标记未写入，原件字节仍保留在 knowledge/raw/assets/。"
+            ]
+          },
+          "text": "{\"id\":\"7707d096-798e-4fca-9f39-371588e8062b\",\"title\":\"独立验收 ../ <script>标题\",\"assetId\":\"94e30689-b39a-4381-9ca1-408ee737a06f\",\"assetRetained\":true,\"warnings\":[\"原件记录（assetId 94e30689-b39a-4381-9ca1-408ee737a06f）的删除标记未写入，原件字节仍保留在 knowledge/raw/assets/。\"]}",
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "311",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Mon, 05 Oct 2026 14:57:50 GMT",
+            "etag": "W/\"137-Y5PLvTEVhSW/77khTw02HRi+fvs\"",
+            "keep-alive": "timeout=5"
+          }
+        },
+        "repaired": {
+          "id": "94e30689-b39a-4381-9ca1-408ee737a06f",
+          "fileName": "detach.txt",
+          "format": "txt",
+          "declaredExtension": ".txt",
+          "byteSize": 21,
+          "sha256": "c2ecc337170d5f6d4fd3c363de935b47c2319bdd0fd4ecd3206ece29cd3198f3",
+          "storedFile": "94e30689-b39a-4381-9ca1-408ee737a06f.txt",
+          "createdAt": "2026-10-05T14:57:50.038Z",
+          "status": "detached",
+          "rawId": "7707d096-798e-4fca-9f39-371588e8062b",
+          "parser": "utf-8-strict",
+          "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。",
+          "detachedAt": "2026-10-05T14:57:50.594Z"
+        },
+        "originalSha": "c2ecc337170d5f6d4fd3c363de935b47c2319bdd0fd4ecd3206ece29cd3198f3",
+        "secondRestartUnchanged": true
+      }
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "PASS",
+      "changed": []
+    }
+  ],
+  "notes": [
+    "Real public HTTP and filesystem assertions; no product imports, no mocks.",
+    "Browser evidence supplied separately by main agent.",
+    {
+      "service": "http://127.0.0.1:57864",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\main",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57864 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\main)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57877",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57877 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57885",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57885 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57896",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file",
+      "logs": "Raw/原件关联对账：补齐 1，补偿 0，标记原件已分离 0\nFMCG AI PM Workspace API: http://127.0.0.1:57896 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57904",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57904 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57911",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\detach",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57911 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\detach)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57919",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\detach",
+      "logs": "Raw/原件关联对账：补齐 0，补偿 0，标记原件已分离 1\nFMCG AI PM Workspace API: http://127.0.0.1:57919 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\detach)\n"
+    },
+    {
+      "service": "http://127.0.0.1:57927",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\detach",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57927 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck-b03-cWmkM7\\detach)\n"
+    }
+  ],
+  "finishedAt": "2026-10-05T14:57:51.338Z",
+  "summary": {
+    "PASS": 6,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

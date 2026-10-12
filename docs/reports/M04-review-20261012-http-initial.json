@@ -1,0 +1,356 @@
+{
+  "at": "2026-10-12T12:12:47.678Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-Ooocsq",
+  "durationMs": 1664,
+  "checks": [
+    {
+      "id": "H01-three-forbidden-levels-no-Raw",
+      "result": "PASS",
+      "actual": {
+        "refused": 3
+      }
+    },
+    {
+      "id": "H02-raw-independent-confirmation",
+      "result": "PASS",
+      "actual": {
+        "status": 403
+      }
+    },
+    {
+      "id": "H03-Public-original-not-working-body",
+      "result": "PASS",
+      "actual": {
+        "rawId": "1924a3c2-9c27-4ac7-9dd9-bba18076f919",
+        "originalExact": true
+      }
+    },
+    {
+      "id": "H04-Internal-grant-and-registration",
+      "result": "PASS",
+      "actual": {
+        "registered": true
+      }
+    },
+    {
+      "id": "H05-same-operation-retry-and-different-payload",
+      "result": "PASS",
+      "actual": {
+        "oneRaw": true
+      }
+    },
+    {
+      "id": "H06-forged-origins-and-Raw-ID-rejected",
+      "result": "PASS",
+      "actual": {
+        "twoRefusals": true
+      }
+    },
+    {
+      "id": "H07-normal-legacy-meeting-Raw-create-compatibility",
+      "result": "FAIL",
+      "actual": {
+        "status": 403,
+        "code": "MEETING_RAW_FORBIDDEN"
+      },
+      "error": "Legacy sourceType=meeting without new origin must remain usable\n\n403 !== 201\n"
+    },
+    {
+      "id": "H08-extraction-and-mixed-synthesis-denied",
+      "result": "FAIL",
+      "actual": {},
+      "error": "Expected values to be strictly equal:\n\n404 !== 403\n"
+    },
+    {
+      "id": "H09-manual-Wiki-restricted-source-denied",
+      "result": "PASS",
+      "actual": {
+        "code": "MEETING_SOURCE_RESTRICTED"
+      }
+    },
+    {
+      "id": "H10-old-Wiki-empty-sources-cannot-launder",
+      "result": "PASS",
+      "actual": {
+        "status": 403
+      }
+    },
+    {
+      "id": "H11-Prompt-create-and-generation-with-restricted-Wiki",
+      "result": "PASS",
+      "actual": {
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "H12-missing-source-Wiki-denies-before-Provider",
+      "result": "FAIL",
+      "actual": {
+        "status": 502,
+        "code": "LLM_PROVIDER_ERROR",
+        "providerCalls": 1,
+        "contextReachedTrap": false
+      },
+      "error": "Missing-source restored Wiki must fail closed before provider\n\n1 !== 0\n"
+    },
+    {
+      "id": "H13-unlink-preserves-Raw-body-and-policy-blocker",
+      "result": "PASS",
+      "actual": {
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "H14-clear-local-versions-retains-valid-Meeting-with-Raw",
+      "result": "PASS",
+      "actual": {
+        "clearStatus": 200,
+        "readStatus": 200
+      }
+    },
+    {
+      "id": "H15-archive-delete-extra-confirm-Raw-retained",
+      "result": "FAIL",
+      "actual": {},
+      "error": "Expected values to be strictly equal:\n\n404 !== 403\n"
+    },
+    {
+      "id": "H16-failed-registration-current-revision-same-ID-retry",
+      "result": "FAIL",
+      "actual": {
+        "firstStatus": 500,
+        "linkStatus": "failed",
+        "requestBaseRevision": 4,
+        "currentRevision": 5,
+        "retryStatus": 409,
+        "retryCode": "IDEMPOTENCY_CONFLICT"
+      },
+      "error": "Persisted failed operation must retry with stable ID after reload\n\n409 !== 201\n"
+    },
+    {
+      "id": "H17-clear-active-Raw-projection-is-valid",
+      "result": "FAIL",
+      "actual": {
+        "clearStatus": 200,
+        "afterReadStatus": 409,
+        "error": "CORRUPT_MEETING",
+        "activeAfterClear": null,
+        "rawProjectionAfterClear": "0f316054-9cd9-4a84-9f1b-a0b5d7786021"
+      },
+      "error": "Clear must reset raw_source_id when active becomes null\n\n409 !== 200\n"
+    },
+    {
+      "id": "H18-long-valid-title-registration-does-not-corrupt-record",
+      "result": "FAIL",
+      "actual": {
+        "registrationStatus": 409,
+        "afterReadStatus": 409,
+        "code": "CORRUPT_MEETING",
+        "persistedRawTitleLength": 205
+      },
+      "error": "Valid 200-character title must not persist an unreadable Raw link\n\n409 !== 200\n"
+    },
+    {
+      "id": "H19-startup-knowledge-manifest-rejects-restricted-source",
+      "result": "FAIL",
+      "actual": {
+        "restoredFixture": "prepared manifest with actual valid Meeting Raw and matching digest",
+        "wikiReadStatus": 200,
+        "manifestStatus": "completed",
+        "writtenIds": [
+          "a91f3d16-521d-4028-95bc-89b269b55b9b"
+        ],
+        "providerCallsDuringRecovery": 0
+      },
+      "error": "Startup recovery must not create Wiki from matching-digest Meeting Raw\n\n200 !== 404\n"
+    },
+    {
+      "id": "H20-provider-isolation-for-restricted-direct-paths",
+      "result": "FAIL",
+      "actual": {
+        "totalUnexpectedProviderCalls": 1,
+        "probe": "H12 is separately observed known failure"
+      },
+      "error": "Expected values to be strictly equal:\n\n1 !== 0\n"
+    },
+    {
+      "id": "H21-reimport-after-Raw-keeps-record-readable",
+      "result": "FAIL",
+      "actual": {
+        "importStatus": 201,
+        "readStatus": 409,
+        "code": "CORRUPT_MEETING"
+      },
+      "error": "Reimport must recompute the current Raw projection\n\n409 !== 200\n"
+    }
+  ],
+  "trace": [
+    {
+      "path": "/api/meetings/6b77d801-9138-4cf8-9cfa-7bf19bf1cff1/raw-links",
+      "method": "POST",
+      "status": 403,
+      "code": "RAW_NOT_AUTHORIZED"
+    },
+    {
+      "path": "/api/meetings/c98d23d4-04e6-49e4-9de2-0ade5f37104e/raw-links",
+      "method": "POST",
+      "status": 403,
+      "code": "RAW_NOT_AUTHORIZED"
+    },
+    {
+      "path": "/api/meetings/4ca6d05f-e0ba-457c-b7fc-c737b4e16acd/raw-links",
+      "method": "POST",
+      "status": 403,
+      "code": "RAW_NOT_AUTHORIZED"
+    },
+    {
+      "path": "/api/meetings/c9b10903-91ac-447d-914c-650f1c4381ed/policy",
+      "method": "PATCH",
+      "status": 403,
+      "code": "CONFIRMATION_REQUIRED"
+    },
+    {
+      "path": "/api/meetings/ad26291c-0580-4df1-9a4f-47fd0bdea72b/raw-links",
+      "method": "POST",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT"
+    },
+    {
+      "path": "/api/meetings/db3e4566-8395-4ff7-a1f2-28425707f45a/raw-links",
+      "method": "POST",
+      "status": 400,
+      "code": "INVALID_BODY"
+    },
+    {
+      "path": "/api/raw",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_ORIGIN_FORBIDDEN"
+    },
+    {
+      "path": "/api/raw",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_RAW_FORBIDDEN"
+    },
+    {
+      "path": "/api/extraction-jobs",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "path": "/api/wiki",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/wiki/cce214c4-8844-48cd-97a9-9b615b127956",
+      "method": "PUT",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/prompts",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/prompt-ai/generate",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/prompt-ai/generate",
+      "method": "POST",
+      "status": 502,
+      "code": "LLM_PROVIDER_ERROR"
+    },
+    {
+      "path": "/api/meetings/0ff36eff-5322-4fc5-8959-ba1cd5aa92ff/policy",
+      "method": "PATCH",
+      "status": 409,
+      "code": "RAW_LINKS_PENDING"
+    },
+    {
+      "path": "/api/meetings/0ff36eff-5322-4fc5-8959-ba1cd5aa92ff/minutes",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/0ff36eff-5322-4fc5-8959-ba1cd5aa92ff",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/db3b4d0c-30c2-4189-bfb9-18dddd1dc601",
+      "method": "DELETE",
+      "status": 409,
+      "code": "MEETING_HAS_REFERENCES"
+    },
+    {
+      "path": "/api/extraction-jobs",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "path": "/api/meetings/628f2282-e71b-41ac-bb26-67d6165a63b6/raw-links",
+      "method": "POST",
+      "status": 500,
+      "code": "INTERNAL_ERROR"
+    },
+    {
+      "path": "/api/meetings/628f2282-e71b-41ac-bb26-67d6165a63b6/raw-links",
+      "method": "POST",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT"
+    },
+    {
+      "path": "/api/meetings/4d598aa0-de17-4126-a016-c74acda27129/minutes",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/4d598aa0-de17-4126-a016-c74acda27129",
+      "method": "GET",
+      "status": 409,
+      "code": "CORRUPT_MEETING"
+    },
+    {
+      "path": "/api/meetings/0eb4e71a-5a16-47db-a40b-f37e5a103958/raw-links",
+      "method": "POST",
+      "status": 409,
+      "code": "CORRUPT_MEETING"
+    },
+    {
+      "path": "/api/meetings/0eb4e71a-5a16-47db-a40b-f37e5a103958",
+      "method": "GET",
+      "status": 409,
+      "code": "CORRUPT_MEETING"
+    },
+    {
+      "path": "/api/wiki/a91f3d16-521d-4028-95bc-89b269b55b9b",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/9f1bbfd4-500d-4e78-b321-05884e93e682/minutes/import",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/meetings/9f1bbfd4-500d-4e78-b321-05884e93e682",
+      "method": "GET",
+      "status": 409,
+      "code": "CORRUPT_MEETING"
+    }
+  ],
+  "summary": {
+    "pass": 11,
+    "fail": 10
+  },
+  "providerCalls": 1,
+  "servicesClosed": true
+}

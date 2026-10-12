@@ -1,0 +1,578 @@
+{
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m05-browser-1w8XOA",
+  "api": "http://127.0.0.1:65454",
+  "proxy": "http://127.0.0.1:65460",
+  "url": "http://127.0.0.1:65461",
+  "controlFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m05-browser-1w8XOA\\.m05-control.json",
+  "pid": 9156,
+  "originalRoots": {
+    "knowledge": {
+      "wiki\\index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+    },
+    "prompts": {},
+    "drafts": {},
+    "state": {}
+  },
+  "currentRoots": {
+    "knowledge": {
+      "raw\\meetings\\d23194df-773f-4fc1-a433-2f9df0855a08.md": "ed074dbacbc151ef19df60adfe4c862d410f8f119caa5d8241b7849e1408d1c4",
+      "raw\\meetings\\d50c1711-3209-4084-8290-7c706779c403.md": "744808fd7bff184ad820fb4ef50d04073cc1d935edf3d720ddb8fe6eacb9d5c2",
+      "wiki\\index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+    },
+    "prompts": {},
+    "drafts": {},
+    "state": {}
+  },
+  "oldRootsUnchanged": false,
+  "providerCalls": 0,
+  "trace": [
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:09:29.425Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:09:29.430Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:09:29.430Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:09:29.462Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:09:29.463Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:09:29.464Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:09:45.201Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:09:45.202Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:09:45.208Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:09:45.209Z",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:10:48.384Z",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:10:48.442Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:10:48.443Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:10:48.453Z",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/policy",
+      "at": "2026-10-12T14:12:00.058Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:12:00.119Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:12:00.119Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:12:00.127Z",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/minutes/import",
+      "at": "2026-10-12T14:12:01.069Z",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:12:01.136Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:12:01.137Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:12:01.146Z",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/minutes/4ff0c30e-2702-4edf-9105-d2492df24061",
+      "at": "2026-10-12T14:12:46.038Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:12:46.105Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:12:46.105Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:12:46.115Z",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/raw-links",
+      "at": "2026-10-12T14:12:48.044Z",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:12:48.119Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:12:48.120Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:12:48.125Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:12:48.125Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:12:48.126Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:12:48.140Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:13:04.527Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:13:04.528Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:13:04.529Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:13:04.556Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:13:04.576Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:13:19.657Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:13:19.657Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:13:19.658Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:13:51.750Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:13:51.751Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:13:51.755Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:13:51.756Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:13:51.762Z",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/minutes/import",
+      "at": "2026-10-12T14:13:53.798Z",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:13:53.870Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:13:53.871Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:13:53.879Z",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/raw-links",
+      "at": "2026-10-12T14:14:52.180Z",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:14:52.237Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:14:52.238Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:14:52.241Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:14:52.241Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:14:52.242Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:14:52.249Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:15:30.157Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:15:30.158Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:15:30.158Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:15:30.158Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:15:30.163Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:15:47.044Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:15:47.046Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:15:47.054Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:15:47.054Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:15:47.061Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:15:48.097Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:15:48.097Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:15:48.097Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:15:48.100Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:15:48.104Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:17:14.284Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:17:14.285Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:17:14.290Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:17:14.291Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:17:14.298Z",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587/raw-links/d23194df-773f-4fc1-a433-2f9df0855a08",
+      "at": "2026-10-12T14:18:07.599Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:18:07.670Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:18:07.670Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:18:07.706Z",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/meetings/21347f44-f490-4ae6-b725-7ca029b18587",
+      "at": "2026-10-12T14:18:35.303Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meetings",
+      "at": "2026-10-12T14:18:35.365Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/meeting-catalog",
+      "at": "2026-10-12T14:18:35.366Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw",
+      "at": "2026-10-12T14:18:47.923Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/stats",
+      "at": "2026-10-12T14:18:47.925Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/raw-processing",
+      "at": "2026-10-12T14:18:47.925Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:18:47.926Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/knowledge/workflows",
+      "at": "2026-10-12T14:18:47.931Z",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/wiki",
+      "at": "2026-10-12T14:19:21.081Z",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/knowledge/syntheses",
+      "at": "2026-10-12T14:19:35.039Z",
+      "status": 403
+    }
+  ],
+  "servicesClosed": true,
+  "uiLogs": "\n  VITE v6.4.3  ready in 375 ms\n\n  ➜  Local:   http://127.0.0.1:65461/\n22:05:24 [vite] (client) hmr update /app/App.tsx\n"
+}

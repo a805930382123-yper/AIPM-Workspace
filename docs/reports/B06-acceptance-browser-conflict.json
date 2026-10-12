@@ -1,0 +1,109 @@
+{
+  "wikiId": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+  "auditId": "14cfb915-e341-470e-bd01-5b4f9e2bf6e9",
+  "failure": {
+    "error": {
+      "code": "DERIVED_FILES_PENDING",
+      "message": "Wiki 已保存（8d050f47-468b-488d-a8c9-a2568b89e57e，第 2 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。",
+      "details": {
+        "committed": true,
+        "id": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+        "revision": 2,
+        "operationId": "fcb4842f-c798-4a53-a36d-8fb389168965",
+        "recoverable": true,
+        "cause": "Independent B06 acceptance EIO"
+      }
+    }
+  },
+  "detail": {
+    "audit": {
+      "id": "14cfb915-e341-470e-bd01-5b4f9e2bf6e9",
+      "wikiId": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+      "scope": "page",
+      "severity": "warning",
+      "comment": "浏览器冲突提示验收：中断后保留人工修改。",
+      "anchor": {
+        "before": "",
+        "text": "隔离冲突测试原正文。",
+        "after": ""
+      },
+      "pageBodySha256": "0cd7ee35e43239b9b288fdd8047f2c62760228b4704b4dfdafdf98f6c40cb15e",
+      "createdRevision": 1,
+      "revision": 2,
+      "createdAt": "2026-10-07T07:00:22.750Z",
+      "updatedAt": "2026-10-07T07:00:22.758Z",
+      "status": "open",
+      "location": {
+        "status": "stale",
+        "start": -1,
+        "end": -1,
+        "method": "page-changed",
+        "reason": "page-changed"
+      },
+      "relocationHistory": [],
+      "decisionHistory": [],
+      "pendingDraftId": "b7f7da6b-4e4d-4909-9636-b0fbf14ee299"
+    },
+    "draft": {
+      "id": "b7f7da6b-4e4d-4909-9636-b0fbf14ee299",
+      "auditId": "14cfb915-e341-470e-bd01-5b4f9e2bf6e9",
+      "revision": 1,
+      "status": "pending",
+      "baseWikiRevision": 1,
+      "baseAuditRevision": 1,
+      "rawSnapshots": [
+        {
+          "rawId": "a99dc66a-8faf-4909-ae13-2c1720aed8a3",
+          "sha256": "d781ebbe8ec21118b96a364556e3bdd4af0c285cb3cb7c4f1afc26f48697b793"
+        }
+      ],
+      "replacement": "铺货率采用有销售门店数除以目标门店数。",
+      "rationale": "依据Raw纠正口径，人工内容需保留",
+      "evidence": [
+        {
+          "rawId": "a99dc66a-8faf-4909-ae13-2c1720aed8a3",
+          "quote": "验收原始资料：铺货率采用有销售门店数除以目标门店数，统计周期为自然月。"
+        }
+      ],
+      "createdAt": "2026-10-07T07:00:22.758Z",
+      "updatedAt": "2026-10-07T07:00:22.758Z",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "independent-b06-fake"
+      }
+    },
+    "conflicts": [
+      {
+        "operationId": "8e16bccd-90c4-4bf9-8e66-4030ad2de0a9",
+        "status": "conflict",
+        "decision": "accepted",
+        "createdAt": "2026-10-07T07:00:22.766Z",
+        "conflictReason": "Wiki revision、正文或页面字段与已提交目标不一致",
+        "expectedWikiRevision": 2,
+        "observedWikiRevision": 3,
+        "changedRawIds": []
+      }
+    ]
+  },
+  "wiki": {
+    "title": "B06浏览器冲突恢复复验",
+    "type": "metric",
+    "category": "metric",
+    "sources": [
+      "a99dc66a-8faf-4909-ae13-2c1720aed8a3"
+    ],
+    "tags": [],
+    "aliases": [],
+    "knowledge_status": "source_supported",
+    "confidence": "medium",
+    "source_level": "B",
+    "review_status": "reviewed",
+    "id": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+    "domain": "fmcg",
+    "created": "2026-10-07T07:00:22.735Z",
+    "updated": "2026-10-07T07:00:54.511Z",
+    "revision": 4,
+    "body": "中断后人工保存的冲突样本，必须保留。",
+    "links": []
+  }
+}

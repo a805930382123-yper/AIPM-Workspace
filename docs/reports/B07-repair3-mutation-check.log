@@ -1,0 +1,37 @@
+B07 repair3 self-test: guard-removal mutation check (construction self-test, NOT independent acceptance)
+subject: app/pages/PromptLibraryPage.tsx, baseline sha256 90431F9F55A1BC54ED1CEE62E8C9E269C72B848129A3CB6B8E70796450EEF6BF (42779 bytes)
+method: change one guard at a time, run only the matching tests of tests/prompt-ui.test.tsx with
+        node --import tsx --import ./tests/support/css-stub.mjs --test --test-name-pattern=<P> tests/prompt-ui.test.tsx
+        then restore the page from a byte copy and re-verify its SHA256 before the next step
+
+baseline F07-04 -> tests 2, pass 2, fail 0 (expect fail 0)
+baseline F07-05 -> tests 3, pass 3, fail 0 (expect fail 0)
+baseline F07-07 -> tests 2, pass 2, fail 0 (expect fail 0)
+(the matching full-suite run of the same restored bytes: tests 146, pass 146, fail 0)
+
+A) this round's repair removed: selectId no longer bumps reloadToken -> tests 2, pass 0, fail 2
+   AssertionError [ERR_ASSERTION]: 重复点击当前行后，甲的历史必须仍然完整（此前会清成 0 并卡在“正在读取版本…”）
+   actual: 0, expected: 1
+   AssertionError [ERR_ASSERTION]: 重复点击同一模板必须重新触发读取，而不是只清空
+   actual: 1, expected: 2
+   -> both orderings required by the fix card are non-vacuous: an already-loaded history is wiped, and
+      an in-flight first read is never followed by a new one.
+
+B) regression of the already-closed F07-04 guard: openVersion's renderRequest bump removed
+   (checked because this round touched the sibling selection path) -> tests 2, pass 1, fail 1
+   AssertionError [ERR_ASSERTION]: 迟到的生成错误不得盖到历史只读页上
+   -> the F07-04 residual guard is still detectable after this round's change.
+
+C) regression of the already-closed F07-05 guard: create finally releases every claim (pre-repair
+   single-slot behaviour) -> tests 3, pass 2, fail 1
+   AssertionError [ERR_ASSERTION]: 己不得复用戊仍在途的 requestId
+
+D) regression of the already-closed F07-05 guard: startCreate no longer drops an id still claimed by
+   an in-flight form -> tests 3, pass 2, fail 1
+   AssertionError [ERR_ASSERTION]: 两张新表单必须各自分配 requestId
+
+restored sha256: 90431F9F55A1BC54ED1CEE62E8C9E269C72B848129A3CB6B8E70796450EEF6BF ; matches baseline: True
+
+note: the F07-07 baseline and A were re-measured after the last edit of
+      tests/prompt-ui.test.tsx (final sha256 4983BD5EA09F1C4AA7142FC130A61E3A760CBD9A6EF19EE85ABBDC53303D0665, 57723 bytes)
+      and the counts/messages above are the ones the final bytes of both files produced.

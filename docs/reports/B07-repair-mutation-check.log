@@ -1,0 +1,46 @@
+B07 repair self-test: guard-removal mutation check (construction self-test, not independent acceptance)
+script: .tmp-b07-repair-mutation.ps1 (throwaway, ASCII source; deleted after the run)
+subject: app/pages/PromptLibraryPage.tsx, sha256 C220C23E507D16F8265CF9171FAD5C9514974A74895D7727ABD942C977BB66B1
+method: remove one repair guard at a time, run tests/prompt-ui.test.tsx, restore the file byte-exactly
+
+baseline, no mutation -> pass 11, fail 0 (expect fail 0)
+F07-02 guard removed -> fail 1 ; detected by: F07-02
+    AssertionError [ERR_ASSERTION]: 改值后旧的本次最终正文必须消失
+    guards removed:   const updateValues = (next: Record<string, string>) => {
+    renderRequest.current += 1;
+    setValues(next);
+    setPreview(null); setPreviewMissing([]);
+    setCopy({ status: 'idle', text: '', message: '' });
+    setError('');
+  }; |     && preview.version === prompt.version && preview.signature === signatureOf(variables, values);
+
+F07-03 guard removed -> fail 1 ; detected by: F07-03
+    AssertionError [ERR_ASSERTION]: 迟到的历史响应不得打开历史视图
+    guards removed: if (stale()) return;
+
+F07-04 guard removed -> fail 1 ; detected by: F07-04
+    AssertionError [ERR_ASSERTION]: 切换后乙的收藏/编辑/删除必须可用
+    guards removed:     releaseBusy();
+    setSelectedId(id); |     } finally { endBusy(token); }
+  };
+
+  /**
+   * B07 repair (F07-02)
+
+F07-05 guard removed -> fail 1 ; detected by: F07-05
+    AssertionError [ERR_ASSERTION]: 找不到目标元素
+    guards removed:         if (selectionVersion.current !== selectionAtSave) return;
+        setForm(null); setBaseVersion(null);
+
+F07-06 guard removed -> fail 1 ; detected by: F07-06
+    AssertionError [ERR_ASSERTION]: 迟到的旧查询不得覆盖当前列表
+    guards removed:     if (listRequest.current !== token) return null;
+
+
+restored sha256: C220C23E507D16F8265CF9171FAD5C9514974A74895D7727ABD942C977BB66B1 ; matches backup: True
+
+--- F07-01, second subject: services/prompt/store.ts (sha256 restored byte-exactly) ---
+guard removed: in isRecord, the full structural/identity rule replaced by the pre-repair shallow rule
+               (`file.id !== id` plus an unconditional `return true`)
+result: tests/prompt.test.ts -> fail 1 ; detected by: F07-01
+restored matches backup: True

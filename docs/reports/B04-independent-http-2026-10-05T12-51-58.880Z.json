@@ -1,0 +1,2405 @@
+{
+  "startedAt": "2026-10-05T12:51:58.882Z",
+  "node": "v25.2.1",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR",
+  "productImports": false,
+  "provider": "Independent fake localhost HTTP provider; NOT real AI",
+  "checks": [
+    {
+      "id": "E04-01-no-configuration-manual-chain",
+      "status": "FAIL",
+      "elapsedMs": 703,
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(search.text.includes(w.json.id))\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:76:634\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:76:3"
+    },
+    {
+      "id": "E04-02-fake-draft-evidence-zero-formal-rules",
+      "status": "FAIL",
+      "elapsedMs": 742,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nundefined !== 1\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:77:617\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:77:3"
+    },
+    {
+      "id": "E04-04-default-unselected",
+      "status": "FAIL",
+      "elapsedMs": 706,
+      "error": "AssertionError [ERR_ASSERTION]: frozen contract: all pages must default unselected\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:78:176\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:78:3",
+      "observed": {
+        "selected": [
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "id": "E04-04-source-metadata-complete",
+      "status": "FAIL",
+      "elapsedMs": 634,
+      "error": "AssertionError [ERR_ASSERTION]: Source preview must preserve actual Raw metadata: report\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:79:273\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:79:3",
+      "observed": {
+        "raw": {
+          "title": "source-meta真实Raw标题",
+          "sourceType": "report",
+          "sourceName": "独立来源名",
+          "author": "独立作者",
+          "publishedAt": "2026-10-03",
+          "url": "https://example.com/acceptance",
+          "tags": [
+            "独立验收"
+          ],
+          "body": "渠道库存为三十天。终端覆盖为一百家。\r\n原文末尾😀可核验证据。",
+          "id": "e0f574b0-67a7-4ff5-a385-50d47a0fd47f",
+          "importedAt": "2026-10-05T12:52:01.669Z",
+          "status": "unprocessed",
+          "bodySha256": "625c49a31f2436fce3b42394b14417ca6dee025cefdf00fb8b222adcb18db9ec"
+        },
+        "source": {
+          "title": "source-metaSource",
+          "category": "other",
+          "summary": "分块1摘要",
+          "key_takeaways": [
+            "定义0",
+            "定义1",
+            "定义2"
+          ],
+          "body": "## 摘要\n\n分块1摘要\n\n## Key Takeaways\n\n- 定义0\n- 定义1\n- 定义2\n\n## 涉及概念\n\n- [[source-meta知识1]]\n- [[source-meta知识3]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- [[source-meta知识2]]\n\n## 重要观点\n\n- 原文事实0\n- 原文事实1\n- 原文事实2\n\n## 待验证内容\n\n- 问题0\n- 问题1\n- 问题2\n\n## Raw 来源\n\n- source-meta真实Raw标题（Raw e0f574b0-67a7-4ff5-a385-50d47a0fd47f）\n\n> 本页是来源摘要，原文以对应 Raw 为准。\n",
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C"
+        },
+        "rawView": {
+          "id": "e0f574b0-67a7-4ff5-a385-50d47a0fd47f",
+          "title": "source-meta真实Raw标题",
+          "sourceType": "report",
+          "sourceName": "独立来源名",
+          "author": "独立作者",
+          "publishedAt": "2026-10-03",
+          "url": "https://example.com/acceptance",
+          "importedAt": "2026-10-05T12:52:01.669Z",
+          "bodySha256": "625c49a31f2436fce3b42394b14417ca6dee025cefdf00fb8b222adcb18db9ec"
+        }
+      }
+    },
+    {
+      "id": "E04-04-partial-select-snapshot-source-links",
+      "status": "FAIL",
+      "elapsedMs": 724,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nundefined !== 0\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:80:1460\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:80:3"
+    },
+    {
+      "id": "E04-04-merge-facts-preserved",
+      "status": "FAIL",
+      "elapsedMs": 710,
+      "error": "AssertionError [ERR_ASSERTION]: merge lost second page source_facts\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:81:479\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:81:3",
+      "observed": {
+        "beforeFacts": [
+          [
+            {
+              "text": "原文事实0",
+              "evidenceIds": [
+                "e1"
+              ]
+            }
+          ],
+          [
+            {
+              "text": "原文事实1",
+              "evidenceIds": [
+                "e1"
+              ]
+            }
+          ]
+        ],
+        "after": {
+          "pageId": "46c1e342-61c0-43e9-b2b1-8bfeb2f1bba7",
+          "title": "合并后的知识",
+          "type": "concept",
+          "category": "industry_basics",
+          "one_line_definition": "定义0",
+          "source_facts": [
+            {
+              "text": "原文事实0",
+              "evidenceIds": [
+                "e1"
+              ]
+            },
+            {
+              "text": "原文事实0",
+              "evidenceIds": [
+                "e1"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "整理0",
+            "整理1"
+          ],
+          "ai_inferences": [
+            "推断0",
+            "推断1"
+          ],
+          "related_pages": [
+            "merge知识2",
+            "merge知识3"
+          ],
+          "open_questions": [
+            "问题0",
+            "问题1"
+          ],
+          "source_evidence": [
+            {
+              "id": "e1",
+              "rawId": "a898434f-732f-43e5-812a-c7c0bc6adbd4",
+              "quote": "渠道库存为三十天。终端覆盖为一百",
+              "start": 0,
+              "end": 16,
+              "chunkIndex": 0
+            },
+            {
+              "id": "e1-m2",
+              "rawId": "a898434f-732f-43e5-812a-c7c0bc6adbd4",
+              "quote": "家。\r\n原文末尾😀可核验证据。",
+              "start": 16,
+              "end": 32,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": true,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 32
+            }
+          ],
+          "mergedFrom": [
+            "merge知识1",
+            "merge知识2"
+          ],
+          "notes": [
+            "由用户合并 2 条建议（merge知识1、merge知识2）。"
+          ],
+          "editedFields": [
+            "merge"
+          ],
+          "renderedBody": "## 一句话说明\n\n定义0\n\n## 来源事实\n\n- 原文事实0（证据 e1）\n- 原文事实0（证据 e1）\n\n## AI 整理\n\n- 整理0\n- 整理1\n\n## AI 推断\n\n- 推断0\n- 推断1\n\n## 待确认问题\n\n- 问题0\n- 问题1\n\n## 来源证据\n\n- e1｜原文 [0, 16)：渠道库存为三十天。终端覆盖为一百\n- e1-m2｜原文 [16, 32)：家。\r\n原文末尾😀可核验证据。\n\n## 关联\n\n- merge知识2（本次未创建，待后续处理）\n- [[merge知识3]]\n\n## 来源\n\n- [[mergeSource]]（Raw a898434f-732f-43e5-812a-c7c0bc6adbd4）\n"
+        }
+      }
+    },
+    {
+      "id": "E04-04-delete-edit-anchors-stale",
+      "status": "PASS",
+      "elapsedMs": 768,
+      "evidence": {
+        "deletedSuggestionAbsent": true,
+        "rawId": "2b2a7527-c6e3-41b1-a215-a27b2e786185"
+      }
+    },
+    {
+      "id": "E04-05-same-key-concurrent-restart",
+      "status": "PASS",
+      "elapsedMs": 1311,
+      "evidence": {
+        "operationId": "74b2ee66-5916-48d9-bdea-e0c2b8ede837",
+        "duplicateFiles": 0
+      }
+    },
+    {
+      "id": "E04-05-different-key-reuses-operation",
+      "status": "FAIL",
+      "elapsedMs": 772,
+      "error": "AssertionError [ERR_ASSERTION]: different-key retry must reuse frozen operation\n\n409 !== 201\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:84:425\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:84:3",
+      "observed": {
+        "pair": [
+          {
+            "status": 201,
+            "json": {
+              "operationId": "c371848d-a897-490e-b3ca-d176add02356",
+              "status": "completed",
+              "reused": false,
+              "sourceReused": false,
+              "sourceId": "5828695d-4863-4d0f-95a4-29fce31153c6",
+              "wikiIds": [
+                "4bd8f70f-1f89-4e97-be1c-656750c9f9b0"
+              ],
+              "sourceReuseId": null,
+              "writtenWikiIds": [
+                "5828695d-4863-4d0f-95a4-29fce31153c6",
+                "4bd8f70f-1f89-4e97-be1c-656750c9f9b0"
+              ],
+              "phases": [
+                {
+                  "name": "source",
+                  "status": "done",
+                  "at": "2026-10-05T12:52:06.065Z"
+                },
+                {
+                  "name": "pages",
+                  "status": "done",
+                  "at": "2026-10-05T12:52:06.070Z"
+                },
+                {
+                  "name": "index",
+                  "status": "done",
+                  "at": "2026-10-05T12:52:06.083Z"
+                },
+                {
+                  "name": "log",
+                  "status": "done",
+                  "at": "2026-10-05T12:52:06.088Z"
+                },
+                {
+                  "name": "state",
+                  "status": "done",
+                  "at": "2026-10-05T12:52:06.097Z"
+                }
+              ],
+              "warnings": []
+            },
+            "text": "{\"operationId\":\"c371848d-a897-490e-b3ca-d176add02356\",\"status\":\"completed\",\"reused\":false,\"sourceReused\":false,\"sourceId\":\"5828695d-4863-4d0f-95a4-29fce31153c6\",\"wikiIds\":[\"4bd8f70f-1f89-4e97-be1c-656750c9f9b0\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"5828695d-4863-4d0f-95a4-29fce31153c6\",\"4bd8f70f-1f89-4e97-be1c-656750c9f9b0\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.065Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.070Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.083Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.088Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.097Z\"}],\"warnings\":[]}"
+          },
+          {
+            "status": 409,
+            "json": {
+              "error": {
+                "code": "IDEMPOTENCY_KEY_MISMATCH",
+                "message": "这份草稿已用另一个 idempotencyKey 提交过；请刷新后查看既有提交状态。",
+                "details": {
+                  "operationId": "c371848d-a897-490e-b3ca-d176add02356",
+                  "status": "completed"
+                }
+              }
+            },
+            "text": "{\"error\":{\"code\":\"IDEMPOTENCY_KEY_MISMATCH\",\"message\":\"这份草稿已用另一个 idempotencyKey 提交过；请刷新后查看既有提交状态。\",\"details\":{\"operationId\":\"c371848d-a897-490e-b3ca-d176add02356\",\"status\":\"completed\"}}}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E04-05-same-key-different-payload-rejected",
+      "status": "FAIL",
+      "elapsedMs": 768,
+      "error": "AssertionError [ERR_ASSERTION]: same key with changed selectedPageIds must be rejected\n\n201 !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:85:444\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:85:3",
+      "observed": {
+        "first": {
+          "status": 201,
+          "json": {
+            "operationId": "2078d191-1877-4aab-8c58-99632528d330",
+            "status": "completed",
+            "reused": false,
+            "sourceReused": false,
+            "sourceId": "92d82ac4-0c8d-4e00-a3a5-07a33eee57da",
+            "wikiIds": [
+              "3fce2262-8ea8-4d58-91d9-8531100dcfbd"
+            ],
+            "sourceReuseId": null,
+            "writtenWikiIds": [
+              "92d82ac4-0c8d-4e00-a3a5-07a33eee57da",
+              "3fce2262-8ea8-4d58-91d9-8531100dcfbd"
+            ],
+            "phases": [
+              {
+                "name": "source",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.850Z"
+              },
+              {
+                "name": "pages",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.856Z"
+              },
+              {
+                "name": "index",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.868Z"
+              },
+              {
+                "name": "log",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.873Z"
+              },
+              {
+                "name": "state",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.881Z"
+              }
+            ],
+            "warnings": []
+          },
+          "text": "{\"operationId\":\"2078d191-1877-4aab-8c58-99632528d330\",\"status\":\"completed\",\"reused\":false,\"sourceReused\":false,\"sourceId\":\"92d82ac4-0c8d-4e00-a3a5-07a33eee57da\",\"wikiIds\":[\"3fce2262-8ea8-4d58-91d9-8531100dcfbd\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"92d82ac4-0c8d-4e00-a3a5-07a33eee57da\",\"3fce2262-8ea8-4d58-91d9-8531100dcfbd\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.850Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.856Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.868Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.873Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.881Z\"}],\"warnings\":[]}"
+        },
+        "changed": {
+          "status": 201,
+          "json": {
+            "operationId": "2078d191-1877-4aab-8c58-99632528d330",
+            "status": "completed",
+            "reused": true,
+            "sourceReused": false,
+            "sourceId": "92d82ac4-0c8d-4e00-a3a5-07a33eee57da",
+            "wikiIds": [
+              "3fce2262-8ea8-4d58-91d9-8531100dcfbd"
+            ],
+            "sourceReuseId": null,
+            "writtenWikiIds": [
+              "92d82ac4-0c8d-4e00-a3a5-07a33eee57da",
+              "3fce2262-8ea8-4d58-91d9-8531100dcfbd"
+            ],
+            "phases": [
+              {
+                "name": "source",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.850Z"
+              },
+              {
+                "name": "pages",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.856Z"
+              },
+              {
+                "name": "index",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.868Z"
+              },
+              {
+                "name": "log",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.873Z"
+              },
+              {
+                "name": "state",
+                "status": "done",
+                "at": "2026-10-05T12:52:06.881Z"
+              }
+            ],
+            "warnings": []
+          },
+          "text": "{\"operationId\":\"2078d191-1877-4aab-8c58-99632528d330\",\"status\":\"completed\",\"reused\":true,\"sourceReused\":false,\"sourceId\":\"92d82ac4-0c8d-4e00-a3a5-07a33eee57da\",\"wikiIds\":[\"3fce2262-8ea8-4d58-91d9-8531100dcfbd\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"92d82ac4-0c8d-4e00-a3a5-07a33eee57da\",\"3fce2262-8ea8-4d58-91d9-8531100dcfbd\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.850Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.856Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.868Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.873Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:06.881Z\"}],\"warnings\":[]}"
+        }
+      }
+    },
+    {
+      "id": "E04-04-source-reuse-valid-link-unchanged-old",
+      "status": "FAIL",
+      "elapsedMs": 793,
+      "error": "AssertionError [ERR_ASSERTION]: new page links draft Source title instead of reused actual Source\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:86:923\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:86:3",
+      "observed": {
+        "oldSourceId": "7ce62734-4123-4171-9772-5a36707897f8",
+        "oldTitle": "既有真实Source",
+        "draftSourceTitle": "reuseSource",
+        "confirm": {
+          "status": 201,
+          "json": {
+            "operationId": "fd56a4c3-610e-4890-907a-097fd25faee3",
+            "status": "completed",
+            "reused": false,
+            "sourceReused": true,
+            "sourceId": "7ce62734-4123-4171-9772-5a36707897f8",
+            "wikiIds": [
+              "b3c7b923-015e-48c2-b657-cf06a5efbc5c"
+            ],
+            "sourceReuseId": "7ce62734-4123-4171-9772-5a36707897f8",
+            "writtenWikiIds": [
+              "b3c7b923-015e-48c2-b657-cf06a5efbc5c"
+            ],
+            "phases": [
+              {
+                "name": "source",
+                "status": "done",
+                "at": "2026-10-05T12:52:07.650Z"
+              },
+              {
+                "name": "pages",
+                "status": "done",
+                "at": "2026-10-05T12:52:07.656Z"
+              },
+              {
+                "name": "index",
+                "status": "done",
+                "at": "2026-10-05T12:52:07.668Z"
+              },
+              {
+                "name": "log",
+                "status": "done",
+                "at": "2026-10-05T12:52:07.673Z"
+              },
+              {
+                "name": "state",
+                "status": "done",
+                "at": "2026-10-05T12:52:07.683Z"
+              }
+            ],
+            "warnings": [
+              "已复用既有 Source「既有真实Source」（7ce62734-4123-4171-9772-5a36707897f8）：本批不修改既有页面，你在草稿里对 Source 的修改不会写入。"
+            ]
+          },
+          "text": "{\"operationId\":\"fd56a4c3-610e-4890-907a-097fd25faee3\",\"status\":\"completed\",\"reused\":false,\"sourceReused\":true,\"sourceId\":\"7ce62734-4123-4171-9772-5a36707897f8\",\"wikiIds\":[\"b3c7b923-015e-48c2-b657-cf06a5efbc5c\"],\"sourceReuseId\":\"7ce62734-4123-4171-9772-5a36707897f8\",\"writtenWikiIds\":[\"b3c7b923-015e-48c2-b657-cf06a5efbc5c\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:07.650Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:07.656Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:07.668Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:07.673Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T12:52:07.683Z\"}],\"warnings\":[\"已复用既有 Source「既有真实Source」（7ce62734-4123-4171-9772-5a36707897f8）：本批不修改既有页面，你在草稿里对 Source 的修改不会写入。\"]}"
+        },
+        "page": {
+          "domain": "fmcg",
+          "created": "2026-10-05T12:52:07.636Z",
+          "updated": "2026-10-05T12:52:07.636Z",
+          "revision": 1,
+          "aliases": [],
+          "tags": [
+            "独立验收"
+          ],
+          "id": "b3c7b923-015e-48c2-b657-cf06a5efbc5c",
+          "title": "reuse知识1",
+          "type": "concept",
+          "category": "industry_basics",
+          "sources": [
+            "fdce15fa-a38a-4710-9206-47715c4a378d"
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "review_status": "unreviewed",
+          "body": "## 一句话说明\n\n定义0\n\n## 来源事实\n\n- 原文事实0（证据 e1）\n\n## AI 整理\n\n- 整理0\n\n## AI 推断\n\n- 推断0\n\n## 待确认问题\n\n- 问题0\n\n## 来源证据\n\n- e1｜原文 [0, 16)：渠道库存为三十天。终端覆盖为一百\n\n## 关联\n\n- reuse知识2（本次未创建，待后续处理）\n\n## 来源\n\n- [[reuseSource]]（Raw fdce15fa-a38a-4710-9206-47715c4a378d）\n",
+          "links": [
+            {
+              "target": "reuseSource",
+              "status": "missing",
+              "candidates": []
+            }
+          ]
+        },
+        "before": {
+          "wiki": {
+            "7ce62734-4123-4171-9772-5a36707897f8.md": "02a491a134feae810bcc914bc09735e34cf83832c93ae2197a0296678380936c",
+            "index.md": "1127058775a5fe4fb17c5f5882f0b73ab2cc76b04cf8a29ce52879102971ae60"
+          },
+          "logs": {
+            "wiki.jsonl": "10fbfa3dc29d3fc060b04a4f2a8abfee7f7ed4037963b0983c77c27e4e3f0dd0"
+          }
+        },
+        "after": {
+          "wiki": {
+            "7ce62734-4123-4171-9772-5a36707897f8.md": "02a491a134feae810bcc914bc09735e34cf83832c93ae2197a0296678380936c",
+            "b3c7b923-015e-48c2-b657-cf06a5efbc5c.md": "589a1ab340a08f707cf8580d96ed341cca8a7358c52b04bef771629b05783c10",
+            "index.md": "514622cd9d8cd35585d45a1c81124799ac3af7377d51e0e72bdbcdad66a60a5d"
+          },
+          "logs": {
+            "wiki.jsonl": "bf5c1ffd8715bd7b299a87cb1eef14147aa20f361b70ba5fdcd44d1804c580df"
+          }
+        }
+      }
+    },
+    {
+      "id": "E04-04-source-selected-link-set",
+      "status": "FAIL",
+      "elapsedMs": 770,
+      "error": "AssertionError [ERR_ASSERTION]: Source has Wikilink to unselected nonexistent page\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:87:483\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:87:3",
+      "observed": {
+        "source": {
+          "domain": "fmcg",
+          "created": "2026-10-05T12:52:08.416Z",
+          "updated": "2026-10-05T12:52:08.416Z",
+          "revision": 1,
+          "aliases": [],
+          "tags": [
+            "独立验收"
+          ],
+          "id": "24c8b4c4-b5b5-460a-ab0d-7f905a9c533f",
+          "title": "source-linksSource",
+          "type": "source",
+          "category": "other",
+          "sources": [
+            "0268c538-c77a-44ed-8d6f-9e6a24c523e7"
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "review_status": "unreviewed",
+          "body": "## 摘要\n\n分块1摘要\n\n## Key Takeaways\n\n- 定义0\n- 定义1\n- 定义2\n\n## 涉及概念\n\n- [[source-links知识1]]\n- [[source-links知识3]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- [[source-links知识2]]\n\n## 重要观点\n\n- 原文事实0\n- 原文事实1\n- 原文事实2\n\n## 待验证内容\n\n- 问题0\n- 问题1\n- 问题2\n\n## Raw 来源\n\n- source-links真实Raw标题（Raw 0268c538-c77a-44ed-8d6f-9e6a24c523e7）\n\n> 本页是来源摘要，原文以对应 Raw 为准。\n",
+          "links": [
+            {
+              "target": "source-links知识1",
+              "status": "resolved",
+              "candidates": [
+                {
+                  "id": "50e092f3-3abb-4747-898e-f19f62352099",
+                  "title": "source-links知识1"
+                }
+              ]
+            },
+            {
+              "target": "source-links知识3",
+              "status": "missing",
+              "candidates": []
+            },
+            {
+              "target": "source-links知识2",
+              "status": "missing",
+              "candidates": []
+            }
+          ]
+        },
+        "selected": "source-links知识1",
+        "unselected": [
+          "source-links知识2",
+          "source-links知识3"
+        ]
+      }
+    },
+    {
+      "id": "E04-06-provider-error-matrix-zero-writes",
+      "status": "FAIL",
+      "elapsedMs": 6894,
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"1a2c97dc-c1bb-4369-95da-0a9c4d58f222\",\"rawId\":\"65907d7c-a81b-4867-bb49-39e9075c9800\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_EVIDENCE_QUOTE_NOT_FOUND\",\"message\":\"证据 e1 的 quote 在原文中找不到（可能被改写或拼接）。\",\"at\":\"2026-10-05T12:52:15.358Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-fake-model\"},\"callCount\":0,\"startedAt\":\"2026-10-05T12:52:15.319Z\",\"finishedAt\":\"2026-10-05T12:52:15.358Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'LLM_EVIDENCE_QUOTE_NOT_FOUND'\n- 'LLM_EVIDENCE_INVALID_POSITION'\n                ^\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:88:1534\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:88:3",
+      "observed": [
+        {
+          "label": "401",
+          "status": "failed",
+          "error": {
+            "code": "LLM_AUTH_FAILED",
+            "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：fake error）（第 1 段）",
+            "at": "2026-10-05T12:52:09.180Z",
+            "retryable": false,
+            "details": {
+              "chunkIndex": 0
+            }
+          }
+        },
+        {
+          "label": "403",
+          "status": "failed",
+          "error": {
+            "code": "LLM_AUTH_FAILED",
+            "message": "Provider 拒绝鉴权（HTTP 403）。请检查服务端 API Key 配置。（Provider 说明：fake error）（第 1 段）",
+            "at": "2026-10-05T12:52:09.885Z",
+            "retryable": false,
+            "details": {
+              "chunkIndex": 0
+            }
+          }
+        },
+        {
+          "label": "429",
+          "status": "failed",
+          "error": {
+            "code": "LLM_RATE_LIMITED",
+            "message": "Provider 限流（HTTP 429），请稍后重试。（Provider 说明：fake error）（第 1 段）",
+            "at": "2026-10-05T12:52:10.593Z",
+            "retryable": true,
+            "details": {
+              "chunkIndex": 0
+            }
+          }
+        },
+        {
+          "label": "500",
+          "status": "failed",
+          "error": {
+            "code": "LLM_PROVIDER_ERROR",
+            "message": "Provider 服务错误（HTTP 500）。（Provider 说明：fake error）（第 1 段）",
+            "at": "2026-10-05T12:52:11.296Z",
+            "retryable": true,
+            "details": {
+              "chunkIndex": 0
+            }
+          }
+        },
+        {
+          "label": "invalid-json",
+          "status": "failed",
+          "error": {
+            "code": "LLM_INVALID_JSON",
+            "message": "Provider 返回的内容不是合法 JSON（未做修补，避免把不完整结果当成成功）。",
+            "at": "2026-10-05T12:52:11.936Z",
+            "retryable": true,
+            "details": {
+              "preview": "{broken"
+            }
+          }
+        },
+        {
+          "label": "empty",
+          "status": "failed",
+          "error": {
+            "code": "LLM_EMPTY_RESULT",
+            "message": "Provider 返回了空结果，未产生任何知识建议。（第 1 段）",
+            "at": "2026-10-05T12:52:12.642Z",
+            "retryable": true,
+            "details": {
+              "chunkIndex": 0
+            }
+          }
+        },
+        {
+          "label": "truncated",
+          "status": "failed",
+          "error": {
+            "code": "LLM_OUTPUT_TRUNCATED",
+            "message": "Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。（第 1 段）",
+            "at": "2026-10-05T12:52:13.344Z",
+            "retryable": true,
+            "details": {
+              "chunkIndex": 0
+            }
+          }
+        },
+        {
+          "label": "schema",
+          "status": "failed",
+          "error": {
+            "code": "LLM_SCHEMA_INVALID",
+            "message": "第 1 段的返回未通过结构校验（1 处问题）：$: 存在未允许的字段 extra",
+            "at": "2026-10-05T12:52:14.042Z",
+            "retryable": true,
+            "details": {
+              "errors": [
+                "$: 存在未允许的字段 extra"
+              ]
+            }
+          }
+        },
+        {
+          "label": "enum",
+          "status": "failed",
+          "error": {
+            "code": "LLM_SCHEMA_INVALID",
+            "message": "第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].type: 值 \"synthesis\" 不在允许的枚举内（\"concept\"、\"entity\"、\"business_process\"、\"metric\"）",
+            "at": "2026-10-05T12:52:14.671Z",
+            "retryable": true,
+            "details": {
+              "errors": [
+                "$.suggested_pages[0].type: 值 \"synthesis\" 不在允许的枚举内（\"concept\"、\"entity\"、\"business_process\"、\"metric\"）"
+              ]
+            }
+          }
+        },
+        {
+          "label": "evidence",
+          "status": "failed",
+          "error": {
+            "code": "LLM_EVIDENCE_QUOTE_NOT_FOUND",
+            "message": "证据 e1 的 quote 在原文中找不到（可能被改写或拼接）。",
+            "at": "2026-10-05T12:52:15.358Z",
+            "retryable": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "E04-06-http-sixty-second-timeout",
+      "status": "PASS",
+      "elapsedMs": 60594
+    },
+    {
+      "id": "E04-08-cancel-late-result-discard-restart",
+      "status": "FAIL",
+      "elapsedMs": 1897,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nundefined !== 0\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:90:1093\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:90:3"
+    },
+    {
+      "id": "E04-08-processing-interruption-recovery",
+      "status": "PASS",
+      "elapsedMs": 1256
+    },
+    {
+      "id": "E04-08-parallel-extraction-single-active",
+      "status": "FAIL",
+      "elapsedMs": 942,
+      "error": "AssertionError [ERR_ASSERTION]: parallel extracts created different active job IDs\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:92:503\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:92:3",
+      "observed": {
+        "pair": [
+          {
+            "status": 202,
+            "json": {
+              "jobId": "62595a02-48b7-40a6-ad8a-1bc576f65206",
+              "rawId": "96b1a436-1528-42b2-865e-19162bd64fa1",
+              "status": "running",
+              "stage": "chunking",
+              "progress": {
+                "chunksTotal": 0,
+                "chunksDone": 0,
+                "pagesFound": 0
+              },
+              "draftId": null,
+              "error": null,
+              "provider": {
+                "name": "openai-compatible",
+                "model": "independent-fake-model"
+              },
+              "callCount": 0,
+              "startedAt": "2026-10-05T12:53:19.850Z",
+              "finishedAt": null,
+              "cancelRequested": false,
+              "reused": false
+            },
+            "text": "{\"jobId\":\"62595a02-48b7-40a6-ad8a-1bc576f65206\",\"rawId\":\"96b1a436-1528-42b2-865e-19162bd64fa1\",\"status\":\"running\",\"stage\":\"chunking\",\"progress\":{\"chunksTotal\":0,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":null,\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-fake-model\"},\"callCount\":0,\"startedAt\":\"2026-10-05T12:53:19.850Z\",\"finishedAt\":null,\"cancelRequested\":false,\"reused\":false}"
+          },
+          {
+            "status": 202,
+            "json": {
+              "jobId": "dac52742-11cb-49e9-ba99-4a5798bebe5f",
+              "rawId": "96b1a436-1528-42b2-865e-19162bd64fa1",
+              "status": "running",
+              "stage": "chunking",
+              "progress": {
+                "chunksTotal": 0,
+                "chunksDone": 0,
+                "pagesFound": 0
+              },
+              "draftId": null,
+              "error": null,
+              "provider": {
+                "name": "openai-compatible",
+                "model": "independent-fake-model"
+              },
+              "callCount": 0,
+              "startedAt": "2026-10-05T12:53:19.850Z",
+              "finishedAt": null,
+              "cancelRequested": false,
+              "reused": false
+            },
+            "text": "{\"jobId\":\"dac52742-11cb-49e9-ba99-4a5798bebe5f\",\"rawId\":\"96b1a436-1528-42b2-865e-19162bd64fa1\",\"status\":\"running\",\"stage\":\"chunking\",\"progress\":{\"chunksTotal\":0,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":null,\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-fake-model\"},\"callCount\":0,\"startedAt\":\"2026-10-05T12:53:19.850Z\",\"finishedAt\":null,\"cancelRequested\":false,\"reused\":false}"
+          }
+        ],
+        "drafts": [
+          {
+            "id": "61fa358b-f0a0-4c27-a109-2ae7cd507a57",
+            "rawId": "96b1a436-1528-42b2-865e-19162bd64fa1",
+            "rawTitle": "parallel-extract真实Raw标题",
+            "status": "pending_confirmation",
+            "revision": 1,
+            "createdAt": "2026-10-05T12:53:20.090Z",
+            "updatedAt": "2026-10-05T12:53:20.090Z",
+            "jobId": "62595a02-48b7-40a6-ad8a-1bc576f65206",
+            "title": "parallel-extractSource",
+            "pageCount": 3,
+            "selectedCount": 3,
+            "commitOperationId": null
+          },
+          {
+            "id": "8b2fae39-f10c-41b3-ae78-de6a93fdc15f",
+            "rawId": "96b1a436-1528-42b2-865e-19162bd64fa1",
+            "rawTitle": "parallel-extract真实Raw标题",
+            "status": "pending_confirmation",
+            "revision": 1,
+            "createdAt": "2026-10-05T12:53:20.085Z",
+            "updatedAt": "2026-10-05T12:53:20.085Z",
+            "jobId": "dac52742-11cb-49e9-ba99-4a5798bebe5f",
+            "title": "parallel-extractSource",
+            "pageCount": 3,
+            "selectedCount": 3,
+            "commitOperationId": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "E04-08-raw-delete-extract-race",
+      "status": "FAIL",
+      "elapsedMs": 840,
+      "error": "AssertionError [ERR_ASSERTION]: deleted Raw acquired dangling pending draft\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:93:512\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:93:3",
+      "observed": {
+        "pair": [
+          {
+            "status": 202,
+            "json": {
+              "jobId": "9f47efda-ded3-4455-b53c-40cff52a2008",
+              "rawId": "bb8b648e-0732-4249-8546-2027feb2ce31",
+              "status": "running",
+              "stage": "chunking",
+              "progress": {
+                "chunksTotal": 0,
+                "chunksDone": 0,
+                "pagesFound": 0
+              },
+              "draftId": null,
+              "error": null,
+              "provider": {
+                "name": "openai-compatible",
+                "model": "independent-fake-model"
+              },
+              "callCount": 0,
+              "startedAt": "2026-10-05T12:53:20.700Z",
+              "finishedAt": null,
+              "cancelRequested": false,
+              "reused": false
+            },
+            "text": "{\"jobId\":\"9f47efda-ded3-4455-b53c-40cff52a2008\",\"rawId\":\"bb8b648e-0732-4249-8546-2027feb2ce31\",\"status\":\"running\",\"stage\":\"chunking\",\"progress\":{\"chunksTotal\":0,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":null,\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-fake-model\"},\"callCount\":0,\"startedAt\":\"2026-10-05T12:53:20.700Z\",\"finishedAt\":null,\"cancelRequested\":false,\"reused\":false}"
+          },
+          {
+            "status": 200,
+            "json": {
+              "id": "bb8b648e-0732-4249-8546-2027feb2ce31",
+              "title": "delete-race真实Raw标题",
+              "assetId": null,
+              "assetRetained": false,
+              "warnings": []
+            },
+            "text": "{\"id\":\"bb8b648e-0732-4249-8546-2027feb2ce31\",\"title\":\"delete-race真实Raw标题\",\"assetId\":null,\"assetRetained\":false,\"warnings\":[]}"
+          }
+        ],
+        "drafts": [
+          {
+            "id": "7b341dbc-381a-4edd-87bd-0752ed486cfd",
+            "rawId": "bb8b648e-0732-4249-8546-2027feb2ce31",
+            "rawTitle": "delete-race真实Raw标题",
+            "status": "pending_confirmation",
+            "revision": 1,
+            "createdAt": "2026-10-05T12:53:20.946Z",
+            "updatedAt": "2026-10-05T12:53:20.946Z",
+            "jobId": "9f47efda-ded3-4455-b53c-40cff52a2008",
+            "title": "delete-raceSource",
+            "pageCount": 3,
+            "selectedCount": 3,
+            "commitOperationId": null
+          }
+        ],
+        "readStatus": 404
+      }
+    },
+    {
+      "id": "E04-09-100k-full-coverage-tail-concurrency",
+      "status": "PASS",
+      "elapsedMs": 781,
+      "evidence": {
+        "allBlocksCovered": true
+      }
+    },
+    {
+      "id": "E04-09-summary-complete-structured-input",
+      "status": "FAIL",
+      "elapsedMs": 703,
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"857cea77-0562-4464-ace9-055cc2189492\",\"rawId\":\"9cca3565-20f2-4ff3-9272-e0d728a84ab8\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":3,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_EVIDENCE_AMBIGUOUS\",\"message\":\"证据 e1 的 quote 在本段出现 888 次，无法确定唯一位置；请在证据中给出准确的 start/end。\",\"at\":\"2026-10-05T12:53:22.456Z\",\"retryable\":true,\"details\":{\"occurrences\":888,\"chunkIndex\":1}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-fake-model\"},\"callCount\":0,\"startedAt\":\"2026-10-05T12:53:22.412Z\",\"finishedAt\":\"2026-10-05T12:53:22.456Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at draft (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:67:230)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:95:511\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:95:3"
+    },
+    {
+      "id": "E04-07-stage-source-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1873,
+      "evidence": {
+        "operationId": "1c0ef682-7a4d-407c-be40-cfed6628e142",
+        "failureResponse": {
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "details": {
+              "committed": true,
+              "recoverable": true,
+              "operationId": "1c0ef682-7a4d-407c-be40-cfed6628e142",
+              "phases": [
+                {
+                  "name": "source",
+                  "status": "failed",
+                  "at": "2026-10-05T12:53:23.160Z",
+                  "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                },
+                {
+                  "name": "pages",
+                  "status": "pending"
+                },
+                {
+                  "name": "index",
+                  "status": "pending"
+                },
+                {
+                  "name": "log",
+                  "status": "pending"
+                },
+                {
+                  "name": "state",
+                  "status": "pending"
+                }
+              ],
+              "writtenWikiIds": []
+            }
+          }
+        },
+        "recovery": {
+          "operationId": "1c0ef682-7a4d-407c-be40-cfed6628e142",
+          "draftId": "eb4a5e8a-a8fc-4c06-a32d-a3593b38173d",
+          "rawId": "68d27d08-214a-4f98-aafa-c2bfbcf71893",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:23.143Z",
+          "updatedAt": "2026-10-05T12:53:23.706Z",
+          "completedAt": "2026-10-05T12:53:23.706Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:23.666Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:23.678Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:23.690Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:23.695Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:23.703Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "ee1f315a-6f7d-4ac9-ab38-5b00272b88f9",
+            "a61a8dac-a215-4c17-b52a-9185814889fa",
+            "b9575c85-8a3b-4901-9d29-a9ceba099755",
+            "ade2d7af-20c1-4b4a-960a-7e386ed8a9f7"
+          ],
+          "sourceId": "ee1f315a-6f7d-4ac9-ab38-5b00272b88f9",
+          "wikiIds": [
+            "a61a8dac-a215-4c17-b52a-9185814889fa",
+            "b9575c85-8a3b-4901-9d29-a9ceba099755",
+            "ade2d7af-20c1-4b4a-960a-7e386ed8a9f7"
+          ],
+          "selectedPageIds": [
+            "9665b83a-76ed-4d92-a976-aec24983189c",
+            "6683797f-2040-4471-8949-0a8cf50ef498",
+            "85f53a63-46ef-4074-8d03-8ea5ed825623"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T12:53:23.164Z",
+            "phase": "source"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "rawUnchanged": true,
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "E04-07-stage-second-page-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1848,
+      "evidence": {
+        "operationId": "74279323-6f00-42ed-9db7-598c06f348c1",
+        "failureResponse": {
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "details": {
+              "committed": true,
+              "recoverable": true,
+              "operationId": "74279323-6f00-42ed-9db7-598c06f348c1",
+              "phases": [
+                {
+                  "name": "source",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:25.047Z"
+                },
+                {
+                  "name": "pages",
+                  "status": "failed",
+                  "at": "2026-10-05T12:53:25.059Z",
+                  "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                },
+                {
+                  "name": "index",
+                  "status": "pending"
+                },
+                {
+                  "name": "log",
+                  "status": "pending"
+                },
+                {
+                  "name": "state",
+                  "status": "pending"
+                }
+              ],
+              "writtenWikiIds": [
+                "ff9b72dd-6378-4db3-8de6-24692c9312b0",
+                "84ff03d4-cd33-4a03-9258-f24121875532"
+              ]
+            }
+          }
+        },
+        "recovery": {
+          "operationId": "74279323-6f00-42ed-9db7-598c06f348c1",
+          "draftId": "d8308038-72e1-4c7a-ae68-ef77ed510473",
+          "rawId": "5401b935-dc5e-418f-9eb0-0f43d46708fd",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:25.033Z",
+          "updatedAt": "2026-10-05T12:53:25.602Z",
+          "completedAt": "2026-10-05T12:53:25.602Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:25.047Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:25.578Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:25.586Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:25.591Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:25.600Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "ff9b72dd-6378-4db3-8de6-24692c9312b0",
+            "84ff03d4-cd33-4a03-9258-f24121875532",
+            "779a00f8-0df7-4ffb-af16-c1f23effd6a1",
+            "90288bc7-3af2-40f9-a7a2-da0b12b9122f"
+          ],
+          "sourceId": "ff9b72dd-6378-4db3-8de6-24692c9312b0",
+          "wikiIds": [
+            "84ff03d4-cd33-4a03-9258-f24121875532",
+            "779a00f8-0df7-4ffb-af16-c1f23effd6a1",
+            "90288bc7-3af2-40f9-a7a2-da0b12b9122f"
+          ],
+          "selectedPageIds": [
+            "d2970991-596b-44b1-9591-eb72130580ea",
+            "02c0238d-2209-4273-926e-ffdd8052d2bf",
+            "44670d77-4bdc-4306-9ad3-06e3b9d7c0ad"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T12:53:25.062Z",
+            "phase": "pages"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "rawUnchanged": true,
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "E04-07-stage-index-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1933,
+      "evidence": {
+        "operationId": "8449e86b-6035-462d-8128-19f25596bfe8",
+        "failureResponse": {
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "details": {
+              "committed": true,
+              "recoverable": true,
+              "operationId": "8449e86b-6035-462d-8128-19f25596bfe8",
+              "phases": [
+                {
+                  "name": "source",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:27.023Z"
+                },
+                {
+                  "name": "pages",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:27.035Z"
+                },
+                {
+                  "name": "index",
+                  "status": "failed",
+                  "at": "2026-10-05T12:53:27.049Z",
+                  "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                },
+                {
+                  "name": "log",
+                  "status": "pending"
+                },
+                {
+                  "name": "state",
+                  "status": "pending"
+                }
+              ],
+              "writtenWikiIds": [
+                "b7c6702a-47fa-47dc-b71c-0c1b87e1b4cf",
+                "16672c2e-4d3e-4cef-aec4-8d92b6880fbd",
+                "4387efe0-bb90-468d-b858-147e6038c6ec",
+                "38884eef-f4de-4652-abbf-3b8451c1c66f"
+              ]
+            }
+          }
+        },
+        "recovery": {
+          "operationId": "8449e86b-6035-462d-8128-19f25596bfe8",
+          "draftId": "ef93f8de-19a2-4801-9594-1c73d94e213f",
+          "rawId": "f4235136-363e-4e56-b25e-4e0b2f61c5c6",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:27.008Z",
+          "updatedAt": "2026-10-05T12:53:27.578Z",
+          "completedAt": "2026-10-05T12:53:27.577Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:27.023Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:27.035Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:27.562Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:27.567Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:27.575Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "b7c6702a-47fa-47dc-b71c-0c1b87e1b4cf",
+            "16672c2e-4d3e-4cef-aec4-8d92b6880fbd",
+            "4387efe0-bb90-468d-b858-147e6038c6ec",
+            "38884eef-f4de-4652-abbf-3b8451c1c66f"
+          ],
+          "sourceId": "b7c6702a-47fa-47dc-b71c-0c1b87e1b4cf",
+          "wikiIds": [
+            "16672c2e-4d3e-4cef-aec4-8d92b6880fbd",
+            "4387efe0-bb90-468d-b858-147e6038c6ec",
+            "38884eef-f4de-4652-abbf-3b8451c1c66f"
+          ],
+          "selectedPageIds": [
+            "939fcb24-a2b9-4c08-b2b4-ee1e23348c1f",
+            "20eedd3e-68cb-4c80-acca-cd51d7ec105f",
+            "96901ede-aea9-4ef1-bd4e-24dd4413b29d"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T12:53:27.052Z",
+            "phase": "index"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "rawUnchanged": true,
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "E04-07-stage-log-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1701,
+      "evidence": {
+        "operationId": "f2f2c1ac-8623-4363-87db-3b83174e1ab3",
+        "failureResponse": {
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at appendFile",
+            "details": {
+              "committed": true,
+              "recoverable": true,
+              "operationId": "f2f2c1ac-8623-4363-87db-3b83174e1ab3",
+              "phases": [
+                {
+                  "name": "source",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:28.834Z"
+                },
+                {
+                  "name": "pages",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:28.844Z"
+                },
+                {
+                  "name": "index",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:28.855Z"
+                },
+                {
+                  "name": "log",
+                  "status": "failed",
+                  "at": "2026-10-05T12:53:28.859Z",
+                  "error": "COMMIT_FAILED: Independent acceptance injected EIO at appendFile"
+                },
+                {
+                  "name": "state",
+                  "status": "pending"
+                }
+              ],
+              "writtenWikiIds": [
+                "4158a4f2-76c6-4622-bed5-f909bef72b10",
+                "de68b801-3100-4a2c-beae-ce19ce9f2e14",
+                "3b5e46c6-a7ce-4b69-a522-88ffab5e69dd",
+                "44e856e7-1d5c-4d06-8dbb-90bd206130f8"
+              ]
+            }
+          }
+        },
+        "recovery": {
+          "operationId": "f2f2c1ac-8623-4363-87db-3b83174e1ab3",
+          "draftId": "254e5046-9dc8-494b-9b18-e1221077de45",
+          "rawId": "cba62b7f-018a-4221-b541-c35d16c5be49",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:28.822Z",
+          "updatedAt": "2026-10-05T12:53:29.306Z",
+          "completedAt": "2026-10-05T12:53:29.305Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:28.834Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:28.844Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:28.855Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:29.296Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at appendFile"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:29.303Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "4158a4f2-76c6-4622-bed5-f909bef72b10",
+            "de68b801-3100-4a2c-beae-ce19ce9f2e14",
+            "3b5e46c6-a7ce-4b69-a522-88ffab5e69dd",
+            "44e856e7-1d5c-4d06-8dbb-90bd206130f8"
+          ],
+          "sourceId": "4158a4f2-76c6-4622-bed5-f909bef72b10",
+          "wikiIds": [
+            "de68b801-3100-4a2c-beae-ce19ce9f2e14",
+            "3b5e46c6-a7ce-4b69-a522-88ffab5e69dd",
+            "44e856e7-1d5c-4d06-8dbb-90bd206130f8"
+          ],
+          "selectedPageIds": [
+            "a0143987-9583-41a2-b570-dcc0844586e1",
+            "9559df4d-c60c-4761-a60a-0f12bccf2971",
+            "efe87073-ccba-4bac-9110-1c9e9594681f"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at appendFile",
+            "at": "2026-10-05T12:53:28.862Z",
+            "phase": "log"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "rawUnchanged": true,
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "E04-07-stage-state-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1728,
+      "evidence": {
+        "operationId": "389708a9-7863-4581-8eb5-6be1d36049bf",
+        "failureResponse": {
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "details": {
+              "committed": true,
+              "recoverable": true,
+              "operationId": "389708a9-7863-4581-8eb5-6be1d36049bf",
+              "phases": [
+                {
+                  "name": "source",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:30.555Z"
+                },
+                {
+                  "name": "pages",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:30.565Z"
+                },
+                {
+                  "name": "index",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:30.577Z"
+                },
+                {
+                  "name": "log",
+                  "status": "done",
+                  "at": "2026-10-05T12:53:30.582Z"
+                },
+                {
+                  "name": "state",
+                  "status": "failed",
+                  "at": "2026-10-05T12:53:30.591Z",
+                  "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                }
+              ],
+              "writtenWikiIds": [
+                "e962dd78-948f-43d7-bca1-685d813adb92",
+                "4f14df09-a859-4f35-8819-5c0c58f8c5f9",
+                "8a67dfb8-e1ea-46b3-beb0-16ad12b2c60b",
+                "e0a30e1f-94e3-40ed-afe0-ba035fccb101"
+              ]
+            }
+          }
+        },
+        "recovery": {
+          "operationId": "389708a9-7863-4581-8eb5-6be1d36049bf",
+          "draftId": "446d8600-445b-4ddc-b715-e7d04ac301f2",
+          "rawId": "7ba7674e-74da-4720-84eb-5760b10d80c2",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:30.542Z",
+          "updatedAt": "2026-10-05T12:53:31.035Z",
+          "completedAt": "2026-10-05T12:53:31.035Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:30.555Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:30.565Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:30.577Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:30.582Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:31.033Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            }
+          ],
+          "writtenWikiIds": [
+            "e962dd78-948f-43d7-bca1-685d813adb92",
+            "4f14df09-a859-4f35-8819-5c0c58f8c5f9",
+            "8a67dfb8-e1ea-46b3-beb0-16ad12b2c60b",
+            "e0a30e1f-94e3-40ed-afe0-ba035fccb101"
+          ],
+          "sourceId": "e962dd78-948f-43d7-bca1-685d813adb92",
+          "wikiIds": [
+            "4f14df09-a859-4f35-8819-5c0c58f8c5f9",
+            "8a67dfb8-e1ea-46b3-beb0-16ad12b2c60b",
+            "e0a30e1f-94e3-40ed-afe0-ba035fccb101"
+          ],
+          "selectedPageIds": [
+            "217f6dee-6ddc-438e-b3a6-ac0573a6b3ef",
+            "595a91a1-af99-496b-aa83-a35855392c4f",
+            "ad0a541a-46ef-4d67-a583-45061d3f1cc5"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T12:53:30.593Z",
+            "phase": "state"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "rawUnchanged": true,
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "E04-07-real-index-directory-fault",
+      "status": "PASS",
+      "elapsedMs": 1074,
+      "evidence": {
+        "result": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\.index.md.e5c12fac-0aae-443b-b2a2-97259487fb13.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\index.md'",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "operationId": "eaf9b400-682b-4708-b9e3-b3e33fa8bbb3",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "done",
+                    "at": "2026-10-05T12:53:32.195Z"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "done",
+                    "at": "2026-10-05T12:53:32.204Z"
+                  },
+                  {
+                    "name": "index",
+                    "status": "failed",
+                    "at": "2026-10-05T12:53:32.216Z",
+                    "error": "COMMIT_FAILED: EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\.index.md.e5c12fac-0aae-443b-b2a2-97259487fb13.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\index.md'"
+                  },
+                  {
+                    "name": "log",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "state",
+                    "status": "pending"
+                  }
+                ],
+                "writtenWikiIds": [
+                  "4f2e0b2f-d302-4da3-aa2e-c46df07b24cc",
+                  "16c6a165-b590-407d-be22-26a992d037d6",
+                  "1d62b3a4-c34a-467a-ac38-620ea12f106e",
+                  "f37cd2c3-83f0-41b7-a99c-5ef4ef23cf7e"
+                ]
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"EPERM: operation not permitted, rename 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b04-independent-UU2SbR\\\\35-physical-index\\\\knowledge\\\\wiki\\\\.index.md.e5c12fac-0aae-443b-b2a2-97259487fb13.tmp' -> 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b04-independent-UU2SbR\\\\35-physical-index\\\\knowledge\\\\wiki\\\\index.md'\",\"details\":{\"committed\":true,\"recoverable\":true,\"operationId\":\"eaf9b400-682b-4708-b9e3-b3e33fa8bbb3\",\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T12:53:32.195Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T12:53:32.204Z\"},{\"name\":\"index\",\"status\":\"failed\",\"at\":\"2026-10-05T12:53:32.216Z\",\"error\":\"COMMIT_FAILED: EPERM: operation not permitted, rename 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b04-independent-UU2SbR\\\\35-physical-index\\\\knowledge\\\\wiki\\\\.index.md.e5c12fac-0aae-443b-b2a2-97259487fb13.tmp' -> 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b04-independent-UU2SbR\\\\35-physical-index\\\\knowledge\\\\wiki\\\\index.md'\"},{\"name\":\"log\",\"status\":\"pending\"},{\"name\":\"state\",\"status\":\"pending\"}],\"writtenWikiIds\":[\"4f2e0b2f-d302-4da3-aa2e-c46df07b24cc\",\"16c6a165-b590-407d-be22-26a992d037d6\",\"1d62b3a4-c34a-467a-ac38-620ea12f106e\",\"f37cd2c3-83f0-41b7-a99c-5ef4ef23cf7e\"]}}}"
+        },
+        "recovered": {
+          "operationId": "eaf9b400-682b-4708-b9e3-b3e33fa8bbb3",
+          "draftId": "c1c289bf-2707-4281-84fd-143dda9afded",
+          "rawId": "d2e549c8-2983-42f0-a896-32466cefa287",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:32.183Z",
+          "updatedAt": "2026-10-05T12:53:32.652Z",
+          "completedAt": "2026-10-05T12:53:32.652Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:32.195Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:32.204Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:32.640Z",
+              "error": "COMMIT_FAILED: EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\.index.md.e5c12fac-0aae-443b-b2a2-97259487fb13.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\index.md'"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:32.643Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:32.649Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "4f2e0b2f-d302-4da3-aa2e-c46df07b24cc",
+            "16c6a165-b590-407d-be22-26a992d037d6",
+            "1d62b3a4-c34a-467a-ac38-620ea12f106e",
+            "f37cd2c3-83f0-41b7-a99c-5ef4ef23cf7e"
+          ],
+          "sourceId": "4f2e0b2f-d302-4da3-aa2e-c46df07b24cc",
+          "wikiIds": [
+            "16c6a165-b590-407d-be22-26a992d037d6",
+            "1d62b3a4-c34a-467a-ac38-620ea12f106e",
+            "f37cd2c3-83f0-41b7-a99c-5ef4ef23cf7e"
+          ],
+          "selectedPageIds": [
+            "aa24cc55-b056-4ea8-98af-717ad5769266",
+            "2d1a2abe-d15f-4f42-912a-b995cf31b0c7",
+            "e924e42d-7962-40f5-b0dd-3dcef6fcaf29"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\.index.md.e5c12fac-0aae-443b-b2a2-97259487fb13.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index\\knowledge\\wiki\\index.md'",
+            "at": "2026-10-05T12:53:32.218Z",
+            "phase": "index"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "E04-07-prepared-manifest-write-failure-zero-writes",
+      "status": "PASS",
+      "elapsedMs": 530,
+      "evidence": {
+        "result": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "INTERNAL_ERROR",
+              "message": "保存或读取失败，请重试。"
+            }
+          },
+          "text": "{\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"保存或读取失败，请重试。\"}}"
+        },
+        "zeroFormalWrites": true
+      }
+    },
+    {
+      "id": "E04-07-manifest-after-file-write-failure-honest-response",
+      "status": "FAIL",
+      "elapsedMs": 1061,
+      "error": "AssertionError [ERR_ASSERTION]: partial failure response lost operationId when manifest update also failed\n+ actual - expected\n\n+ undefined\n- 'e45af016-fb96-4cc2-b17a-005baa1e4b3b'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:99:821\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:99:3",
+      "observed": {
+        "result": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "INTERNAL_ERROR",
+              "message": "保存或读取失败，请重试。"
+            }
+          },
+          "text": "{\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"保存或读取失败，请重试。\"}}"
+        },
+        "list": [
+          {
+            "domain": "fmcg",
+            "created": "2026-10-05T12:53:33.811Z",
+            "updated": "2026-10-05T12:53:33.811Z",
+            "revision": 1,
+            "aliases": [],
+            "tags": [
+              "独立验收"
+            ],
+            "id": "aa0c8e32-9fc3-4682-b101-0dcaaa3ee3ab",
+            "title": "manifest-after-writeSource",
+            "type": "source",
+            "category": "other",
+            "sources": [
+              "84bd0452-fea5-4ad9-8735-b4243e8b3e14"
+            ],
+            "knowledge_status": "source_supported",
+            "confidence": "medium",
+            "source_level": "C",
+            "review_status": "unreviewed",
+            "body": "## 摘要\n\n分块1摘要\n\n## Key Takeaways\n\n- 定义0\n- 定义1\n- 定义2\n\n## 涉及概念\n\n- [[manifest-after-write知识1]]\n- [[manifest-after-write知识3]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- [[manifest-after-write知识2]]\n\n## 重要观点\n\n- 原文事实0\n- 原文事实1\n- 原文事实2\n\n## 待验证内容\n\n- 问题0\n- 问题1\n- 问题2\n\n## Raw 来源\n\n- manifest-after-write真实Raw标题（Raw 84bd0452-fea5-4ad9-8735-b4243e8b3e14）\n\n> 本页是来源摘要，原文以对应 Raw 为准。\n"
+          }
+        ],
+        "manifest": {
+          "operationId": "e45af016-fb96-4cc2-b17a-005baa1e4b3b",
+          "draftId": "af7a7652-3281-4246-9b78-d6842c06b4e2",
+          "idempotencyKey": "independent-key",
+          "rawId": "84bd0452-fea5-4ad9-8735-b4243e8b3e14",
+          "rawSha256": "625c49a31f2436fce3b42394b14417ca6dee025cefdf00fb8b222adcb18db9ec",
+          "rawTitle": "manifest-after-write真实Raw标题",
+          "status": "committing",
+          "createdAt": "2026-10-05T12:53:33.811Z",
+          "updatedAt": "2026-10-05T12:53:33.818Z",
+          "provider": {
+            "name": "openai-compatible",
+            "model": "independent-fake-model"
+          },
+          "snapshot": {
+            "capturedRevision": 1,
+            "document": {
+              "title": "manifest-after-writeSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块1摘要"
+            },
+            "selectedPageIds": [
+              "b9b0325e-1959-49d9-b89e-1222ecc4dbde",
+              "f549d4df-841b-4ba0-9a06-a5b1f46e80fb",
+              "1a776bc5-119a-4071-a027-4d4e1a3581b3"
+            ],
+            "sourceRecord": {
+              "domain": "fmcg",
+              "created": "2026-10-05T12:53:33.811Z",
+              "updated": "2026-10-05T12:53:33.811Z",
+              "revision": 1,
+              "aliases": [],
+              "tags": [
+                "独立验收"
+              ],
+              "id": "aa0c8e32-9fc3-4682-b101-0dcaaa3ee3ab",
+              "title": "manifest-after-writeSource",
+              "type": "source",
+              "category": "other",
+              "sources": [
+                "84bd0452-fea5-4ad9-8735-b4243e8b3e14"
+              ],
+              "knowledge_status": "source_supported",
+              "confidence": "medium",
+              "source_level": "C",
+              "review_status": "unreviewed",
+              "body": "## 摘要\n\n分块1摘要\n\n## Key Takeaways\n\n- 定义0\n- 定义1\n- 定义2\n\n## 涉及概念\n\n- [[manifest-after-write知识1]]\n- [[manifest-after-write知识3]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- [[manifest-after-write知识2]]\n\n## 重要观点\n\n- 原文事实0\n- 原文事实1\n- 原文事实2\n\n## 待验证内容\n\n- 问题0\n- 问题1\n- 问题2\n\n## Raw 来源\n\n- manifest-after-write真实Raw标题（Raw 84bd0452-fea5-4ad9-8735-b4243e8b3e14）\n\n> 本页是来源摘要，原文以对应 Raw 为准。\n"
+            },
+            "pageRecords": [
+              {
+                "domain": "fmcg",
+                "created": "2026-10-05T12:53:33.811Z",
+                "updated": "2026-10-05T12:53:33.811Z",
+                "revision": 1,
+                "aliases": [],
+                "tags": [
+                  "独立验收"
+                ],
+                "id": "45af0007-08c1-4ce2-a55b-1da328f51ae3",
+                "title": "manifest-after-write知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "sources": [
+                  "84bd0452-fea5-4ad9-8735-b4243e8b3e14"
+                ],
+                "knowledge_status": "ai_organized",
+                "confidence": "medium",
+                "source_level": "C",
+                "review_status": "unreviewed",
+                "body": "## 一句话说明\n\n定义0\n\n## 来源事实\n\n- 原文事实0（证据 e1）\n\n## AI 整理\n\n- 整理0\n\n## AI 推断\n\n- 推断0\n\n## 待确认问题\n\n- 问题0\n\n## 来源证据\n\n- e1｜原文 [0, 16)：渠道库存为三十天。终端覆盖为一百\n\n## 关联\n\n- [[manifest-after-write知识2]]\n\n## 来源\n\n- [[manifest-after-writeSource]]（Raw 84bd0452-fea5-4ad9-8735-b4243e8b3e14）\n"
+              },
+              {
+                "domain": "fmcg",
+                "created": "2026-10-05T12:53:33.811Z",
+                "updated": "2026-10-05T12:53:33.811Z",
+                "revision": 1,
+                "aliases": [],
+                "tags": [
+                  "独立验收"
+                ],
+                "id": "ab39a363-f2c0-4ca4-a573-4679446aec81",
+                "title": "manifest-after-write知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "sources": [
+                  "84bd0452-fea5-4ad9-8735-b4243e8b3e14"
+                ],
+                "knowledge_status": "ai_organized",
+                "confidence": "medium",
+                "source_level": "C",
+                "review_status": "unreviewed",
+                "body": "## 一句话说明\n\n定义1\n\n## 来源事实\n\n- 原文事实1（证据 e1）\n\n## AI 整理\n\n- 整理1\n\n## AI 推断\n\n- 推断1\n\n## 待确认问题\n\n- 问题1\n\n## 来源证据\n\n- e1｜原文 [16, 32)：家。\r\n原文末尾😀可核验证据。\n\n## 关联\n\n- [[manifest-after-write知识3]]\n\n## 来源\n\n- [[manifest-after-writeSource]]（Raw 84bd0452-fea5-4ad9-8735-b4243e8b3e14）\n"
+              },
+              {
+                "domain": "fmcg",
+                "created": "2026-10-05T12:53:33.811Z",
+                "updated": "2026-10-05T12:53:33.811Z",
+                "revision": 1,
+                "aliases": [],
+                "tags": [
+                  "独立验收"
+                ],
+                "id": "6e15af6a-a454-46d7-b1dc-cf3e1123ad8f",
+                "title": "manifest-after-write知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "sources": [
+                  "84bd0452-fea5-4ad9-8735-b4243e8b3e14"
+                ],
+                "knowledge_status": "ai_organized",
+                "confidence": "medium",
+                "source_level": "C",
+                "review_status": "unreviewed",
+                "body": "## 一句话说明\n\n定义2\n\n## 来源事实\n\n- 原文事实2（证据 e1）\n\n## AI 整理\n\n- 整理2\n\n## AI 推断\n\n- 推断2\n\n## 待确认问题\n\n- 问题2\n\n## 来源证据\n\n- e1｜原文 [0, 16)：渠道库存为三十天。终端覆盖为一百\n\n## 关联\n\n- [[manifest-after-write知识1]]\n\n## 来源\n\n- [[manifest-after-writeSource]]（Raw 84bd0452-fea5-4ad9-8735-b4243e8b3e14）\n"
+              }
+            ],
+            "digests": {
+              "45af0007-08c1-4ce2-a55b-1da328f51ae3": "f5aed56175d14416d9f6ac7f35f2185e26ef26e1874a74e1f37be7e12bf740df",
+              "ab39a363-f2c0-4ca4-a573-4679446aec81": "79d729f0fada0927c3994ef79c682807516434e819b4054a42a658b46e21ceef",
+              "6e15af6a-a454-46d7-b1dc-cf3e1123ad8f": "42d8753ef0205deb280ab4bf4d360a3a1e3324e1a245adfc74a75785457c97db",
+              "aa0c8e32-9fc3-4682-b101-0dcaaa3ee3ab": "e848a95696086e8bd0e0e45d85533e1348b9a9873077f0ee5608e6752c2dfe71"
+            },
+            "warnings": []
+          },
+          "phases": [
+            {
+              "name": "source",
+              "status": "pending"
+            },
+            {
+              "name": "pages",
+              "status": "pending"
+            },
+            {
+              "name": "index",
+              "status": "pending"
+            },
+            {
+              "name": "log",
+              "status": "pending"
+            },
+            {
+              "name": "state",
+              "status": "pending"
+            }
+          ],
+          "writtenWikiIds": []
+        },
+        "recovered": {
+          "operationId": "e45af016-fb96-4cc2-b17a-005baa1e4b3b",
+          "draftId": "af7a7652-3281-4246-9b78-d6842c06b4e2",
+          "rawId": "84bd0452-fea5-4ad9-8735-b4243e8b3e14",
+          "status": "completed",
+          "createdAt": "2026-10-05T12:53:33.811Z",
+          "updatedAt": "2026-10-05T12:53:34.283Z",
+          "completedAt": "2026-10-05T12:53:34.283Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T12:53:34.249Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T12:53:34.260Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T12:53:34.271Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T12:53:34.275Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T12:53:34.282Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "aa0c8e32-9fc3-4682-b101-0dcaaa3ee3ab",
+            "45af0007-08c1-4ce2-a55b-1da328f51ae3",
+            "ab39a363-f2c0-4ca4-a573-4679446aec81",
+            "6e15af6a-a454-46d7-b1dc-cf3e1123ad8f"
+          ],
+          "sourceId": "aa0c8e32-9fc3-4682-b101-0dcaaa3ee3ab",
+          "wikiIds": [
+            "45af0007-08c1-4ce2-a55b-1da328f51ae3",
+            "ab39a363-f2c0-4ca4-a573-4679446aec81",
+            "6e15af6a-a454-46d7-b1dc-cf3e1123ad8f"
+          ],
+          "selectedPageIds": [
+            "b9b0325e-1959-49d9-b89e-1222ecc4dbde",
+            "f549d4df-841b-4ba0-9a06-a5b1f46e80fb",
+            "1a776bc5-119a-4071-a027-4d4e1a3581b3"
+          ],
+          "error": null,
+          "recoveryHint": null,
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "E04-07-crash-file-written-before-manifest-update",
+      "status": "PASS",
+      "elapsedMs": 1066,
+      "evidence": {
+        "exactWindow": "Source written, source phase remains pending; child exited 86 before manifest rename",
+        "recoveredSameOperation": true
+      }
+    },
+    {
+      "id": "E04-11-fake-key-error-response-no-leak",
+      "status": "FAIL",
+      "elapsedMs": 620,
+      "error": "AssertionError [ERR_ASSERTION]: invalid JSON preview leaks complete fake API key\n\n2 !== 0\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:101:814\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:64:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-independent-http.mjs:101:3",
+      "observed": {
+        "hitCount": 2,
+        "hitSurfaces": [
+          "job",
+          "disk"
+        ],
+        "errorCode": "LLM_INVALID_JSON"
+      }
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "PASS",
+      "changed": [],
+      "builderFingerprintMismatches": []
+    }
+  ],
+  "services": [
+    {
+      "pid": 6176,
+      "base": "http://127.0.0.1:54725",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\1-no-config",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54725 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\1-no-config)\n"
+    },
+    {
+      "pid": 33832,
+      "base": "http://127.0.0.1:54737",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\2-preview",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54737 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\2-preview)\n"
+    },
+    {
+      "pid": 26440,
+      "base": "http://127.0.0.1:54750",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\3-default",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54750 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\3-default)\n"
+    },
+    {
+      "pid": 14244,
+      "base": "http://127.0.0.1:54761",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\4-source-meta",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54761 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\4-source-meta)\n"
+    },
+    {
+      "pid": 25296,
+      "base": "http://127.0.0.1:54771",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\5-partial",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54771 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\5-partial)\n"
+    },
+    {
+      "pid": 34408,
+      "base": "http://127.0.0.1:54781",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\6-merge",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54781 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\6-merge)\n"
+    },
+    {
+      "pid": 34588,
+      "base": "http://127.0.0.1:54792",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\7-edit",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54792 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\7-edit)\n"
+    },
+    {
+      "pid": 17324,
+      "base": "http://127.0.0.1:54803",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\8-same-key",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54803 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\8-same-key)\n"
+    },
+    {
+      "pid": 27324,
+      "base": "http://127.0.0.1:54814",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\8-same-key",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54814 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\8-same-key)\n"
+    },
+    {
+      "pid": 10708,
+      "base": "http://127.0.0.1:54826",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\9-different-key",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54826 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\9-different-key)\n"
+    },
+    {
+      "pid": 29944,
+      "base": "http://127.0.0.1:54840",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\10-changed-payload",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:54840 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\10-changed-payload)\n"
+    },
+    {
+      "pid": 34964,
+      "base": "http://127.0.0.1:61000",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\11-reuse",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:61000 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\11-reuse)\n"
+    },
+    {
+      "pid": 22004,
+      "base": "http://127.0.0.1:55703",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\12-source-links",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55703 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\12-source-links)\n"
+    },
+    {
+      "pid": 1064,
+      "base": "http://127.0.0.1:55714",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\13-error-401",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55714 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\13-error-401)\n"
+    },
+    {
+      "pid": 34116,
+      "base": "http://127.0.0.1:55725",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\14-error-403",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55725 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\14-error-403)\n"
+    },
+    {
+      "pid": 10744,
+      "base": "http://127.0.0.1:55736",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\15-error-429",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55736 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\15-error-429)\n"
+    },
+    {
+      "pid": 2488,
+      "base": "http://127.0.0.1:55749",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\16-error-500",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55749 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\16-error-500)\n"
+    },
+    {
+      "pid": 3196,
+      "base": "http://127.0.0.1:55762",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\17-error-invalid-json",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55762 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\17-error-invalid-json)\n"
+    },
+    {
+      "pid": 22660,
+      "base": "http://127.0.0.1:55772",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\18-error-empty",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55772 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\18-error-empty)\n"
+    },
+    {
+      "pid": 33948,
+      "base": "http://127.0.0.1:55783",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\19-error-truncated",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55783 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\19-error-truncated)\n"
+    },
+    {
+      "pid": 15528,
+      "base": "http://127.0.0.1:55796",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\20-error-schema",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55796 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\20-error-schema)\n"
+    },
+    {
+      "pid": 11536,
+      "base": "http://127.0.0.1:55807",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\21-error-enum",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55807 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\21-error-enum)\n"
+    },
+    {
+      "pid": 7468,
+      "base": "http://127.0.0.1:55817",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\22-error-evidence",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55817 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\22-error-evidence)\n"
+    },
+    {
+      "pid": 26340,
+      "base": "http://127.0.0.1:55828",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\23-timeout",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55828 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\23-timeout)\n"
+    },
+    {
+      "pid": 13032,
+      "base": "http://127.0.0.1:52481",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\24-cancel",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52481 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\24-cancel)\n"
+    },
+    {
+      "pid": 21084,
+      "base": "http://127.0.0.1:52495",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\24-cancel",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52495 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\24-cancel)\n"
+    },
+    {
+      "pid": 33932,
+      "base": "http://127.0.0.1:52508",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\25-interrupted",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52508 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\25-interrupted)\n"
+    },
+    {
+      "pid": 10368,
+      "base": "http://127.0.0.1:52520",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\25-interrupted",
+      "closed": true,
+      "exitCode": null,
+      "logs": "提取任务对账：1 个中断任务已标记为可重试的失败\nFMCG AI PM Workspace API: http://127.0.0.1:52520 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\25-interrupted)\n"
+    },
+    {
+      "pid": 32708,
+      "base": "http://127.0.0.1:52532",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\26-parallel-extract",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52532 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\26-parallel-extract)\n"
+    },
+    {
+      "pid": 27976,
+      "base": "http://127.0.0.1:52549",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\27-delete-race",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52549 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\27-delete-race)\n"
+    },
+    {
+      "pid": 9684,
+      "base": "http://127.0.0.1:52566",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\28-long",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52566 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\28-long)\n"
+    },
+    {
+      "pid": 28232,
+      "base": "http://127.0.0.1:52581",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\29-summary",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52581 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\29-summary)\n"
+    },
+    {
+      "pid": 8532,
+      "base": "http://127.0.0.1:52593",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\30-fault-source",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52593 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\30-fault-source)\n"
+    },
+    {
+      "pid": 13496,
+      "base": "http://127.0.0.1:52603",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\30-fault-source",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52603 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\30-fault-source)\n"
+    },
+    {
+      "pid": 26680,
+      "base": "http://127.0.0.1:52613",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\30-fault-source",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52613 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\30-fault-source)\n"
+    },
+    {
+      "pid": 28992,
+      "base": "http://127.0.0.1:52622",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\31-fault-second-page",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52622 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\31-fault-second-page)\n"
+    },
+    {
+      "pid": 27188,
+      "base": "http://127.0.0.1:52632",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\31-fault-second-page",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52632 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\31-fault-second-page)\n"
+    },
+    {
+      "pid": 13276,
+      "base": "http://127.0.0.1:52642",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\31-fault-second-page",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52642 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\31-fault-second-page)\n"
+    },
+    {
+      "pid": 33844,
+      "base": "http://127.0.0.1:52650",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\32-fault-index",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52650 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\32-fault-index)\n"
+    },
+    {
+      "pid": 2056,
+      "base": "http://127.0.0.1:52661",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\32-fault-index",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52661 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\32-fault-index)\n"
+    },
+    {
+      "pid": 30728,
+      "base": "http://127.0.0.1:52677",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\32-fault-index",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52677 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\32-fault-index)\n"
+    },
+    {
+      "pid": 27764,
+      "base": "http://127.0.0.1:52685",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\33-fault-log",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52685 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\33-fault-log)\n"
+    },
+    {
+      "pid": 18532,
+      "base": "http://127.0.0.1:52695",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\33-fault-log",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52695 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\33-fault-log)\n"
+    },
+    {
+      "pid": 34792,
+      "base": "http://127.0.0.1:52704",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\33-fault-log",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52704 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\33-fault-log)\n"
+    },
+    {
+      "pid": 2276,
+      "base": "http://127.0.0.1:52712",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\34-fault-state",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52712 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\34-fault-state)\n"
+    },
+    {
+      "pid": 20256,
+      "base": "http://127.0.0.1:52722",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\34-fault-state",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52722 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\34-fault-state)\n"
+    },
+    {
+      "pid": 34488,
+      "base": "http://127.0.0.1:52737",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\34-fault-state",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52737 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\34-fault-state)\n"
+    },
+    {
+      "pid": 33132,
+      "base": "http://127.0.0.1:52745",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52745 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index)\n"
+    },
+    {
+      "pid": 14164,
+      "base": "http://127.0.0.1:52754",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52754 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\35-physical-index)\n"
+    },
+    {
+      "pid": 31976,
+      "base": "http://127.0.0.1:52763",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\36-prepared",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52763 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\36-prepared)\nRequest failed: Independent acceptance injected EIO at rename\n"
+    },
+    {
+      "pid": 33724,
+      "base": "http://127.0.0.1:52772",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\37-manifest-after-write",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52772 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\37-manifest-after-write)\nRequest failed: Independent acceptance injected EIO at rename\n"
+    },
+    {
+      "pid": 4324,
+      "base": "http://127.0.0.1:52783",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\37-manifest-after-write",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52783 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\37-manifest-after-write)\n"
+    },
+    {
+      "pid": 27344,
+      "base": "http://127.0.0.1:52792",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\38-crash-window",
+      "closed": true,
+      "exitCode": 86,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52792 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\38-crash-window)\n"
+    },
+    {
+      "pid": 16252,
+      "base": "http://127.0.0.1:52801",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\38-crash-window",
+      "closed": true,
+      "exitCode": null,
+      "logs": "AI 提交对账：已继续 1 个用户已确认的提交\nFMCG AI PM Workspace API: http://127.0.0.1:52801 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\38-crash-window)\n"
+    },
+    {
+      "pid": 20208,
+      "base": "http://127.0.0.1:52810",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\39-key-leak",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:52810 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-UU2SbR\\39-key-leak)\n"
+    }
+  ],
+  "fakeRequests": [],
+  "frozenBefore": {
+    "README.md": "0dd7daf72a3843f32060fe7d6de516df5d4d17ecb25edf645073ac6877c6b5c7",
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    ".gitignore": "b7c82e90c2f9ca63fd0265cb120bb4a2ed1502423de7e0c81d26e922da825b74",
+    ".env.example": "be8758a8e2931a089b4cff552d563852689d87f20f2935a4a8796267cb560a49",
+    "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+    "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+    "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+    "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+    "app/pages/DraftReviewPage.tsx": "01bff8f741ee7df4951db41f4845b8c7b08b045a0a5369aa3470b107a02cbeea",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+    "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/llm-api.ts": "7f1adc1b1fabbef40f07d69523fdc9094a98e4481df045ed2bc8c8cae10b1e72",
+    "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+    "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+    "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/jobs.ts": "38c03c75b6fe4aba1767b2a36506fb456b45299a0c09ed9d059aa56b071c3be9",
+    "services/llm/provider.ts": "4ac34af2c7dbe90c47cd3bec9c84bfa198a0371f8e4bfd7990e9d1a6387b7a51",
+    "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+    "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+    "services/llm/service.ts": "30ae99591800c707d62eac7790203e838ff9fe77c400881d3de4ff1334e08e54",
+    "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+    "services/storage/files.ts": "7ca3e33b9c1a5d6facd76ea4853589d2a6ffd076d0de589b5ad8498fb1801439",
+    "services/wiki/commits.ts": "5c5333dc3ed0a768da1842955023e42e5216da924b9fc14939f821026ae90e15",
+    "services/wiki/drafts.ts": "e8f13cd79dfad4148d943e27255b525c1335584484ca91a8447880c6ffe1c4c3",
+    "services/wiki/render.ts": "f729f9d33c559f5c850a35963c1244d2b491f63de831a5096bc38571b8b35e26",
+    "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+    "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+  },
+  "builderFingerprintMismatches": [],
+  "frozenAfter": {
+    "README.md": "0dd7daf72a3843f32060fe7d6de516df5d4d17ecb25edf645073ac6877c6b5c7",
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    ".gitignore": "b7c82e90c2f9ca63fd0265cb120bb4a2ed1502423de7e0c81d26e922da825b74",
+    ".env.example": "be8758a8e2931a089b4cff552d563852689d87f20f2935a4a8796267cb560a49",
+    "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+    "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+    "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+    "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+    "app/pages/DraftReviewPage.tsx": "01bff8f741ee7df4951db41f4845b8c7b08b045a0a5369aa3470b107a02cbeea",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+    "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/llm-api.ts": "7f1adc1b1fabbef40f07d69523fdc9094a98e4481df045ed2bc8c8cae10b1e72",
+    "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+    "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+    "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/jobs.ts": "38c03c75b6fe4aba1767b2a36506fb456b45299a0c09ed9d059aa56b071c3be9",
+    "services/llm/provider.ts": "4ac34af2c7dbe90c47cd3bec9c84bfa198a0371f8e4bfd7990e9d1a6387b7a51",
+    "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+    "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+    "services/llm/service.ts": "30ae99591800c707d62eac7790203e838ff9fe77c400881d3de4ff1334e08e54",
+    "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+    "services/storage/files.ts": "7ca3e33b9c1a5d6facd76ea4853589d2a6ffd076d0de589b5ad8498fb1801439",
+    "services/wiki/commits.ts": "5c5333dc3ed0a768da1842955023e42e5216da924b9fc14939f821026ae90e15",
+    "services/wiki/drafts.ts": "e8f13cd79dfad4148d943e27255b525c1335584484ca91a8447880c6ffe1c4c3",
+    "services/wiki/render.ts": "f729f9d33c559f5c850a35963c1244d2b491f63de831a5096bc38571b8b35e26",
+    "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+    "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+  },
+  "frozenChanged": [],
+  "finishedAt": "2026-10-05T12:53:36.110Z",
+  "elapsedMs": 97232,
+  "summary": {
+    "PASS": 14,
+    "FAIL": 17,
+    "BLOCKED": 0
+  },
+  "cleanup": {
+    "ownServicesClosed": true,
+    "fakeClosed": true,
+    "isolatedDataRetained": true,
+    "formalWorkspaceTouched": false
+  }
+}

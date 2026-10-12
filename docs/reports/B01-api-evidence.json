@@ -1,0 +1,263 @@
+{
+  "startedAt": "2026-10-05T16:02:58.909Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz",
+  "evidencePath": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\B01-api-evidence.json",
+  "version": {
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263"
+  },
+  "checks": [
+    {
+      "id": "B01-01-init-health-empty-stats",
+      "status": "PASS",
+      "elapsedMs": 509,
+      "evidence": {
+        "base": "http://127.0.0.1:51667",
+        "initializedAt": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main",
+        "stats": {
+          "rawCount": 0,
+          "wikiCount": 0,
+          "thisWeekNewCount": 0,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        }
+      }
+    },
+    {
+      "id": "B01-02-100k-exact-body-frontmatter",
+      "status": "PASS",
+      "elapsedMs": 33,
+      "evidence": {
+        "id": "5333b837-e5f8-4bc6-96c3-13ee32012095",
+        "file": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\notes\\5333b837-e5f8-4bc6-96c3-13ee32012095.md",
+        "bodyChars": 100000,
+        "bodyBytes": 299898,
+        "bodySha256": "f059515354822d1731cf43ced9cbe24f6be7f7722caf80686302cd893d3c21dc",
+        "importedAt": "2026-10-05T16:02:59.438Z",
+        "exactEqual": true
+      }
+    },
+    {
+      "id": "B01-03-eight-source-directories-metadata",
+      "status": "PASS",
+      "elapsedMs": 36,
+      "evidence": {
+        "records": [
+          {
+            "sourceType": "wechat",
+            "folder": "articles",
+            "id": "449b6e06-8c17-4829-acfa-7c4815fdf277"
+          },
+          {
+            "sourceType": "article",
+            "folder": "articles",
+            "id": "664d0ba7-3a66-45f4-a193-1e0319390178"
+          },
+          {
+            "sourceType": "report",
+            "folder": "reports",
+            "id": "18bccfbf-8f6a-46aa-b40f-95b68cd42eaa"
+          },
+          {
+            "sourceType": "company",
+            "folder": "company",
+            "id": "b6d7673c-7fd3-41a6-8045-b3e88e7d2610"
+          },
+          {
+            "sourceType": "customer",
+            "folder": "customer",
+            "id": "64a5a066-6d01-4956-9aa7-4b4a279f676e"
+          },
+          {
+            "sourceType": "meeting",
+            "folder": "meetings",
+            "id": "b6d3c37b-a500-4d7a-9e2c-82949f220e46"
+          },
+          {
+            "sourceType": "note",
+            "folder": "notes",
+            "id": "dd77304c-9b37-4353-b1d9-a09caabdceed"
+          },
+          {
+            "sourceType": "other",
+            "folder": "other",
+            "id": "826741e6-2716-441c-9fe4-d35d6155fd09"
+          }
+        ],
+        "listCount": 9
+      }
+    },
+    {
+      "id": "B01-04-invalid-input-no-files",
+      "status": "PASS",
+      "elapsedMs": 113,
+      "evidence": {
+        "errors": [
+          {
+            "name": "empty-title",
+            "status": 400,
+            "error": {
+              "code": "REQUIRED_FIELD",
+              "message": "标题不能为空。"
+            }
+          },
+          {
+            "name": "blank-title",
+            "status": 400,
+            "error": {
+              "code": "REQUIRED_FIELD",
+              "message": "标题不能为空。"
+            }
+          },
+          {
+            "name": "empty-body",
+            "status": 400,
+            "error": {
+              "code": "REQUIRED_FIELD",
+              "message": "正文不能为空。"
+            }
+          },
+          {
+            "name": "blank-body",
+            "status": 400,
+            "error": {
+              "code": "REQUIRED_FIELD",
+              "message": "正文不能为空。"
+            }
+          },
+          {
+            "name": "invalid-type",
+            "status": 400,
+            "error": {
+              "code": "INVALID_SOURCE_TYPE",
+              "message": "来源类型无效。"
+            }
+          },
+          {
+            "name": "invalid-url",
+            "status": 400,
+            "error": {
+              "code": "INVALID_URL",
+              "message": "链接必须是有效的 http 或 https 地址。"
+            }
+          },
+          {
+            "name": "invalid-tags",
+            "status": 400,
+            "error": {
+              "code": "INVALID_TAGS",
+              "message": "标签必须是文本列表。"
+            }
+          },
+          {
+            "name": "body-limit",
+            "status": 413,
+            "error": {
+              "code": "BODY_TOO_LARGE",
+              "message": "正文超过 500,000 字符上限。"
+            }
+          }
+        ],
+        "invalidJsonStatus": 400,
+        "transportLimitStatus": 413,
+        "missingStatus": 404,
+        "unchangedFileCount": 10
+      }
+    },
+    {
+      "id": "B01-05-real-write-failure-no-success",
+      "status": "PASS",
+      "elapsedMs": 19,
+      "evidence": {
+        "injectedFailure": "ENOTDIR: source directory replaced by file in isolated fixture",
+        "status": 500,
+        "error": {
+          "code": "INTERNAL_ERROR",
+          "message": "保存或读取失败，请重试。"
+        },
+        "recoveryId": "9c26196f-91aa-46d9-9979-13f84449d44f"
+      }
+    },
+    {
+      "id": "B01-06-restart-immutable-files",
+      "status": "PASS",
+      "elapsedMs": 527,
+      "evidence": {
+        "fileHashes": {
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\articles\\449b6e06-8c17-4829-acfa-7c4815fdf277.md": "d747eb35947cb54bb4f4390a0dc1c5c48ea78e6e7a1dd62901430e46b2d7deef",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\articles\\664d0ba7-3a66-45f4-a193-1e0319390178.md": "891753a7a3b5e871035d1faffe42a2aadbc1afceff4ca217cc41e7e2b2954ba4",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\company\\b6d7673c-7fd3-41a6-8045-b3e88e7d2610.md": "3e53b19afaeb48c90275cdf90cc7082c5026d6a1b3d5bc3061d8be55c76078e8",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\customer\\64a5a066-6d01-4956-9aa7-4b4a279f676e.md": "479dd4ae6f253375fc8fd3f8645fa7c464e63f811f725ac8112a2d045a62cc07",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\meetings\\b6d3c37b-a500-4d7a-9e2c-82949f220e46.md": "40773992fac173fbb8571e76024dd3f00f9bf86e381c8033a5fe1c30fc3af333",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\notes\\5333b837-e5f8-4bc6-96c3-13ee32012095.md": "7b52548ebc1d3dbfbae102dc2b97f1363e14ace2ce7a6cd64f2579ae6944ef24",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\notes\\9c26196f-91aa-46d9-9979-13f84449d44f.md": "fbca6983e8f2a90708a691930ce454c470b3195c510fe0945b4652dcc46ae091",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\notes\\dd77304c-9b37-4353-b1d9-a09caabdceed.md": "7e7e7294f4d280a89ee141cf561f68706d2d72ad6bdfd41c8d358bc8b1bc5251",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\other\\826741e6-2716-441c-9fe4-d35d6155fd09.md": "190bd85c6d0575ba8c950dc4b7a6efdc29484d247c5d4cdf5d986b4a3bebfecb",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\raw\\reports\\18bccfbf-8f6a-46aa-b40f-95b68cd42eaa.md": "8d31112108a45a3469d28ff01498cb522dcb8313c7a07173245ff00f530c74da",
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b01-acceptance-XCiJUz\\main\\knowledge\\wiki\\index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+        },
+        "rawCount": 10,
+        "stats": {
+          "rawCount": 10,
+          "wikiCount": 0,
+          "thisWeekNewCount": 10,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        },
+        "updateRoute": "non-JSON rejection"
+      }
+    },
+    {
+      "id": "B01-07-shanghai-week-boundaries",
+      "status": "PASS",
+      "elapsedMs": 513,
+      "evidence": {
+        "samples": [
+          {
+            "id": "2cbcc54e-5ffd-4f33-830f-0955df014da3",
+            "importedAt": "2026-10-04T15:59:59.000Z"
+          },
+          {
+            "id": "90affe22-2373-4dc6-af98-bb2035a800b4",
+            "importedAt": "2026-10-04T16:00:00.000Z"
+          },
+          {
+            "id": "2e301c86-09ee-4766-837b-617db523386f",
+            "importedAt": "2026-10-04T16:00:01.000Z"
+          },
+          {
+            "id": "3d53c7cb-93de-45f0-a815-9f4468a0aefc",
+            "importedAt": "2026-10-11T16:00:00.000Z"
+          }
+        ],
+        "stats": {
+          "rawCount": 4,
+          "wikiCount": 0,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        }
+      }
+    }
+  ],
+  "notes": [
+    "API/file evidence only; browser evidence supplied independently by main agent.",
+    "Temporary fixture directories retained for inspection; no user data changed."
+  ],
+  "finishedAt": "2026-10-05T16:03:00.679Z",
+  "summary": {
+    "PASS": 7,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

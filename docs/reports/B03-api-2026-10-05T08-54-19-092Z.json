@@ -1,0 +1,400 @@
+{
+  "startedAt": "2026-10-05T08:54:19.096Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-selfcheck-NqD80c",
+  "evidencePath": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\B03-api-evidence.json",
+  "archivedEvidencePath": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\B03-api-2026-10-05T08-54-19-092Z.json",
+  "version": {
+    "app/App.tsx": "3753ffbf6ad75a9f7cc8cc34683cc86f0261745118a54c0a43cd7d2b342ca55e",
+    "app/api.ts": "0dc8c063389c35d7741de71c86e0b93ce492e6ee2c8397f92efe6c0a90f33657",
+    "app/main.tsx": "b280c492a2df4e6ec6ec998cfc03a90adb990822f83e804afb93e7536f950523",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "cbc37ab0767423dea1a55ec307aff1770d3c4c8b234118fe68eaf4dd3c2f1b55",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "package-lock.json": "2201e13943a1dbfc033f0341c0f4edbece6517f078ef73ded0d75daf4098201d",
+    "package.json": "4ead8519427ef38f261e88a818e1747d70e59d10ccd6ffeb99fe5936bfd38379",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "server/index.ts": "801810073b8b96ff4e20fee1326ef41822dede9f53cc2fa1aac8048034c78877",
+    "server/raw-import.ts": "e2ceca0433b88b307379f0b12abfeed9ee9bc444a526c57d6dd0945eef1ffed1",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/raw/assets.ts": "ca355e671658cb1e75909d37ca551d9394b2580be6756451ca5d5fbe43d71b02",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/store.ts": "246919f6b2d85eb6c0e850bc65e27205db7654267c7ef12e89447569129c7765",
+    "services/stats/index.ts": "6b7e35714ac12d1e04514485726334db9a9652be5ec7440c8ecca8c69e9e1c84",
+    "services/wiki/store.ts": "64429e98068cc23fa4a0774e6aa62405c17cc912647f944b007d7060a0e48aa8",
+    "tests/fixtures/b03/blank.txt": "2d78c57ece641bd2b069829350a2ca4272532ee9cc9953902ca8f59ed690089a",
+    "tests/fixtures/b03/bom-notes.txt": "31b59c1407695d669164b69afe6ec7dface3c955ac72f09803d5001c5bb5712b",
+    "tests/fixtures/b03/broken.docx": "f34c29a09151bffff37eb49e532a9c70c6d1f13a5d4352f52d78283557a7e61b",
+    "tests/fixtures/b03/broken.pdf": "986ad2bbe0aefbf4d90606dd21bdddcb8a75e68a411aae7c7b6cc3382a050390",
+    "tests/fixtures/b03/empty.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/b03/fake-docx.docx": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3",
+    "tests/fixtures/b03/fake-pdf.pdf": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3",
+    "tests/fixtures/b03/gbk-notes.txt": "8b2cd2d7938d5765d38d46a89dee2513252815e8f5ccf583e587e88ade81ab7c",
+    "tests/fixtures/b03/logo.png": "64855b65e2103a55a1b4c340032f9c8892eb9ba8564d7ee5e34a371def0c1849",
+    "tests/fixtures/b03/make-fixtures.py": "f93554b2866002cb9217873dcdec32793445b382a09baee5410585c6d0cfa59c",
+    "tests/fixtures/b03/scan-image.pdf": "d8869404e8dee4a203543469620880dbe1033a7dece3266e38bf396d4d2bd057",
+    "tests/fixtures/b03/zh-notes.txt": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+    "tests/fixtures/b03/zh-report.docx": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+    "tests/fixtures/b03/zh-report.md": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+    "tests/fixtures/b03/zh-report.pdf": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1"
+  },
+  "checks": [
+    {
+      "id": "B03-01-health-empty-baseline",
+      "status": "PASS",
+      "elapsedMs": 19,
+      "evidence": {
+        "health": {
+          "ok": true
+        },
+        "stats": {
+          "rawCount": 0,
+          "wikiCount": 0,
+          "thisWeekNewCount": 0,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        },
+        "dataDir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-selfcheck-NqD80c\\main"
+      }
+    },
+    {
+      "id": "B03-02-regression-paste-text-import",
+      "status": "PASS",
+      "elapsedMs": 23,
+      "evidence": {
+        "id": "2dc0c075-7bba-4fc6-a3f4-591b878885ff",
+        "bodySha256": "e5942969648a069f2c4d2262f6696372087ba4703abf1109af9d8b98c6384e20"
+      }
+    },
+    {
+      "id": "B03-03-import-markdown-file",
+      "status": "PASS",
+      "elapsedMs": 16,
+      "evidence": {
+        "rawId": "8fabb903-496e-4324-b466-31ddfaa22b57",
+        "assetId": "bf9dbeaf-498a-4d4c-aaad-82a49c40aaf7",
+        "byteSize": 337,
+        "sha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+        "storedFile": "bf9dbeaf-498a-4d4c-aaad-82a49c40aaf7.md",
+        "parser": "utf-8-strict"
+      }
+    },
+    {
+      "id": "B03-04-import-txt-whitespace-and-bom",
+      "status": "PASS",
+      "elapsedMs": 16,
+      "evidence": {
+        "txtId": "786a33f9-b6b6-4ac4-8b6e-fb9aafc0cad7",
+        "bomId": "3fd7de55-9600-4b2e-b538-50aa2f1d1052",
+        "charCount": 78
+      }
+    },
+    {
+      "id": "B03-05-import-docx-real-parser",
+      "status": "PASS",
+      "elapsedMs": 54,
+      "evidence": {
+        "rawId": "de958dd7-b198-4dac-978e-6395f7269957",
+        "parser": "mammoth 1.13.0",
+        "bodyChars": 103,
+        "note": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。"
+      }
+    },
+    {
+      "id": "B03-06-import-pdf-text-real-parser",
+      "status": "PASS",
+      "elapsedMs": 663,
+      "evidence": {
+        "rawId": "cc711ca4-9ed8-4266-87b2-5e00ff7616e0",
+        "parser": "pdfjs-dist 6.4.299",
+        "bodyChars": 96,
+        "note": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+      }
+    },
+    {
+      "id": "B03-07-failure-matrix-keeps-original-and-adds-no-raw",
+      "status": "PASS",
+      "elapsedMs": 96,
+      "evidence": {
+        "observed": [
+          {
+            "file": "empty.txt",
+            "status": 400,
+            "code": "EMPTY_FILE",
+            "assetId": "a42c5673-6684-4fda-8ad0-7a67d5ffd3fd",
+            "storedFile": "a42c5673-6684-4fda-8ad0-7a67d5ffd3fd.txt",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "file": "blank.txt",
+            "status": 422,
+            "code": "EMPTY_CONTENT",
+            "assetId": "b0e64e8c-f0b0-455b-bc5f-62c3dd875dcb",
+            "storedFile": "b0e64e8c-f0b0-455b-bc5f-62c3dd875dcb.txt",
+            "sha256": "2d78c57ece641bd2b069829350a2ca4272532ee9cc9953902ca8f59ed690089a"
+          },
+          {
+            "file": "broken.docx",
+            "status": 422,
+            "code": "DOCX_INVALID",
+            "assetId": "a0211986-5578-4239-bfb0-bf246d25c6b9",
+            "storedFile": "a0211986-5578-4239-bfb0-bf246d25c6b9.docx",
+            "sha256": "f34c29a09151bffff37eb49e532a9c70c6d1f13a5d4352f52d78283557a7e61b"
+          },
+          {
+            "file": "broken.pdf",
+            "status": 422,
+            "code": "PDF_INVALID",
+            "assetId": "e06c8ddf-6e65-4326-bf25-61424dfda4e6",
+            "storedFile": "e06c8ddf-6e65-4326-bf25-61424dfda4e6.pdf",
+            "sha256": "986ad2bbe0aefbf4d90606dd21bdddcb8a75e68a411aae7c7b6cc3382a050390"
+          },
+          {
+            "file": "scan-image.pdf",
+            "status": 422,
+            "code": "PDF_NO_TEXT",
+            "assetId": "eefa2b01-4842-460d-accc-86b60f820531",
+            "storedFile": "eefa2b01-4842-460d-accc-86b60f820531.pdf",
+            "sha256": "d8869404e8dee4a203543469620880dbe1033a7dece3266e38bf396d4d2bd057"
+          },
+          {
+            "file": "fake-docx.docx",
+            "status": 415,
+            "code": "FORMAT_MISMATCH",
+            "assetId": "225904ea-2b51-4cb3-8401-4ffa8133cfae",
+            "storedFile": "225904ea-2b51-4cb3-8401-4ffa8133cfae.docx",
+            "sha256": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3"
+          },
+          {
+            "file": "fake-pdf.pdf",
+            "status": 415,
+            "code": "FORMAT_MISMATCH",
+            "assetId": "622b44c4-d61f-4967-a11c-a8221b3fec49",
+            "storedFile": "622b44c4-d61f-4967-a11c-a8221b3fec49.pdf",
+            "sha256": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3"
+          },
+          {
+            "file": "gbk-notes.txt",
+            "status": 415,
+            "code": "UNSUPPORTED_ENCODING",
+            "assetId": "1436de85-f226-4079-83be-9fa70e47a34b",
+            "storedFile": "1436de85-f226-4079-83be-9fa70e47a34b.txt",
+            "sha256": "8b2cd2d7938d5765d38d46a89dee2513252815e8f5ccf583e587e88ade81ab7c"
+          },
+          {
+            "file": "logo.png",
+            "status": 415,
+            "code": "UNSUPPORTED_FORMAT",
+            "assetId": "806ba79b-ca5b-4b57-b9d0-461a84e4613b",
+            "storedFile": "806ba79b-ca5b-4b57-b9d0-461a84e4613b.bin",
+            "sha256": "64855b65e2103a55a1b4c340032f9c8892eb9ba8564d7ee5e34a371def0c1849"
+          }
+        ],
+        "baselineRawCount": 6,
+        "assetCount": 28
+      }
+    },
+    {
+      "id": "B03-08-oversize-rejected-while-receiving",
+      "status": "PASS",
+      "elapsedMs": 72,
+      "evidence": {
+        "status": 413,
+        "code": "FILE_TOO_LARGE",
+        "message": "文件超过 20 MiB 上限，已在接收阶段拒绝，未保存原件。",
+        "limitBytes": 20971520,
+        "payloadBytes": 22020096
+      }
+    },
+    {
+      "id": "B03-09-body-limit-retains-original-without-raw",
+      "status": "PASS",
+      "elapsedMs": 34,
+      "evidence": {
+        "code": "BODY_TOO_LARGE",
+        "message": "提取到的正文为 500,001 个字符，超过 500,000 字符上限；未创建 Raw。 原件已保留（assetId 1b71f9ae-d2e7-4f62-b2a6-bde52e4457ce，1500003 字节，SHA-256 7824d1994eca3f23572624678ef5bb57233a238a4b264fbef6b2ebf993c3d3ce），正文未入库、未创建 Raw。",
+        "assetId": "1b71f9ae-d2e7-4f62-b2a6-bde52e4457ce",
+        "bytes": 1500003
+      }
+    },
+    {
+      "id": "B03-10-upload-request-errors",
+      "status": "PASS",
+      "elapsedMs": 8,
+      "evidence": {
+        "codes": [
+          "MISSING_FILE",
+          "INVALID_METADATA",
+          "INVALID_SOURCE_TYPE",
+          "INVALID_URL",
+          "INVALID_UPLOAD",
+          "INVALID_UPLOAD",
+          "INVALID_UPLOAD"
+        ]
+      }
+    },
+    {
+      "id": "B03-11-not-found-responses",
+      "status": "PASS",
+      "elapsedMs": 6,
+      "evidence": {
+        "missing": "00000000-0000-4000-8000-000000000000"
+      }
+    },
+    {
+      "id": "B03-12-duplicate-import-creates-independent-records",
+      "status": "PASS",
+      "elapsedMs": 28,
+      "evidence": {
+        "firstId": "59b1fddd-026a-4de6-9edf-0ef527058a56",
+        "secondId": "00e6ac21-9f49-4e35-9d84-35d603ee898e",
+        "firstFileHash": "aa885fd4fcaef9f950ac742e312a801b174aab5680e44a0e063ab5341a1b23d4",
+        "identicalSha256": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f"
+      }
+    },
+    {
+      "id": "B03-13-original-file-name-is-metadata-only",
+      "status": "PASS",
+      "elapsedMs": 36,
+      "evidence": {
+        "traversalTitle": "evil<script>",
+        "storedFile": "d2beb463-a3b8-43b4-aa16-44875312c0be.md",
+        "htmlTitle": "<img src=x onerror=alert(1)>渠道",
+        "chineseFileName": "中文资料.md"
+      }
+    },
+    {
+      "id": "B03-14-wiki-reference-listing-and-delete-blocked",
+      "status": "PASS",
+      "elapsedMs": 24,
+      "evidence": {
+        "rawId": "8fabb903-496e-4324-b466-31ddfaa22b57",
+        "wikiId": "17bf43af-26fe-45f9-a10e-b7c8414e2ed9",
+        "status": 409,
+        "code": "RAW_REFERENCED",
+        "references": [
+          {
+            "id": "17bf43af-26fe-45f9-a10e-b7c8414e2ed9",
+            "title": "来源引用验收页",
+            "type": "source"
+          }
+        ]
+      }
+    },
+    {
+      "id": "B03-15-delete-unreferenced-raw-keeps-original",
+      "status": "PASS",
+      "elapsedMs": 37,
+      "evidence": {
+        "id": "383b052c-58a1-4460-8168-e525860ad5f7",
+        "assetId": "06acbdd7-8047-4d95-ae36-d0039b54b8e4",
+        "statsBefore": 13,
+        "statsAfter": 12,
+        "assetStatus": "detached"
+      }
+    },
+    {
+      "id": "B03-16-wiki-save-rejects-deleted-raw-source",
+      "status": "PASS",
+      "elapsedMs": 6,
+      "evidence": {
+        "status": 400,
+        "code": "INVALID_SOURCE",
+        "wikiCount": 1
+      }
+    },
+    {
+      "id": "B03-17-reimport-creates-new-id-and-keeps-old",
+      "status": "PASS",
+      "elapsedMs": 10,
+      "evidence": {
+        "oldId": "8fabb903-496e-4324-b466-31ddfaa22b57",
+        "newId": "ac0ea954-b3b1-4119-a7ce-3250a3b3c2de",
+        "oldFileHash": "003381fe072cb4d025e551817f08f540559e960597cd6bb68f19835935c1ac65",
+        "newAssetId": "e35ccaa9-3c44-41fd-be28-35513d7fc525"
+      }
+    },
+    {
+      "id": "B03-18-real-persistence-failure-reports-no-fake-success",
+      "status": "PASS",
+      "elapsedMs": 47,
+      "evidence": {
+        "assetFailure": "ASSET_WRITE_FAILED",
+        "rawFailure": "RAW_WRITE_FAILED",
+        "recoveredId": "8ec554f3-3e41-4e52-a53f-826b8a37a667",
+        "rawCountBefore": 13,
+        "rawCountAfter": 14
+      }
+    },
+    {
+      "id": "B03-19-restart-consistency-same-data-directory",
+      "status": "PASS",
+      "elapsedMs": 592,
+      "evidence": {
+        "rawCount": 14,
+        "stats": {
+          "rawCount": 14,
+          "wikiCount": 1,
+          "thisWeekNewCount": 15,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        },
+        "retainedOriginals": 50,
+        "failureRecordsAfterRestart": 11,
+        "deletedRawStatus": 404,
+        "references": 1
+      }
+    },
+    {
+      "id": "B03-20-home-stats-and-search-regression",
+      "status": "PASS",
+      "elapsedMs": 19,
+      "evidence": {
+        "stats": {
+          "rawCount": 14,
+          "wikiCount": 1,
+          "thisWeekNewCount": 15,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        },
+        "wikiSearchHits": 1,
+        "exportBytes": 400
+      }
+    },
+    {
+      "id": "B03-21-concurrent-raw-delete-and-wiki-save-stay-consistent",
+      "status": "PASS",
+      "elapsedMs": 41,
+      "evidence": {
+        "wikiStatus": 201,
+        "deleteStatus": 409,
+        "rawExists": true,
+        "referencedBy": [
+          "并发引用验收页"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Isolated FMCG_DATA_DIR + own port; the user workspace was not imported into.",
+    "Browser interaction is not covered here; the build report records it separately."
+  ],
+  "finishedAt": "2026-10-05T08:54:21.464Z",
+  "summary": {
+    "PASS": 21,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

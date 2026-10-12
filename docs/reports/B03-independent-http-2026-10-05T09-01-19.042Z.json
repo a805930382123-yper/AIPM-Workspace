@@ -1,0 +1,55 @@
+{
+  "startedAt": "2026-10-05T09:01:19.044Z",
+  "node": "v25.2.1",
+  "startup": "node --import tsx server/index.ts",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{0fbd85e6-4cae-4d9f-bc28-1ee16ab2fd26}\\AC\\Temp\\fmcg-b03-independent-YRIL00",
+  "version": {
+    "README.md": "33e01929bab501114d13dd013a2303b45386844a51814e424d760939394d1400",
+    "package.json": "4ead8519427ef38f261e88a818e1747d70e59d10ccd6ffeb99fe5936bfd38379",
+    "package-lock.json": "2201e13943a1dbfc033f0341c0f4edbece6517f078ef73ded0d75daf4098201d",
+    "app/api.ts": "0dc8c063389c35d7741de71c86e0b93ce492e6ee2c8397f92efe6c0a90f33657",
+    "app/App.tsx": "3753ffbf6ad75a9f7cc8cc34683cc86f0261745118a54c0a43cd7d2b342ca55e",
+    "app/main.tsx": "b280c492a2df4e6ec6ec998cfc03a90adb990822f83e804afb93e7536f950523",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "cbc37ab0767423dea1a55ec307aff1770d3c4c8b234118fe68eaf4dd3c2f1b55",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "801810073b8b96ff4e20fee1326ef41822dede9f53cc2fa1aac8048034c78877",
+    "server/raw-import.ts": "e2ceca0433b88b307379f0b12abfeed9ee9bc444a526c57d6dd0945eef1ffed1",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/raw/assets.ts": "ca355e671658cb1e75909d37ca551d9394b2580be6756451ca5d5fbe43d71b02",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/store.ts": "246919f6b2d85eb6c0e850bc65e27205db7654267c7ef12e89447569129c7765",
+    "services/stats/index.ts": "6b7e35714ac12d1e04514485726334db9a9652be5ec7440c8ecca8c69e9e1c84",
+    "services/wiki/store.ts": "64429e98068cc23fa4a0774e6aa62405c17cc912647f944b007d7060a0e48aa8",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3"
+  },
+  "checks": [
+    {
+      "id": "HARNESS",
+      "status": "BLOCKED",
+      "error": "Error: START_FAILED node:internal/fs/promises:786\r\n  return await PromisePrototypeThen(\r\n         ^\r\n\r\nError: EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{0fbd85e6-4cae-4d9f-bc28-1ee16ab2fd26}\\AC\\Temp\\fmcg-b03-independent-YRIL00\\main\\knowledge\\wiki\\.index.md.a12c118b-a0ac-4260-915d-37db60a8e2ad.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{0fbd85e6-4cae-4d9f-bc28-1ee16ab2fd26}\\AC\\Temp\\fmcg-b03-independent-YRIL00\\main\\knowledge\\wiki\\index.md'\r\n    at async rename (node:internal/fs/promises:786:10)\r\n    at async writeAtomic (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:63:5)\r\n    at async WikiStore.rebuildIndex (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:266:5)\r\n    at async WikiStore.recoverPending (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:316:5)\r\n    at async WikiStore.initialize (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:96:5)\r\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\server\\index.ts:24:1) {\r\n  errno: -4048,\r\n  code: 'EPERM',\r\n  syscall: 'rename',\r\n  path: 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Packages\\\\sandbox.{0fbd85e6-4cae-4d9f-bc28-1ee16ab2fd26}\\\\AC\\\\Temp\\\\fmcg-b03-independent-YRIL00\\\\main\\\\knowledge\\\\wiki\\\\.index.md.a12c118b-a0ac-4260-915d-37db60a8e2ad.tmp',\r\n  dest: 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Packages\\\\sandbox.{0fbd85e6-4cae-4d9f-bc28-1ee16ab2fd26}\\\\AC\\\\Temp\\\\fmcg-b03-independent-YRIL00\\\\main\\\\knowledge\\\\wiki\\\\index.md'\r\n}\r\n\r\nNode.js v25.2.1\r\n\n    at start (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:24:601)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:35:10"
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "PASS",
+      "changed": []
+    }
+  ],
+  "notes": [
+    "Real public HTTP and filesystem assertions; no product imports, no mocks.",
+    "Browser evidence supplied separately by main agent."
+  ],
+  "finishedAt": "2026-10-05T09:01:20.211Z",
+  "summary": {
+    "PASS": 1,
+    "FAIL": 0,
+    "BLOCKED": 1
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "at": "2026-10-11T14:23:26.274Z",
+  "checks": [
+    {
+      "id": "V01-all-observed-browser-checks",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: B10-sensitive-local-explicit-confirm:observed\n\nfalse !== true\n"
+    },
+    {
+      "id": "V02-eio-disk-unchanged",
+      "result": "PASS",
+      "details": {
+        "sameRecordBytes": true,
+        "actualRenameFault": {
+          "method": "rename",
+          "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m02-browser-KygodI\\meetings\\records\\935af182-c360-4037-9cdc-456a724da1b7.json"
+        }
+      }
+    },
+    {
+      "id": "V03-delete-cancel-no-write",
+      "result": "PASS",
+      "details": {
+        "records": 3,
+        "allBytesUnchanged": true
+      }
+    },
+    {
+      "id": "V04-restricted-clear-and-minimal-create",
+      "result": "PASS",
+      "details": {
+        "upgradedFieldsCleared": true,
+        "newHiddenInputNotSent": true
+      }
+    },
+    {
+      "id": "V05-lost-post-response-single-record",
+      "result": "PASS",
+      "details": {
+        "committed201Dropped": true,
+        "sameObjectRetry200": true
+      }
+    },
+    {
+      "id": "V06-bidirectional-stable-date-id-sort",
+      "result": "PASS",
+      "details": {
+        "sameDateTieByUuid": true,
+        "ascendingAndDescending": true
+      }
+    },
+    {
+      "id": "V07-restart-byte-catalog-and-deletion-consistency",
+      "result": "PASS",
+      "details": {
+        "sameRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m02-browser-KygodI",
+        "recordBytesAndCatalogUnchanged": true,
+        "deletedNotResurrected": true,
+        "revocationPersisted": true
+      }
+    },
+    {
+      "id": "V08-old-asset-and-provider-isolation",
+      "result": "PASS",
+      "details": {
+        "knowledgePromptsDraftsStateUnchanged": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "V09-narrow-and-repaired-css",
+      "result": "PASS",
+      "details": {
+        "noDocumentHorizontalOverflow": true,
+        "dangerTextWhite": true
+      }
+    },
+    {
+      "id": "V10-core-checks-and-final-freeze",
+      "result": "PASS",
+      "details": {
+        "api": 23,
+        "component": 12,
+        "legacyHttp": 7,
+        "protectedFiles": 960,
+        "formalFiles": 2,
+        "productFiles": 78,
+        "unitFiles": 43
+      }
+    },
+    {
+      "id": "V11-service-ports-closed",
+      "result": "PASS",
+      "details": {
+        "probes": [
+          {
+            "url": "http://127.0.0.1:57861",
+            "listening": false
+          },
+          {
+            "url": "http://127.0.0.1:57878",
+            "listening": false
+          },
+          {
+            "url": "http://127.0.0.1:57879",
+            "listening": false
+          },
+          {
+            "url": "http://127.0.0.1:62633",
+            "listening": false
+          },
+          {
+            "url": "http://127.0.0.1:62639",
+            "listening": false
+          },
+          {
+            "url": "http://127.0.0.1:62640",
+            "listening": false
+          }
+        ],
+        "rawClosureFlagCalibration": "Lab originally treated a signal-terminated Vite child as active because exitCode is null; both shell sessions exited 0 and all six ports are closed. Original raw flags preserved."
+      }
+    }
+  ],
+  "summary": {
+    "pass": 10,
+    "fail": 1
+  }
+}

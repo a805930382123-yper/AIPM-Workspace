@@ -1,0 +1,347 @@
+{
+  "at": "2026-10-12T12:48:01.615Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-bGf0AK",
+  "primaryMeetingId": "3a9d48a4-4c8f-4856-9c3c-aac343b044ee",
+  "durationMs": 1602,
+  "checks": [
+    {
+      "id": "H01-three-forbidden-levels-no-Raw",
+      "result": "PASS",
+      "actual": {
+        "refused": 3
+      }
+    },
+    {
+      "id": "H02-raw-independent-confirmation",
+      "result": "PASS",
+      "actual": {
+        "status": 403
+      }
+    },
+    {
+      "id": "H03-Public-original-not-working-body",
+      "result": "PASS",
+      "actual": {
+        "rawId": "16c8448b-fa68-46d1-b41f-b83ac27c2d9f",
+        "originalExact": true
+      }
+    },
+    {
+      "id": "H04-Internal-grant-and-registration",
+      "result": "PASS",
+      "actual": {
+        "registered": true
+      }
+    },
+    {
+      "id": "H05-same-operation-retry-and-different-payload",
+      "result": "PASS",
+      "actual": {
+        "oneRaw": true
+      }
+    },
+    {
+      "id": "H06-forged-origins-and-Raw-ID-rejected",
+      "result": "PASS",
+      "actual": {
+        "twoRefusals": true
+      }
+    },
+    {
+      "id": "H07-normal-legacy-meeting-Raw-create-compatibility",
+      "result": "PASS",
+      "actual": {
+        "status": 201
+      }
+    },
+    {
+      "id": "H08-extraction-and-mixed-synthesis-denied",
+      "result": "PASS",
+      "actual": {
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "H09-manual-Wiki-restricted-source-denied",
+      "result": "PASS",
+      "actual": {
+        "code": "MEETING_SOURCE_RESTRICTED"
+      }
+    },
+    {
+      "id": "H10-old-Wiki-empty-sources-cannot-launder",
+      "result": "PASS",
+      "actual": {
+        "status": 403
+      }
+    },
+    {
+      "id": "H11-Prompt-create-and-generation-with-restricted-Wiki",
+      "result": "PASS",
+      "actual": {
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "H12-missing-source-Wiki-denies-before-Provider",
+      "result": "FAIL",
+      "actual": {
+        "status": 409,
+        "code": "MEETING_SOURCE_RESTRICTED",
+        "providerCalls": 0
+      },
+      "error": "Expected values to be strictly equal:\n\n409 !== 403\n"
+    },
+    {
+      "id": "H13-unlink-preserves-Raw-body-and-policy-blocker",
+      "result": "PASS",
+      "actual": {
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "H14-clear-local-versions-retains-valid-Meeting-with-Raw",
+      "result": "PASS",
+      "actual": {
+        "clearStatus": 200,
+        "readStatus": 200
+      }
+    },
+    {
+      "id": "H15-archive-delete-extra-confirm-Raw-retained",
+      "result": "PASS",
+      "actual": {
+        "remainsRestrictedAfterMeetingDeletion": true
+      }
+    },
+    {
+      "id": "H16-failed-registration-current-revision-same-ID-retry",
+      "result": "PASS",
+      "actual": {
+        "firstStatus": 500,
+        "linkStatus": "failed",
+        "requestBaseRevision": 4,
+        "currentRevision": 5,
+        "retryStatus": 201
+      }
+    },
+    {
+      "id": "H17-clear-active-Raw-projection-is-valid",
+      "result": "PASS",
+      "actual": {
+        "clearStatus": 200,
+        "afterReadStatus": 200,
+        "activeAfterClear": null,
+        "rawProjectionAfterClear": null
+      }
+    },
+    {
+      "id": "H18-long-valid-title-registration-does-not-corrupt-record",
+      "result": "PASS",
+      "actual": {
+        "registrationStatus": 201,
+        "afterReadStatus": 200,
+        "persistedRawTitleLength": 200
+      }
+    },
+    {
+      "id": "H19-startup-knowledge-manifest-rejects-restricted-source",
+      "result": "PASS",
+      "actual": {
+        "restoredFixture": "prepared manifest with actual valid Meeting Raw and matching digest",
+        "wikiReadStatus": 404,
+        "manifestStatus": "conflict",
+        "writtenIds": [],
+        "providerCallsDuringRecovery": 0
+      }
+    },
+    {
+      "id": "H20-provider-isolation-for-restricted-direct-paths",
+      "result": "PASS",
+      "actual": {
+        "totalUnexpectedProviderCalls": 0,
+        "probe": "H12 is separately observed known failure"
+      }
+    },
+    {
+      "id": "H21-reimport-after-Raw-keeps-record-readable",
+      "result": "PASS",
+      "actual": {
+        "importStatus": 201,
+        "readStatus": 200
+      }
+    }
+  ],
+  "trace": [
+    {
+      "path": "/api/meetings/fba87c00-ceee-404c-8e36-2efac1406187/raw-links",
+      "method": "POST",
+      "status": 403,
+      "code": "RAW_NOT_AUTHORIZED"
+    },
+    {
+      "path": "/api/meetings/a64fd648-8bef-439f-9d38-40eb2c8eca94/raw-links",
+      "method": "POST",
+      "status": 403,
+      "code": "RAW_NOT_AUTHORIZED"
+    },
+    {
+      "path": "/api/meetings/0159e4a0-01fb-4bc9-9af3-1740f25dd376/raw-links",
+      "method": "POST",
+      "status": 403,
+      "code": "RAW_NOT_AUTHORIZED"
+    },
+    {
+      "path": "/api/meetings/c9026f1b-0b55-4980-b510-fdd45004dea6/policy",
+      "method": "PATCH",
+      "status": 403,
+      "code": "CONFIRMATION_REQUIRED"
+    },
+    {
+      "path": "/api/meetings/bfa52c95-4427-44eb-ad57-20ad52d743e3/raw-links",
+      "method": "POST",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT"
+    },
+    {
+      "path": "/api/meetings/61249695-499f-4879-91f2-6df2193d3bde/raw-links",
+      "method": "POST",
+      "status": 400,
+      "code": "INVALID_BODY"
+    },
+    {
+      "path": "/api/raw",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_ORIGIN_FORBIDDEN"
+    },
+    {
+      "path": "/api/raw",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/raw/16c8448b-fa68-46d1-b41f-b83ac27c2d9f/extract",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/knowledge/syntheses",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/wiki",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/wiki/ff33c283-7b94-4ae8-85b9-50c1f951f276",
+      "method": "PUT",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/prompts",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/prompt-ai/generate",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/prompt-ai/generate",
+      "method": "POST",
+      "status": 409,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/meetings/3a9d48a4-4c8f-4856-9c3c-aac343b044ee/policy",
+      "method": "PATCH",
+      "status": 409,
+      "code": "RAW_LINKS_PENDING"
+    },
+    {
+      "path": "/api/meetings/3a9d48a4-4c8f-4856-9c3c-aac343b044ee/minutes",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/3a9d48a4-4c8f-4856-9c3c-aac343b044ee",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/178ec190-5db1-478e-939b-f7cecf9e932b",
+      "method": "DELETE",
+      "status": 409,
+      "code": "MEETING_HAS_REFERENCES"
+    },
+    {
+      "path": "/api/raw/6aab0e6d-c342-4fa0-9a65-c50907edb540/extract",
+      "method": "POST",
+      "status": 403,
+      "code": "MEETING_SOURCE_RESTRICTED"
+    },
+    {
+      "path": "/api/meetings/f7bd0672-20f0-46c1-8cd8-35a1c3b6e8f7/raw-links",
+      "method": "POST",
+      "status": 500,
+      "code": "INTERNAL_ERROR"
+    },
+    {
+      "path": "/api/meetings/f7bd0672-20f0-46c1-8cd8-35a1c3b6e8f7/raw-links",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/meetings/429c90f7-ad22-42c4-bef9-0c57441f4959/minutes",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/429c90f7-ad22-42c4-bef9-0c57441f4959",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/meetings/c7ad88f1-44ac-4db7-bc3a-39d7e210cd6b/raw-links",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/meetings/c7ad88f1-44ac-4db7-bc3a-39d7e210cd6b",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/wiki/cb9dd135-f041-4655-b3b0-817b38546cdd",
+      "method": "GET",
+      "status": 404,
+      "code": "NOT_FOUND"
+    },
+    {
+      "path": "/api/meetings/be4cf409-dcca-4d76-b20e-cf4eff2b7b24/minutes/import",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/api/meetings/be4cf409-dcca-4d76-b20e-cf4eff2b7b24",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "summary": {
+    "pass": 20,
+    "fail": 1
+  },
+  "providerCalls": 0,
+  "servicesClosed": true
+}

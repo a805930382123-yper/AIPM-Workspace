@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-12T14:28:20.321Z",
+  "kind": "Actual App + real isolated HTTP + ordinary fake Provider job/poll",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-brIitQ",
+  "durationMs": 2178,
+  "checks": [
+    {
+      "id": "AJ01-ordinary-job-settle-refresh-preserves-current-Raw-selection",
+      "result": "PASS",
+      "actual": {
+        "userSelected": "ff879d6e-7b26-4a10-923b-fe1f91fbeb3d",
+        "initialRaw": "d5c397bd-b446-407c-bf27-ce42765003c5",
+        "jobId": "def49145-5172-4995-b333-4442ca0978d6",
+        "actualJob": "failed",
+        "shownDetail": "未处理其他AI 整理知识重新导入删除AJ01用户选中的旧Rawisolated ordinary source导入时间2026年10月12日 22:28原发布日期未填写来源链接未填写资料 IDff879d6e-7b26-4a10-923b-fe1f91fbeb3d原始正文SHA-256 已保存# AJ01用户选中的旧Raw正文校验值 78a4d46c577dd1ad03a248820a23d146fe530b46a2ff9898860838b67ada48c0"
+      }
+    }
+  ],
+  "summary": {
+    "pass": 1,
+    "fail": 0
+  },
+  "requests": [
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/def49145-5172-4995-b333-4442ca0978d6",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    }
+  ],
+  "providerCalls": 1,
+  "providerMeaning": "One explicit ordinary Raw fake job only; no Meeting input or external Provider",
+  "servicesClosed": true
+}

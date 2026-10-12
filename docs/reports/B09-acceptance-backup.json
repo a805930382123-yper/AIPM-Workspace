@@ -1,0 +1,144 @@
+{
+  "base": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-backup-LPyxNU",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-IhyTIC",
+  "checks": [
+    {
+      "id": "E09-04-complete-byte-export-and-empty-root-restore",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Prompt。\"}}\n\n404 !== 200\n",
+      "stack": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Prompt。\"}}\n\n404 !== 200\n\n    at expect (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b08-harness.mjs:16:108)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b09-backup.mjs:29:259\n    at async run (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b09-backup.mjs:11:68)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b09-backup.mjs:22:2"
+    },
+    {
+      "id": "E09-05-malformed-archives-no-target-write",
+      "result": "PASS",
+      "details": [
+        {
+          "name": "traversal",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：../escape\"}\n"
+        },
+        {
+          "name": "absolute",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：/tmp/escape\"}\n"
+        },
+        {
+          "name": "drive",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：C:/escape\"}\n"
+        },
+        {
+          "name": "backslash",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：knowledge\\\\raw\\\\escape\"}\n"
+        },
+        {
+          "name": "duplicate",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含重复路径：state/x\"}\n"
+        },
+        {
+          "name": "case-alias",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含大小写重复路径：state/X\"}\n"
+        },
+        {
+          "name": "ads",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：file:secret\"}\n"
+        },
+        {
+          "name": "reserved",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：CON.json\"}\n"
+        },
+        {
+          "name": "trailing-dot",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：file.\"}\n"
+        },
+        {
+          "name": "trailing-space",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：file \"}\n"
+        },
+        {
+          "name": "hash",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件长度或 SHA-256 校验失败：state/x\"}\n"
+        },
+        {
+          "name": "base64",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"校验字段无效：state/x\"}\n"
+        },
+        {
+          "name": "size",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件长度或 SHA-256 校验失败：state/x\"}\n"
+        },
+        {
+          "name": "oversize",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件大小无效：state/x\"}\n"
+        },
+        {
+          "name": "outside",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：config/key\"}\n"
+        },
+        {
+          "name": "version",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档格式或版本不受支持。\"}\n"
+        },
+        {
+          "name": "format",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档格式或版本不受支持。\"}\n"
+        },
+        {
+          "name": "file-count",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件数超过上限 20000。\"}\n"
+        }
+      ]
+    },
+    {
+      "id": "E09-05-nonempty-containment-and-symlink",
+      "result": "PASS",
+      "details": {
+        "nonemptyPreserved": true,
+        "containmentRejected": true,
+        "symlink": {
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"拒绝符号链接：C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b08-independent-IhyTIC\\\\state\\\\junction\"}\n"
+        },
+        "whitelistRootSymlink": {
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"拒绝白名单目录符号链接：C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b09-backup-LPyxNU\\\\junction-root\\\\knowledge\"}\n"
+        }
+      }
+    }
+  ]
+}

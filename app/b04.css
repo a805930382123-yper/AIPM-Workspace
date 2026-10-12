@@ -1,0 +1,48 @@
+/* B04：AI 整理状态、设置页与审核页样式（沿用既有视觉风格）。 */
+.ai-status i { background: #8d9aa9; }
+.ai-status.processing i { background: #c98b3a; }
+.ai-status.pending_confirmation i { background: #c98b3a; }
+.ai-status.generated i { background: #5e9b7b; }
+.ai-status.failed i { background: #b4645a; }
+.detail-actions .text-button.ai-action { color: #2f5a8c; font-weight: 600; }
+.ai-progress { margin: 10px 0 0; padding: 8px 10px; border: 1px solid #e2e9f1; border-radius: 5px; color: #5b6b80; background: #f5f8fb; font-size: 11px; }
+
+.settings-panel { max-width: 900px; }
+.settings-body { padding: 18px 20px 20px; }
+.settings-grid { margin-top: 0; }
+.config-badge { padding: 4px 9px; border-radius: 12px; border: 1px solid #e4e9ee; color: #7d8899; font-size: 10px; }
+.config-badge.ok { border-color: #cfe0d5; color: #4b7b60; background: #f1f8f3; }
+.config-badge.off { border-color: #ecdcc4; color: #8a6a3a; background: #fdf8f1; }
+.settings-help { margin-top: 16px; padding-top: 14px; border-top: 1px solid #edf0f4; color: #5f6f83; font-size: 11px; line-height: 1.7; }
+.settings-help h3 { margin: 0 0 6px; color: #3c4b60; font-size: 12px; }
+.settings-help pre { margin: 8px 0; padding: 10px 12px; border: 1px solid #e6ebf1; border-radius: 5px; background: #fafbfd; color: #4f5f73; font-family: Consolas, monospace; font-size: 11px; white-space: pre-wrap; }
+.settings-help code { font-family: Consolas, monospace; font-size: 10px; }
+
+.draft-page .heading-actions { flex-wrap: wrap; }
+.draft-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-bottom: 14px; }
+.draft-source-body, .draft-card-body { padding: 16px 18px; }
+.draft-source-body h3 { margin: 0 0 6px; color: #2b3a4d; font-size: 15px; }
+.draft-raw-preview { margin: 10px 0 0; padding: 12px; max-height: 260px; overflow: auto; border: 1px solid #edf0f4; border-radius: 5px; background: #fcfcfd; color: #4f5f73; font-size: 11px; line-height: 1.7; white-space: pre-wrap; }
+.draft-card-body .field + .field { margin-top: 10px; }
+.draft-card-body textarea { width: 100%; border: 1px solid #dce2e9; border-radius: 5px; padding: 9px; font-size: 11px; line-height: 1.7; color: #344255; resize: vertical; }
+.draft-enum-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+.draft-pages-panel { margin-bottom: 12px; }
+.draft-card { padding: 16px 18px; border-top: 1px solid #edf0f4; }
+.draft-card.selected { background: #fbfdff; border-left: 3px solid #446b9b; }
+.draft-card-head { display: flex; align-items: center; gap: 10px; }
+.draft-select { display: inline-flex; align-items: center; gap: 5px; color: #5f6f83; font-size: 11px; white-space: nowrap; }
+.draft-index { color: #9aa4b1; font-size: 10px; }
+.draft-title { flex: 1; height: 34px; border: 1px solid #dce2e9; border-radius: 5px; padding: 0 10px; color: #2b3a4d; font-size: 13px; font-weight: 600; }
+.draft-card .field { margin-top: 10px; }
+.draft-card .field input, .draft-card .field select { width: 100%; height: 34px; border: 1px solid #dce2e9; border-radius: 5px; padding: 0 9px; font-size: 11px; }
+.draft-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
+.draft-block h4, .draft-evidence h4 { margin: 0 0 7px; color: #55677d; font-size: 11px; font-weight: 650; }
+.draft-line { display: flex; flex-direction: column; gap: 4px; margin-bottom: 7px; }
+.draft-line textarea { width: 100%; border: 1px solid #e2e7ed; border-radius: 5px; padding: 7px 8px; font-size: 11px; line-height: 1.6; color: #3f4d60; resize: vertical; }
+.draft-evidence-ref { color: #8d98a6; font-size: 10px; }
+.draft-evidence { margin-top: 13px; padding-top: 12px; border-top: 1px dashed #e4e9ef; }
+.draft-evidence-row { display: flex; align-items: center; gap: 9px; padding: 6px 0; font-size: 11px; color: #4f5f73; }
+.draft-evidence-quote { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #3f4d60; }
+.draft-evidence-pos { color: #97a2b0; font-size: 10px; white-space: nowrap; }
+.conflict-warn { border-color: #ecdcc4; }
+@media (max-width: 1050px) { .draft-columns { grid-template-columns: 1fr; } }

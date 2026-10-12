@@ -1,0 +1,510 @@
+{
+  "at": "2026-10-12T13:59:45.335Z",
+  "kind": "Actual App React + real isolated HTTP; jsdom, not browser",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-1xTKqN",
+  "durationMs": 2842,
+  "checks": [
+    {
+      "id": "AC01-register-cross-nav-Raw-and-home-without-reload",
+      "result": "PASS",
+      "actual": {
+        "rawId": "a64df63b-b785-473e-955e-27e1645df217",
+        "noReload": true,
+        "rawAndStatsCount": 1
+      }
+    },
+    {
+      "id": "AC02-link-opens-exact-older-Raw-not-current-selection",
+      "result": "PASS",
+      "actual": {
+        "selectedRaw": "3675716c-f04a-4262-9104-a54336f2875a",
+        "exactOlderOriginal": true
+      }
+    },
+    {
+      "id": "AC03-failed-registration-and-cancel-do-not-increase-count",
+      "result": "PASS",
+      "actual": {
+        "actualWriteEIO": true,
+        "countUnchanged": true
+      }
+    },
+    {
+      "id": "AC04-old-raw-list-response-cannot-overwrite-new-registration",
+      "result": "PASS",
+      "actual": {
+        "newRawStillVisible": "dd9fd1e8-9802-4a3c-99ad-121409f6bc79",
+        "olderSnapshotHeldAndReleased": true
+      }
+    },
+    {
+      "id": "AC05-deleted-Raw-not-clickable-and-Meeting-stays-readable",
+      "result": "PASS",
+      "actual": {
+        "readStatus": 200,
+        "noFakeOpenButton": true
+      }
+    },
+    {
+      "id": "AC07-missing-explicit-Raw-target-never-displays-another",
+      "result": "PASS",
+      "actual": {
+        "expectedRaw": "66d9351c-b7c4-4946-a76b-d85c8ec4d9e3",
+        "shownDetail": null
+      }
+    },
+    {
+      "id": "AC08-late-missing-target-refresh-cannot-replace-user-selection",
+      "result": "PASS",
+      "actual": {
+        "userSelected": "a64df63b-b785-473e-955e-27e1645df217",
+        "finalDetail": "未处理会议纪要本机专用删除Meeting来源仅限本机保存：禁止外部 AI、Wiki沉淀与Prompt背景使用。AC01跨页 原始纪要AC01跨页导入时间2026年10月12日 21:59原发布日期未填写来源链接未填写资料 IDa64df63b-b785-473e-955e-27e1645df217Meeting ID0b2bdc47-af42-48ce-a827-983bbe4b94ad来源版本9b6a99fa-3ad3-42b4-b5a2-074a54919e88原件 SHA-25685af63f86dcee8337f5d0ea35968e8cb798551bf2bc529cfcfcd4b9cba976363处理策略meeting_local_only原始正文SHA-256 已保存# AC01跨页 original正文校验值 85af63f86dcee8337f5d0ea35968e8cb798551bf2bc529cfcfcd4b9cba976363"
+      }
+    },
+    {
+      "id": "AC09-partial-registration-error-shows-real-Raw-count-on-nav",
+      "result": "PASS",
+      "actual": {
+        "actualLinkedCommitEIO": true,
+        "rawWrittenButReceiptPending": true,
+        "realRawCount": 7
+      }
+    },
+    {
+      "id": "AC06-provider-browser-storage-and-auto-fetch-isolation",
+      "result": "PASS",
+      "actual": {
+        "providerCalls": 0,
+        "noBrowserBodyPersistence": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 0
+  },
+  "requests": [
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/0b2bdc47-af42-48ce-a827-983bbe4b94ad",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/0b2bdc47-af42-48ce-a827-983bbe4b94ad/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 3,
+        "requestId": "584b9629-57ee-468d-b1c0-7d6240955f6d",
+        "import_id": "9b6a99fa-3ad3-42b4-b5a2-074a54919e88",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/0b2bdc47-af42-48ce-a827-983bbe4b94ad",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/3fc97c23-43e8-4795-a04a-02e7a4a7fb8d",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/17ce5365-c2d6-4170-b37d-2985097a644e",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/17ce5365-c2d6-4170-b37d-2985097a644e/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 3,
+        "requestId": "058ce27f-bcc7-4834-9f6a-402be486a83c",
+        "import_id": "a301ddad-7634-4713-9706-4644ee30acb5",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/2cfbe10e-f0a6-43fc-b27a-41f2e8d95016",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/2cfbe10e-f0a6-43fc-b27a-41f2e8d95016",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/2cfbe10e-f0a6-43fc-b27a-41f2e8d95016/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 3,
+        "requestId": "33bcb18d-0ad7-49e9-8f1d-101706781921",
+        "import_id": "0cf086cf-5fa9-47ab-9e06-0cfa3d63c518",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/2cfbe10e-f0a6-43fc-b27a-41f2e8d95016",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/99f9e962-1934-480d-a1ab-626d93060561",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/643952b0-f4f8-40a1-99c5-11b8c80b5be2",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/1cf4e7cf-67d1-45a1-98cd-3ce65c20ae42",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/0ee4810a-6eaf-4c41-9528-d6ee2ff80a3b",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/0ee4810a-6eaf-4c41-9528-d6ee2ff80a3b/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 3,
+        "requestId": "7886b0be-0046-4514-ab66-97848e3cf773",
+        "import_id": "b29bd290-772a-4567-a307-6c26783ace4c",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/raw",
+      "method": "GET"
+    },
+    {
+      "path": "/api/stats",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw-processing",
+      "method": "GET"
+    }
+  ],
+  "providerCalls": 0,
+  "servicesClosed": true
+}

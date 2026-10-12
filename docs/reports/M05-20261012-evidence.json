@@ -1,0 +1,164 @@
+{
+  "at": "2026-10-12T14:28:39.293Z",
+  "meaning": "Evidence integrity only; acceptance also requires Standards/Spec judgments and final report",
+  "checks": [
+    {
+      "id": "frozen-user-data-protected-history",
+      "verified": true,
+      "details": {
+        "product": 82,
+        "unit": 49,
+        "workspace": 3,
+        "protected": 1165
+      }
+    },
+    {
+      "id": "backend-unmodified-historical-reuse-valid",
+      "verified": true,
+      "details": {
+        "unchangedNonAppProductFiles": 62,
+        "M04EdgesReused": 5
+      }
+    },
+    {
+      "id": "full-quality-final-count-no-skips",
+      "verified": true,
+      "details": {
+        "build": true,
+        "tests": 201
+      }
+    },
+    {
+      "id": "scenario-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 8,
+        "providerCalls": 0,
+        "closed": true
+      }
+    },
+    {
+      "id": "app-component-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 10,
+        "providerCalls": 0,
+        "closed": true
+      }
+    },
+    {
+      "id": "app-job-component-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 1,
+        "providerCalls": 1,
+        "closed": true
+      }
+    },
+    {
+      "id": "component-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 7,
+        "providerCalls": 0,
+        "closed": true
+      }
+    },
+    {
+      "id": "http-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 21,
+        "providerCalls": 0,
+        "closed": true
+      }
+    },
+    {
+      "id": "deep-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 11,
+        "providerCalls": 1,
+        "closed": true
+      }
+    },
+    {
+      "id": "api-regression-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 23,
+        "providerCalls": "normal fake paths; individual evidence",
+        "closed": true
+      }
+    },
+    {
+      "id": "backup-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 5,
+        "providerCalls": 0,
+        "closed": true
+      }
+    },
+    {
+      "id": "b05-regression-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 11,
+        "providerCalls": "normal fake paths; individual evidence",
+        "closed": true
+      }
+    },
+    {
+      "id": "b06-regression-actual-evidence",
+      "verified": true,
+      "details": {
+        "pass": 15,
+        "providerCalls": "normal fake paths; individual evidence",
+        "closed": true
+      }
+    },
+    {
+      "id": "old-chain-and-explicit-demo",
+      "verified": true,
+      "details": {
+        "pass": 7,
+        "scope": "ordinary Raw/Wiki/manual Prompt; explicitly labelled demo only in temporary root",
+        "closed": true
+      }
+    },
+    {
+      "id": "browser-isolation-real-Raw-delta-and-closed",
+      "verified": true,
+      "details": {
+        "actualBrowserChecks": 9,
+        "expectedMeetingRawAdded": 2,
+        "providerCalls": 0,
+        "closed": true
+      }
+    },
+    {
+      "id": "own-browser-ports-closed",
+      "verified": true,
+      "details": {
+        "ports": [
+          65454,
+          65460,
+          65461
+        ],
+        "closed": true
+      }
+    },
+    {
+      "id": "MH48-concrete-result-limit-mapping",
+      "verified": true,
+      "details": {
+        "rows": 48,
+        "legacyFailuresRetained": true,
+        "realAIBlocked": true
+      }
+    }
+  ],
+  "verified": 17,
+  "failed": 0
+}

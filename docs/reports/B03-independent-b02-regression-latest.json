@@ -1,0 +1,608 @@
+{
+  "startedAt": "2026-10-05T09:02:15.253Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-b02-regression-Qm5TbW",
+  "evidencePath": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\B03-independent-b02-regression-latest.json",
+  "archivedEvidencePath": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\B03-independent-b02-regression-2026-10-05T09-02-15-249Z.json",
+  "version": {
+    "package-lock.json": "2201e13943a1dbfc033f0341c0f4edbece6517f078ef73ded0d75daf4098201d",
+    "package.json": "4ead8519427ef38f261e88a818e1747d70e59d10ccd6ffeb99fe5936bfd38379",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "server/index.ts": "801810073b8b96ff4e20fee1326ef41822dede9f53cc2fa1aac8048034c78877",
+    "server/raw-import.ts": "e2ceca0433b88b307379f0b12abfeed9ee9bc444a526c57d6dd0945eef1ffed1",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/raw/assets.ts": "ca355e671658cb1e75909d37ca551d9394b2580be6756451ca5d5fbe43d71b02",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/store.ts": "246919f6b2d85eb6c0e850bc65e27205db7654267c7ef12e89447569129c7765",
+    "services/stats/index.ts": "6b7e35714ac12d1e04514485726334db9a9652be5ec7440c8ecca8c69e9e1c84",
+    "services/wiki/store.ts": "64429e98068cc23fa4a0774e6aa62405c17cc912647f944b007d7060a0e48aa8"
+  },
+  "checks": [
+    {
+      "id": "B02-01-schema-rules-six-templates",
+      "status": "PASS",
+      "elapsedMs": 11,
+      "evidence": {
+        "types": [
+          "source",
+          "concept",
+          "entity",
+          "business_process",
+          "metric",
+          "synthesis"
+        ],
+        "categories": [
+          {
+            "id": "industry_basics",
+            "label": "行业基础"
+          },
+          {
+            "id": "category",
+            "label": "品类"
+          },
+          {
+            "id": "channel",
+            "label": "渠道"
+          },
+          {
+            "id": "sales",
+            "label": "销售"
+          },
+          {
+            "id": "store",
+            "label": "门店"
+          },
+          {
+            "id": "distributor",
+            "label": "经销商"
+          },
+          {
+            "id": "supply_chain",
+            "label": "供应链"
+          },
+          {
+            "id": "product",
+            "label": "商品"
+          },
+          {
+            "id": "metric",
+            "label": "数据指标"
+          },
+          {
+            "id": "ai_application",
+            "label": "AI应用"
+          },
+          {
+            "id": "company_business",
+            "label": "公司业务"
+          },
+          {
+            "id": "customer",
+            "label": "客户"
+          },
+          {
+            "id": "other",
+            "label": "其他"
+          }
+        ],
+        "sections": {
+          "source": [
+            "摘要",
+            "Key Takeaways",
+            "涉及概念",
+            "涉及实体",
+            "涉及业务流程",
+            "涉及指标",
+            "重要观点",
+            "待验证内容"
+          ],
+          "concept": [
+            "一句话解释",
+            "定义",
+            "为什么重要",
+            "在业务中的位置",
+            "关键特征",
+            "常见分类",
+            "与其他概念关系",
+            "常见业务场景",
+            "待确认问题"
+          ],
+          "entity": [
+            "一句话说明",
+            "基本信息",
+            "在当前业务中的角色",
+            "相关业务",
+            "相关概念",
+            "相关流程"
+          ],
+          "business_process": [
+            "业务目标",
+            "涉及角色",
+            "触发条件",
+            "输入",
+            "完整流程",
+            "输出",
+            "使用系统",
+            "关键规则",
+            "人工判断点",
+            "异常情况",
+            "痛点",
+            "可能的 AI 机会",
+            "相关指标",
+            "相关知识"
+          ],
+          "metric": [
+            "定义",
+            "业务含义",
+            "计算方式",
+            "适用范围",
+            "数据来源",
+            "如何解读",
+            "常见误区",
+            "相关指标"
+          ],
+          "synthesis": [
+            "综合说明",
+            "主要来源",
+            "一致观点",
+            "冲突",
+            "待确认问题"
+          ]
+        }
+      }
+    },
+    {
+      "id": "B02-02-six-types-frontmatter-source",
+      "status": "PASS",
+      "elapsedMs": 139,
+      "evidence": {
+        "records": {
+          "source": {
+            "id": "593656ab-c19f-4ea4-a582-06056feefdea",
+            "revision": 1,
+            "sources": [
+              "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758"
+            ]
+          },
+          "concept": {
+            "id": "eead7854-7310-48c7-a205-307d8ae54eb9",
+            "revision": 1,
+            "sources": [
+              "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758",
+              "560c7dd0-bb41-4745-9af8-35da2b5e06ab"
+            ]
+          },
+          "entity": {
+            "id": "48eeaab3-2dd1-4e28-895b-43a40841bce3",
+            "revision": 1,
+            "sources": [
+              "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758",
+              "560c7dd0-bb41-4745-9af8-35da2b5e06ab"
+            ]
+          },
+          "business_process": {
+            "id": "00aa011a-3f77-4dd4-a9ef-4061551b3bee",
+            "revision": 1,
+            "sources": [
+              "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758",
+              "560c7dd0-bb41-4745-9af8-35da2b5e06ab"
+            ]
+          },
+          "metric": {
+            "id": "c28256f0-ed77-4019-b2cf-8184bcbfc417",
+            "revision": 1,
+            "sources": [
+              "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758",
+              "560c7dd0-bb41-4745-9af8-35da2b5e06ab"
+            ]
+          },
+          "synthesis": {
+            "id": "7f510376-0bab-4320-be4c-40b2f95152fe",
+            "revision": 1,
+            "sources": [
+              "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758",
+              "560c7dd0-bb41-4745-9af8-35da2b5e06ab"
+            ]
+          }
+        },
+        "rawHashes": {
+          "notes/560c7dd0-bb41-4745-9af8-35da2b5e06ab.md": "bb5cf4efaa56eeff916b349d327354a34855797e71ca1d37ec273dac51f6cd73",
+          "notes/5bf8ec79-7c9a-4c8f-8d23-6a42ba370758.md": "63aeb60310dbef0c2576161bba23abdfd5bd5ef77a5dd8962f923e1984c22dee"
+        }
+      }
+    },
+    {
+      "id": "B02-03-invalid-status-source-no-write",
+      "status": "PASS",
+      "elapsedMs": 146,
+      "evidence": {
+        "errors": [
+          {
+            "name": "verified-no-source",
+            "status": 400,
+            "error": {
+              "code": "STATUS_REQUIRES_REVIEWED_SOURCE",
+              "message": "verified 必须关联有效 Raw 来源且审核状态为 reviewed。"
+            }
+          },
+          {
+            "name": "supported-no-source",
+            "status": 400,
+            "error": {
+              "code": "STATUS_REQUIRES_SOURCE",
+              "message": "source_supported 必须关联有效 Raw 来源。"
+            }
+          },
+          {
+            "name": "verified-unreviewed",
+            "status": 400,
+            "error": {
+              "code": "STATUS_REQUIRES_REVIEWED_SOURCE",
+              "message": "verified 必须关联有效 Raw 来源且审核状态为 reviewed。"
+            }
+          },
+          {
+            "name": "missing-raw",
+            "status": 400,
+            "error": {
+              "code": "INVALID_SOURCE",
+              "message": "找不到来源 Raw：00000000-0000-4000-8000-000000000000"
+            }
+          },
+          {
+            "name": "invalid-type",
+            "status": 400,
+            "error": {
+              "code": "INVALID_TYPE",
+              "message": "Wiki 类型无效。"
+            }
+          },
+          {
+            "name": "invalid-category",
+            "status": 400,
+            "error": {
+              "code": "INVALID_CATEGORY",
+              "message": "Wiki 分类无效。"
+            }
+          },
+          {
+            "name": "invalid-confidence",
+            "status": 400,
+            "error": {
+              "code": "INVALID_CONFIDENCE",
+              "message": "可信度无效。"
+            }
+          },
+          {
+            "name": "invalid-source-level",
+            "status": 400,
+            "error": {
+              "code": "INVALID_SOURCE_LEVEL",
+              "message": "来源等级无效。"
+            }
+          },
+          {
+            "name": "blank-title",
+            "status": 400,
+            "error": {
+              "code": "INVALID_FIELD",
+              "message": "标题不能为空或格式不正确。"
+            }
+          },
+          {
+            "name": "invalid-aliases",
+            "status": 400,
+            "error": {
+              "code": "INVALID_FIELD",
+              "message": "别名必须是文本列表。"
+            }
+          }
+        ],
+        "defaultRecord": {
+          "id": "17db60a0-1002-44a6-83de-29cb4afbc09a",
+          "knowledge_status": "needs_verification",
+          "review_status": "reviewed"
+        },
+        "supportedUnreviewedId": "e27247b2-b55c-4317-ad5a-b1088670004a",
+        "verifiedId": "b580fbe2-273a-4a0c-825a-d4a0142e8d84"
+      }
+    },
+    {
+      "id": "B02-04-update-stale-and-concurrent-revision",
+      "status": "PASS",
+      "elapsedMs": 78,
+      "evidence": {
+        "conceptId": "eead7854-7310-48c7-a205-307d8ae54eb9",
+        "revision": 2,
+        "staleStatuses": [
+          409,
+          409
+        ],
+        "raceStatuses": [
+          200,
+          409
+        ],
+        "metricRevision": 2
+      }
+    },
+    {
+      "id": "B02-05-alias-rename-ambiguity-references",
+      "status": "PASS",
+      "elapsedMs": 35,
+      "evidence": {
+        "oldTitle": "验收动销概念",
+        "resolvedTargetId": "eead7854-7310-48c7-a205-307d8ae54eb9",
+        "ambiguous": {
+          "target": "共同别名验收",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "id": "58870dcd-1f25-4ac8-9ba0-0c503b94de0c",
+              "title": "验收第二候选"
+            },
+            {
+              "id": "eead7854-7310-48c7-a205-307d8ae54eb9",
+              "title": "验收门店动销"
+            }
+          ]
+        },
+        "references": [
+          {
+            "id": "48eeaab3-2dd1-4e28-895b-43a40841bce3",
+            "title": "验收业务实体"
+          }
+        ]
+      }
+    },
+    {
+      "id": "B02-06-five-fields-chinese-search",
+      "status": "PASS",
+      "elapsedMs": 102,
+      "evidence": {
+        "results": [
+          {
+            "query": "中文标题独立探针",
+            "ids": [
+              "894b07d7-17f9-4896-badd-870057a1a417"
+            ]
+          },
+          {
+            "query": "中文别名独立探针",
+            "ids": [
+              "894b07d7-17f9-4896-badd-870057a1a417"
+            ]
+          },
+          {
+            "query": "中文标签独立探针",
+            "ids": [
+              "894b07d7-17f9-4896-badd-870057a1a417"
+            ]
+          },
+          {
+            "query": "中文正文独立探针",
+            "ids": [
+              "894b07d7-17f9-4896-badd-870057a1a417"
+            ]
+          },
+          {
+            "query": "渠道",
+            "ids": [
+              "894b07d7-17f9-4896-badd-870057a1a417",
+              "7f510376-0bab-4320-be4c-40b2f95152fe"
+            ]
+          },
+          {
+            "query": "KA全角探针",
+            "ids": [
+              "894b07d7-17f9-4896-badd-870057a1a417"
+            ]
+          }
+        ],
+        "categoryCounts": {
+          "industry_basics": 9,
+          "category": 0,
+          "channel": 1,
+          "sales": 0,
+          "store": 0,
+          "distributor": 0,
+          "supply_chain": 0,
+          "product": 0,
+          "metric": 0,
+          "ai_application": 0,
+          "company_business": 0,
+          "customer": 0,
+          "other": 1
+        },
+        "categoryIds": [
+          "894b07d7-17f9-4896-badd-870057a1a417"
+        ],
+        "qmdUsed": false
+      }
+    },
+    {
+      "id": "B02-07-real-markdown-download",
+      "status": "PASS",
+      "elapsedMs": 7,
+      "evidence": {
+        "id": "48eeaab3-2dd1-4e28-895b-43a40841bce3",
+        "contentDisposition": "attachment; filename=\"wiki-48eeaab3-2dd1-4e28-895b-43a40841bce3.md\"",
+        "artifact": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-b02-regression-Qm5TbW\\downloaded-wiki.md",
+        "fileSha256": "013cac48ea5ad29053e507127b376cbe84c830bb967cfd345129b2442ba10426",
+        "frontmatter": {
+          "title": "验收业务实体",
+          "type": "entity",
+          "category": "industry_basics",
+          "sources": [
+            "5bf8ec79-7c9a-4c8f-8d23-6a42ba370758",
+            "560c7dd0-bb41-4745-9af8-35da2b5e06ab"
+          ],
+          "tags": [
+            "验收资料"
+          ],
+          "aliases": [],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "review_status": "reviewed",
+          "id": "48eeaab3-2dd1-4e28-895b-43a40841bce3",
+          "domain": "fmcg",
+          "created": "2026-10-05T09:02:15.858Z",
+          "updated": "2026-10-05T09:02:15.858Z",
+          "revision": 1
+        }
+      }
+    },
+    {
+      "id": "B02-08-delete-effects-recycle-and-missing-link",
+      "status": "PASS",
+      "elapsedMs": 45,
+      "evidence": {
+        "deletedId": "eead7854-7310-48c7-a205-307d8ae54eb9",
+        "referenceId": "48eeaab3-2dd1-4e28-895b-43a40841bce3",
+        "referenceHash": "013cac48ea5ad29053e507127b376cbe84c830bb967cfd345129b2442ba10426",
+        "archiveFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-b02-regression-Qm5TbW\\main\\knowledge\\recycle\\wiki\\eead7854-7310-48c7-a205-307d8ae54eb9.md",
+        "wikiCount": 10
+      }
+    },
+    {
+      "id": "B02-09-index-log-category-counts",
+      "status": "PASS",
+      "elapsedMs": 23,
+      "evidence": {
+        "wikiCount": 10,
+        "categoryCounts": {
+          "industry_basics": 8,
+          "category": 0,
+          "channel": 1,
+          "sales": 0,
+          "store": 0,
+          "distributor": 0,
+          "supply_chain": 0,
+          "product": 0,
+          "metric": 0,
+          "ai_application": 0,
+          "company_business": 0,
+          "customer": 0,
+          "other": 1
+        },
+        "indexFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-b02-regression-Qm5TbW\\main\\knowledge\\wiki\\index.md",
+        "indexSha256": "5165d939aba5145b853383dd18387c4bbab5993b0cd34742e3d9f603b387ebac",
+        "logFiles": [
+          "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-b02-regression-Qm5TbW\\main\\knowledge\\logs\\wiki.jsonl"
+        ],
+        "logSha256": "d4770df2741e1e9cafeb618877f660241b85371b7ba91b8570ae01c153a445a6",
+        "stats": {
+          "rawCount": 2,
+          "wikiCount": 10,
+          "thisWeekNewCount": 12,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        }
+      }
+    },
+    {
+      "id": "B02-10-real-write-and-derived-file-failure",
+      "status": "PASS",
+      "elapsedMs": 73,
+      "evidence": {
+        "mainFailureStatus": 500,
+        "derivedFailureStatus": 500,
+        "survivorId": "27f37499-44f9-4901-93f7-b6b2629a1389",
+        "recoveryId": "48a2bba9-ecb3-42ee-8115-7c1d8b72b8d6",
+        "rawHashesUnchanged": true
+      }
+    },
+    {
+      "id": "B02-11-restart-wiki-and-raw-preservation",
+      "status": "PASS",
+      "elapsedMs": 668,
+      "evidence": {
+        "wikiCount": 12,
+        "preservedWikiHashes": {
+          "00aa011a-3f77-4dd4-a9ef-4061551b3bee.md": "c821eb3753dd6a34be8255fbd71edb234fbfa2c9f9b97a9eb8963dd163e4cb4a",
+          "17db60a0-1002-44a6-83de-29cb4afbc09a.md": "6cac98e0100509897f14834c98f707c3bd60956c837f1f62af4d2c3f4b561985",
+          "27f37499-44f9-4901-93f7-b6b2629a1389.md": "9236d161fc81d5c2bc76aa32e3eadac1a033b202485d55433a75281f4266da24",
+          "48a2bba9-ecb3-42ee-8115-7c1d8b72b8d6.md": "40098323570cca31658886b31c142c5c6db02dfccb9268c3648fed8e66378be3",
+          "48eeaab3-2dd1-4e28-895b-43a40841bce3.md": "013cac48ea5ad29053e507127b376cbe84c830bb967cfd345129b2442ba10426",
+          "58870dcd-1f25-4ac8-9ba0-0c503b94de0c.md": "57a95c9ab10fd14caef6acd7bc1f82e4dd42577d4e366eec6e480172ec6d20d3",
+          "593656ab-c19f-4ea4-a582-06056feefdea.md": "0a2726dba192c3855d97e840d40044288cd691ae3eabfa89fcb33cb706df0844",
+          "7f510376-0bab-4320-be4c-40b2f95152fe.md": "4e23e47fabcbd8edae5d55e4226e6427e8dc69c25ac01871d48141e4a8fc85ac",
+          "894b07d7-17f9-4896-badd-870057a1a417.md": "ab6d4a7cbdb51edc60522213f783f67f00919257f559812f72e68e8126b5ebf1",
+          "b580fbe2-273a-4a0c-825a-d4a0142e8d84.md": "9a45f50425cfb42ee4ce96cef37629a07e599ce075920440027e152ceac64128",
+          "c28256f0-ed77-4019-b2cf-8184bcbfc417.md": "e2cd63429d5aa7ae435edce2ac0b84207e70b24927e70ee3f99525a6901b265f",
+          "e27247b2-b55c-4317-ad5a-b1088670004a.md": "30c617d2e3c757f1e7ea15d8a7c71b708f90a229ea500ccf5b0921b4d34a02c3",
+          "index.md": "ac179d79aabf6a60a4e42a5f5d8da34df96713cce427b4b220115d80d6399f1c"
+        },
+        "rawHashes": {
+          "notes/560c7dd0-bb41-4745-9af8-35da2b5e06ab.md": "bb5cf4efaa56eeff916b349d327354a34855797e71ca1d37ec273dac51f6cd73",
+          "notes/5bf8ec79-7c9a-4c8f-8d23-6a42ba370758.md": "63aeb60310dbef0c2576161bba23abdfd5bd5ef77a5dd8962f923e1984c22dee"
+        },
+        "noLlmRequired": true
+      }
+    },
+    {
+      "id": "B02-12-created-field-shanghai-week-stats",
+      "status": "PASS",
+      "elapsedMs": 584,
+      "evidence": {
+        "samples": [
+          {
+            "id": "6828740e-2607-4d0c-aba7-58411965cdc6",
+            "created": "2026-10-04T15:59:59.000Z"
+          },
+          {
+            "id": "7b76fae0-3986-4c63-9c48-2661517eea43",
+            "created": "2026-10-04T16:00:00.000Z"
+          },
+          {
+            "id": "077fe896-a5dc-497e-8ea8-99bc5e945e8e",
+            "created": "2026-10-04T16:00:01.000Z"
+          },
+          {
+            "id": "af83256c-0b05-4e97-a704-c61327c34605",
+            "created": "2026-10-11T16:00:00.000Z"
+          }
+        ],
+        "stats": {
+          "rawCount": 0,
+          "wikiCount": 4,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05"
+        },
+        "categoryCounts": {
+          "industry_basics": 4,
+          "category": 0,
+          "channel": 0,
+          "sales": 0,
+          "store": 0,
+          "distributor": 0,
+          "supply_chain": 0,
+          "product": 0,
+          "metric": 0,
+          "ai_application": 0,
+          "company_business": 0,
+          "customer": 0,
+          "other": 0
+        }
+      }
+    }
+  ],
+  "notes": [
+    "Public HTTP/file evidence only; main agent supplies real browser evidence.",
+    "Isolated fixture directories retained; user service/data untouched."
+  ],
+  "finishedAt": "2026-10-05T09:02:17.717Z",
+  "summary": {
+    "PASS": 12,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

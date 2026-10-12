@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-07",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-g1ZwOa",
+  "checks": [
+    {
+      "id": "UI-create",
+      "result": "PASS",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\":\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - article:\n    - generic: 业务分析\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07返修模板甲\" [level=2]\n    - generic: 分类\n    - generic: 业务分析\n    - generic: 版本\n    - generic: 第 1 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:19\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:19\n    - generic: 甲标签\n    - generic: 返修\n    - heading \"场景\" [level=3]\n    - paragraph: 甲第一版场景\n    - heading \"输入要求\" [level=3]\n    - paragraph: 甲输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 甲输出\n    - heading \"相关 Wiki · 1\" [level=3]\n    - code: B07浏览器关联知识\n    - button \"打开 Wiki ›\"\n    - heading \"示例\" [level=3]\n    - generic: 甲示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: \"首行 请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。 尾部\"\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 2 个变量\n    - generic: 客户名称\n    - textbox \"客户名称 未填写\":\n      - /placeholder: 填写 客户名称\n    - emphasis: 未填写\n    - generic: 业务流程\n    - textbox \"业务流程 未填写\":\n      - /placeholder: 填写 业务流程\n    - emphasis: 未填写\n    - status: 还缺少：客户名称、业务流程（只填空格也算未填写）。\n    - button \"生成最终正文\"\n    - button \"复制最终正文\" [disabled]\n    - heading \"版本历史 · 1\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:19\n      - generic: 人工保存 · 48 字符"
+    },
+    {
+      "id": "F07-02-change-values",
+      "result": "PASS",
+      "oldCopied": " 首行\n请为 华东 $& $1 {{业务流程}} 制定 铺货 回访；重复客户 华东 $& $1 {{业务流程}}。\n尾部 ",
+      "oldCopyDisabled": true,
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\":\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - article:\n    - generic: 业务分析\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07返修模板甲\" [level=2]\n    - generic: 分类\n    - generic: 业务分析\n    - generic: 版本\n    - generic: 第 1 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:19\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:19\n    - generic: 甲标签\n    - generic: 返修\n    - heading \"场景\" [level=3]\n    - paragraph: 甲第一版场景\n    - heading \"输入要求\" [level=3]\n    - paragraph: 甲输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 甲输出\n    - heading \"相关 Wiki · 1\" [level=3]\n    - code: B07浏览器关联知识\n    - button \"打开 Wiki ›\"\n    - heading \"示例\" [level=3]\n    - generic: 甲示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: \"首行 请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。 尾部\"\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 2 个变量\n    - generic: 客户名称\n    - textbox \"客户名称\" [active]:\n      - /placeholder: 填写 客户名称\n      - text: 华南新客户\n    - generic: 业务流程\n    - textbox \"业务流程\":\n      - /placeholder: 填写 业务流程\n      - text: 铺货 回访\n    - button \"生成最终正文\"\n    - button \"复制最终正文\" [disabled]\n    - heading \"版本历史 · 1\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:19\n      - generic: 人工保存 · 48 字符"
+    },
+    {
+      "id": "F07-02-real-paste",
+      "result": "PASS",
+      "copied": " 首行\n请为 华南新客户 制定 铺货 回访；重复客户 华南新客户。\n尾部 ",
+      "pasted": " 首行\n请为 华南新客户 制定 铺货 回访；重复客户 华南新客户。\n尾部 ",
+      "templateBytesUnchanged": true
+    },
+    {
+      "id": "F07-02-inflight-values",
+      "result": "PASS",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\":\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - article:\n    - generic: 业务分析\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07返修模板甲\" [level=2]\n    - generic: 分类\n    - generic: 业务分析\n    - generic: 版本\n    - generic: 第 1 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:19\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:19\n    - generic: 甲标签\n    - generic: 返修\n    - heading \"场景\" [level=3]\n    - paragraph: 甲第一版场景\n    - heading \"输入要求\" [level=3]\n    - paragraph: 甲输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 甲输出\n    - heading \"相关 Wiki · 1\" [level=3]\n    - code: B07浏览器关联知识\n    - button \"打开 Wiki ›\"\n    - heading \"示例\" [level=3]\n    - generic: 甲示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: \"首行 请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。 尾部\"\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 2 个变量\n    - generic: 客户名称\n    - textbox \"客户名称\" [active]:\n      - /placeholder: 填写 客户名称\n      - text: 在途改值客户\n    - generic: 业务流程\n    - textbox \"业务流程\":\n      - /placeholder: 填写 业务流程\n      - text: 铺货 回访\n    - button \"生成最终正文\"\n    - button \"复制最终正文\" [disabled]\n    - heading \"版本历史 · 1\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:19\n      - generic: 人工保存 · 48 字符"
+    },
+    {
+      "id": "F07-03-B-to-A",
+      "result": "PASS",
+      "event": {
+        "id": "history-B",
+        "phase": "released",
+        "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+        "method": "GET",
+        "status": 200,
+        "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:18:35.513Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.513Z\",\"version\":1,\"source\":\"manual\"}}}"
+      },
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\" [active]:\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\":\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - article:\n    - generic: 业务分析\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07返修模板甲\" [level=2]\n    - generic: 分类\n    - generic: 业务分析\n    - generic: 版本\n    - generic: 第 1 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:19\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:19\n    - generic: 甲标签\n    - generic: 返修\n    - heading \"场景\" [level=3]\n    - paragraph: 甲第一版场景\n    - heading \"输入要求\" [level=3]\n    - paragraph: 甲输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 甲输出\n    - heading \"相关 Wiki · 1\" [level=3]\n    - code: B07浏览器关联知识\n    - button \"打开 Wiki ›\"\n    - heading \"示例\" [level=3]\n    - generic: 甲示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: \"首行 请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。 尾部\"\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 2 个变量\n    - generic: 客户名称\n    - textbox \"客户名称 未填写\":\n      - /placeholder: 填写 客户名称\n    - emphasis: 未填写\n    - generic: 业务流程\n    - textbox \"业务流程 未填写\":\n      - /placeholder: 填写 业务流程\n    - emphasis: 未填写\n    - status: 还缺少：客户名称、业务流程（只填空格也算未填写）。\n    - button \"生成最终正文\"\n    - button \"复制最终正文\" [disabled]\n    - heading \"版本历史 · 1\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:19\n      - generic: 人工保存 · 48 字符"
+    },
+    {
+      "id": "F07-03-A-to-B",
+      "result": "PASS",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\" [active]:\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - article:\n    - generic: 日常办公\n    - generic: 手动创建\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/export\n    - button \"收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07模板乙\" [level=2]\n    - generic: 分类\n    - generic: 日常办公\n    - generic: 版本\n    - generic: 第 2 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:18\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:18\n    - generic: 乙标签\n    - heading \"场景\" [level=3]\n    - paragraph: 普通办公\n    - heading \"输入要求\" [level=3]\n    - paragraph: 乙输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 乙输出\n    - heading \"相关 Wiki · 0\" [level=3]\n    - paragraph: 未关联 Wiki。\n    - heading \"示例\" [level=3]\n    - generic: 乙示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: 模板乙第二版无变量原文。\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 正文没有变量，可直接复制\n    - button \"复制最终正文\"\n    - heading \"本次最终正文\" [level=3]\n    - generic: 无变量，复制的是模板原文\n    - generic: 模板乙第二版无变量原文。\n    - heading \"版本历史 · 2\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 2 版 2026年10月7日 22:18 人工保存 · 12 字符\":\n      - generic: 第 2 版\n      - generic: 2026年10月7日 22:18\n      - generic: 人工保存 · 12 字符\n    - button \"第 1 版 2026年10月7日 22:18 人工保存 · 9 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:18\n      - generic: 人工保存 · 9 字符"
+    },
+    {
+      "id": "F07-03-version-order",
+      "result": "PASS",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\":\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - article:\n    - status:\n      - generic: 正在查看第 2 版（历史快照，只读）\n      - generic: 保存于 2026年10月7日 22:18 · 人工保存。历史版本不能填写变量或复制，也不会被本次查看修改。\n      - button \"返回当前版本\"\n    - heading \"B07模板乙\" [level=2]\n    - generic: 日常办公\n    - generic: 手动创建\n    - generic: 版本\n    - generic: 第 2 版\n    - generic: 修改来源\n    - generic: 人工保存\n    - generic: 保存时间\n    - generic: 2026年10月7日 22:18\n    - generic: 变量\n    - generic: 无\n    - heading \"场景\" [level=3]\n    - paragraph: 普通办公\n    - heading \"输入要求\" [level=3]\n    - paragraph: 乙输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 乙输出\n    - generic: 乙标签\n    - heading \"示例\" [level=3]\n    - generic: 乙示例\n    - heading \"正文（第 2 版原样）\" [level=3]\n    - generic: 模板乙第二版无变量原文。"
+    },
+    {
+      "id": "F07-03-old-error-new-form",
+      "result": "PASS",
+      "actualStatus": 500,
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签\":\n    - generic: ✳\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 2 版\n    - generic: 标签：乙标签\n  - paragraph: 创建 Prompt\n  - heading \"新建 Prompt\" [level=2]\n  - button \"取消编辑\": ×\n  - text: 名称\n  - emphasis: \"*\"\n  - textbox \"名称 *\" [active]:\n    - /placeholder: 例如：经销商访谈提纲\n    - text: 历史请求后新表单\n  - text: 分类\n  - combobox \"分类\":\n    - option \"行业学习\" [selected]\n    - option \"业务分析\"\n    - option \"客户\"\n    - option \"产品\"\n    - option \"AI\"\n    - option \"日常办公\"\n  - text: 收藏\n  - combobox \"收藏\":\n    - option \"不收藏\" [selected]\n    - option \"加入收藏\"\n  - text: 场景\n  - textbox \"场景\":\n    - /placeholder: 什么时候用这条 Prompt，例如：走访经销商前准备访谈问题\n  - text: 正文\n  - emphasis: \"*\"\n  - textbox \"正文 * 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。\":\n    - /placeholder: \"用 {{变量名}} 标出每次需要替换的部分，例如：\\n请把下面的行业术语解释给刚入职的同事：{{行业术语}}\"\n  - generic: 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。\n  - text: 输入要求\n  - textbox \"输入要求\":\n    - /placeholder: 需要用户提供什么\n  - text: 输出要求\n  - textbox \"输出要求\":\n    - /placeholder: 希望得到什么结果、格式与边界\n  - text: 相关 Wiki\n  - listbox \"相关 Wiki 按住 Ctrl 可多选；只允许选择当前存在的 Wiki。关联不会把 Wiki 正文写入 Prompt。\":\n    - option \"B07浏览器关联知识｜metric\"\n  - generic: 按住 Ctrl 可多选；只允许选择当前存在的 Wiki。关联不会把 Wiki 正文写入 Prompt。\n  - text: 示例\n  - textbox \"示例\":\n    - /placeholder: 填写好的示例，方便以后照着改\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 用逗号分隔，例如：访谈，经销商\n  - generic: 保存后形成正式 Prompt 记录与一个新版本\n  - button \"取消\"\n  - button \"保存 Prompt\""
+    },
+    {
+      "id": "F07-04-success-and-busy-ownership",
+      "result": "PASS",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - status:\n    - text: 已加入收藏。\n    - button \"关闭\"\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\":\n    - generic: ★\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 3 版\n    - generic: 标签：乙标签\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - article:\n    - generic: 日常办公\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07模板乙\" [level=2]\n    - generic: 分类\n    - generic: 日常办公\n    - generic: 版本\n    - generic: 第 3 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:18\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:22\n    - generic: 乙标签\n    - heading \"场景\" [level=3]\n    - paragraph: 普通办公\n    - heading \"输入要求\" [level=3]\n    - paragraph: 乙输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 乙输出\n    - heading \"相关 Wiki · 0\" [level=3]\n    - paragraph: 未关联 Wiki。\n    - heading \"示例\" [level=3]\n    - generic: 乙示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: 模板乙第二版无变量原文。\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 正文没有变量，可直接复制\n    - button \"复制最终正文\"\n    - heading \"本次最终正文\" [level=3]\n    - generic: 无变量，复制的是模板原文\n    - generic: 模板乙第二版无变量原文。\n    - heading \"版本历史 · 3\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 3 版 2026年10月7日 22:22 人工保存 · 12 字符\":\n      - generic: 第 3 版\n      - generic: 2026年10月7日 22:22\n      - generic: 人工保存 · 12 字符\n    - button \"第 2 版 2026年10月7日 22:18 人工保存 · 12 字符\":\n      - generic: 第 2 版\n      - generic: 2026年10月7日 22:18\n      - generic: 人工保存 · 12 字符\n    - button \"第 1 版 2026年10月7日 22:18 人工保存 · 9 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:18\n      - generic: 人工保存 · 9 字符"
+    },
+    {
+      "id": "F07-04-failure-switch",
+      "result": "PASS",
+      "actualStatus": 422,
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\" [active]:\n    - generic: ★\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 3 版\n    - generic: 标签：乙标签\n  - button \"★ B07返修模板甲 业务分析 · 第 1 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 1 版\n    - generic: 标签：甲标签、返修\n  - article:\n    - generic: 日常办公\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07模板乙\" [level=2]\n    - generic: 分类\n    - generic: 日常办公\n    - generic: 版本\n    - generic: 第 3 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:18\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:22\n    - generic: 乙标签\n    - heading \"场景\" [level=3]\n    - paragraph: 普通办公\n    - heading \"输入要求\" [level=3]\n    - paragraph: 乙输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 乙输出\n    - heading \"相关 Wiki · 0\" [level=3]\n    - paragraph: 未关联 Wiki。\n    - heading \"示例\" [level=3]\n    - generic: 乙示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: 模板乙第二版无变量原文。\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 正文没有变量，可直接复制\n    - button \"复制最终正文\"\n    - heading \"本次最终正文\" [level=3]\n    - generic: 无变量，复制的是模板原文\n    - generic: 模板乙第二版无变量原文。\n    - heading \"版本历史 · 3\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 3 版 2026年10月7日 22:22 人工保存 · 12 字符\":\n      - generic: 第 3 版\n      - generic: 2026年10月7日 22:22\n      - generic: 人工保存 · 12 字符\n    - button \"第 2 版 2026年10月7日 22:18 人工保存 · 12 字符\":\n      - generic: 第 2 版\n      - generic: 2026年10月7日 22:18\n      - generic: 人工保存 · 12 字符\n    - button \"第 1 版 2026年10月7日 22:18 人工保存 · 9 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:18\n      - generic: 人工保存 · 9 字符"
+    },
+    {
+      "id": "F07-05-update-to-new",
+      "result": "PASS",
+      "name": "B07返修新模板丙",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 2 条\n  - button \"全部 2\":\n    - text: 全部\n    - generic: \"2\"\n  - button \"行业学习 0\":\n    - text: 行业学习\n    - generic: \"0\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 2 条\n  - button \"★ B07返修模板甲 业务分析 · 第 2 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 2 版\n    - generic: 标签：甲标签、返修\n  - button \"★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\":\n    - generic: ★\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 3 版\n    - generic: 标签：乙标签\n  - paragraph: 创建 Prompt\n  - heading \"新建 Prompt\" [level=2]\n  - button \"取消编辑\": ×\n  - text: 名称\n  - emphasis: \"*\"\n  - textbox \"名称 *\":\n    - /placeholder: 例如：经销商访谈提纲\n    - text: B07返修新模板丙\n  - text: 分类\n  - combobox \"分类\":\n    - option \"行业学习\" [selected]\n    - option \"业务分析\"\n    - option \"客户\"\n    - option \"产品\"\n    - option \"AI\"\n    - option \"日常办公\"\n  - text: 收藏\n  - combobox \"收藏\":\n    - option \"不收藏\" [selected]\n    - option \"加入收藏\"\n  - text: 场景\n  - textbox \"场景\":\n    - /placeholder: 什么时候用这条 Prompt，例如：走访经销商前准备访谈问题\n  - text: 正文\n  - emphasis: \"*\"\n  - 'textbox \"正文 * 正文原样保存（含前后空白与换行）；识别到的变量：{{客户名称}}。上限 100,000 字符。\" [active]':\n    - /placeholder: \"用 {{变量名}} 标出每次需要替换的部分，例如：\\n请把下面的行业术语解释给刚入职的同事：{{行业术语}}\"\n    - text: \"丙模板 {{客户名称}}\"\n  - generic: \"正文原样保存（含前后空白与换行）；识别到的变量：{{客户名称}}。上限 100,000 字符。\"\n  - text: 输入要求\n  - textbox \"输入要求\":\n    - /placeholder: 需要用户提供什么\n  - text: 输出要求\n  - textbox \"输出要求\":\n    - /placeholder: 希望得到什么结果、格式与边界\n  - text: 相关 Wiki\n  - listbox \"相关 Wiki 按住 Ctrl 可多选；只允许选择当前存在的 Wiki。关联不会把 Wiki 正文写入 Prompt。\":\n    - option \"B07浏览器关联知识｜metric\"\n  - generic: 按住 Ctrl 可多选；只允许选择当前存在的 Wiki。关联不会把 Wiki 正文写入 Prompt。\n  - text: 示例\n  - textbox \"示例\":\n    - /placeholder: 填写好的示例，方便以后照着改\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 用逗号分隔，例如：访谈，经销商\n  - generic: 保存后形成正式 Prompt 记录与一个新版本\n  - button \"取消\"\n  - button \"保存 Prompt\""
+    },
+    {
+      "id": "same-record-cancel-probe",
+      "result": "PASS",
+      "note": "取消后旧请求仍在途时编辑按钮禁用，不能输入另一份表单；请求结束恢复。",
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - status:\n    - text: 已保存为第 3 版。\n    - button \"关闭\"\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 3 条\n  - button \"全部 3\":\n    - text: 全部\n    - generic: \"3\"\n  - button \"行业学习 1\":\n    - text: 行业学习\n    - generic: \"1\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 3 条\n  - button \"★ B07返修模板甲 业务分析 · 第 3 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 3 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07返修新模板丙 行业学习 · 第 1 版 手动创建\":\n    - generic: ✳\n    - generic: B07返修新模板丙\n    - generic: 行业学习 · 第 1 版\n    - generic: 手动创建\n  - button \"★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\":\n    - generic: ★\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 3 版\n    - generic: 标签：乙标签\n  - article:\n    - generic: 业务分析\n    - generic: 手动创建\n    - generic: 已收藏\n    - link \"导出 Markdown\":\n      - /url: /api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n    - button \"取消收藏\"\n    - button \"编辑\"\n    - button \"删除\"\n    - heading \"B07返修模板甲\" [level=2]\n    - generic: 分类\n    - generic: 业务分析\n    - generic: 版本\n    - generic: 第 3 版\n    - generic: 创建时间\n    - generic: 2026年10月7日 22:19\n    - generic: 最近修改\n    - generic: 2026年10月7日 22:24\n    - generic: 甲标签\n    - generic: 返修\n    - heading \"场景\" [level=3]\n    - paragraph: 甲第三版已提交旧编辑\n    - heading \"输入要求\" [level=3]\n    - paragraph: 甲输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 甲输出\n    - heading \"相关 Wiki · 1\" [level=3]\n    - code: B07浏览器关联知识\n    - button \"打开 Wiki ›\"\n    - heading \"示例\" [level=3]\n    - generic: 甲示例\n    - heading \"正文模板\" [level=3]\n    - generic: 原样保存 · 不会因为填写变量而改变\n    - generic: \"首行 请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。 尾部\"\n    - heading \"填写变量并复制\" [level=3]\n    - generic: 2 个变量\n    - generic: 客户名称\n    - textbox \"客户名称 未填写\":\n      - /placeholder: 填写 客户名称\n    - emphasis: 未填写\n    - generic: 业务流程\n    - textbox \"业务流程 未填写\":\n      - /placeholder: 填写 业务流程\n    - emphasis: 未填写\n    - status: 还缺少：客户名称、业务流程（只填空格也算未填写）。\n    - button \"生成最终正文\"\n    - button \"复制最终正文\" [disabled]\n    - heading \"版本历史 · 3\" [level=3]\n    - generic: 每次有效保存都会追加完整快照\n    - button \"第 3 版 2026年10月7日 22:24 人工保存 · 48 字符\":\n      - generic: 第 3 版\n      - generic: 2026年10月7日 22:24\n      - generic: 人工保存 · 48 字符\n    - button \"第 2 版 2026年10月7日 22:23 人工保存 · 48 字符\":\n      - generic: 第 2 版\n      - generic: 2026年10月7日 22:23\n      - generic: 人工保存 · 48 字符\n    - button \"第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\":\n      - generic: 第 1 版\n      - generic: 2026年10月7日 22:19\n      - generic: 人工保存 · 48 字符"
+    },
+    {
+      "id": "F07-04-render-error-history",
+      "result": "FAIL",
+      "status": 422,
+      "alerts": [
+        "还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。关闭"
+      ],
+      "dom": "- complementary:\n  - generic: F\n  - text: 快消 AI 工作台\n  - generic: FMCG PM WORKSPACE\n  - generic: 工作空间\n  - navigation \"主导航\":\n    - button \"⌂ 首页\":\n      - generic: ⌂\n      - text: 首页\n    - button \"▤ 知识库\":\n      - generic: ▤\n      - text: 知识库\n    - button \"▧ Raw 原始资料\":\n      - generic: ▧\n      - text: Raw 原始资料\n    - button \"✳ Prompt 工作台\":\n      - generic: ✳\n      - text: Prompt 工作台\n  - generic: 偏好\n  - button \"⚙ 设置\":\n    - generic: ⚙\n    - text: 设置\n  - generic: 数据保存在本机\n- main:\n  - generic: 工作空间 / Prompt 工作台\n  - generic: 本地工作区\n  - paragraph: 可复用工作方法 · 手动 Library\n  - heading \"Prompt 工作台\" [level=1]\n  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n  - button \"自然语言生成（B08 后续开放）\" [disabled]\n  - button \"优化 Prompt（B08 后续开放）\" [disabled]\n  - button \"＋ 新建 Prompt\":\n    - generic: ＋\n    - text: 新建 Prompt\n  - navigation \"Prompt 工作台功能\":\n    - generic: Library\n    - button \"Generator · B08 后续开放\" [disabled]\n    - button \"Optimizer · B08 后续开放\" [disabled]\n  - alert:\n    - text: 还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\n    - button \"关闭\"\n  - heading \"分类\" [level=2]\n  - text: 六个默认分类，点击筛选\n  - generic: 3 条\n  - button \"全部 3\":\n    - text: 全部\n    - generic: \"3\"\n  - button \"行业学习 1\":\n    - text: 行业学习\n    - generic: \"1\"\n  - button \"业务分析 1\":\n    - text: 业务分析\n    - generic: \"1\"\n  - button \"客户 0\":\n    - text: 客户\n    - generic: \"0\"\n  - button \"产品 0\":\n    - text: 产品\n    - generic: \"0\"\n  - button \"AI 0\":\n    - text: AI\n    - generic: \"0\"\n  - button \"日常办公 1\":\n    - text: 日常办公\n    - generic: \"1\"\n  - generic: ⌕\n  - textbox \"搜索 Prompt\":\n    - /placeholder: 搜索名称、标签或正文\n  - text: 标签\n  - textbox \"标签\":\n    - /placeholder: 按标签筛选\n  - checkbox \"只看收藏\"\n  - text: 只看收藏\n  - generic: 3 条\n  - button \"★ B07返修模板甲 业务分析 · 第 3 版 标签：甲标签、返修\":\n    - generic: ★\n    - generic: B07返修模板甲\n    - generic: 业务分析 · 第 3 版\n    - generic: 标签：甲标签、返修\n  - button \"✳ B07返修新模板丙 行业学习 · 第 1 版 手动创建\":\n    - generic: ✳\n    - generic: B07返修新模板丙\n    - generic: 行业学习 · 第 1 版\n    - generic: 手动创建\n  - button \"★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\":\n    - generic: ★\n    - generic: B07模板乙\n    - generic: 日常办公 · 第 3 版\n    - generic: 标签：乙标签\n  - article:\n    - status:\n      - generic: 正在查看第 1 版（历史快照，只读）\n      - generic: 保存于 2026年10月7日 22:19 · 人工保存。历史版本不能填写变量或复制，也不会被本次查看修改。\n      - button \"返回当前版本\"\n    - heading \"B07返修模板甲\" [level=2]\n    - generic: 业务分析\n    - generic: 手动创建\n    - generic: 已收藏\n    - generic: 版本\n    - generic: 第 1 版\n    - generic: 修改来源\n    - generic: 人工保存\n    - generic: 保存时间\n    - generic: 2026年10月7日 22:19\n    - generic: 变量\n    - generic: \"{{客户名称}}、{{业务流程}}\"\n    - heading \"场景\" [level=3]\n    - paragraph: 甲第一版场景\n    - heading \"输入要求\" [level=3]\n    - paragraph: 甲输入\n    - heading \"输出要求\" [level=3]\n    - paragraph: 甲输出\n    - generic: 甲标签\n    - generic: 返修\n    - heading \"相关 Wiki\" [level=3]\n    - code: 64fad3d4-953f-48e9-a943-f785e85fbde1\n    - button \"B07浏览器关联知识 ›\"\n    - heading \"示例\" [level=3]\n    - generic: 甲示例\n    - heading \"正文（第 1 版原样）\" [level=3]\n    - generic: \"首行 请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。 尾部\""
+    },
+    {
+      "id": "F07-06-filter-reorder",
+      "status": "PASS",
+      "state": "Browser tab: 1, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:57014/\".\n0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:57014/\n\t1 container root\n\t\t2 container\n\t\t\t3 text F 快消 AI 工作台 FMCG PM WORKSPACE 工作空间\n\t\t\t4 container 主导航\n\t\t\t\t5 button ⌂ 首页\n\t\t\t\t\t6 text ⌂\n\t\t\t\t\t7 text 首页\n\t\t\t\t8 button ▤ 知识库\n\t\t\t\t\t9 text ▤\n\t\t\t\t\t10 text 知识库\n\t\t\t\t11 button ▧ Raw 原始资料\n\t\t\t\t\t12 text ▧\n\t\t\t\t\t13 text Raw 原始资料\n\t\t\t\t14 button ✳ Prompt 工作台\n\t\t\t\t\t15 text ✳\n\t\t\t\t\t16 text Prompt 工作台\n\t\t\t17 text 偏好\n\t\t\t18 button ⚙ 设置\n\t\t\t\t19 text ⚙\n\t\t\t\t20 text 设置\n\t\t\t21 text 数据保存在本机\n\t\t22 container\n\t\t\t23 container\n\t\t\t\t24 text 工作空间  / Prompt 工作台\n\t\t\t25 text 本地工作区 可复用工作方法 · 手动 Library\n\t\t\t26 heading Prompt 工作台, Value: 1\n\t\t\t\t27 text Prompt 工作台\n\t\t\t28 text 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n\t\t\t29 button (disabled) 自然语言生成（B08 后续开放）, Help: B08 后续开放\n\t\t\t30 button (disabled) 优化 Prompt（B08 后续开放）, Help: B08 后续开放\n\t\t\t31 button ＋ 新建 Prompt\n\t\t\t\t32 text ＋\n\t\t\t\t33 text 新建 Prompt\n\t\t\t34 container Prompt 工作台功能\n\t\t\t\t35 text Library\n\t\t\t\t36 button (disabled) Generator · B08 后续开放, Help: B08 后续开放\n\t\t\t\t37 button (disabled) Optimizer · B08 后续开放, Help: B08 后续开放\n\t\t\t38 heading 分类, Value: 2\n\t\t\t\t39 text 分类\n\t\t\t40 text 六个默认分类，点击筛选 3  条\n\t\t\t41 button 全部 3\n\t\t\t\t42 text 全部\n\t\t\t\t43 text 3\n\t\t\t44 button 行业学习 1, Help: 学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\n\t\t\t\t45 text 行业学习\n\t\t\t\t46 text 1\n\t\t\t47 button 业务分析 1, Help: 分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\n\t\t\t\t48 text 业务分析\n\t\t\t\t49 text 1\n\t\t\t50 button 客户 0, Help: 面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\n\t\t\t\t51 text 客户\n\t\t\t\t52 text 0\n\t\t\t53 button 产品 0, Help: 产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\n\t\t\t\t54 text 产品\n\t\t\t\t55 text 0\n\t\t\t56 button AI 0, Help: 用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\n\t\t\t\t57 text AI\n\t\t\t\t58 text 0\n\t\t\t59 button 日常办公 1, Help: 日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\n\t\t\t\t60 text 日常办公\n\t\t\t\t61 text 1\n\t\t\t62 container\n\t\t\t\t63 text ⌕\n\t\t\t\t64 text field (settable) Description: 搜索 Prompt, Value: 返修模板甲\n\t\t\t\t274 button 清空搜索\n\t\t\t65 container\n\t\t\t\t66 text 标签\n\t\t\t\t67 text field (settable) 标签\n\t\t\t68 checkbox (settable, integer) Description: 只看收藏, Value: 0\n\t\t\t69 text 1  条\n\t\t\t148 button ★ B07返修模板甲 业务分析 · 第 3 版 标签：甲标签、返修\n\t\t\t\t149 text ★\n\t\t\t\t150 text B07返修模板甲\n\t\t\t\t151 container\n\t\t\t\t\t152 text 业务分析  · 第  3  版\n\t\t\t\t153 text 标签：甲标签、返修\n\t\t\t275 container\n\t\t\t\t276 text 业务分析 手动创建 已收藏\n\t\t\t\t277 link Description: 导出 Markdown, Value: 127.0.0.1:57014/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n\t\t\t\t278 button 取消收藏\n\t\t\t\t279 button 编辑\n\t\t\t\t280 button 删除\n\t\t\t\t281 heading B07返修模板甲, Value: 2\n\t\t\t\t\t282 text B07返修模板甲\n\t\t\t\t283 text 分类 业务分析 版本 第 3 版 创建时间 2026年10月7日 22:19 最近修改 2026年10月7日 22:24 甲标签 返修\n\t\t\t\t284 heading 场景, Value: 3\n\t\t\t\t\t285 text 场景\n\t\t\t\t286 text 甲第三版已提交旧编辑\n\t\t\t\t287 heading 输入要求, Value: 3\n\t\t\t\t\t288 text 输入要求\n\t\t\t\t289 text 甲输入\n\t\t\t\t290 heading 输出要求, Value: 3\n\t\t\t\t\t291 text 输出要求\n\t\t\t\t292 text 甲输出\n\t\t\t\t293 heading 相关 Wiki · 1, Value: 3\n\t\t\t\t\t294 text 相关 Wiki ·  1\n\t\t\t\t295 text B07浏览器关联知识\n\t\t\t\t296 button 打开 Wiki ›\n\t\t\t\t297 heading 示例, Value: 3\n\t\t\t\t\t298 text 示例\n\t\t\t\t299 text 甲示例\n\t\t\t\t300 heading 正文模板, Value: 3\n\t\t\t\t\t301 text 正文模板\n\t\t\t\t302 text 原样保存 · 不会因为填写变量而改变\n\t\t\t\t303 text  首行\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\n尾部 \n\t\t\t\t304 heading 填写变量并复制, Value: 3\n\t\t\t\t\t305 text 填写变量并复制\n\t\t\t\t306 text 2 个变量\n\t\t\t\t307 container\n\t\t\t\t\t308 text 客户名称\n\t\t\t\t\t309 text field (settable) 客户名称 未填写\n\t\t\t\t\t310 text 未填写\n\t\t\t\t311 container\n\t\t\t\t\t312 text 业务流程\n\t\t\t\t\t313 text field (settable) 业务流程 未填写\n\t\t\t\t\t314 text 未填写\n\t\t\t\t315 container\n\t\t\t\t\t316 text 还缺少： 客户名称、业务流程 （只填空格也算未填写）。\n\t\t\t\t317 container\n\t\t\t\t\t318 text 服务端校验未通过，缺少： 客户名称、业务流程 。未生成的模板不会被复制。\n\t\t\t\t319 button 生成最终正文\n\t\t\t\t320 button (disabled) 复制最终正文\n\t\t\t\t321 heading 版本历史 · 3, Value: 3\n\t\t\t\t\t322 text 版本历史 · \n\t\t\t\t323 text 每次有效保存都会追加完整快照\n\t\t\t\t324 button 第 3 版 2026年10月7日 22:24 人工保存 · 48 字符\n\t\t\t\t\t325 container\n\t\t\t\t\t\t326 text 第  3  版\n\t\t\t\t\t327 text 2026年10月7日 22:24\n\t\t\t\t\t328 container\n\t\t\t\t\t\t329 text 人工保存  ·  48  字符\n\t\t\t\t330 button 第 2 版 2026年10月7日 22:23 人工保存 · 48 字符\n\t\t\t\t\t331 container\n\t\t\t\t\t\t332 text 第  2  版\n\t\t\t\t\t333 text 2026年10月7日 22:23\n\t\t\t\t\t334 container\n\t\t\t\t\t\t335 text 人工保存  ·  48  字符\n\t\t\t\t336 button 第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\n\t\t\t\t\t337 container\n\t\t\t\t\t\t338 text 第  1  版\n\t\t\t\t\t339 text 2026年10月7日 22:19\n\t\t\t\t\t340 container\n\t\t\t\t\t\t341 text 人工保存  ·  48  字符\n\nThe focused UI element is 64 text field (settable) Description: 搜索 Prompt, Value: 返修模板甲",
+      "events": [
+        {
+          "id": "filter-old",
+          "phase": "held",
+          "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+          "method": "GET",
+          "status": 200,
+          "body": "{\"items\":[{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:22:18.945Z\",\"version\":3,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":1,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}"
+        },
+        {
+          "id": "filter-old",
+          "phase": "released",
+          "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+          "method": "GET",
+          "status": 200,
+          "body": "{\"items\":[{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:22:18.945Z\",\"version\":3,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":1,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}"
+        }
+      ]
+    },
+    {
+      "id": "F07-05-create-request-id-overlap",
+      "result": "FAIL",
+      "response": {
+        "id": "create-F",
+        "phase": "held",
+        "url": "/api/prompts",
+        "method": "POST",
+        "status": 409,
+        "body": "{\"error\":{\"code\":\"REQUEST_ID_CONFLICT\",\"message\":\"同一个 requestId 已用于另一组初始内容，本次未写入；请重新发起一次新建。\",\"details\":{\"id\":\"4aa58372-464d-47a3-8649-eee66530ac99\"}}}"
+      },
+      "dom": "Browser tab: 1, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:57014/\".\n0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:57014/\n\t1 container root\n\t\t2 container\n\t\t\t3 text F 快消 AI 工作台 FMCG PM WORKSPACE 工作空间\n\t\t\t4 container 主导航\n\t\t\t\t5 button ⌂ 首页\n\t\t\t\t\t6 text ⌂\n\t\t\t\t\t7 text 首页\n\t\t\t\t8 button ▤ 知识库\n\t\t\t\t\t9 text ▤\n\t\t\t\t\t10 text 知识库\n\t\t\t\t11 button ▧ Raw 原始资料\n\t\t\t\t\t12 text ▧\n\t\t\t\t\t13 text Raw 原始资料\n\t\t\t\t14 button ✳ Prompt 工作台\n\t\t\t\t\t15 text ✳\n\t\t\t\t\t16 text Prompt 工作台\n\t\t\t17 text 偏好\n\t\t\t18 button ⚙ 设置\n\t\t\t\t19 text ⚙\n\t\t\t\t20 text 设置\n\t\t\t21 text 数据保存在本机\n\t\t22 container\n\t\t\t23 container\n\t\t\t\t24 text 工作空间  / Prompt 工作台\n\t\t\t25 text 本地工作区 可复用工作方法 · 手动 Library\n\t\t\t26 heading Prompt 工作台, Value: 1\n\t\t\t\t27 text Prompt 工作台\n\t\t\t28 text 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n\t\t\t29 button (disabled) 自然语言生成（B08 后续开放）, Help: B08 后续开放\n\t\t\t30 button (disabled) 优化 Prompt（B08 后续开放）, Help: B08 后续开放\n\t\t\t31 button ＋ 新建 Prompt\n\t\t\t\t32 text ＋\n\t\t\t\t33 text 新建 Prompt\n\t\t\t34 container Prompt 工作台功能\n\t\t\t\t35 text Library\n\t\t\t\t36 button (disabled) Generator · B08 后续开放, Help: B08 后续开放\n\t\t\t\t37 button (disabled) Optimizer · B08 后续开放, Help: B08 后续开放\n\t\t\t407 text 同一个 requestId 已用于另一组初始内容，本次未写入；请重新发起一次新建。\n\t\t\t408 button 关闭\n\t\t\t38 heading 分类, Value: 2\n\t\t\t\t39 text 分类\n\t\t\t40 text 六个默认分类，点击筛选 5  条\n\t\t\t41 button 全部 5\n\t\t\t\t42 text 全部\n\t\t\t\t43 text 5\n\t\t\t44 button 行业学习 3, Help: 学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\n\t\t\t\t45 text 行业学习\n\t\t\t\t46 text 3\n\t\t\t47 button 业务分析 1, Help: 分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\n\t\t\t\t48 text 业务分析\n\t\t\t\t49 text 1\n\t\t\t50 button 客户 0, Help: 面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\n\t\t\t\t51 text 客户\n\t\t\t\t52 text 0\n\t\t\t53 button 产品 0, Help: 产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\n\t\t\t\t54 text 产品\n\t\t\t\t55 text 0\n\t\t\t56 button AI 0, Help: 用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\n\t\t\t\t57 text AI\n\t\t\t\t58 text 0\n\t\t\t59 button 日常办公 1, Help: 日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\n\t\t\t\t60 text 日常办公\n\t\t\t\t61 text 1\n\t\t\t62 container\n\t\t\t\t63 text ⌕\n\t\t\t\t64 text field (settable) 搜索 Prompt\n\t\t\t65 container\n\t\t\t\t66 text 标签\n\t\t\t\t67 text field (settable) 标签\n\t\t\t68 checkbox (settable, integer) Description: 只看收藏, Value: 0\n\t\t\t69 text 5  条\n\t\t\t395 button ✳ B07并发新建戊 行业学习 · 第 1 版 手动创建\n\t\t\t\t396 text ✳\n\t\t\t\t397 text B07并发新建戊\n\t\t\t\t398 container\n\t\t\t\t\t399 text 行业学习  · 第  1  版\n\t\t\t\t400 text 手动创建\n\t\t\t401 button ✳ B07并发新建丁 行业学习 · 第 1 版 手动创建\n\t\t\t\t402 text ✳\n\t\t\t\t403 text B07并发新建丁\n\t\t\t\t404 container\n\t\t\t\t\t405 text 行业学习  · 第  1  版\n\t\t\t\t406 text 手动创建\n\t\t\t148 button ★ B07返修模板甲 业务分析 · 第 3 版 标签：甲标签、返修\n\t\t\t\t149 text ★\n\t\t\t\t150 text B07返修模板甲\n\t\t\t\t151 container\n\t\t\t\t\t152 text 业务分析  · 第  3  版\n\t\t\t\t153 text 标签：甲标签、返修\n\t\t\t342 button ✳ B07返修新模板丙 行业学习 · 第 1 版 手动创建\n\t\t\t\t343 text ✳\n\t\t\t\t344 text B07返修新模板丙\n\t\t\t\t345 container\n\t\t\t\t\t346 text 行业学习  · 第  1  版\n\t\t\t\t347 text 手动创建\n\t\t\t348 button ★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\n\t\t\t\t349 text ★\n\t\t\t\t350 text B07模板乙\n\t\t\t\t351 container\n\t\t\t\t\t352 text 日常办公  · 第  3  版\n\t\t\t\t353 text 标签：乙标签\n\t\t\t354 container\n\t\t\t\t355 text 创建 Prompt\n\t\t\t\t356 heading 新建 Prompt, Value: 2\n\t\t\t\t\t357 text 新建 Prompt\n\t\t\t\t358 button 取消编辑\n\t\t\t\t359 text 名称\n\t\t\t\t360 text *\n\t\t\t\t361 text field (settable) 名称 *, Value: B07并发新建己\n\t\t\t\t362 text 分类\n\t\t\t\t363 pop up button (collapsed, settable) 分类, Value: 行业学习, Secondary Actions: Expand\n\t\t\t\t\t364 menu\n\t\t\t\t\t\t365 (selected) 行业学习\n\t\t\t\t\t\t366 业务分析\n\t\t\t\t\t\t367 客户\n\t\t\t\t\t\t368 产品\n\t\t\t\t\t\t369 AI\n\t\t\t\t\t\t370 日常办公\n\t\t\t\t371 text 收藏\n\t\t\t\t372 pop up button (collapsed, settable) 收藏, Value: 不收藏, Secondary Actions: Expand\n\t\t\t\t\t373 menu\n\t\t\t\t\t\t374 (selected) 不收藏\n\t\t\t\t\t\t375 加入收藏\n\t\t\t\t376 text 场景\n\t\t\t\t377 text entry area (settable) 场景\n\t\t\t\t378 text 正文\n\t\t\t\t379 text *\n\t\t\t\t380 text entry area (settable) 正文 * 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。, Value: 己正文\n\t\t\t\t381 text 正文原样保存（含前后空白与换行）；识别到的变量： 暂无 。上限  100,000  字符。 输入要求\n\t\t\t\t382 text entry area (settable) 输入要求\n\t\t\t\t383 text 输出要求\n\t\t\t\t384 text entry area (settable) 输出要求\n\t\t\t\t385 text 相关 Wiki\n\t\t\t\t386 list 相关 Wiki 按住 Ctrl 可多选；只允许选择当前存在的 Wiki。关联不会把 Wiki 正文写入 Prompt。\n\t\t\t\t\t387 B07浏览器关联知识｜metric\n\t\t\t\t388 text 按住 Ctrl 可多选；只允许选择当前存在的 Wiki。关联不会把 Wiki 正文写入 Prompt。 示例\n\t\t\t\t389 text entry area (settable) 示例\n\t\t\t\t390 text 标签\n\t\t\t\t391 text field (settable) 标签\n\t\t\t\t392 text 保存后形成正式 Prompt 记录与一个新版本\n\t\t\t\t393 button 取消\n\t\t\t\t394 button 保存 Prompt\n\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:57014/"
+    },
+    {
+      "id": "UI-export-current",
+      "result": "PASS",
+      "downloadPath": "C:\\Users\\80593\\Downloads\\prompt-f6caf607-34ca-471d-ae4e-d2467860f3d9.md"
+    },
+    {
+      "id": "UI-delete-C",
+      "result": "PASS",
+      "state": "Browser tab: 1, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:57014/\".\n0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:57014/\n\t1 container root\n\t\t2 container\n\t\t\t3 text F 快消 AI 工作台 FMCG PM WORKSPACE 工作空间\n\t\t\t4 container 主导航\n\t\t\t\t5 button ⌂ 首页\n\t\t\t\t\t6 text ⌂\n\t\t\t\t\t7 text 首页\n\t\t\t\t8 button ▤ 知识库\n\t\t\t\t\t9 text ▤\n\t\t\t\t\t10 text 知识库\n\t\t\t\t11 button ▧ Raw 原始资料\n\t\t\t\t\t12 text ▧\n\t\t\t\t\t13 text Raw 原始资料\n\t\t\t\t14 button ✳ Prompt 工作台\n\t\t\t\t\t15 text ✳\n\t\t\t\t\t16 text Prompt 工作台\n\t\t\t17 text 偏好\n\t\t\t18 button ⚙ 设置\n\t\t\t\t19 text ⚙\n\t\t\t\t20 text 设置\n\t\t\t21 text 数据保存在本机\n\t\t22 container\n\t\t\t23 container\n\t\t\t\t24 text 工作空间  / Prompt 工作台\n\t\t\t25 text 本地工作区 可复用工作方法 · 手动 Library\n\t\t\t26 heading Prompt 工作台, Value: 1\n\t\t\t\t27 text Prompt 工作台\n\t\t\t28 text 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。\n\t\t\t29 button (disabled) 自然语言生成（B08 后续开放）, Help: B08 后续开放\n\t\t\t30 button (disabled) 优化 Prompt（B08 后续开放）, Help: B08 后续开放\n\t\t\t31 button ＋ 新建 Prompt\n\t\t\t\t32 text ＋\n\t\t\t\t33 text 新建 Prompt\n\t\t\t34 container Prompt 工作台功能\n\t\t\t\t35 text Library\n\t\t\t\t36 button (disabled) Generator · B08 后续开放, Help: B08 后续开放\n\t\t\t\t37 button (disabled) Optimizer · B08 后续开放, Help: B08 后续开放\n\t\t\t407 text Prompt 已删除（移动到 prompts/recycle，不再出现在列表、搜索和统计中）。\n\t\t\t408 button 关闭\n\t\t\t38 heading 分类, Value: 2\n\t\t\t\t39 text 分类\n\t\t\t40 text 六个默认分类，点击筛选 4  条\n\t\t\t41 button 全部 4\n\t\t\t\t42 text 全部\n\t\t\t\t43 text 4\n\t\t\t44 button 行业学习 2, Help: 学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\n\t\t\t\t45 text 行业学习\n\t\t\t\t46 text 2\n\t\t\t47 button 业务分析 1, Help: 分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\n\t\t\t\t48 text 业务分析\n\t\t\t\t49 text 1\n\t\t\t50 button 客户 0, Help: 面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\n\t\t\t\t51 text 客户\n\t\t\t\t52 text 0\n\t\t\t53 button 产品 0, Help: 产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\n\t\t\t\t54 text 产品\n\t\t\t\t55 text 0\n\t\t\t56 button AI 0, Help: 用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\n\t\t\t\t57 text AI\n\t\t\t\t58 text 0\n\t\t\t59 button 日常办公 1, Help: 日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\n\t\t\t\t60 text 日常办公\n\t\t\t\t61 text 1\n\t\t\t62 container\n\t\t\t\t63 text ⌕\n\t\t\t\t64 text field (settable) 搜索 Prompt\n\t\t\t65 container\n\t\t\t\t66 text 标签\n\t\t\t\t67 text field (settable) 标签\n\t\t\t68 checkbox (settable, integer) Description: 只看收藏, Value: 0\n\t\t\t69 text 4  条\n\t\t\t395 button ✳ B07并发新建戊 行业学习 · 第 1 版 手动创建\n\t\t\t\t396 text ✳\n\t\t\t\t397 text B07并发新建戊\n\t\t\t\t398 container\n\t\t\t\t\t399 text 行业学习  · 第  1  版\n\t\t\t\t400 text 手动创建\n\t\t\t401 button ✳ B07并发新建丁 行业学习 · 第 1 版 手动创建\n\t\t\t\t402 text ✳\n\t\t\t\t403 text B07并发新建丁\n\t\t\t\t404 container\n\t\t\t\t\t405 text 行业学习  · 第  1  版\n\t\t\t\t406 text 手动创建\n\t\t\t148 button ★ B07返修模板甲 业务分析 · 第 3 版 标签：甲标签、返修\n\t\t\t\t149 text ★\n\t\t\t\t150 text B07返修模板甲\n\t\t\t\t151 container\n\t\t\t\t\t152 text 业务分析  · 第  3  版\n\t\t\t\t153 text 标签：甲标签、返修\n\t\t\t348 button ★ B07模板乙 日常办公 · 第 3 版 标签：乙标签\n\t\t\t\t349 text ★\n\t\t\t\t350 text B07模板乙\n\t\t\t\t351 container\n\t\t\t\t\t352 text 日常办公  · 第  3  版\n\t\t\t\t353 text 标签：乙标签\n\t\t\t409 text ✳\n\t\t\t410 text 选择或创建一条 Prompt\n\t\t\t411 text Library 与知识库分离：这里保存的是工作方法，不会写入 Wiki。\n\t\t\t412 button 新建 Prompt\n\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:57014/"
+    },
+    {
+      "id": "UI-restart-persistence",
+      "result": "PASS",
+      "state": "Browser tab: 1, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:57014/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 106, 115-118\n~\t\t\t\t96 text 业务分析 手动创建 已收藏\n~\t\t\t\t97 link Description: 导出 Markdown, Value: 127.0.0.1:57014/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/export\n~\t\t\t\t98 button 取消收藏\n~\t\t\t\t101 heading B07返修模板甲, Value: 2\n~\t\t\t\t\t102 text B07返修模板甲\n~\t\t\t\t103 text 分类 业务分析 版本 第 3 版 创建时间 2026年10月7日 22:19 最近修改 2026年10月7日 22:24 甲标签 返修\n+\t\t\t\t122 heading 场景, Value: 3\n+\t\t\t\t\t123 text 场景\n+\t\t\t\t124 text 甲第三版已提交旧编辑\n+\t\t\t\t125 heading 输入要求, Value: 3\n+\t\t\t\t\t126 text 输入要求\n+\t\t\t\t127 text 甲输入\n+\t\t\t\t128 heading 输出要求, Value: 3\n+\t\t\t\t\t129 text 输出要求\n+\t\t\t\t130 text 甲输出\n~\t\t\t\t104 heading 相关 Wiki · 1, Value: 3\n~\t\t\t\t\t105 text 相关 Wiki ·  1\n+\t\t\t\t131 text B07浏览器关联知识\n+\t\t\t\t132 button 打开 Wiki ›\n+\t\t\t\t133 heading 示例, Value: 3\n+\t\t\t\t\t134 text 示例\n+\t\t\t\t135 text 甲示例\n~\t\t\t\t110 text  首行\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\n尾部 \n~\t\t\t\t113 text 2 个变量\n+\t\t\t\t136 container\n+\t\t\t\t\t137 text 客户名称\n+\t\t\t\t\t138 text field (settable) 客户名称 未填写\n+\t\t\t\t\t139 text 未填写\n+\t\t\t\t140 container\n+\t\t\t\t\t141 text 业务流程\n+\t\t\t\t\t142 text field (settable) 业务流程 未填写\n+\t\t\t\t\t143 text 未填写\n+\t\t\t\t144 container\n+\t\t\t\t\t145 text 还缺少： 客户名称、业务流程 （只填空格也算未填写）。\n+\t\t\t\t146 button 生成最终正文\n~\t\t\t\t114 button (disabled) 复制最终正文\n~\t\t\t\t119 heading 版本历史 · 3, Value: 3\n~\t\t\t\t\t120 text 版本历史 · \n+\t\t\t\t147 button 第 3 版 2026年10月7日 22:24 人工保存 · 48 字符\n+\t\t\t\t\t148 container\n+\t\t\t\t\t\t149 text 第  3  版\n+\t\t\t\t\t150 text 2026年10月7日 22:24\n+\t\t\t\t\t151 container\n+\t\t\t\t\t\t152 text 人工保存  ·  48  字符\n+\t\t\t\t153 button 第 2 版 2026年10月7日 22:23 人工保存 · 48 字符\n+\t\t\t\t\t154 container\n+\t\t\t\t\t\t155 text 第  2  版\n+\t\t\t\t\t156 text 2026年10月7日 22:23\n+\t\t\t\t\t157 container\n+\t\t\t\t\t\t158 text 人工保存  ·  48  字符\n+\t\t\t\t159 button 第 1 版 2026年10月7日 22:19 人工保存 · 48 字符\n+\t\t\t\t\t160 container\n+\t\t\t\t\t\t161 text 第  1  版\n+\t\t\t\t\t162 text 2026年10月7日 22:19\n+\t\t\t\t\t163 container\n+\t\t\t\t\t\t164 text 人工保存  ·  48  字符\nThe focused UI element is 83 button ★ B07返修模板甲 业务分析 · 第 3 版 标签：甲标签、返修",
+      "restartCount": 2
+    },
+    {
+      "id": "UI-tag-favorite-filter",
+      "result": "PASS",
+      "state": "Browser tab: 1, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:57014/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 89-94\n~\t\t\t\t68 text field (settable) 标签, Value: 甲标签\n~\t\t\t70 text 1  条\nThe focused UI element is 68 text field (settable) 标签, Value: 甲标签"
+    }
+  ],
+  "aId": "f6caf607-34ca-471d-ae4e-d2467860f3d9",
+  "cId": "d22f1943-eb4f-43e9-b762-b30abad039bc",
+  "completed": true,
+  "summary": {
+    "closed": [
+      "F07-01",
+      "F07-02",
+      "F07-03",
+      "F07-06"
+    ],
+    "open": [
+      "F07-04",
+      "F07-05"
+    ],
+    "batch": "FAIL"
+  },
+  "events": [
+    {
+      "id": "render-values",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"version\":1,\"body\":\" 首行\\n请为 华南新客户 制定 铺货 回访；重复客户 华南新客户。\\n尾部 \",\"missingVariables\":[]}"
+    },
+    {
+      "id": "render-values",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"version\":1,\"body\":\" 首行\\n请为 华南新客户 制定 铺货 回访；重复客户 华南新客户。\\n尾部 \",\"missingVariables\":[]}"
+    },
+    {
+      "id": "history-B",
+      "phase": "held",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:18:35.513Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.513Z\",\"version\":1,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-B",
+      "phase": "released",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:18:35.513Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.513Z\",\"version\":1,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-A",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/versions/1",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:19:28.695Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"name\":\"B07返修模板甲\",\"category\":\"business_analysis\",\"scenario\":\"甲第一版场景\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"variables\":[\"客户名称\",\"业务流程\"],\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"64fad3d4-953f-48e9-a943-f785e85fbde1\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"返修\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:19:28.695Z\",\"updatedAt\":\"2026-10-07T14:19:28.695Z\",\"version\":1,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-A",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/versions/1",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:19:28.695Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"name\":\"B07返修模板甲\",\"category\":\"business_analysis\",\"scenario\":\"甲第一版场景\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"variables\":[\"客户名称\",\"业务流程\"],\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"64fad3d4-953f-48e9-a943-f785e85fbde1\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"返修\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:19:28.695Z\",\"updatedAt\":\"2026-10-07T14:19:28.695Z\",\"version\":1,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-v1",
+      "phase": "held",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:18:35.513Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.513Z\",\"version\":1,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-v2",
+      "phase": "held",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/2",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":2,\"savedAt\":\"2026-10-07T14:18:35.524Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.524Z\",\"version\":2,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-v2",
+      "phase": "released",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/2",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":2,\"savedAt\":\"2026-10-07T14:18:35.524Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.524Z\",\"version\":2,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-v1",
+      "phase": "released",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"version\":{\"version\":1,\"savedAt\":\"2026-10-07T14:18:35.513Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:18:35.513Z\",\"version\":1,\"source\":\"manual\"}}}"
+    },
+    {
+      "id": "history-error",
+      "phase": "held",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+      "method": "GET",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"CORRUPT_PROMPT\",\"message\":\"Prompt 文件 2f5f430f-71ba-431e-baa1-47a08428b778 不是可读取的 JSON，已保留原文件，请人工检查。\",\"details\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\"}}}"
+    },
+    {
+      "id": "history-error",
+      "phase": "released",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778/versions/1",
+      "method": "GET",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"CORRUPT_PROMPT\",\"message\":\"Prompt 文件 2f5f430f-71ba-431e-baa1-47a08428b778 不是可读取的 JSON，已保留原文件，请人工检查。\",\"details\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\"}}}"
+    },
+    {
+      "id": "render-A-busy",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"version\":1,\"body\":\" 首行\\n请为 请求甲客户 制定 请求甲流程；重复客户 请求甲客户。\\n尾部 \",\"missingVariables\":[]}"
+    },
+    {
+      "id": "favorite-B-busy",
+      "phase": "held",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778",
+      "method": "PUT",
+      "status": 200,
+      "body": "{\"prompt\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:22:18.945Z\",\"version\":3,\"source\":\"manual\"}}"
+    },
+    {
+      "id": "render-A-busy",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"version\":1,\"body\":\" 首行\\n请为 请求甲客户 制定 请求甲流程；重复客户 请求甲客户。\\n尾部 \",\"missingVariables\":[]}"
+    },
+    {
+      "id": "favorite-B-busy",
+      "phase": "released",
+      "url": "/api/prompts/2f5f430f-71ba-431e-baa1-47a08428b778",
+      "method": "PUT",
+      "status": 200,
+      "body": "{\"prompt\":{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:22:18.945Z\",\"version\":3,\"source\":\"manual\"}}"
+    },
+    {
+      "id": "render-failure",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}"
+    },
+    {
+      "id": "render-failure",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}"
+    },
+    {
+      "id": "save-A",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9",
+      "method": "PUT",
+      "status": 200,
+      "body": "{\"prompt\":{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"name\":\"B07返修模板甲\",\"category\":\"business_analysis\",\"scenario\":\"甲第二版场景\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"variables\":[\"客户名称\",\"业务流程\"],\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"64fad3d4-953f-48e9-a943-f785e85fbde1\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"返修\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:19:28.695Z\",\"updatedAt\":\"2026-10-07T14:23:31.741Z\",\"version\":2,\"source\":\"manual\"}}"
+    },
+    {
+      "id": "save-A",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9",
+      "method": "PUT",
+      "status": 200,
+      "body": "{\"prompt\":{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"name\":\"B07返修模板甲\",\"category\":\"business_analysis\",\"scenario\":\"甲第二版场景\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"variables\":[\"客户名称\",\"业务流程\"],\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"64fad3d4-953f-48e9-a943-f785e85fbde1\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"返修\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:19:28.695Z\",\"updatedAt\":\"2026-10-07T14:23:31.741Z\",\"version\":2,\"source\":\"manual\"}}"
+    },
+    {
+      "id": "same-record-save",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9",
+      "method": "PUT",
+      "status": 200,
+      "body": "{\"prompt\":{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"name\":\"B07返修模板甲\",\"category\":\"business_analysis\",\"scenario\":\"甲第三版已提交旧编辑\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"variables\":[\"客户名称\",\"业务流程\"],\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"64fad3d4-953f-48e9-a943-f785e85fbde1\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"返修\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:19:28.695Z\",\"updatedAt\":\"2026-10-07T14:24:51.720Z\",\"version\":3,\"source\":\"manual\"}}"
+    },
+    {
+      "id": "same-record-save",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9",
+      "method": "PUT",
+      "status": 200,
+      "body": "{\"prompt\":{\"id\":\"f6caf607-34ca-471d-ae4e-d2467860f3d9\",\"name\":\"B07返修模板甲\",\"category\":\"business_analysis\",\"scenario\":\"甲第三版已提交旧编辑\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"variables\":[\"客户名称\",\"业务流程\"],\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"64fad3d4-953f-48e9-a943-f785e85fbde1\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"返修\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:19:28.695Z\",\"updatedAt\":\"2026-10-07T14:24:51.720Z\",\"version\":3,\"source\":\"manual\"}}"
+    },
+    {
+      "id": "render-error-history",
+      "phase": "held",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}"
+    },
+    {
+      "id": "render-error-history",
+      "phase": "released",
+      "url": "/api/prompts/f6caf607-34ca-471d-ae4e-d2467860f3d9/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}"
+    },
+    {
+      "id": "filter-old",
+      "phase": "held",
+      "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"items\":[{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:22:18.945Z\",\"version\":3,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":1,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}"
+    },
+    {
+      "id": "filter-old",
+      "phase": "released",
+      "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"items\":[{\"id\":\"2f5f430f-71ba-431e-baa1-47a08428b778\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":true,\"createdAt\":\"2026-10-07T14:18:35.513Z\",\"updatedAt\":\"2026-10-07T14:22:18.945Z\",\"version\":3,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":1,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}"
+    },
+    {
+      "id": "create-D",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"e9c239e0-0524-4208-9cf7-55dbae6f1b4b\",\"name\":\"B07并发新建丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T14:30:37.533Z\",\"updatedAt\":\"2026-10-07T14:30:37.533Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}"
+    },
+    {
+      "id": "create-E",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"4aa58372-464d-47a3-8649-eee66530ac99\",\"name\":\"B07并发新建戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T14:30:38.221Z\",\"updatedAt\":\"2026-10-07T14:30:38.221Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}"
+    },
+    {
+      "id": "create-D",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"e9c239e0-0524-4208-9cf7-55dbae6f1b4b\",\"name\":\"B07并发新建丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T14:30:37.533Z\",\"updatedAt\":\"2026-10-07T14:30:37.533Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}"
+    },
+    {
+      "id": "create-F",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 409,
+      "body": "{\"error\":{\"code\":\"REQUEST_ID_CONFLICT\",\"message\":\"同一个 requestId 已用于另一组初始内容，本次未写入；请重新发起一次新建。\",\"details\":{\"id\":\"4aa58372-464d-47a3-8649-eee66530ac99\"}}}"
+    },
+    {
+      "id": "create-E",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"4aa58372-464d-47a3-8649-eee66530ac99\",\"name\":\"B07并发新建戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T14:30:38.221Z\",\"updatedAt\":\"2026-10-07T14:30:38.221Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}"
+    },
+    {
+      "id": "create-F",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 409,
+      "body": "{\"error\":{\"code\":\"REQUEST_ID_CONFLICT\",\"message\":\"同一个 requestId 已用于另一组初始内容，本次未写入；请重新发起一次新建。\",\"details\":{\"id\":\"4aa58372-464d-47a3-8649-eee66530ac99\"}}}"
+    }
+  ]
+}

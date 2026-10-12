@@ -1,0 +1,18 @@
+﻿[PASS] E07-01 记录与校验 (69ms)
+[PASS] E07-02 列表与中文搜索 (74ms)
+[PASS] E07-03 版本历史 (524ms)
+[PASS] E07-04 并发冲突与创建重试 (57ms)
+[PASS] E07-05 变量提取与填充 (29ms)
+[PASS] E07-07 删除与回收 (579ms)
+[PASS] E07-08 与知识库松耦合 (67ms)
+[PASS] E07-09 Markdown 导出 (7ms)
+[PASS] E07-10 磁盘故障注入与恢复 (551ms)
+[PASS] E07-11 首页数量与知识日志隔离 (53ms)
+[PASS] F07-01 损坏记录不计入有效数量且读取受控失败 (570ms)
+[PASS] E07-12 无 LLM 可用与既有入口回归 (45ms)
+[NOT_RUN] E07-06 真实浏览器复制/粘贴
+      本机没有可由脚本驱动的真实浏览器，本轮不执行剪贴板实测；UI 层的复制分支（未填变量阻止复制、剪贴板失败提示）由 tests/prompt-ui.test.tsx 用桩验证，但那不是真实剪贴板证据，不能替代。留待 Codex 主 Agent 用真实浏览器独立验收。
+
+B07 construction self-test: 12 PASS / 0 FAIL / 1 NOT_RUN in 3145ms
+data root (temporary): C:\Users\80593\AppData\Local\Temp\fmcg-b07-builder-2LiluH
+evidence: docs/reports/B07-builder-http-evidence.json

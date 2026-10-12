@@ -1,0 +1,20 @@
+
+> fmcg-ai-pm-workspace@0.1.0 build
+> tsc -b && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 2 modules transformed.
+✗ Build failed in 37ms
+error during build:
+[commonjs--resolver] EPERM: operation not permitted, realpath 'E:\AI\Work\AIPM Workspace\app\main.tsx'
+    at node:fs:2814:18
+    at getRealPath (file:///E:/AI/Work/AIPM%20Workspace/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:16363:16)
+    at tryResolveRealFileOrType (file:///E:/AI/Work/AIPM%20Workspace/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:16354:20)
+    at tryCleanFsResolve (file:///E:/AI/Work/AIPM%20Workspace/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:15954:22)
+    at tryFsResolve (file:///E:/AI/Work/AIPM%20Workspace/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:15947:15)
+    at Object.resolveId (file:///E:/AI/Work/AIPM%20Workspace/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:15747:19)
+    at Object.handler (file:///E:/AI/Work/AIPM%20Workspace/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:46618:15)
+    at file:///E:/AI/Work/AIPM%20Workspace/node_modules/rollup/dist/es/shared/node-entry.js:23456:40
+    at async PluginDriver.hookFirstAndGetPlugin (file:///E:/AI/Work/AIPM%20Workspace/node_modules/rollup/dist/es/shared/node-entry.js:23338:28)
+    at async resolveId (file:///E:/AI/Work/AIPM%20Workspace/node_modules/rollup/dist/es/shared/node-entry.js:21791:26)

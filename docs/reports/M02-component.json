@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-11T13:53:29.607Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-KjUYBR",
+  "durationMs": 1966,
+  "kind": "jsdom React with actual isolated product HTTP; NOT browser evidence",
+  "checks": [
+    {
+      "id": "C01-committed-create-lost-response-safe-retry",
+      "result": "PASS",
+      "details": {
+        "actualHttpCommit": true,
+        "oneRecord": true,
+        "sameRequestId": true
+      }
+    },
+    {
+      "id": "C02-double-submit-single-operation",
+      "result": "PASS",
+      "details": {
+        "instantDuplicateBlocked": true
+      }
+    },
+    {
+      "id": "C03-edit-conflict-keeps-input-no-overwrite",
+      "result": "PASS",
+      "details": {
+        "actual409": true,
+        "inputRetained": true
+      }
+    },
+    {
+      "id": "C04-unsafe-url-actual-refusal",
+      "result": "PASS",
+      "details": {
+        "badUrlNotCommitted": true,
+        "inputRetained": true
+      }
+    },
+    {
+      "id": "C05-late-detail-cannot-replace-current",
+      "result": "PASS",
+      "details": {
+        "currentRemainsB": true
+      }
+    },
+    {
+      "id": "C06-late-delete-cannot-clear-current",
+      "result": "PASS",
+      "details": {
+        "actualDelete": true,
+        "currentRemainsB": true
+      }
+    },
+    {
+      "id": "C07-policy-close-late-response",
+      "result": "PASS",
+      "details": {
+        "latePolicyNeverReopensOldRecord": true
+      }
+    },
+    {
+      "id": "C08-catalog-close-late-response",
+      "result": "PASS",
+      "details": {
+        "lateCatalogNeverSelectsOldRecord": true
+      }
+    },
+    {
+      "id": "C09-five-filter-combination-and-url-retention",
+      "result": "PASS",
+      "details": {
+        "fiveDimensionsCombined": true,
+        "tagNameSearch": true,
+        "reloadPreservesFilters": true
+      }
+    },
+    {
+      "id": "C10-stopped-references-edit-other-fields",
+      "result": "PASS",
+      "details": {
+        "inactiveTagPreserved": true,
+        "noFalseReselection": true
+      }
+    },
+    {
+      "id": "C11-restricted-create-clears-hidden-fields",
+      "result": "PASS",
+      "details": {
+        "hiddenFieldsNeverPosted": true
+      }
+    },
+    {
+      "id": "C12-module-isolation",
+      "result": "PASS",
+      "details": {
+        "oldAssetsUnchanged": true,
+        "providerCalls": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 12,
+    "fail": 0
+  },
+  "alerts": [],
+  "providerCalls": 0,
+  "servicesClosed": true
+}

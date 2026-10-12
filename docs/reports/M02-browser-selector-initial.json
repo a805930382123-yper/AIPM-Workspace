@@ -1,0 +1,303 @@
+{
+  "at": "2026-10-11T14:20:25.718Z",
+  "kind": "actual CUA in-app Chromium browser, isolated real product API",
+  "checks": [
+    {
+      "id": "B01-empty-no-auto-seed",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B02-minimal-create-defaults-no-links",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B03-edit-cancel-retains-title",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B04-edit-save-https-links",
+      "result": "PASS",
+      "links": [
+        {
+          "href": "https://example.com/m02-recording",
+          "name": "打开录音链接 ↗",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "href": "https://example.com/m02-minutes",
+          "name": "打开纪要链接 ↗",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ]
+    },
+    {
+      "id": "B05-real-source-link-new-tab",
+      "result": "PASS",
+      "newTabUrl": "https://example.com/m02-recording",
+      "safeAnchor": {
+        "href": "https://example.com/m02-recording",
+        "name": "打开录音链接 ↗",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    },
+    {
+      "id": "B06-two-tags-real-save",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B07-default-type-rename-stop-edit-restore-and-add",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B08-tag-rename-stop-edit-restore",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B09-sensitive-local-refusal",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B10-sensitive-local-explicit-confirm",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B11-actual-eio-500-retains-input",
+      "result": "PASS",
+      "input": "写失败保留客户"
+    },
+    {
+      "id": "B12-actual-409-keeps-unsaved-edit",
+      "result": "PASS",
+      "input": "冲突时保留我的输入"
+    },
+    {
+      "id": "B13-restricted-upgrade-preview-cancel",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B14-restricted-upgrade-clear",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B15-post-committed-response-lost-form-retained",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B16-public-raw-refusal-without-independent-confirmation",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B17-public-raw-confirmed-no-feature-buttons",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B18-internal-upgrade-reconfirms-local-clears-raw",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B19-restricted-minimal-create",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B20-combined-five-filters-and-tagname-search",
+      "result": "PASS",
+      "rows": [
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+      ]
+    },
+    {
+      "id": "B21-reload-restores-filter-url",
+      "result": "PASS",
+      "sameUrl": true,
+      "rows": [
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+      ]
+    },
+    {
+      "id": "B22-empty-search-clear-recovery",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B23-ascending-descending-with-same-date",
+      "result": "PASS",
+      "desc": [
+        "M02验收渠道讨论2026-10-11 · 需求对接验收改名Restricted · 无标签",
+        "M02验收同日代称2026-10-11 · 需求对接验收改名Restricted · 无标签",
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+      ],
+      "asc": [
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签",
+        "M02验收同日代称2026-10-11 · 需求对接验收改名Restricted · 无标签",
+        "M02验收渠道讨论2026-10-11 · 需求对接验收改名Restricted · 无标签"
+      ]
+    },
+    {
+      "id": "B24-narrow-390-search-detail-link",
+      "result": "PASS",
+      "viewport": 390,
+      "layout": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "rows": [
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+      ],
+      "linkVisible": true
+    },
+    {
+      "id": "F02-01-danger-button-css",
+      "result": "FAIL_INITIAL",
+      "observed": {
+        "color": "rgb(154,81,71)",
+        "background": "rgb(164,84,74)"
+      },
+      "repairAgent": "GPT-6 Luna High"
+    },
+    {
+      "id": "F02-01-danger-button-css",
+      "result": "PASS_REPAIRED",
+      "actual": {
+        "background": "rgb(140, 63, 54)",
+        "color": "rgb(255, 255, 255)"
+      },
+      "confirmation": {
+        "background": "rgb(157, 81, 70)",
+        "color": "rgb(255, 255, 255)"
+      }
+    },
+    {
+      "id": "B25-keyboard-labelled-field-focus",
+      "result": "PASS",
+      "observed": "Tab from 客户 focuses 项目"
+    },
+    {
+      "id": "B26-delete-cancel",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B27-delete-confirm-fixture-record",
+      "result": "PASS",
+      "remainingRows": [
+        "M02验收渠道讨论2026-10-11 · 需求对接验收改名Restricted · 无标签",
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+      ]
+    },
+    {
+      "id": "B28-legacy-home-navigation",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B29-legacy-wiki-navigation",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B30-legacy-raw-navigation",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B31-legacy-prompt-navigation",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B32-legacy-settings-navigation",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B33-four-search-fields",
+      "result": "PASS",
+      "evidence": [
+        {
+          "q": "公开复盘",
+          "rows": [
+            "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+          ]
+        },
+        {
+          "q": "验收渠道改名",
+          "rows": [
+            "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+          ]
+        },
+        {
+          "q": "验收客户乙",
+          "rows": [
+            "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+          ]
+        },
+        {
+          "q": "验收项目乙",
+          "rows": [
+            "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B34-http-url-refused-input-retained",
+      "result": "PASS",
+      "observed": true
+    },
+    {
+      "id": "B35-cloud-mode-keeps-server-reported-policy",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B36-explicit-local-authorization-revocation",
+      "result": "PASS",
+      "observed": false
+    },
+    {
+      "id": "B37-same-root-restart-real-browser",
+      "result": "PASS",
+      "root": "C:/Users/80593/AppData/Local/Temp/fmcg-m02-browser-KygodI",
+      "rows": [
+        "M02验收渠道讨论2026-10-11 · 需求对接验收改名Restricted · 无标签",
+        "M02验收公开复盘2026-09-01 · 需求对接验收改名Internal · 验收渠道改名、验收项目标签"
+      ],
+      "link": "https://example.com/m02-public",
+      "deletedRecordNotVisible": true
+    },
+    {
+      "id": "B38-final-narrow-after-repair-restart",
+      "result": "PASS",
+      "layout": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "deleteColors": {
+        "background": "rgb(164, 84, 74)",
+        "color": "rgb(255, 255, 255)"
+      }
+    }
+  ],
+  "calibration": [
+    "Exact label selectors for populated textarea/multi-select include nested text; used visible control role or prefix instead.",
+    "Date fill changes native value without React change in this harness; real ArrowDown key updated React state and persisted 2026-09-01."
+  ]
+}

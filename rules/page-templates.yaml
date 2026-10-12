@@ -1,0 +1,124 @@
+# Based on LLM-Wiki-KB page-template structure (MIT); Chinese sections below follow the FMCG PRD.
+templates:
+  source:
+    sections:
+      - key: summary
+        label: 摘要
+        hint: 用几句话概括来源主题，不复制 Raw 全文。
+      - key: key_takeaways
+        label: Key Takeaways
+        hint: 每条写一个可查阅的重点。
+      - key: concepts
+        label: 涉及概念
+        hint: 可使用 [[概念名称]] 建立关联。
+      - key: entities
+        label: 涉及实体
+      - key: processes
+        label: 涉及业务流程
+      - key: metrics
+        label: 涉及指标
+      - key: important_points
+        label: 重要观点
+      - key: verification_questions
+        label: 待验证内容
+        hint: 当前来源不能确认、需要进一步核对的内容。
+  concept:
+    sections:
+      - key: one_line_explanation
+        label: 一句话解释
+      - key: definition
+        label: 定义
+      - key: why_important
+        label: 为什么重要
+      - key: business_context
+        label: 在业务中的位置
+      - key: characteristics
+        label: 关键特征
+      - key: common_categories
+        label: 常见分类
+      - key: relationships
+        label: 与其他概念关系
+        hint: 可使用 [[概念名称]] 建立关联。
+      - key: scenarios
+        label: 常见业务场景
+      - key: open_questions
+        label: 待确认问题
+  entity:
+    sections:
+      - key: one_line_summary
+        label: 一句话说明
+      - key: basic_information
+        label: 基本信息
+      - key: business_role
+        label: 在当前业务中的角色
+      - key: related_business
+        label: 相关业务
+      - key: related_concepts
+        label: 相关概念
+        hint: 可使用 [[概念名称]] 建立关联。
+      - key: related_processes
+        label: 相关流程
+  business_process:
+    sections:
+      - key: business_goal
+        label: 业务目标
+      - key: roles
+        label: 涉及角色
+      - key: trigger
+        label: 触发条件
+      - key: inputs
+        label: 输入
+      - key: steps
+        label: 完整流程
+      - key: outputs
+        label: 输出
+      - key: systems
+        label: 使用系统
+      - key: rules
+        label: 关键规则
+      - key: human_judgement
+        label: 人工判断点
+      - key: exceptions
+        label: 异常情况
+      - key: pain_points
+        label: 痛点
+      - key: ai_opportunities
+        label: 可能的 AI 机会
+        hint: 内容属于分析建议，不能写成来源事实。
+      - key: metrics
+        label: 相关指标
+      - key: related_knowledge
+        label: 相关知识
+        hint: 可使用 [[知识名称]] 建立关联。
+  metric:
+    sections:
+      - key: definition
+        label: 定义
+      - key: business_meaning
+        label: 业务含义
+      - key: formula
+        label: 计算方式
+      - key: scope
+        label: 适用范围
+      - key: data_source
+        label: 数据来源
+      - key: interpretation
+        label: 如何解读
+      - key: common_mistakes
+        label: 常见误区
+      - key: related_metrics
+        label: 相关指标
+  synthesis:
+    sections:
+      - key: overview
+        label: 综合说明
+      - key: major_sources
+        label: 主要来源
+        hint: 在来源选择中关联多个 Raw，并说明各自支持的部分。
+      - key: agreements
+        label: 一致观点
+      - key: conflicts
+        label: 冲突
+        hint: 保留不同来源的说法，不要静默合并。
+      - key: open_questions
+        label: 待确认问题

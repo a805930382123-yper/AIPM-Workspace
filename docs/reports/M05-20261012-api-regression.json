@@ -1,0 +1,206 @@
+{
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m01-independent-FlagLA",
+  "durationMs": 2848,
+  "checks": [
+    {
+      "id": "M01-01-catalog-defaults",
+      "result": "PASS",
+      "details": {
+        "eightTypes": true,
+        "noTagsOrMeetingsSeeded": true
+      }
+    },
+    {
+      "id": "M01-02-minimal-safe-create",
+      "result": "PASS",
+      "details": {
+        "meetingId": "bbf69fda-b9e4-4062-930b-518ec98f479a",
+        "revision": 1,
+        "defaultsSafe": true
+      }
+    },
+    {
+      "id": "M01-03-idempotent-original-input",
+      "result": "PASS",
+      "details": {
+        "sameId": true,
+        "conflictingPayloadRejected": true,
+        "editingDoesNotBreakCreationKey": true
+      }
+    },
+    {
+      "id": "M01-04-revision-and-concurrent-update",
+      "result": "PASS",
+      "details": {
+        "concurrentWinner": 1,
+        "staleRejected": true
+      }
+    },
+    {
+      "id": "M01-05-create-field-and-date-boundaries",
+      "result": "PASS",
+      "details": {
+        "rejectedVariants": 20,
+        "validLeapDate": "2028-02-29"
+      }
+    },
+    {
+      "id": "M01-06-https-validation",
+      "result": "PASS",
+      "details": {
+        "httpsOnly": true,
+        "credentialsAndControlsRejected": true,
+        "emptyLinksLegal": true
+      }
+    },
+    {
+      "id": "M01-07-metadata-cannot-grant-or-store-body",
+      "result": "PASS",
+      "details": {
+        "forbiddenFields": 13,
+        "noMutation": true
+      }
+    },
+    {
+      "id": "M01-08-catalog-add-rename-stop-reference",
+      "result": "PASS",
+      "details": {
+        "stableTypeId": true,
+        "stoppedHistoricalReferencesReadable": true,
+        "newChoicesRefused": true,
+        "userTagSupported": true
+      }
+    },
+    {
+      "id": "M01-09-catalog-validation-and-concurrency",
+      "result": "PASS",
+      "details": {
+        "oneCatalogWinner": true,
+        "invalidFieldsRejected": true
+      }
+    },
+    {
+      "id": "M01-10-internal-sensitive-local-confirmation",
+      "result": "PASS",
+      "details": {
+        "twoLevelsRequireDedicatedConfirmation": true,
+        "capabilitiesRemainClosed": true
+      }
+    },
+    {
+      "id": "M01-11-public-raw-policy-not-capability",
+      "result": "PASS",
+      "details": {
+        "publicLocalAllowed": true,
+        "rawGrantIndependent": true,
+        "higherLevelRechecksLocalAuthorization": true,
+        "upgradeClearsRawGrant": true
+      }
+    },
+    {
+      "id": "M01-12-policy-reject-downgrade-ai-and-bad-fields",
+      "result": "PASS",
+      "details": {
+        "downgradeAndExternalAiRefused": true,
+        "strictFields": true
+      }
+    },
+    {
+      "id": "M01-13-restricted-create-and-transition",
+      "result": "PASS",
+      "details": {
+        "restrictedLeastMetadata": true,
+        "clearRequiresExplicitConfirmation": true
+      }
+    },
+    {
+      "id": "M01-14-list-summary-and-unavailable-routes",
+      "result": "PASS",
+      "details": {
+        "noBodyInSummary": true,
+        "malformedRawRegistrationRefusedWithoutWrite": true,
+        "noProviderCall": true
+      }
+    },
+    {
+      "id": "M01-15-confirmed-delete-and-stale-guard",
+      "result": "PASS",
+      "details": {
+        "confirmedOnly": true,
+        "staleNotDeleted": true
+      }
+    },
+    {
+      "id": "M01-16-restart-byte-consistency",
+      "result": "PASS",
+      "details": {
+        "sameDirectoryRestartStable": true,
+        "catalogNotReseeded": true
+      }
+    },
+    {
+      "id": "M01-17-corrupt-record-syntax-no-overwrite",
+      "result": "PASS",
+      "details": {
+        "corruptionExplicit": true,
+        "listDoesNotHideDamage": true,
+        "updateDeletePreserveDamagedFile": true
+      }
+    },
+    {
+      "id": "M01-18-corrupt-record-structure-and-id",
+      "result": "PASS",
+      "details": {
+        "structuralDamageRejected": true
+      }
+    },
+    {
+      "id": "M01-19-catalog-corruption-not-reinitialized",
+      "result": "PASS",
+      "details": {
+        "brokenCatalogRetained": true,
+        "restartNeverOverwrites": true
+      }
+    },
+    {
+      "id": "M01-20-actual-write-failure-safe-retry",
+      "result": "PASS",
+      "details": {
+        "actualEioRejected": true,
+        "noPartialRecord": true,
+        "retryWorks": true
+      }
+    },
+    {
+      "id": "M01-21-uuid-path-guard-and-title-not-path",
+      "result": "PASS",
+      "details": {
+        "uuidGuard": true,
+        "titleNeverUsedAsPath": true
+      }
+    },
+    {
+      "id": "M01-22-records-junction-escape",
+      "result": "PASS",
+      "details": {
+        "outsideNeverReadAsMeeting": true,
+        "outsideUnchanged": true
+      }
+    },
+    {
+      "id": "M01-23-module-isolation-and-no-secrets-in-log",
+      "result": "PASS",
+      "details": {
+        "knowledgePromptsDraftsStateUnchanged": true,
+        "providerCalls": 0,
+        "noSensitiveErrorLog": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 23,
+    "fail": 0
+  },
+  "servicesClosed": true,
+  "provider": "local HTTP trap only; must have zero calls"
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "B07",
+  "kind": "construction-self-test",
+  "script": "tests/b07-prompt-http.mjs",
+  "note": "施工自测证据，不是独立验收。由施工 Agent 编写并执行；不得据此标记独立 PASS。",
+  "startedAt": "2026-10-07T07:56:54.042Z",
+  "finishedAt": "2026-10-07T07:56:56.552Z",
+  "durationMs": 2508,
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-builder-J2MJi2",
+  "dataRootDisposedWithWorkspace": false,
+  "llmConfigured": false,
+  "passed": 11,
+  "failed": 0,
+  "notRun": 1,
+  "items": [
+    {
+      "id": "E07-01",
+      "title": "记录与校验",
+      "status": "PASS",
+      "evidence": "{\"schemaCategories\":[\"industry_learning=行业学习\",\"business_analysis=业务分析\",\"customer=客户\",\"product=产品\",\"ai=AI\",\"office=日常办公\"],\"createdFields\":[\"id\",\"name\",\"category\",\"scenario\",\"body\",\"variables\",\"inputRequirements\",\"outputRequirements\",\"relatedWikiIds\",\"examples\",\"tags\",\"favorite\",\"createdAt\",\"updatedAt\",\"version\",\"source\"],\"bodyChars\":10914,\"bodyRoundTrip\":\"exact\",\"rejectedCodes\":[\"INVALID_CATEGORY\",\"INVALID_FIELD\",\"REQUIRED_FIELD\",\"SYSTEM_FIELD_NOT_ALLOWED\",\"UNKNOWN_FIELD\",\"INVALID_REQUEST_ID\",\"INVALID_ID\",\"INVALID_BASE_VERSION\",\"FIELD_TOO_LARGE\"],\"filesBefore\":2,\"filesAfter\":2}",
+      "detail": "",
+      "durationMs": 66
+    },
+    {
+      "id": "E07-02",
+      "title": "列表与中文搜索",
+      "status": "PASS",
+      "evidence": "{\"total\":4,\"categoryCounts\":{\"industry_learning\":1,\"business_analysis\":1,\"customer\":1,\"product\":1,\"ai\":0,\"office\":0},\"searches\":{\"name\":\"门店动销\",\"tag\":\"趋势\",\"body\":\"上架计划\",\"empty\":\"不存在的关键词\"}}",
+      "detail": "",
+      "durationMs": 76
+    },
+    {
+      "id": "E07-03",
+      "title": "版本历史",
+      "status": "PASS",
+      "evidence": "{\"versions\":[\"1@2026-10-07T07:56:54.611Z\",\"2@2026-10-07T07:56:54.689Z\",\"3@2026-10-07T07:56:54.693Z\",\"4@2026-10-07T07:56:54.697Z\",\"5@2026-10-07T07:56:54.701Z\"],\"noChangeSaveKeptVersion\":5,\"restartVersion\":5}",
+      "detail": "",
+      "durationMs": 498
+    },
+    {
+      "id": "E07-04",
+      "title": "并发冲突与创建重试",
+      "status": "PASS",
+      "evidence": "{\"concurrentStatuses\":[200,409],\"staleUpdateKeptFile\":true,\"staleDeleteKeptFile\":true,\"retryReused\":true,\"retryAfterEditName\":\"重试创建样本（已编辑）\",\"recycledCode\":\"PROMPT_RECYCLED\",\"duplicateAllowed\":true}",
+      "detail": "",
+      "durationMs": 55
+    },
+    {
+      "id": "E07-05",
+      "title": "变量提取与填充",
+      "status": "PASS",
+      "evidence": "{\"variables\":[\"客户名称\",\"访谈主题\"],\"literalValues\":\"preserved\",\"protoKeys\":\"值：甲|乙\",\"fileShaUnchanged\":\"7ea7a349a8b98ba4791c9f87f91eb1243c546ae27565f77b36ca364220ce999b\"}",
+      "detail": "",
+      "durationMs": 29
+    },
+    {
+      "id": "E07-07",
+      "title": "删除与回收",
+      "status": "PASS",
+      "evidence": "{\"recyclePath\":\"prompts/recycle/b2eeee70-9e7e-4d57-8600-08819e8ac91e.json\",\"officeCounts\":[4,3],\"promptCounts\":[13,12],\"junkIgnored\":true,\"survivedRestart\":true}",
+      "detail": "",
+      "durationMs": 576
+    },
+    {
+      "id": "E07-08",
+      "title": "与知识库松耦合",
+      "status": "PASS",
+      "evidence": "{\"resolvedThenMissing\":true,\"exportMarksDead\":true,\"wikiSearchHits\":0,\"lintStatus\":200,\"promptLeakedIntoWiki\":false}",
+      "detail": "",
+      "durationMs": 68
+    },
+    {
+      "id": "E07-09",
+      "title": "Markdown 导出",
+      "status": "PASS",
+      "evidence": "{\"contentType\":\"text/markdown; charset=utf-8\",\"filename\":\"attachment; filename=\\\"prompt-b743da38-4efa-4a16-9503-0e265e34d4c8.md\\\"\",\"bytes\":438,\"frontmatterKeys\":[\"id\",\"name\",\"category\",\"categoryLabel\",\"scenario\",\"variables\",\"tags\",\"favorite\",\"source\",\"version\",\"createdAt\",\"updatedAt\",\"relatedWiki\"],\"fencedBodyKept\":true}",
+      "detail": "",
+      "durationMs": 8
+    },
+    {
+      "id": "E07-10",
+      "title": "磁盘故障注入与恢复",
+      "status": "PASS",
+      "evidence": "{\"failureCodes\":[\"PROMPT_WRITE_FAILED\",\"PROMPT_DELETE_FAILED\"],\"versionAfterFailures\":2,\"tempLeftovers\":0,\"recovered\":true,\"lastInjectedFault\":{\"method\":\"rename\",\"target\":\"C:/Users/80593/AppData/Local/Temp/fmcg-b07-builder-J2MJi2/prompts/recycle/7bc2e240-50c9-4f8c-bd25-20eb2b7e1093.json\",\"count\":1,\"action\":\"error\",\"at\":\"2026-10-07T07:56:55.937Z\"}}",
+      "detail": "",
+      "durationMs": 534
+    },
+    {
+      "id": "E07-11",
+      "title": "首页数量与知识日志隔离",
+      "status": "PASS",
+      "evidence": "{\"counts\":{\"start\":14,\"afterCreate\":15,\"afterEdit\":15,\"afterDelete\":14},\"knowledgeLogUnchanged\":true,\"listMatchesCount\":true,\"filesInPromptDir\":14}",
+      "detail": "",
+      "durationMs": 50
+    },
+    {
+      "id": "E07-12",
+      "title": "无 LLM 可用与既有入口回归",
+      "status": "PASS",
+      "evidence": "{\"entries\":{\"raw\":200,\"wiki\":200,\"wikiSchema\":200,\"stats\":200,\"audits\":200,\"wikiLint\":200,\"promptSchema\":200},\"manualChainWithoutLlm\":true,\"extractionResponse\":{\"httpStatus\":400,\"jobStatus\":null,\"code\":\"LLM_NOT_CONFIGURED\"}}",
+      "detail": "",
+      "durationMs": 37
+    },
+    {
+      "id": "E07-06",
+      "title": "真实浏览器复制/粘贴",
+      "status": "NOT_RUN",
+      "evidence": "",
+      "detail": "本机没有可由脚本驱动的真实浏览器，本轮不执行剪贴板实测；UI 层的复制分支（未填变量阻止复制、剪贴板失败提示）由 tests/prompt-ui.test.tsx 用桩验证，但那不是真实剪贴板证据，不能替代。留待 Codex 主 Agent 用真实浏览器独立验收。",
+      "durationMs": 0
+    }
+  ]
+}

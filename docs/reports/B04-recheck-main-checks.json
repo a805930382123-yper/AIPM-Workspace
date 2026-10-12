@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-05",
+  "scope": "B04 repair independent recheck; no product changes by reviewers",
+  "builderEvidenceArchive": {
+    "path": "B04-recheck-builder-http-evidence.json",
+    "sha256": "e2341db76834112d871f9173d280be312e5e456c4833f226228b5b72081f5e07",
+    "archivedBeforeNpmTest": true,
+    "note": "Existing npm test rewrites B04-http-evidence.json; the submitted repair evidence was copied first."
+  },
+  "build": {
+    "command": "npm.cmd run build",
+    "execution": "approved escalated environment",
+    "exitCode": 0,
+    "result": "PASS",
+    "stdout": "B04-recheck-main-build.log",
+    "modules": 39,
+    "outputJs": "index-CC-_fZgv.js",
+    "outputCss": "index-uxFGZpP_.css"
+  },
+  "tests": {
+    "command": "npm.cmd test",
+    "execution": "approved escalated environment",
+    "exitCode": 0,
+    "result": "PASS",
+    "pass": 92,
+    "fail": 0,
+    "durationMs": 16535.8211,
+    "stdout": "B04-recheck-main-test.log",
+    "freshEvidence": "B04-recheck-main-http-evidence.json"
+  },
+  "browser": {
+    "report": "B04-recheck-browser.md",
+    "persistenceChecks": "B04-recheck-browser-checks.json",
+    "fakeProvider": true,
+    "noRealProviderCall": true,
+    "restartFileCount": 16,
+    "restartHashDifferenceCount": 0,
+    "cleanup": "runtime/B04-recheck-browser-cleanup.json"
+  },
+  "realProvider": { "result": "BLOCKED", "reason": "No user configured server-side product Provider/model/key. Fake is not real AI evidence." },
+  "finalBatchResult": "FAIL",
+  "remainingDefectIds": ["F04-04", "F04-05", "F04-11"],
+  "nextBatchAuthorized": false
+}

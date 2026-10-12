@@ -1,0 +1,220 @@
+{
+  "base": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-backup-EmkVvn",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-orvn86",
+  "checks": [
+    {
+      "id": "E09-04-complete-byte-export-and-empty-root-restore",
+      "result": "PASS",
+      "details": {
+        "export": {
+          "code": 0,
+          "stdout": "{\"path\":\"C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b09-backup-EmkVvn\\\\backup.json\",\"files\":21,\"bytes\":24599}\n",
+          "stderr": ""
+        },
+        "restore": {
+          "code": 0,
+          "stdout": "{\"path\":\"C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b09-backup-EmkVvn\\\\restored\",\"files\":21,\"bytes\":24599}\n",
+          "stderr": ""
+        },
+        "files": 21,
+        "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-backup-EmkVvn\\restored",
+        "counts": {
+          "rawCount": 2,
+          "wikiCount": 6,
+          "thisWeekNewCount": 8,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 4,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-11T12:26:22.868Z",
+              "action": "create",
+              "id": "2ad48e93-4e7e-4971-bfd5-9321b7f0073a",
+              "title": "备份知识",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-11T12:26:22.831Z",
+              "action": "create",
+              "id": "ad539cd5-a929-40de-a871-500942137728",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T12:26:22.819Z",
+              "action": "create",
+              "id": "59873c8a-2329-417f-aa10-3aa000bfe36e",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T12:26:22.807Z",
+              "action": "create",
+              "id": "91e11099-397a-4d29-9443-52e0cf100838",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T12:26:22.788Z",
+              "action": "create",
+              "id": "2418c96b-0bfc-4479-bbd5-a9c65293fde5",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T12:26:22.774Z",
+              "action": "create",
+              "id": "8fe7d4fc-ba4e-4913-83c4-f114aaa49128",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "E09-05-malformed-archives-no-target-write",
+      "result": "PASS",
+      "details": [
+        {
+          "name": "traversal",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：../escape\"}\n"
+        },
+        {
+          "name": "absolute",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：/tmp/escape\"}\n"
+        },
+        {
+          "name": "drive",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：C:/escape\"}\n"
+        },
+        {
+          "name": "backslash",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：knowledge\\\\raw\\\\escape\"}\n"
+        },
+        {
+          "name": "duplicate",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含重复路径：state/x\"}\n"
+        },
+        {
+          "name": "case-alias",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含大小写重复路径：state/X\"}\n"
+        },
+        {
+          "name": "ads",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：file:secret\"}\n"
+        },
+        {
+          "name": "reserved",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：CON.json\"}\n"
+        },
+        {
+          "name": "trailing-dot",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：file.\"}\n"
+        },
+        {
+          "name": "trailing-space",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含 Windows 不安全路径段：file \"}\n"
+        },
+        {
+          "name": "hash",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件长度或 SHA-256 校验失败：state/x\"}\n"
+        },
+        {
+          "name": "base64",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"校验字段无效：state/x\"}\n"
+        },
+        {
+          "name": "size",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件长度或 SHA-256 校验失败：state/x\"}\n"
+        },
+        {
+          "name": "oversize",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件大小无效：state/x\"}\n"
+        },
+        {
+          "name": "outside",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档包含非法路径：config/key\"}\n"
+        },
+        {
+          "name": "version",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档格式或版本不受支持。\"}\n"
+        },
+        {
+          "name": "format",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"归档格式或版本不受支持。\"}\n"
+        },
+        {
+          "name": "file-count",
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"文件数超过上限 20000。\"}\n"
+        }
+      ]
+    },
+    {
+      "id": "E09-05-nonempty-containment-and-symlink",
+      "result": "PASS",
+      "details": {
+        "nonemptyPreserved": true,
+        "containmentRejected": true,
+        "symlink": {
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"拒绝符号链接：C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b08-independent-orvn86\\\\state\\\\junction\"}\n"
+        },
+        "whitelistRootSymlink": {
+          "code": 1,
+          "stdout": "",
+          "stderr": "{\"error\":\"拒绝白名单目录符号链接：C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Temp\\\\fmcg-b09-backup-EmkVvn\\\\junction-root\\\\knowledge\"}\n"
+        }
+      }
+    }
+  ]
+}

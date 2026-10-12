@@ -1,0 +1,594 @@
+{
+  "result": "PASS",
+  "sameDirectory": true,
+  "restartCount": 1,
+  "before": {
+    "knowledge": {
+      "audit\\800675ba-a4c1-4965-a6e8-bf76b3a6c29c.json": "dc5b3202375c890c786f2a03605e5b73ee387c5a756170efd1278bc937163fd4",
+      "logs\\wiki.jsonl": "9285be6e12eb82accb3637f8f9a95f74610dc651582573f3983417e431059263",
+      "raw\\articles\\b437db9f-4706-4b31-905e-833506652067.md": "4fc1fecb178546503b1a1f50c2b97bdad5b48d063771431ce32e57dcb4b24cc2",
+      "raw\\notes\\5f59de33-869d-42e0-ae58-50c060e39951.md": "24d5d1f4699ad0215b88152ec7f164c7bebe716e15e59cea47730b6247fc1b3a",
+      "wiki\\3238b106-84b0-4fed-af75-61996f9c22f4.md": "b7e83c7cc9e594c83e33e0cffcef5960ec9305fee0f503a9d98fb2021fb35a08",
+      "wiki\\3baecf7a-28c9-4a55-a6f8-ad6f629d50d9.md": "7aa39272994c52292422fcaf4537b8a48066e6d6b7b0f278e60fb8a6068e5c42",
+      "wiki\\421627af-e187-4f55-8e57-a43637614ec0.md": "210b713cca250ddd0404d1426f1010b3df6fbc61e223f96800266c06114801ef",
+      "wiki\\5e32fbcc-43ff-43a2-bf4a-9248f67f5199.md": "112982011b356954fd8831f382807d9e7a72f20a89202028bf27255c335fd8ef",
+      "wiki\\e089d404-5f1a-4d5e-8da4-6f6baf734d9b.md": "dab4bf7fbd85eaeaa7c7c95ec596addd95636e6193eb97ba5be981071bab8d55",
+      "wiki\\edaf5b5f-25d7-4384-bc88-f2c7db41219f.md": "9f18c9a117b9e22e15f1448ae696614815b69a8a63cae13740e33aa44ac64c90",
+      "wiki\\f7f210dc-3ba7-44b7-8ed2-8c829d4f5628.md": "ff9f522ef26116ee08dde12c9a1896fa9d23612d2d8a4c345491e1442cdf51e5",
+      "wiki\\index.md": "381d6fa7e5dd2e4504d3e00db6f2287855c55c095bb7a7083a84f4c6567fe55a"
+    },
+    "prompts": {
+      "3e1f417e-8307-4314-bf26-3c4d6c6c521f.json": "00b5d473c0fec4d652aaa23f2f135a3725eab5b1b458e5ddaad5d306377ff1a5",
+      "46e62e73-78f7-4fdc-93e9-9ad5a5dc0f57.json": "115ee90cf8249481bb2c3103863cc2c0468813362aa0d9e7e12d28307bef41de",
+      "78a94659-39d7-4e47-87ed-c343b48ef337.json": "f05a9dc7f55253ab602b8ff787e7e75c9de401c7c77919ed8590e1c2af9a3835",
+      "dea6e297-99e0-4d4d-947a-df9cd461ce07.json": "cc237198028cedf40bf5a1323ac6c03dcd3355929f4c20553de8b32a5a547f7e",
+      "e27e3ce0-6a50-47f3-be3d-3dc5231e252f.json": "e940e7772a0c9e52aa8c6034417dec9745d3b61f76a3b7187ade9892c36c30ba"
+    },
+    "drafts": {
+      "audit\\9180b69b-1149-4d49-8f14-8f3dc2eb434e.json": "76db2dd14fefdce39120c78ba1950da4dd5c54a9446661055d386cf3d01bdc27",
+      "eb841678-80d1-4619-8eb3-9966b5a39e47.json": "1fdb554441ea0a75e49a4e89e985e26a8926dd068595d759eb7bd6ba6fc5cdb6",
+      "prompts\\2a867777-191e-441f-9867-aaa88cbcc7f8.json": "a40fb3064a551b533809632f8d93598ec1a6791d5677938eb1007990b5f028fd",
+      "prompts\\8b9d6ab6-0f40-479d-a8ef-655f7851080b.json": "f05ec1c580cd414dac7480c9bfc7815f83345ea23fda4270f9357b5057c9f847",
+      "prompts\\c72b9ef3-19a6-4688-a88c-24bb67b60fd2.json": "064c4785bde0493fde00d2a0cbe0e2c5644379882602418747eda5904f0ba6ef",
+      "prompts\\dea6e297-99e0-4d4d-947a-df9cd461ce07.json": "7b15e72acb1eb97509920461450e69af8b28cbdffc7ae784b6af6821ded642bd"
+    },
+    "state": {
+      "audit-operations\\9d19bb11-a019-4931-9df0-536ebb9b15b8.json": "78a0f98f857153f12f4c104f12e2f3c705400e71e9094b8af5c16dadb1e18ead",
+      "demo-manifest.json": "742e8a2f0dac4e44791e424ae81e42ea0028261059abf4cee5fa965a0d5e5052",
+      "extraction-jobs\\dca55bb9-1d58-4f35-aaf0-bba055e7111c.json": "057f38489d9ca258828b951533f9c1ba70950ecb37b839696d8785dd49cb7b3d",
+      "raw-processing\\b437db9f-4706-4b31-905e-833506652067.json": "b02cff302bdc810e697049c13ccfd389f50d2b69608c24134694c4540aa23802",
+      "wiki-commits\\11c70632-fdfc-4630-8574-dca821d4f450.json": "ec24e550dfb6ca036f616f1561bf66ce8c3047aba430d1a315fbbc0a620cd363"
+    }
+  },
+  "after": {
+    "knowledge": {
+      "audit\\800675ba-a4c1-4965-a6e8-bf76b3a6c29c.json": "dc5b3202375c890c786f2a03605e5b73ee387c5a756170efd1278bc937163fd4",
+      "logs\\wiki.jsonl": "9285be6e12eb82accb3637f8f9a95f74610dc651582573f3983417e431059263",
+      "raw\\articles\\b437db9f-4706-4b31-905e-833506652067.md": "4fc1fecb178546503b1a1f50c2b97bdad5b48d063771431ce32e57dcb4b24cc2",
+      "raw\\notes\\5f59de33-869d-42e0-ae58-50c060e39951.md": "24d5d1f4699ad0215b88152ec7f164c7bebe716e15e59cea47730b6247fc1b3a",
+      "wiki\\3238b106-84b0-4fed-af75-61996f9c22f4.md": "b7e83c7cc9e594c83e33e0cffcef5960ec9305fee0f503a9d98fb2021fb35a08",
+      "wiki\\3baecf7a-28c9-4a55-a6f8-ad6f629d50d9.md": "7aa39272994c52292422fcaf4537b8a48066e6d6b7b0f278e60fb8a6068e5c42",
+      "wiki\\421627af-e187-4f55-8e57-a43637614ec0.md": "210b713cca250ddd0404d1426f1010b3df6fbc61e223f96800266c06114801ef",
+      "wiki\\5e32fbcc-43ff-43a2-bf4a-9248f67f5199.md": "112982011b356954fd8831f382807d9e7a72f20a89202028bf27255c335fd8ef",
+      "wiki\\e089d404-5f1a-4d5e-8da4-6f6baf734d9b.md": "dab4bf7fbd85eaeaa7c7c95ec596addd95636e6193eb97ba5be981071bab8d55",
+      "wiki\\edaf5b5f-25d7-4384-bc88-f2c7db41219f.md": "9f18c9a117b9e22e15f1448ae696614815b69a8a63cae13740e33aa44ac64c90",
+      "wiki\\f7f210dc-3ba7-44b7-8ed2-8c829d4f5628.md": "ff9f522ef26116ee08dde12c9a1896fa9d23612d2d8a4c345491e1442cdf51e5",
+      "wiki\\index.md": "381d6fa7e5dd2e4504d3e00db6f2287855c55c095bb7a7083a84f4c6567fe55a"
+    },
+    "prompts": {
+      "3e1f417e-8307-4314-bf26-3c4d6c6c521f.json": "00b5d473c0fec4d652aaa23f2f135a3725eab5b1b458e5ddaad5d306377ff1a5",
+      "46e62e73-78f7-4fdc-93e9-9ad5a5dc0f57.json": "115ee90cf8249481bb2c3103863cc2c0468813362aa0d9e7e12d28307bef41de",
+      "78a94659-39d7-4e47-87ed-c343b48ef337.json": "f05a9dc7f55253ab602b8ff787e7e75c9de401c7c77919ed8590e1c2af9a3835",
+      "dea6e297-99e0-4d4d-947a-df9cd461ce07.json": "cc237198028cedf40bf5a1323ac6c03dcd3355929f4c20553de8b32a5a547f7e",
+      "e27e3ce0-6a50-47f3-be3d-3dc5231e252f.json": "e940e7772a0c9e52aa8c6034417dec9745d3b61f76a3b7187ade9892c36c30ba"
+    },
+    "drafts": {
+      "audit\\9180b69b-1149-4d49-8f14-8f3dc2eb434e.json": "76db2dd14fefdce39120c78ba1950da4dd5c54a9446661055d386cf3d01bdc27",
+      "eb841678-80d1-4619-8eb3-9966b5a39e47.json": "1fdb554441ea0a75e49a4e89e985e26a8926dd068595d759eb7bd6ba6fc5cdb6",
+      "prompts\\2a867777-191e-441f-9867-aaa88cbcc7f8.json": "a40fb3064a551b533809632f8d93598ec1a6791d5677938eb1007990b5f028fd",
+      "prompts\\8b9d6ab6-0f40-479d-a8ef-655f7851080b.json": "f05ec1c580cd414dac7480c9bfc7815f83345ea23fda4270f9357b5057c9f847",
+      "prompts\\c72b9ef3-19a6-4688-a88c-24bb67b60fd2.json": "064c4785bde0493fde00d2a0cbe0e2c5644379882602418747eda5904f0ba6ef",
+      "prompts\\dea6e297-99e0-4d4d-947a-df9cd461ce07.json": "7b15e72acb1eb97509920461450e69af8b28cbdffc7ae784b6af6821ded642bd"
+    },
+    "state": {
+      "audit-operations\\9d19bb11-a019-4931-9df0-536ebb9b15b8.json": "78a0f98f857153f12f4c104f12e2f3c705400e71e9094b8af5c16dadb1e18ead",
+      "demo-manifest.json": "742e8a2f0dac4e44791e424ae81e42ea0028261059abf4cee5fa965a0d5e5052",
+      "extraction-jobs\\dca55bb9-1d58-4f35-aaf0-bba055e7111c.json": "057f38489d9ca258828b951533f9c1ba70950ecb37b839696d8785dd49cb7b3d",
+      "raw-processing\\b437db9f-4706-4b31-905e-833506652067.json": "b02cff302bdc810e697049c13ccfd389f50d2b69608c24134694c4540aa23802",
+      "wiki-commits\\11c70632-fdfc-4630-8574-dca821d4f450.json": "ec24e550dfb6ca036f616f1561bf66ce8c3047aba430d1a315fbbc0a620cd363"
+    }
+  },
+  "stats": {
+    "rawCount": 2,
+    "wikiCount": 7,
+    "thisWeekNewCount": 9,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 5,
+    "weekStartsOn": "2026-10-05",
+    "recentChanges": [
+      {
+        "time": "2026-10-08T14:27:38.707Z",
+        "action": "create",
+        "id": "5e32fbcc-43ff-43a2-bf4a-9248f67f5199",
+        "title": "库存周转率",
+        "type": "metric",
+        "revision": 1,
+        "isDemo": true
+      },
+      {
+        "time": "2026-10-08T14:27:38.694Z",
+        "action": "create",
+        "id": "3238b106-84b0-4fed-af75-61996f9c22f4",
+        "title": "门店补货流程",
+        "type": "business_process",
+        "revision": 1,
+        "isDemo": true
+      },
+      {
+        "time": "2026-10-08T14:27:38.682Z",
+        "action": "create",
+        "id": "e089d404-5f1a-4d5e-8da4-6f6baf734d9b",
+        "title": "快消行业渠道体系",
+        "type": "concept",
+        "revision": 1,
+        "isDemo": true
+      },
+      {
+        "time": "2026-10-08T14:27:38.669Z",
+        "action": "create",
+        "id": "421627af-e187-4f55-8e57-a43637614ec0",
+        "title": "动销",
+        "type": "metric",
+        "revision": 1,
+        "isDemo": true
+      },
+      {
+        "time": "2026-10-08T14:27:38.657Z",
+        "action": "create",
+        "id": "f7f210dc-3ba7-44b7-8ed2-8c829d4f5628",
+        "title": "快速消费品 FMCG",
+        "type": "concept",
+        "revision": 1,
+        "isDemo": true
+      },
+      {
+        "time": "2026-10-08T14:21:36.245Z",
+        "action": "audit",
+        "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+        "title": "B09经销商订货流程",
+        "type": "business_process",
+        "revision": 2
+      },
+      {
+        "time": "2026-10-08T14:21:36.238Z",
+        "action": "update",
+        "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+        "title": "B09经销商订货流程",
+        "type": "business_process",
+        "revision": 2
+      },
+      {
+        "time": "2026-10-08T14:19:35.524Z",
+        "action": "create",
+        "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+        "title": "B09独立浏览器来源",
+        "type": "source",
+        "revision": 1
+      }
+    ]
+  },
+  "prompts": [
+    {
+      "id": "3e1f417e-8307-4314-bf26-3c4d6c6c521f",
+      "current": {
+        "id": "3e1f417e-8307-4314-bf26-3c4d6c6c521f",
+        "name": "快消术语学习",
+        "category": "industry_learning",
+        "scenario": "【演示数据】解释快消行业术语",
+        "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n请面向刚入职的同事解释 {{行业术语}}。说明定义、常见业务场景和仍需确认的口径。",
+        "variables": [
+          "行业术语"
+        ],
+        "inputRequirements": "",
+        "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [
+          "演示数据",
+          "术语"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T14:27:38.713Z",
+        "updatedAt": "2026-10-08T14:27:38.713Z",
+        "version": 1,
+        "source": "manual",
+        "isDemo": true
+      },
+      "versions": [
+        {
+          "version": 1,
+          "savedAt": "2026-10-08T14:27:38.713Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "3e1f417e-8307-4314-bf26-3c4d6c6c521f",
+            "name": "快消术语学习",
+            "category": "industry_learning",
+            "scenario": "【演示数据】解释快消行业术语",
+            "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n请面向刚入职的同事解释 {{行业术语}}。说明定义、常见业务场景和仍需确认的口径。",
+            "variables": [
+              "行业术语"
+            ],
+            "inputRequirements": "",
+            "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+            "relatedWikiIds": [],
+            "examples": "",
+            "tags": [
+              "演示数据",
+              "术语"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:27:38.713Z",
+            "updatedAt": "2026-10-08T14:27:38.713Z",
+            "version": 1,
+            "source": "manual",
+            "isDemo": true
+          }
+        }
+      ],
+      "creation": {
+        "requestId": "3e1f417e-8307-4314-bf26-3c4d6c6c521f",
+        "input": {
+          "name": "快消术语学习",
+          "category": "industry_learning",
+          "scenario": "【演示数据】解释快消行业术语",
+          "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n请面向刚入职的同事解释 {{行业术语}}。说明定义、常见业务场景和仍需确认的口径。",
+          "inputRequirements": "",
+          "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+          "relatedWikiIds": [],
+          "examples": "",
+          "tags": [
+            "演示数据",
+            "术语"
+          ],
+          "favorite": false
+        },
+        "createdAt": "2026-10-08T14:27:38.713Z"
+      }
+    },
+    {
+      "id": "46e62e73-78f7-4fdc-93e9-9ad5a5dc0f57",
+      "current": {
+        "id": "46e62e73-78f7-4fdc-93e9-9ad5a5dc0f57",
+        "name": "AI机会识别",
+        "category": "ai",
+        "scenario": "【演示数据】探索AI辅助机会",
+        "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n针对 {{业务场景}}，列出可验证的AI辅助机会、所需数据、人工复核点、风险和试点问题。标注为分析建议。",
+        "variables": [
+          "业务场景"
+        ],
+        "inputRequirements": "",
+        "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [
+          "演示数据",
+          "AI机会"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T14:27:38.727Z",
+        "updatedAt": "2026-10-08T14:27:38.727Z",
+        "version": 1,
+        "source": "manual",
+        "isDemo": true
+      },
+      "versions": [
+        {
+          "version": 1,
+          "savedAt": "2026-10-08T14:27:38.727Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "46e62e73-78f7-4fdc-93e9-9ad5a5dc0f57",
+            "name": "AI机会识别",
+            "category": "ai",
+            "scenario": "【演示数据】探索AI辅助机会",
+            "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n针对 {{业务场景}}，列出可验证的AI辅助机会、所需数据、人工复核点、风险和试点问题。标注为分析建议。",
+            "variables": [
+              "业务场景"
+            ],
+            "inputRequirements": "",
+            "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+            "relatedWikiIds": [],
+            "examples": "",
+            "tags": [
+              "演示数据",
+              "AI机会"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:27:38.727Z",
+            "updatedAt": "2026-10-08T14:27:38.727Z",
+            "version": 1,
+            "source": "manual",
+            "isDemo": true
+          }
+        }
+      ],
+      "creation": {
+        "requestId": "46e62e73-78f7-4fdc-93e9-9ad5a5dc0f57",
+        "input": {
+          "name": "AI机会识别",
+          "category": "ai",
+          "scenario": "【演示数据】探索AI辅助机会",
+          "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n针对 {{业务场景}}，列出可验证的AI辅助机会、所需数据、人工复核点、风险和试点问题。标注为分析建议。",
+          "inputRequirements": "",
+          "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+          "relatedWikiIds": [],
+          "examples": "",
+          "tags": [
+            "演示数据",
+            "AI机会"
+          ],
+          "favorite": false
+        },
+        "createdAt": "2026-10-08T14:27:38.727Z"
+      }
+    },
+    {
+      "id": "78a94659-39d7-4e47-87ed-c343b48ef337",
+      "current": {
+        "id": "78a94659-39d7-4e47-87ed-c343b48ef337",
+        "name": "业务流程拆解",
+        "category": "business_analysis",
+        "scenario": "【演示数据】梳理业务流程",
+        "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n请把 {{业务流程}} 拆成触发条件、参与角色、步骤、输入输出、异常和待确认问题。不要补造事实。",
+        "variables": [
+          "业务流程"
+        ],
+        "inputRequirements": "",
+        "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [
+          "演示数据",
+          "流程"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T14:27:38.718Z",
+        "updatedAt": "2026-10-08T14:27:38.718Z",
+        "version": 1,
+        "source": "manual",
+        "isDemo": true
+      },
+      "versions": [
+        {
+          "version": 1,
+          "savedAt": "2026-10-08T14:27:38.718Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "78a94659-39d7-4e47-87ed-c343b48ef337",
+            "name": "业务流程拆解",
+            "category": "business_analysis",
+            "scenario": "【演示数据】梳理业务流程",
+            "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n请把 {{业务流程}} 拆成触发条件、参与角色、步骤、输入输出、异常和待确认问题。不要补造事实。",
+            "variables": [
+              "业务流程"
+            ],
+            "inputRequirements": "",
+            "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+            "relatedWikiIds": [],
+            "examples": "",
+            "tags": [
+              "演示数据",
+              "流程"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:27:38.718Z",
+            "updatedAt": "2026-10-08T14:27:38.718Z",
+            "version": 1,
+            "source": "manual",
+            "isDemo": true
+          }
+        }
+      ],
+      "creation": {
+        "requestId": "78a94659-39d7-4e47-87ed-c343b48ef337",
+        "input": {
+          "name": "业务流程拆解",
+          "category": "business_analysis",
+          "scenario": "【演示数据】梳理业务流程",
+          "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n请把 {{业务流程}} 拆成触发条件、参与角色、步骤、输入输出、异常和待确认问题。不要补造事实。",
+          "inputRequirements": "",
+          "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+          "relatedWikiIds": [],
+          "examples": "",
+          "tags": [
+            "演示数据",
+            "流程"
+          ],
+          "favorite": false
+        },
+        "createdAt": "2026-10-08T14:27:38.718Z"
+      }
+    },
+    {
+      "id": "dea6e297-99e0-4d4d-947a-df9cd461ce07",
+      "current": {
+        "id": "dea6e297-99e0-4d4d-947a-df9cd461ce07",
+        "name": "B09浏览器生成模板",
+        "category": "customer",
+        "scenario": "经销商访谈",
+        "body": " B09优化后人工确认\n角色：产品经理；目标：核对订货流程。\n客户：{{客户名称}}\n区分事实、推断、待确认；不得虚构经营数据。\n 尾部 ",
+        "variables": [
+          "客户名称"
+        ],
+        "inputRequirements": "提供访谈记录",
+        "outputRequirements": "流程和待确认问题",
+        "relatedWikiIds": [
+          "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9"
+        ],
+        "examples": "访谈示例",
+        "tags": [
+          "验收",
+          "访谈"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T14:25:20.755Z",
+        "updatedAt": "2026-10-08T14:26:48.393Z",
+        "version": 2,
+        "source": "ai_generated"
+      },
+      "versions": [
+        {
+          "version": 1,
+          "savedAt": "2026-10-08T14:25:20.755Z",
+          "changeSource": "ai_generated",
+          "snapshot": {
+            "id": "dea6e297-99e0-4d4d-947a-df9cd461ce07",
+            "name": "B09浏览器生成模板",
+            "category": "customer",
+            "scenario": "经销商访谈",
+            "body": " B09生成后人工编辑\n输入 {{客户名称}}\n请核实异常订单。\n 尾部 ",
+            "variables": [
+              "客户名称"
+            ],
+            "inputRequirements": "提供访谈记录",
+            "outputRequirements": "流程和待确认问题",
+            "relatedWikiIds": [
+              "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9"
+            ],
+            "examples": "访谈示例",
+            "tags": [
+              "验收",
+              "访谈"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:25:20.755Z",
+            "updatedAt": "2026-10-08T14:25:20.755Z",
+            "version": 1,
+            "source": "ai_generated"
+          }
+        },
+        {
+          "version": 2,
+          "savedAt": "2026-10-08T14:26:48.393Z",
+          "changeSource": "ai_optimized",
+          "snapshot": {
+            "id": "dea6e297-99e0-4d4d-947a-df9cd461ce07",
+            "name": "B09浏览器生成模板",
+            "category": "customer",
+            "scenario": "经销商访谈",
+            "body": " B09优化后人工确认\n角色：产品经理；目标：核对订货流程。\n客户：{{客户名称}}\n区分事实、推断、待确认；不得虚构经营数据。\n 尾部 ",
+            "variables": [
+              "客户名称"
+            ],
+            "inputRequirements": "提供访谈记录",
+            "outputRequirements": "流程和待确认问题",
+            "relatedWikiIds": [
+              "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9"
+            ],
+            "examples": "访谈示例",
+            "tags": [
+              "验收",
+              "访谈"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:25:20.755Z",
+            "updatedAt": "2026-10-08T14:26:48.393Z",
+            "version": 2,
+            "source": "ai_generated"
+          }
+        }
+      ],
+      "creation": {
+        "requestId": "dea6e297-99e0-4d4d-947a-df9cd461ce07",
+        "input": {
+          "name": "B09浏览器生成模板",
+          "category": "customer",
+          "scenario": "经销商访谈",
+          "body": " B09生成后人工编辑\n输入 {{客户名称}}\n请核实异常订单。\n 尾部 ",
+          "inputRequirements": "提供访谈记录",
+          "outputRequirements": "流程和待确认问题",
+          "relatedWikiIds": [
+            "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9"
+          ],
+          "examples": "访谈示例",
+          "tags": [
+            "验收",
+            "访谈"
+          ],
+          "favorite": false
+        },
+        "createdAt": "2026-10-08T14:25:20.755Z"
+      },
+      "aiConfirmations": {
+        "dea6e297-99e0-4d4d-947a-df9cd461ce07": {
+          "mode": "new",
+          "payload": "{\"mode\":\"new\",\"source\":\"ai_generated\",\"targetPromptId\":null,\"baseVersion\":null,\"input\":{\"name\":\"B09浏览器生成模板\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" B09生成后人工编辑\\n输入 {{客户名称}}\\n请核实异常订单。\\n 尾部 \",\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[\"3baecf7a-28c9-4a55-a6f8-ad6f629d50d9\"],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false}}",
+          "version": 1
+        },
+        "ee018a50-c940-4690-a7fc-2beff04ab691": {
+          "mode": "version",
+          "payload": "{\"mode\":\"version\",\"source\":\"optimized\",\"targetPromptId\":\"dea6e297-99e0-4d4d-947a-df9cd461ce07\",\"baseVersion\":1,\"input\":{\"name\":\"B09浏览器生成模板\",\"category\":\"customer\",\"scenario\":\"经销商访谈\",\"body\":\" B09优化后人工确认\\n角色：产品经理；目标：核对订货流程。\\n客户：{{客户名称}}\\n区分事实、推断、待确认；不得虚构经营数据。\\n 尾部 \",\"inputRequirements\":\"提供访谈记录\",\"outputRequirements\":\"流程和待确认问题\",\"relatedWikiIds\":[\"3baecf7a-28c9-4a55-a6f8-ad6f629d50d9\"],\"examples\":\"访谈示例\",\"tags\":[\"验收\",\"访谈\"],\"favorite\":false}}",
+          "version": 2
+        }
+      }
+    },
+    {
+      "id": "e27e3ce0-6a50-47f3-be3d-3dc5231e252f",
+      "current": {
+        "id": "e27e3ce0-6a50-47f3-be3d-3dc5231e252f",
+        "name": "客户会议总结",
+        "category": "customer",
+        "scenario": "【演示数据】整理客户会议",
+        "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n根据以下会议原文整理讨论主题、明确事实、行动项与待确认问题：\n{{会议原文}}",
+        "variables": [
+          "会议原文"
+        ],
+        "inputRequirements": "",
+        "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [
+          "演示数据",
+          "会议"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-08T14:27:38.722Z",
+        "updatedAt": "2026-10-08T14:27:38.722Z",
+        "version": 1,
+        "source": "manual",
+        "isDemo": true
+      },
+      "versions": [
+        {
+          "version": 1,
+          "savedAt": "2026-10-08T14:27:38.722Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "e27e3ce0-6a50-47f3-be3d-3dc5231e252f",
+            "name": "客户会议总结",
+            "category": "customer",
+            "scenario": "【演示数据】整理客户会议",
+            "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n根据以下会议原文整理讨论主题、明确事实、行动项与待确认问题：\n{{会议原文}}",
+            "variables": [
+              "会议原文"
+            ],
+            "inputRequirements": "",
+            "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+            "relatedWikiIds": [],
+            "examples": "",
+            "tags": [
+              "演示数据",
+              "会议"
+            ],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:27:38.722Z",
+            "updatedAt": "2026-10-08T14:27:38.722Z",
+            "version": 1,
+            "source": "manual",
+            "isDemo": true
+          }
+        }
+      ],
+      "creation": {
+        "requestId": "e27e3ce0-6a50-47f3-be3d-3dc5231e252f",
+        "input": {
+          "name": "客户会议总结",
+          "category": "customer",
+          "scenario": "【演示数据】整理客户会议",
+          "body": "> 【演示数据】虚构教学模板，请按实际情况修改。\n\n根据以下会议原文整理讨论主题、明确事实、行动项与待确认问题：\n{{会议原文}}",
+          "inputRequirements": "",
+          "outputRequirements": "明确区分已知信息、整理结果和待确认问题。",
+          "relatedWikiIds": [],
+          "examples": "",
+          "tags": [
+            "演示数据",
+            "会议"
+          ],
+          "favorite": false
+        },
+        "createdAt": "2026-10-08T14:27:38.722Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+import type { Raw, Stats } from '../api';
+import { dateText, sourceLabels } from '../api';
+
+export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void }) {
+  const cards = [
+    { label: 'Raw 原始资料', value: stats.rawCount, detail: '持续积累的来源材料', action: onOpenRaw },
+    { label: 'Wiki 知识', value: stats.wikiCount, detail: '经过确认的知识页面', action: onOpenWiki },
+    { label: '本周新增', value: stats.thisWeekNewCount, detail: 'Raw 与 Wiki 新建 · 周一开始', action: undefined },
+    { label: '待确认', value: stats.pendingConfirmationCount, detail: '等待人工审核的草稿', action: undefined },
+    { label: 'Open Audit', value: stats.openAuditCount, detail: '尚未处理的知识纠错', action: undefined },
+    { label: 'Prompt', value: stats.promptCount, detail: 'Library 中的有效模板', action: onOpenPrompt },
+  ];
+  return <div className="page home-page">
+    <div className="page-heading"><div><p className="eyebrow">个人知识工作台</p><h1>早上好，开始积累业务知识</h1><p className="subheading">把接触到的行业资料收进来，为后续整理留下可靠来源。</p></div><div className="heading-actions"><button className="secondary-button" onClick={onCreateWiki}><span>＋</span> 新建 Wiki</button><button className="primary-button" onClick={onImport}><span>＋</span> 导入原始资料</button></div></div>
+    <section className="stats-grid" aria-label="知识库统计">{cards.map((card, i) => <button key={card.label} className={`stat-card ${i === 0 ? 'stat-primary' : ''}`} onClick={() => card.action?.()} disabled={!card.action}><span className="stat-label">{card.label}</span><strong>{card.value}</strong><span className="stat-detail">{card.detail}</span></button>)}</section>
+    <div className="home-columns">
+      <section className="panel recent-panel"><div className="panel-heading"><div><h2>最近导入</h2><p>你保存的原始材料</p></div><button className="text-button" onClick={() => onOpenRaw()}>查看全部 <span>›</span></button></div>
+        {items.length ? <div className="recent-list">{items.slice(0, 5).map(item => <button className="recent-row" key={item.id} onClick={() => onOpenRaw(item.id)}><span className="file-icon">文</span><span className="recent-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{sourceLabels[item.sourceType]} · {item.sourceName}</small></span><time>{dateText(item.importedAt)}</time></button>)}</div> : <div className="empty-recent"><div className="empty-symbol">▧</div><b>这里会显示你导入的资料</b><span>粘贴文章、会议纪要或业务记录，开始建立自己的知识来源。</span><button className="secondary-button" onClick={onImport}>导入第一条资料</button></div>}
+      </section>
+      <section className="panel recent-panel"><div className="panel-heading"><div><h2>最近知识变更</h2><p>从正式知识操作日志读取</p></div><button className="text-button" onClick={() => onOpenWiki()}>查看知识库 ›</button></div>{stats.recentChanges?.length ? <div className="recent-list">{stats.recentChanges.map((change,index)=><button className="recent-row" key={`${change.id}-${change.action}-${index}`} onClick={() => onOpenWiki(change.id)}><span className="file-icon">知</span><span className="recent-copy"><b>{change.title}{change.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{change.action==='audit'?'Audit纠错':change.action==='create'?'新建 Wiki':change.action==='delete'?'删除 Wiki':'更新 Wiki'} · 第 {change.revision} 版</small></span><time>{dateText(change.time)}</time></button>)}</div>:<div className="empty-recent"><b>暂无知识变更记录</b><span>创建或修订 Wiki 后，最近操作会显示在这里。</span></div>}</section>
+      <section className="panel next-panel"><div className="panel-heading"><div><h2>工作流程</h2><p>从原始材料到业务 Wiki</p></div></div><div className="flow-list"><div className="flow-step current"><span className="flow-dot">1</span><div><b>保存 Raw 来源</b><small>原文完整保留，可随时查阅</small></div><span className="flow-state">可用</span></div><div className="flow-step current"><span className="flow-dot">2</span><div><b>手动整理为 Wiki</b><small>按类型模板创建、关联和维护知识</small></div></div><div className="flow-step current"><span className="flow-dot">3</span><div><b>沉淀可复用 Prompt</b><small>在 Prompt 工作台手动创建模板，填写变量后复制最终正文</small></div><span className="flow-state">可用</span></div></div><div className="flow-note">本周统计从本机已保存的 Raw 与 Wiki 文件读取，统计周期始于周一；Prompt 数量按 Library 中有效的模板计算。</div></section>
+    </div>
+    <section className="panel home-quick-actions"><div className="panel-heading"><div><h2>快捷入口</h2><p>直接打开对应操作</p></div></div><div className="quick-action-grid"><button className="secondary-button" onClick={onImport}>导入资料</button><button className="secondary-button" onClick={onCreateWiki}>新建 Wiki</button><button className="secondary-button" onClick={onGeneratePrompt}>生成 Prompt</button><button className="secondary-button" onClick={onCreatePrompt}>新建 Prompt</button><button className="secondary-button" onClick={onLint}>检查知识库</button></div></section>
+  </div>;
+}

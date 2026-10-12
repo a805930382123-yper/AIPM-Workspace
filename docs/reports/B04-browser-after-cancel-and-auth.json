@@ -1,0 +1,194 @@
+{
+  "stats": {
+    "rawCount": 3,
+    "wikiCount": 2,
+    "thisWeekNewCount": 5,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 0,
+    "weekStartsOn": "2026-10-05"
+  },
+  "drafts": {
+    "items": [
+      {
+        "id": "5f2ea3f9-13b8-4d57-85bd-224b6d767164",
+        "rawId": "2c4ba2e7-3abf-4f37-a70c-86242ebf92ee",
+        "rawTitle": "B04独立UI-保存合并放弃",
+        "status": "discarded",
+        "revision": 3,
+        "createdAt": "2026-10-05T12:52:54.8Z",
+        "updatedAt": "2026-10-05T12:54:13.028Z",
+        "jobId": "10d84da6-737c-4a1b-8f98-6587528399fd",
+        "title": "B04独立UI-保存合并放弃-来源摘要",
+        "pageCount": 1,
+        "selectedCount": 0,
+        "commitOperationId": null
+      },
+      {
+        "id": "ec311d78-7f18-42c3-b8e4-1700ec2107e0",
+        "rawId": "bde4c309-3c74-490c-9af5-163f63b15cb2",
+        "rawTitle": "B04独立UI-编辑确认",
+        "status": "confirmed",
+        "revision": 2,
+        "createdAt": "2026-10-05T12:48:14.952Z",
+        "updatedAt": "2026-10-05T12:50:28.397Z",
+        "jobId": "2d53fa63-1cf5-423b-b974-b1b0af7d1379",
+        "title": "B04独立UI-编辑确认-来源摘要",
+        "pageCount": 2,
+        "selectedCount": 2,
+        "commitOperationId": "198d3fd4-2ec6-4371-a3fd-24cef7ecfc01"
+      }
+    ]
+  },
+  "states": {
+    "items": [
+      {
+        "rawId": "2c4ba2e7-3abf-4f37-a70c-86242ebf92ee",
+        "status": "unprocessed",
+        "updatedAt": "2026-10-05T12:54:13.045Z",
+        "history": [
+          {
+            "at": "2026-10-05T12:52:54.788Z",
+            "from": "unprocessed",
+            "to": "processing",
+            "reason": "AI 整理已启动",
+            "jobId": "10d84da6-737c-4a1b-8f98-6587528399fd"
+          },
+          {
+            "at": "2026-10-05T12:52:54.807Z",
+            "from": "processing",
+            "to": "pending_confirmation",
+            "reason": "提取完成，等待人工审核",
+            "jobId": "10d84da6-737c-4a1b-8f98-6587528399fd",
+            "draftId": "5f2ea3f9-13b8-4d57-85bd-224b6d767164"
+          },
+          {
+            "at": "2026-10-05T12:54:13.045Z",
+            "from": "pending_confirmation",
+            "to": "unprocessed",
+            "reason": "用户放弃了待审核草稿",
+            "draftId": "5f2ea3f9-13b8-4d57-85bd-224b6d767164"
+          }
+        ],
+        "jobId": "10d84da6-737c-4a1b-8f98-6587528399fd",
+        "revertStatus": "unprocessed",
+        "draftId": "5f2ea3f9-13b8-4d57-85bd-224b6d767164"
+      },
+      {
+        "rawId": "bde4c309-3c74-490c-9af5-163f63b15cb2",
+        "status": "generated",
+        "updatedAt": "2026-10-05T12:50:28.401Z",
+        "history": [
+          {
+            "at": "2026-10-05T12:48:14.904Z",
+            "from": "unprocessed",
+            "to": "processing",
+            "reason": "AI 整理已启动",
+            "jobId": "2d53fa63-1cf5-423b-b974-b1b0af7d1379"
+          },
+          {
+            "at": "2026-10-05T12:48:14.962Z",
+            "from": "processing",
+            "to": "pending_confirmation",
+            "reason": "提取完成，等待人工审核",
+            "jobId": "2d53fa63-1cf5-423b-b974-b1b0af7d1379",
+            "draftId": "ec311d78-7f18-42c3-b8e4-1700ec2107e0"
+          },
+          {
+            "at": "2026-10-05T12:50:28.401Z",
+            "from": "pending_confirmation",
+            "to": "generated",
+            "reason": "AI 提取结果已确认写入 Wiki",
+            "draftId": "ec311d78-7f18-42c3-b8e4-1700ec2107e0"
+          }
+        ],
+        "jobId": "2d53fa63-1cf5-423b-b974-b1b0af7d1379",
+        "revertStatus": "unprocessed",
+        "draftId": "ec311d78-7f18-42c3-b8e4-1700ec2107e0",
+        "generatedWikiIds": [
+          "1989bf73-d436-4251-a280-8a8f6790b6df",
+          "40097a66-4903-4288-bef3-c87ac5692bad"
+        ],
+        "confirmedOperationId": "198d3fd4-2ec6-4371-a3fd-24cef7ecfc01"
+      },
+      {
+        "rawId": "d9e0858e-de38-48fd-9bf4-ec7f3adc5342",
+        "status": "failed",
+        "updatedAt": "2026-10-05T13:01:03.877Z",
+        "history": [
+          {
+            "at": "2026-10-05T12:56:30.538Z",
+            "from": "unprocessed",
+            "to": "processing",
+            "reason": "AI 整理已启动",
+            "jobId": "311e82ca-4180-472e-a556-39260541a72a"
+          },
+          {
+            "at": "2026-10-05T12:56:30.824Z",
+            "from": "processing",
+            "to": "unprocessed",
+            "reason": "AI 整理已取消，晚到的结果不会写入草稿"
+          },
+          {
+            "at": "2026-10-05T13:01:03.869Z",
+            "from": "unprocessed",
+            "to": "processing",
+            "reason": "AI 整理已启动",
+            "jobId": "6d1200bb-fc0e-4dd9-8a77-d7957997c166"
+          },
+          {
+            "at": "2026-10-05T13:01:03.877Z",
+            "from": "processing",
+            "to": "failed",
+            "reason": "提取失败：LLM_AUTH_FAILED"
+          }
+        ],
+        "jobId": "6d1200bb-fc0e-4dd9-8a77-d7957997c166",
+        "revertStatus": "unprocessed",
+        "lastError": {
+          "code": "LLM_AUTH_FAILED",
+          "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：independent fixture authentication rejected）（第 1 段）",
+          "at": "2026-10-05T13:01:03.877Z",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  "raw": {
+    "items": [
+      {
+        "title": "B04独立UI-取消慢任务",
+        "sourceType": "article",
+        "sourceName": "独立fake取消fixture",
+        "tags": [],
+        "id": "d9e0858e-de38-48fd-9bf4-ec7f3adc5342",
+        "importedAt": "2026-10-05T12:56:30.247Z",
+        "status": "unprocessed",
+        "bodySha256": "db04ba43ffbfbbb5140ae359dda87ecb55195efd8c975e9607e2919238621296",
+        "body": "第三条独立资料只用于测试取消，不应创建草稿。"
+      },
+      {
+        "title": "B04独立UI-保存合并放弃",
+        "sourceType": "article",
+        "sourceName": "独立fake非生产资料",
+        "tags": [],
+        "id": "2c4ba2e7-3abf-4f37-a70c-86242ebf92ee",
+        "importedAt": "2026-10-05T12:52:54.508Z",
+        "status": "unprocessed",
+        "bodySha256": "ec6d1763fd03ee526f7ac7192193a7c63eef120e537a6e9b369303fef185e04c",
+        "body": "第二条独立资料用于保存合并与放弃测试。\n这不是用户业务资料。"
+      },
+      {
+        "title": "B04独立UI-编辑确认",
+        "sourceType": "article",
+        "sourceName": "独立fake非生产资料",
+        "tags": [],
+        "id": "bde4c309-3c74-490c-9af5-163f63b15cb2",
+        "importedAt": "2026-10-05T12:48:14.652Z",
+        "status": "unprocessed",
+        "bodySha256": "3641005336c08a620067761adc24ba1afeaad733c792dcc85e5303ce0c37f447",
+        "body": "渠道库存周转为38天。\n应分别核对渠道动销与经销商库存。\n"
+      }
+    ]
+  }
+}

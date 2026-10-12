@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-05",
+  "scope": "B04 second repair independent recheck; no product edits by reviewers",
+  "builderEvidenceArchive": {
+    "path": "B04-recheck2-builder-http-evidence.json",
+    "sha256": "63e74190fe1f7470c7fa4bf09f7a982a183995758aeb3415b4da5f50b0c7afa0",
+    "archivedBeforeNpmTest": true,
+    "note": "npm test rewrites B04-http-evidence.json; submitted current evidence was archived first."
+  },
+  "build": {
+    "command": "npm.cmd run build",
+    "execution": "approved escalated environment",
+    "result": "PASS",
+    "exitCode": 0,
+    "stdout": "B04-recheck2-main-build.log",
+    "modules": 39,
+    "outputJs": "index-CC-_fZgv.js",
+    "outputCss": "index-uxFGZpP_.css"
+  },
+  "tests": {
+    "command": "npm.cmd test",
+    "execution": "approved escalated environment",
+    "result": "PASS",
+    "exitCode": 0,
+    "pass": 96,
+    "fail": 0,
+    "durationMs": 18855.8897,
+    "stdout": "B04-recheck2-main-test.log",
+    "freshHttpEvidence": "B04-recheck2-main-http-evidence.json"
+  },
+  "browser": {
+    "report": "B04-recheck2-browser.md",
+    "apiChecks": "B04-recheck2-browser-checks.json",
+    "fakeProvider": true,
+    "noRealProviderCall": true,
+    "cleanup": "runtime/B04-recheck2-browser-cleanup.json"
+  },
+  "realProvider": {
+    "result": "BLOCKED",
+    "reason": "No existing user-configured server-side product Provider/model/key. Presence-only check recorded; no credentials read.",
+    "presenceEvidence": "B04-recheck2-config-presence.json"
+  },
+  "finalBatchResult": "FAIL",
+  "closedRootCauseCount": 10,
+  "remainingDefectIds": ["F04-11"],
+  "backendEffectiveBusiness": { "pass": 8, "fail": 2, "total": 10, "report": "B04-recheck2-independent-review.json" },
+  "runtimeProductFreeze": "PASS",
+  "builderFingerprintDocument": "DOC_FAIL_README",
+  "nextBatchAuthorized": false
+}

@@ -1,0 +1,228 @@
+{
+  "at": "2026-10-12T12:15:51.257Z",
+  "kind": "jsdom React with actual isolated product HTTP, NOT real browser",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-8NmVha",
+  "durationMs": 918,
+  "checks": [
+    {
+      "id": "C01-first-import-enables-Raw-registration",
+      "result": "FAIL",
+      "actual": {
+        "serverImports": 1,
+        "optionCount": 1,
+        "confirmDisabled": true,
+        "registerDisabled": true
+      },
+      "error": "New import must update Raw import selection without remount\n\ntrue !== false\n"
+    },
+    {
+      "id": "C02-work-save-updates-Raw-form-revision",
+      "result": "FAIL",
+      "actual": {
+        "submittedRevision": 3,
+        "currentRevision": 4,
+        "rawLinks": 0,
+        "alert": "会议记录已有更新，请刷新后重新确认登记。 登记输入仍保留。检测到版本冲突。载入最新记录后重新检查。重载最新版"
+      },
+      "error": "Normal same-meeting refresh must update Raw revision\n\n0 !== 1\n"
+    },
+    {
+      "id": "C03-archive-delete-can-explicitly-preserve-Raw",
+      "result": "FAIL",
+      "actual": {
+        "rawConfirmControls": 0,
+        "submittedFields": [
+          "baseRevision",
+          "confirm",
+          "confirmLocalMinutes"
+        ],
+        "alert": "存在Raw来源；删除会议不会删除或解除Raw限制，需要单独确认保留。 会议记录未确认删除；请重新读取后再操作。重新读取",
+        "remains": true
+      },
+      "error": "Archive delete must support confirmRawReferences\n\ntrue !== false\n"
+    },
+    {
+      "id": "C04-failed-registration-retry-after-refresh",
+      "result": "FAIL",
+      "actual": {
+        "status": "failed",
+        "alert": "requestId已用于不同的Raw登记请求。 登记输入仍保留。检测到版本冲突。载入最新记录后重新检查。重载最新版"
+      },
+      "error": "Failed operation must retry from refreshed form\n\n'failed' !== 'linked'\n"
+    },
+    {
+      "id": "C05-unlink-cancel-and-confirm-preserve-Raw",
+      "result": "PASS",
+      "actual": {
+        "cancelPreserved": true,
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "C06-Provider-and-browser-storage-isolation",
+      "result": "PASS",
+      "actual": {
+        "providerCalls": 0,
+        "browserStoredBodies": false
+      }
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 4
+  },
+  "requests": [
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/8443e2de-6e98-4cde-b868-9411a0176dde",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/8443e2de-6e98-4cde-b868-9411a0176dde/minutes/import",
+      "method": "POST",
+      "body": {
+        "baseRevision": 2,
+        "requestId": "1c80f741-2654-41e9-b112-ba39e7cc00a1",
+        "text": "# first original"
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/8443e2de-6e98-4cde-b868-9411a0176dde",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/560b2b2c-be14-4a6d-848e-73e68293bd29",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/560b2b2c-be14-4a6d-848e-73e68293bd29/minutes/7cc7b4f0-45af-4479-8025-bd8a7f252fb0",
+      "method": "PATCH",
+      "body": {
+        "baseRevision": 3,
+        "editable_minutes": "# edited work"
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/560b2b2c-be14-4a6d-848e-73e68293bd29",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/560b2b2c-be14-4a6d-848e-73e68293bd29/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 3,
+        "requestId": "0fd56093-ff3d-4912-99f9-af850cb62646",
+        "import_id": "7cc7b4f0-45af-4479-8025-bd8a7f252fb0",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/2723c2b3-b36d-4cfd-93e7-429c6bcd6849",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/2723c2b3-b36d-4cfd-93e7-429c6bcd6849",
+      "method": "DELETE",
+      "body": {
+        "baseRevision": 5,
+        "confirm": true,
+        "confirmLocalMinutes": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/fd31ccbf-6c10-44aa-af20-0f2d776c768d",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/fd31ccbf-6c10-44aa-af20-0f2d776c768d/raw-links",
+      "method": "POST",
+      "body": {
+        "baseRevision": 4,
+        "requestId": "6ffad332-140d-4ce9-a5a7-8e3f21460da0",
+        "import_id": "885b7b37-2d98-481d-b692-101b41ee60f4",
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/ff7da7dd-5173-4999-99e6-c939319e1203",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/ff7da7dd-5173-4999-99e6-c939319e1203/raw-links/59b19ef4-0c1f-4d67-a221-aa2c800de459",
+      "method": "DELETE",
+      "body": {
+        "baseRevision": 5,
+        "confirm": true
+      }
+    },
+    {
+      "path": "/api/meeting-catalog",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings",
+      "method": "GET"
+    },
+    {
+      "path": "/api/meetings/ff7da7dd-5173-4999-99e6-c939319e1203",
+      "method": "GET"
+    }
+  ],
+  "providerCalls": 0,
+  "servicesClosed": true
+}

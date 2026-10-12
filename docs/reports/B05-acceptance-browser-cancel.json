@@ -1,0 +1,148 @@
+{
+  "workflows": [
+    {
+      "id": "4a4bb63c-2473-4020-9834-bd5ca2b0ea5c",
+      "kind": "update",
+      "status": "discarded",
+      "revision": 3,
+      "createdAt": "2026-10-07T05:47:13.256Z",
+      "updatedAt": "2026-10-07T05:51:09.825Z",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "independent-b05-fake"
+      },
+      "rawSnapshots": [
+        {
+          "id": "b618e622-6d25-43c0-b138-78ec54c3cb04",
+          "title": "验收资料 浏览器来源B",
+          "bodySha256": "5252add52cce038d6d2626ee22d33cdd77742c350ca414d38f75e732f64c9e4a"
+        }
+      ],
+      "targetWikiId": "3a1ebaae-ef30-43ac-8f0f-1a9d77534b43",
+      "baseRevision": 1,
+      "baseWiki": {
+        "title": "铺货率",
+        "type": "metric",
+        "category": "metric",
+        "sources": [
+          "abbd1f63-407a-4d9b-aaec-4f1889fb9e37"
+        ],
+        "tags": [],
+        "aliases": [
+          "Distribution Rate"
+        ],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "B",
+        "review_status": "reviewed",
+        "id": "3a1ebaae-ef30-43ac-8f0f-1a9d77534b43",
+        "domain": "fmcg",
+        "created": "2026-10-07T05:43:40.857Z",
+        "updated": "2026-10-07T05:43:40.857Z",
+        "revision": 1,
+        "body": "来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。"
+      },
+      "inputDraft": {
+        "draftId": "9cb6be0f-485b-406e-85f3-c7e3d34095b2",
+        "pageId": "ca3ef85b-2bbf-4912-92b4-4ecdb02156b6",
+        "revision": 3
+      },
+      "sections": {
+        "existing": "来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。",
+        "newSource": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+        "suggestedAdditions": [
+          "来源B补充公式：铺货率=有销售门店数/目标门店数",
+          "浏览器人工增加"
+        ],
+        "conflicts": [
+          "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。"
+        ],
+        "inferences": [
+          "AI推断：差异可能源于销售活跃程度，待验证"
+        ],
+        "openQuestions": [
+          "请业务确认两种分子定义以及适用范围"
+        ],
+        "agreement": [
+          "两个来源一致采用目标门店作为分母、自然月作为周期"
+        ],
+        "sourceList": [
+          {
+            "id": "b618e622-6d25-43c0-b138-78ec54c3cb04",
+            "title": "验收资料 浏览器来源B"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "section": "suggestedAdditions",
+          "text": "来源B补充公式：铺货率=有销售门店数/目标门店数",
+          "rawId": "b618e622-6d25-43c0-b138-78ec54c3cb04",
+          "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+          "start": 0,
+          "end": 41
+        },
+        {
+          "section": "conflicts",
+          "text": "来源A 铺货率=上架门店数/目标门店数；来源B 铺货率=有销售门店数/目标门店数。存在冲突，待验证。",
+          "rawId": "b618e622-6d25-43c0-b138-78ec54c3cb04",
+          "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+          "start": 0,
+          "end": 41
+        },
+        {
+          "section": "agreement",
+          "text": "两个来源一致采用目标门店作为分母、自然月作为周期",
+          "rawId": "b618e622-6d25-43c0-b138-78ec54c3cb04",
+          "quote": "来源B：铺货率=有销售门店数/目标门店数。统计周期为自然月。两种口径需要业务确认。",
+          "start": 0,
+          "end": 41
+        }
+      ],
+      "title": "铺货率 人工更名",
+      "category": "metric",
+      "sources": [
+        "abbd1f63-407a-4d9b-aaec-4f1889fb9e37",
+        "b618e622-6d25-43c0-b138-78ec54c3cb04"
+      ]
+    }
+  ],
+  "wiki": {
+    "title": "铺货率",
+    "type": "metric",
+    "category": "metric",
+    "sources": [
+      "abbd1f63-407a-4d9b-aaec-4f1889fb9e37"
+    ],
+    "tags": [],
+    "aliases": [
+      "Distribution Rate"
+    ],
+    "knowledge_status": "source_supported",
+    "confidence": "medium",
+    "source_level": "B",
+    "review_status": "reviewed",
+    "id": "3a1ebaae-ef30-43ac-8f0f-1a9d77534b43",
+    "domain": "fmcg",
+    "created": "2026-10-07T05:43:40.857Z",
+    "updated": "2026-10-07T05:43:40.857Z",
+    "revision": 1,
+    "body": "来源A：铺货率=上架门店数/目标门店数。统计周期为自然月。人工旧备注需永久保留。",
+    "links": []
+  },
+  "list": [
+    {
+      "id": "3a1ebaae-ef30-43ac-8f0f-1a9d77534b43",
+      "type": "metric",
+      "title": "铺货率",
+      "sources": [
+        "abbd1f63-407a-4d9b-aaec-4f1889fb9e37"
+      ]
+    }
+  ],
+  "rawUnchanged": true,
+  "formalUnchanged": true,
+  "savedWorkflowExists": true,
+  "updateTitleLost": false,
+  "contentPreserved": false
+}

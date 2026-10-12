@@ -1,0 +1,759 @@
+{
+  "startedAt": "2026-10-05T15:40:53.594Z",
+  "node": "v25.2.1",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck2-dj7x80",
+  "productImports": false,
+  "provider": "Independent fake localhost HTTP provider; NOT real AI",
+  "scope": [
+    "F04-04",
+    "F04-05",
+    "F04-11",
+    "direct Source snapshot regression"
+  ],
+  "checks": [
+    {
+      "id": "F04-11-long-coverage-complete-summary-http",
+      "status": "FAIL",
+      "elapsedMs": 807,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- '57d04d06-b1ca-48f7-a5b8-bbeb47c4c084'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck2-http.mjs:134:1715\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck2-http.mjs:71:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck2-http.mjs:134:3"
+    },
+    {
+      "id": "F04-11-no-provider-offsets-summary-gets-located-evidence",
+      "status": "FAIL",
+      "elapsedMs": 717,
+      "error": "AssertionError [ERR_ASSERTION]: summary uses provider optional offsets instead of server located offsets\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck2-http.mjs:135:990\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck2-http.mjs:71:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck2-http.mjs:135:3",
+      "observed": {
+        "summaryPayload": [
+          {
+            "chunk": 1,
+            "chunkRange": {
+              "start": 0,
+              "end": 8000
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块1摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000000库存材料正文。",
+                        "start": 0,
+                        "end": 16,
+                        "chunkIndex": 0
+                      },
+                      {
+                        "id": "e1-c2",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000475库存材料正文。",
+                        "start": 7600,
+                        "end": 7616,
+                        "chunkIndex": 1
+                      },
+                      {
+                        "id": "e1-c3",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000950库存材料正文。",
+                        "start": 15200,
+                        "end": 15216,
+                        "chunkIndex": 2
+                      },
+                      {
+                        "id": "e1-c4",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段001425库存材料正文。",
+                        "start": 22800,
+                        "end": 22816,
+                        "chunkIndex": 3
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000499库存材料正文。",
+                        "start": 7984,
+                        "end": 8000,
+                        "chunkIndex": 0
+                      },
+                      {
+                        "id": "e1-c2",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000974库存材料正文。",
+                        "start": 15584,
+                        "end": 15600,
+                        "chunkIndex": 1
+                      },
+                      {
+                        "id": "e1-c3",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段001449库存材料正文。",
+                        "start": 23184,
+                        "end": 23200,
+                        "chunkIndex": 2
+                      },
+                      {
+                        "id": "e1-c4",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段001699库存材料正文。",
+                        "start": 27184,
+                        "end": 27200,
+                        "chunkIndex": 3
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000000库存材料正文。",
+                        "start": 0,
+                        "end": 16,
+                        "chunkIndex": 0
+                      },
+                      {
+                        "id": "e1-c2",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000475库存材料正文。",
+                        "start": 7600,
+                        "end": 7616,
+                        "chunkIndex": 1
+                      },
+                      {
+                        "id": "e1-c3",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段000950库存材料正文。",
+                        "start": 15200,
+                        "end": 15216,
+                        "chunkIndex": 2
+                      },
+                      {
+                        "id": "e1-c4",
+                        "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+                        "quote": "唯一段001425库存材料正文。",
+                        "start": 22800,
+                        "end": 22816,
+                        "chunkIndex": 3
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          },
+          {
+            "chunk": 2,
+            "chunkRange": {
+              "start": 7600,
+              "end": 15600
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块2摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          },
+          {
+            "chunk": 3,
+            "chunkRange": {
+              "start": 15200,
+              "end": 23200
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块3摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          },
+          {
+            "chunk": 4,
+            "chunkRange": {
+              "start": 22800,
+              "end": 27200
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块4摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "resolved": false
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          }
+        ],
+        "normalizedEvidence": [
+          {
+            "id": "e1",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000000库存材料正文。",
+            "start": 0,
+            "end": 16,
+            "chunkIndex": 0
+          },
+          {
+            "id": "e1-c2",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000475库存材料正文。",
+            "start": 7600,
+            "end": 7616,
+            "chunkIndex": 1
+          },
+          {
+            "id": "e1-c3",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000950库存材料正文。",
+            "start": 15200,
+            "end": 15216,
+            "chunkIndex": 2
+          },
+          {
+            "id": "e1-c4",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段001425库存材料正文。",
+            "start": 22800,
+            "end": 22816,
+            "chunkIndex": 3
+          },
+          {
+            "id": "e1",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000499库存材料正文。",
+            "start": 7984,
+            "end": 8000,
+            "chunkIndex": 0
+          },
+          {
+            "id": "e1-c2",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000974库存材料正文。",
+            "start": 15584,
+            "end": 15600,
+            "chunkIndex": 1
+          },
+          {
+            "id": "e1-c3",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段001449库存材料正文。",
+            "start": 23184,
+            "end": 23200,
+            "chunkIndex": 2
+          },
+          {
+            "id": "e1-c4",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段001699库存材料正文。",
+            "start": 27184,
+            "end": 27200,
+            "chunkIndex": 3
+          },
+          {
+            "id": "e1",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000000库存材料正文。",
+            "start": 0,
+            "end": 16,
+            "chunkIndex": 0
+          },
+          {
+            "id": "e1-c2",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000475库存材料正文。",
+            "start": 7600,
+            "end": 7616,
+            "chunkIndex": 1
+          },
+          {
+            "id": "e1-c3",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段000950库存材料正文。",
+            "start": 15200,
+            "end": 15216,
+            "chunkIndex": 2
+          },
+          {
+            "id": "e1-c4",
+            "rawId": "b09b9485-cb52-485d-8a7f-c95b66eb9687",
+            "quote": "唯一段001425库存材料正文。",
+            "start": 22800,
+            "end": 22816,
+            "chunkIndex": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "FAIL",
+      "changed": [],
+      "builderFingerprintMismatches": [
+        "README.md"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "pid": 28232,
+      "base": "http://127.0.0.1:55986",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck2-dj7x80\\1-long-summary",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55986 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck2-dj7x80\\1-long-summary)\n"
+    },
+    {
+      "pid": 21332,
+      "base": "http://127.0.0.1:56001",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck2-dj7x80\\2-no-offsets",
+      "closed": true,
+      "exitCode": null,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:56001 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-recheck2-dj7x80\\2-no-offsets)\n"
+    }
+  ],
+  "fakeRequests": [],
+  "frozenBefore": {
+    "README.md": "6c371e193056c0ad92118b6a6dc3a1d9ef28f2b04e89e3d37d2d16116d62a9c0",
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    ".gitignore": "b7c82e90c2f9ca63fd0265cb120bb4a2ed1502423de7e0c81d26e922da825b74",
+    ".env.example": "be8758a8e2931a089b4cff552d563852689d87f20f2935a4a8796267cb560a49",
+    "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+    "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+    "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+    "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+    "app/pages/DraftReviewPage.tsx": "c0a8673286cb286ee869f82ca687b784d01bcb1e64d18e834cf4163596cb3e44",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+    "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/llm-api.ts": "07229db6ed0558e8d88463120f45e7172b1233cf1b1d2dfb1b403178e867a237",
+    "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+    "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+    "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/jobs.ts": "e4b0ac53979515c61bb435429135fa935e33de79a38364ae43e1974c1e036b86",
+    "services/llm/provider.ts": "c24e5117c4d4c2fdd2a2f4e60845241e2cde1abd7ba3c50ab618cb33ec4f0d37",
+    "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+    "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+    "services/llm/service.ts": "f31bc73bf88c183f7aafce1577225a79dd5176da9d77487bdcd2bb4bb3122fb5",
+    "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+    "services/storage/files.ts": "bf17c152f39528a5213e20666ffcee18bd54dc3a0f7f88a76131bd3e74bfd92f",
+    "services/wiki/commits.ts": "17dc1bd10776c4bd7945a30d348145932a3f70cce2ad77f82fe38c31f8d4404e",
+    "services/wiki/drafts.ts": "320edbef7fe7ab56cb4c7412da4fc10ea963ed3718bec235ae4110541bf94d11",
+    "services/wiki/render.ts": "7b9261a5de96c5a579c03ee7ff558a173db7f15c89dec86b7070012678c2578e",
+    "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+    "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+  },
+  "builderFingerprintMismatches": [
+    "README.md"
+  ],
+  "frozenAfter": {
+    "README.md": "6c371e193056c0ad92118b6a6dc3a1d9ef28f2b04e89e3d37d2d16116d62a9c0",
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    ".gitignore": "b7c82e90c2f9ca63fd0265cb120bb4a2ed1502423de7e0c81d26e922da825b74",
+    ".env.example": "be8758a8e2931a089b4cff552d563852689d87f20f2935a4a8796267cb560a49",
+    "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+    "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+    "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+    "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+    "app/pages/DraftReviewPage.tsx": "c0a8673286cb286ee869f82ca687b784d01bcb1e64d18e834cf4163596cb3e44",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+    "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/llm-api.ts": "07229db6ed0558e8d88463120f45e7172b1233cf1b1d2dfb1b403178e867a237",
+    "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+    "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+    "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/jobs.ts": "e4b0ac53979515c61bb435429135fa935e33de79a38364ae43e1974c1e036b86",
+    "services/llm/provider.ts": "c24e5117c4d4c2fdd2a2f4e60845241e2cde1abd7ba3c50ab618cb33ec4f0d37",
+    "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+    "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+    "services/llm/service.ts": "f31bc73bf88c183f7aafce1577225a79dd5176da9d77487bdcd2bb4bb3122fb5",
+    "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+    "services/storage/files.ts": "bf17c152f39528a5213e20666ffcee18bd54dc3a0f7f88a76131bd3e74bfd92f",
+    "services/wiki/commits.ts": "17dc1bd10776c4bd7945a30d348145932a3f70cce2ad77f82fe38c31f8d4404e",
+    "services/wiki/drafts.ts": "320edbef7fe7ab56cb4c7412da4fc10ea963ed3718bec235ae4110541bf94d11",
+    "services/wiki/render.ts": "7b9261a5de96c5a579c03ee7ff558a173db7f15c89dec86b7070012678c2578e",
+    "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+    "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+  },
+  "frozenChanged": [],
+  "finishedAt": "2026-10-05T15:40:55.213Z",
+  "elapsedMs": 1624,
+  "summary": {
+    "PASS": 0,
+    "FAIL": 3,
+    "BLOCKED": 0
+  },
+  "cleanup": {
+    "ownServicesClosed": true,
+    "fakeClosed": true,
+    "isolatedDataRetained": true,
+    "formalWorkspaceTouched": false
+  }
+}

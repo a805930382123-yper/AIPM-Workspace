@@ -1,0 +1,34 @@
+{
+  "clientDate": "2026-10-07",
+  "startedAt": "2026-10-07T05:36:05.387Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-5OCdTW",
+  "provider": "independent HTTP fake; real AI quality BLOCKED",
+  "checks": [
+    {
+      "id": "E05-06-fault-recovery-idempotency",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: recovered formal commit must finalize its persisted workflow\n+ actual - expected\n\n+ 'pending_confirmation'\n- 'confirmed'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:139:12\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:19:41)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b05-independent-http.mjs:127:3"
+    }
+  ],
+  "services": [
+    {
+      "pid": 16332,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-5OCdTW\\1",
+      "base": "http://127.0.0.1:53282",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:53282 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-5OCdTW\\1)\n"
+    },
+    {
+      "pid": 19316,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-5OCdTW\\1",
+      "base": "http://127.0.0.1:53292",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:53292 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b05-independent-5OCdTW\\1)\n"
+    }
+  ],
+  "durationMs": 1071,
+  "summary": {
+    "pass": 0,
+    "fail": 1
+  }
+}

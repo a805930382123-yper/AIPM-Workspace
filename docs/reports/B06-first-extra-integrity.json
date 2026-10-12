@@ -1,0 +1,48 @@
+{
+  "clientDate": "2026-10-07",
+  "provider": "independent HTTP fake only; real quality BLOCKED",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb",
+  "checks": [
+    {
+      "id": "E06-06d-recovery-matches-actual-wiki-content",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: recovery cannot mark resolved by revision alone when actual content differs\n\n'resolved' !== 'open'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:178:12\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:24:75)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:171:3"
+    },
+    {
+      "id": "E06-06e-recovery-checks-actual-raw-snapshot",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: changed Raw must prevent recovery falsely completing Audit\n\n'resolved' !== 'open'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:186:29\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:24:75)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:181:3"
+    }
+  ],
+  "services": [
+    {
+      "pid": 36820,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\1",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:53373 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\1)\n"
+    },
+    {
+      "pid": 25344,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\1",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:53383 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\1)\n"
+    },
+    {
+      "pid": 22420,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\2",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:53392 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\2)\n"
+    },
+    {
+      "pid": 6180,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\2",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:53402 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-mTlJEb\\2)\n"
+    }
+  ],
+  "durationMs": 2076,
+  "summary": {
+    "pass": 0,
+    "fail": 2
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "fakeProvider": true,
+  "checks": [
+    {
+      "id": "F04-01",
+      "actualLevel": "C",
+      "expectedLevel": "A",
+      "expectedSourceTitle": "独立人工Source标题-不应丢失",
+      "editedBodyPresent": false,
+      "actualSourceTitle": "B04独立UI-编辑确认-来源摘要",
+      "result": "FAIL"
+    },
+    {
+      "editedDefinitionPresent": false,
+      "expectedPageTitle": "人工确认后的新标题-不应丢失",
+      "actualPageTitle": "B04独立UI-编辑确认-渠道概念",
+      "result": "FAIL",
+      "id": "F04-02"
+    },
+    {
+      "id": "partial-selection-count",
+      "beforeWikiCount": 0,
+      "sourceCount": 1,
+      "conceptCount": 1,
+      "afterWikiCount": 2,
+      "result": "PASS"
+    },
+    {
+      "sameBody": true,
+      "sameSha": true,
+      "result": "PASS",
+      "id": "Raw-body-unchanged"
+    }
+  ]
+}

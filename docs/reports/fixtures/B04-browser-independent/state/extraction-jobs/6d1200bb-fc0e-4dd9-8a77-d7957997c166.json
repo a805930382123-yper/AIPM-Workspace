@@ -1,0 +1,27 @@
+{
+  "id": "6d1200bb-fc0e-4dd9-8a77-d7957997c166",
+  "rawId": "d9e0858e-de38-48fd-9bf4-ec7f3adc5342",
+  "status": "failed",
+  "stage": "done",
+  "chunksTotal": 1,
+  "chunksDone": 0,
+  "pagesFound": 0,
+  "provider": {
+    "name": "openai-compatible",
+    "model": "independent-fake-b04"
+  },
+  "cancelRequested": false,
+  "callCount": 0,
+  "startedAt": "2026-10-05T13:01:03.855Z",
+  "updatedAt": "2026-10-05T13:01:03.891Z",
+  "finishedAt": "2026-10-05T13:01:03.883Z",
+  "error": {
+    "code": "LLM_AUTH_FAILED",
+    "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：independent fixture authentication rejected）（第 1 段）",
+    "at": "2026-10-05T13:01:03.883Z",
+    "retryable": false,
+    "details": {
+      "chunkIndex": 0
+    }
+  }
+}

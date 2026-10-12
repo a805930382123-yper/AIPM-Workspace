@@ -1,0 +1,67 @@
+{
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m01-privacy-NDNULS",
+  "durationMs": 681,
+  "checks": [
+    {
+      "id": "P01-restricted-cannot-local",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"meeting_id\":\"d2ee83dc-35d6-4a9d-8493-77f628067380\",\"revision\":2,\"created_at\":\"2026-10-11T12:15:07.051Z\",\"updated_at\":\"2026-10-11T12:15:07.056Z\",\"meeting_time\":null,\"tags\":[],\"customer\":null,\"project\":null,\"description\":null,\"recording_url\":null,\"minutes_url\":null,\"title\":\"边界会议\",\"meeting_date\":\"2026-10-11\",\"meeting_type\":\"23a6a2fc-c963-446b-8ce6-ec72e11d755f\",\"confidentiality\":\"Restricted\",\"storage_mode\":\"local_archive\",\"local_storage_authorized\":true,\"external_ai_authorized\":false,\"raw_transfer_authorized\":false,\"policy_updated_at\":\"2026-10-11T12:15:07.056Z\",\"imports\":[],\"active_import_id\":null,\"raw_links\":[],\"raw_source_id\":null,\"capabilities\":{\"canImportMinutes\":false,\"canRegisterRaw\":false,\"canUseAi\":false,\"importReason\":\"会议纪要导入尚未在本批交付。\",\"rawReason\":\"会议 Raw 登记尚未在本批交付。\",\"aiReason\":\"本版不支持 Meeting 外部 AI 处理。\"}}\n\n200 !== 403\n"
+    },
+    {
+      "id": "P02-restricted-clears-hidden-original",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: Original private metadata remains in persisted creation history"
+    },
+    {
+      "id": "P03-corrupt-body-field",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"meeting_id\":\"5e4bfae5-449f-47ad-8537-8d68e8f85514\",\"revision\":1,\"created_at\":\"2026-10-11T12:15:07.074Z\",\"updated_at\":\"2026-10-11T12:15:07.074Z\",\"meeting_time\":null,\"tags\":[],\"customer\":null,\"project\":null,\"description\":null,\"recording_url\":null,\"minutes_url\":null,\"title\":\"边界会议\",\"meeting_date\":\"2026-10-11\",\"meeting_type\":\"23a6a2fc-c963-446b-8ce6-ec72e11d755f\",\"confidentiality\":\"Sensitive\",\"storage_mode\":\"cloud_index\",\"local_storage_authorized\":false,\"external_ai_authorized\":false,\"raw_transfer_authorized\":false,\"policy_updated_at\":\"2026-10-11T12:15:07.074Z\",\"imports\":[],\"active_import_id\":null,\"raw_links\":[],\"raw_source_id\":null,\"imported_minutes\":\"M01_PRIVATE_SENTINEL\",\"capabilities\":{\"canImportMinutes\":false,\"canRegisterRaw\":false,\"canUseAi\":false,\"importReason\":\"会议纪要导入尚未在本批交付。\",\"rawReason\":\"会议 Raw 登记尚未在本批交付。\",\"aiReason\":\"本版不支持 Meeting 外部 AI 处理。\"}}\n\n200 !== 409\n"
+    },
+    {
+      "id": "P04-corrupt-url",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"meeting_id\":\"781ae666-741f-4ba8-aadb-5b7c8d65d553\",\"revision\":1,\"created_at\":\"2026-10-11T12:15:07.082Z\",\"updated_at\":\"2026-10-11T12:15:07.082Z\",\"meeting_time\":null,\"tags\":[],\"customer\":null,\"project\":null,\"description\":null,\"recording_url\":null,\"minutes_url\":\"javascript:alert(1)\",\"title\":\"边界会议\",\"meeting_date\":\"2026-10-11\",\"meeting_type\":\"23a6a2fc-c963-446b-8ce6-ec72e11d755f\",\"confidentiality\":\"Sensitive\",\"storage_mode\":\"cloud_index\",\"local_storage_authorized\":false,\"external_ai_authorized\":false,\"raw_transfer_authorized\":false,\"policy_updated_at\":\"2026-10-11T12:15:07.082Z\",\"imports\":[],\"active_import_id\":null,\"raw_links\":[],\"raw_source_id\":null,\"capabilities\":{\"canImportMinutes\":false,\"canRegisterRaw\":false,\"canUseAi\":false,\"importReason\":\"会议纪要导入尚未在本批交付。\",\"rawReason\":\"会议 Raw 登记尚未在本批交付。\",\"aiReason\":\"本版不支持 Meeting 外部 AI 处理。\"}}\n\n200 !== 409\n"
+    },
+    {
+      "id": "P05-corrupt-restricted-fields",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"meeting_id\":\"75ebab15-eb0e-4938-a074-8e1d75035fc4\",\"revision\":1,\"created_at\":\"2026-10-11T12:15:07.092Z\",\"updated_at\":\"2026-10-11T12:15:07.092Z\",\"meeting_time\":null,\"tags\":[],\"customer\":\"M01_PRIVATE_SENTINEL\",\"project\":null,\"description\":null,\"recording_url\":null,\"minutes_url\":null,\"title\":\"边界会议\",\"meeting_date\":\"2026-10-11\",\"meeting_type\":\"23a6a2fc-c963-446b-8ce6-ec72e11d755f\",\"confidentiality\":\"Restricted\",\"storage_mode\":\"cloud_index\",\"local_storage_authorized\":false,\"external_ai_authorized\":false,\"raw_transfer_authorized\":false,\"policy_updated_at\":\"2026-10-11T12:15:07.092Z\",\"imports\":[],\"active_import_id\":null,\"raw_links\":[],\"raw_source_id\":null,\"capabilities\":{\"canImportMinutes\":false,\"canRegisterRaw\":false,\"canUseAi\":false,\"importReason\":\"会议纪要导入尚未在本批交付。\",\"rawReason\":\"会议 Raw 登记尚未在本批交付。\",\"aiReason\":\"本版不支持 Meeting 外部 AI 处理。\"}}\n\n200 !== 409\n"
+    },
+    {
+      "id": "P06-error-does-not-echo-unknown-key",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: Error echoes caller-controlled key"
+    },
+    {
+      "id": "P07-missing-catalog-not-reseed-with-records",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"revision\":1,\"types\":[{\"id\":\"e97a99e3-9b33-4ca8-9533-4ea7f201fdce\",\"name\":\"需求对接\",\"active\":true},{\"id\":\"dcac2787-5be1-4c92-bc37-e836a17fd03a\",\"name\":\"项目进展\",\"active\":true},{\"id\":\"cdca62b5-4b0b-474d-8914-255a8b74d26d\",\"name\":\"客户拜访\",\"active\":true},{\"id\":\"5053531f-06d5-47d5-b3e5-81041b087b0c\",\"name\":\"方案评审\",\"active\":true},{\"id\":\"fabb9dfb-9498-474b-a93d-23c78416dc24\",\"name\":\"内部例会\",\"active\":true},{\"id\":\"9c6130a3-f7c2-45bb-9f1c-8180613987dc\",\"name\":\"培训学习\",\"active\":true},{\"id\":\"0297bdc1-1f8c-4934-bc11-b795a6832904\",\"name\":\"业务复盘\",\"active\":true},{\"id\":\"fd49f1e6-dbc1-4b4d-88e6-a6cfea27efec\",\"name\":\"其他\",\"active\":true}],\"tags\":[]}\n\n200 !== 409\n"
+    },
+    {
+      "id": "P08-replay-after-type-stopped",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"INVALID_MEETING_TYPE\",\"message\":\"会议类型不存在或已停用。\",\"details\":{\"meeting_type\":\"27555e82-b50c-4d21-8bd0-8174ca3b8b1d\"}}}\n\n422 !== 200\n"
+    },
+    {
+      "id": "P09-local-grant-needs-confirmation",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"meeting_id\":\"4f79df3f-72df-40c7-b732-9ddc510932da\",\"revision\":2,\"created_at\":\"2026-10-11T12:15:07.126Z\",\"updated_at\":\"2026-10-11T12:15:07.130Z\",\"meeting_time\":null,\"tags\":[],\"customer\":null,\"project\":null,\"description\":null,\"recording_url\":null,\"minutes_url\":null,\"title\":\"边界会议\",\"meeting_date\":\"2026-10-11\",\"meeting_type\":\"23a6a2fc-c963-446b-8ce6-ec72e11d755f\",\"confidentiality\":\"Sensitive\",\"storage_mode\":\"cloud_index\",\"local_storage_authorized\":true,\"external_ai_authorized\":false,\"raw_transfer_authorized\":false,\"policy_updated_at\":\"2026-10-11T12:15:07.130Z\",\"imports\":[],\"active_import_id\":null,\"raw_links\":[],\"raw_source_id\":null,\"capabilities\":{\"canImportMinutes\":false,\"canRegisterRaw\":false,\"canUseAi\":false,\"importReason\":\"会议纪要导入尚未在本批交付。\",\"rawReason\":\"会议 Raw 登记尚未在本批交付。\",\"aiReason\":\"本版不支持 Meeting 外部 AI 处理。\"}}\n\n200 !== 403\n"
+    },
+    {
+      "id": "P10-revoke-grant-cannot-keep-local",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: {\"schema_version\":1,\"meeting_id\":\"8366a529-9f45-4224-9d3d-63c0456305f5\",\"revision\":3,\"created_at\":\"2026-10-11T12:15:07.136Z\",\"updated_at\":\"2026-10-11T12:15:07.142Z\",\"meeting_time\":null,\"tags\":[],\"customer\":null,\"project\":null,\"description\":null,\"recording_url\":null,\"minutes_url\":null,\"title\":\"边界会议\",\"meeting_date\":\"2026-10-11\",\"meeting_type\":\"23a6a2fc-c963-446b-8ce6-ec72e11d755f\",\"confidentiality\":\"Internal\",\"storage_mode\":\"local_archive\",\"local_storage_authorized\":false,\"external_ai_authorized\":false,\"raw_transfer_authorized\":false,\"policy_updated_at\":\"2026-10-11T12:15:07.142Z\",\"imports\":[],\"active_import_id\":null,\"raw_links\":[],\"raw_source_id\":null,\"capabilities\":{\"canImportMinutes\":false,\"canRegisterRaw\":false,\"canUseAi\":false,\"importReason\":\"会议纪要导入尚未在本批交付。\",\"rawReason\":\"会议 Raw 登记尚未在本批交付。\",\"aiReason\":\"本版不支持 Meeting 外部 AI 处理。\"}}\n\n200 !== 403\n"
+    },
+    {
+      "id": "P11-cloud-clears-raw-grant",
+      "result": "FAIL",
+      "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n"
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 11
+  },
+  "providerCalls": 0,
+  "servicesClosed": true
+}

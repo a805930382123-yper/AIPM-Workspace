@@ -1,0 +1,206 @@
+{
+  "startedAt": "2026-10-05T09:03:02.740Z",
+  "node": "v25.2.1",
+  "startup": "node --import tsx server/index.ts",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq",
+  "version": {
+    "README.md": "33e01929bab501114d13dd013a2303b45386844a51814e424d760939394d1400",
+    "package.json": "4ead8519427ef38f261e88a818e1747d70e59d10ccd6ffeb99fe5936bfd38379",
+    "package-lock.json": "2201e13943a1dbfc033f0341c0f4edbece6517f078ef73ded0d75daf4098201d",
+    "app/api.ts": "0dc8c063389c35d7741de71c86e0b93ce492e6ee2c8397f92efe6c0a90f33657",
+    "app/App.tsx": "3753ffbf6ad75a9f7cc8cc34683cc86f0261745118a54c0a43cd7d2b342ca55e",
+    "app/main.tsx": "b280c492a2df4e6ec6ec998cfc03a90adb990822f83e804afb93e7536f950523",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "cbc37ab0767423dea1a55ec307aff1770d3c4c8b234118fe68eaf4dd3c2f1b55",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "801810073b8b96ff4e20fee1326ef41822dede9f53cc2fa1aac8048034c78877",
+    "server/raw-import.ts": "e2ceca0433b88b307379f0b12abfeed9ee9bc444a526c57d6dd0945eef1ffed1",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/raw/assets.ts": "ca355e671658cb1e75909d37ca551d9394b2580be6756451ca5d5fbe43d71b02",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/store.ts": "246919f6b2d85eb6c0e850bc65e27205db7654267c7ef12e89447569129c7765",
+    "services/stats/index.ts": "6b7e35714ac12d1e04514485726334db9a9652be5ec7440c8ecca8c69e9e1c84",
+    "services/wiki/store.ts": "64429e98068cc23fa4a0774e6aa62405c17cc912647f944b007d7060a0e48aa8",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3"
+  },
+  "checks": [
+    {
+      "id": "E03-12-cross-file-association-write-failure-no-success",
+      "status": "FAIL",
+      "elapsedMs": 1864,
+      "error": "AssertionError [ERR_ASSERTION]: partial linkage persistence failure must not return successful 201\n\n201 !== 500\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:62:44\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:30:209)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:51:2",
+      "observed": {
+        "response": {
+          "status": 201,
+          "json": {
+            "raw": {
+              "title": "独立验收 ../ <script>标题",
+              "sourceType": "report",
+              "sourceName": "独立原件",
+              "author": "验收作者",
+              "publishedAt": "2026-10-03",
+              "url": "https://example.com/report",
+              "tags": [
+                "中文标签",
+                "渠道"
+              ],
+              "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。",
+              "assetId": "96de9970-f26c-4c06-bd07-471e7efa9614",
+              "assetFileName": "cross.pdf",
+              "assetFormat": "pdf",
+              "assetByteSize": 40990,
+              "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+              "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+              "id": "4ae5f3f7-2816-4bd9-af8a-0713c6d10843",
+              "importedAt": "2026-10-05T09:03:04.573Z",
+              "status": "unprocessed",
+              "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23"
+            },
+            "asset": {
+              "id": "96de9970-f26c-4c06-bd07-471e7efa9614",
+              "fileName": "cross.pdf",
+              "format": "pdf",
+              "declaredExtension": ".pdf",
+              "byteSize": 40990,
+              "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+              "storedFile": "96de9970-f26c-4c06-bd07-471e7efa9614.pdf",
+              "createdAt": "2026-10-05T09:03:03.762Z",
+              "status": "stored"
+            },
+            "extraction": {
+              "parser": "pdfjs-dist 6.4.299",
+              "note": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+              "bodyChars": 96
+            },
+            "warnings": [
+              "Raw 已创建（4ae5f3f7-2816-4bd9-af8a-0713c6d10843），但原件记录（assetId 96de9970-f26c-4c06-bd07-471e7efa9614）的关联信息未写入；原件字节仍保留在 knowledge/raw/assets/。"
+            ]
+          }
+        },
+        "raw": {
+          "items": [
+            {
+              "title": "独立验收 ../ <script>标题",
+              "sourceType": "report",
+              "sourceName": "独立原件",
+              "author": "验收作者",
+              "publishedAt": "2026-10-03",
+              "url": "https://example.com/report",
+              "tags": [
+                "中文标签",
+                "渠道"
+              ],
+              "assetId": "96de9970-f26c-4c06-bd07-471e7efa9614",
+              "assetFileName": "cross.pdf",
+              "assetFormat": "pdf",
+              "assetByteSize": 40990,
+              "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+              "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+              "id": "4ae5f3f7-2816-4bd9-af8a-0713c6d10843",
+              "importedAt": "2026-10-05T09:03:04.573Z",
+              "status": "unprocessed",
+              "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+              "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+            }
+          ]
+        },
+        "intercepted": "96de9970-f26c-4c06-bd07-471e7efa9614.json",
+        "recordBefore": "{\n  \"id\": \"96de9970-f26c-4c06-bd07-471e7efa9614\",\n  \"fileName\": \"cross.pdf\",\n  \"format\": \"pdf\",\n  \"declaredExtension\": \".pdf\",\n  \"byteSize\": 40990,\n  \"sha256\": \"525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1\",\n  \"storedFile\": \"96de9970-f26c-4c06-bd07-471e7efa9614.pdf\",\n  \"createdAt\": \"2026-10-05T09:03:03.762Z\",\n  \"status\": \"stored\"\n}\n",
+        "afterRestart": {
+          "raw": {
+            "items": [
+              {
+                "title": "独立验收 ../ <script>标题",
+                "sourceType": "report",
+                "sourceName": "独立原件",
+                "author": "验收作者",
+                "publishedAt": "2026-10-03",
+                "url": "https://example.com/report",
+                "tags": [
+                  "中文标签",
+                  "渠道"
+                ],
+                "assetId": "96de9970-f26c-4c06-bd07-471e7efa9614",
+                "assetFileName": "cross.pdf",
+                "assetFormat": "pdf",
+                "assetByteSize": 40990,
+                "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+                "id": "4ae5f3f7-2816-4bd9-af8a-0713c6d10843",
+                "importedAt": "2026-10-05T09:03:04.573Z",
+                "status": "unprocessed",
+                "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+                "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+              }
+            ]
+          },
+          "assets": {
+            "items": [
+              {
+                "id": "96de9970-f26c-4c06-bd07-471e7efa9614",
+                "fileName": "cross.pdf",
+                "format": "pdf",
+                "declaredExtension": ".pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "storedFile": "96de9970-f26c-4c06-bd07-471e7efa9614.pdf",
+                "createdAt": "2026-10-05T09:03:03.762Z",
+                "status": "stored"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "E03-13-readme-node-minimum-vs-installed-pdfjs",
+      "status": "FAIL",
+      "elapsedMs": 1,
+      "error": "AssertionError [ERR_ASSERTION]: README claims Node20 although pdfjs requires >=22.13.0 || >=24\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:65:352\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:30:209)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b03-independent-http.mjs:65:2",
+      "observed": {
+        "readmeClaim": "需要 Node.js 20 或更高版本以及 npm。在项目目录运行：",
+        "pdfjsVersion": "6.4.299",
+        "engines": {
+          "node": ">=22.13.0 || >=24"
+        }
+      }
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "PASS",
+      "changed": []
+    }
+  ],
+  "notes": [
+    "Real public HTTP and filesystem assertions; no product imports, no mocks.",
+    "Browser evidence supplied separately by main agent.",
+    {
+      "service": "http://127.0.0.1:55890",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq\\main",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55890 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq\\main)\n"
+    },
+    {
+      "service": "http://127.0.0.1:55896",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55896 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:55907",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55907 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b03-independent-ZltgVq\\cross-file)\n"
+    }
+  ],
+  "finishedAt": "2026-10-05T09:03:05.152Z",
+  "summary": {
+    "PASS": 1,
+    "FAIL": 2,
+    "BLOCKED": 0
+  }
+}

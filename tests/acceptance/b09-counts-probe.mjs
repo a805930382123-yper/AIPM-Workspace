@@ -1,0 +1,2 @@
+import fs from 'node:fs/promises';import assert from 'node:assert/strict';
+const p='docs/reports/B09-acceptance-browser-manual-counts-runtime.json',r=JSON.parse(await fs.readFile(p,'utf8'));const response=await fetch(r.api+'/api/stats');const stats=await response.json();assert.equal(stats.openAuditCount,1);await fs.writeFile('docs/reports/B09-initial-audit-count-api.json',JSON.stringify({status:response.status,stats,dataRoot:r.dataRoot},null,2));console.log(stats);

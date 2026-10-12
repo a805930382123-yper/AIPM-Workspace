@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-04",
+  "url": "http://127.0.0.1:5174/",
+  "dataRoot": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\fixtures\\B02-browser-20261004",
+  "version": {
+    "app/main.tsx": "e36696dc893cc8fd22b45b742883950fbdce917a7c75a59a1e57309db05f95de",
+    "app/App.tsx": "5f81e37ecdcd7d47a56e469df20d75d7d059e178c5420a9876620151c532adab",
+    "app/api.ts": "a87d3640643f032caa8712d3683ecd287202d58be2c3935b2d20f6653472a631",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "5fcce98e685ae22317dce84b1bfa7e4556072a572869c610c5b37dff8827a1ea",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff"
+  },
+  "sixTypesCreatedThroughUI": [
+    {
+      "id": "b80c8ded-9192-4669-8819-8491f9710eb0",
+      "title": "B02验收-补货概念（已改名）",
+      "type": "concept",
+      "revision": 2
+    },
+    {
+      "id": "4defebb4-377f-4c04-aa0d-e9912ec26122",
+      "title": "B02验收-两份资料综合",
+      "type": "synthesis",
+      "revision": 1
+    },
+    {
+      "id": "5b6c3f81-e361-4d26-9cd0-0863fc74cd31",
+      "title": "B02验收-补货完成率",
+      "type": "metric",
+      "revision": 1
+    },
+    {
+      "id": "b3d87d31-be5d-41a0-ad50-4785cece6758",
+      "title": "B02验收-补货流程",
+      "type": "business_process",
+      "revision": 1
+    },
+    {
+      "id": "b1a2df59-903f-479f-994f-f912d50fba13",
+      "title": "B02验收-访谈摘要",
+      "type": "source",
+      "revision": 1
+    },
+    {
+      "id": "b3a416bc-3ff9-477c-8309-87137aa08713",
+      "title": "B02验收-示例实体",
+      "type": "entity",
+      "revision": 1
+    }
+  ],
+  "download": {
+    "archive": "fixtures/B02-downloaded-source.md",
+    "sha256": "154c726971d095a101901a9364d3cc37dbe68cbe674e54d967907e039ab90833",
+    "bytes": 730,
+    "equalsStoredMarkdown": true,
+    "method": "Visible native download link clicked; browser download event returned C:/Users/80593/Downloads/wiki-b1a2df59-903f-479f-994f-f912d50fba13.md"
+  },
+  "deletion": {
+    "id": "b3a416bc-3ff9-477c-8309-87137aa08713",
+    "incomingPages": 2,
+    "remainingPageCount": 5,
+    "survivingRecordsUnchanged": true,
+    "recycleOutsideWiki": true
+  },
+  "rawChecks": [
+    {
+      "id": "1aeb7a56-7bb3-4bd2-8700-af9f00a2cda3",
+      "bodySha256": "e47f45c9760a54bb7f2067cf2f2c9833651f67593382680111ef09a26df30ab9",
+      "unchanged": true
+    },
+    {
+      "id": "4515ed52-2fab-4036-acea-31cf81931c80",
+      "bodySha256": "07b2619a03fd39e993c1380d46e55ab87ea1a090650828c30a1b11f0605c7bea",
+      "unchanged": true
+    }
+  ],
+  "finalStats": {
+    "rawCount": 2,
+    "wikiCount": 5,
+    "thisWeekNewCount": 7,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 0,
+    "weekStartsOn": "2026-09-28"
+  },
+  "notes": [
+    "隔离验收数据，不是正式知识。",
+    "PowerShell JSON将.750Z格式化为.75Z；比较按ISO时间值归一化，非产品变更。",
+    "UI操作证据详见同名Markdown。"
+  ],
+  "followup": {
+    "id": "B02-UI-04",
+    "failure": "PUT response omitted links; editor success view lost relationship panel.",
+    "fix": "GET full detail after save; guard selection against stale async updates.",
+    "retest": {
+      "revision3": "UI immediately showed 门店补量 and clickable renamed concept without refreshing",
+      "revision4": "Saved Source link; immediate selection of Source remained selected after response",
+      "metricId": "5b6c3f81-e361-4d26-9cd0-0863fc74cd31",
+      "finalRevision": 4,
+      "links": [
+        {
+          "target": "B02验收-访谈摘要",
+          "status": "resolved",
+          "candidates": [
+            {
+              "id": "b1a2df59-903f-479f-994f-f912d50fba13",
+              "title": "B02验收-访谈摘要"
+            }
+          ]
+        }
+      ]
+    },
+    "note": "Metric revision1 at deletion evidence snapshot; later revisions2-4 were explicit UI-04 edits, not deletion side effects."
+  }
+}

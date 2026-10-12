@@ -1,0 +1,168 @@
+{
+  "at": "2026-10-11T16:10:53.755Z",
+  "checks": [
+    {
+      "id": "V01-final-frozen-and-protected-files",
+      "result": "PASS",
+      "details": {
+        "product": 79,
+        "unitTests": 45,
+        "workspace": 2,
+        "protected": 1018
+      }
+    },
+    {
+      "id": "V02-quality",
+      "result": "PASS",
+      "details": {
+        "build": true,
+        "fullTests": 177,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "id": "V-http",
+      "result": "PASS",
+      "details": {
+        "pass": 21,
+        "durationMs": 26365
+      }
+    },
+    {
+      "id": "V-api-regression",
+      "result": "PASS",
+      "details": {
+        "pass": 23,
+        "durationMs": 2873
+      }
+    },
+    {
+      "id": "V-component",
+      "result": "PASS",
+      "details": {
+        "pass": 18,
+        "durationMs": 3733
+      }
+    },
+    {
+      "id": "V-backup",
+      "result": "PASS",
+      "details": {
+        "pass": 5,
+        "durationMs": 8644
+      }
+    },
+    {
+      "id": "V-legacy-http",
+      "result": "PASS",
+      "details": {
+        "pass": 7,
+        "durationMs": null
+      }
+    },
+    {
+      "id": "V08-browser-calibration",
+      "result": "PASS",
+      "details": {
+        "validPass": 37,
+        "invalidRetained": 5,
+        "closedDefects": 1
+      }
+    },
+    {
+      "id": "V-EIO-disk-identical",
+      "result": "PASS",
+      "details": {
+        "exactSHA256": true
+      }
+    },
+    {
+      "id": "V-restart-disk-identical",
+      "result": "PASS",
+      "details": {
+        "exactSHA256": true
+      }
+    },
+    {
+      "id": "V11-browser-isolation-and-cleanup",
+      "result": "PASS",
+      "details": {
+        "sameDataRoot": true,
+        "providerCalls": 0,
+        "oldRootsUnchanged": true,
+        "servicesClosed": true,
+        "noAutomaticImageRequests": true
+      }
+    },
+    {
+      "id": "V12-browser-disk-archive-delete",
+      "result": "PASS",
+      "details": {
+        "AUnchanged": true,
+        "BDeleted": true,
+        "allBodiesCleared": true
+      }
+    },
+    {
+      "id": "V13-browser-snapshot-originals-and-API",
+      "result": "PASS",
+      "details": {
+        "snapshotCount": 5,
+        "versionHashChecks": 11
+      }
+    },
+    {
+      "id": "V14-browser-real-failure-and-lost-response",
+      "result": "PASS",
+      "details": {
+        "actualEIO": true,
+        "actual409": true,
+        "droppedAfterCommit": true
+      }
+    },
+    {
+      "id": "V15-ports-closed",
+      "result": "PASS",
+      "details": {
+        "ports": [
+          "63276",
+          "63290",
+          "63291",
+          "57195",
+          "57201",
+          "57202"
+        ],
+        "allClosed": true
+      }
+    },
+    {
+      "id": "V16-screenshot-and-viewport-evidence",
+      "result": "PASS",
+      "details": [
+        {
+          "name": "browser-desktop-final",
+          "format": "JPEG returned by browser",
+          "imageWidth": 1264,
+          "imageHeight": 1844,
+          "viewportWidth": 1280,
+          "viewportHeight": 900,
+          "horizontalOverflow": false
+        },
+        {
+          "name": "browser-narrow",
+          "format": "JPEG returned by browser",
+          "imageWidth": 375,
+          "imageHeight": 2312,
+          "viewportWidth": 390,
+          "viewportHeight": 844,
+          "horizontalOverflow": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "pass": 16,
+    "fail": 0
+  }
+}

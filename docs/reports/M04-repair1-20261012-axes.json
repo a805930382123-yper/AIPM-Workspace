@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-12",
+  "kind": "Root record of independent read-only reviewer handoffs; not a runtime test",
+  "comparison": "M04-repair1-20261012-baseline.json -> M04-repair1-20261012-frozen.json",
+  "changedProductFiles": 10,
+  "changedTestFiles": 3,
+  "standards": {
+    "agent": "/root/m04_standards_review",
+    "result": "PASS",
+    "remainingActionableFindings": 0,
+    "coverage": "Final strict receipt schema, truthful raw_deleted time, original/source checks, real Raw replay audit, current authorization, bounded legacy compatibility, UI late-response isolation"
+  },
+  "spec": {
+    "agent": "/root/m04_spec_review",
+    "result": "PASS",
+    "remainingActionableFindings": 0,
+    "coverage": "F04-01–08 and supplemental repair card, fixed identity, source restrictions, deletion/recovery, legacy/new receipt semantics, actual Raw provenance and UI key/ref isolation"
+  },
+  "limits": ["Read-only review, no test execution by reviewers", "No old full-source copies or Git metadata; not a line-diff review", "Root runtime/browser evidence is independently required"]
+}

@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-05",
+  "scope": "B04 independent acceptance; product code unchanged",
+  "build": {
+    "command": "npm.cmd run build",
+    "execution": "approved escalated environment",
+    "result": "PASS",
+    "exitCode": 0,
+    "tsc": "PASS",
+    "viteVersion": "6.4.3",
+    "modules": 39,
+    "outputJs": "index-C_NXw5Uk.js",
+    "outputCss": "index-uxFGZpP_.css",
+    "note": "Observed command output; no separate build stdout artifact was saved."
+  },
+  "tests": {
+    "command": "npm.cmd test",
+    "execution": "approved escalated environment",
+    "result": "PASS",
+    "exitCode": 0,
+    "pass": 80,
+    "fail": 0,
+    "durationMs": 12570.7385,
+    "stdout": "B04-main-test.log",
+    "freshHttpEvidence": "B04-main-unit-http-evidence.json"
+  },
+  "excludedSandboxAttempt": {
+    "result": "ENVIRONMENT_FAILURE",
+    "pass": 63,
+    "fail": 17,
+    "reason": "Localhost fetch independently returned EACCES in default sandbox. Failed HTTP worker did not exit; only its verified own PID was terminated. These failures are not product verdicts.",
+    "evidence": "B04-main-sandbox-test-evidence.json"
+  },
+  "builderEvidenceSideEffect": {
+    "path": "B04-http-evidence.json",
+    "reason": "Existing npm test runner rewrites this builder evidence path. Initial rerun overwrote it before archival; original contents were not preserved and were not reconstructed.",
+    "originalSha256RecordedInBuildReport": "cbac48250d78f02ea5cba466614ebff2c18caa5a2330a75fa8a90080c7648e4c",
+    "independentConclusionReliesOn": ["B04-independent-review.json", "B04-browser-independent.md"]
+  },
+  "realProvider": { "result": "BLOCKED", "reason": "No user configured server-side product Provider/model/key; fake is not real AI evidence." },
+  "finalBatchResult": "FAIL",
+  "nextBatchAuthorized": false
+}

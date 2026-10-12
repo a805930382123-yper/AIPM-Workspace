@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-08",
+  "provider": "independent fake; real Provider quality BLOCKED",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-QiszFl",
+  "checks": [
+    {
+      "id": "F08-05-generated-history-row",
+      "result": "PASS",
+      "label": "第 1 版\n2026年10月8日 21:07\nAI 生成 · 72 字符"
+    },
+    {
+      "id": "F08-05-generated-history-detail",
+      "result": "PASS",
+      "dom": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59805/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59805/"
+    },
+    {
+      "id": "F08-05-manual-history-label-regression",
+      "result": "PASS"
+    },
+    {
+      "id": "F08-03-keeps-old-history-while-current-updated",
+      "result": "PASS",
+      "evidence": "保存甲v3返回Library保留正在查看v2只读，列表v3；历史上下文不被旧保存清掉。首次试找v3按钮因历史视图无按钮而超时，按UI返回当前后核查。"
+    },
+    {
+      "id": "F08-05-ai-optimized-history-row-regression",
+      "result": "PASS",
+      "label": "第 3 版\n2026年10月8日 21:07\nAI 优化保存 · 69 字符"
+    },
+    {
+      "id": "F08-05-ai-optimized-history-detail-regression",
+      "result": "PASS"
+    }
+  ]
+}

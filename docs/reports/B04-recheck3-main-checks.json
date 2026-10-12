@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-06",
+  "scope": "B04 third repair: remaining F04-11 and directly affected regressions; no product edits by reviewers",
+  "builderArchives": {
+    "archivedBeforeNpmTest": true,
+    "http": { "path": "B04-recheck3-builder-http-evidence.json", "sha256": "68bfc519c95eba73c40a474ebf3705fbda4da5c6dc4a18b70219ff35393adbf4" },
+    "merge": { "path": "B04-recheck3-builder-merge-payload.json", "sha256": "5b2467777df3553e703497629932f131894d70d4ffc66d51790107db1299c519" },
+    "sideEffect": "Existing npm test rewrites both B04-http-evidence.json and B04-repair3-merge-payload.json. Submitted files were copied before execution."
+  },
+  "builderMergeEvidenceDocument": {
+    "result": "DOC_HASH_MISMATCH",
+    "reportedSha256": "f4976863160f4b662aa5837fffac8bb6ed04456b4da0ff466f93cfb533857f94",
+    "actualSubmittedSha256": "5b2467777df3553e703497629932f131894d70d4ffc66d51790107db1299c519",
+    "reasonUnknown": true,
+    "note": "Documentary evidence discrepancy only; not counted as a product defect. Independent HTTP evidence determines functional verdict."
+  },
+  "build": {
+    "command": "npm.cmd run build",
+    "execution": "approved escalated environment",
+    "result": "PASS",
+    "exitCode": 0,
+    "stdout": "B04-recheck3-main-build.log",
+    "modules": 39,
+    "outputJs": "index-CC-_fZgv.js",
+    "outputCss": "index-uxFGZpP_.css"
+  },
+  "tests": {
+    "command": "npm.cmd test",
+    "execution": "approved escalated environment",
+    "result": "PASS",
+    "exitCode": 0,
+    "pass": 101,
+    "fail": 0,
+    "durationMs": 20311.538,
+    "stdout": "B04-recheck3-main-test.log",
+    "freshHttpEvidence": "B04-recheck3-main-http-evidence.json",
+    "freshMergeEvidence": "B04-recheck3-main-merge-payload.json"
+  },
+  "productFingerprintComparison": {
+    "result": "PASS",
+    "compared": ["services/llm/service.ts", "services/wiki/commits.ts", "services/wiki/drafts.ts", "README.md"],
+    "note": "All four full product fingerprints in repair3 report match actual submitted files. Full runtime freeze belongs to independent HTTP report."
+  },
+  "browser": {
+    "result": "NOT_RERUN",
+    "reason": "No UI source changes in this repair; change concerns backend aggregation and summary input. Reuse prior real-browser evidence and run affected backend checks. Npm UI tests are not real browser evidence.",
+    "priorReport": "B04-recheck2-browser.md"
+  },
+  "realProvider": {
+    "result": "BLOCKED",
+    "reason": "No user-configured existing server-side product Provider/model/key. Presence-only check recorded; no real credential values read.",
+    "presenceEvidence": "B04-recheck3-config-presence.json"
+  },
+  "deterministicRepairVerdict": "PASS",
+  "closedRootCauseCount": 11,
+  "remainingProductDefectIds": [],
+  "backendEffectiveBusiness": { "pass": 4, "fail": 0, "total": 4, "report": "B04-recheck3-independent-review.json" },
+  "finalBatchResult": "BLOCKED",
+  "nextBatchAuthorized": false
+}

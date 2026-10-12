@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-11T15:59:40.883Z",
+  "records": [
+    {
+      "meeting_id": "4b9ce1c6-bb5b-4556-8a29-3b2521475b7c",
+      "title": "M03浏览器甲",
+      "revision": 12,
+      "mode": "cloud_index",
+      "level": "Sensitive",
+      "localAuthorized": false,
+      "capabilities": {
+        "canImportMinutes": false,
+        "canRegisterRaw": false,
+        "canUseAi": false,
+        "importReason": "请先切换到本地归档模式。",
+        "rawReason": "本批不开放会议 Raw 登记。",
+        "aiReason": "本版不支持 Meeting 外部 AI 处理。"
+      },
+      "fileSHA256": "8601183bcaf9e81603d72fd9561bdca82869e04d2b08b8799750c62945e4ad68",
+      "active": null,
+      "imports": [],
+      "ledgerCount": 3,
+      "apiAndDiskImportsEqual": true
+    },
+    {
+      "meeting_id": "9df71611-b2f7-45f3-a17d-379b8dc761b5",
+      "title": "M03浏览器乙",
+      "revision": 3,
+      "mode": "local_archive",
+      "level": "Public",
+      "localAuthorized": false,
+      "capabilities": {
+        "canImportMinutes": true,
+        "canRegisterRaw": false,
+        "canUseAi": false,
+        "importReason": "",
+        "rawReason": "本批不开放会议 Raw 登记。",
+        "aiReason": "本版不支持 Meeting 外部 AI 处理。"
+      },
+      "fileSHA256": "6deb689e152409c8b665e84d381a361936b4730679bcf3cb5e7bd31d6ce2ecdc",
+      "active": "7840bb10-f065-4083-a1d0-ceeffc1af37f",
+      "imports": [
+        {
+          "id": "7840bb10-f065-4083-a1d0-ceeffc1af37f",
+          "originalSha256": "d591934a867723d635e517a30023e05442084bef0f40476e1e28fdc95f07c01d",
+          "storedSha256": "d591934a867723d635e517a30023e05442084bef0f40476e1e28fdc95f07c01d",
+          "workingSha256": "d591934a867723d635e517a30023e05442084bef0f40476e1e28fdc95f07c01d",
+          "originalChars": 14,
+          "workChars": 14,
+          "filename": null
+        }
+      ],
+      "ledgerCount": 1,
+      "apiAndDiskImportsEqual": true
+    }
+  ],
+  "files": {
+    "catalog.json": "f3bd8cc74753c2d213ee9998a1346af7af3fc4657c6aaaad715abd0247f6f209",
+    "records\\4b9ce1c6-bb5b-4556-8a29-3b2521475b7c.json": "8601183bcaf9e81603d72fd9561bdca82869e04d2b08b8799750c62945e4ad68",
+    "records\\9df71611-b2f7-45f3-a17d-379b8dc761b5.json": "6deb689e152409c8b665e84d381a361936b4730679bcf3cb5e7bd31d6ce2ecdc"
+  },
+  "oldRoots": {
+    "knowledge": {
+      "wiki\\index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+    },
+    "prompts": {},
+    "drafts": {},
+    "state": {}
+  }
+}

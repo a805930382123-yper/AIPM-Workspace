@@ -1,0 +1,67 @@
+# Based on LLM-Wiki-KB schema-template.md (MIT); page-type set and fields adapted to this product PRD.
+domain: fmcg
+types:
+  - id: source
+    label: 来源摘要
+    description: 对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。
+  - id: concept
+    label: 概念
+    description: 解释一个明确的快消行业概念。
+  - id: entity
+    label: 业务实体
+    description: 记录企业、品牌、产品、平台、系统、客户或机构。
+  - id: business_process
+    label: 业务流程
+    description: 描述业务目标、角色、步骤、规则与异常。
+  - id: metric
+    label: 业务指标
+    description: 记录指标定义、公式、范围与解读方式。
+  - id: synthesis
+    label: 综合整理
+    description: 手动综合多个来源，分别保留一致观点、冲突与待确认问题。
+categories:
+  - id: industry_basics
+    label: 行业基础
+  - id: category
+    label: 品类
+  - id: channel
+    label: 渠道
+  - id: sales
+    label: 销售
+  - id: store
+    label: 门店
+  - id: distributor
+    label: 经销商
+  - id: supply_chain
+    label: 供应链
+  - id: product
+    label: 商品
+  - id: metric
+    label: 数据指标
+  - id: ai_application
+    label: AI应用
+  - id: company_business
+    label: 公司业务
+  - id: customer
+    label: 客户
+  - id: other
+    label: 其他
+enums:
+  knowledge_status:
+    - verified
+    - source_supported
+    - ai_organized
+    - inferred
+    - needs_verification
+  confidence:
+    - high
+    - medium
+    - low
+  source_level:
+    - A
+    - B
+    - C
+    - D
+  review_status:
+    - unreviewed
+    - reviewed

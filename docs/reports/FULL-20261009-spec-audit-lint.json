@@ -1,0 +1,986 @@
+{
+  "clientDate": "2026-10-07",
+  "provider": "independent HTTP fake only; real quality BLOCKED",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g",
+  "checks": [
+    {
+      "id": "E06-01-create-persist-stats",
+      "result": "PASS",
+      "evidence": {
+        "ids": [
+          "b757c97f-1121-41cd-bed7-9571c5f2d333",
+          "0961236f-04a0-4294-8a4c-64e46dbbdfc0",
+          "d97adc2d-ff3e-4d59-9188-9a36aae81fcf",
+          "e189e974-583e-4d29-af5e-b8a918151f38"
+        ],
+        "restartSameDirectory": true,
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "E06-02-anchor-movement-and-negatives",
+      "result": "PASS",
+      "evidence": {
+        "movement": "found",
+        "ambiguous": {
+          "error": {
+            "code": "ANCHOR_UNCERTAIN",
+            "message": "Wiki 内容已变化，Audit 目标需要重新定位。",
+            "details": {
+              "location": {
+                "status": "uncertain",
+                "start": -1,
+                "end": -1,
+                "method": "ambiguous"
+              }
+            }
+          }
+        },
+        "deleted": {
+          "error": {
+            "code": "ANCHOR_UNCERTAIN",
+            "message": "Wiki 内容已变化，Audit 目标需要重新定位。",
+            "details": {
+              "location": {
+                "status": "uncertain",
+                "start": -1,
+                "end": -1,
+                "method": "missing"
+              }
+            }
+          }
+        },
+        "wholePageStale": true,
+        "originalAnchorRetained": true
+      }
+    },
+    {
+      "id": "E06-03-provider-preview-edit-discard",
+      "result": "PASS",
+      "evidence": {
+        "draftId": "8a04d894-5e48-4da8-96cb-3a200b90b9fd",
+        "rawId": "19412831-d62f-4a0c-b82f-d0e183532719",
+        "providerInputAllThree": true,
+        "savedAcrossRestart": true,
+        "discardedWithoutWikiWrite": true
+      }
+    },
+    {
+      "id": "E06-02b-repeat-context-and-deleted-page",
+      "result": "PASS",
+      "evidence": {
+        "duplicateTextContextSelectsRightOccurrence": true,
+        "deletedWikiBlocksProposal": true
+      }
+    },
+    {
+      "id": "E06-04-four-decisions-and-precise-write",
+      "result": "PASS",
+      "evidence": {
+        "accepted": {
+          "audit": {
+            "id": "0ff328ba-640c-48fe-952d-b7c205dc20f9",
+            "wikiId": "ae22233e-badf-4995-bec3-8314034173ed",
+            "scope": "paragraph",
+            "severity": "error",
+            "comment": "反馈：口径错误，请依Raw纠正并保留其他人工文字。",
+            "anchor": {
+              "before": "## 人工保留前文\n",
+              "text": "铺货率采用上架门店数除以目标门店数。",
+              "after": "\n## 人工保留后文\n范围需要业务确认。"
+            },
+            "pageBodySha256": "f4511cdffc0f83b4a0c076048ddc3f01baa292e03edd4b134f49d06683479dc2",
+            "createdRevision": 1,
+            "revision": 3,
+            "createdAt": "2026-10-09T13:57:55.313Z",
+            "updatedAt": "2026-10-09T13:57:55.345Z",
+            "status": "resolved",
+            "location": {
+              "status": "located",
+              "start": 10,
+              "end": 28,
+              "method": "context"
+            },
+            "relocationHistory": [],
+            "decisionHistory": [
+              {
+                "decision": "accepted",
+                "at": "2026-10-09T13:57:55.345Z",
+                "operationId": "39be2df0-b554-40e6-b877-c59903228da0",
+                "wikiRevision": 2,
+                "draftId": "dcb94e1d-6d29-4ef5-ab05-8ee82aadfb08",
+                "requestHash": "2b991069cd91fa6385d45c641916f8bdf07b22918fdb25fda2f8bcdfea06d900"
+              }
+            ]
+          },
+          "decision": "accepted",
+          "operationId": "39be2df0-b554-40e6-b877-c59903228da0",
+          "wikiRevision": 2,
+          "reused": false
+        },
+        "partialBody": "## 人工保留前文\n人工部分采纳：销售门店口径，周期待确认。\n## 人工保留后文\n范围需要业务确认。",
+        "rejectedId": "499ae0ac-cdb2-40ed-97e9-18e2b9728b97",
+        "deferredId": "efb1168b-906f-4754-bc4e-7d25db05bff9",
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "E06-05-versions-confirm-and-idempotence",
+      "result": "PASS",
+      "evidence": {
+        "explicitConfirmRequired": true,
+        "staleDraftWikiAudit": true,
+        "completedRetryNoWrites": true,
+        "operationId": "0de58388-339f-4ca8-8c71-ef139c13b4a4"
+      }
+    },
+    {
+      "id": "E06-06-real-io-failure-recovery",
+      "result": "PASS",
+      "evidence": {
+        "failed": {
+          "error": {
+            "code": "DERIVED_FILES_PENDING",
+            "message": "Wiki 已保存（9df0f36e-63d2-42de-907c-15465c8aa1ab，第 2 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。",
+            "details": {
+              "committed": true,
+              "id": "9df0f36e-63d2-42de-907c-15465c8aa1ab",
+              "revision": 2,
+              "operationId": "22a63fc3-66dc-4b46-a8b8-48a458f0b605",
+              "recoverable": true,
+              "cause": "Independent B06 acceptance EIO"
+            }
+          }
+        },
+        "recovered": {
+          "id": "a9aee8a4-d571-4805-bae5-1646f8ed761d",
+          "wikiId": "9df0f36e-63d2-42de-907c-15465c8aa1ab",
+          "scope": "paragraph",
+          "severity": "error",
+          "comment": "反馈：口径错误，请依Raw纠正并保留其他人工文字。",
+          "anchor": {
+            "before": "## 人工保留前文\n",
+            "text": "铺货率采用上架门店数除以目标门店数。",
+            "after": "\n## 人工保留后文\n范围需要业务确认。"
+          },
+          "pageBodySha256": "f4511cdffc0f83b4a0c076048ddc3f01baa292e03edd4b134f49d06683479dc2",
+          "createdRevision": 1,
+          "revision": 3,
+          "createdAt": "2026-10-09T13:57:57.072Z",
+          "updatedAt": "2026-10-09T13:57:57.537Z",
+          "status": "resolved",
+          "location": {
+            "status": "missing",
+            "start": -1,
+            "end": -1,
+            "method": "missing",
+            "reason": "missing"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-09T13:57:57.537Z",
+              "operationId": "79dc277a-730f-4137-9cff-b5e721252431",
+              "wikiRevision": 2,
+              "draftId": "934e11c5-9d21-48db-97e4-6ae4a9e90527",
+              "requestHash": "6bcf8db5155fcc83d69e5dfc5d4ff81dfb56844f8cfffe36617dd439193ef204"
+            }
+          ]
+        },
+        "stableWikiRevision": 2,
+        "logOnce": true
+      }
+    },
+    {
+      "id": "E06-06b-recovery-human-conflict",
+      "result": "PASS",
+      "evidence": {
+        "humanRevisionPreserved": 3,
+        "humanBodyPreserved": true,
+        "auditNotFalselyResolved": true,
+        "conflictEvidenceRetained": true
+      }
+    },
+    {
+      "id": "E06-06c-log-failure-is-not-success",
+      "result": "PASS",
+      "evidence": {
+        "failure": {
+          "error": {
+            "code": "DERIVED_FILES_PENDING",
+            "message": "Wiki 已保存（3254c143-2b9a-459d-b883-105eeef7d998，第 2 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。",
+            "details": {
+              "committed": true,
+              "id": "3254c143-2b9a-459d-b883-105eeef7d998",
+              "revision": 2,
+              "operationId": "e3395f30-4cd5-4a41-8b2b-62a4a4ef8a15",
+              "recoverable": true,
+              "cause": "Independent B06 acceptance EIO"
+            }
+          }
+        },
+        "noFalseSuccess": true,
+        "restartCompletedOnce": true
+      }
+    },
+    {
+      "id": "E06-06d-recovery-matches-actual-wiki-content",
+      "result": "PASS",
+      "evidence": {
+        "sameRevisionExternalEditPreserved": true,
+        "auditNotFalselyResolved": true
+      }
+    },
+    {
+      "id": "E06-06e-recovery-checks-actual-raw-snapshot",
+      "result": "PASS",
+      "evidence": {
+        "changedActualRawBlocksRecoveryCompletion": true
+      }
+    },
+    {
+      "id": "E06-07-raw-integrity-and-provider-failures",
+      "result": "PASS",
+      "evidence": {
+        "changedActualRawRejected": true,
+        "invalidProviderRejected": true,
+        "noProvider503": true,
+        "manualDecisionStillWorks": true
+      }
+    },
+    {
+      "id": "E06-07b-strict-schema-and-quote-source",
+      "result": "PASS",
+      "evidence": {
+        "strictRequiredFieldsLengthsAndUnknownFields": true,
+        "wrongSourceQuoteRejected": true,
+        "statuses": [
+          {
+            "case": 1,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_SCHEMA_MISMATCH"
+          },
+          {
+            "case": 2,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_SCHEMA_MISMATCH"
+          },
+          {
+            "case": 3,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_PROVIDER_ERROR"
+          },
+          {
+            "case": 4,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_SCHEMA_MISMATCH"
+          },
+          {
+            "case": "wrong-source-quote",
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_EVIDENCE_INVALID"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E06-09-proposal-race-cannot-resurrect-resolved-audit",
+      "result": "PASS",
+      "evidence": {
+        "concurrentProposalRejected409": true,
+        "manualDecisionAndHistoryPreserved": true
+      }
+    },
+    {
+      "id": "E06-08-lint-eleven-and-readonly-cli",
+      "result": "PASS",
+      "evidence": {
+        "codes": [
+          "BROKEN_WIKI_LINK",
+          "CONFIDENCE_MISSING",
+          "KNOWLEDGE_STATUS_MISSING",
+          "SOURCE_LEVEL_MISSING",
+          "SOURCE_MISSING",
+          "UNSOURCED_FACT",
+          "FRONTMATTER_MISSING",
+          "INDEX_MISSING",
+          "ORPHAN_WIKI",
+          "DUPLICATE_TITLE",
+          "OPEN_AUDIT"
+        ],
+        "findings": [
+          {
+            "code": "BROKEN_WIKI_LINK",
+            "objectId": "14e844c8-2522-43bd-a605-d75ad8c9dc2b",
+            "file": "knowledge/wiki/14e844c8-2522-43bd-a605-d75ad8c9dc2b.md",
+            "message": "Wiki 链接“不存在的页面”没有目标页面。",
+            "location": {
+              "line": 21,
+              "text": "[[不存在的页面]]"
+            }
+          },
+          {
+            "code": "CONFIDENCE_MISSING",
+            "objectId": "0df56929-bb02-48f0-8be7-f46e8c492413",
+            "file": "knowledge/wiki/0df56929-bb02-48f0-8be7-f46e8c492413.md",
+            "message": "Frontmatter 缺少 confidence。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "KNOWLEDGE_STATUS_MISSING",
+            "objectId": "849c1227-6bcb-499d-810e-bad0dc14df92",
+            "file": "knowledge/wiki/849c1227-6bcb-499d-810e-bad0dc14df92.md",
+            "message": "Frontmatter 缺少 knowledge_status。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "SOURCE_LEVEL_MISSING",
+            "objectId": "a481ea69-9b11-4e2c-86ff-c632eac911f5",
+            "file": "knowledge/wiki/a481ea69-9b11-4e2c-86ff-c632eac911f5.md",
+            "message": "Frontmatter 缺少 source_level。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "SOURCE_MISSING",
+            "objectId": "a8692a7c-0c8a-4666-8759-2fade9209795",
+            "file": "knowledge/wiki/a8692a7c-0c8a-4666-8759-2fade9209795.md",
+            "message": "一个或多个 sources 未映射到现存 Raw。",
+            "location": {
+              "line": 5,
+              "text": "sources:"
+            }
+          },
+          {
+            "code": "UNSOURCED_FACT",
+            "objectId": "a8692a7c-0c8a-4666-8759-2fade9209795",
+            "file": "knowledge/wiki/a8692a7c-0c8a-4666-8759-2fade9209795.md",
+            "message": "页面声明来源支持/已验证，但没有有效 Raw 来源。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "UNSOURCED_FACT",
+            "objectId": "b6082cdc-9fac-4969-91dd-ad8998a4d8b9",
+            "file": "knowledge/wiki/b6082cdc-9fac-4969-91dd-ad8998a4d8b9.md",
+            "message": "“来源事实”中的该条陈述没有可在有效 Raw 中定位的证据引用。",
+            "location": {
+              "line": 22,
+              "text": "铺货率增长99%，无来源定位。"
+            }
+          },
+          {
+            "code": "UNSOURCED_FACT",
+            "objectId": "bd24077b-fa4e-4c60-be0b-0f9fcb52daad",
+            "file": "knowledge/wiki/bd24077b-fa4e-4c60-be0b-0f9fcb52daad.md",
+            "message": "“来源事实”中的该条陈述没有可在有效 Raw 中定位的证据引用。",
+            "location": {
+              "line": 22,
+              "text": "无依据增长说法（证据 ev-forged-b06）"
+            }
+          },
+          {
+            "code": "FRONTMATTER_MISSING",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "页面缺少或无法解析 YAML Frontmatter。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "KNOWLEDGE_STATUS_MISSING",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "Frontmatter 缺少 knowledge_status。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "CONFIDENCE_MISSING",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "Frontmatter 缺少 confidence。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "SOURCE_LEVEL_MISSING",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "Frontmatter 缺少 source_level。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "SOURCE_MISSING",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "sources 为空或缺失。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "UNSOURCED_FACT",
+            "objectId": "ecb18f9d-bdbf-4547-a4d9-ca698357aea0",
+            "file": "knowledge/wiki/ecb18f9d-bdbf-4547-a4d9-ca698357aea0.md",
+            "message": "“来源事实”中的该条陈述没有可在有效 Raw 中定位的证据引用。",
+            "location": {
+              "line": 22,
+              "text": "无依据增长说法（证据 ev-bounds-b06）"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "0df56929-bb02-48f0-8be7-f46e8c492413",
+            "file": "knowledge/wiki/0df56929-bb02-48f0-8be7-f46e8c492413.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "14e844c8-2522-43bd-a605-d75ad8c9dc2b",
+            "file": "knowledge/wiki/14e844c8-2522-43bd-a605-d75ad8c9dc2b.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "27f79993-9a5f-4c39-bd18-9899f679354a",
+            "file": "knowledge/wiki/27f79993-9a5f-4c39-bd18-9899f679354a.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "410dd07b-fa03-4183-92fc-7dd8a13d8e7d",
+            "file": "knowledge/wiki/410dd07b-fa03-4183-92fc-7dd8a13d8e7d.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "7b0f59e8-63a6-4922-accc-66a1490836a5",
+            "file": "knowledge/wiki/7b0f59e8-63a6-4922-accc-66a1490836a5.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "849c1227-6bcb-499d-810e-bad0dc14df92",
+            "file": "knowledge/wiki/849c1227-6bcb-499d-810e-bad0dc14df92.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "991c26f7-1fc0-4115-a06e-a0690c6b5f42",
+            "file": "knowledge/wiki/991c26f7-1fc0-4115-a06e-a0690c6b5f42.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "a481ea69-9b11-4e2c-86ff-c632eac911f5",
+            "file": "knowledge/wiki/a481ea69-9b11-4e2c-86ff-c632eac911f5.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "a8692a7c-0c8a-4666-8759-2fade9209795",
+            "file": "knowledge/wiki/a8692a7c-0c8a-4666-8759-2fade9209795.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "ab8d2b0e-f764-40fe-bf25-f8115923077e",
+            "file": "knowledge/wiki/ab8d2b0e-f764-40fe-bf25-f8115923077e.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "b6082cdc-9fac-4969-91dd-ad8998a4d8b9",
+            "file": "knowledge/wiki/b6082cdc-9fac-4969-91dd-ad8998a4d8b9.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "bd24077b-fa4e-4c60-be0b-0f9fcb52daad",
+            "file": "knowledge/wiki/bd24077b-fa4e-4c60-be0b-0f9fcb52daad.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "c4c45198-d58d-4ef8-90c3-6d9e496b43b1",
+            "file": "knowledge/wiki/c4c45198-d58d-4ef8-90c3-6d9e496b43b1.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "e06ad9fd-5a50-4fbb-947c-88dc41e6f9cc",
+            "file": "knowledge/wiki/e06ad9fd-5a50-4fbb-947c-88dc41e6f9cc.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "ecb18f9d-bdbf-4547-a4d9-ca698357aea0",
+            "file": "knowledge/wiki/ecb18f9d-bdbf-4547-a4d9-ca698357aea0.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "INDEX_MISSING",
+            "objectId": "f9d90c18-b50f-4875-a6a5-c4cdbc517c33",
+            "file": "knowledge/wiki/f9d90c18-b50f-4875-a6a5-c4cdbc517c33.md",
+            "message": "知识 Index 文件缺失或为空，页面未被收录。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "0df56929-bb02-48f0-8be7-f46e8c492413",
+            "file": "knowledge/wiki/0df56929-bb02-48f0-8be7-f46e8c492413.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "14e844c8-2522-43bd-a605-d75ad8c9dc2b",
+            "file": "knowledge/wiki/14e844c8-2522-43bd-a605-d75ad8c9dc2b.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "27f79993-9a5f-4c39-bd18-9899f679354a",
+            "file": "knowledge/wiki/27f79993-9a5f-4c39-bd18-9899f679354a.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "410dd07b-fa03-4183-92fc-7dd8a13d8e7d",
+            "file": "knowledge/wiki/410dd07b-fa03-4183-92fc-7dd8a13d8e7d.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "7b0f59e8-63a6-4922-accc-66a1490836a5",
+            "file": "knowledge/wiki/7b0f59e8-63a6-4922-accc-66a1490836a5.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "849c1227-6bcb-499d-810e-bad0dc14df92",
+            "file": "knowledge/wiki/849c1227-6bcb-499d-810e-bad0dc14df92.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "991c26f7-1fc0-4115-a06e-a0690c6b5f42",
+            "file": "knowledge/wiki/991c26f7-1fc0-4115-a06e-a0690c6b5f42.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "a481ea69-9b11-4e2c-86ff-c632eac911f5",
+            "file": "knowledge/wiki/a481ea69-9b11-4e2c-86ff-c632eac911f5.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "a8692a7c-0c8a-4666-8759-2fade9209795",
+            "file": "knowledge/wiki/a8692a7c-0c8a-4666-8759-2fade9209795.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "ab8d2b0e-f764-40fe-bf25-f8115923077e",
+            "file": "knowledge/wiki/ab8d2b0e-f764-40fe-bf25-f8115923077e.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "b6082cdc-9fac-4969-91dd-ad8998a4d8b9",
+            "file": "knowledge/wiki/b6082cdc-9fac-4969-91dd-ad8998a4d8b9.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "bd24077b-fa4e-4c60-be0b-0f9fcb52daad",
+            "file": "knowledge/wiki/bd24077b-fa4e-4c60-be0b-0f9fcb52daad.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "c4c45198-d58d-4ef8-90c3-6d9e496b43b1",
+            "file": "knowledge/wiki/c4c45198-d58d-4ef8-90c3-6d9e496b43b1.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+            "file": "knowledge/wiki/c8d48f2e-59de-4ef3-8e91-aaf802847f76.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "# 无YAML的真实页"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "e06ad9fd-5a50-4fbb-947c-88dc41e6f9cc",
+            "file": "knowledge/wiki/e06ad9fd-5a50-4fbb-947c-88dc41e6f9cc.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "ORPHAN_WIKI",
+            "objectId": "ecb18f9d-bdbf-4547-a4d9-ca698357aea0",
+            "file": "knowledge/wiki/ecb18f9d-bdbf-4547-a4d9-ca698357aea0.md",
+            "message": "非 Source 页面没有有效入链或出链。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "DUPLICATE_TITLE",
+            "objectId": "991c26f7-1fc0-4115-a06e-a0690c6b5f42",
+            "file": "knowledge/wiki/991c26f7-1fc0-4115-a06e-a0690c6b5f42.md",
+            "message": "标题“B06重复标题”规范化后与 1 个页面重复。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "DUPLICATE_TITLE",
+            "objectId": "c4c45198-d58d-4ef8-90c3-6d9e496b43b1",
+            "file": "knowledge/wiki/c4c45198-d58d-4ef8-90c3-6d9e496b43b1.md",
+            "message": "标题“Ｂ０６重复标题”规范化后与 1 个页面重复。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          },
+          {
+            "code": "OPEN_AUDIT",
+            "objectId": "27f79993-9a5f-4c39-bd18-9899f679354a",
+            "file": "knowledge/wiki/27f79993-9a5f-4c39-bd18-9899f679354a.md",
+            "message": "Audit 7c9d4e90-1828-4f98-9739-9e51cfff8e54 尚未处理：反馈：口径错误，请依Raw纠正并保留其他人工文字。",
+            "location": {
+              "line": 1,
+              "text": "---"
+            }
+          }
+        ],
+        "fixtures": {
+          "broken_link": "14e844c8-2522-43bd-a605-d75ad8c9dc2b",
+          "orphan_wiki": "e06ad9fd-5a50-4fbb-947c-88dc41e6f9cc",
+          "frontmatter_missing": "c8d48f2e-59de-4ef3-8e91-aaf802847f76",
+          "source_missing": "a8692a7c-0c8a-4666-8759-2fade9209795",
+          "knowledge_status_missing": "849c1227-6bcb-499d-810e-bad0dc14df92",
+          "confidence_missing": "0df56929-bb02-48f0-8be7-f46e8c492413",
+          "source_level_missing": "a481ea69-9b11-4e2c-86ff-c632eac911f5",
+          "unsourced_fact": "b6082cdc-9fac-4969-91dd-ad8998a4d8b9",
+          "duplicate_title": "c4c45198-d58d-4ef8-90c3-6d9e496b43b1"
+        },
+        "cliReadOnly": true,
+        "completeDataRootUnchanged": true
+      }
+    }
+  ],
+  "services": [
+    {
+      "pid": 25276,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\1",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62450 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\1)\n"
+    },
+    {
+      "pid": 25692,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\1",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62459 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\1)\n"
+    },
+    {
+      "pid": 25356,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\2",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62467 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\2)\n"
+    },
+    {
+      "pid": 10156,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\3",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62477 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\3)\n"
+    },
+    {
+      "pid": 2704,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\3",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62485 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\3)\n"
+    },
+    {
+      "pid": 19804,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\4",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62494 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\4)\n"
+    },
+    {
+      "pid": 22404,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\5",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62506 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\5)\n"
+    },
+    {
+      "pid": 8480,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\5",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62514 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\5)\n"
+    },
+    {
+      "pid": 7208,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\6",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62521 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\6)\n"
+    },
+    {
+      "pid": 3932,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\7",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62529 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\7)\n"
+    },
+    {
+      "pid": 2716,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\7",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62537 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\7)\n"
+    },
+    {
+      "pid": 12640,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\8",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62546 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\8)\n"
+    },
+    {
+      "pid": 23212,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\8",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62554 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\8)\n"
+    },
+    {
+      "pid": 1876,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\9",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62561 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\9)\n"
+    },
+    {
+      "pid": 21400,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\9",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62569 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\9)\n"
+    },
+    {
+      "pid": 23104,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\10",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62576 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\10)\n"
+    },
+    {
+      "pid": 28660,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\10",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62584 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\10)\n"
+    },
+    {
+      "pid": 21928,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\11",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62591 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\11)\n"
+    },
+    {
+      "pid": 18568,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\11",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62599 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\11)\n"
+    },
+    {
+      "pid": 5736,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\12",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62606 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\12)\n"
+    },
+    {
+      "pid": 26232,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\12",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62616 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\12)\n"
+    },
+    {
+      "pid": 14668,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\13",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62627 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\13)\n"
+    },
+    {
+      "pid": 2396,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\14",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62637 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\14)\n"
+    },
+    {
+      "pid": 3992,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\15",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:62645 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-QPwm1g\\15)\n"
+    }
+  ],
+  "durationMs": 14380,
+  "summary": {
+    "pass": 15,
+    "fail": 0
+  }
+}

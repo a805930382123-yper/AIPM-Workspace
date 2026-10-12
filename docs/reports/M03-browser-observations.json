@@ -1,0 +1,436 @@
+[
+  {
+    "id": "B01-cloud-Sensitive-no-import",
+    "result": "PASS",
+    "actual": {
+      "pasteVisible": 0,
+      "reason": "请先切换到本地归档模式。"
+    },
+    "at": "2026-10-11T15:36:42.891Z"
+  },
+  {
+    "id": "F03-04-policy-copy-still-denies-delivered-import",
+    "result": "FAIL",
+    "actual": {
+      "text": "会议安全策略\n\n保存时会检查最新版本，避免覆盖已有修改。\n\n×\n保密等级\nSensitive\nRestricted\n存储模式\n云端索引\n本地归档\n授权本地保存（开启 Internal/Sensitive 本地模式时需本次独立确认）\n授权本地 Raw 登记（功能尚未开放）\n外部 AI 处理始终禁用。升级到 Restricted 会将不允许的标签、客户、项目、备注及云链接清空。\n本批不提供纪要导入、Raw 登记或 AI 处理。\n取消\n保存策略"
+    },
+    "at": "2026-10-11T15:37:07.224Z"
+  },
+  {
+    "id": "B02-dedicated-Sensitive-local-grant",
+    "result": "FAIL",
+    "actual": {
+      "mode": "云端索引",
+      "pastePresent": 0
+    },
+    "at": "2026-10-11T15:37:07.829Z"
+  },
+  {
+    "id": "B02a-unconfirmed-local-grant-refused",
+    "result": "PASS",
+    "actual": {
+      "alert": "Internal 或 Sensitive 会议授予本地保存权限前必须独立确认。 策略表单仍保留。",
+      "mode": "云端索引"
+    },
+    "at": "2026-10-11T15:37:26.382Z"
+  },
+  {
+    "id": "B02b-dedicated-local-grant-success",
+    "result": "PASS",
+    "actual": {
+      "mode": "本地归档",
+      "pastePresent": 1
+    },
+    "at": "2026-10-11T15:37:26.976Z"
+  },
+  {
+    "id": "B03-safe-Markdown-render",
+    "result": "PASS",
+    "actual": {
+      "code": "const n = 1;\n",
+      "headings": 1,
+      "images": 0,
+      "links": [
+        {
+          "href": "https://example.com/m03",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "list": 2,
+      "quotes": 1,
+      "scripts": 0,
+      "text": "纪要标题\n\n事实一\n事实二\n\n\n引用原文\n\nconst n = 1;\n\n安全外链\n危险脚本\n危险数据\n[图片已隐藏：远程图片]\n[图片已隐藏：本地陷阱图片]\n\n"
+    },
+    "at": "2026-10-11T15:38:10.244Z"
+  },
+  {
+    "id": "B04-original-text-no-HTML-execution",
+    "result": "FAIL",
+    "actual": {
+      "equalOriginal": false,
+      "rawHtmlRetained": true,
+      "images": 0
+    },
+    "at": "2026-10-11T15:38:10.549Z"
+  },
+  {
+    "id": "B05-edit-cancel",
+    "result": "PASS",
+    "actual": {
+      "renderStillOriginal": 1,
+      "editorCount": 0
+    },
+    "at": "2026-10-11T15:38:11.419Z"
+  },
+  {
+    "id": "B04a-original-text-as-submitted-by-browser-textarea",
+    "result": "PASS",
+    "actual": {
+      "equalTextareaLF": true,
+      "rawHtmlRetained": true,
+      "note": "首次B04比较的是夹具CRLF；原生textarea输入归一为LF，需按实际提交字符串比较，API及文件上传另验CRLF。"
+    },
+    "at": "2026-10-11T15:38:40.874Z"
+  },
+  {
+    "id": "B06-work-edit-save",
+    "result": "PASS",
+    "actual": {
+      "workingHeading": 1
+    },
+    "at": "2026-10-11T15:38:41.480Z"
+  },
+  {
+    "id": "B07-edit-does-not-rewrite-original",
+    "result": "PASS",
+    "actual": {
+      "equalOriginal": true
+    },
+    "at": "2026-10-11T15:38:41.774Z"
+  },
+  {
+    "id": "B08-reimport-without-confirm-disabled",
+    "result": "PASS",
+    "actual": {
+      "enabled": false
+    },
+    "at": "2026-10-11T15:38:42.072Z"
+  },
+  {
+    "id": "B09-file-reimport-confirm",
+    "result": "PASS",
+    "actual": {
+      "versions": 2,
+      "newHeading": 1
+    },
+    "at": "2026-10-11T15:49:24.036Z"
+  },
+  {
+    "id": "B10-upload-BOM-CRLF-original-preserved",
+    "result": "PASS",
+    "actual": {
+      "equalFile": true,
+      "bom": true,
+      "crlf": true,
+      "trailingSpaces": true
+    },
+    "at": "2026-10-11T15:50:54.202Z"
+  },
+  {
+    "id": "B11-historical-working-copy-frozen-readonly",
+    "result": "PASS",
+    "actual": {
+      "oldWorkingHeading": 1,
+      "editButton": 0
+    },
+    "at": "2026-10-11T15:50:54.281Z"
+  },
+  {
+    "id": "B12-policy-copies-block-cloud-and-show-count",
+    "result": "PASS",
+    "actual": {
+      "error": "存在本地纪要副本，需先明确删除后才能调整存储模式或撤销本地授权。（本地纪要副本：2 份） 策略表单仍保留。\n\n策略输入仍保留。载入最新版后，确认当前状态再提交。\n\n载入最新版",
+      "mode": "本地归档",
+      "versionCount": 2
+    },
+    "at": "2026-10-11T15:51:11.729Z"
+  },
+  {
+    "id": "B13-policy-copy-F03-04-closed",
+    "result": "PASS",
+    "actual": {
+      "dialogText": "会议安全策略\n\n保存时会检查最新版本，避免覆盖已有修改。\n\n×\n保密等级\nSensitive\nRestricted\n存储模式\n云端索引\n本地归档\n授权本地保存（开启 Internal/Sensitive 本地模式时需本次独立确认）\n我确认本地保存授权适用于此会议\n授权本地 Raw 登记（功能尚未开放）\n外部 AI 处理始终禁用。升级到 Restricted 会将不允许的标签、客户、项目、备注及云链接清空。\n存在本地纪要副本，需先明确删除后才能调整存储模式或撤销本地授权。（本地纪要副本：2 份） 策略表单仍保留。\n\n策略输入仍保留。载入最新版后，确认当前状态再提交。\n\n载入最新版\n纪要导入已支持；本批仍关闭 Raw 登记和 AI 处理。\n取消\n保存策略"
+    },
+    "at": "2026-10-11T15:51:11.751Z"
+  },
+  {
+    "id": "B14-desktop-1280-layout",
+    "result": "PASS",
+    "actual": {
+      "clientWidth": 1280,
+      "height": 900,
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "at": "2026-10-11T15:51:13.208Z"
+  },
+  {
+    "id": "B15-actual-EIO-save-keeps-draft",
+    "result": "PASS",
+    "actual": {
+      "alert": "会议记录保存失败，原有内容保持不变。 工作副本仍保留。",
+      "draft": "# 工作副本二\n写入失败后保留\n\n[安全外链](https://example.com/m03)"
+    },
+    "at": "2026-10-11T15:51:55.473Z"
+  },
+  {
+    "id": "B16-EIO-removed-retry-saves-work",
+    "result": "PASS",
+    "actual": {
+      "heading": 1,
+      "alertCount": 0
+    },
+    "at": "2026-10-11T15:52:46.387Z"
+  },
+  {
+    "id": "B17-user-click-safe-HTTPS-new-tab",
+    "result": "FAIL",
+    "actual": {
+      "newTabs": []
+    },
+    "at": "2026-10-11T15:52:46.667Z"
+  },
+  {
+    "id": "B18-narrow-390-layout",
+    "result": "PASS",
+    "actual": {
+      "clientWidth": 390,
+      "editor": 324.8000183105469,
+      "height": 844,
+      "scrollWidth": 390,
+      "width": 390
+    },
+    "at": "2026-10-11T15:52:47.813Z"
+  },
+  {
+    "id": "B19-actual409-working-draft-preserved",
+    "result": "PASS",
+    "actual": {
+      "draft": "# 冲突草稿\n重载也保留",
+      "error": "会议记录已有更新，请重载后检查。 工作副本仍保留。\n\n冲突后仍保留输入。载入最新 revision 后检查，再决定是否重试。\n\n重载最新版"
+    },
+    "at": "2026-10-11T15:53:38.555Z"
+  },
+  {
+    "id": "B20-reload-keeps-working-draft",
+    "result": "PASS",
+    "actual": {
+      "draft": "# 冲突草稿\n重载也保留"
+    },
+    "at": "2026-10-11T15:53:38.870Z"
+  },
+  {
+    "id": "B21-explicit-save-after-conflict-check",
+    "result": "PASS",
+    "actual": {
+      "heading": 1
+    },
+    "at": "2026-10-11T15:53:39.163Z"
+  },
+  {
+    "id": "B17a-HTTPS-popup-observed-after-creation",
+    "result": "PASS",
+    "actual": {
+      "url": "https://example.com/m03",
+      "title": "Example Domain",
+      "note": "B17的即时tabs快照早于新页登记；后续实际已出现新页，原断言保留。"
+    },
+    "at": "2026-10-11T15:54:04.230Z"
+  },
+  {
+    "id": "B22-import-dropped-response-keeps-paste",
+    "result": "PASS",
+    "actual": {
+      "input": "# 丢响应第三版\n同一输入重试",
+      "alert": "请求失败，请稍后重试。 输入仍保留。"
+    },
+    "at": "2026-10-11T15:54:44.651Z"
+  },
+  {
+    "id": "B23-same-import-retry-no-duplicate",
+    "result": "PASS",
+    "actual": {
+      "versions": 3,
+      "heading": 1
+    },
+    "at": "2026-10-11T15:54:44.973Z"
+  },
+  {
+    "id": "B24-switch-away-while-save-pending",
+    "result": "PASS",
+    "actual": {
+      "title": "M03浏览器乙",
+      "draftCount": 0
+    },
+    "at": "2026-10-11T15:55:30.773Z"
+  },
+  {
+    "id": "B25-late-save-does-not-replace-current",
+    "result": "PASS",
+    "actual": {
+      "title": "M03浏览器乙"
+    },
+    "at": "2026-10-11T15:56:13.665Z"
+  },
+  {
+    "id": "B26-old-meeting-save-was-committed",
+    "result": "PASS",
+    "actual": {
+      "versions": 3,
+      "heading": 1
+    },
+    "at": "2026-10-11T15:56:13.775Z"
+  },
+  {
+    "id": "B27-refresh-restores-versions-and-working-copy",
+    "result": "PASS",
+    "actual": {
+      "versions": 3,
+      "workingHeading": 1
+    },
+    "at": "2026-10-11T15:56:14.249Z"
+  },
+  {
+    "id": "B28-same-directory-service-restart",
+    "result": "PASS",
+    "actual": {
+      "meeting": "M03浏览器甲",
+      "versions": 3,
+      "work": 1
+    },
+    "at": "2026-10-11T15:57:26.465Z"
+  },
+  {
+    "id": "B29-archive-delete-preview-and-extra-confirm",
+    "result": "PASS",
+    "actual": {
+      "preview": "确认删除“M03浏览器甲”？\n将删除会议档案及 3 个本地纪要版本（原件与工作副本）；飞书资料不受影响。\n我确认一并删除全部本地纪要\n取消\n确认删除",
+      "confirmEnabled": false
+    },
+    "at": "2026-10-11T15:57:26.838Z"
+  },
+  {
+    "id": "B30-archive-delete-cancel-keeps-versions",
+    "result": "PASS",
+    "actual": {
+      "versions": 3
+    },
+    "at": "2026-10-11T15:57:27.140Z"
+  },
+  {
+    "id": "B31-clear-cancel-no-submit",
+    "result": "PASS",
+    "actual": {
+      "enabled": false,
+      "versions": 3
+    },
+    "at": "2026-10-11T15:57:27.719Z"
+  },
+  {
+    "id": "B32-clear-confirm-removes-all-local-versions",
+    "result": "FAIL",
+    "actual": {
+      "versionPicker": 1,
+      "sourceView": 1
+    },
+    "at": "2026-10-11T15:58:32.139Z"
+  },
+  {
+    "id": "B33-after-clear-revoke-and-cloud-succeeds",
+    "result": "PASS",
+    "actual": {
+      "mode": "本地归档",
+      "import": 1
+    },
+    "at": "2026-10-11T15:58:33.063Z"
+  },
+  {
+    "id": "B32a-clear-completion-confirmed",
+    "result": "PASS",
+    "actual": {
+      "mode": "云端索引",
+      "paste": 0,
+      "versions": 0,
+      "security": "安全状态\n\n本地保存：未授权；Raw：未授权；外部 AI：始终禁用。\n\n纪要仅保存在本地会议记录中；本批不开放 Raw 登记与 AI 处理。"
+    },
+    "at": "2026-10-11T15:58:59.626Z"
+  },
+  {
+    "id": "B33a-cloud-revoke-completion-confirmed",
+    "result": "PASS",
+    "actual": {
+      "mode": "云端索引",
+      "paste": 0,
+      "versions": 0,
+      "security": "安全状态\n\n本地保存：未授权；Raw：未授权；外部 AI：始终禁用。\n\n纪要仅保存在本地会议记录中；本批不开放 Raw 登记与 AI 处理。"
+    },
+    "at": "2026-10-11T15:58:59.628Z"
+  },
+  {
+    "id": "B34-Public-local-import-without-special-grant",
+    "result": "PASS",
+    "actual": {
+      "mode": "本地归档",
+      "paste": 1
+    },
+    "at": "2026-10-11T15:59:24.525Z"
+  },
+  {
+    "id": "B35-confirm-archive-delete-with-body",
+    "result": "PASS",
+    "actual": {
+      "deletedRow": 0,
+      "otherRow": 1,
+      "confirmDialog": 0
+    },
+    "at": "2026-10-11T16:00:15.409Z"
+  },
+  {
+    "id": "B36-existing-navigation-after-meeting-operations",
+    "result": "PASS",
+    "actual": [
+      {
+        "nav": "⌂ 首页",
+        "mainPresent": true,
+        "heading": "早上好，开始积累业务知识"
+      },
+      {
+        "nav": "▧ Raw 原始资料",
+        "mainPresent": true,
+        "heading": "Raw 原始资料"
+      },
+      {
+        "nav": "▤ 知识库",
+        "mainPresent": true,
+        "heading": "知识库"
+      },
+      {
+        "nav": "✳ Prompt 工作台",
+        "mainPresent": true,
+        "heading": "Prompt 工作台"
+      },
+      {
+        "nav": "⚙ 设置",
+        "mainPresent": true,
+        "heading": "设置"
+      },
+      {
+        "nav": "▣ 会议档案",
+        "mainPresent": true,
+        "heading": "会议档案"
+      }
+    ],
+    "at": "2026-10-11T16:00:17.092Z"
+  }
+]

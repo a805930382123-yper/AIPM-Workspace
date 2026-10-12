@@ -1,0 +1,143 @@
+{
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m01-privacy-OGKhOz",
+  "durationMs": 2679,
+  "checks": [
+    {
+      "id": "P01-restricted-cannot-local",
+      "result": "PASS",
+      "details": {
+        "directBypassRejected": true
+      }
+    },
+    {
+      "id": "P02-restricted-clears-hidden-original",
+      "result": "PASS",
+      "details": {
+        "clearedFromWholeRecord": true
+      }
+    },
+    {
+      "id": "P03-corrupt-body-field",
+      "result": "PASS",
+      "details": {
+        "detailAndListRejectWithoutWrite": true
+      }
+    },
+    {
+      "id": "P04-corrupt-url",
+      "result": "PASS",
+      "details": {
+        "detailAndListRejectWithoutWrite": true
+      }
+    },
+    {
+      "id": "P05-corrupt-restricted-fields",
+      "result": "PASS",
+      "details": {
+        "detailAndListRejectWithoutWrite": true
+      }
+    },
+    {
+      "id": "P06-error-does-not-echo-unknown-key",
+      "result": "PASS",
+      "details": {
+        "safeError": true
+      }
+    },
+    {
+      "id": "P07-missing-catalog-not-reseed-with-records",
+      "result": "PASS",
+      "details": {
+        "missingCatalogExplicit": true
+      }
+    },
+    {
+      "id": "P08-replay-after-type-stopped",
+      "result": "PASS",
+      "details": {
+        "sameOriginalRequestStillReused": true
+      }
+    },
+    {
+      "id": "P09-local-grant-needs-confirmation",
+      "result": "PASS",
+      "details": {
+        "independentGrantConfirmed": true
+      }
+    },
+    {
+      "id": "P10-revoke-grant-cannot-keep-local",
+      "result": "PASS",
+      "details": {
+        "noUnauthorizedLocalState": true
+      }
+    },
+    {
+      "id": "P11-cloud-clears-raw-grant",
+      "result": "PASS",
+      "details": {
+        "cloudHasNoRawGrant": true
+      }
+    },
+    {
+      "id": "P12-persisted-semantic-boundaries",
+      "result": "PASS",
+      "details": {
+        "corruptVariants": 12
+      }
+    },
+    {
+      "id": "P13-catalog-semantic-corruption",
+      "result": "PASS",
+      "details": {
+        "corruptCatalogs": 4
+      }
+    },
+    {
+      "id": "P14-catalog-actual-write-failure",
+      "result": "PASS",
+      "details": {
+        "actualEio": true,
+        "catalogBytesAndRevisionPreserved": true
+      }
+    },
+    {
+      "id": "P15-existing-record-actual-write-failure",
+      "result": "PASS",
+      "details": {
+        "actualEio": true,
+        "oldRecordAndRevisionPreserved": true
+      }
+    },
+    {
+      "id": "P16-record-path-link-rejected",
+      "result": "PASS",
+      "details": {
+        "recordPathLinkNeverFollowed": true,
+        "actualFixture": "windows-junction",
+        "fileSymlink": "NOT_RUN: Windows requires privilege; junction lstat refusal exercised"
+      }
+    },
+    {
+      "id": "P17-default-type-name-can-change",
+      "result": "PASS",
+      "details": {
+        "defaultIsSeedNotImmutableName": true,
+        "stableIdAfterRestart": true
+      }
+    },
+    {
+      "id": "P18-catalog-cap-never-writes-invalid-state",
+      "result": "PASS",
+      "details": {
+        "acceptedCatalogMutationsAlwaysRemainReadable": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 18,
+    "fail": 0
+  },
+  "providerCalls": 0,
+  "servicesClosed": true
+}

@@ -1,0 +1,730 @@
+{
+  "result": "PASS",
+  "coreProductFiles": 71,
+  "coreUnchangedSinceInitialFreeze": true,
+  "authorizedDocumentChanges": [
+    "docs/delivery.md",
+    "docs/open-source-reuse.md"
+  ],
+  "initialBuilderShaDeclarationsVerified": 7,
+  "browser": {
+    "PASS": 36,
+    "INVALID_EXPECTATION": 3
+  },
+  "manual": {
+    "PASS": 12
+  },
+  "exports": {
+    "PASS": 3
+  },
+  "matrixChildRows": 109,
+  "environments": [
+    {
+      "suffix": "",
+      "result": "PASS",
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-AnrvS4",
+      "closed": {
+        "api": true,
+        "ui": true,
+        "proxy": true,
+        "fake": true
+      },
+      "restartCount": 1,
+      "providerRequests": 7,
+      "postRequests": [
+        {
+          "url": "/api/raw",
+          "status": 201
+        },
+        {
+          "url": "/api/raw/b437db9f-4706-4b31-905e-833506652067/extract",
+          "status": 202
+        },
+        {
+          "url": "/api/drafts/eb841678-80d1-4619-8eb3-9966b5a39e47/confirm",
+          "status": 201
+        },
+        {
+          "url": "/api/audits",
+          "status": 201
+        },
+        {
+          "url": "/api/audits/800675ba-a4c1-4965-a6e8-bf76b3a6c29c/propose",
+          "status": 201
+        },
+        {
+          "url": "/api/audits/800675ba-a4c1-4965-a6e8-bf76b3a6c29c/resolve",
+          "status": 200
+        },
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 201
+        },
+        {
+          "url": "/api/prompt-ai/generate",
+          "status": 201
+        },
+        {
+          "url": "/api/prompt-ai/drafts/dea6e297-99e0-4d4d-947a-df9cd461ce07/confirm",
+          "status": 201
+        },
+        {
+          "url": "/api/prompt-ai/optimize",
+          "status": 201
+        },
+        {
+          "url": "/api/prompt-ai/drafts/8b9d6ab6-0f40-479d-a8ef-655f7851080b/confirm",
+          "status": 201
+        },
+        {
+          "url": "/api/demo/import",
+          "status": 200
+        },
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 502
+        },
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 201
+        }
+      ],
+      "stats": [
+        {
+          "rawCount": 0,
+          "wikiCount": 0,
+          "thisWeekNewCount": 0,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 0,
+          "wikiCount": 0,
+          "thisWeekNewCount": 0,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 0,
+          "thisWeekNewCount": 1,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 0,
+          "thisWeekNewCount": 1,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 0,
+          "thisWeekNewCount": 1,
+          "pendingConfirmationCount": 1,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 2,
+          "thisWeekNewCount": 3,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 2,
+          "thisWeekNewCount": 3,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:21:36.245Z",
+              "action": "audit",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:21:36.238Z",
+              "action": "update",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 2,
+          "thisWeekNewCount": 3,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 1,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:21:36.245Z",
+              "action": "audit",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:21:36.238Z",
+              "action": "update",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 2,
+          "thisWeekNewCount": 3,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 1,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:21:36.245Z",
+              "action": "audit",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:21:36.238Z",
+              "action": "update",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 2,
+          "wikiCount": 7,
+          "thisWeekNewCount": 9,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 5,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:27:38.707Z",
+              "action": "create",
+              "id": "5e32fbcc-43ff-43a2-bf4a-9248f67f5199",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.694Z",
+              "action": "create",
+              "id": "3238b106-84b0-4fed-af75-61996f9c22f4",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.682Z",
+              "action": "create",
+              "id": "e089d404-5f1a-4d5e-8da4-6f6baf734d9b",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.669Z",
+              "action": "create",
+              "id": "421627af-e187-4f55-8e57-a43637614ec0",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.657Z",
+              "action": "create",
+              "id": "f7f210dc-3ba7-44b7-8ed2-8c829d4f5628",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:21:36.245Z",
+              "action": "audit",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:21:36.238Z",
+              "action": "update",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 2,
+          "wikiCount": 7,
+          "thisWeekNewCount": 9,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 5,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:27:38.707Z",
+              "action": "create",
+              "id": "5e32fbcc-43ff-43a2-bf4a-9248f67f5199",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.694Z",
+              "action": "create",
+              "id": "3238b106-84b0-4fed-af75-61996f9c22f4",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.682Z",
+              "action": "create",
+              "id": "e089d404-5f1a-4d5e-8da4-6f6baf734d9b",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.669Z",
+              "action": "create",
+              "id": "421627af-e187-4f55-8e57-a43637614ec0",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.657Z",
+              "action": "create",
+              "id": "f7f210dc-3ba7-44b7-8ed2-8c829d4f5628",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:21:36.245Z",
+              "action": "audit",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:21:36.238Z",
+              "action": "update",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 2,
+          "wikiCount": 7,
+          "thisWeekNewCount": 9,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 5,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:27:38.707Z",
+              "action": "create",
+              "id": "5e32fbcc-43ff-43a2-bf4a-9248f67f5199",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.694Z",
+              "action": "create",
+              "id": "3238b106-84b0-4fed-af75-61996f9c22f4",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.682Z",
+              "action": "create",
+              "id": "e089d404-5f1a-4d5e-8da4-6f6baf734d9b",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.669Z",
+              "action": "create",
+              "id": "421627af-e187-4f55-8e57-a43637614ec0",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:27:38.657Z",
+              "action": "create",
+              "id": "f7f210dc-3ba7-44b7-8ed2-8c829d4f5628",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-08T14:21:36.245Z",
+              "action": "audit",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:21:36.238Z",
+              "action": "update",
+              "id": "3baecf7a-28c9-4a55-a6f8-ad6f629d50d9",
+              "title": "B09经销商订货流程",
+              "type": "business_process",
+              "revision": 2
+            },
+            {
+              "time": "2026-10-08T14:19:35.524Z",
+              "action": "create",
+              "id": "edaf5b5f-25d7-4384-bc88-f2c7db41219f",
+              "title": "B09独立浏览器来源",
+              "type": "source",
+              "revision": 1
+            }
+          ]
+        }
+      ],
+      "promptId": "dea6e297-99e0-4d4d-947a-df9cd461ce07",
+      "historySources": [
+        "ai_generated",
+        "ai_optimized"
+      ],
+      "rawId": "b437db9f-4706-4b31-905e-833506652067",
+      "rawPath": "raw\\articles\\b437db9f-4706-4b31-905e-833506652067.md",
+      "formalAssetsByteIdenticalAcrossRestart": true
+    },
+    {
+      "suffix": "-manual",
+      "result": "PASS",
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-Ndk5lB",
+      "closed": {
+        "api": true,
+        "ui": true,
+        "proxy": true,
+        "fake": true
+      },
+      "restartCount": 1,
+      "providerRequests": 0,
+      "postRequests": [
+        {
+          "url": "/api/raw",
+          "status": 201
+        },
+        {
+          "url": "/api/raw/f4b54a6b-6ce1-4323-b28f-a5b7a461b206/extract",
+          "status": 400
+        },
+        {
+          "url": "/api/wiki",
+          "status": 201
+        },
+        {
+          "url": "/api/prompts",
+          "status": 201
+        },
+        {
+          "url": "/api/prompts/a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8/render",
+          "status": 200
+        },
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 503
+        }
+      ],
+      "stats": [
+        {
+          "rawCount": 0,
+          "wikiCount": 0,
+          "thisWeekNewCount": 0,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 0,
+          "wikiCount": 0,
+          "thisWeekNewCount": 0,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 0,
+          "thisWeekNewCount": 1,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": []
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 1,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 0,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:44:05.386Z",
+              "action": "create",
+              "id": "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f",
+              "title": "B09无Key手动异常订单",
+              "type": "concept",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 1,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 1,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:44:05.386Z",
+              "action": "create",
+              "id": "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f",
+              "title": "B09无Key手动异常订单",
+              "type": "concept",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 1,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 1,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:44:05.386Z",
+              "action": "create",
+              "id": "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f",
+              "title": "B09无Key手动异常订单",
+              "type": "concept",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 1,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 1,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:44:05.386Z",
+              "action": "create",
+              "id": "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f",
+              "title": "B09无Key手动异常订单",
+              "type": "concept",
+              "revision": 1
+            }
+          ]
+        },
+        {
+          "rawCount": 1,
+          "wikiCount": 1,
+          "thisWeekNewCount": 2,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 1,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T14:44:05.386Z",
+              "action": "create",
+              "id": "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f",
+              "title": "B09无Key手动异常订单",
+              "type": "concept",
+              "revision": 1
+            }
+          ]
+        }
+      ],
+      "promptId": "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8",
+      "historySources": [
+        "manual",
+        "manual"
+      ],
+      "rawId": "f4b54a6b-6ce1-4323-b28f-a5b7a461b206",
+      "rawPath": "raw\\articles\\f4b54a6b-6ce1-4323-b28f-a5b7a461b206.md",
+      "formalAssetsByteIdenticalAcrossRestart": true
+    }
+  ],
+  "clipboardRestored": true,
+  "closedOwnTabs": [
+    6,
+    7,
+    8
+  ]
+}

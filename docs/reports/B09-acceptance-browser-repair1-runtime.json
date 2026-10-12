@@ -1,0 +1,1111 @@
+{
+  "provider": "independent fake, not real AI quality",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-flSIgU",
+  "httpRequests": [
+    {
+      "at": "2026-10-08T15:05:16.570Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:16.574Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:16.586Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:16.588Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:16.589Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:16.596Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.764Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.766Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.767Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.771Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.774Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.775Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.781Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.810Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.815Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:27.858Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.084Z",
+      "method": "POST",
+      "url": "/api/audits",
+      "status": 201,
+      "requestBody": "{\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\"}",
+      "body": "{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:28.081Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.092Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.093Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:28.081Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.095Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.098Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.101Z",
+      "method": "GET",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:28.081Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.387Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.389Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:28.393Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.738Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.740Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.740Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.746Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.747Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.748Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.753Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.764Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:28.081Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.768Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:28.081Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:40.816Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.050Z",
+      "method": "GET",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:28.081Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.388Z",
+      "method": "POST",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7/resolve",
+      "status": 200,
+      "requestBody": "{\"baseAuditRevision\":1,\"decision\":\"deferred\",\"confirm\":false,\"reason\":\"独立测试：延期保持待处理\"}",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:41.380Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"}]},\"decision\":\"deferred\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.395Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.395Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:41.380Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.396Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.401Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.405Z",
+      "method": "GET",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:41.380Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"}]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.414Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.687Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.689Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:41.692Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.056Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.057Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.058Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.063Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.065Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.067Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.073Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.082Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:41.380Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.087Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:41.380Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.135Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.355Z",
+      "method": "GET",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:41.380Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"}]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.706Z",
+      "method": "POST",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7/resolve",
+      "status": 200,
+      "requestBody": "{\"baseAuditRevision\":2,\"decision\":\"rejected\",\"confirm\":false,\"reason\":\"独立测试：拒绝解决且不改正文\"}",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]},\"decision\":\"rejected\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.713Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.713Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.714Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.717Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.722Z",
+      "method": "GET",
+      "url": "/api/audits/79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:58.730Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.010Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.012Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.015Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.346Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.348Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.348Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.352Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.354Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.354Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.359Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.370Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.375Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.444Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:04:59.513Z\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.667Z",
+      "method": "POST",
+      "url": "/api/audits",
+      "status": 201,
+      "requestBody": "{\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\"}",
+      "body": "{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:05:59.665Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.675Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.675Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:05:59.665Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]},{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.676Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.679Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:05:59.682Z",
+      "method": "GET",
+      "url": "/api/audits/20d7cef5-ba52-4de3-ae90-1e1f45b2cd30",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:05:59.665Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:06.433Z",
+      "method": "POST",
+      "url": "/api/audits/20d7cef5-ba52-4de3-ae90-1e1f45b2cd30/propose",
+      "status": 201,
+      "requestBody": "{}",
+      "body": "{\"audit\":{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:06.428Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[],\"pendingDraftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\"},\"draft\":{\"id\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"auditId\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"revision\":1,\"status\":\"pending\",\"baseWikiRevision\":1,\"baseAuditRevision\":1,\"rawSnapshots\":[{\"rawId\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"sha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\"}],\"replacement\":\"B09人工确认后的订货流程：先核对库存，再由负责人确认。\",\"rationale\":\"固定本地夹具依据原文核对，仅用于流程验收。\",\"evidence\":[{\"rawId\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"quote\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}],\"createdAt\":\"2026-10-08T15:06:06.428Z\",\"updatedAt\":\"2026-10-08T15:06:06.428Z\",\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"}}}"
+    },
+    {
+      "at": "2026-10-08T15:06:06.440Z",
+      "method": "GET",
+      "url": "/api/audits/20d7cef5-ba52-4de3-ae90-1e1f45b2cd30",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:06.428Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[],\"pendingDraftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\"},\"draft\":{\"id\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"auditId\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"revision\":1,\"status\":\"pending\",\"baseWikiRevision\":1,\"baseAuditRevision\":1,\"rawSnapshots\":[{\"rawId\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"sha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\"}],\"replacement\":\"B09人工确认后的订货流程：先核对库存，再由负责人确认。\",\"rationale\":\"固定本地夹具依据原文核对，仅用于流程验收。\",\"evidence\":[{\"rawId\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"quote\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}],\"createdAt\":\"2026-10-08T15:06:06.428Z\",\"updatedAt\":\"2026-10-08T15:06:06.428Z\",\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"}},\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.593Z",
+      "method": "POST",
+      "url": "/api/audits/20d7cef5-ba52-4de3-ae90-1e1f45b2cd30/resolve",
+      "status": 200,
+      "requestBody": "{\"baseAuditRevision\":2,\"decision\":\"accepted\",\"confirm\":true,\"draftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"baseDraftRevision\":1,\"replacement\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\"}",
+      "body": "{\"audit\":{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:18.566Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"accepted\",\"at\":\"2026-10-08T15:06:18.566Z\",\"operationId\":\"592b23e3-cf4a-4313-8211-c75f3637400c\",\"wikiRevision\":2,\"draftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"requestHash\":\"89ac9fed3dcddc75200ebda00396f3ec2d1b31db87f9774f4a0ceaea9f14de4d\"}]},\"decision\":\"accepted\",\"operationId\":\"592b23e3-cf4a-4313-8211-c75f3637400c\",\"wikiRevision\":2,\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.602Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.603Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.603Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:18.566Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"accepted\",\"at\":\"2026-10-08T15:06:18.566Z\",\"operationId\":\"592b23e3-cf4a-4313-8211-c75f3637400c\",\"wikiRevision\":2,\"draftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"requestHash\":\"89ac9fed3dcddc75200ebda00396f3ec2d1b31db87f9774f4a0ceaea9f14de4d\"}]},{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.608Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:06:18.587Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:06:18.580Z\",\"action\":\"update\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.610Z",
+      "method": "GET",
+      "url": "/api/audits/20d7cef5-ba52-4de3-ae90-1e1f45b2cd30",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:18.566Z\",\"status\":\"resolved\",\"location\":{\"status\":\"stale\",\"start\":-1,\"end\":-1,\"method\":\"page-changed\",\"reason\":\"page-changed\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"accepted\",\"at\":\"2026-10-08T15:06:18.566Z\",\"operationId\":\"592b23e3-cf4a-4313-8211-c75f3637400c\",\"wikiRevision\":2,\"draftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"requestHash\":\"89ac9fed3dcddc75200ebda00396f3ec2d1b31db87f9774f4a0ceaea9f14de4d\"}]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.621Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.934Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.936Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:18.940Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:06:18.587Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:06:18.580Z\",\"action\":\"update\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:54.936Z",
+      "method": "GET",
+      "url": "/api/prompts/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"categories\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\",\"help\":\"学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\"},{\"id\":\"business_analysis\",\"label\":\"业务分析\",\"help\":\"分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\"},{\"id\":\"customer\",\"label\":\"客户\",\"help\":\"面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\"},{\"id\":\"product\",\"label\":\"产品\",\"help\":\"产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\"},{\"id\":\"ai\",\"label\":\"AI\",\"help\":\"用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\"},{\"id\":\"office\",\"label\":\"日常办公\",\"help\":\"日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:54.937Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:06:54.942Z",
+      "method": "GET",
+      "url": "/api/prompts/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"categories\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\",\"help\":\"学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\"},{\"id\":\"business_analysis\",\"label\":\"业务分析\",\"help\":\"分析业务流程与经营问题，例如动销与库存分析、促销复盘、经销商经营诊断、指标拆解与归因。\"},{\"id\":\"customer\",\"label\":\"客户\",\"help\":\"面向客户与门店的工作方法，例如客户访谈提纲、门店走访记录整理、客户需求澄清、异议处理。\"},{\"id\":\"product\",\"label\":\"产品\",\"help\":\"产品与商品相关工作，例如新品卖点提炼、产品资料整理、包装与规格说明、产品对比分析。\"},{\"id\":\"ai\",\"label\":\"AI\",\"help\":\"用 AI 辅助业务工作的提问方法，例如让 AI 拆解业务流程、整理会议纪要、检查方案缺项、生成分析框架。\"},{\"id\":\"office\",\"label\":\"日常办公\",\"help\":\"日常事务类模板，例如周报与月报整理、会议纪要、行动计划拆分、汇报材料大纲。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:54.943Z",
+      "method": "GET",
+      "url": "/api/wiki",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.028Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":0,\"product\":0,\"ai\":0,\"office\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.270Z",
+      "method": "POST",
+      "url": "/api/prompts",
+      "status": 201,
+      "requestBody": "{\"requestId\":\"500436fb-f81f-4f9a-b9c9-3806dd3e1d1c\",\"name\":\"B09返修统计模板\",\"category\":\"office\",\"scenario\":\"\",\"body\":\"返修手动模板 {{客户名称}}\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}",
+      "body": "{\"prompt\":{\"id\":\"500436fb-f81f-4f9a-b9c9-3806dd3e1d1c\",\"name\":\"B09返修统计模板\",\"category\":\"office\",\"scenario\":\"\",\"body\":\"返修手动模板 {{客户名称}}\",\"variables\":[\"客户名称\"],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-08T15:06:55.268Z\",\"updatedAt\":\"2026-10-08T15:06:55.268Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.277Z",
+      "method": "GET",
+      "url": "/api/prompts",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"500436fb-f81f-4f9a-b9c9-3806dd3e1d1c\",\"name\":\"B09返修统计模板\",\"category\":\"office\",\"scenario\":\"\",\"body\":\"返修手动模板 {{客户名称}}\",\"variables\":[\"客户名称\"],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-08T15:06:55.268Z\",\"updatedAt\":\"2026-10-08T15:06:55.268Z\",\"version\":1,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":0,\"business_analysis\":0,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.283Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.284Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.289Z",
+      "method": "GET",
+      "url": "/api/prompts/500436fb-f81f-4f9a-b9c9-3806dd3e1d1c",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"prompt\":{\"id\":\"500436fb-f81f-4f9a-b9c9-3806dd3e1d1c\",\"name\":\"B09返修统计模板\",\"category\":\"office\",\"scenario\":\"\",\"body\":\"返修手动模板 {{客户名称}}\",\"variables\":[\"客户名称\"],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-08T15:06:55.268Z\",\"updatedAt\":\"2026-10-08T15:06:55.268Z\",\"version\":1,\"source\":\"manual\"},\"wikiLinks\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.289Z",
+      "method": "GET",
+      "url": "/api/prompts/500436fb-f81f-4f9a-b9c9-3806dd3e1d1c/versions",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-08T15:06:55.268Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"500436fb-f81f-4f9a-b9c9-3806dd3e1d1c\",\"name\":\"B09返修统计模板\",\"category\":\"office\",\"scenario\":\"\",\"body\":\"返修手动模板 {{客户名称}}\",\"variables\":[\"客户名称\"],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-08T15:06:55.268Z\",\"updatedAt\":\"2026-10-08T15:06:55.268Z\",\"version\":1,\"source\":\"manual\"}}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.290Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":1,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:06:18.587Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:06:18.580Z\",\"action\":\"update\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.572Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.574Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:06:55.578Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":1,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:06:18.587Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:06:18.580Z\",\"action\":\"update\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:31.907Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:07:31.911Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:31.913Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:07:31.919Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":1,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:06:18.587Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:06:18.580Z\",\"action\":\"update\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:31.919Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:31.930Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":1,\"thisWeekNewCount\":2,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":1,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:06:18.587Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:06:18.580Z\",\"action\":\"update\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":2},{\"time\":\"2026-10-08T15:05:58.699Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:05:41.383Z\",\"action\":\"audit\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:04:59.520Z\",\"action\":\"create\",\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.139Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.142Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.142Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.144Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.148Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.149Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09返修计数来源\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09返修计数来源\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"importedAt\":\"2026-10-08T15:04:59.499Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.153Z",
+      "method": "GET",
+      "url": "/api/wiki/77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.163Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:18.566Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"accepted\",\"at\":\"2026-10-08T15:06:18.566Z\",\"operationId\":\"592b23e3-cf4a-4313-8211-c75f3637400c\",\"wikiRevision\":2,\"draftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"requestHash\":\"89ac9fed3dcddc75200ebda00396f3ec2d1b31db87f9774f4a0ceaea9f14de4d\"}]},{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.169Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"20d7cef5-ba52-4de3-ae90-1e1f45b2cd30\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:59.665Z\",\"updatedAt\":\"2026-10-08T15:06:18.566Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"accepted\",\"at\":\"2026-10-08T15:06:18.566Z\",\"operationId\":\"592b23e3-cf4a-4313-8211-c75f3637400c\",\"wikiRevision\":2,\"draftId\":\"894f0a01-2590-4e3f-91c2-68af8db6816f\",\"requestHash\":\"89ac9fed3dcddc75200ebda00396f3ec2d1b31db87f9774f4a0ceaea9f14de4d\"}]},{\"id\":\"79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7\",\"wikiId\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试一\",\"anchor\":{\"before\":\"\",\"text\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"after\":\"\"},\"pageBodySha256\":\"460323a13bcc4110c9fa2e0c9c2b6b722db7566b26004651cadbf04ba092085c\",\"createdRevision\":1,\"revision\":3,\"createdAt\":\"2026-10-08T15:05:28.081Z\",\"updatedAt\":\"2026-10-08T15:05:58.696Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":21,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"deferred\",\"reason\":\"独立测试：延期保持待处理\",\"at\":\"2026-10-08T15:05:41.380Z\",\"operationId\":\"c55d7c3d-c61b-4059-8cfe-b3a46b33d89b\",\"requestHash\":\"d8688c88ea26574d75399a1f5ad3feaff0bee0a4bce6d16fae8e009785e16b07\"},{\"decision\":\"rejected\",\"reason\":\"独立测试：拒绝解决且不改正文\",\"at\":\"2026-10-08T15:05:58.696Z\",\"operationId\":\"cfc51247-00f5-4293-8089-b241321aa6ea\",\"requestHash\":\"0bca002aaeaaf2881200aea644e9eeaa092d475270eaf9d338ebd431e865820c\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:07:32.223Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09返修计数页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\"],\"tags\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"aliases\":[],\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:04:59.513Z\",\"updated\":\"2026-10-08T15:06:18.572Z\",\"revision\":2,\"body\":\"## 人工确认\\nB09_F09_03_ACCEPT：核对库存、负责人确认异常订单。\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":1,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    }
+  ],
+  "uiLogs": "\n  VITE v6.4.3  ready in 370 ms\n\n  ➜  Local:   http://127.0.0.1:55673/\n",
+  "url": "http://127.0.0.1:55673/",
+  "api": "http://127.0.0.1:55662",
+  "clipboardUrl": "http://127.0.0.1:55672/clipboard-target",
+  "apiPid": 2788,
+  "uiPid": 38964,
+  "stopFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-flSIgU\\.stop-b09-browser",
+  "restartCount": 1,
+  "afterKnowledge": {
+    "audit\\20d7cef5-ba52-4de3-ae90-1e1f45b2cd30.json": "63811bf9b31689ee82c1fa72823a63dccc3ddec6eefff431f5f0d0f05fed7380",
+    "audit\\79373fc1-7ae0-4f0d-ba22-dfb5f98a21d7.json": "3a9bcc8ae4e44b9a1465b4ae69130e7f6581410ca504eda912a8d1a20666faa6",
+    "logs\\wiki.jsonl": "a1d595e2c1880c685476baf74018e54bed9cd4fd3a772108e9cccd0ce8e467aa",
+    "raw\\reports\\ffc3de93-0e20-474b-abf0-f7d80e1163f5.md": "5e4ae4cb4d64b1dcaffdfa48688453cadcdc8ecc864cd38e2e7fe7c9ca9355d1",
+    "wiki\\77e9a6dc-ef62-4542-9c51-76b8081eb33b.md": "eb2cb7fda040ad19739c18de10c5a39996c385467cd0831ca2de115061fdd0f0",
+    "wiki\\index.md": "ffec56cf17bfdabca2a16d2061a4790bf01889ecff2474229cdb557a5f5dce6c"
+  },
+  "afterPrompts": {
+    "500436fb-f81f-4f9a-b9c9-3806dd3e1d1c.json": "46dd08a7e1f79e2a7c895c64fca2320a42ffb48a3206b36711ebb63bf1e083db"
+  },
+  "finalStats": {
+    "rawCount": 1,
+    "wikiCount": 1,
+    "thisWeekNewCount": 2,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 1,
+    "weekStartsOn": "2026-10-05",
+    "recentChanges": [
+      {
+        "time": "2026-10-08T15:06:18.587Z",
+        "action": "audit",
+        "id": "77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+        "title": "B09返修计数页面",
+        "type": "metric",
+        "revision": 2
+      },
+      {
+        "time": "2026-10-08T15:06:18.580Z",
+        "action": "update",
+        "id": "77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+        "title": "B09返修计数页面",
+        "type": "metric",
+        "revision": 2
+      },
+      {
+        "time": "2026-10-08T15:05:58.699Z",
+        "action": "audit",
+        "id": "77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+        "title": "B09返修计数页面",
+        "type": "metric",
+        "revision": 1
+      },
+      {
+        "time": "2026-10-08T15:05:41.383Z",
+        "action": "audit",
+        "id": "77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+        "title": "B09返修计数页面",
+        "type": "metric",
+        "revision": 1
+      },
+      {
+        "time": "2026-10-08T15:04:59.520Z",
+        "action": "create",
+        "id": "77e9a6dc-ef62-4542-9c51-76b8081eb33b",
+        "title": "B09返修计数页面",
+        "type": "metric",
+        "revision": 1
+      }
+    ]
+  },
+  "providerRequests": [
+    {
+      "at": "2026-10-08T15:06:06.423Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是知识库纠错助手。只输出符合以下 JSON Schema 的 JSON：{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"replacement\",\"rationale\",\"evidence\"],\"properties\":{\"replacement\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":200000},\"rationale\":{\"type\":\"string\",\"maxLength\":4000},\"evidence\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"rawId\",\"quote\"],\"properties\":{\"rawId\":{\"type\":\"string\"},\"quote\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":2000}}}}}}。不得杜撰来源事实；每条 quote 必须逐字来自对应 Raw 正文；没有证据时 evidence 可为空。"
+          },
+          {
+            "role": "user",
+            "content": "{\"audit\":{\"severity\":\"suggestion\",\"comment\":\"B09返修：计数测试二，人工确认修订\",\"scope\":\"page\"},\"wiki\":{\"id\":\"77e9a6dc-ef62-4542-9c51-76b8081eb33b\",\"title\":\"B09返修计数页面\",\"revision\":1,\"body\":\"## 返修测试\\n核对库存，再确认异常订单。\",\"target\":\"## 返修测试\\n核对库存，再确认异常订单。\"},\"raws\":[{\"id\":\"ffc3de93-0e20-474b-abf0-f7d80e1163f5\",\"title\":\"验收资料 B09返修计数来源\",\"body\":\"独立虚构返修计数夹具：先核对库存，再确认异常订单。\",\"bodySha256\":\"ecf9a8d29286439083f32f851245c9b8e4e73d0d96fde9091b870aae0fa31654\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    }
+  ],
+  "closed": {
+    "api": true,
+    "ui": true,
+    "proxy": true,
+    "fake": true
+  }
+}

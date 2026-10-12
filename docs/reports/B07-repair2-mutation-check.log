@@ -1,0 +1,18 @@
+﻿B07 repair2 self-test: guard-removal mutation check (construction self-test, not independent acceptance)
+script: .tmp-b07-repair2-mutation.ps1 (throwaway, ASCII source; deleted after the run)
+subject: app/pages/PromptLibraryPage.tsx, baseline sha256 43A0EBA2EC94FD2036ACEFB16E89F4F4661F3FA37A82AE672A29DAB69E4ED3F3
+method: remove one repair guard at a time, run only the matching test with --test-name-pattern, restore the file byte-exactly
+
+baseline F07-04 residual -> pass 1, fail 0 (expect fail 0)
+baseline F07-05 residual -> pass 1, fail 0 (expect fail 0)
+
+A) openVersion renderRequest bump removed -> pass 0, fail 1
+   AssertionError [ERR_ASSERTION]: 迟到的生成错误不得盖到历史只读页上
+A2) backToCurrent renderRequest bump removed -> pass 1, fail 0 (exit 0)
+A3) startEdit renderRequest bump removed -> pass 1, fail 0 (exit 0)
+B) create finally clears all claims (pre-repair single-slot behaviour) -> pass 0, fail 1
+   AssertionError [ERR_ASSERTION]: 己不得复用戊仍在途的 requestId
+B2) startCreate no longer drops an id claimed by an in-flight form -> pass 0, fail 1
+   AssertionError [ERR_ASSERTION]: 两张新表单必须各自分配 requestId
+
+restored sha256: 43A0EBA2EC94FD2036ACEFB16E89F4F4661F3FA37A82AE672A29DAB69E4ED3F3 ; matches baseline: True

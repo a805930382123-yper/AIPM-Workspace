@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-12T13:18:17.962Z",
+  "kind": "actual Codex IAB browser UI against isolated product HTTP",
+  "result": "PASS",
+  "checks": [
+    {
+      "id": "BR01-registered-original-and-source-visible",
+      "result": "PASS",
+      "actual": "真实会议详情展示 linked Raw、import UUID、原件 SHA 和 local_only 限制"
+    },
+    {
+      "id": "BR02-work-copy-save-preserves-original",
+      "result": "PASS",
+      "actual": "副本编辑后revision6，原文仍为初始测试原件"
+    },
+    {
+      "id": "BR03-reimport-preserves-history-and-syncs-Raw-options",
+      "result": "PASS",
+      "actual": "revision7/v2当前，v1只读，旧Raw保留，Raw选择器具有新版本；原文模式保留所以heading等待是无效选择器"
+    },
+    {
+      "id": "BR04-explicit-new-version-Raw-registration",
+      "result": "PASS",
+      "actual": "revision9，两个不同Raw ID，分别固定到v1/v2及其SHA；无自动覆盖"
+    },
+    {
+      "id": "BR05-unlink-cancel-and-confirm",
+      "result": "PASS",
+      "actual": "取消不变，确认后revision10，旧Raw显示已解除且仍保留ID/原件SHA；组合文本精确等待不匹配DOM，实际AX已确认"
+    },
+    {
+      "id": "BR06-delete-archive-extra-Raw-confirmation",
+      "result": "PASS",
+      "actual": "缺Raw确认按钮禁用，取消保留档案；两项确认后DELETE成功，会议列表0条"
+    },
+    {
+      "id": "BR07-after-archive-delete-Raw-retained-restricted-after-reload",
+      "result": "PASS",
+      "actual": "reload后2条Raw均保留；新Raw显示原件正文、Meeting/import/SHA/local_only；初次跨导航列表沿用App缓存直到reload，记录为M05集成检查事项"
+    },
+    {
+      "id": "BR08-synthesis-request-denied-after-Meeting-deletion",
+      "result": "PASS",
+      "actual": "实际选择两个Meeting Raw后生成请求，界面受控拒绝：Meeting Raw仅允许本机保存，不能进入AI处理；未生成草稿"
+    }
+  ],
+  "observations": [
+    "两个精确DOM等待因原文模式/组合AX文本不匹配而无效，后续实际AX状态已验证；不计失败产品",
+    "跨导航Raw列表沿用App缓存，刷新后读到全部2条Raw；M05集成检查需覆盖缓存更新",
+    "fullPage截图能力报错，改用实际滚动后viewport截图"
+  ],
+  "screenshots": [
+    "M04-repair1-20261012-browser-confirmation.jpg",
+    "M04-repair1-20261012-browser-Raw-retained.jpg"
+  ]
+}

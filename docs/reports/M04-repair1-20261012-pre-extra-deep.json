@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-12T12:50:36.441Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-bx3e3L",
+  "durationMs": 3412,
+  "checks": [
+    {
+      "id": "D01-legacy-meeting-file-and-manual-Wiki-compatible",
+      "result": "PASS",
+      "details": {
+        "realMultipart": true,
+        "ordinaryMeetingOriginAbsent": true,
+        "manualWikiAllowed": true
+      }
+    },
+    {
+      "id": "D02-fixed-ID-concurrent-registration-one-Raw",
+      "result": "PASS",
+      "details": {
+        "sameID": "0419207b-c9b3-4187-9f6a-886bf5d3d44e",
+        "oneRaw": true
+      }
+    },
+    {
+      "id": "D03-actual-Raw-written-linked-rename-EIO-restart",
+      "result": "PASS",
+      "details": {
+        "actualLinkedCommitEIO": true,
+        "limitedRawAlreadyPersisted": true,
+        "sameRawAfterRestart": true,
+        "replayReused": true
+      }
+    },
+    {
+      "id": "D04-restored-pending-revoked-policy-no-new-material",
+      "result": "PASS",
+      "details": {
+        "restoredPendingFixture": true,
+        "currentGrantFalse": true,
+        "noRawCreated": true
+      }
+    },
+    {
+      "id": "D05-restored-fixed-ID-conflict-never-overwrites",
+      "result": "PASS",
+      "details": {
+        "sameRawIDConflict": true,
+        "existingRawBytesPreserved": true
+      }
+    },
+    {
+      "id": "D06-restricted-and-missing-old-sources-deny-Audit-Wiki-Prompt",
+      "result": "PASS",
+      "details": {
+        "paths": 8,
+        "allDeniedBeforeProviderAndWrites": true
+      }
+    },
+    {
+      "id": "D07-update-confirm-rechecks-old-target-sources",
+      "result": "PASS",
+      "details": {
+        "status": 403,
+        "code": "MEETING_SOURCE_RESTRICTED",
+        "providerCalls": 0,
+        "noAssetOrDraftWrites": true,
+        "restoredPendingUpdate": true,
+        "healthyNewRawRestrictedOldTarget": true
+      }
+    },
+    {
+      "id": "D08-update-recovery-rechecks-old-target-before-files",
+      "result": "PASS",
+      "details": {
+        "preparedUpdateManifest": true,
+        "healthySnapshotRestrictedOldTarget": true,
+        "noWikiIndexLogOrDraftWrite": true
+      }
+    },
+    {
+      "id": "D09-Prompt-draft-confirm-rechecks-selected-Wiki",
+      "result": "PASS",
+      "details": {
+        "status": 403,
+        "code": "MEETING_SOURCE_RESTRICTED",
+        "providerCalls": 0,
+        "noAssetOrDraftWrites": true,
+        "actualNormalPreviewBeforeRestore": true
+      }
+    },
+    {
+      "id": "D10-malformed-origin-and-unknown-policy-denied",
+      "result": "PASS",
+      "details": {
+        "malformedOrigins": 3,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "D11-registration-retry-after-metadata-edit-keeps-original-source",
+      "result": "PASS",
+      "details": {
+        "latestRevisionAcceptedSameOperation": true,
+        "sourceMetadataCapturedAtRequest": true,
+        "originalExact": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 11,
+    "fail": 0
+  },
+  "providerCalls": 1,
+  "providerMeaning": "Only explicit normal preview setup may call fake; guarded paths assert no added calls",
+  "servicesClosed": true
+}

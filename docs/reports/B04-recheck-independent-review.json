@@ -1,0 +1,1965 @@
+{
+  "conclusion": "FAIL",
+  "sources": {
+    "http": "B04-recheck-http-2026-10-05T14-56-33.011Z.json",
+    "b02": "B04-recheck-b02-regression-2026-10-05T14-57-36-549Z.json",
+    "b03": "B04-recheck-b03-regression-2026-10-05T14-57-42.823Z.json"
+  },
+  "productImports": false,
+  "provider": "independent localhost fake HTTP; no real AI",
+  "businessScenarios": 23,
+  "summary": {
+    "PASS": 21,
+    "FAIL": 3,
+    "BLOCKED": 0
+  },
+  "checks": [
+    {
+      "id": "F04-03-default-unselected-empty-confirm",
+      "status": "PASS",
+      "elapsedMs": 722,
+      "evidence": {
+        "zeroFormalChanges": true
+      }
+    },
+    {
+      "id": "F04-04-concurrent-any-key-restart",
+      "status": "PASS",
+      "elapsedMs": 1194,
+      "evidence": {
+        "duplicateFilesAndLog": 0
+      }
+    },
+    {
+      "id": "F04-04-different-selection-conflict",
+      "status": "PASS",
+      "elapsedMs": 671
+    },
+    {
+      "id": "F04-04-unknown-id-retry-not-silently-accepted",
+      "status": "FAIL",
+      "elapsedMs": 792,
+      "error": "AssertionError [ERR_ASSERTION]: retry silently discards unknown selection ID then returns 201\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:84:482\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:69:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:84:3",
+      "observed": {
+        "first": {
+          "status": 201,
+          "json": {
+            "operationId": "7410c25d-2ccf-42c0-8318-101b520bfd22",
+            "status": "completed",
+            "reused": false,
+            "sourceReused": false,
+            "sourceId": "663b3cee-dc4d-4a53-af4a-e9889f9d5c25",
+            "wikiIds": [
+              "68f6bcf7-7227-4804-a053-63bb58c4de62"
+            ],
+            "sourceReuseId": null,
+            "writtenWikiIds": [
+              "663b3cee-dc4d-4a53-af4a-e9889f9d5c25",
+              "68f6bcf7-7227-4804-a053-63bb58c4de62"
+            ],
+            "phases": [
+              {
+                "name": "source",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.426Z"
+              },
+              {
+                "name": "pages",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.432Z"
+              },
+              {
+                "name": "index",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.445Z"
+              },
+              {
+                "name": "log",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.451Z"
+              },
+              {
+                "name": "state",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.460Z"
+              }
+            ],
+            "warnings": []
+          },
+          "text": "{\"operationId\":\"7410c25d-2ccf-42c0-8318-101b520bfd22\",\"status\":\"completed\",\"reused\":false,\"sourceReused\":false,\"sourceId\":\"663b3cee-dc4d-4a53-af4a-e9889f9d5c25\",\"wikiIds\":[\"68f6bcf7-7227-4804-a053-63bb58c4de62\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"663b3cee-dc4d-4a53-af4a-e9889f9d5c25\",\"68f6bcf7-7227-4804-a053-63bb58c4de62\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.426Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.432Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.445Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.451Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.460Z\"}],\"warnings\":[]}"
+        },
+        "invalid": {
+          "status": 201,
+          "json": {
+            "operationId": "7410c25d-2ccf-42c0-8318-101b520bfd22",
+            "status": "completed",
+            "reused": true,
+            "sourceReused": false,
+            "sourceId": "663b3cee-dc4d-4a53-af4a-e9889f9d5c25",
+            "wikiIds": [
+              "68f6bcf7-7227-4804-a053-63bb58c4de62"
+            ],
+            "sourceReuseId": null,
+            "writtenWikiIds": [
+              "663b3cee-dc4d-4a53-af4a-e9889f9d5c25",
+              "68f6bcf7-7227-4804-a053-63bb58c4de62"
+            ],
+            "phases": [
+              {
+                "name": "source",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.426Z"
+              },
+              {
+                "name": "pages",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.432Z"
+              },
+              {
+                "name": "index",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.445Z"
+              },
+              {
+                "name": "log",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.451Z"
+              },
+              {
+                "name": "state",
+                "status": "done",
+                "at": "2026-10-05T14:56:36.460Z"
+              }
+            ],
+            "warnings": []
+          },
+          "text": "{\"operationId\":\"7410c25d-2ccf-42c0-8318-101b520bfd22\",\"status\":\"completed\",\"reused\":true,\"sourceReused\":false,\"sourceId\":\"663b3cee-dc4d-4a53-af4a-e9889f9d5c25\",\"wikiIds\":[\"68f6bcf7-7227-4804-a053-63bb58c4de62\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"663b3cee-dc4d-4a53-af4a-e9889f9d5c25\",\"68f6bcf7-7227-4804-a053-63bb58c4de62\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.426Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.432Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.445Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.451Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:36.460Z\"}],\"warnings\":[]}"
+        }
+      }
+    },
+    {
+      "id": "F04-05-reused-source-real-link-old-bytes",
+      "status": "PASS",
+      "elapsedMs": 727
+    },
+    {
+      "id": "F04-05-selection-renamed-page-and-skipped-text",
+      "status": "FAIL",
+      "elapsedMs": 790,
+      "error": "AssertionError [ERR_ASSERTION]: source labels actually created page as uncreated because selected flags and confirm IDs differ\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:86:840\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:69:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:86:3",
+      "observed": {
+        "source": {
+          "domain": "fmcg",
+          "created": "2026-10-05T14:56:37.960Z",
+          "updated": "2026-10-05T14:56:37.960Z",
+          "revision": 1,
+          "aliases": [],
+          "tags": [
+            "独立验收"
+          ],
+          "id": "69d30c18-c1bd-43f7-aba8-b3cf81401127",
+          "title": "renamedSource",
+          "type": "source",
+          "category": "other",
+          "sources": [
+            "326c9959-c9f1-400f-9218-0331177f2f8c"
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "review_status": "unreviewed",
+          "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：独立来源名\n- 作者：独立作者\n- 原发布日期：2026-10-03\n- 原始链接：https://example.com/acceptance\n- Raw：renamed真实Raw标题（326c9959-c9f1-400f-9218-0331177f2f8c）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n分块1摘要\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- [[人工改名但未在草稿勾选]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 原文事实0\n\n## 待验证内容\n\n- 问题0\n\n## 本次未创建的建议（未选中，待处理）\n\n- 人工改名但未在草稿勾选（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- renamed知识2（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- renamed知识3（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- renamed真实Raw标题（Raw 326c9959-c9f1-400f-9218-0331177f2f8c）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+          "links": [
+            {
+              "target": "人工改名但未在草稿勾选",
+              "status": "resolved",
+              "candidates": [
+                {
+                  "id": "141b71f4-6e3c-484d-9abf-08199dc3042a",
+                  "title": "人工改名但未在草稿勾选"
+                }
+              ]
+            }
+          ]
+        },
+        "selectedTitle": "人工改名但未在草稿勾选",
+        "links": [
+          {
+            "target": "人工改名但未在草稿勾选",
+            "status": "resolved",
+            "candidates": [
+              {
+                "id": "141b71f4-6e3c-484d-9abf-08199dc3042a",
+                "title": "人工改名但未在草稿勾选"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "F04-06-metadata-preview-formal-and-missing",
+      "status": "PASS",
+      "elapsedMs": 1461
+    },
+    {
+      "id": "F04-06-source-edit-snapshot-and-revision",
+      "status": "PASS",
+      "elapsedMs": 789
+    },
+    {
+      "id": "F04-07-different-facts-same-fact-multi-evidence",
+      "status": "PASS",
+      "elapsedMs": 764
+    },
+    {
+      "id": "F04-08-parallel-extract-and-delete-orderings",
+      "status": "PASS",
+      "elapsedMs": 1773
+    },
+    {
+      "id": "F04-08-cancel-late-discard-pending-restart",
+      "status": "PASS",
+      "elapsedMs": 1733
+    },
+    {
+      "id": "F04-09-stage-source-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1752,
+      "evidence": {
+        "failed": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "Independent acceptance injected EIO at rename",
+              "details": {
+                "committed": false,
+                "recoverable": true,
+                "operationId": "0a7a0fe7-3c1b-437d-81ca-338d47e26bdc",
+                "failedPhase": "source",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "failed",
+                    "at": "2026-10-05T14:56:45.322Z",
+                    "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "index",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "log",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "state",
+                    "status": "pending"
+                  }
+                ],
+                "writtenWikiIds": [],
+                "status": "failed"
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"Independent acceptance injected EIO at rename\",\"details\":{\"committed\":false,\"recoverable\":true,\"operationId\":\"0a7a0fe7-3c1b-437d-81ca-338d47e26bdc\",\"failedPhase\":\"source\",\"phases\":[{\"name\":\"source\",\"status\":\"failed\",\"at\":\"2026-10-05T14:56:45.322Z\",\"error\":\"COMMIT_FAILED: Independent acceptance injected EIO at rename\"},{\"name\":\"pages\",\"status\":\"pending\"},{\"name\":\"index\",\"status\":\"pending\"},{\"name\":\"log\",\"status\":\"pending\"},{\"name\":\"state\",\"status\":\"pending\"}],\"writtenWikiIds\":[],\"status\":\"failed\"}}}"
+        },
+        "recovered": {
+          "operationId": "0a7a0fe7-3c1b-437d-81ca-338d47e26bdc",
+          "draftId": "7ff27c8d-c710-41c5-8aac-847c55f36fbe",
+          "rawId": "afbd2630-4b77-4bf8-bfb0-6d57cc708329",
+          "status": "completed",
+          "createdAt": "2026-10-05T14:56:45.308Z",
+          "updatedAt": "2026-10-05T14:56:45.771Z",
+          "completedAt": "2026-10-05T14:56:45.771Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T14:56:45.738Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T14:56:45.747Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T14:56:45.758Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T14:56:45.762Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T14:56:45.769Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "0750dc5b-8e06-4625-92af-f4c51d18facd",
+            "d055ad22-ff8a-4872-a9fe-a9df775412f3",
+            "8570052b-f0b9-4ad8-9982-8c99f8ca6e36",
+            "52f22f0f-8b74-42a5-882a-a582fbdf9413"
+          ],
+          "sourceId": "0750dc5b-8e06-4625-92af-f4c51d18facd",
+          "wikiIds": [
+            "d055ad22-ff8a-4872-a9fe-a9df775412f3",
+            "8570052b-f0b9-4ad8-9982-8c99f8ca6e36",
+            "52f22f0f-8b74-42a5-882a-a582fbdf9413"
+          ],
+          "selectedPageIds": [
+            "a1cacce2-d37f-49f8-9f15-ee702be2039c",
+            "0101c8bc-96fd-4a9f-a07d-d5b66814922c",
+            "7d4d0d50-f2ea-4288-adbf-dc02780751f2"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T14:56:45.323Z",
+            "phase": "source"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "F04-09-stage-second-page-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1874,
+      "evidence": {
+        "failed": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "Independent acceptance injected EIO at rename",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "operationId": "7bedb1df-3bb3-4b10-9c52-ebd458834d3f",
+                "failedPhase": "pages",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:47.004Z"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "failed",
+                    "at": "2026-10-05T14:56:47.015Z",
+                    "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                  },
+                  {
+                    "name": "index",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "log",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "state",
+                    "status": "pending"
+                  }
+                ],
+                "writtenWikiIds": [
+                  "20921058-8771-4e3d-9444-3220f852cae0",
+                  "281260e7-ff45-4900-964c-6e05a9ef1f96"
+                ],
+                "status": "failed"
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"Independent acceptance injected EIO at rename\",\"details\":{\"committed\":true,\"recoverable\":true,\"operationId\":\"7bedb1df-3bb3-4b10-9c52-ebd458834d3f\",\"failedPhase\":\"pages\",\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:47.004Z\"},{\"name\":\"pages\",\"status\":\"failed\",\"at\":\"2026-10-05T14:56:47.015Z\",\"error\":\"COMMIT_FAILED: Independent acceptance injected EIO at rename\"},{\"name\":\"index\",\"status\":\"pending\"},{\"name\":\"log\",\"status\":\"pending\"},{\"name\":\"state\",\"status\":\"pending\"}],\"writtenWikiIds\":[\"20921058-8771-4e3d-9444-3220f852cae0\",\"281260e7-ff45-4900-964c-6e05a9ef1f96\"],\"status\":\"failed\"}}}"
+        },
+        "recovered": {
+          "operationId": "7bedb1df-3bb3-4b10-9c52-ebd458834d3f",
+          "draftId": "a3ca5b86-952c-4913-9725-0b2da3218439",
+          "rawId": "8578da93-f844-4166-9d25-2caa0a1aaa99",
+          "status": "completed",
+          "createdAt": "2026-10-05T14:56:46.988Z",
+          "updatedAt": "2026-10-05T14:56:47.577Z",
+          "completedAt": "2026-10-05T14:56:47.576Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T14:56:47.004Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T14:56:47.552Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T14:56:47.559Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T14:56:47.565Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T14:56:47.574Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "20921058-8771-4e3d-9444-3220f852cae0",
+            "281260e7-ff45-4900-964c-6e05a9ef1f96",
+            "26df47e8-0d83-45a5-820e-5524d61fbdd0",
+            "905f4235-77e8-4696-91e8-8fea66117088"
+          ],
+          "sourceId": "20921058-8771-4e3d-9444-3220f852cae0",
+          "wikiIds": [
+            "281260e7-ff45-4900-964c-6e05a9ef1f96",
+            "26df47e8-0d83-45a5-820e-5524d61fbdd0",
+            "905f4235-77e8-4696-91e8-8fea66117088"
+          ],
+          "selectedPageIds": [
+            "44bc560b-f012-4c3e-aee9-405a39508fa8",
+            "4f9687a0-5f3b-4811-8312-f7d6d561a526",
+            "fe13a032-dec9-4307-8274-17b9a3d0a700"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T14:56:47.017Z",
+            "phase": "pages"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "F04-09-stage-index-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1987,
+      "evidence": {
+        "failed": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "Independent acceptance injected EIO at rename",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "operationId": "6420ea8e-22a8-46f0-8c00-706905092baf",
+                "failedPhase": "index",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:48.997Z"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:49.009Z"
+                  },
+                  {
+                    "name": "index",
+                    "status": "failed",
+                    "at": "2026-10-05T14:56:49.024Z",
+                    "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                  },
+                  {
+                    "name": "log",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "state",
+                    "status": "pending"
+                  }
+                ],
+                "writtenWikiIds": [
+                  "4954a30b-e0a7-4d3c-a82d-758f87cd7204",
+                  "d29959ab-bb5e-428d-bcdb-96febd846a38",
+                  "d78178e4-8225-46a6-85fc-51639c71b177",
+                  "27f305c3-7929-44e5-901b-5df9f120969a"
+                ],
+                "status": "failed"
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"Independent acceptance injected EIO at rename\",\"details\":{\"committed\":true,\"recoverable\":true,\"operationId\":\"6420ea8e-22a8-46f0-8c00-706905092baf\",\"failedPhase\":\"index\",\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:48.997Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:49.009Z\"},{\"name\":\"index\",\"status\":\"failed\",\"at\":\"2026-10-05T14:56:49.024Z\",\"error\":\"COMMIT_FAILED: Independent acceptance injected EIO at rename\"},{\"name\":\"log\",\"status\":\"pending\"},{\"name\":\"state\",\"status\":\"pending\"}],\"writtenWikiIds\":[\"4954a30b-e0a7-4d3c-a82d-758f87cd7204\",\"d29959ab-bb5e-428d-bcdb-96febd846a38\",\"d78178e4-8225-46a6-85fc-51639c71b177\",\"27f305c3-7929-44e5-901b-5df9f120969a\"],\"status\":\"failed\"}}}"
+        },
+        "recovered": {
+          "operationId": "6420ea8e-22a8-46f0-8c00-706905092baf",
+          "draftId": "5517acbf-38c3-473e-82bd-0d711f9fdc0f",
+          "rawId": "fa130eab-5070-4b2e-8271-51e76b3ff973",
+          "status": "completed",
+          "createdAt": "2026-10-05T14:56:48.981Z",
+          "updatedAt": "2026-10-05T14:56:49.594Z",
+          "completedAt": "2026-10-05T14:56:49.594Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T14:56:48.997Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T14:56:49.009Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T14:56:49.580Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T14:56:49.585Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T14:56:49.592Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "4954a30b-e0a7-4d3c-a82d-758f87cd7204",
+            "d29959ab-bb5e-428d-bcdb-96febd846a38",
+            "d78178e4-8225-46a6-85fc-51639c71b177",
+            "27f305c3-7929-44e5-901b-5df9f120969a"
+          ],
+          "sourceId": "4954a30b-e0a7-4d3c-a82d-758f87cd7204",
+          "wikiIds": [
+            "d29959ab-bb5e-428d-bcdb-96febd846a38",
+            "d78178e4-8225-46a6-85fc-51639c71b177",
+            "27f305c3-7929-44e5-901b-5df9f120969a"
+          ],
+          "selectedPageIds": [
+            "23a179c9-98d8-42e5-bb14-a4978d9c5755",
+            "cfc10a91-2627-4f93-a386-9edbba9d79d9",
+            "357a8c7b-478a-4715-bd4f-c9447c966dfa"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T14:56:49.027Z",
+            "phase": "index"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "F04-09-stage-log-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1717,
+      "evidence": {
+        "failed": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "Independent acceptance injected EIO at appendFile",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "operationId": "7862a1ce-4177-4686-8dab-7fd471d202ed",
+                "failedPhase": "log",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:50.901Z"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:50.911Z"
+                  },
+                  {
+                    "name": "index",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:50.922Z"
+                  },
+                  {
+                    "name": "log",
+                    "status": "failed",
+                    "at": "2026-10-05T14:56:50.928Z",
+                    "error": "COMMIT_FAILED: Independent acceptance injected EIO at appendFile"
+                  },
+                  {
+                    "name": "state",
+                    "status": "pending"
+                  }
+                ],
+                "writtenWikiIds": [
+                  "d9e8d8fe-c29f-4a56-9bf3-8b6f7ef6e927",
+                  "9b9bb981-d7c2-4e5e-8f6f-fdf23216bbb9",
+                  "3b86f2a7-679a-4ff3-b7ca-b3a1762d76ed",
+                  "ac0facd2-9461-4a2e-b2e3-b705f5e8fadf"
+                ],
+                "status": "failed"
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"Independent acceptance injected EIO at appendFile\",\"details\":{\"committed\":true,\"recoverable\":true,\"operationId\":\"7862a1ce-4177-4686-8dab-7fd471d202ed\",\"failedPhase\":\"log\",\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:50.901Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:50.911Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:50.922Z\"},{\"name\":\"log\",\"status\":\"failed\",\"at\":\"2026-10-05T14:56:50.928Z\",\"error\":\"COMMIT_FAILED: Independent acceptance injected EIO at appendFile\"},{\"name\":\"state\",\"status\":\"pending\"}],\"writtenWikiIds\":[\"d9e8d8fe-c29f-4a56-9bf3-8b6f7ef6e927\",\"9b9bb981-d7c2-4e5e-8f6f-fdf23216bbb9\",\"3b86f2a7-679a-4ff3-b7ca-b3a1762d76ed\",\"ac0facd2-9461-4a2e-b2e3-b705f5e8fadf\"],\"status\":\"failed\"}}}"
+        },
+        "recovered": {
+          "operationId": "7862a1ce-4177-4686-8dab-7fd471d202ed",
+          "draftId": "f6b9fdf0-aa0b-4c5c-8826-cd98e746a78a",
+          "rawId": "fb692333-d3ba-44e0-857e-c5ec2e70efb0",
+          "status": "completed",
+          "createdAt": "2026-10-05T14:56:50.886Z",
+          "updatedAt": "2026-10-05T14:56:51.381Z",
+          "completedAt": "2026-10-05T14:56:51.381Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T14:56:50.901Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T14:56:50.911Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T14:56:50.922Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T14:56:51.372Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at appendFile"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T14:56:51.379Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "d9e8d8fe-c29f-4a56-9bf3-8b6f7ef6e927",
+            "9b9bb981-d7c2-4e5e-8f6f-fdf23216bbb9",
+            "3b86f2a7-679a-4ff3-b7ca-b3a1762d76ed",
+            "ac0facd2-9461-4a2e-b2e3-b705f5e8fadf"
+          ],
+          "sourceId": "d9e8d8fe-c29f-4a56-9bf3-8b6f7ef6e927",
+          "wikiIds": [
+            "9b9bb981-d7c2-4e5e-8f6f-fdf23216bbb9",
+            "3b86f2a7-679a-4ff3-b7ca-b3a1762d76ed",
+            "ac0facd2-9461-4a2e-b2e3-b705f5e8fadf"
+          ],
+          "selectedPageIds": [
+            "107eac5e-14e6-4d7d-a759-d688adf7d977",
+            "a0e24299-a112-43b5-8485-0ec2218f1a6a",
+            "acded91e-98ac-473a-805a-daed08fb1b26"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at appendFile",
+            "at": "2026-10-05T14:56:50.930Z",
+            "phase": "log"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "F04-09-stage-state-failure-recovery",
+      "status": "PASS",
+      "elapsedMs": 1715,
+      "evidence": {
+        "failed": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "Independent acceptance injected EIO at rename",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "operationId": "1d2709c4-0f89-46bb-9421-eb22f7dc1213",
+                "failedPhase": "state",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:52.621Z"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:52.632Z"
+                  },
+                  {
+                    "name": "index",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:52.644Z"
+                  },
+                  {
+                    "name": "log",
+                    "status": "done",
+                    "at": "2026-10-05T14:56:52.648Z"
+                  },
+                  {
+                    "name": "state",
+                    "status": "failed",
+                    "at": "2026-10-05T14:56:52.658Z",
+                    "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                  }
+                ],
+                "writtenWikiIds": [
+                  "1266b4ce-2c9b-4b1d-8d2a-f5d317c7789f",
+                  "995ee19d-ad47-47c6-9e26-b853f34f65be",
+                  "71589fd9-643f-47cb-a026-dff24a80c2d6",
+                  "337a7656-10c5-4dc0-92d7-74e9067f6e8b"
+                ],
+                "status": "failed"
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"Independent acceptance injected EIO at rename\",\"details\":{\"committed\":true,\"recoverable\":true,\"operationId\":\"1d2709c4-0f89-46bb-9421-eb22f7dc1213\",\"failedPhase\":\"state\",\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:52.621Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:52.632Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:52.644Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:52.648Z\"},{\"name\":\"state\",\"status\":\"failed\",\"at\":\"2026-10-05T14:56:52.658Z\",\"error\":\"COMMIT_FAILED: Independent acceptance injected EIO at rename\"}],\"writtenWikiIds\":[\"1266b4ce-2c9b-4b1d-8d2a-f5d317c7789f\",\"995ee19d-ad47-47c6-9e26-b853f34f65be\",\"71589fd9-643f-47cb-a026-dff24a80c2d6\",\"337a7656-10c5-4dc0-92d7-74e9067f6e8b\"],\"status\":\"failed\"}}}"
+        },
+        "recovered": {
+          "operationId": "1d2709c4-0f89-46bb-9421-eb22f7dc1213",
+          "draftId": "10673545-c3d9-4046-ba37-15733c8fff52",
+          "rawId": "1b3d1d23-ff2f-4a34-812a-fc1cbf69b932",
+          "status": "completed",
+          "createdAt": "2026-10-05T14:56:52.606Z",
+          "updatedAt": "2026-10-05T14:56:53.124Z",
+          "completedAt": "2026-10-05T14:56:53.124Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T14:56:52.621Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T14:56:52.632Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T14:56:52.644Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T14:56:52.648Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T14:56:53.122Z",
+              "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+            }
+          ],
+          "writtenWikiIds": [
+            "1266b4ce-2c9b-4b1d-8d2a-f5d317c7789f",
+            "995ee19d-ad47-47c6-9e26-b853f34f65be",
+            "71589fd9-643f-47cb-a026-dff24a80c2d6",
+            "337a7656-10c5-4dc0-92d7-74e9067f6e8b"
+          ],
+          "sourceId": "1266b4ce-2c9b-4b1d-8d2a-f5d317c7789f",
+          "wikiIds": [
+            "995ee19d-ad47-47c6-9e26-b853f34f65be",
+            "71589fd9-643f-47cb-a026-dff24a80c2d6",
+            "337a7656-10c5-4dc0-92d7-74e9067f6e8b"
+          ],
+          "selectedPageIds": [
+            "5946205d-8a9a-4a38-b306-ae319f2eb518",
+            "de1294ce-eb76-4fd5-a229-9a9efb4f7034",
+            "3fb4fb44-53e5-46e0-bb39-967585377acc"
+          ],
+          "error": {
+            "code": "COMMIT_FAILED",
+            "message": "Independent acceptance injected EIO at rename",
+            "at": "2026-10-05T14:56:52.660Z",
+            "phase": "state"
+          },
+          "recoveryHint": "已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。",
+          "warnings": []
+        },
+        "secondRestartIdempotent": true
+      }
+    },
+    {
+      "id": "F04-09-prepared-write-failure-zero-formal",
+      "status": "PASS",
+      "elapsedMs": 626
+    },
+    {
+      "id": "F04-09-manifest-update-failure-honest-recovery",
+      "status": "PASS",
+      "elapsedMs": 1695,
+      "evidence": {
+        "failed": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "COMMIT_FAILED",
+              "message": "Independent acceptance injected EIO at rename",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "operationId": "4a54014a-afed-453e-a259-a0954df5c97f",
+                "failedPhase": "source",
+                "phases": [
+                  {
+                    "name": "source",
+                    "status": "failed",
+                    "at": "2026-10-05T14:56:54.997Z",
+                    "error": "COMMIT_FAILED: Independent acceptance injected EIO at rename"
+                  },
+                  {
+                    "name": "pages",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "index",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "log",
+                    "status": "pending"
+                  },
+                  {
+                    "name": "state",
+                    "status": "pending"
+                  }
+                ],
+                "writtenWikiIds": [
+                  "f46e47f0-97ed-4974-8775-f6ca2acf6cce"
+                ],
+                "status": "failed"
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"COMMIT_FAILED\",\"message\":\"Independent acceptance injected EIO at rename\",\"details\":{\"committed\":true,\"recoverable\":true,\"operationId\":\"4a54014a-afed-453e-a259-a0954df5c97f\",\"failedPhase\":\"source\",\"phases\":[{\"name\":\"source\",\"status\":\"failed\",\"at\":\"2026-10-05T14:56:54.997Z\",\"error\":\"COMMIT_FAILED: Independent acceptance injected EIO at rename\"},{\"name\":\"pages\",\"status\":\"pending\"},{\"name\":\"index\",\"status\":\"pending\"},{\"name\":\"log\",\"status\":\"pending\"},{\"name\":\"state\",\"status\":\"pending\"}],\"writtenWikiIds\":[\"f46e47f0-97ed-4974-8775-f6ca2acf6cce\"],\"status\":\"failed\"}}}"
+        },
+        "durableManifestBeforeRecovery": {
+          "operationId": "4a54014a-afed-453e-a259-a0954df5c97f",
+          "draftId": "1ba186a0-bbf2-459b-8e39-a43d44adaa8f",
+          "idempotencyKey": "independent-key",
+          "rawId": "b55b68a7-0ff0-4a1e-9cbe-51379162d401",
+          "rawSha256": "625c49a31f2436fce3b42394b14417ca6dee025cefdf00fb8b222adcb18db9ec",
+          "rawTitle": "manifest真实Raw标题",
+          "payloadDigest": "3d1e0f255e0b8548eeb6e873d6ae5504496e9ad40c60f8e41deb4f32287ed842",
+          "status": "committing",
+          "createdAt": "2026-10-05T14:56:54.979Z",
+          "updatedAt": "2026-10-05T14:56:54.988Z",
+          "provider": {
+            "name": "openai-compatible",
+            "model": "independent-fake-model"
+          },
+          "snapshot": {
+            "capturedRevision": 1,
+            "document": {
+              "title": "manifestSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块1摘要"
+            },
+            "selectedPageIds": [
+              "7f67d3ef-77bf-4af4-a0a5-d07207b5cce7",
+              "21a620c1-1d6a-4434-8e1c-51891949d94c",
+              "9db8bef1-42f7-4599-b78b-1e9757d38f1c"
+            ],
+            "sourceRecord": {
+              "domain": "fmcg",
+              "created": "2026-10-05T14:56:54.979Z",
+              "updated": "2026-10-05T14:56:54.979Z",
+              "revision": 1,
+              "aliases": [],
+              "tags": [
+                "独立验收"
+              ],
+              "id": "f46e47f0-97ed-4974-8775-f6ca2acf6cce",
+              "title": "manifestSource",
+              "type": "source",
+              "category": "other",
+              "sources": [
+                "b55b68a7-0ff0-4a1e-9cbe-51379162d401"
+              ],
+              "knowledge_status": "source_supported",
+              "confidence": "medium",
+              "source_level": "C",
+              "review_status": "unreviewed",
+              "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：独立来源名\n- 作者：独立作者\n- 原发布日期：2026-10-03\n- 原始链接：https://example.com/acceptance\n- Raw：manifest真实Raw标题（b55b68a7-0ff0-4a1e-9cbe-51379162d401）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n分块1摘要\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- [[manifest知识1]]\n- [[manifest知识3]]\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- [[manifest知识2]]\n\n## 重要观点\n\n- 原文事实0\n- 原文事实1\n- 原文事实2\n\n## 待验证内容\n\n- 问题0\n- 问题1\n- 问题2\n\n## 本次未创建的建议（未选中，待处理）\n\n- manifest知识1（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- manifest知识2（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- manifest知识3（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- manifest真实Raw标题（Raw b55b68a7-0ff0-4a1e-9cbe-51379162d401）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n"
+            },
+            "pageRecords": [
+              {
+                "domain": "fmcg",
+                "created": "2026-10-05T14:56:54.979Z",
+                "updated": "2026-10-05T14:56:54.979Z",
+                "revision": 1,
+                "aliases": [],
+                "tags": [
+                  "独立验收"
+                ],
+                "id": "561e8e8e-39e2-4141-a3c8-92f1d2e50aeb",
+                "title": "manifest知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "sources": [
+                  "b55b68a7-0ff0-4a1e-9cbe-51379162d401"
+                ],
+                "knowledge_status": "ai_organized",
+                "confidence": "medium",
+                "source_level": "C",
+                "review_status": "unreviewed",
+                "body": "## 一句话说明\n\n定义0\n\n## 来源事实\n\n- 原文事实0（证据 e1）\n\n## AI 整理\n\n- 整理0\n\n## AI 推断\n\n- 推断0\n\n## 待确认问题\n\n- 问题0\n\n## 来源证据\n\n- e1｜原文 [0, 16)：渠道库存为三十天。终端覆盖为一百\n\n## 关联\n\n- [[manifest知识2]]\n\n## 来源\n\n- [[manifestSource]]（Raw b55b68a7-0ff0-4a1e-9cbe-51379162d401）\n"
+              },
+              {
+                "domain": "fmcg",
+                "created": "2026-10-05T14:56:54.979Z",
+                "updated": "2026-10-05T14:56:54.979Z",
+                "revision": 1,
+                "aliases": [],
+                "tags": [
+                  "独立验收"
+                ],
+                "id": "c750a255-6ae9-47bd-8e38-91a5ed5561d0",
+                "title": "manifest知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "sources": [
+                  "b55b68a7-0ff0-4a1e-9cbe-51379162d401"
+                ],
+                "knowledge_status": "ai_organized",
+                "confidence": "medium",
+                "source_level": "C",
+                "review_status": "unreviewed",
+                "body": "## 一句话说明\n\n定义1\n\n## 来源事实\n\n- 原文事实1（证据 e1）\n\n## AI 整理\n\n- 整理1\n\n## AI 推断\n\n- 推断1\n\n## 待确认问题\n\n- 问题1\n\n## 来源证据\n\n- e1｜原文 [16, 32)：家。\r\n原文末尾😀可核验证据。\n\n## 关联\n\n- [[manifest知识3]]\n\n## 来源\n\n- [[manifestSource]]（Raw b55b68a7-0ff0-4a1e-9cbe-51379162d401）\n"
+              },
+              {
+                "domain": "fmcg",
+                "created": "2026-10-05T14:56:54.979Z",
+                "updated": "2026-10-05T14:56:54.979Z",
+                "revision": 1,
+                "aliases": [],
+                "tags": [
+                  "独立验收"
+                ],
+                "id": "21882bad-b98d-4ed0-b693-147200ec73c3",
+                "title": "manifest知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "sources": [
+                  "b55b68a7-0ff0-4a1e-9cbe-51379162d401"
+                ],
+                "knowledge_status": "ai_organized",
+                "confidence": "medium",
+                "source_level": "C",
+                "review_status": "unreviewed",
+                "body": "## 一句话说明\n\n定义2\n\n## 来源事实\n\n- 原文事实2（证据 e1）\n\n## AI 整理\n\n- 整理2\n\n## AI 推断\n\n- 推断2\n\n## 待确认问题\n\n- 问题2\n\n## 来源证据\n\n- e1｜原文 [0, 16)：渠道库存为三十天。终端覆盖为一百\n\n## 关联\n\n- [[manifest知识1]]\n\n## 来源\n\n- [[manifestSource]]（Raw b55b68a7-0ff0-4a1e-9cbe-51379162d401）\n"
+              }
+            ],
+            "digests": {
+              "561e8e8e-39e2-4141-a3c8-92f1d2e50aeb": "725493368777d5340e3b07bf198cfb3bd2bc44ba08ba5936476cdb336982c2d5",
+              "c750a255-6ae9-47bd-8e38-91a5ed5561d0": "848f6d70f88da0b14ab0ef79e68f9828b63773117acce6effce98961afd325de",
+              "21882bad-b98d-4ed0-b693-147200ec73c3": "cca4017d86abf8715f245f19726caf8e05b0b8e6320e26930633f4d6ce406254",
+              "f46e47f0-97ed-4974-8775-f6ca2acf6cce": "cb49d2881b0c142213620885e21537363391bc03f1d4f647851544f55c4050c8"
+            },
+            "warnings": []
+          },
+          "phases": [
+            {
+              "name": "source",
+              "status": "pending"
+            },
+            {
+              "name": "pages",
+              "status": "pending"
+            },
+            {
+              "name": "index",
+              "status": "pending"
+            },
+            {
+              "name": "log",
+              "status": "pending"
+            },
+            {
+              "name": "state",
+              "status": "pending"
+            }
+          ],
+          "writtenWikiIds": []
+        },
+        "recovered": {
+          "operationId": "4a54014a-afed-453e-a259-a0954df5c97f",
+          "draftId": "1ba186a0-bbf2-459b-8e39-a43d44adaa8f",
+          "rawId": "b55b68a7-0ff0-4a1e-9cbe-51379162d401",
+          "status": "completed",
+          "createdAt": "2026-10-05T14:56:54.979Z",
+          "updatedAt": "2026-10-05T14:56:55.482Z",
+          "completedAt": "2026-10-05T14:56:55.482Z",
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-05T14:56:55.447Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-05T14:56:55.458Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-05T14:56:55.470Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-05T14:56:55.473Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-05T14:56:55.480Z"
+            }
+          ],
+          "writtenWikiIds": [
+            "f46e47f0-97ed-4974-8775-f6ca2acf6cce",
+            "561e8e8e-39e2-4141-a3c8-92f1d2e50aeb",
+            "c750a255-6ae9-47bd-8e38-91a5ed5561d0",
+            "21882bad-b98d-4ed0-b693-147200ec73c3"
+          ],
+          "sourceId": "f46e47f0-97ed-4974-8775-f6ca2acf6cce",
+          "wikiIds": [
+            "561e8e8e-39e2-4141-a3c8-92f1d2e50aeb",
+            "c750a255-6ae9-47bd-8e38-91a5ed5561d0",
+            "21882bad-b98d-4ed0-b693-147200ec73c3"
+          ],
+          "selectedPageIds": [
+            "7f67d3ef-77bf-4af4-a0a5-d07207b5cce7",
+            "21a620c1-1d6a-4434-8e1c-51891949d94c",
+            "9db8bef1-42f7-4599-b78b-1e9757d38f1c"
+          ],
+          "error": null,
+          "recoveryHint": null,
+          "warnings": []
+        },
+        "retry": {
+          "status": 201,
+          "json": {
+            "operationId": "4a54014a-afed-453e-a259-a0954df5c97f",
+            "status": "completed",
+            "reused": true,
+            "sourceReused": false,
+            "sourceId": "f46e47f0-97ed-4974-8775-f6ca2acf6cce",
+            "wikiIds": [
+              "561e8e8e-39e2-4141-a3c8-92f1d2e50aeb",
+              "c750a255-6ae9-47bd-8e38-91a5ed5561d0",
+              "21882bad-b98d-4ed0-b693-147200ec73c3"
+            ],
+            "sourceReuseId": null,
+            "writtenWikiIds": [
+              "f46e47f0-97ed-4974-8775-f6ca2acf6cce",
+              "561e8e8e-39e2-4141-a3c8-92f1d2e50aeb",
+              "c750a255-6ae9-47bd-8e38-91a5ed5561d0",
+              "21882bad-b98d-4ed0-b693-147200ec73c3"
+            ],
+            "phases": [
+              {
+                "name": "source",
+                "status": "done",
+                "at": "2026-10-05T14:56:55.447Z"
+              },
+              {
+                "name": "pages",
+                "status": "done",
+                "at": "2026-10-05T14:56:55.458Z"
+              },
+              {
+                "name": "index",
+                "status": "done",
+                "at": "2026-10-05T14:56:55.470Z"
+              },
+              {
+                "name": "log",
+                "status": "done",
+                "at": "2026-10-05T14:56:55.473Z"
+              },
+              {
+                "name": "state",
+                "status": "done",
+                "at": "2026-10-05T14:56:55.480Z"
+              }
+            ],
+            "warnings": []
+          },
+          "text": "{\"operationId\":\"4a54014a-afed-453e-a259-a0954df5c97f\",\"status\":\"completed\",\"reused\":true,\"sourceReused\":false,\"sourceId\":\"f46e47f0-97ed-4974-8775-f6ca2acf6cce\",\"wikiIds\":[\"561e8e8e-39e2-4141-a3c8-92f1d2e50aeb\",\"c750a255-6ae9-47bd-8e38-91a5ed5561d0\",\"21882bad-b98d-4ed0-b693-147200ec73c3\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"f46e47f0-97ed-4974-8775-f6ca2acf6cce\",\"561e8e8e-39e2-4141-a3c8-92f1d2e50aeb\",\"c750a255-6ae9-47bd-8e38-91a5ed5561d0\",\"21882bad-b98d-4ed0-b693-147200ec73c3\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:55.447Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:55.458Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:55.470Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:55.473Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-05T14:56:55.480Z\"}],\"warnings\":[]}"
+        }
+      }
+    },
+    {
+      "id": "F04-09-crash-file-written-manifest-pending",
+      "status": "PASS",
+      "elapsedMs": 1150
+    },
+    {
+      "id": "F04-09-real-index-directory-fault",
+      "status": "PASS",
+      "elapsedMs": 1168
+    },
+    {
+      "id": "F04-10-secret-error-and-valid-output-probes",
+      "status": "PASS",
+      "elapsedMs": 2945,
+      "evidence": [
+        {
+          "kind": "invalid-json",
+          "code": "LLM_INVALID_JSON",
+          "hitCount": 0,
+          "hitSurfaces": []
+        },
+        {
+          "kind": "auth",
+          "code": "LLM_AUTH_FAILED",
+          "hitCount": 0,
+          "hitSurfaces": []
+        },
+        {
+          "kind": "schema",
+          "code": "LLM_SCHEMA_INVALID",
+          "hitCount": 0,
+          "hitSurfaces": []
+        },
+        {
+          "kind": "valid-output",
+          "code": "LLM_OUTPUT_CONTAINS_SECRET",
+          "hitCount": 0,
+          "hitSurfaces": []
+        }
+      ]
+    },
+    {
+      "id": "F04-11-long-coverage-complete-summary-http",
+      "status": "PASS",
+      "elapsedMs": 710
+    },
+    {
+      "id": "F04-11-no-provider-offsets-summary-gets-located-evidence",
+      "status": "FAIL",
+      "elapsedMs": 709,
+      "error": "AssertionError [ERR_ASSERTION]: summary uses provider optional offsets instead of server located offsets\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:99:984\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:69:194)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b04-recheck-http.mjs:99:3",
+      "observed": {
+        "summaryPayload": [
+          {
+            "chunk": 1,
+            "chunkRange": {
+              "start": 0,
+              "end": 8000
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块1摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000000库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000499库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000000库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          },
+          {
+            "chunk": 2,
+            "chunkRange": {
+              "start": 7600,
+              "end": 15600
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块2摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000475库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000974库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000475库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          },
+          {
+            "chunk": 3,
+            "chunkRange": {
+              "start": 15200,
+              "end": 23200
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块3摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000950库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段001449库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段000950库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          },
+          {
+            "chunk": 4,
+            "chunkRange": {
+              "start": 22800,
+              "end": 27200
+            },
+            "document": {
+              "title": "no-offsetsSource",
+              "main_topic": "渠道库存与业务",
+              "summary": "分块4摘要"
+            },
+            "pages": [
+              {
+                "title": "no-offsets知识1",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义0",
+                "source_facts": [
+                  {
+                    "text": "原文事实0",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段001425库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理0"
+                ],
+                "ai_inferences": [
+                  "推断0"
+                ],
+                "open_questions": [
+                  "问题0"
+                ],
+                "related_pages": [
+                  "no-offsets知识2"
+                ]
+              },
+              {
+                "title": "no-offsets知识2",
+                "type": "metric",
+                "category": "industry_basics",
+                "one_line_definition": "定义1",
+                "source_facts": [
+                  {
+                    "text": "原文事实1",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段001699库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理1"
+                ],
+                "ai_inferences": [
+                  "推断1"
+                ],
+                "open_questions": [
+                  "问题1"
+                ],
+                "related_pages": [
+                  "no-offsets知识3"
+                ]
+              },
+              {
+                "title": "no-offsets知识3",
+                "type": "concept",
+                "category": "industry_basics",
+                "one_line_definition": "定义2",
+                "source_facts": [
+                  {
+                    "text": "原文事实2",
+                    "evidence": [
+                      {
+                        "id": "e1",
+                        "quote": "唯一段001425库存材料正文。"
+                      }
+                    ]
+                  }
+                ],
+                "ai_organized": [
+                  "整理2"
+                ],
+                "ai_inferences": [
+                  "推断2"
+                ],
+                "open_questions": [
+                  "问题2"
+                ],
+                "related_pages": [
+                  "no-offsets知识1"
+                ]
+              }
+            ]
+          }
+        ],
+        "normalizedEvidence": [
+          {
+            "id": "e1",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000000库存材料正文。",
+            "start": 0,
+            "end": 16,
+            "chunkIndex": 0
+          },
+          {
+            "id": "e1-c2",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000475库存材料正文。",
+            "start": 7600,
+            "end": 7616,
+            "chunkIndex": 1
+          },
+          {
+            "id": "e1-c3",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000950库存材料正文。",
+            "start": 15200,
+            "end": 15216,
+            "chunkIndex": 2
+          },
+          {
+            "id": "e1-c4",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段001425库存材料正文。",
+            "start": 22800,
+            "end": 22816,
+            "chunkIndex": 3
+          },
+          {
+            "id": "e1",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000499库存材料正文。",
+            "start": 7984,
+            "end": 8000,
+            "chunkIndex": 0
+          },
+          {
+            "id": "e1-c2",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000974库存材料正文。",
+            "start": 15584,
+            "end": 15600,
+            "chunkIndex": 1
+          },
+          {
+            "id": "e1-c3",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段001449库存材料正文。",
+            "start": 23184,
+            "end": 23200,
+            "chunkIndex": 2
+          },
+          {
+            "id": "e1-c4",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段001699库存材料正文。",
+            "start": 27184,
+            "end": 27200,
+            "chunkIndex": 3
+          },
+          {
+            "id": "e1",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000000库存材料正文。",
+            "start": 0,
+            "end": 16,
+            "chunkIndex": 0
+          },
+          {
+            "id": "e1-c2",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000475库存材料正文。",
+            "start": 7600,
+            "end": 7616,
+            "chunkIndex": 1
+          },
+          {
+            "id": "e1-c3",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段000950库存材料正文。",
+            "start": 15200,
+            "end": 15216,
+            "chunkIndex": 2
+          },
+          {
+            "id": "e1-c4",
+            "rawId": "f033743f-264f-41cf-89c1-bc434579ed30",
+            "quote": "唯一段001425库存材料正文。",
+            "start": 22800,
+            "end": 22816,
+            "chunkIndex": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "PASS",
+      "changed": [],
+      "builderFingerprintMismatches": []
+    }
+  ],
+  "closedBackend": [
+    "F04-03",
+    "F04-06",
+    "F04-07",
+    "F04-08",
+    "F04-09",
+    "F04-10"
+  ],
+  "closedWithBrowser": [
+    "F04-01",
+    "F04-02",
+    "F04-03",
+    "F04-06",
+    "F04-07",
+    "F04-08",
+    "F04-09",
+    "F04-10"
+  ],
+  "remaining": [
+    {
+      "id": "F04-04",
+      "check": "F04-04-unknown-id-retry-not-silently-accepted",
+      "status": "OPEN",
+      "priority": 2,
+      "reason": "Unknown selected ID filtered before comparing confirmed payload; different request returns 201."
+    },
+    {
+      "id": "F04-05",
+      "check": "F04-05-selection-renamed-page-and-skipped-text",
+      "status": "OPEN",
+      "priority": 2,
+      "reason": "Confirm IDs create page but stale draft selected flags label it uncreated and omit its Key Takeaways."
+    },
+    {
+      "id": "F04-11",
+      "check": "F04-11-no-provider-offsets-summary-gets-located-evidence",
+      "status": "OPEN",
+      "priority": 2,
+      "reason": "Legally absent Provider hints are located correctly in draft but missing from actual summary HTTP input."
+    }
+  ],
+  "fingerprint": {
+    "count": 47,
+    "before": {
+      "README.md": "814b4c5d1317e3f73db70e4c358486ada4b5bcc30e2f473c54a4fb19128042cd",
+      "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+      "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+      ".gitignore": "b7c82e90c2f9ca63fd0265cb120bb4a2ed1502423de7e0c81d26e922da825b74",
+      ".env.example": "be8758a8e2931a089b4cff552d563852689d87f20f2935a4a8796267cb560a49",
+      "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+      "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+      "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+      "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+      "app/pages/DraftReviewPage.tsx": "c0a8673286cb286ee869f82ca687b784d01bcb1e64d18e834cf4163596cb3e44",
+      "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+      "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+      "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+      "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+      "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+      "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+      "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+      "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+      "server/llm-api.ts": "07229db6ed0558e8d88463120f45e7172b1233cf1b1d2dfb1b403178e867a237",
+      "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+      "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+      "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+      "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+      "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+      "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+      "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+      "services/llm/jobs.ts": "e4b0ac53979515c61bb435429135fa935e33de79a38364ae43e1974c1e036b86",
+      "services/llm/provider.ts": "c24e5117c4d4c2fdd2a2f4e60845241e2cde1abd7ba3c50ab618cb33ec4f0d37",
+      "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+      "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+      "services/llm/service.ts": "69fdbae6804db9546143c6b0e657a1392126a69cb1f07641730bdce2d40c9245",
+      "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+      "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+      "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+      "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+      "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+      "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+      "services/storage/files.ts": "bf17c152f39528a5213e20666ffcee18bd54dc3a0f7f88a76131bd3e74bfd92f",
+      "services/wiki/commits.ts": "0be885b6686e8d846e24fe2b78c9c3b5622c5cf9402e6d5c4e3209357b007ca2",
+      "services/wiki/drafts.ts": "b0f8484546e2b7bfa1362f015307f31986f296e651428e74cb590a7aa65885c0",
+      "services/wiki/render.ts": "7b9261a5de96c5a579c03ee7ff558a173db7f15c89dec86b7070012678c2578e",
+      "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+      "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+      "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+      "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+      "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+      "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+    },
+    "after": {
+      "README.md": "814b4c5d1317e3f73db70e4c358486ada4b5bcc30e2f473c54a4fb19128042cd",
+      "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+      "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+      ".gitignore": "b7c82e90c2f9ca63fd0265cb120bb4a2ed1502423de7e0c81d26e922da825b74",
+      ".env.example": "be8758a8e2931a089b4cff552d563852689d87f20f2935a4a8796267cb560a49",
+      "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+      "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+      "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+      "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+      "app/pages/DraftReviewPage.tsx": "c0a8673286cb286ee869f82ca687b784d01bcb1e64d18e834cf4163596cb3e44",
+      "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+      "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+      "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+      "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+      "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+      "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+      "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+      "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+      "server/llm-api.ts": "07229db6ed0558e8d88463120f45e7172b1233cf1b1d2dfb1b403178e867a237",
+      "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+      "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+      "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+      "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+      "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+      "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+      "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+      "services/llm/jobs.ts": "e4b0ac53979515c61bb435429135fa935e33de79a38364ae43e1974c1e036b86",
+      "services/llm/provider.ts": "c24e5117c4d4c2fdd2a2f4e60845241e2cde1abd7ba3c50ab618cb33ec4f0d37",
+      "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+      "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+      "services/llm/service.ts": "69fdbae6804db9546143c6b0e657a1392126a69cb1f07641730bdce2d40c9245",
+      "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+      "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+      "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+      "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+      "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+      "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+      "services/storage/files.ts": "bf17c152f39528a5213e20666ffcee18bd54dc3a0f7f88a76131bd3e74bfd92f",
+      "services/wiki/commits.ts": "0be885b6686e8d846e24fe2b78c9c3b5622c5cf9402e6d5c4e3209357b007ca2",
+      "services/wiki/drafts.ts": "b0f8484546e2b7bfa1362f015307f31986f296e651428e74cb590a7aa65885c0",
+      "services/wiki/render.ts": "7b9261a5de96c5a579c03ee7ff558a173db7f15c89dec86b7070012678c2578e",
+      "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+      "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+      "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+      "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+      "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+      "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+    },
+    "changes": [],
+    "builderProductMismatches": []
+  },
+  "elapsedMs": {
+    "http": 29853,
+    "b02": 2294,
+    "b03": 8513
+  },
+  "regressions": {
+    "b02": {
+      "PASS": 12,
+      "FAIL": 0,
+      "BLOCKED": 0
+    },
+    "b03": {
+      "PASS": 6,
+      "FAIL": 0,
+      "BLOCKED": 0
+    },
+    "b03BusinessIds": [
+      "E03-01-real-four-formats-bytes-body-metadata",
+      "E03-09-delete-references-reimport",
+      "E03-10-concurrent-wiki-create-update-raw-delete-no-dangling",
+      "E03-12-cross-file-association-write-failure-no-success",
+      "E03-15-delete-detach-write-failure-startup-repair"
+    ]
+  },
+  "mainChecks": {
+    "date": "2026-10-05",
+    "scope": "B04 repair independent recheck; no product changes by reviewers",
+    "builderEvidenceArchive": {
+      "path": "B04-recheck-builder-http-evidence.json",
+      "sha256": "e2341db76834112d871f9173d280be312e5e456c4833f226228b5b72081f5e07",
+      "archivedBeforeNpmTest": true,
+      "note": "Existing npm test rewrites B04-http-evidence.json; the submitted repair evidence was copied first."
+    },
+    "build": {
+      "command": "npm.cmd run build",
+      "execution": "approved escalated environment",
+      "exitCode": 0,
+      "result": "PASS",
+      "stdout": "B04-recheck-main-build.log",
+      "modules": 39,
+      "outputJs": "index-CC-_fZgv.js",
+      "outputCss": "index-uxFGZpP_.css"
+    },
+    "tests": {
+      "command": "npm.cmd test",
+      "execution": "approved escalated environment",
+      "exitCode": 0,
+      "result": "PASS",
+      "pass": 92,
+      "fail": 0,
+      "durationMs": 16535.8211,
+      "stdout": "B04-recheck-main-test.log",
+      "freshEvidence": "B04-recheck-main-http-evidence.json"
+    },
+    "browser": {
+      "report": "B04-recheck-browser.md",
+      "persistenceChecks": "B04-recheck-browser-checks.json",
+      "fakeProvider": true,
+      "noRealProviderCall": true,
+      "restartFileCount": 16,
+      "restartHashDifferenceCount": 0,
+      "cleanup": "runtime/B04-recheck-browser-cleanup.json"
+    },
+    "realProvider": {
+      "result": "BLOCKED",
+      "reason": "No user configured server-side product Provider/model/key. Fake is not real AI evidence."
+    },
+    "finalBatchResult": "FAIL",
+    "remainingDefectIds": [
+      "F04-04",
+      "F04-05",
+      "F04-11"
+    ],
+    "nextBatchAuthorized": false
+  },
+  "browserEvidenceReview": {
+    "reviewed": true,
+    "report": "B04-recheck-browser.md",
+    "persistence": {
+      "fakeProvider": true,
+      "sourceTitlePreserved": true,
+      "sourceBodyPreserved": true,
+      "sourceLevelPreserved": true,
+      "pageTitlePreserved": true,
+      "pageDefinitionPreserved": true,
+      "rawBodyUnchanged": true,
+      "rawBodyShaUnchanged": true,
+      "selectedLinkPresent": true,
+      "unselectedLinkAbsent": true,
+      "unselectedPlainTextPresent": true,
+      "fileHashDifferenceCount": 0,
+      "fileCount": 16,
+      "stats": {
+        "rawCount": 2,
+        "wikiCount": 4,
+        "thisWeekNewCount": 6,
+        "pendingConfirmationCount": 0,
+        "openAuditCount": 0,
+        "promptCount": 0,
+        "weekStartsOn": "2026-10-05"
+      },
+      "configured": false
+    },
+    "note": "Read actual browser report/API/file results; backend acceptance agent itself did not operate browser."
+  },
+  "realProvider": {
+    "status": "BLOCKED",
+    "reason": "No user-configured product Provider credentials; zero real provider calls; fixing deterministic defects would still not allow batch PASS."
+  },
+  "notRun": [
+    "60-second timeout unchanged independent boundary (prior evidence retained)",
+    "10-minute total deadline",
+    "Legacy Raw above 500000 chars",
+    "51 aggregate pages",
+    "Full Provider error matrix on repaired version",
+    "Separate final draft-confirmed/final completed-manifest failure"
+  ],
+  "cleanup": {
+    "http": {
+      "ownServicesClosed": true,
+      "fakeClosed": true,
+      "isolatedDataRetained": true,
+      "formalWorkspaceTouched": false
+    },
+    "b02Stopped": true,
+    "b03Stopped": true,
+    "temporaryDataRetained": true,
+    "formalWorkspaceTouched": false
+  },
+  "finishedAt": "2026-10-05T15:04:37.821Z",
+  "tokenUsage": "Unavailable"
+}

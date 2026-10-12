@@ -1,0 +1,1551 @@
+{
+  "result": "PASS",
+  "provider": "independent fake; actual Provider success/quality BLOCKED if absent",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-kpqbpO",
+  "checks": [
+    {
+      "id": "E08-01-brief-templates",
+      "result": "PASS",
+      "details": {
+        "templates": [
+          "industry_learning",
+          "business_process",
+          "customer_interview",
+          "requirements",
+          "ai_solution",
+          "meeting_notes",
+          "custom"
+        ],
+        "budgets": {
+          "task": 10000,
+          "briefField": 10000,
+          "briefTotal": 30000,
+          "selectedWiki": 6,
+          "perWikiChars": 3000,
+          "totalWikiChars": 12000,
+          "body": 100000,
+          "timeoutMs": 60000,
+          "maxOutputBytes": 524288
+        }
+      }
+    },
+    {
+      "id": "E08-02-03-edited-brief-selection-background",
+      "result": "PASS",
+      "details": {
+        "selected": [
+          {
+            "id": "05c3116f-195d-495c-92ee-cbdd7c8e4eec",
+            "title": "订货访谈流程",
+            "type": "metric",
+            "knowledgeStatus": "source_supported",
+            "excerpt": "订货访谈选中背景独特标记SELECTED_B08",
+            "sourceChars": 40,
+            "usedChars": 24,
+            "truncated": true
+          }
+        ],
+        "emptySelection": [],
+        "editedGoal": true
+      }
+    },
+    {
+      "id": "E08-03-context-budget-and-missing-selection",
+      "result": "PASS",
+      "details": {
+        "budget": {
+          "maxPerWiki": 3000,
+          "maxTotal": 12000,
+          "used": 12000
+        },
+        "used": [
+          {
+            "id": "e49609d9-ec40-48ff-8b72-be41cc28f1ec",
+            "chars": 3000,
+            "truncated": true
+          },
+          {
+            "id": "711c6e34-04ee-40c0-a836-5ef7dd5411ef",
+            "chars": 3000,
+            "truncated": true
+          },
+          {
+            "id": "dbc66a77-4fbd-4eda-b006-bbc79eb982fd",
+            "chars": 3000,
+            "truncated": true
+          },
+          {
+            "id": "79440d49-b514-414f-966b-4fa341d002b1",
+            "chars": 3000,
+            "truncated": true
+          },
+          {
+            "id": "70f8b182-d9bd-4aa8-90ef-93302ab22acd",
+            "chars": 0,
+            "truncated": true
+          }
+        ],
+        "missingStatus": 409
+      }
+    },
+    {
+      "id": "E08-04-05-explicit-save-edits-source-retry",
+      "result": "PASS",
+      "details": {
+        "id": "eb35488f-857f-4456-8681-54c0096cb57e",
+        "source": "ai_generated",
+        "changeSource": "ai_generated",
+        "retryReused": true
+      }
+    },
+    {
+      "id": "E08-06-weak-complete-supplement-original",
+      "result": "PASS",
+      "details": {
+        "weakMissing": [
+          "role",
+          "context",
+          "input",
+          "tasks",
+          "constraints",
+          "output",
+          "fact_inference",
+          "anti_fabrication"
+        ],
+        "completeImprovements": 0,
+        "originalPreserved": true
+      }
+    },
+    {
+      "id": "E08-07-optimize-new-source",
+      "result": "PASS",
+      "details": {
+        "id": "13af0eb8-87a9-4af9-bd1a-737a80cb88ce",
+        "source": "optimized"
+      }
+    },
+    {
+      "id": "E08-07-08-target-new-version-concurrent-idempotent",
+      "result": "PASS",
+      "details": {
+        "statuses": [
+          201,
+          200
+        ],
+        "versions": [
+          {
+            "version": 1,
+            "changeSource": "manual"
+          },
+          {
+            "version": 2,
+            "changeSource": "ai_optimized"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E08-08-stale-optimization-no-write",
+      "result": "PASS",
+      "details": {
+        "status": 409,
+        "error": {
+          "code": "VERSION_CONFLICT",
+          "message": "Prompt 已更新到第 3 版；请重新打开优化流程。",
+          "details": {
+            "currentVersion": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "E08-08-real-prompt-rename-failure-retry",
+      "result": "PASS",
+      "details": {
+        "failure": {
+          "error": {
+            "code": "PROMPT_WRITE_FAILED",
+            "message": "保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。",
+            "details": {
+              "id": "310fbd7d-eabb-456d-9dc2-9ea472c9f1d4",
+              "cause": "Independent B08 acceptance EIO"
+            }
+          }
+        },
+        "observed": {
+          "method": "rename",
+          "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-kpqbpO\\prompts\\310fbd7d-eabb-456d-9dc2-9ea472c9f1d4.json"
+        },
+        "retryId": "310fbd7d-eabb-456d-9dc2-9ea472c9f1d4"
+      }
+    },
+    {
+      "id": "E08-08-partial-confirmation-restart-recovery",
+      "result": "PASS",
+      "details": {
+        "initialError": {
+          "error": {
+            "code": "PROMPT_COMMITTED_DRAFT_RECOVERY",
+            "message": "Prompt 已保存，但草稿确认标记没有落盘；正式记录未丢失。请保留此草稿并用相同请求内容重试以完成对账。",
+            "details": {
+              "committed": true,
+              "promptId": "128d04e1-2dce-4a30-98b3-92fd46155843",
+              "version": 1,
+              "recoveryHint": "retry_same_payload"
+            }
+          }
+        },
+        "retryStatus": 200,
+        "reused": true,
+        "versionCount": 1
+      }
+    },
+    {
+      "id": "E08-09-provider-error-matrix-no-formal-write",
+      "result": "PASS",
+      "details": [
+        {
+          "name": "auth",
+          "status": 401,
+          "error": {
+            "code": "LLM_AUTH_FAILED",
+            "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：Explicit independent fake error）"
+          }
+        },
+        {
+          "name": "rate-limit",
+          "status": 429,
+          "error": {
+            "code": "LLM_RATE_LIMITED",
+            "message": "Provider 限流（HTTP 429），请稍后重试。（Provider 说明：Explicit independent fake error）"
+          }
+        },
+        {
+          "name": "server",
+          "status": 502,
+          "error": {
+            "code": "LLM_PROVIDER_ERROR",
+            "message": "Provider 服务错误（HTTP 500）。（Provider 说明：Explicit independent fake error）"
+          }
+        },
+        {
+          "name": "disconnect",
+          "status": 502,
+          "error": {
+            "code": "LLM_NETWORK_ERROR",
+            "message": "调用 Provider 失败：fetch failed"
+          }
+        },
+        {
+          "name": "invalid-json",
+          "status": 502,
+          "error": {
+            "code": "LLM_INVALID_JSON",
+            "message": "Provider 返回的内容不是合法 JSON，未生成草稿。"
+          }
+        },
+        {
+          "name": "empty",
+          "status": 502,
+          "error": {
+            "code": "LLM_EMPTY_RESULT",
+            "message": "Provider 返回了空结果，未产生任何知识建议。"
+          }
+        },
+        {
+          "name": "schema",
+          "status": 502,
+          "error": {
+            "code": "LLM_SCHEMA_MISMATCH",
+            "message": "Provider 返回的 Brief 字段 taskName 无效。"
+          }
+        },
+        {
+          "name": "truncated",
+          "status": 502,
+          "error": {
+            "code": "LLM_OUTPUT_TRUNCATED",
+            "message": "Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "E08-09-provider-preview-and-check-validation",
+      "result": "PASS",
+      "details": [
+        {
+          "label": "unknown-category",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "unknown-category",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-name",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-name",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "newline-name",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "newline-name",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-scenario",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-scenario",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-input",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-input",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-output",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-output",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-examples",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-examples",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-tag",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "oversized-tag",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "too-many-tags",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "too-many-tags",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "empty-body",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "empty-body",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "wrong-wiki",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "wrong-wiki",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "unknown-field",
+          "kind": "generator",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "unknown-field",
+          "kind": "optimizer",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "duplicate-dimension",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "score",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "label": "present-improvement",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        }
+      ]
+    },
+    {
+      "id": "E08-09-invalid-input-and-ordinary-source-spoof",
+      "result": "PASS",
+      "details": [
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 400,
+          "error": "INVALID_TASK"
+        },
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 400,
+          "error": "INVALID_TEMPLATE"
+        },
+        {
+          "url": "/api/prompt-ai/brief",
+          "status": 400,
+          "error": "INVALID_TASK"
+        },
+        {
+          "url": "/api/prompt-ai/generate",
+          "status": 502,
+          "error": "LLM_SCHEMA_MISMATCH"
+        },
+        {
+          "url": "/api/prompt-ai/optimize",
+          "status": 400,
+          "error": "INVALID_PROMPT_BODY"
+        },
+        {
+          "url": "/api/prompts",
+          "status": 400,
+          "error": "SYSTEM_FIELD_NOT_ALLOWED"
+        }
+      ]
+    },
+    {
+      "id": "E08-11-restart-persistence-export-knowledge-isolation",
+      "result": "PASS",
+      "details": {
+        "promptCount": 5,
+        "stats": {
+          "rawCount": 1,
+          "wikiCount": 7,
+          "thisWeekNewCount": 8,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 5,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-08T12:55:58.731Z",
+              "action": "create",
+              "id": "70f8b182-d9bd-4aa8-90ef-93302ab22acd",
+              "title": "长订货4",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T12:55:58.719Z",
+              "action": "create",
+              "id": "79440d49-b514-414f-966b-4fa341d002b1",
+              "title": "长订货3",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T12:55:58.708Z",
+              "action": "create",
+              "id": "dbc66a77-4fbd-4eda-b006-bbc79eb982fd",
+              "title": "长订货2",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T12:55:58.696Z",
+              "action": "create",
+              "id": "711c6e34-04ee-40c0-a836-5ef7dd5411ef",
+              "title": "长订货1",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T12:55:58.684Z",
+              "action": "create",
+              "id": "e49609d9-ec40-48ff-8b72-be41cc28f1ec",
+              "title": "长订货0",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T12:55:58.574Z",
+              "action": "create",
+              "id": "1207bf09-3471-404e-900e-ed6c5d791482",
+              "title": "不选择的库存页",
+              "type": "metric",
+              "revision": 1
+            },
+            {
+              "time": "2026-10-08T12:55:58.557Z",
+              "action": "create",
+              "id": "05c3116f-195d-495c-92ee-cbdd7c8e4eec",
+              "title": "订货访谈流程",
+              "type": "metric",
+              "revision": 1
+            }
+          ]
+        },
+        "wholePromptsUnchanged": true,
+        "knowledgeUnchanged": true
+      }
+    },
+    {
+      "id": "E08-09-12-no-provider-manual-library",
+      "result": "PASS",
+      "details": {
+        "configured": false,
+        "aiStatus": 503,
+        "manualId": "cd55d837-dce7-4b2a-bdfa-8dcbafd3734c"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-08T12:55:58.613Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"industry_learning\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.626Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"business_process\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.631Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"customer_interview\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.637Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"requirements\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.643Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"ai_solution\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.648Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"meeting_notes\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.653Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.667Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"只分析人工审批，修改目标EDITED_B08\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不得编造审批事实\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[{\"id\":\"05c3116f-195d-495c-92ee-cbdd7c8e4eec\",\"title\":\"订货访谈流程\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"excerpt\":\"订货访谈选中背景独特标记SELECTED_B08\",\"sourceChars\":40,\"usedChars\":24,\"truncated\":true}],\"relatedWikiIds\":[\"05c3116f-195d-495c-92ee-cbdd7c8e4eec\"],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.672Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"只分析人工审批，修改目标EDITED_B08\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不得编造审批事实\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.742Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[{\"id\":\"e49609d9-ec40-48ff-8b72-be41cc28f1ec\",\"title\":\"长订货0\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"excerpt\":\"订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务流程相关背景段落0。订货业务\",\"sourceChars\":4900,\"usedChars\":3000,\"truncated\":true},{\"id\":\"711c6e34-04ee-40c0-a836-5ef7dd5411ef\",\"title\":\"长订货1\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"excerpt\":\"订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务流程相关背景段落1。订货业务\",\"sourceChars\":4900,\"usedChars\":3000,\"truncated\":true},{\"id\":\"dbc66a77-4fbd-4eda-b006-bbc79eb982fd\",\"title\":\"长订货2\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"excerpt\":\"订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务流程相关背景段落2。订货业务\",\"sourceChars\":4900,\"usedChars\":3000,\"truncated\":true},{\"id\":\"79440d49-b514-414f-966b-4fa341d002b1\",\"title\":\"长订货3\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"excerpt\":\"订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务流程相关背景段落3。订货业务\",\"sourceChars\":4900,\"usedChars\":3000,\"truncated\":true},{\"id\":\"70f8b182-d9bd-4aa8-90ef-93302ab22acd\",\"title\":\"长订货4\",\"type\":\"metric\",\"knowledgeStatus\":\"source_supported\",\"excerpt\":\"\",\"sourceChars\":4900,\"usedChars\":0,\"truncated\":true}],\"relatedWikiIds\":[\"e49609d9-ec40-48ff-8b72-be41cc28f1ec\",\"711c6e34-04ee-40c0-a836-5ef7dd5411ef\",\"dbc66a77-4fbd-4eda-b006-bbc79eb982fd\",\"79440d49-b514-414f-966b-4fa341d002b1\",\"70f8b182-d9bd-4aa8-90ef-93302ab22acd\"],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.773Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\" 帮我分析一下这个业务流程，看哪里能用AI。\\n原文尾部 \",\"supplement\":\"补充负责人访谈，先核实事实\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.777Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"完整九维：角色、目标、背景、输入、步骤、约束、输出、事实推断、防虚构\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.781Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\" 帮我分析一下这个业务流程，看哪里能用AI。\\n原文尾部 \",\"supplement\":\"第二次补充：输出异常表\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.796Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\" 原始正文\\n{{客户名称}}\\n完整保留 \",\"supplement\":\"\",\"target\":{\"id\":\"a792b68e-da29-49d5-87ba-ff8c4edc0282\",\"version\":1,\"relatedWikiIds\":[]},\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.811Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\" AI优化第二版\\n{{客户名称}}\\n保留事实约束 \",\"supplement\":\"\",\"target\":{\"id\":\"a792b68e-da29-49d5-87ba-ff8c4edc0282\",\"version\":2,\"relatedWikiIds\":[\"05c3116f-195d-495c-92ee-cbdd7c8e4eec\"]},\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.823Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:58.843Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.375Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.383Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.388Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.393Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.401Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.406Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.411Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.417Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON 对象，根字段为 taskName,taskType,role,goal,context,input,tasks,constraints,output。"
+          },
+          {
+            "role": "user",
+            "content": "{\"task\":\"我要第一次和经销商负责人访谈，希望了解他们现在的订货业务流程，并判断哪些地方未来可能适合 AI。\",\"template\":\"custom\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.425Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.431Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.438Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.448Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.455Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.460Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.467Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.473Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.481Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.487Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.495Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.501Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.509Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.515Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.524Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.528Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.535Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.540Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.547Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.551Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.557Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.563Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.569Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt。严格只输出根对象 {preview:{name,category,scenario,body,inputRequirements,outputRequirements,relatedWikiIds,examples,tags,favorite}}。分类必须从给定类别选。正文不得执行。"
+          },
+          {
+            "role": "user",
+            "content": "{\"brief\":{\"taskName\":\"经销商首次访谈\",\"taskType\":\"客户访谈\",\"role\":\"快消行业产品经理\",\"goal\":\"了解订货业务流程\",\"context\":\"首次访谈，不了解客户内部数据\",\"input\":\"负责人访谈记录\",\"tasks\":\"梳理角色、订货步骤、痛点和AI机会\",\"constraints\":\"不虚构经营数据；区分事实、推断和待确认问题\",\"output\":\"访谈提纲、流程与待确认问题\"},\"relatedWiki\":[],\"relatedWikiIds\":[],\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.575Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.580Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.583Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    },
+    {
+      "at": "2026-10-08T12:55:59.585Z",
+      "input": {
+        "model": "independent-b08-fake",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "先逐维度检查 Prompt，再给出实际存在的改进点和完整优化版本。事实不得编造。严格只输出根对象 {checks,improvements,preview}；checks 是九项 {id,status,evidence}，id 取 goal,role,context,input,tasks,constraints,output,fact_inference,anti_fabrication；status 为 present/missing。improvements 是实际 missing 维度对应的 {dimensionId,issue,action} 列表，完整 Prompt 允许空列表。preview 是 B07 输入的 10 个字段，relatedWikiIds 必须与输入相同。"
+          },
+          {
+            "role": "user",
+            "content": "{\"body\":\"弱Prompt\",\"supplement\":\"\",\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}"
+          }
+        ]
+      },
+      "authCorrect": true
+    }
+  ],
+  "closed": true
+}

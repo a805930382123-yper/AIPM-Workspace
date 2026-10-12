@@ -1,0 +1,889 @@
+{
+  "provider": "independent fake, not real AI quality",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-omZq2C",
+  "httpRequests": [
+    {
+      "at": "2026-10-08T15:17:10.114Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:10.118Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:10.126Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:10.128Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:10.129Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:10.137Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.432Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.432Z",
+      "method": "GET",
+      "url": "/api/wiki/a9cff110-c1e4-4d79-9800-ceca010f1625",
+      "status": 404,
+      "requestBody": "",
+      "body": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Wiki。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.433Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.439Z",
+      "method": "GET",
+      "url": "/api/wiki/a9cff110-c1e4-4d79-9800-ceca010f1625",
+      "status": 404,
+      "requestBody": "",
+      "body": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Wiki。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.439Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.442Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.446Z",
+      "method": "GET",
+      "url": "/api/wiki/a9cff110-c1e4-4d79-9800-ceca010f1625",
+      "status": 404,
+      "requestBody": "",
+      "body": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Wiki。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:19.520Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.025Z",
+      "method": "GET",
+      "url": "/api/wiki/b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.053Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.057Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.378Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.379Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.383Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.688Z",
+      "method": "GET",
+      "url": "/api/wiki/a9cff110-c1e4-4d79-9800-ceca010f1625",
+      "status": 404,
+      "requestBody": "",
+      "body": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Wiki。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.688Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.690Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.693Z",
+      "method": "GET",
+      "url": "/api/wiki/a9cff110-c1e4-4d79-9800-ceca010f1625",
+      "status": 404,
+      "requestBody": "",
+      "body": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Wiki。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.695Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.697Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.698Z",
+      "method": "GET",
+      "url": "/api/wiki/a9cff110-c1e4-4d79-9800-ceca010f1625",
+      "status": 404,
+      "requestBody": "",
+      "body": "{\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"没有找到这条 Wiki。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:35.779Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.599Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.601Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.605Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.915Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.917Z",
+      "method": "GET",
+      "url": "/api/wiki/b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.917Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.921Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.923Z",
+      "method": "GET",
+      "url": "/api/wiki/b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.924Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.929Z",
+      "method": "GET",
+      "url": "/api/wiki/b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.938Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:53.941Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.001Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.341Z",
+      "method": "GET",
+      "url": "/api/wiki?q=%E6%9C%89%E6%95%88%E4%B8%99",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.347Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.360Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.364Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.698Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.700Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:54.703Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.022Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.024Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.027Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.030Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.109Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.119Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.129Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:17:55.133Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.300Z",
+      "method": "POST",
+      "url": "/api/audits",
+      "status": 201,
+      "requestBody": "{\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\"}",
+      "body": "{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:29.294Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.312Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.313Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:29.294Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.314Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.319Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.323Z",
+      "method": "GET",
+      "url": "/api/audits/0b4ca492-3b69-4359-a76f-9f2bd53534ed",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:29.294Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.586Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.588Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.592Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":1,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.917Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.919Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.919Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.923Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.925Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.926Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.931Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.939Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:29.294Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:29.944Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:29.294Z\",\"status\":\"open\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.002Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.222Z",
+      "method": "GET",
+      "url": "/api/audits/0b4ca492-3b69-4359-a76f-9f2bd53534ed",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":1,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:29.294Z\",\"status\":\"open\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.565Z",
+      "method": "POST",
+      "url": "/api/audits/0b4ca492-3b69-4359-a76f-9f2bd53534ed/resolve",
+      "status": 200,
+      "requestBody": "{\"baseAuditRevision\":1,\"decision\":\"rejected\",\"confirm\":false,\"reason\":\"独立回归结束，人工拒绝。\"}",
+      "body": "{\"audit\":{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:30.556Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"rejected\",\"reason\":\"独立回归结束，人工拒绝。\",\"at\":\"2026-10-08T15:18:30.556Z\",\"operationId\":\"86398377-b138-437c-bc16-c5f1b31b0a77\",\"requestHash\":\"0e242ea0179255195c61642ac4a5ab7ebfaed3aa63a609b48dfffe4d0cbaf49e\"}]},\"decision\":\"rejected\",\"operationId\":\"86398377-b138-437c-bc16-c5f1b31b0a77\",\"reused\":false}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.572Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.572Z",
+      "method": "GET",
+      "url": "/api/audits?wikiId=62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:30.556Z\",\"status\":\"resolved\",\"location\":{\"status\":\"located\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"rejected\",\"reason\":\"独立回归结束，人工拒绝。\",\"at\":\"2026-10-08T15:18:30.556Z\",\"operationId\":\"86398377-b138-437c-bc16-c5f1b31b0a77\",\"requestHash\":\"0e242ea0179255195c61642ac4a5ab7ebfaed3aa63a609b48dfffe4d0cbaf49e\"}]}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.573Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.577Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:18:30.559Z\",\"action\":\"audit\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.581Z",
+      "method": "GET",
+      "url": "/api/audits/0b4ca492-3b69-4359-a76f-9f2bd53534ed",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"audit\":{\"id\":\"0b4ca492-3b69-4359-a76f-9f2bd53534ed\",\"wikiId\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"scope\":\"page\",\"severity\":\"suggestion\",\"comment\":\"B09最终回归：统计仍应刷新\",\"anchor\":{\"before\":\"\",\"text\":\"丙在列表第一条\",\"after\":\"\"},\"pageBodySha256\":\"8419e3535fa83159ac4e2e80d9cd79769917835608a4c9e6c1f73414b36945cf\",\"createdRevision\":1,\"revision\":2,\"createdAt\":\"2026-10-08T15:18:29.294Z\",\"updatedAt\":\"2026-10-08T15:18:30.556Z\",\"status\":\"resolved\",\"location\":{\"status\":\"found\",\"start\":0,\"end\":7,\"method\":\"page-snapshot\",\"reason\":\"page-snapshot\"},\"relocationHistory\":[],\"decisionHistory\":[{\"decision\":\"rejected\",\"reason\":\"独立回归结束，人工拒绝。\",\"at\":\"2026-10-08T15:18:30.556Z\",\"operationId\":\"86398377-b138-437c-bc16-c5f1b31b0a77\",\"requestHash\":\"0e242ea0179255195c61642ac4a5ab7ebfaed3aa63a609b48dfffe4d0cbaf49e\"}]},\"draft\":null,\"conflicts\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.590Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.878Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.880Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:30.883Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:18:30.559Z\",\"action\":\"audit\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:31.213Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:18:31.214Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:31.217Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:18:31.219Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:31.297Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:18:31.310Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.435Z",
+      "method": "GET",
+      "url": "/api/raw-processing",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[]}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.437Z",
+      "method": "GET",
+      "url": "/api/raw",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\",\"bodySha256\":\"bdd39576b483e4eb6ee62140510b09b408528edebb71b0f4d87fb2584b5fe919\",\"body\":\"独立虚构过期关联来源\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.442Z",
+      "method": "GET",
+      "url": "/api/stats",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"rawCount\":1,\"wikiCount\":2,\"thisWeekNewCount\":3,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[{\"time\":\"2026-10-08T15:18:30.559Z\",\"action\":\"audit\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.887Z\",\"action\":\"create\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.873Z\",\"action\":\"delete\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.854Z\",\"action\":\"create\",\"id\":\"a9cff110-c1e4-4d79-9800-ceca010f1625\",\"title\":\"B09被删乙页面\",\"type\":\"metric\",\"revision\":1},{\"time\":\"2026-10-08T15:16:54.840Z\",\"action\":\"create\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"revision\":1}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.750Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.752Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.755Z",
+      "method": "GET",
+      "url": "/api/wiki/schema",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"domain\":\"fmcg\",\"types\":[{\"id\":\"source\",\"label\":\"来源摘要\",\"description\":\"对一份 Raw 来源做结构化摘要，原文仍以 Raw 为准。\"},{\"id\":\"concept\",\"label\":\"概念\",\"description\":\"解释一个明确的快消行业概念。\"},{\"id\":\"entity\",\"label\":\"业务实体\",\"description\":\"记录企业、品牌、产品、平台、系统、客户或机构。\"},{\"id\":\"business_process\",\"label\":\"业务流程\",\"description\":\"描述业务目标、角色、步骤、规则与异常。\"},{\"id\":\"metric\",\"label\":\"业务指标\",\"description\":\"记录指标定义、公式、范围与解读方式。\"},{\"id\":\"synthesis\",\"label\":\"综合整理\",\"description\":\"手动综合多个来源，分别保留一致观点、冲突与待确认问题。\"}],\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"enums\":{\"knowledge_status\":[\"verified\",\"source_supported\",\"ai_organized\",\"inferred\",\"needs_verification\"],\"confidence\":[\"high\",\"medium\",\"low\"],\"source_level\":[\"A\",\"B\",\"C\",\"D\"],\"review_status\":[\"unreviewed\",\"reviewed\"]},\"pageTemplates\":{\"source\":{\"sections\":[{\"key\":\"summary\",\"label\":\"摘要\",\"hint\":\"用几句话概括来源主题，不复制 Raw 全文。\"},{\"key\":\"key_takeaways\",\"label\":\"Key Takeaways\",\"hint\":\"每条写一个可查阅的重点。\"},{\"key\":\"concepts\",\"label\":\"涉及概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"entities\",\"label\":\"涉及实体\"},{\"key\":\"processes\",\"label\":\"涉及业务流程\"},{\"key\":\"metrics\",\"label\":\"涉及指标\"},{\"key\":\"important_points\",\"label\":\"重要观点\"},{\"key\":\"verification_questions\",\"label\":\"待验证内容\",\"hint\":\"当前来源不能确认、需要进一步核对的内容。\"}]},\"concept\":{\"sections\":[{\"key\":\"one_line_explanation\",\"label\":\"一句话解释\"},{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"why_important\",\"label\":\"为什么重要\"},{\"key\":\"business_context\",\"label\":\"在业务中的位置\"},{\"key\":\"characteristics\",\"label\":\"关键特征\"},{\"key\":\"common_categories\",\"label\":\"常见分类\"},{\"key\":\"relationships\",\"label\":\"与其他概念关系\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"scenarios\",\"label\":\"常见业务场景\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]},\"entity\":{\"sections\":[{\"key\":\"one_line_summary\",\"label\":\"一句话说明\"},{\"key\":\"basic_information\",\"label\":\"基本信息\"},{\"key\":\"business_role\",\"label\":\"在当前业务中的角色\"},{\"key\":\"related_business\",\"label\":\"相关业务\"},{\"key\":\"related_concepts\",\"label\":\"相关概念\",\"hint\":\"可使用 [[概念名称]] 建立关联。\"},{\"key\":\"related_processes\",\"label\":\"相关流程\"}]},\"business_process\":{\"sections\":[{\"key\":\"business_goal\",\"label\":\"业务目标\"},{\"key\":\"roles\",\"label\":\"涉及角色\"},{\"key\":\"trigger\",\"label\":\"触发条件\"},{\"key\":\"inputs\",\"label\":\"输入\"},{\"key\":\"steps\",\"label\":\"完整流程\"},{\"key\":\"outputs\",\"label\":\"输出\"},{\"key\":\"systems\",\"label\":\"使用系统\"},{\"key\":\"rules\",\"label\":\"关键规则\"},{\"key\":\"human_judgement\",\"label\":\"人工判断点\"},{\"key\":\"exceptions\",\"label\":\"异常情况\"},{\"key\":\"pain_points\",\"label\":\"痛点\"},{\"key\":\"ai_opportunities\",\"label\":\"可能的 AI 机会\",\"hint\":\"内容属于分析建议，不能写成来源事实。\"},{\"key\":\"metrics\",\"label\":\"相关指标\"},{\"key\":\"related_knowledge\",\"label\":\"相关知识\",\"hint\":\"可使用 [[知识名称]] 建立关联。\"}]},\"metric\":{\"sections\":[{\"key\":\"definition\",\"label\":\"定义\"},{\"key\":\"business_meaning\",\"label\":\"业务含义\"},{\"key\":\"formula\",\"label\":\"计算方式\"},{\"key\":\"scope\",\"label\":\"适用范围\"},{\"key\":\"data_source\",\"label\":\"数据来源\"},{\"key\":\"interpretation\",\"label\":\"如何解读\"},{\"key\":\"common_mistakes\",\"label\":\"常见误区\"},{\"key\":\"related_metrics\",\"label\":\"相关指标\"}]},\"synthesis\":{\"sections\":[{\"key\":\"overview\",\"label\":\"综合说明\"},{\"key\":\"major_sources\",\"label\":\"主要来源\",\"hint\":\"在来源选择中关联多个 Raw，并说明各自支持的部分。\"},{\"key\":\"agreements\",\"label\":\"一致观点\"},{\"key\":\"conflicts\",\"label\":\"冲突\",\"hint\":\"保留不同来源的说法，不要静默合并。\"},{\"key\":\"open_questions\",\"label\":\"待确认问题\"}]}},\"sourcePolicy\":{\"levels\":[{\"id\":\"A\",\"label\":\"A 级\",\"description\":\"公司正式资料、客户明确确认、业务系统数据、政府、行业协会或权威机构。\"},{\"id\":\"B\",\"label\":\"B 级\",\"description\":\"专业研究机构、主流行业媒体或有明确行业履历的专家。\"},{\"id\":\"C\",\"label\":\"C 级\",\"description\":\"普通公众号、个人文章或一般网络内容。\"},{\"id\":\"D\",\"label\":\"D 级\",\"description\":\"来源未知、营销软文或尚未核验的 AI 内容。\"}],\"guidance\":\"来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。\"}}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.757Z",
+      "method": "GET",
+      "url": "/api/raw?summary=true",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"验收资料 B09过期关联夹具\",\"sourceType\":\"report\",\"sourceName\":\"隔离样本 B09过期关联夹具\",\"author\":\"验收样本\",\"publishedAt\":\"2026-10-01\",\"url\":\"https://example.com/b07-fixture\",\"tags\":[],\"id\":\"80219470-261b-4fe0-979f-7157dcbf66a4\",\"importedAt\":\"2026-10-08T15:16:54.818Z\",\"status\":\"unprocessed\"}]}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.836Z",
+      "method": "GET",
+      "url": "/api/wiki?",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"items\":[{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\"},{\"title\":\"B09有效甲页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"b8b82e65-8102-4e79-a6ae-c3096ebbb6f8\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.832Z\",\"updated\":\"2026-10-08T15:16:54.832Z\",\"revision\":1,\"body\":\"甲仍然存在\"}],\"categoryCounts\":{\"industry_basics\":0,\"category\":0,\"channel\":0,\"sales\":0,\"store\":0,\"distributor\":0,\"supply_chain\":0,\"product\":0,\"metric\":2,\"ai_application\":0,\"company_business\":0,\"customer\":0,\"other\":0}}"
+    },
+    {
+      "at": "2026-10-08T15:18:41.848Z",
+      "method": "GET",
+      "url": "/api/wiki/62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"title\":\"B09有效丙页面\",\"type\":\"metric\",\"category\":\"metric\",\"sources\":[\"80219470-261b-4fe0-979f-7157dcbf66a4\"],\"tags\":[],\"aliases\":[],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"B\",\"review_status\":\"reviewed\",\"id\":\"62d0d80a-5fa9-42c1-9ce4-5c954a6325db\",\"domain\":\"fmcg\",\"created\":\"2026-10-08T15:16:54.881Z\",\"updated\":\"2026-10-08T15:16:54.881Z\",\"revision\":1,\"body\":\"丙在列表第一条\",\"links\":[]}"
+    }
+  ],
+  "uiLogs": "\n  VITE v6.4.3  ready in 323 ms\n\n  ➜  Local:   http://127.0.0.1:49338/\n",
+  "url": "http://127.0.0.1:49338/",
+  "api": "http://127.0.0.1:49329",
+  "clipboardUrl": "http://127.0.0.1:49337/clipboard-target",
+  "apiPid": 29160,
+  "uiPid": 40360,
+  "stopFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-omZq2C\\.stop-b09-browser",
+  "afterKnowledge": {
+    "audit\\0b4ca492-3b69-4359-a76f-9f2bd53534ed.json": "76464b4eba0ec9cca9cc84ef7da0148b3790d7f7425bfb6f86d43178eee14533",
+    "logs\\wiki.jsonl": "8e85fb47c1ff4a74945ca18b2ceffe708ba663b140fd7e7bb19e756eec2f86e8",
+    "raw\\reports\\80219470-261b-4fe0-979f-7157dcbf66a4.md": "c99ab8c693fd196853c077fc2f76680a0c9995219e572845ae6d20964ec727af",
+    "recycle\\wiki\\a9cff110-c1e4-4d79-9800-ceca010f1625.md": "2cc8f0386f1c6ab27a55ce81f8a8a75ec818cad808263b3646c9787a1ea3fc14",
+    "wiki\\62d0d80a-5fa9-42c1-9ce4-5c954a6325db.md": "8f50abd9d3504a33b21d3c6e26fd3c202a70c9fbb00f88f898dd97f1592d711c",
+    "wiki\\b8b82e65-8102-4e79-a6ae-c3096ebbb6f8.md": "5be4884af2ecf27cf139f9141c7a44970e3e5a1ce0c10db4d493421baa0ad294",
+    "wiki\\index.md": "651f1c350ec186ce5d28857bad046fcc45ffc45a6381dc47b98267c6778f1582"
+  },
+  "afterPrompts": {},
+  "finalStats": {
+    "rawCount": 1,
+    "wikiCount": 2,
+    "thisWeekNewCount": 3,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 0,
+    "weekStartsOn": "2026-10-05",
+    "recentChanges": [
+      {
+        "time": "2026-10-08T15:18:30.559Z",
+        "action": "audit",
+        "id": "62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+        "title": "B09有效丙页面",
+        "type": "metric",
+        "revision": 1
+      },
+      {
+        "time": "2026-10-08T15:16:54.887Z",
+        "action": "create",
+        "id": "62d0d80a-5fa9-42c1-9ce4-5c954a6325db",
+        "title": "B09有效丙页面",
+        "type": "metric",
+        "revision": 1
+      },
+      {
+        "time": "2026-10-08T15:16:54.873Z",
+        "action": "delete",
+        "id": "a9cff110-c1e4-4d79-9800-ceca010f1625",
+        "title": "B09被删乙页面",
+        "type": "metric",
+        "revision": 1
+      },
+      {
+        "time": "2026-10-08T15:16:54.854Z",
+        "action": "create",
+        "id": "a9cff110-c1e4-4d79-9800-ceca010f1625",
+        "title": "B09被删乙页面",
+        "type": "metric",
+        "revision": 1
+      },
+      {
+        "time": "2026-10-08T15:16:54.840Z",
+        "action": "create",
+        "id": "b8b82e65-8102-4e79-a6ae-c3096ebbb6f8",
+        "title": "B09有效甲页面",
+        "type": "metric",
+        "revision": 1
+      }
+    ]
+  },
+  "providerRequests": [],
+  "closed": {
+    "api": true,
+    "ui": true,
+    "proxy": true,
+    "fake": true
+  }
+}

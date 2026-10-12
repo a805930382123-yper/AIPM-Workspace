@@ -1,0 +1,413 @@
+{
+  "clientDate": "2026-10-07",
+  "provider": "independent HTTP fake only; real quality BLOCKED",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v",
+  "checks": [
+    {
+      "id": "E06-01-create-persist-stats",
+      "result": "PASS",
+      "evidence": {
+        "ids": [
+          "37957837-36ab-4418-a742-74ed1d434452",
+          "debafea6-69e9-4cda-b42e-89a12e2d6b13",
+          "f0e1e48d-8ef0-489c-ac4f-e2b9510745b0",
+          "1dde08b0-efb7-4911-b82f-70e703b6f23c"
+        ],
+        "restartSameDirectory": true,
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "E06-02-anchor-movement-and-negatives",
+      "result": "PASS",
+      "evidence": {
+        "movement": "found",
+        "ambiguous": {
+          "error": {
+            "code": "ANCHOR_UNCERTAIN",
+            "message": "Wiki 内容已变化，Audit 目标需要重新定位。",
+            "details": {
+              "location": {
+                "status": "uncertain",
+                "start": -1,
+                "end": -1,
+                "method": "ambiguous"
+              }
+            }
+          }
+        },
+        "deleted": {
+          "error": {
+            "code": "ANCHOR_UNCERTAIN",
+            "message": "Wiki 内容已变化，Audit 目标需要重新定位。",
+            "details": {
+              "location": {
+                "status": "uncertain",
+                "start": -1,
+                "end": -1,
+                "method": "missing"
+              }
+            }
+          }
+        },
+        "wholePageStale": true,
+        "originalAnchorRetained": true
+      }
+    },
+    {
+      "id": "E06-03-provider-preview-edit-discard",
+      "result": "PASS",
+      "evidence": {
+        "draftId": "2c05cc32-99be-4b48-a714-7d517a0d09ab",
+        "rawId": "f6281f56-7515-4588-a732-d2ffc0515ce4",
+        "providerInputAllThree": true,
+        "savedAcrossRestart": true,
+        "discardedWithoutWikiWrite": true
+      }
+    },
+    {
+      "id": "E06-02b-repeat-context-and-deleted-page",
+      "result": "PASS",
+      "evidence": {
+        "duplicateTextContextSelectsRightOccurrence": true,
+        "deletedWikiBlocksProposal": true
+      }
+    },
+    {
+      "id": "E06-04-four-decisions-and-precise-write",
+      "result": "PASS",
+      "evidence": {
+        "accepted": {
+          "audit": {
+            "id": "b25fc9f1-9e36-42e5-b486-c304c0f70cc6",
+            "wikiId": "fc3ced58-90c6-4209-bce3-8bafcd872b7b",
+            "scope": "paragraph",
+            "severity": "error",
+            "comment": "反馈：口径错误，请依Raw纠正并保留其他人工文字。",
+            "anchor": {
+              "before": "## 人工保留前文\n",
+              "text": "铺货率采用上架门店数除以目标门店数。",
+              "after": "\n## 人工保留后文\n范围需要业务确认。"
+            },
+            "pageBodySha256": "f4511cdffc0f83b4a0c076048ddc3f01baa292e03edd4b134f49d06683479dc2",
+            "createdRevision": 1,
+            "revision": 3,
+            "createdAt": "2026-10-07T06:39:17.291Z",
+            "updatedAt": "2026-10-07T06:39:17.321Z",
+            "status": "resolved",
+            "location": {
+              "status": "located",
+              "start": 10,
+              "end": 28,
+              "method": "context"
+            },
+            "relocationHistory": [],
+            "decisionHistory": [
+              {
+                "decision": "accepted",
+                "at": "2026-10-07T06:39:17.321Z",
+                "operationId": "16d78803-f0d0-49b5-b5e2-fb6cafdf46a2",
+                "wikiRevision": 2,
+                "draftId": "cdfaa871-8dab-44ac-84e5-c4de466015f8",
+                "requestHash": "aed587031c01e92e6b92ee74cf708767a51f84cf252544aec1355966c4049acd"
+              }
+            ]
+          },
+          "decision": "accepted",
+          "operationId": "16d78803-f0d0-49b5-b5e2-fb6cafdf46a2",
+          "wikiRevision": 2,
+          "reused": false
+        },
+        "partialBody": "## 人工保留前文\n人工部分采纳：销售门店口径，周期待确认。\n## 人工保留后文\n范围需要业务确认。",
+        "rejectedId": "9748fde9-00e8-40f6-ab32-d23098098c17",
+        "deferredId": "dfebe4ba-505f-4a68-b74c-7a75f9921619",
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "E06-05-versions-confirm-and-idempotence",
+      "result": "PASS",
+      "evidence": {
+        "explicitConfirmRequired": true,
+        "staleDraftWikiAudit": true,
+        "completedRetryNoWrites": true,
+        "operationId": "9f892661-d22a-4b66-bbc3-74fa6339720f"
+      }
+    },
+    {
+      "id": "E06-06-real-io-failure-recovery",
+      "result": "PASS",
+      "evidence": {
+        "failed": {
+          "error": {
+            "code": "DERIVED_FILES_PENDING",
+            "message": "Wiki 已保存（a062bb14-8073-45d4-9f01-1a35cd3d2395，第 2 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。",
+            "details": {
+              "committed": true,
+              "id": "a062bb14-8073-45d4-9f01-1a35cd3d2395",
+              "revision": 2,
+              "operationId": "0b852949-61b6-47e5-93c5-57d249ae06bb",
+              "recoverable": true,
+              "cause": "Independent B06 acceptance EIO"
+            }
+          }
+        },
+        "recovered": {
+          "id": "2bc53433-57a3-40d6-a816-13998883381a",
+          "wikiId": "a062bb14-8073-45d4-9f01-1a35cd3d2395",
+          "scope": "paragraph",
+          "severity": "error",
+          "comment": "反馈：口径错误，请依Raw纠正并保留其他人工文字。",
+          "anchor": {
+            "before": "## 人工保留前文\n",
+            "text": "铺货率采用上架门店数除以目标门店数。",
+            "after": "\n## 人工保留后文\n范围需要业务确认。"
+          },
+          "pageBodySha256": "f4511cdffc0f83b4a0c076048ddc3f01baa292e03edd4b134f49d06683479dc2",
+          "createdRevision": 1,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:39:19.052Z",
+          "updatedAt": "2026-10-07T06:39:19.493Z",
+          "status": "resolved",
+          "location": {
+            "status": "missing",
+            "start": -1,
+            "end": -1,
+            "method": "missing",
+            "reason": "missing"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T06:39:19.493Z",
+              "operationId": "922598b4-a613-4c37-a4e7-6b25cc5b9787",
+              "wikiRevision": 2,
+              "draftId": "c1ad5826-b079-4346-b239-ec328ae1af00",
+              "requestHash": "588625530e7a1d26b3bcc2990b22e2263ff7c3c409d7b85a432c7a7d3f46333c"
+            }
+          ]
+        },
+        "stableWikiRevision": 2,
+        "logOnce": true
+      }
+    },
+    {
+      "id": "E06-06b-recovery-human-conflict",
+      "result": "FAIL",
+      "error": "Error: ENOENT: no such file or directory, open 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\8\\state\\audit-operations\\4d1bb885-eccc-406b-9c2c-c8e39860f2c4.json'\n    at async open (node:internal/fs/promises:641:25)\n    at async readFile (node:internal/fs/promises:1279:14)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:159:64\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:24:75)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:151:3"
+    },
+    {
+      "id": "E06-06c-log-failure-is-not-success",
+      "result": "PASS",
+      "evidence": {
+        "failure": {
+          "error": {
+            "code": "DERIVED_FILES_PENDING",
+            "message": "Wiki 已保存（4c19e16b-cf95-4743-8a39-bca5addbe99d，第 2 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。",
+            "details": {
+              "committed": true,
+              "id": "4c19e16b-cf95-4743-8a39-bca5addbe99d",
+              "revision": 2,
+              "operationId": "c67376dd-cca7-4f4c-86ff-34af96673da0",
+              "recoverable": true,
+              "cause": "Independent B06 acceptance EIO"
+            }
+          }
+        },
+        "noFalseSuccess": true,
+        "restartCompletedOnce": true
+      }
+    },
+    {
+      "id": "E06-07-raw-integrity-and-provider-failures",
+      "result": "PASS",
+      "evidence": {
+        "changedActualRawRejected": true,
+        "invalidProviderRejected": true,
+        "noProvider503": true,
+        "manualDecisionStillWorks": true
+      }
+    },
+    {
+      "id": "E06-07b-strict-schema-and-quote-source",
+      "result": "PASS",
+      "evidence": {
+        "strictRequiredFieldsLengthsAndUnknownFields": true,
+        "wrongSourceQuoteRejected": true,
+        "statuses": [
+          {
+            "case": 1,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_SCHEMA_MISMATCH"
+          },
+          {
+            "case": 2,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_SCHEMA_MISMATCH"
+          },
+          {
+            "case": 3,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_PROVIDER_ERROR"
+          },
+          {
+            "case": 4,
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_SCHEMA_MISMATCH"
+          },
+          {
+            "case": "wrong-source-quote",
+            "expected": 502,
+            "status": 502,
+            "code": "LLM_EVIDENCE_INVALID"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E06-09-proposal-race-cannot-resurrect-resolved-audit",
+      "result": "PASS",
+      "evidence": {
+        "concurrentProposalRejected409": true,
+        "manualDecisionAndHistoryPreserved": true
+      }
+    },
+    {
+      "id": "E06-08-lint-eleven-and-readonly-cli",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: unsourced_fact failed to locate fixture 503bbae7-fa8f-4ee3-9608-108be46728ed\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:243:63\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:24:75)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/b06-independent-http.mjs:212:3"
+    }
+  ],
+  "services": [
+    {
+      "pid": 37360,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\1",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57604 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\1)\n"
+    },
+    {
+      "pid": 27352,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\1",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57633 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\1)\n"
+    },
+    {
+      "pid": 2056,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\2",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57654 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\2)\n"
+    },
+    {
+      "pid": 36196,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\3",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57672 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\3)\n"
+    },
+    {
+      "pid": 21556,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\3",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57689 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\3)\n"
+    },
+    {
+      "pid": 3572,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\4",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57702 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\4)\n"
+    },
+    {
+      "pid": 13872,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\5",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57727 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\5)\n"
+    },
+    {
+      "pid": 37372,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\5",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57754 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\5)\n"
+    },
+    {
+      "pid": 25352,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\6",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57763 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\6)\n"
+    },
+    {
+      "pid": 9260,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\7",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57772 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\7)\n"
+    },
+    {
+      "pid": 19992,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\7",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57782 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\7)\n"
+    },
+    {
+      "pid": 18388,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\8",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57793 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\8)\n"
+    },
+    {
+      "pid": 33328,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\8",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57808 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\8)\n"
+    },
+    {
+      "pid": 37060,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\9",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57823 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\9)\n"
+    },
+    {
+      "pid": 33740,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\9",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57839 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\9)\n"
+    },
+    {
+      "pid": 20420,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\10",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57855 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\10)\n"
+    },
+    {
+      "pid": 8696,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\10",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57871 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\10)\n"
+    },
+    {
+      "pid": 37172,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\11",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57885 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\11)\n"
+    },
+    {
+      "pid": 36060,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\12",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57897 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\12)\n"
+    },
+    {
+      "pid": 18132,
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\13",
+      "closed": true,
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:57905 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b06-independent-m4vM9v\\13)\n"
+    }
+  ],
+  "durationMs": 11461,
+  "summary": {
+    "pass": 11,
+    "fail": 2
+  }
+}

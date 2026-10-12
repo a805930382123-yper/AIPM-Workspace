@@ -1,0 +1,45 @@
+[dev:ui] 
+[dev:ui] > fmcg-ai-pm-workspace@0.1.0 dev:ui
+[dev:ui] > vite --host 127.0.0.1
+[dev:ui] 
+[dev:api] 
+[dev:api] > fmcg-ai-pm-workspace@0.1.0 dev:api
+[dev:api] > tsx watch server/index.ts
+[dev:api] 
+[dev:api] FMCG AI PM Workspace API: http://127.0.0.1:4317 (data: E:\AI\Work\AIPM Workspace\workspace)
+[dev:ui] 
+[dev:ui]   VITE v6.4.3  ready in 759 ms
+[dev:ui] 
+[dev:ui]   ➜  Local:   http://127.0.0.1:5173/
+[dev:api] 16:43:30 [tsx] change in ./server\index.ts Restarting...
+[dev:api] FMCG AI PM Workspace API: http://127.0.0.1:4317 (data: E:\AI\Work\AIPM Workspace\workspace)
+[dev:api] 16:45:04 [tsx] change in ./server\index.ts Restarting...
+[dev:api] FMCG AI PM Workspace API: http://127.0.0.1:4317 (data: E:\AI\Work\AIPM Workspace\workspace)
+[dev:api] 16:46:39 [tsx] change in ./services\wiki\store.ts Restarting...
+[dev:api] node:internal/modules/run_main:107
+[dev:api]     triggerUncaughtException(
+[dev:api]     ^
+[dev:api] 
+[dev:api] Error: Transform failed with 1 error:
+[dev:api] E:\AI\Work\AIPM Workspace\services\wiki\store.ts:127:20: ERROR: "await" can only be used inside an "async" function
+[dev:api]     at failureErrorWithLog (E:\AI\Work\AIPM Workspace\node_modules\esbuild\lib\main.js:1752:15)
+[dev:api]     at E:\AI\Work\AIPM Workspace\node_modules\esbuild\lib\main.js:1019:50
+[dev:api]     at responseCallbacks.<computed> (E:\AI\Work\AIPM Workspace\node_modules\esbuild\lib\main.js:886:9)
+[dev:api]     at handleIncomingPacket (E:\AI\Work\AIPM Workspace\node_modules\esbuild\lib\main.js:941:12)
+[dev:api]     at Socket.readFromStdout (E:\AI\Work\AIPM Workspace\node_modules\esbuild\lib\main.js:864:7)
+[dev:api]     at Socket.emit (node:events:508:28)
+[dev:api]     at addChunk (node:internal/streams/readable:559:12)
+[dev:api]     at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+[dev:api]     at Readable.push (node:internal/streams/readable:390:5)
+[dev:api]     at Pipe.onStreamRead (node:internal/stream_base_commons:189:23) {
+[dev:api]   name: 'TransformError'
+[dev:api] }
+[dev:api] 
+[dev:api] Node.js v25.2.1
+[dev:api] 16:46:54 [tsx] change in ./services\wiki\store.ts Rerunning...
+[dev:api] FMCG AI PM Workspace API: http://127.0.0.1:4317 (data: E:\AI\Work\AIPM Workspace\workspace)
+[dev:api] 16:47:22 [tsx] change in ./services\wiki\store.ts Restarting...
+[dev:api] FMCG AI PM Workspace API: http://127.0.0.1:4317 (data: E:\AI\Work\AIPM Workspace\workspace)
+[dev:api] 16:47:22 [tsx] change in ./server\wiki-validation.ts Restarting...
+[dev:api] FMCG AI PM Workspace API: http://127.0.0.1:4317 (data: E:\AI\Work\AIPM Workspace\workspace)
+[dev:ui] 16:49:40 [vite] (client) hmr update /app/main.tsx

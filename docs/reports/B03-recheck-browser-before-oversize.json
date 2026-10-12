@@ -1,0 +1,174 @@
+{
+  "raw": {
+    "items": [
+      {
+        "title": "B03复验-DOCX查看",
+        "sourceType": "article",
+        "sourceName": "独立浏览器复验",
+        "tags": [],
+        "assetId": "513b2853-b55b-4dcd-8c42-ed09e0c8be23",
+        "assetFileName": "zh-report.docx",
+        "assetFormat": "docx",
+        "assetByteSize": 36888,
+        "assetSha256": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+        "extractionParser": "mammoth 1.13.0",
+        "extractionNote": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。",
+        "id": "6e7c0e25-c93e-4fa5-a801-f46033b22f57",
+        "importedAt": "2026-10-05T10:51:11.305Z",
+        "status": "unprocessed",
+        "bodySha256": "93adbf94016a4df938d04237c5cdb51c52254c2f00f96c015d3e8ca754b558c1",
+        "body": "经销商库存周转动销分析报告\n\n报告编号：FMCG-B03-001\n\n一、背景\n\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n\n二、结论\n\n建议将安全库存下调 10%，并每周复核补货节奏。\n\n"
+      },
+      {
+        "title": "B03复验-MD继续导入",
+        "sourceType": "article",
+        "sourceName": "独立浏览器复验",
+        "tags": [],
+        "assetId": "53794174-f153-4634-94dd-0530c81bbd9f",
+        "assetFileName": "zh-report.md",
+        "assetFormat": "markdown",
+        "assetByteSize": 337,
+        "assetSha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+        "extractionParser": "utf-8-strict",
+        "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。",
+        "id": "913a8199-e260-4237-a8d4-79c32eb652ff",
+        "importedAt": "2026-10-05T10:50:17.38Z",
+        "status": "unprocessed",
+        "bodySha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+        "body": "  \r\n# 渠道动销分析\r\n\r\n> B03 自检样本：本行与前后空白必须原样保留。\r\n\r\n第一段：门店动销率与分销覆盖的关系。\n第二行使用单独 LF 换行。\r\n---\r\n第三段：独立分隔线之后的内容仍是正文。\r\n\r\n- 要点一：周转天数\r\n- 要点二：SKU 宽度\r\n\r\n尾随空白保留：   \r\n  \n"
+      },
+      {
+        "title": "B03复验-PDF关闭",
+        "sourceType": "article",
+        "sourceName": "独立浏览器复验",
+        "tags": [],
+        "assetId": "96ec940e-c942-4865-9c74-57686f0e4f55",
+        "assetFileName": "zh-report.pdf",
+        "assetFormat": "pdf",
+        "assetByteSize": 40990,
+        "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+        "extractionParser": "pdfjs-dist 6.4.299",
+        "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+        "id": "daadc0ce-d536-4c0e-ab15-506719dfb351",
+        "importedAt": "2026-10-05T10:49:01.639Z",
+        "status": "unprocessed",
+        "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+        "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+      },
+      {
+        "title": "B03复验-编辑多分隔标签",
+        "sourceType": "article",
+        "sourceName": "独立复验资料",
+        "tags": [
+          "渠道",
+          "库存",
+          "动销",
+          "SKU"
+        ],
+        "id": "a2ee398e-f4cf-4d05-90ea-c9da2c55f1cb",
+        "importedAt": "2026-10-05T10:44:18.717Z",
+        "status": "unprocessed",
+        "bodySha256": "d5215acf931aba39462ade9189dbafdbd7a61b4abeb3ec3aaae0db21009bec3e",
+        "body": "编辑分隔符识别复验正文"
+      },
+      {
+        "title": "B03复验-双标签重导入",
+        "sourceType": "article",
+        "sourceName": "独立复验资料",
+        "tags": [
+          "渠道",
+          "库存"
+        ],
+        "id": "d619ea5e-e461-4e20-b53b-26cce46abad9",
+        "importedAt": "2026-10-05T10:44:17.964Z",
+        "status": "unprocessed",
+        "bodySha256": "b6c1e9e30860139faf3fc9c369e303fb5ac60a2f8d1f5056b8ac889d2e4aac20",
+        "body": "重新导入，不改变原来的两个标签。"
+      },
+      {
+        "title": "B03复验-原始双标签",
+        "sourceType": "article",
+        "sourceName": "独立复验资料",
+        "tags": [
+          "渠道",
+          "库存"
+        ],
+        "id": "793e6204-0d89-46ce-a575-cb74747c0c2e",
+        "importedAt": "2026-10-05T10:43:59.815Z",
+        "status": "unprocessed",
+        "bodySha256": "de8641ad4cfe4f5fbca60314b655524f505ed2233afb491b92593d6ddeb363cc",
+        "body": "  原始标签复验正文\n保持原文。\n"
+      }
+    ]
+  },
+  "assets": {
+    "items": [
+      {
+        "id": "513b2853-b55b-4dcd-8c42-ed09e0c8be23",
+        "fileName": "zh-report.docx",
+        "format": "docx",
+        "declaredExtension": ".docx",
+        "byteSize": 36888,
+        "sha256": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+        "storedFile": "513b2853-b55b-4dcd-8c42-ed09e0c8be23.docx",
+        "createdAt": "2026-10-05T10:51:11.228Z",
+        "status": "parsed",
+        "rawId": "6e7c0e25-c93e-4fa5-a801-f46033b22f57",
+        "parser": "mammoth 1.13.0",
+        "extractionNote": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。"
+      },
+      {
+        "id": "cb5e5a08-3d4f-4b36-96a1-7b9f7db9e378",
+        "fileName": "zh-notes.txt",
+        "format": "txt",
+        "declaredExtension": ".txt",
+        "byteSize": 160,
+        "sha256": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+        "storedFile": "cb5e5a08-3d4f-4b36-96a1-7b9f7db9e378.txt",
+        "createdAt": "2026-10-05T10:50:38.954Z",
+        "status": "detached",
+        "rawId": "b94e5c23-77ad-4b71-b30e-6c6db6078a73",
+        "parser": "utf-8-strict",
+        "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。",
+        "detachedAt": "2026-10-05T10:51:38.287Z"
+      },
+      {
+        "id": "53794174-f153-4634-94dd-0530c81bbd9f",
+        "fileName": "zh-report.md",
+        "format": "markdown",
+        "declaredExtension": ".md",
+        "byteSize": 337,
+        "sha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+        "storedFile": "53794174-f153-4634-94dd-0530c81bbd9f.md",
+        "createdAt": "2026-10-05T10:50:17.372Z",
+        "status": "parsed",
+        "rawId": "913a8199-e260-4237-a8d4-79c32eb652ff",
+        "parser": "utf-8-strict",
+        "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。"
+      },
+      {
+        "id": "96ec940e-c942-4865-9c74-57686f0e4f55",
+        "fileName": "zh-report.pdf",
+        "format": "pdf",
+        "declaredExtension": ".pdf",
+        "byteSize": 40990,
+        "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+        "storedFile": "96ec940e-c942-4865-9c74-57686f0e4f55.pdf",
+        "createdAt": "2026-10-05T10:49:00.656Z",
+        "status": "parsed",
+        "rawId": "daadc0ce-d536-4c0e-ab15-506719dfb351",
+        "parser": "pdfjs-dist 6.4.299",
+        "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+      }
+    ]
+  },
+  "stats": {
+    "rawCount": 6,
+    "wikiCount": 0,
+    "thisWeekNewCount": 6,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 0,
+    "weekStartsOn": "2026-10-05"
+  }
+}

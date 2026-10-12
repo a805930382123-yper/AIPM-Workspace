@@ -1,0 +1,187 @@
+{
+  "startedAt": "2026-10-10T15:10:27.825Z",
+  "durationMs": 2516,
+  "provider": "local HTTP fake only; real quality BLOCKED",
+  "checks": [
+    {
+      "id": "S01-replacement",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-rationale",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-valid-evidence",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-escaped-json",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-extra-key",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-malformed-json",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_INVALID_JSON",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-provider-error",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "code": "LLM_PROVIDER_ERROR",
+        "noWrites": true,
+        "noSecretInResponseOrLogs": true,
+        "providerCalls": 1
+      }
+    },
+    {
+      "id": "S01-clean-retry",
+      "result": "PASS",
+      "details": {
+        "draftCreated": true,
+        "onlyDraft": true
+      }
+    },
+    {
+      "id": "S01-preserve-existing-pending",
+      "result": "PASS",
+      "details": {
+        "status": 502,
+        "pendingPreserved": true
+      }
+    },
+    {
+      "id": "S01-restart-and-retry",
+      "result": "PASS",
+      "details": {
+        "restartStable": true,
+        "cleanReplacementWorks": true,
+        "rawAndWikiUnchanged": true
+      }
+    },
+    {
+      "id": "S02-valid-byte-preservation",
+      "result": "PASS",
+      "details": {
+        "mixedNewlinesAndWhitespaceExact": true
+      }
+    },
+    {
+      "id": "S02-body-tamper",
+      "result": "PASS",
+      "details": {
+        "statuses": [
+          409,
+          409,
+          409,
+          409
+        ],
+        "providerCalls": 0,
+        "noWrites": true,
+        "restorationWorks": true
+      }
+    },
+    {
+      "id": "S02-missing-digest",
+      "result": "PASS",
+      "details": {
+        "statuses": [
+          409,
+          409,
+          409,
+          409
+        ],
+        "providerCalls": 0,
+        "noWrites": true,
+        "restorationWorks": true
+      }
+    },
+    {
+      "id": "S02-invalid-digest",
+      "result": "PASS",
+      "details": {
+        "statuses": [
+          409,
+          409,
+          409,
+          409
+        ],
+        "providerCalls": 0,
+        "noWrites": true,
+        "restorationWorks": true
+      }
+    },
+    {
+      "id": "S02-restart-corrupt-and-recover",
+      "result": "PASS",
+      "details": {
+        "startupAvailable": true,
+        "stillRejected": true,
+        "noProviderCall": true,
+        "restoredReadWorks": true
+      }
+    },
+    {
+      "id": "S02-restored-first-extraction",
+      "result": "PASS",
+      "details": {
+        "status": "completed",
+        "providerActuallyCalled": true,
+        "draftDigestCorrect": true,
+        "rawBytesUnchanged": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 16,
+    "fail": 0
+  },
+  "servicesClosed": true,
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-6zpx17"
+}

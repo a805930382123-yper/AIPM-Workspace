@@ -1,0 +1,394 @@
+{
+  "at": "2026-10-12T14:28:24.068Z",
+  "scope": "Meeting Hub M01–M05 local MVP; not whole-product or real-AI PASS",
+  "rows": [
+    {
+      "id": "MH01",
+      "requirement": "新建会议",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH02",
+      "requirement": "编辑会议",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH03",
+      "requirement": "删除会议",
+      "result": "本地PASS",
+      "evidence": "scenario S07；component C03；browser删除确认",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "删除只影响本地，不删除飞书/外部备份，不声称安全擦除"
+    },
+    {
+      "id": "MH04",
+      "requirement": "删除二次确认",
+      "result": "本地PASS",
+      "evidence": "scenario S07；component C03；browser删除确认",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "删除只影响本地，不删除飞书/外部备份，不声称安全擦除"
+    },
+    {
+      "id": "MH05",
+      "requirement": "保存录音链接",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH06",
+      "requirement": "保存纪要链接",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH07",
+      "requirement": "点击打开飞书",
+      "result": "本地能力PASS；外部权限未测",
+      "evidence": "browser HTTPS新标签属性；M02历史实际外链入口",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "只提供点击HTTPS链接，不保证飞书登录、权限或远端可用"
+    },
+    {
+      "id": "MH08",
+      "requirement": "缺少链接正常",
+      "result": "本地PASS（含历史复用）",
+      "evidence": "browser基本筛选/缺链接；M02历史多维筛选/排序；当前Meeting筛选逻辑只读复核",
+      "artifact": "M02-browser-checks.json",
+      "limits": "不是把历史全部多组合过滤倒称本轮重跑；搜索只覆盖元数据"
+    },
+    {
+      "id": "MH09",
+      "requirement": "刷新仍存在",
+      "result": "本地PASS",
+      "evidence": "scenario S04/S05；api-regression真实写故障；App AC03/AC09；deep恢复",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "部分成功可保留受限Raw；明确状态、同ID恢复"
+    },
+    {
+      "id": "MH10",
+      "requirement": "选择主类型",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH11",
+      "requirement": "管理业务标签",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH12",
+      "requirement": "多个标签",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH13",
+      "requirement": "客户/项目字段",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH14",
+      "requirement": "类型筛选",
+      "result": "本地PASS（含历史复用）",
+      "evidence": "browser基本筛选/缺链接；M02历史多维筛选/排序；当前Meeting筛选逻辑只读复核",
+      "artifact": "M02-browser-checks.json",
+      "limits": "不是把历史全部多组合过滤倒称本轮重跑；搜索只覆盖元数据"
+    },
+    {
+      "id": "MH15",
+      "requirement": "标签筛选",
+      "result": "本地PASS（含历史复用）",
+      "evidence": "browser基本筛选/缺链接；M02历史多维筛选/排序；当前Meeting筛选逻辑只读复核",
+      "artifact": "M02-browser-checks.json",
+      "limits": "不是把历史全部多组合过滤倒称本轮重跑；搜索只覆盖元数据"
+    },
+    {
+      "id": "MH16",
+      "requirement": "日期排序",
+      "result": "本地PASS（含历史复用）",
+      "evidence": "browser基本筛选/缺链接；M02历史多维筛选/排序；当前Meeting筛选逻辑只读复核",
+      "artifact": "M02-browser-checks.json",
+      "limits": "不是把历史全部多组合过滤倒称本轮重跑；搜索只覆盖元数据"
+    },
+    {
+      "id": "MH17",
+      "requirement": "搜索会议",
+      "result": "本地PASS（含历史复用）",
+      "evidence": "browser基本筛选/缺链接；M02历史多维筛选/排序；当前Meeting筛选逻辑只读复核",
+      "artifact": "M02-browser-checks.json",
+      "limits": "不是把历史全部多组合过滤倒称本轮重跑；搜索只覆盖元数据"
+    },
+    {
+      "id": "MH18",
+      "requirement": "云端模式不需文件",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH19",
+      "requirement": "Markdown 导入",
+      "result": "本地PASS",
+      "evidence": "scenario S03真实multipart/BOM/CRLF/副本/再导入；component；M03既有格式拒绝",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "仅UTF-8 .md和粘贴，不签PDF/DOCX；原件不被工作副本覆盖"
+    },
+    {
+      "id": "MH20",
+      "requirement": "粘贴纪要",
+      "result": "本地PASS",
+      "evidence": "scenario S03真实multipart/BOM/CRLF/副本/再导入；component；M03既有格式拒绝",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "仅UTF-8 .md和粘贴，不签PDF/DOCX；原件不被工作副本覆盖"
+    },
+    {
+      "id": "MH21",
+      "requirement": "阅读纪要",
+      "result": "本地PASS",
+      "evidence": "browser危险Markdown阅读；M03历史安全渲染；scenario原件精确",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "HTML不执行、图片不自动加载、仅HTTPS外链；Raw原文只读"
+    },
+    {
+      "id": "MH22",
+      "requirement": "编辑纪要",
+      "result": "本地PASS",
+      "evidence": "scenario S03真实multipart/BOM/CRLF/副本/再导入；component；M03既有格式拒绝",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "仅UTF-8 .md和粘贴，不签PDF/DOCX；原件不被工作副本覆盖"
+    },
+    {
+      "id": "MH23",
+      "requirement": "原始版本不覆盖",
+      "result": "本地PASS",
+      "evidence": "scenario S03真实multipart/BOM/CRLF/副本/再导入；component；M03既有格式拒绝",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "仅UTF-8 .md和粘贴，不签PDF/DOCX；原件不被工作副本覆盖"
+    },
+    {
+      "id": "MH24",
+      "requirement": "不支持文件报错",
+      "result": "本地PASS",
+      "evidence": "scenario S03真实multipart/BOM/CRLF/副本/再导入；component；M03既有格式拒绝",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "仅UTF-8 .md和粘贴，不签PDF/DOCX；原件不被工作副本覆盖"
+    },
+    {
+      "id": "MH25",
+      "requirement": "失败不破坏档案",
+      "result": "本地PASS",
+      "evidence": "scenario S04/S05；api-regression真实写故障；App AC03/AC09；deep恢复",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "部分成功可保留受限Raw；明确状态、同ID恢复"
+    },
+    {
+      "id": "MH26",
+      "requirement": "未分类默认敏感",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH27",
+      "requirement": "Sensitive 默认云索引",
+      "result": "本地PASS",
+      "evidence": "scenario S01；api-regression创建/字段/目录/默认策略",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "当前产品HTTP实测；Restricted仅最少元数据"
+    },
+    {
+      "id": "MH28",
+      "requirement": "Restricted 禁正文",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S02/S06；api-regression策略；http/deep受限/缺失来源拒绝",
+      "artifact": "M05-20261012-deep.json",
+      "limits": "Sensitive/Restricted Raw与所有新会议AI均禁用；不提供降级绕过/自动传输"
+    },
+    {
+      "id": "MH29",
+      "requirement": "Internal/Sensitive 本地授权",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S02/S06；api-regression策略；http/deep受限/缺失来源拒绝",
+      "artifact": "M05-20261012-deep.json",
+      "limits": "Sensitive/Restricted Raw与所有新会议AI均禁用；不提供降级绕过/自动传输"
+    },
+    {
+      "id": "MH30",
+      "requirement": "未授权不入 Raw/LLM",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S02/S06；api-regression策略；http/deep受限/缺失来源拒绝",
+      "artifact": "M05-20261012-deep.json",
+      "limits": "Sensitive/Restricted Raw与所有新会议AI均禁用；不提供降级绕过/自动传输"
+    },
+    {
+      "id": "MH31",
+      "requirement": "不自动发送外部模型",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S02/S06；api-regression策略；http/deep受限/缺失来源拒绝",
+      "artifact": "M05-20261012-deep.json",
+      "limits": "Sensitive/Restricted Raw与所有新会议AI均禁用；不提供降级绕过/自动传输"
+    },
+    {
+      "id": "MH32",
+      "requirement": "API 不绕过页面权限",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S02/S06；api-regression策略；http/deep受限/缺失来源拒绝",
+      "artifact": "M05-20261012-deep.json",
+      "limits": "Sensitive/Restricted Raw与所有新会议AI均禁用；不提供降级绕过/自动传输"
+    },
+    {
+      "id": "MH33",
+      "requirement": "放宽限制不隐式传输",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S02/S06；api-regression策略；http/deep受限/缺失来源拒绝",
+      "artifact": "M05-20261012-deep.json",
+      "limits": "Sensitive/Restricted Raw与所有新会议AI均禁用；不提供降级绕过/自动传输"
+    },
+    {
+      "id": "MH34",
+      "requirement": "日志不泄露正文",
+      "result": "本地PASS",
+      "evidence": "scenario S08；deep拒绝前无写入；browser lab roots及Provider计数",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "显式Raw增加真实Raw计数；一般会议操作不改知识/Prompt/草稿"
+    },
+    {
+      "id": "MH35",
+      "requirement": "删除不删飞书",
+      "result": "本地PASS",
+      "evidence": "scenario S07；component C03；browser删除确认",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "删除只影响本地，不删除飞书/外部备份，不声称安全擦除"
+    },
+    {
+      "id": "MH36",
+      "requirement": "旧 LLM/Wiki 正常",
+      "result": "本地兼容PASS；旧安全FAIL/真实AI BLOCKED",
+      "evidence": "旧链与B05/B06实际fake回归；App真实任务轮询AJ01；FULL2历史遗留",
+      "artifact": "M05-20261012-legacy-http.json",
+      "limits": "S-03/S-04未修；fake不代表真实Provider输出质量"
+    },
+    {
+      "id": "MH37",
+      "requirement": "旧 Prompt 正常",
+      "result": "本地兼容PASS；旧安全FAIL/真实AI BLOCKED",
+      "evidence": "旧链手动Prompt与deep正常预览/受限确认",
+      "artifact": "M05-20261012-legacy-http.json",
+      "limits": "Library无Provider可用；真实生成/优化质量未签收"
+    },
+    {
+      "id": "MH38",
+      "requirement": "不重建 Raw",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S03/S07；http21与deep11；App真实Raw定位",
+      "artifact": "M05-20261012-http.json",
+      "limits": "复用既有Raw格式；只Public/Internal明确登记；不创建会议Wiki"
+    },
+    {
+      "id": "MH39",
+      "requirement": "获准纪要可关联 Raw",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S03/S07；http21与deep11；App真实Raw定位",
+      "artifact": "M05-20261012-http.json",
+      "limits": "复用既有Raw格式；只Public/Internal明确登记；不创建会议Wiki"
+    },
+    {
+      "id": "MH40",
+      "requirement": "关联不自动建 Wiki",
+      "result": "本地PASS（按MVP收窄）",
+      "evidence": "scenario S03/S07；http21与deep11；App真实Raw定位",
+      "artifact": "M05-20261012-http.json",
+      "limits": "复用既有Raw格式；只Public/Internal明确登记；不创建会议Wiki"
+    },
+    {
+      "id": "MH41",
+      "requirement": "无关资料不入知识库/AI",
+      "result": "本地PASS",
+      "evidence": "scenario S08；deep拒绝前无写入；browser lab roots及Provider计数",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "显式Raw增加真实Raw计数；一般会议操作不改知识/Prompt/草稿"
+    },
+    {
+      "id": "MH42",
+      "requirement": "模块数据不混用",
+      "result": "本地PASS",
+      "evidence": "scenario S08；deep拒绝前无写入；browser lab roots及Provider计数",
+      "artifact": "M05-20261012-scenario.json",
+      "limits": "显式Raw增加真实Raw计数；一般会议操作不改知识/Prompt/草稿"
+    },
+    {
+      "id": "MH43",
+      "requirement": "沿用旧 UI",
+      "result": "本地PASS",
+      "evidence": "实际browser桌面/基本窄屏；App AC01/02/04/05/07/08；两轴只读",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "没有播放器/会议AI假入口；未知目标不展示其它资料"
+    },
+    {
+      "id": "MH44",
+      "requirement": "列表详情正常",
+      "result": "本地PASS",
+      "evidence": "实际browser桌面/基本窄屏；App AC01/02/04/05/07/08；两轴只读",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "没有播放器/会议AI假入口；未知目标不展示其它资料"
+    },
+    {
+      "id": "MH45",
+      "requirement": "不做假播放器",
+      "result": "本地PASS",
+      "evidence": "实际browser桌面/基本窄屏；App AC01/02/04/05/07/08；两轴只读",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "没有播放器/会议AI假入口；未知目标不展示其它资料"
+    },
+    {
+      "id": "MH46",
+      "requirement": "演示资料标注",
+      "result": "本地PASS（不新增会议样例）",
+      "evidence": "api-regression空会议目录；scenario S01；旧demo实际显式导入及isDemo保留",
+      "artifact": "M05-20261012-legacy-http.json",
+      "limits": "Meeting不自动灌入；旧演示功能需用户显式导入并标记，测试数据只在隔离目录"
+    },
+    {
+      "id": "MH47",
+      "requirement": "无假按钮/假操作",
+      "result": "本地PASS",
+      "evidence": "实际browser桌面/基本窄屏；App AC01/02/04/05/07/08；两轴只读",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "没有播放器/会议AI假入口；未知目标不展示其它资料"
+    },
+    {
+      "id": "MH48",
+      "requirement": "桌面主要操作",
+      "result": "本地PASS",
+      "evidence": "实际browser桌面/基本窄屏；App AC01/02/04/05/07/08；两轴只读",
+      "artifact": "M05-20261012-browser.json",
+      "limits": "没有播放器/会议AI假入口；未知目标不展示其它资料"
+    }
+  ],
+  "total": 48,
+  "legacySecurity": "S-03/S-04 FAIL retained",
+  "realProvider": "36 historical checks BLOCKED retained",
+  "historicalEvidence": "M02/M03 unchanged feature checks explicitly distinguished from M05 runtime"
+}

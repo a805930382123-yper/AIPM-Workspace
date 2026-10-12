@@ -1,0 +1,459 @@
+{
+  "generatedAt": "2026-10-07T06:40:15.747Z",
+  "wikiFilesSha256": "7e8a3c102ea1c71698c7ec33e0dbf52feb21db9422449245ea192818c1796893",
+  "findings": [
+    {
+      "code": "BROKEN_WIKI_LINK",
+      "objectId": "f05d731a-2f0c-4144-bc86-014c0826472b",
+      "file": "knowledge/wiki/f05d731a-2f0c-4144-bc86-014c0826472b.md",
+      "message": "Wiki 链接“不存在的页面”没有目标页面。",
+      "location": {
+        "line": 21,
+        "text": "[[不存在的页面]]"
+      }
+    },
+    {
+      "code": "CONFIDENCE_MISSING",
+      "objectId": "0abb2a32-bdbe-47c8-aa2c-42467931fba7",
+      "file": "knowledge/wiki/0abb2a32-bdbe-47c8-aa2c-42467931fba7.md",
+      "message": "Frontmatter 缺少 confidence。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "SOURCE_LEVEL_MISSING",
+      "objectId": "0e8ff15e-0061-493b-9be9-5762c333fc3c",
+      "file": "knowledge/wiki/0e8ff15e-0061-493b-9be9-5762c333fc3c.md",
+      "message": "Frontmatter 缺少 source_level。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "SOURCE_MISSING",
+      "objectId": "2f5a6113-9961-4c05-95c5-6f24e33bccf6",
+      "file": "knowledge/wiki/2f5a6113-9961-4c05-95c5-6f24e33bccf6.md",
+      "message": "一个或多个 sources 未映射到现存 Raw。",
+      "location": {
+        "line": 5,
+        "text": "sources:"
+      }
+    },
+    {
+      "code": "UNSOURCED_FACT",
+      "objectId": "2f5a6113-9961-4c05-95c5-6f24e33bccf6",
+      "file": "knowledge/wiki/2f5a6113-9961-4c05-95c5-6f24e33bccf6.md",
+      "message": "页面声明来源支持/已验证，但没有有效 Raw 来源。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "FRONTMATTER_MISSING",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "页面缺少或无法解析 YAML Frontmatter。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "KNOWLEDGE_STATUS_MISSING",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "Frontmatter 缺少 knowledge_status。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "CONFIDENCE_MISSING",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "Frontmatter 缺少 confidence。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "SOURCE_LEVEL_MISSING",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "Frontmatter 缺少 source_level。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "SOURCE_MISSING",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "sources 为空或缺失。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "KNOWLEDGE_STATUS_MISSING",
+      "objectId": "b2f896b3-c889-4c3f-b556-07cfe5e7f61e",
+      "file": "knowledge/wiki/b2f896b3-c889-4c3f-b556-07cfe5e7f61e.md",
+      "message": "Frontmatter 缺少 knowledge_status。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "UNSOURCED_FACT",
+      "objectId": "b6413a9c-6e9a-4fdc-bc85-d32f849c4add",
+      "file": "knowledge/wiki/b6413a9c-6e9a-4fdc-bc85-d32f849c4add.md",
+      "message": "“来源事实”中的该条陈述没有可在有效 Raw 中定位的证据引用。",
+      "location": {
+        "line": 22,
+        "text": "- 来源内容需业务确认（证据 ev-long-b06）"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "0abb2a32-bdbe-47c8-aa2c-42467931fba7",
+      "file": "knowledge/wiki/0abb2a32-bdbe-47c8-aa2c-42467931fba7.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "0e8ff15e-0061-493b-9be9-5762c333fc3c",
+      "file": "knowledge/wiki/0e8ff15e-0061-493b-9be9-5762c333fc3c.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "154febbb-7ab5-4612-a017-7ba54115e37d",
+      "file": "knowledge/wiki/154febbb-7ab5-4612-a017-7ba54115e37d.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "2f5a6113-9961-4c05-95c5-6f24e33bccf6",
+      "file": "knowledge/wiki/2f5a6113-9961-4c05-95c5-6f24e33bccf6.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "4e4a90e0-345f-4ca6-9471-9b4cbfbc5daf",
+      "file": "knowledge/wiki/4e4a90e0-345f-4ca6-9471-9b4cbfbc5daf.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "503bbae7-fa8f-4ee3-9608-108be46728ed",
+      "file": "knowledge/wiki/503bbae7-fa8f-4ee3-9608-108be46728ed.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "74c44c53-a317-45cb-844d-555fc512b226",
+      "file": "knowledge/wiki/74c44c53-a317-45cb-844d-555fc512b226.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "9219cebc-cfd2-4fc7-99d1-2e6e8543801e",
+      "file": "knowledge/wiki/9219cebc-cfd2-4fc7-99d1-2e6e8543801e.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "9a133e15-dfad-429c-b846-b6feea14c1c9",
+      "file": "knowledge/wiki/9a133e15-dfad-429c-b846-b6feea14c1c9.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "afd11e0d-b3ba-4c6c-aac5-a6f65ecef814",
+      "file": "knowledge/wiki/afd11e0d-b3ba-4c6c-aac5-a6f65ecef814.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "b2f896b3-c889-4c3f-b556-07cfe5e7f61e",
+      "file": "knowledge/wiki/b2f896b3-c889-4c3f-b556-07cfe5e7f61e.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "b6413a9c-6e9a-4fdc-bc85-d32f849c4add",
+      "file": "knowledge/wiki/b6413a9c-6e9a-4fdc-bc85-d32f849c4add.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "dc8f775a-5849-4598-a562-9f7efac71551",
+      "file": "knowledge/wiki/dc8f775a-5849-4598-a562-9f7efac71551.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "INDEX_MISSING",
+      "objectId": "f05d731a-2f0c-4144-bc86-014c0826472b",
+      "file": "knowledge/wiki/f05d731a-2f0c-4144-bc86-014c0826472b.md",
+      "message": "知识 Index 文件缺失或为空，页面未被收录。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "0abb2a32-bdbe-47c8-aa2c-42467931fba7",
+      "file": "knowledge/wiki/0abb2a32-bdbe-47c8-aa2c-42467931fba7.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "0e8ff15e-0061-493b-9be9-5762c333fc3c",
+      "file": "knowledge/wiki/0e8ff15e-0061-493b-9be9-5762c333fc3c.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "154febbb-7ab5-4612-a017-7ba54115e37d",
+      "file": "knowledge/wiki/154febbb-7ab5-4612-a017-7ba54115e37d.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "2f5a6113-9961-4c05-95c5-6f24e33bccf6",
+      "file": "knowledge/wiki/2f5a6113-9961-4c05-95c5-6f24e33bccf6.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "4e4a90e0-345f-4ca6-9471-9b4cbfbc5daf",
+      "file": "knowledge/wiki/4e4a90e0-345f-4ca6-9471-9b4cbfbc5daf.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "503bbae7-fa8f-4ee3-9608-108be46728ed",
+      "file": "knowledge/wiki/503bbae7-fa8f-4ee3-9608-108be46728ed.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "5e7093d0-5c1e-4bb4-86df-05ce67510358",
+      "file": "knowledge/wiki/5e7093d0-5c1e-4bb4-86df-05ce67510358.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "# 无YAML的真实页"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "74c44c53-a317-45cb-844d-555fc512b226",
+      "file": "knowledge/wiki/74c44c53-a317-45cb-844d-555fc512b226.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "9219cebc-cfd2-4fc7-99d1-2e6e8543801e",
+      "file": "knowledge/wiki/9219cebc-cfd2-4fc7-99d1-2e6e8543801e.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "9a133e15-dfad-429c-b846-b6feea14c1c9",
+      "file": "knowledge/wiki/9a133e15-dfad-429c-b846-b6feea14c1c9.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "afd11e0d-b3ba-4c6c-aac5-a6f65ecef814",
+      "file": "knowledge/wiki/afd11e0d-b3ba-4c6c-aac5-a6f65ecef814.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "b2f896b3-c889-4c3f-b556-07cfe5e7f61e",
+      "file": "knowledge/wiki/b2f896b3-c889-4c3f-b556-07cfe5e7f61e.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "b6413a9c-6e9a-4fdc-bc85-d32f849c4add",
+      "file": "knowledge/wiki/b6413a9c-6e9a-4fdc-bc85-d32f849c4add.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "ORPHAN_WIKI",
+      "objectId": "f05d731a-2f0c-4144-bc86-014c0826472b",
+      "file": "knowledge/wiki/f05d731a-2f0c-4144-bc86-014c0826472b.md",
+      "message": "非 Source 页面没有有效入链或出链。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "DUPLICATE_TITLE",
+      "objectId": "154febbb-7ab5-4612-a017-7ba54115e37d",
+      "file": "knowledge/wiki/154febbb-7ab5-4612-a017-7ba54115e37d.md",
+      "message": "标题“B06重复标题”规范化后与 1 个页面重复。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "DUPLICATE_TITLE",
+      "objectId": "9219cebc-cfd2-4fc7-99d1-2e6e8543801e",
+      "file": "knowledge/wiki/9219cebc-cfd2-4fc7-99d1-2e6e8543801e.md",
+      "message": "标题“Ｂ０６重复标题”规范化后与 1 个页面重复。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    },
+    {
+      "code": "OPEN_AUDIT",
+      "objectId": "4e4a90e0-345f-4ca6-9471-9b4cbfbc5daf",
+      "file": "knowledge/wiki/4e4a90e0-345f-4ca6-9471-9b4cbfbc5daf.md",
+      "message": "Audit 5eb69ee2-c4ad-4a1c-b078-6be2dbb6b5f4 尚未处理：反馈：口径错误，请依Raw纠正并保留其他人工文字。",
+      "location": {
+        "line": 1,
+        "text": "---"
+      }
+    }
+  ],
+  "summary": {
+    "BROKEN_WIKI_LINK": 1,
+    "ORPHAN_WIKI": 14,
+    "INDEX_MISSING": 15,
+    "FRONTMATTER_MISSING": 1,
+    "SOURCE_MISSING": 2,
+    "KNOWLEDGE_STATUS_MISSING": 2,
+    "CONFIDENCE_MISSING": 2,
+    "SOURCE_LEVEL_MISSING": 2,
+    "UNSOURCED_FACT": 2,
+    "OPEN_AUDIT": 1,
+    "DUPLICATE_TITLE": 2
+  }
+}

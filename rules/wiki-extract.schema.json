@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "fmcg-wiki-extract-b04",
+  "title": "FMCG Wiki Extract Result (B04)",
+  "description": "LLMService.wikiExtract 的结构化输出契约。未知字段、错误枚举或错误类型一律拒绝，不静默删字段或改成默认值。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["document", "suggested_pages"],
+  "properties": {
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "main_topic", "summary"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "main_topic": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 4000 }
+      }
+    },
+    "suggested_pages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title", "type", "category", "one_line_definition", "source_facts",
+          "ai_organized", "ai_inferences", "related_pages", "open_questions", "source_evidence"
+        ],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "type": { "type": "string", "enum": ["concept", "entity", "business_process", "metric"] },
+          "category": {
+            "type": "string",
+            "enum": [
+              "industry_basics", "category", "channel", "sales", "store", "distributor",
+              "supply_chain", "product", "metric", "ai_application", "company_business", "customer", "other"
+            ]
+          },
+          "one_line_definition": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "source_facts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["text", "evidenceIds"],
+              "properties": {
+                "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+                "evidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1, "maxLength": 64 } }
+              }
+            }
+          },
+          "ai_organized": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 2000 } },
+          "ai_inferences": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 2000 } },
+          "related_pages": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 300 } },
+          "open_questions": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 2000 } },
+          "source_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "rawId", "quote"],
+              "properties": {
+                "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+                "rawId": { "type": "string", "minLength": 1, "maxLength": 64 },
+                "quote": { "type": "string", "minLength": 1, "maxLength": 4000 },
+                "start": { "type": "integer", "minimum": 0 },
+                "end": { "type": "integer", "minimum": 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

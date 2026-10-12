@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-08",
+  "checks": [
+    {
+      "id": "F07-07-repeat-loaded-B",
+      "result": "PASS",
+      "state": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 70 button ✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签"
+    },
+    {
+      "id": "F07-07-B-A-repeat-A",
+      "result": "PASS",
+      "state": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 76 button ★ B07三返模板甲 业务分析 · 第 2 版 标签：甲标签、三返"
+    },
+    {
+      "id": "F07-07-inflight-repeat-two-reads",
+      "result": "PASS",
+      "old": {
+        "id": "versions-old-3",
+        "phase": "held",
+        "url": "/api/prompts/e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282/versions",
+        "method": "GET",
+        "status": 200,
+        "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-07T15:59:35.385Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:59:35.385Z\",\"updatedAt\":\"2026-10-07T15:59:35.385Z\",\"version\":1,\"source\":\"manual\"}},{\"version\":2,\"savedAt\":\"2026-10-07T15:59:35.396Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:59:35.385Z\",\"updatedAt\":\"2026-10-07T15:59:35.396Z\",\"version\":2,\"source\":\"manual\"}}]}",
+        "requestBody": ""
+      },
+      "fresh": {
+        "id": "versions-new-3",
+        "phase": "held",
+        "url": "/api/prompts/e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282/versions",
+        "method": "GET",
+        "status": 200,
+        "body": "{\"items\":[{\"version\":1,\"savedAt\":\"2026-10-07T15:59:35.385Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:59:35.385Z\",\"updatedAt\":\"2026-10-07T15:59:35.385Z\",\"version\":1,\"source\":\"manual\"}},{\"version\":2,\"savedAt\":\"2026-10-07T15:59:35.396Z\",\"changeSource\":\"manual\",\"snapshot\":{\"id\":\"e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:59:35.385Z\",\"updatedAt\":\"2026-10-07T15:59:35.396Z\",\"version\":2,\"source\":\"manual\"}}]}",
+        "requestBody": ""
+      },
+      "oldReadIgnored": true,
+      "beforeReleaseNew": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 70 button ✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签",
+      "after": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t119 heading 版本历史 · 2, Value: 3\n~\t\t\t\t\t120 text 版本历史 ·  2\n~\t\t\t\t121 text 每次有效保存都会追加完整快照\n+\t\t\t\t136 button 第 2 版 2026年10月7日 23:59 人工保存 · 12 字符\n+\t\t\t\t\t137 container\n+\t\t\t\t\t\t138 text 第  2  版\n+\t\t\t\t\t139 text 2026年10月7日 23:59\n+\t\t\t\t\t140 container\n+\t\t\t\t\t\t141 text 人工保存  ·  12  字符\n+\t\t\t\t142 button 第 1 版 2026年10月7日 23:59 人工保存 · 9 字符\n+\t\t\t\t\t143 container\n+\t\t\t\t\t\t144 text 第  1  版\n+\t\t\t\t\t145 text 2026年10月7日 23:59\n+\t\t\t\t\t146 container\n+\t\t\t\t\t\t147 text 人工保存  ·  9  字符\nThe focused UI element is 70 button ✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签"
+    },
+    {
+      "id": "F07-07-history-editor-return-readonly",
+      "result": "PASS",
+      "history": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 84-97, 100-106, 118-147\n+\t\t\t82 container\n+\t\t\t\t83 container\n+\t\t\t\t\t84 text 正在查看第  1  版（历史快照，只读）\n+\t\t\t\t85 text 保存于  2026年10月7日 23:59  ·  人工保存 。历史版本不能填写变量或复制，也不会被本次查看修改。\n+\t\t\t\t86 button 返回当前版本\n+\t\t\t\t87 heading B07模板乙, Value: 2\n+\t\t\t\t\t88 text B07模板乙\n+\t\t\t\t89 text 日常办公 手动创建 版本 第 1 版 修改来源 人工保存 保存时间 2026年10月7日 23:59 变量 无\n+\t\t\t\t90 heading 场景, Value: 3\n+\t\t\t\t\t91 text 场景\n+\t\t\t\t92 text 普通办公\n+\t\t\t\t93 heading 输入要求, Value: 3\n+\t\t\t\t\t94 text 输入要求\n+\t\t\t\t95 text 乙输入\n+\t\t\t\t96 heading 输出要求, Value: 3\n+\t\t\t\t\t97 text 输出要求\n+\t\t\t\t98 text 乙输出\n+\t\t\t\t99 text 乙标签\n+\t\t\t\t100 heading 示例, Value: 3\n+\t\t\t\t\t101 text 示例\n+\t\t\t\t102 text 乙示例\n+\t\t\t\t103 heading 正文（第 1 版原样）, Value: 3\n+\t\t\t\t\t104 text 正文（第  1  版原样）\n+\t\t\t\t105 text 模板乙无变量原文。\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59233/",
+      "editorReturned": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 85, 89, 93-98, 102-104, 107, 111, 119, 122\n~\t\t\t\t83 text 日常办公 手动创建\n~\t\t\t\t84 link Description: 导出 Markdown, Value: 127.0.0.1:59233/api/prompts/e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282/export\n+\t\t\t\t85 button 收藏\n~\t\t\t\t86 button 编辑\n~\t\t\t\t87 button 删除\n~\t\t\t\t88 heading B07模板乙, Value: 2\n+\t\t\t\t\t89 text B07模板乙\n~\t\t\t\t90 text 分类 日常办公 版本 第 2 版 创建时间 2026年10月7日 23:59 最近修改 2026年10月7日 23:59 乙标签\n~\t\t\t\t91 heading 场景, Value: 3\n~\t\t\t\t\t92 text 场景\n+\t\t\t\t93 text 普通办公\n+\t\t\t\t94 heading 输入要求, Value: 3\n+\t\t\t\t\t95 text 输入要求\n+\t\t\t\t96 text 乙输入\n+\t\t\t\t97 heading 输出要求, Value: 3\n+\t\t\t\t\t98 text 输出要求\n~\t\t\t\t99 text 乙输出\n~\t\t\t\t100 heading 相关 Wiki · 0, Value: 3\n~\t\t\t\t\t101 text 相关 Wiki ·  0\n+\t\t\t\t102 text 未关联 Wiki。\n+\t\t\t\t103 heading 示例, Value: 3\n+\t\t\t\t\t104 text 示例\n~\t\t\t\t105 text 乙示例\n~\t\t\t\t106 heading 正文模板, Value: 3\n+\t\t\t\t\t107 text 正文模板\n~\t\t\t\t108 text 原样保存 · 不会因为填写变量而改变\n~\t\t\t\t109 text 模板乙第二版无变量原文。\n~\t\t\t\t110 heading 填写变量并复制, Value: 3\n+\t\t\t\t\t111 text 填写变量并复制\n~\t\t\t\t112 text 正文没有变量，可直接复制\n~\t\t\t\t113 button 复制最终正文\n~\t\t\t\t114 heading 本次最终正文, Value: 3\n~\t\t\t\t\t115 text 本次最终正文\n~\t\t\t\t116 text 无变量，复制的是模板原文\n~\t\t\t\t117 text 模板乙第二版无变量原文。\n~\t\t\t\t118 heading 版本历史 · 2, Value: 3\n+\t\t\t\t\t119 text 版本历史 ·  2\n~\t\t\t\t120 text 每次有效保存都会追加完整快照\n~\t\t\t\t121 button 第 2 版 2026年10月7日 23:59 人工保存 · 12 字符\n+\t\t\t\t\t122 container\n+\t\t\t\t\t\t123 text 第  2  版\n+\t\t\t\t\t124 text 2026年10月7日 23:59\n+\t\t\t\t\t125 container\n+\t\t\t\t\t\t126 text 人工保存  ·  12  字符\n+\t\t\t\t127 button 第 1 版 2026年10月7日 23:59 人工保存 · 9 字符\n+\t\t\t\t\t128 container\n+\t\t\t\t\t\t129 text 第  1  版\n+\t\t\t\t\t130 text 2026年10月7日 23:59\n+\t\t\t\t\t131 container\n+\t\t\t\t\t\t132 text 人工保存  ·  9  字符\nThe focused UI element is 70 button ✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签",
+      "templateBytesUnchanged": true
+    },
+    {
+      "id": "F07-04-late-422-history-regression",
+      "result": "PASS",
+      "event": {
+        "id": "late-render-422",
+        "phase": "held",
+        "url": "/api/prompts/78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09/render",
+        "method": "POST",
+        "status": 422,
+        "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}",
+        "requestBody": "{\"baseVersion\":2,\"values\":{}}"
+      },
+      "state": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59233/"
+    },
+    {
+      "id": "F07-04-late-200-busy-history-regression",
+      "result": "PASS",
+      "old": {
+        "id": "r3-render-old-success",
+        "phase": "held",
+        "url": "/api/prompts/78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09/render",
+        "method": "POST",
+        "status": 200,
+        "body": "{\"id\":\"78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09\",\"version\":2,\"body\":\" 首行\\n请为 旧客户 制定 旧流程；重复客户 旧客户。\\n尾部 \",\"missingVariables\":[]}",
+        "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"旧客户\",\"业务流程\":\"旧流程\"}}"
+      },
+      "fresh": {
+        "id": "r3-render-new-success",
+        "phase": "held",
+        "url": "/api/prompts/78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09/render",
+        "method": "POST",
+        "status": 200,
+        "body": "{\"id\":\"78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09\",\"version\":2,\"body\":\" 首行\\n请为 新客户 制定 新流程；重复客户 新客户。\\n尾部 \",\"missingVariables\":[]}",
+        "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"新客户\",\"业务流程\":\"新流程\"}}"
+      },
+      "busyDisabled": true,
+      "busyDom": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 108, 112-114\n~\t\t\t\t85 button (disabled) 取消收藏\n~\t\t\t\t86 button (disabled) 编辑\n~\t\t\t\t87 button (disabled) 删除\n~\t\t\t\t\t107 text field (settable) 客户名称, Value: 新客户\n~\t\t\t\t\t111 text field (settable) 业务流程, Value: 新流程\n~\t\t\t\t115 button (disabled) 正在生成…\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59233/",
+      "finalDom": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t85 button 取消收藏\n~\t\t\t\t86 button 编辑\n~\t\t\t\t87 button 删除\n~\t\t\t\t115 button 生成最终正文\n~\t\t\t\t116 button 复制最终正文\n+\t\t\t\t132 heading 本次最终正文, Value: 3\n+\t\t\t\t\t133 text 本次最终正文\n+\t\t\t\t134 text 基于第 2 版的这一次结果，不会保存\n+\t\t\t\t135 text  首行\n请为 新客户 制定 新流程；重复客户 新客户。\n尾部 \nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59233/"
+    },
+    {
+      "id": "F07-07-generated-context-repeat-readonly-copy",
+      "result": "PASS",
+      "pasted": " 首行\n请为 新客户 制定 新流程；重复客户 新客户。\n尾部 ",
+      "expected": " 首行\n请为 新客户 制定 新流程；重复客户 新客户。\n尾部 ",
+      "copyDisabled": true,
+      "inputValues": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "templateBytesUnchanged": true,
+      "dom": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 120-136\n~\t\t\t\t\t107 text field (settable) 客户名称 未填写\n+\t\t\t\t\t120 text 未填写\n~\t\t\t\t\t111 text field (settable) 业务流程 未填写\n+\t\t\t\t\t121 text 未填写\n+\t\t\t\t122 container\n+\t\t\t\t\t123 text 还缺少： 客户名称、业务流程 （只填空格也算未填写）。\n~\t\t\t\t116 button (disabled) 复制最终正文\n+\t\t\t\t124 button 第 2 版 2026年10月8日 00:01 人工保存 · 48 字符\n+\t\t\t\t\t125 container\n+\t\t\t\t\t\t126 text 第  2  版\n+\t\t\t\t\t127 text 2026年10月8日 00:01\n+\t\t\t\t\t128 container\n+\t\t\t\t\t\t129 text 人工保存  ·  48  字符\n+\t\t\t\t130 button 第 1 版 2026年10月8日 00:01 人工保存 · 48 字符\n+\t\t\t\t\t131 container\n+\t\t\t\t\t\t132 text 第  1  版\n+\t\t\t\t\t133 text 2026年10月8日 00:01\n+\t\t\t\t\t134 container\n+\t\t\t\t\t\t135 text 人工保存  ·  48  字符\nThe focused UI element is 76 button ★ B07三返模板甲 业务分析 · 第 2 版 标签：甲标签、三返"
+    },
+    {
+      "id": "F07-05-three-overlapping-creates-regression",
+      "result": "PASS",
+      "events": [
+        {
+          "id": "r3-create-D",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"0c0b8510-82bc-4170-a933-3bf9cd7e144d\",\"name\":\"三返连续新建丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁的独立正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T16:08:40.461Z\",\"updatedAt\":\"2026-10-07T16:08:40.461Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"0c0b8510-82bc-4170-a933-3bf9cd7e144d\",\"name\":\"三返连续新建丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁的独立正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        },
+        {
+          "id": "r3-create-E",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"495b3144-248a-4035-a797-d95404ed0b2b\",\"name\":\"三返连续新建戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊的独立正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T16:08:41.084Z\",\"updatedAt\":\"2026-10-07T16:08:41.084Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"495b3144-248a-4035-a797-d95404ed0b2b\",\"name\":\"三返连续新建戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊的独立正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        },
+        {
+          "id": "r3-create-F",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"bc18b058-b5d6-45ca-8ce0-d91e493fe7ee\",\"name\":\"三返连续新建己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己的独立正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T16:08:41.777Z\",\"updatedAt\":\"2026-10-07T16:08:41.777Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"bc18b058-b5d6-45ca-8ce0-d91e493fe7ee\",\"name\":\"三返连续新建己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己的独立正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        }
+      ],
+      "beforeLateResponse": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 82-122\n~\t\t\t40 text 六个默认分类，点击筛选 5  条\n~\t\t\t41 button 全部 5\n~\t\t\t\t43 text 5\n~\t\t\t44 button 行业学习 3, Help: 学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\n~\t\t\t\t46 text 3\n~\t\t\t69 text 5  条\n+\t\t\t135 button ✳ 三返连续新建己 行业学习 · 第 1 版 手动创建\n+\t\t\t\t136 text ✳\n+\t\t\t\t137 text 三返连续新建己\n+\t\t\t\t138 container\n+\t\t\t\t\t139 text 行业学习  · 第  1  版\n+\t\t\t\t140 text 手动创建\n+\t\t\t141 container\n+\t\t\t\t142 text 行业学习 手动创建\n+\t\t\t\t143 link Description: 导出 Markdown, Value: 127.0.0.1:59233/api/prompts/bc18b058-b5d6-45ca-8ce0-d91e493fe7ee/export\n+\t\t\t\t144 button 收藏\n+\t\t\t\t145 button 编辑\n+\t\t\t\t146 button 删除\n+\t\t\t\t147 heading 三返连续新建己, Value: 2\n+\t\t\t\t\t148 text 三返连续新建己\n+\t\t\t\t149 text 分类 行业学习 版本 第 1 版 创建时间 2026年10月8日 00:08 最近修改 2026年10月8日 00:08\n+\t\t\t\t150 heading 相关 Wiki · 0, Value: 3\n+\t\t\t\t\t151 text 相关 Wiki ·  0\n+\t\t\t\t152 text 未关联 Wiki。\n+\t\t\t\t153 heading 正文模板, Value: 3\n+\t\t\t\t\t154 text 正文模板\n+\t\t\t\t155 text 原样保存 · 不会因为填写变量而改变\n+\t\t\t\t156 text 己的独立正文\n+\t\t\t\t157 heading 填写变量并复制, Value: 3\n+\t\t\t\t\t158 text 填写变量并复制\n+\t\t\t\t159 text 正文没有变量，可直接复制\n+\t\t\t\t160 button 复制最终正文\n+\t\t\t\t161 heading 本次最终正文, Value: 3\n+\t\t\t\t\t162 text 本次最终正文\n+\t\t\t\t163 text 无变量，复制的是模板原文\n+\t\t\t\t164 text 己的独立正文\n+\t\t\t\t165 heading 版本历史 · 1, Value: 3\n+\t\t\t\t\t166 text 版本历史 ·  1\n+\t\t\t\t167 text 每次有效保存都会追加完整快照\n+\t\t\t\t168 button 第 1 版 2026年10月8日 00:08 人工保存 · 6 字符\n+\t\t\t\t\t169 container\n+\t\t\t\t\t\t170 text 第  1  版\n+\t\t\t\t\t171 text 2026年10月8日 00:08\n+\t\t\t\t\t172 container\n+\t\t\t\t\t\t173 text 人工保存  ·  6  字符\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59233/",
+      "afterLateResponse": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:59233/"
+    },
+    {
+      "id": "F07-07-refresh-restart-repeat-A-B",
+      "result": "PASS",
+      "bDom": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t102 text 日常办公 手动创建\n~\t\t\t\t103 link Description: 导出 Markdown, Value: 127.0.0.1:59233/api/prompts/e7cbf5b8-cc2f-4bbc-a48c-4d389ae24282/export\n~\t\t\t\t107 heading B07模板乙, Value: 2\n~\t\t\t\t\t108 text B07模板乙\n~\t\t\t\t109 text 分类 日常办公 版本 第 2 版 创建时间 2026年10月7日 23:59 最近修改 2026年10月7日 23:59 乙标签\n+\t\t\t\t128 heading 场景, Value: 3\n+\t\t\t\t\t129 text 场景\n+\t\t\t\t130 text 普通办公\n+\t\t\t\t131 heading 输入要求, Value: 3\n+\t\t\t\t\t132 text 输入要求\n+\t\t\t\t133 text 乙输入\n+\t\t\t\t134 heading 输出要求, Value: 3\n+\t\t\t\t\t135 text 输出要求\n+\t\t\t\t136 text 乙输出\n+\t\t\t\t137 heading 示例, Value: 3\n+\t\t\t\t\t138 text 示例\n+\t\t\t\t139 text 乙示例\n~\t\t\t\t116 text 模板乙第二版无变量原文。\n~\t\t\t\t124 text 模板乙第二版无变量原文。\n~\t\t\t\t125 heading 版本历史 · 2, Value: 3\n~\t\t\t\t\t126 text 版本历史 ·  2\n+\t\t\t\t140 button 第 2 版 2026年10月7日 23:59 人工保存 · 12 字符\n+\t\t\t\t\t141 container\n+\t\t\t\t\t\t142 text 第  2  版\n+\t\t\t\t\t143 text 2026年10月7日 23:59\n+\t\t\t\t\t144 container\n+\t\t\t\t\t\t145 text 人工保存  ·  12  字符\n+\t\t\t\t146 button 第 1 版 2026年10月7日 23:59 人工保存 · 9 字符\n+\t\t\t\t\t147 container\n+\t\t\t\t\t\t148 text 第  1  版\n+\t\t\t\t\t149 text 2026年10月7日 23:59\n+\t\t\t\t\t150 container\n+\t\t\t\t\t\t151 text 人工保存  ·  9  字符\nThe focused UI element is 95 button ✳ B07模板乙 日常办公 · 第 2 版 标签：乙标签",
+      "aDom": "Browser tab: 5, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:59233/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 112, 121-124, 134-136, 139-151\n~\t\t\t\t102 text 业务分析 手动创建 已收藏\n~\t\t\t\t103 link Description: 导出 Markdown, Value: 127.0.0.1:59233/api/prompts/78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09/export\n~\t\t\t\t104 button 取消收藏\n~\t\t\t\t107 heading B07三返模板甲, Value: 2\n~\t\t\t\t\t108 text B07三返模板甲\n~\t\t\t\t109 text 分类 业务分析 版本 第 2 版 创建时间 2026年10月8日 00:01 最近修改 2026年10月8日 00:01 甲标签 三返\n~\t\t\t\t130 text 三返甲第二版场景\n~\t\t\t\t110 heading 相关 Wiki · 1, Value: 3\n~\t\t\t\t\t111 text 相关 Wiki ·  1\n+\t\t\t\t131 text B07浏览器关联知识\n+\t\t\t\t132 button 打开 Wiki ›\n~\t\t\t\t116 text  首行\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\n尾部 \n~\t\t\t\t119 text 2 个变量\n+\t\t\t\t133 container\n+\t\t\t\t\t134 text 客户名称\n+\t\t\t\t\t135 text field (settable) 客户名称 未填写\n+\t\t\t\t\t136 text 未填写\n+\t\t\t\t137 container\n+\t\t\t\t\t138 text 业务流程\n+\t\t\t\t\t139 text field (settable) 业务流程 未填写\n+\t\t\t\t\t140 text 未填写\n+\t\t\t\t141 container\n+\t\t\t\t\t142 text 还缺少： 客户名称、业务流程 （只填空格也算未填写）。\n+\t\t\t\t143 button 生成最终正文\n~\t\t\t\t120 button (disabled) 复制最终正文\n+\t\t\t\t144 button 第 2 版 2026年10月8日 00:01 人工保存 · 48 字符\n+\t\t\t\t\t145 container\n+\t\t\t\t\t\t146 text 第  2  版\n+\t\t\t\t\t147 text 2026年10月8日 00:01\n+\t\t\t\t\t148 container\n+\t\t\t\t\t\t149 text 人工保存  ·  48  字符\n+\t\t\t\t150 button 第 1 版 2026年10月8日 00:01 人工保存 · 48 字符\n+\t\t\t\t\t151 container\n+\t\t\t\t\t\t152 text 第  1  版\n+\t\t\t\t\t153 text 2026年10月8日 00:01\n+\t\t\t\t\t154 container\n+\t\t\t\t\t\t155 text 人工保存  ·  48  字符\nThe focused UI element is 89 button ★ B07三返模板甲 业务分析 · 第 2 版 标签：甲标签、三返",
+      "historyCount": 2
+    }
+  ],
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-7uTEu3",
+  "aId": "78f8a6f9-aa07-4e40-a7e8-65ab0fca9f09",
+  "notes": [
+    "前两次在首个相同URL响应被持有时等待第二个HTTP事件，3秒/12秒均未到达；日志显示首响应释放后第二请求才到达。第三次先释放旧响应，再扣住新读取：实际完成可裁决的先旧后新顺序。旧事件全部保留，不计产品FAIL。"
+  ],
+  "created": [
+    {
+      "id": "0c0b8510-82bc-4170-a933-3bf9cd7e144d",
+      "requestId": "0c0b8510-82bc-4170-a933-3bf9cd7e144d",
+      "name": "三返连续新建丁",
+      "status": 201
+    },
+    {
+      "id": "495b3144-248a-4035-a797-d95404ed0b2b",
+      "requestId": "495b3144-248a-4035-a797-d95404ed0b2b",
+      "name": "三返连续新建戊",
+      "status": 201
+    },
+    {
+      "id": "bc18b058-b5d6-45ca-8ce0-d91e493fe7ee",
+      "requestId": "bc18b058-b5d6-45ca-8ce0-d91e493fe7ee",
+      "name": "三返连续新建己",
+      "status": 201
+    }
+  ]
+}

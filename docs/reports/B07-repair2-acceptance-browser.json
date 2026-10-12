@@ -1,0 +1,540 @@
+{
+  "date": "2026-10-07",
+  "checks": [
+    {
+      "id": "UI-create-edit",
+      "result": "PASS"
+    },
+    {
+      "id": "F07-04-history-late-422",
+      "result": "PASS",
+      "event": {
+        "id": "history-render-422",
+        "phase": "held",
+        "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+        "method": "POST",
+        "status": 422,
+        "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}",
+        "requestBody": "{\"baseVersion\":2,\"values\":{}}"
+      },
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-04-return-no-stale-error",
+      "result": "PASS"
+    },
+    {
+      "id": "F07-04-success-history-return-busy",
+      "result": "PASS",
+      "event": {
+        "id": "history-render-200-old",
+        "phase": "held",
+        "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+        "method": "POST",
+        "status": 200,
+        "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 旧客户 制定 旧流程；重复客户 旧客户。\\n尾部 \",\"missingVariables\":[]}",
+        "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"旧客户\",\"业务流程\":\"旧流程\"}}"
+      },
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-04-new-context-render",
+      "result": "PASS",
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t85 button 取消收藏\n~\t\t\t\t86 button 编辑\n~\t\t\t\t87 button 删除\n~\t\t\t\t124 button 生成最终正文\n~\t\t\t\t125 button 复制最终正文\n+\t\t\t\t141 heading 本次最终正文, Value: 3\n+\t\t\t\t\t142 text 本次最终正文\n+\t\t\t\t143 text 基于第 2 版的这一次结果，不会保存\n+\t\t\t\t144 text  首行\n请为 新客户 制定 新流程；重复客户 新客户。\n尾部 \nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-02-real-copy-paste-regression",
+      "result": "INVALID_EXPECTATION",
+      "oldCopyDisabled": true,
+      "literalCopied": " 首行\n请为 华东 $& $1 {{业务流程}} 制定 铺货回访；重复客户 华东 $& $1 {{业务流程}}。\n尾部 ",
+      "copied": " 首行\n请为 华南最新客户 制定 铺货回访；重复客户 华南最新客户。\n尾部 ",
+      "pasted": " 首行\n请为 华南最新客户 制定 铺货回访；重复客户 华南最新客户。\n尾部 ",
+      "templateUnchanged": true,
+      "note": "验收脚本误把单行 input.fill 的换行当成实际输入；浏览器单行输入已去掉换行。保留原记录，改用可见实物值重做逐字符断言，不计产品 FAIL。"
+    },
+    {
+      "id": "F07-02-real-copy-paste-regression-valid",
+      "result": "PASS",
+      "literalCopied": " 首行\n请为 华东 $& $1 {{业务流程}} 制定 铺货 回访；重复客户 华东 $& $1 {{业务流程}}。\n尾部 ",
+      "copied": " 首行\n请为 华南最新客户 制定 铺货 回访；重复客户 华南最新客户。\n尾部 ",
+      "pasted": " 首行\n请为 华南最新客户 制定 铺货 回访；重复客户 华南最新客户。\n尾部 ",
+      "oldCopyDisabled": true,
+      "templateUnchanged": true
+    },
+    {
+      "id": "F07-04-render-new-form-422",
+      "result": "PASS",
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t89 text field (settable) 名称 *, Value: B07二返并发丁\n~\t\t\t\t108 text entry area (settable) 正文 * 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。, Value: 丁正文\nThe focused UI element is 108 text entry area (settable) 正文 * 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。, Value: 丁正文",
+      "event": {
+        "id": "render-new-form-422",
+        "phase": "held",
+        "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+        "method": "POST",
+        "status": 422,
+        "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\"]}}}",
+        "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"\",\"业务流程\":\"铺货 回访\"}}"
+      }
+    },
+    {
+      "id": "F07-05-three-overlapping-forms",
+      "result": "PASS",
+      "responses": [
+        {
+          "id": "create-D",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:45.968Z\",\"updatedAt\":\"2026-10-07T15:17:45.968Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        },
+        {
+          "id": "create-E",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:46.638Z\",\"updatedAt\":\"2026-10-07T15:17:46.638Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        },
+        {
+          "id": "create-F",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:01.265Z\",\"updatedAt\":\"2026-10-07T15:18:01.265Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        }
+      ],
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n+\t\t\t\t\t169 container\n+\t\t\t\t\t\t170 text 第  1  版\n+\t\t\t\t\t171 text 2026年10月7日 23:18\n+\t\t\t\t\t172 container\n+\t\t\t\t\t\t173 text 人工保存  ·  3  字符\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-05-real-failure-stable-retry",
+      "result": "PASS",
+      "failed": {
+        "id": "retry-failed",
+        "phase": "held",
+        "url": "/api/prompts",
+        "method": "POST",
+        "status": 500,
+        "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+        "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+      },
+      "retried": {
+        "id": "retry-success",
+        "phase": "held",
+        "url": "/api/prompts",
+        "method": "POST",
+        "status": 201,
+        "body": "{\"prompt\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:48.155Z\",\"updatedAt\":\"2026-10-07T15:18:48.155Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+        "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+      },
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 182-183\n~\t\t\t40 text 六个默认分类，点击筛选 6  条\n~\t\t\t41 button 全部 6\n~\t\t\t\t43 text 6\n~\t\t\t44 button 行业学习 4, Help: 学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\n~\t\t\t\t46 text 4\n~\t\t\t69 text 6  条\n+\t\t\t141 button ✳ B07二返真实失败重试 行业学习 · 第 1 版 手动创建\n+\t\t\t\t142 text ✳\n+\t\t\t\t143 text B07二返真实失败重试\n+\t\t\t\t144 container\n+\t\t\t\t\t145 text 行业学习  · 第  1  版\n+\t\t\t\t146 text 手动创建\n+\t\t\t147 container\n+\t\t\t\t148 text 行业学习 手动创建\n+\t\t\t\t149 link Description: 导出 Markdown, Value: 127.0.0.1:49389/api/prompts/d03338d1-7fbb-4b60-8c64-fcef44c43628/export\n+\t\t\t\t150 button 收藏\n+\t\t\t\t151 button 编辑\n+\t\t\t\t152 button 删除\n+\t\t\t\t153 heading B07二返真实失败重试, Value: 2\n+\t\t\t\t\t154 text B07二返真实失败重试\n+\t\t\t\t155 text 分类 行业学习 版本 第 1 版 创建时间 2026年10月7日 23:18 最近修改 2026年10月7日 23:18\n+\t\t\t\t156 heading 相关 Wiki · 0, Value: 3\n+\t\t\t\t\t157 text 相关 Wiki ·  0\n+\t\t\t\t158 text 未关联 Wiki。\n+\t\t\t\t159 heading 正文模板, Value: 3\n+\t\t\t\t\t160 text 正文模板\n+\t\t\t\t161 text 原样保存 · 不会因为填写变量而改变\n+\t\t\t\t162 text 失败重试原文\n+\t\t\t\t163 heading 填写变量并复制, Value: 3\n+\t\t\t\t\t164 text 填写变量并复制\n+\t\t\t\t165 text 正文没有变量，可直接复制\n+\t\t\t\t166 button 复制最终正文\n+\t\t\t\t167 heading 本次最终正文, Value: 3\n+\t\t\t\t\t168 text 本次最终正文\n+\t\t\t\t169 text 无变量，复制的是模板原文\n+\t\t\t\t170 text 失败重试原文\n+\t\t\t\t171 heading 版本历史 · 1, Value: 3\n+\t\t\t\t\t172 text 版本历史 ·  1\n+\t\t\t\t173 text 每次有效保存都会追加完整快照\n+\t\t\t\t174 button 第 1 版 2026年10月7日 23:18 人工保存 · 6 字符\n+\t\t\t\t\t175 container\n+\t\t\t\t\t\t176 text 第  1  版\n+\t\t\t\t\t177 text 2026年10月7日 23:18\n+\t\t\t\t\t178 container\n+\t\t\t\t\t\t179 text 人工保存  ·  6  字符\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-05-late-failure-overlap-identity",
+      "result": "PASS",
+      "responses": [
+        {
+          "id": "create-G-failure",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 500,
+          "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+          "requestBody": "{\"requestId\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"name\":\"B07二返迟到失败庚\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"庚不落盘\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        },
+        {
+          "id": "create-H",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:36.872Z\",\"updatedAt\":\"2026-10-07T15:19:36.872Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        },
+        {
+          "id": "create-I",
+          "phase": "held",
+          "url": "/api/prompts",
+          "method": "POST",
+          "status": 201,
+          "body": "{\"prompt\":{\"id\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:37.666Z\",\"updatedAt\":\"2026-10-07T15:19:37.666Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+          "requestBody": "{\"requestId\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+        }
+      ],
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t40 text 六个默认分类，点击筛选 8  条\n~\t\t\t41 button 全部 8\n~\t\t\t\t43 text 8\n~\t\t\t44 button 行业学习 6, Help: 学习快消行业的基础概念与结构，例如行业术语解释、渠道体系梳理、品类基础知识、供应链与门店运营概念。\n~\t\t\t\t46 text 6\n~\t\t\t69 text 8  条\n+\t\t\t147 button ✳ B07二返并发壬 行业学习 · 第 1 版 手动创建\n+\t\t\t\t148 text ✳\n+\t\t\t\t149 text B07二返并发壬\n+\t\t\t\t150 container\n+\t\t\t\t\t151 text 行业学习  · 第  1  版\n+\t\t\t\t152 text 手动创建\n+\t\t\t153 button ✳ B07二返并发辛 行业学习 · 第 1 版 手动创建\n+\t\t\t\t154 text ✳\n+\t\t\t\t155 text B07二返并发辛\n+\t\t\t\t156 container\n+\t\t\t\t\t157 text 行业学习  · 第  1  版\n+\t\t\t\t158 text 手动创建\n+\t\t\t159 container\n+\t\t\t\t160 text 行业学习 手动创建\n+\t\t\t\t161 link Description: 导出 Markdown, Value: 127.0.0.1:49389/api/prompts/8d5658a0-cc4a-4510-a749-7ce2fedbbac6/export\n+\t\t\t\t162 button 收藏\n+\t\t\t\t163 button 编辑\n+\t\t\t\t164 button 删除\n+\t\t\t\t165 heading B07二返并发壬, Value: 2\n+\t\t\t\t\t166 text B07二返并发壬\n+\t\t\t\t167 text 分类 行业学习 版本 第 1 版 创建时间 2026年10月7日 23:19 最近修改 2026年10月7日 23:19\n+\t\t\t\t168 heading 相关 Wiki · 0, Value: 3\n+\t\t\t\t\t169 text 相关 Wiki ·  0\n+\t\t\t\t170 text 未关联 Wiki。\n+\t\t\t\t171 heading 正文模板, Value: 3\n+\t\t\t\t\t172 text 正文模板\n+\t\t\t\t173 text 原样保存 · 不会因为填写变量而改变\n+\t\t\t\t174 text 壬正文\n+\t\t\t\t175 heading 填写变量并复制, Value: 3\n+\t\t\t\t\t176 text 填写变量并复制\n+\t\t\t\t177 text 正文没有变量，可直接复制\n+\t\t\t\t178 button 复制最终正文\n+\t\t\t\t179 heading 本次最终正文, Value: 3\n+\t\t\t\t\t180 text 本次最终正文\n+\t\t\t\t181 text 无变量，复制的是模板原文\n+\t\t\t\t182 text 壬正文\n+\t\t\t\t183 heading 版本历史 · 1, Value: 3\n+\t\t\t\t\t184 text 版本历史 ·  1\n+\t\t\t\t185 text 每次有效保存都会追加完整快照\n+\t\t\t\t186 button 第 1 版 2026年10月7日 23:19 人工保存 · 3 字符\n+\t\t\t\t\t187 container\n+\t\t\t\t\t\t188 text 第  1  版\n+\t\t\t\t\t189 text 2026年10月7日 23:19\n+\t\t\t\t\t190 container\n+\t\t\t\t\t\t191 text 人工保存  ·  3  字符\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-05-late-real-409-new-form",
+      "result": "PASS",
+      "event": {
+        "id": "update-conflict",
+        "phase": "held",
+        "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+        "method": "PUT",
+        "status": 409,
+        "body": "{\"error\":{\"code\":\"VERSION_CONFLICT\",\"message\":\"这条 Prompt 已经被保存为第 3 版，请刷新后重新编辑；你刚才的输入没有被覆盖。\",\"details\":{\"currentVersion\":3}}}",
+        "requestBody": "{\"name\":\"B07二返模板甲\",\"category\":\"business_analysis\",\"scenario\":\"本窗口未保存输入\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"978cb51a-3845-4a4c-a877-778b4f944528\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"二返\"],\"favorite\":true,\"baseVersion\":2}"
+      },
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t166 text field (settable) 名称 *, Value: 409期间新表单输入\n~\t\t\t\t185 text entry area (settable) 正文 * 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。, Value: 新表单人工原文\nThe focused UI element is 185 text entry area (settable) 正文 * 正文原样保存（含前后空白与换行）；识别到的变量：暂无。上限 100,000 字符。, Value: 新表单人工原文"
+    },
+    {
+      "id": "F07-04-history-late-200-only",
+      "result": "PASS",
+      "event": {
+        "id": "history-only-success",
+        "phase": "held",
+        "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+        "method": "POST",
+        "status": 200,
+        "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":3,\"body\":\" 首行\\n请为 迟到的旧值 制定 旧结果；重复客户 迟到的旧值。\\n尾部 \",\"missingVariables\":[]}",
+        "requestBody": "{\"baseVersion\":3,\"values\":{\"客户名称\":\"迟到的旧值\",\"业务流程\":\"旧结果\"}}"
+      },
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 0 AXWebArea 快消 AI 产品经理工作台, URL: 127.0.0.1:49389/"
+    },
+    {
+      "id": "F07-06-old-search-regression",
+      "result": "PASS",
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 64 text field (settable) Description: 搜索 Prompt, Value: 二返模板甲"
+    },
+    {
+      "id": "UI-restart-persistence",
+      "result": "FAIL",
+      "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 166-183\n~\t\t\t\t163 heading 版本历史 · 0, Value: 3\n~\t\t\t\t\t164 text 版本历史 ·  0\n~\t\t\t\t165 text 每次有效保存都会追加完整快照 正在读取版本…\nThe focused UI element is 71 button ★ B07二返模板甲 业务分析 · 第 3 版 标签：甲标签、二返"
+    },
+    {
+      "id": "F07-07-reselect-current-loses-history",
+      "result": "FAIL",
+      "before": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 169-182\n~\t\t\t\t120 text 业务分析 手动创建 已收藏\n~\t\t\t\t121 link Description: 导出 Markdown, Value: 127.0.0.1:49389/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/export\n~\t\t\t\t122 button 取消收藏\n~\t\t\t\t125 heading B07二返模板甲, Value: 2\n~\t\t\t\t\t126 text B07二返模板甲\n~\t\t\t\t127 text 分类 业务分析 版本 第 3 版 创建时间 2026年10月7日 23:15 最近修改 2026年10月7日 23:20 甲标签 二返\n~\t\t\t\t130 text 另一窗口已保存的第三版\n~\t\t\t\t133 text 甲输入\n~\t\t\t\t136 text 甲输出\n~\t\t\t\t137 heading 相关 Wiki · 1, Value: 3\n~\t\t\t\t\t138 text 相关 Wiki ·  1\n~\t\t\t\t166 text B07浏览器关联知识\n+\t\t\t\t167 button 打开 Wiki ›\n~\t\t\t\t143 text 甲示例\n~\t\t\t\t147 text  首行\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\n尾部 \n~\t\t\t\t150 text 2 个变量\n+\t\t\t\t168 container\n+\t\t\t\t\t169 text 客户名称\n+\t\t\t\t\t170 text field (settable) 客户名称 未填写\n+\t\t\t\t\t171 text 未填写\n+\t\t\t\t172 container\n+\t\t\t\t\t173 text 业务流程\n+\t\t\t\t\t174 text field (settable) 业务流程 未填写\n+\t\t\t\t\t175 text 未填写\n+\t\t\t\t176 container\n+\t\t\t\t\t177 text 还缺少： 客户名称、业务流程 （只填空格也算未填写）。\n+\t\t\t\t178 button 生成最终正文\n~\t\t\t\t162 button (disabled) 复制最终正文\n~\t\t\t\t163 heading 版本历史 · 3, Value: 3\n~\t\t\t\t\t164 text 版本历史 · \n+\t\t\t\t179 button 第 3 版 2026年10月7日 23:20 人工保存 · 48 字符\n+\t\t\t\t\t180 container\n+\t\t\t\t\t\t181 text 第  3  版\n+\t\t\t\t\t182 text 2026年10月7日 23:20\n+\t\t\t\t\t183 container\n+\t\t\t\t\t\t184 text 人工保存  ·  48  字符\n+\t\t\t\t185 button 第 2 版 2026年10月7日 23:15 人工保存 · 48 字符\n+\t\t\t\t\t186 container\n+\t\t\t\t\t\t187 text 第  2  版\n+\t\t\t\t\t188 text 2026年10月7日 23:15\n+\t\t\t\t\t189 container\n+\t\t\t\t\t\t190 text 人工保存  ·  48  字符\n+\t\t\t\t191 button 第 1 版 2026年10月7日 23:15 人工保存 · 48 字符\n+\t\t\t\t\t192 container\n+\t\t\t\t\t\t193 text 第  1  版\n+\t\t\t\t\t194 text 2026年10月7日 23:15\n+\t\t\t\t\t195 container\n+\t\t\t\t\t\t196 text 人工保存  ·  48  字符\nThe focused UI element is 71 button ★ B07二返模板甲 业务分析 · 第 3 版 标签：甲标签、二返",
+      "after": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 179-196\n~\t\t\t\t163 heading 版本历史 · 0, Value: 3\n~\t\t\t\t\t164 text 版本历史 ·  0\n~\t\t\t\t165 text 每次有效保存都会追加完整快照 正在读取版本…\nThe focused UI element is 71 button ★ B07二返模板甲 业务分析 · 第 3 版 标签：甲标签、二返",
+      "note": "先乙→甲正常读取三版，再点已选中的甲，清空版本列表但 effect 不重新执行。此前等待4秒仍无历史按钮。",
+      "confirmedLater": {
+        "historyButtons": 0,
+        "state": "Browser tab: 3, Title: \"快消 AI 产品经理工作台\", URL: \"http://127.0.0.1:49389/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 71 button ★ B07二返模板甲 业务分析 · 第 3 版 标签：甲标签、二返"
+      }
+    }
+  ],
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-sqld8o",
+  "aId": "a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+  "created": [
+    {
+      "requestId": "c70d20a5-c57d-415e-8eef-10f4cb87e7fb",
+      "id": "c70d20a5-c57d-415e-8eef-10f4cb87e7fb",
+      "name": "B07二返并发丁"
+    },
+    {
+      "requestId": "a35795d0-e3b8-4bcf-9695-d55e7f088475",
+      "id": "a35795d0-e3b8-4bcf-9695-d55e7f088475",
+      "name": "B07二返并发戊"
+    },
+    {
+      "requestId": "4f7ffdd2-fcc9-4574-b50e-b6f4a86242df",
+      "id": "4f7ffdd2-fcc9-4574-b50e-b6f4a86242df",
+      "name": "B07二返并发己"
+    }
+  ],
+  "retryId": "d03338d1-7fbb-4b60-8c64-fcef44c43628",
+  "moreCreated": [
+    {
+      "id": "3037fa9d-04bf-44f5-b0bc-919eb463217c",
+      "requestId": "3037fa9d-04bf-44f5-b0bc-919eb463217c",
+      "name": "B07二返并发辛"
+    },
+    {
+      "id": "8d5658a0-cc4a-4510-a749-7ce2fedbbac6",
+      "requestId": "8d5658a0-cc4a-4510-a749-7ce2fedbbac6",
+      "name": "B07二返并发壬"
+    }
+  ],
+  "failedId": "dfc55f93-b1e2-4fb2-84b8-e892accc1ea1",
+  "completed": true,
+  "summary": {
+    "batch": "FAIL",
+    "closed": [
+      "F07-01",
+      "F07-02",
+      "F07-03",
+      "F07-04",
+      "F07-05",
+      "F07-06"
+    ],
+    "open": [
+      "F07-07"
+    ],
+    "note": "首次刷新检查失败与当前重复选择复现为同一 F07-07；INVALID_EXPECTATION 仅为验收脚本错误，不计产品结果。"
+  },
+  "events": [
+    {
+      "id": "history-render-422",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{}}"
+    },
+    {
+      "id": "history-render-422",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{}}"
+    },
+    {
+      "id": "history-render-200-old",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 旧客户 制定 旧流程；重复客户 旧客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"旧客户\",\"业务流程\":\"旧流程\"}}"
+    },
+    {
+      "id": "history-render-new",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 新客户 制定 新流程；重复客户 新客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"新客户\",\"业务流程\":\"新流程\"}}"
+    },
+    {
+      "id": "history-render-200-old",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 旧客户 制定 旧流程；重复客户 旧客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"旧客户\",\"业务流程\":\"旧流程\"}}"
+    },
+    {
+      "id": "history-render-new",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 新客户 制定 新流程；重复客户 新客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"新客户\",\"业务流程\":\"新流程\"}}"
+    },
+    {
+      "id": "render-new-form-422",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"\",\"业务流程\":\"铺货 回访\"}}"
+    },
+    {
+      "id": "render-new-form-422",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"\",\"业务流程\":\"铺货 回访\"}}"
+    },
+    {
+      "id": "create-D",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:45.968Z\",\"updatedAt\":\"2026-10-07T15:17:45.968Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-E",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:46.638Z\",\"updatedAt\":\"2026-10-07T15:17:46.638Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-D",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:45.968Z\",\"updatedAt\":\"2026-10-07T15:17:45.968Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-F",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:01.265Z\",\"updatedAt\":\"2026-10-07T15:18:01.265Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-F",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:01.265Z\",\"updatedAt\":\"2026-10-07T15:18:01.265Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-E",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:46.638Z\",\"updatedAt\":\"2026-10-07T15:17:46.638Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-failed",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-failed",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-success",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:48.155Z\",\"updatedAt\":\"2026-10-07T15:18:48.155Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-success",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:48.155Z\",\"updatedAt\":\"2026-10-07T15:18:48.155Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-G-failure",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"name\":\"B07二返迟到失败庚\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"庚不落盘\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-H",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:36.872Z\",\"updatedAt\":\"2026-10-07T15:19:36.872Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-G-failure",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"name\":\"B07二返迟到失败庚\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"庚不落盘\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-I",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:37.666Z\",\"updatedAt\":\"2026-10-07T15:19:37.666Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-I",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:37.666Z\",\"updatedAt\":\"2026-10-07T15:19:37.666Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-H",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:36.872Z\",\"updatedAt\":\"2026-10-07T15:19:36.872Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "update-conflict",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+      "method": "PUT",
+      "status": 409,
+      "body": "{\"error\":{\"code\":\"VERSION_CONFLICT\",\"message\":\"这条 Prompt 已经被保存为第 3 版，请刷新后重新编辑；你刚才的输入没有被覆盖。\",\"details\":{\"currentVersion\":3}}}",
+      "requestBody": "{\"name\":\"B07二返模板甲\",\"category\":\"business_analysis\",\"scenario\":\"本窗口未保存输入\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"978cb51a-3845-4a4c-a877-778b4f944528\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"二返\"],\"favorite\":true,\"baseVersion\":2}"
+    },
+    {
+      "id": "update-conflict",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+      "method": "PUT",
+      "status": 409,
+      "body": "{\"error\":{\"code\":\"VERSION_CONFLICT\",\"message\":\"这条 Prompt 已经被保存为第 3 版，请刷新后重新编辑；你刚才的输入没有被覆盖。\",\"details\":{\"currentVersion\":3}}}",
+      "requestBody": "{\"name\":\"B07二返模板甲\",\"category\":\"business_analysis\",\"scenario\":\"本窗口未保存输入\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"978cb51a-3845-4a4c-a877-778b4f944528\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"二返\"],\"favorite\":true,\"baseVersion\":2}"
+    },
+    {
+      "id": "history-only-success",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":3,\"body\":\" 首行\\n请为 迟到的旧值 制定 旧结果；重复客户 迟到的旧值。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":3,\"values\":{\"客户名称\":\"迟到的旧值\",\"业务流程\":\"旧结果\"}}"
+    },
+    {
+      "id": "history-only-success",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":3,\"body\":\" 首行\\n请为 迟到的旧值 制定 旧结果；重复客户 迟到的旧值。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":3,\"values\":{\"客户名称\":\"迟到的旧值\",\"业务流程\":\"旧结果\"}}"
+    },
+    {
+      "id": "old-search",
+      "phase": "held",
+      "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"items\":[{\"id\":\"5ac45181-ee7a-4a95-9f0e-aecf65a846bb\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:14:06.431Z\",\"updatedAt\":\"2026-10-07T15:14:06.445Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":6,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}",
+      "requestBody": ""
+    },
+    {
+      "id": "old-search",
+      "phase": "released",
+      "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"items\":[{\"id\":\"5ac45181-ee7a-4a95-9f0e-aecf65a846bb\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:14:06.431Z\",\"updatedAt\":\"2026-10-07T15:14:06.445Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":6,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}",
+      "requestBody": ""
+    }
+  ]
+}

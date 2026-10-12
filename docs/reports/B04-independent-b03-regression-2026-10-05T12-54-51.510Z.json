@@ -1,0 +1,1071 @@
+{
+  "startedAt": "2026-10-05T12:54:51.512Z",
+  "node": "v25.2.1",
+  "startup": "node --import tsx server/index.ts",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM",
+  "version": {
+    "README.md": "0dd7daf72a3843f32060fe7d6de516df5d4d17ecb25edf645073ac6877c6b5c7",
+    "package.json": "e5645495a8ee4795492494cafbd44f35e144049637424830edec32af1f4e3380",
+    "package-lock.json": "b40e9e8ab792a7d84ce0448bc6f6942e7c1b3c1bb9822feb1f4c87ebc9277d43",
+    "app/api.ts": "d89aa74ac332d1b37b94e3d71dc2c24aba4662e8fca02ec9b7ebed1142fa38e9",
+    "app/App.tsx": "6b0a4809919a14da42ae5c44ce41ab493c62e7ffe9c01428e0e40b5365502f37",
+    "app/b04.css": "e7c2a7d7a43ccb5a744f42d2031ea8dbd3f7417d117b31266184b4da4fc9471f",
+    "app/main.tsx": "4db8c65ea04b913e73d88d6766a9137e39f5479acb57a91c3e3fd72cded67602",
+    "app/pages/DraftReviewPage.tsx": "01bff8f741ee7df4951db41f4845b8c7b08b045a0a5369aa3470b107a02cbeea",
+    "app/pages/HomePage.tsx": "f43c913ced008fc65004b6b5af5d0d00928915071851644c44bc4bf2d544dece",
+    "app/pages/RawPage.tsx": "3d389c1b68dded89f4178dfc92497204aa782edd8d273db7555252ac04896b61",
+    "app/pages/SettingsPage.tsx": "d8b948b9bf683c1f2a708800f253874d6e01ecd90885921ae53939f9a539908b",
+    "app/pages/WikiPage.tsx": "73bbbcfd0905c61845cc102cd5559acd5e8e675ab83bade895cf15cf78de4940",
+    "app/raw.css": "88a1eab682566ba68839c9a8bafd9c9c7befb59ba4f844805deb47a103b5dfbc",
+    "app/styles.css": "783e0b2782dfaa5c8167e49f297b3267da793c8a891760a9e1e19faca98a8bff",
+    "app/wiki.css": "e63aa1c0f75ae41b6197bcd6416a996ad105e86bf34d19a703a8fdbbdb2490f1",
+    "server/index.ts": "c4252604ba65371f8a33275d875db495da1a245646a6738ede236893337ea77a",
+    "server/llm-api.ts": "7f1adc1b1fabbef40f07d69523fdc9094a98e4481df045ed2bc8c8cae10b1e72",
+    "server/llm-validation.ts": "0a3f4b8bc97c34a758b96fc57752bff69363a203c31a61440402561b631621f6",
+    "server/raw-import.ts": "425ce9e785b67fd07b9604402ffea8fbb96a765513682d5fae0a8b0a2365234d",
+    "server/validation.ts": "a05f077a6e578ee417fefd6e3f5aa37bd3a9789daa4f4f01c2fc2803e35eed48",
+    "server/wiki-validation.ts": "cca1ddbc2317174edda7610191f0f9d7330bd17ba01a3f4d58ceab2624d8fb87",
+    "services/llm/chunk.ts": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606",
+    "services/llm/config.ts": "77605c22ca7c822f3d7219777db7e29d93c49eeef37bcdfa56fd22192444d5a1",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/jobs.ts": "38c03c75b6fe4aba1767b2a36506fb456b45299a0c09ed9d059aa56b071c3be9",
+    "services/llm/provider.ts": "4ac34af2c7dbe90c47cd3bec9c84bfa198a0371f8e4bfd7990e9d1a6387b7a51",
+    "services/llm/rules.ts": "2f0323b761d60c72d8674a055dc22672fb864156fed8aab8f65e44940682a606",
+    "services/llm/schema-validator.ts": "7eb0e66b67cacdd68688c083098763ecd049fb411a98c50c875ea81307341d7a",
+    "services/llm/service.ts": "30ae99591800c707d62eac7790203e838ff9fe77c400881d3de4ff1334e08e54",
+    "services/raw/assets.ts": "79459e525b1fdf92ac460ed8a8b0212b2c14d0ff78354b734a5b466370dd3861",
+    "services/raw/limits.ts": "22e62af61a8cf445962c154ef64a39caf3eb48cca873dc59396c8d0739da4537",
+    "services/raw/parse.ts": "92545e34e614ce629d60974482cc081ef7a21036d7aac430d1f1e2d8a16cb229",
+    "services/raw/state.ts": "af2d63e146988dcbae1ca39294aff3328bb351b33d47f97072e21df61f11ff06",
+    "services/raw/store.ts": "a6d10185f7a9a61dc765c31740b57c2115afb51275be3784f81791d7c2719937",
+    "services/stats/index.ts": "8984f13b0818e32a3ec672aa7eb421eba17b4ea36c476efa4b968853920ec263",
+    "services/storage/files.ts": "7ca3e33b9c1a5d6facd76ea4853589d2a6ffd076d0de589b5ad8498fb1801439",
+    "services/wiki/commits.ts": "5c5333dc3ed0a768da1842955023e42e5216da924b9fc14939f821026ae90e15",
+    "services/wiki/drafts.ts": "e8f13cd79dfad4148d943e27255b525c1335584484ca91a8447880c6ffe1c4c3",
+    "services/wiki/render.ts": "f729f9d33c559f5c850a35963c1244d2b491f63de831a5096bc38571b8b35e26",
+    "services/wiki/store.ts": "468578ad5f26914785b8e31cad4f8da3041ae744964cd49111ab3d69c2c43af1",
+    "rules/extraction-rules.yaml": "b5b7a17bd7646d4b2a517cf09f06035203223f7af08d411a0df4cb9188af1391",
+    "rules/fmcg-schema.yaml": "21e817f606fb0df1b6aeea724a9b227b8c9fa86c011165d0cdc29e853c0ca1b7",
+    "rules/page-templates.yaml": "f9b311f7470b461c53ddb19f091bd69189746835dfa3c969427ecdef021443ae",
+    "rules/source-policy.yaml": "6594dd86b1aef929056f86c9d9ad6c176828e55397a272e999c4d1dbb04337a3",
+    "rules/wiki-extract.schema.json": "4e7dc316afcaadb523885a970c52705cd8a5eb28dd8b702d6e46cb241d1f36c3"
+  },
+  "checks": [
+    {
+      "id": "E03-01-real-four-formats-bytes-body-metadata",
+      "status": "PASS",
+      "elapsedMs": 870,
+      "evidence": [
+        {
+          "name": "zh-report.md",
+          "rawId": "ce467a05-789c-49f0-bb59-38e6ee1e1d71",
+          "assetId": "e9d48384-0c20-4644-bea5-547d8b5723b5",
+          "chars": 151,
+          "bodySha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "assetSha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "parser": "utf-8-strict",
+          "note": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。"
+        },
+        {
+          "name": "zh-notes.txt",
+          "rawId": "638928e1-3d52-4446-8b43-d032524c1b0c",
+          "assetId": "ae68d126-b228-40aa-b09b-3914d32790cf",
+          "chars": 78,
+          "bodySha256": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+          "assetSha256": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+          "parser": "utf-8-strict",
+          "note": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。"
+        },
+        {
+          "name": "zh-report.docx",
+          "rawId": "e31f8f06-ad27-47e0-af5f-09fabe928b37",
+          "assetId": "e1a15584-1c5d-4c5b-a243-db9d45277148",
+          "chars": 103,
+          "bodySha256": "93adbf94016a4df938d04237c5cdb51c52254c2f00f96c015d3e8ca754b558c1",
+          "assetSha256": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+          "parser": "mammoth 1.13.0",
+          "note": "mammoth 提取 Word 文本；段落之间以空行分隔，段落内换行与空白按文档结构还原，不做 trim。"
+        },
+        {
+          "name": "zh-report.pdf",
+          "rawId": "08ec9eea-9efb-46d1-9e29-cb987550c027",
+          "assetId": "ab8a559a-8a90-4937-9cde-4d91b4599def",
+          "chars": 96,
+          "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+          "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+          "parser": "pdfjs-dist 6.4.299",
+          "note": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+        }
+      ]
+    },
+    {
+      "id": "E03-02-bom-frontmatter-whitespace-filename-no-overwrite",
+      "status": "PASS",
+      "elapsedMs": 20,
+      "evidence": {
+        "ids": [
+          "4caa6e34-dc00-4adf-8eb5-df9144caef14",
+          "c7274e85-5ea0-459d-b789-c18d30623296"
+        ],
+        "bodyHash": "0356dffe34fed7ad1c229afaeb4bec4498969e9a5d876fef3e4b2fdbaba1fab8",
+        "storedFile": "c87fecb0-d978-41b4-92af-af4cedcd56c6.md"
+      }
+    },
+    {
+      "id": "E03-03-failure-matrix-no-raw-retained-originals",
+      "status": "PASS",
+      "elapsedMs": 202,
+      "evidence": {
+        "rawCount": 7,
+        "outcomes": [
+          {
+            "name": "empty.txt",
+            "status": 400,
+            "error": {
+              "code": "EMPTY_FILE",
+              "message": "文件内容为空（0 字节），没有可提取的正文；未创建 Raw。 原件已保留（assetId 57d702e5-215c-484e-a167-faacd7d2a400，0 字节，SHA-256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "57d702e5-215c-484e-a167-faacd7d2a400",
+                "format": "txt",
+                "fileName": "empty.txt",
+                "byteSize": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          },
+          {
+            "name": "blank.txt",
+            "status": 422,
+            "error": {
+              "code": "EMPTY_CONTENT",
+              "message": "提取到的正文为空或只有空白字符；未创建 Raw。 原件已保留（assetId 7d89f089-b281-49e0-aff3-a983af5db1ec，11 字节，SHA-256 2d78c57ece641bd2b069829350a2ca4272532ee9cc9953902ca8f59ed690089a），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "7d89f089-b281-49e0-aff3-a983af5db1ec",
+                "format": "txt",
+                "fileName": "blank.txt",
+                "byteSize": 11,
+                "sha256": "2d78c57ece641bd2b069829350a2ca4272532ee9cc9953902ca8f59ed690089a"
+              }
+            }
+          },
+          {
+            "name": "gbk-notes.txt",
+            "status": 415,
+            "error": {
+              "code": "UNSUPPORTED_ENCODING",
+              "message": "文本不是严格的 UTF-8 编码（可能是 GBK 等其它编码）。为避免产生乱码，本批不做猜测解码；请另存为 UTF-8 后重新导入，或改用粘贴文本。 原件已保留（assetId eed75480-a3c1-4fa5-9976-1033f64e9812，43 字节，SHA-256 8b2cd2d7938d5765d38d46a89dee2513252815e8f5ccf583e587e88ade81ab7c），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "eed75480-a3c1-4fa5-9976-1033f64e9812",
+                "format": "txt",
+                "fileName": "gbk-notes.txt",
+                "byteSize": 43,
+                "sha256": "8b2cd2d7938d5765d38d46a89dee2513252815e8f5ccf583e587e88ade81ab7c"
+              }
+            }
+          },
+          {
+            "name": "fake-docx.docx",
+            "status": 415,
+            "error": {
+              "code": "FORMAT_MISMATCH",
+              "message": "扩展名是 .docx，但文件内容不是DOCX 文档；已拒绝导入。 原件已保留（assetId 3d03d902-91d3-4d9f-bb52-8528309adb1e，63 字节，SHA-256 eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "3d03d902-91d3-4d9f-bb52-8528309adb1e",
+                "format": "docx",
+                "fileName": "fake-docx.docx",
+                "byteSize": 63,
+                "sha256": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3"
+              }
+            }
+          },
+          {
+            "name": "fake-pdf.pdf",
+            "status": 415,
+            "error": {
+              "code": "FORMAT_MISMATCH",
+              "message": "扩展名是 .pdf，但文件内容不是PDF 文档；已拒绝导入。 原件已保留（assetId 7eae0e3e-fb5e-4f84-863e-8456e5c2e8d6，63 字节，SHA-256 eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "7eae0e3e-fb5e-4f84-863e-8456e5c2e8d6",
+                "format": "pdf",
+                "fileName": "fake-pdf.pdf",
+                "byteSize": 63,
+                "sha256": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3"
+              }
+            }
+          },
+          {
+            "name": "broken.docx",
+            "status": 422,
+            "error": {
+              "code": "DOCX_INVALID",
+              "message": "DOCX 压缩包不完整（找不到中央目录记录），文件已损坏或被截断；未创建 Raw。 原件已保留（assetId 1ec77ad9-ded9-4b97-be78-3a06afd75f15，800 字节，SHA-256 f34c29a09151bffff37eb49e532a9c70c6d1f13a5d4352f52d78283557a7e61b），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "1ec77ad9-ded9-4b97-be78-3a06afd75f15",
+                "format": "docx",
+                "fileName": "broken.docx",
+                "byteSize": 800,
+                "sha256": "f34c29a09151bffff37eb49e532a9c70c6d1f13a5d4352f52d78283557a7e61b"
+              }
+            }
+          },
+          {
+            "name": "broken.pdf",
+            "status": 422,
+            "error": {
+              "code": "PDF_INVALID",
+              "message": "PDF 结构损坏或无法解析：Invalid PDF structure.；未创建 Raw。 原件已保留（assetId 9e914593-d215-4822-a696-990574a9aea1，521 字节，SHA-256 986ad2bbe0aefbf4d90606dd21bdddcb8a75e68a411aae7c7b6cc3382a050390），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "9e914593-d215-4822-a696-990574a9aea1",
+                "format": "pdf",
+                "fileName": "broken.pdf",
+                "byteSize": 521,
+                "sha256": "986ad2bbe0aefbf4d90606dd21bdddcb8a75e68a411aae7c7b6cc3382a050390"
+              }
+            }
+          },
+          {
+            "name": "scan-image.pdf",
+            "status": 422,
+            "error": {
+              "code": "PDF_NO_TEXT",
+              "message": "PDF 共 1 页，但没有可提取的文字层（可能是扫描件或纯图片页）。本批不做 OCR；未创建 Raw，请改用粘贴文本。 原件已保留（assetId b5913e34-6274-4ef3-b344-ac836cb1fae4，52307 字节，SHA-256 d8869404e8dee4a203543469620880dbe1033a7dece3266e38bf396d4d2bd057），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "b5913e34-6274-4ef3-b344-ac836cb1fae4",
+                "format": "pdf",
+                "fileName": "scan-image.pdf",
+                "byteSize": 52307,
+                "sha256": "d8869404e8dee4a203543469620880dbe1033a7dece3266e38bf396d4d2bd057"
+              }
+            }
+          },
+          {
+            "name": "encrypted.pdf",
+            "status": 422,
+            "error": {
+              "code": "PDF_ENCRYPTED",
+              "message": "PDF 已加密，需要密码才能读取；本批不支持加密文件，未创建 Raw。 原件已保留（assetId 4f70f079-45f4-4d0d-a8eb-f0e04c5bdf75，35252 字节，SHA-256 0d9f368e805cdeee753d39b42f6b55984d2c66c0fb660293f32ba37f81380622），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "4f70f079-45f4-4d0d-a8eb-f0e04c5bdf75",
+                "format": "pdf",
+                "fileName": "encrypted.pdf",
+                "byteSize": 35252,
+                "sha256": "0d9f368e805cdeee753d39b42f6b55984d2c66c0fb660293f32ba37f81380622"
+              }
+            }
+          },
+          {
+            "name": "empty.docx",
+            "status": 422,
+            "error": {
+              "code": "EMPTY_CONTENT",
+              "message": "DOCX 中没有可提取的文字（可能只包含图片、图形或空段落）；未创建 Raw。 原件已保留（assetId f329900b-b5d2-4bf7-8403-b1b75c2af321，36563 字节，SHA-256 01f87acbd4ac3024939a559eb946b861d87cad0f78fb37805ca5c43c754666f7），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "f329900b-b5d2-4bf7-8403-b1b75c2af321",
+                "format": "docx",
+                "fileName": "empty.docx",
+                "byteSize": 36563,
+                "sha256": "01f87acbd4ac3024939a559eb946b861d87cad0f78fb37805ca5c43c754666f7"
+              }
+            }
+          },
+          {
+            "name": "logo.png",
+            "status": 415,
+            "error": {
+              "code": "UNSUPPORTED_FORMAT",
+              "message": "不支持的文件格式：.png。本批支持 Markdown（.md/.markdown）、TXT（.txt）、DOCX（.docx）与 PDF（.pdf）。 原件已保留（assetId 49087809-f600-4445-840a-4be559680eb3，2011 字节，SHA-256 64855b65e2103a55a1b4c340032f9c8892eb9ba8564d7ee5e34a371def0c1849），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "49087809-f600-4445-840a-4be559680eb3",
+                "format": "unknown",
+                "fileName": "logo.png",
+                "byteSize": 2011,
+                "sha256": "64855b65e2103a55a1b4c340032f9c8892eb9ba8564d7ee5e34a371def0c1849"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E03-04-exact-body-and-upload-limits",
+      "status": "PASS",
+      "elapsedMs": 174,
+      "evidence": {
+        "exact": "3d3f83d5-7a92-43ca-b064-e6cfc7930283",
+        "bodyTooLarge": {
+          "status": 413,
+          "json": {
+            "error": {
+              "code": "BODY_TOO_LARGE",
+              "message": "提取到的正文为 500,001 个字符，超过 500,000 字符上限；未创建 Raw。 原件已保留（assetId 52a46e53-edf7-40ac-9e19-1002171d79b6，1500003 字节，SHA-256 f54fe3d417de2a3b5f0a2d4ecac0d963c22953352d8042fd728ee7e66ebf5ad4），正文未入库、未创建 Raw。",
+              "details": {
+                "retained": true,
+                "assetId": "52a46e53-edf7-40ac-9e19-1002171d79b6",
+                "format": "txt",
+                "fileName": "over.txt",
+                "byteSize": 1500003,
+                "sha256": "f54fe3d417de2a3b5f0a2d4ecac0d963c22953352d8042fd728ee7e66ebf5ad4"
+              }
+            }
+          }
+        },
+        "uploadTooLarge": {
+          "status": 413,
+          "json": {
+            "error": {
+              "code": "FILE_TOO_LARGE",
+              "message": "文件超过 20 MiB 上限，已在接收阶段拒绝，未保存原件。",
+              "details": {
+                "retained": false,
+                "limitBytes": 20971520
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "E03-05-metadata-invalid-no-assets-paste-remedy",
+      "status": "PASS",
+      "elapsedMs": 122,
+      "evidence": {
+        "results": [
+          {
+            "status": 400,
+            "json": {
+              "error": {
+                "code": "INVALID_SOURCE_TYPE",
+                "message": "来源类型无效。"
+              }
+            }
+          },
+          {
+            "status": 400,
+            "json": {
+              "error": {
+                "code": "INVALID_URL",
+                "message": "链接必须是有效的 http 或 https 地址。"
+              }
+            }
+          },
+          {
+            "status": 400,
+            "json": {
+              "error": {
+                "code": "INVALID_DATE",
+                "message": "原发布日期请使用 YYYY-MM-DD 格式。"
+              }
+            }
+          },
+          {
+            "status": 400,
+            "json": {
+              "error": {
+                "code": "INVALID_TAGS",
+                "message": "标签必须是文本列表。"
+              }
+            }
+          }
+        ],
+        "paste": "8fece3f5-48a4-4253-b54e-2276c34e7b12"
+      }
+    },
+    {
+      "id": "E03-06-mixed-text-image-pdf-explicit-page-note",
+      "status": "PASS",
+      "elapsedMs": 24,
+      "evidence": {
+        "rawId": "0bc819e6-cbb3-4b3b-879f-2188b8d5a0b7",
+        "note": "pdfjs-dist 6.4.299 提取页面文字：共 2 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。 第 2 页没有文字层（图片/扫描页），未包含在正文中。"
+      }
+    },
+    {
+      "id": "E03-07-real-asset-write-failure",
+      "status": "PASS",
+      "elapsedMs": 29,
+      "evidence": {
+        "status": 500,
+        "json": {
+          "error": {
+            "code": "ASSET_WRITE_FAILED",
+            "message": "原件写入本机失败，未创建 Raw：EEXIST: file already exists, mkdir 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\main\\knowledge\\raw\\assets'",
+            "details": {
+              "retained": false,
+              "fileName": "failed.txt",
+              "byteSize": 18
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "E03-08-real-raw-write-failure-retention-restart",
+      "status": "PASS",
+      "elapsedMs": 58,
+      "evidence": {
+        "status": 500,
+        "json": {
+          "error": {
+            "code": "RAW_WRITE_FAILED",
+            "message": "正文已提取，但写入正式 Raw 失败：EEXIST: file already exists, mkdir 'C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\main\\knowledge\\raw\\reports' 原件已保留（assetId f424688a-7a9e-4c9e-8f6a-f0e3a4c39e89，18 字节，SHA-256 c6c697dfc9a374e63d8de4d9d742cfb2821108982cc1d1f0b2568e3c48fe677f），正文未入库、未创建 Raw。",
+            "details": {
+              "retained": true,
+              "assetId": "f424688a-7a9e-4c9e-8f6a-f0e3a4c39e89",
+              "format": "txt",
+              "fileName": "failed.txt",
+              "byteSize": 18,
+              "sha256": "c6c697dfc9a374e63d8de4d9d742cfb2821108982cc1d1f0b2568e3c48fe677f"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "E03-09-delete-references-reimport",
+      "status": "PASS",
+      "elapsedMs": 84,
+      "evidence": {
+        "wikiId": "d6f9f874-9342-4064-9598-1709731bc777",
+        "blocked": {
+          "status": 409,
+          "json": {
+            "error": {
+              "code": "RAW_REFERENCED",
+              "message": "这条原始资料仍被 1 条正式 Wiki 引用，删除已取消。请先在知识库中解除这些页面的来源引用。",
+              "details": {
+                "references": [
+                  {
+                    "id": "d6f9f874-9342-4064-9598-1709731bc777",
+                    "title": "独立Wiki",
+                    "type": "concept"
+                  }
+                ]
+              }
+            }
+          },
+          "text": "{\"error\":{\"code\":\"RAW_REFERENCED\",\"message\":\"这条原始资料仍被 1 条正式 Wiki 引用，删除已取消。请先在知识库中解除这些页面的来源引用。\",\"details\":{\"references\":[{\"id\":\"d6f9f874-9342-4064-9598-1709731bc777\",\"title\":\"独立Wiki\",\"type\":\"concept\"}]}}}",
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "285",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Mon, 05 Oct 2026 12:54:53 GMT",
+            "etag": "W/\"11d-ykpXKljF9Dx5uUBs6p+tHt96hlE\"",
+            "keep-alive": "timeout=5"
+          }
+        },
+        "deleted": {
+          "status": 200,
+          "json": {
+            "id": "97463e44-0d1f-44c9-9dac-cacf443d632c",
+            "title": "独立验收 ../ <script>标题",
+            "assetId": "a1a4c7ef-66d4-4d9e-bcd5-5ef28dd22083",
+            "assetRetained": true,
+            "warnings": []
+          },
+          "text": "{\"id\":\"97463e44-0d1f-44c9-9dac-cacf443d632c\",\"title\":\"独立验收 ../ <script>标题\",\"assetId\":\"a1a4c7ef-66d4-4d9e-bcd5-5ef28dd22083\",\"assetRetained\":true,\"warnings\":[]}",
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "171",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Mon, 05 Oct 2026 12:54:53 GMT",
+            "etag": "W/\"ab-ON7Skye+tjWDuWz1pOF/iacM5g4\"",
+            "keep-alive": "timeout=5"
+          }
+        },
+        "asset": {
+          "id": "a1a4c7ef-66d4-4d9e-bcd5-5ef28dd22083",
+          "fileName": "zh-report.md",
+          "format": "markdown",
+          "declaredExtension": ".md",
+          "byteSize": 337,
+          "sha256": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "storedFile": "a1a4c7ef-66d4-4d9e-bcd5-5ef28dd22083.md",
+          "createdAt": "2026-10-05T12:54:53.588Z",
+          "status": "detached",
+          "rawId": "97463e44-0d1f-44c9-9dac-cacf443d632c",
+          "parser": "utf-8-strict",
+          "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。",
+          "detachedAt": "2026-10-05T12:54:53.599Z"
+        }
+      }
+    },
+    {
+      "id": "E03-10-concurrent-wiki-create-update-raw-delete-no-dangling",
+      "status": "PASS",
+      "elapsedMs": 353,
+      "evidence": [
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 400,
+            "error": "INVALID_SOURCE"
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          },
+          {
+            "status": 200
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          },
+          {
+            "status": 201
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          },
+          {
+            "status": 200
+          }
+        ],
+        [
+          {
+            "status": 201
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ],
+        [
+          {
+            "status": 200
+          },
+          {
+            "status": 409,
+            "error": "RAW_REFERENCED"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "E03-11-restart-id-body-assets-failures-deletion",
+      "status": "PASS",
+      "elapsedMs": 649,
+      "evidence": {
+        "rawCount": 21,
+        "assetCount": 23,
+        "hashes": {
+          "assets/1ec77ad9-ded9-4b97-be78-3a06afd75f15.docx": "f34c29a09151bffff37eb49e532a9c70c6d1f13a5d4352f52d78283557a7e61b",
+          "assets/1ec77ad9-ded9-4b97-be78-3a06afd75f15.json": "abfa62710de2893d57c31263dc68b0c8a52ff47cd468fc3bebefa0fb1a02735a",
+          "assets/3d03d902-91d3-4d9f-bb52-8528309adb1e.docx": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3",
+          "assets/3d03d902-91d3-4d9f-bb52-8528309adb1e.json": "521760165182841a32df0fac6bf282e6392bce75efba621d79b83dcfa522c779",
+          "assets/49087809-f600-4445-840a-4be559680eb3.bin": "64855b65e2103a55a1b4c340032f9c8892eb9ba8564d7ee5e34a371def0c1849",
+          "assets/49087809-f600-4445-840a-4be559680eb3.json": "d15e7b89c295add773cb2024a7d40f796009c708a2d493b39fe7cd6ed8debb41",
+          "assets/4b7509a9-abce-4ed1-bef3-a42052e8fa00.docx": "2775d7c6fee6175b9796fb8a249679d5f9f44ea964b13e9b2e51359e2c747157",
+          "assets/4b7509a9-abce-4ed1-bef3-a42052e8fa00.json": "30de181f4be7a23a1e6f94e5635610f4b1fd55e781ad37bb529a4d816ad16127",
+          "assets/4f70f079-45f4-4d0d-a8eb-f0e04c5bdf75.json": "b4ce999e52628c978974abcd5a201ddfaba04fcb5d9f4485d1451f00d9a44990",
+          "assets/4f70f079-45f4-4d0d-a8eb-f0e04c5bdf75.pdf": "0d9f368e805cdeee753d39b42f6b55984d2c66c0fb660293f32ba37f81380622",
+          "assets/52a46e53-edf7-40ac-9e19-1002171d79b6.json": "e38fd5c63d7b28f44beeea33d4eb8b24fe23044f5836934f0b48e4c8ffadbcf9",
+          "assets/52a46e53-edf7-40ac-9e19-1002171d79b6.txt": "f54fe3d417de2a3b5f0a2d4ecac0d963c22953352d8042fd728ee7e66ebf5ad4",
+          "assets/57d702e5-215c-484e-a167-faacd7d2a400.json": "9ca1546c59092dc2b09a7ca86649cc58f149befb70930f35586b85b551aec340",
+          "assets/57d702e5-215c-484e-a167-faacd7d2a400.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "assets/7d89f089-b281-49e0-aff3-a983af5db1ec.json": "d297993831174338f1e63db84db921ab3fe2c7dc5fd353293dee793984296a8b",
+          "assets/7d89f089-b281-49e0-aff3-a983af5db1ec.txt": "2d78c57ece641bd2b069829350a2ca4272532ee9cc9953902ca8f59ed690089a",
+          "assets/7eae0e3e-fb5e-4f84-863e-8456e5c2e8d6.json": "4e9107d764ab2ad20b6ff864543918a35a8a5337ae197145aa2b5509024648df",
+          "assets/7eae0e3e-fb5e-4f84-863e-8456e5c2e8d6.pdf": "eebebd963da033938c1dee356c3334f786f3465fb41de44ff186467390490fb3",
+          "assets/89ab12bc-14f4-4117-b280-9937fd66d496.json": "9871b63c0df843351c2429862d6ecb2e7065097601fd0521e937d8bd22447cb7",
+          "assets/89ab12bc-14f4-4117-b280-9937fd66d496.md": "460892aacb33dae567898bf3f5330c85619bf3919d6cbc362a6f7a0080582645",
+          "assets/9e914593-d215-4822-a696-990574a9aea1.json": "aa88496ae95593d03feecc09a8bf86d30b7c9956feb0d8c10bbf0a17cfff505c",
+          "assets/9e914593-d215-4822-a696-990574a9aea1.pdf": "986ad2bbe0aefbf4d90606dd21bdddcb8a75e68a411aae7c7b6cc3382a050390",
+          "assets/a1a4c7ef-66d4-4d9e-bcd5-5ef28dd22083.json": "6df7f4301b6ef5381e3ffa1daa947a98331074a551504581f90f17a796a16839",
+          "assets/a1a4c7ef-66d4-4d9e-bcd5-5ef28dd22083.md": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "assets/ab8a559a-8a90-4937-9cde-4d91b4599def.json": "c9d3d2add4698f906abc901c4a53a504f1116875ee6bec97324d8f328e524d20",
+          "assets/ab8a559a-8a90-4937-9cde-4d91b4599def.pdf": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+          "assets/ae68d126-b228-40aa-b09b-3914d32790cf.json": "227cc15aaad59d830473f6d8de98c3eaaf0f5c43ee32bace9d2461daec198cef",
+          "assets/ae68d126-b228-40aa-b09b-3914d32790cf.txt": "c0a1f77e7115956747edbd1841244de0bbedf95e37fc4ae0db0662934671015f",
+          "assets/b2cb650e-bc4f-427a-a591-4ef1ed4ac7fc.json": "41e9c02b7eb7e65cc1fd91b812b06711bd623b5153d416f71fa21deb5ee8748c",
+          "assets/b2cb650e-bc4f-427a-a591-4ef1ed4ac7fc.pdf": "a85ace50f8cc20f5b8a50dd601f7013b3c14521bcc5473ea3f1f0395c77c4b03",
+          "assets/b5913e34-6274-4ef3-b344-ac836cb1fae4.json": "6abc84e27e6075117ca9dcc3bd9d4b62eae0eaceb3cd07d09b3a43081279220e",
+          "assets/b5913e34-6274-4ef3-b344-ac836cb1fae4.pdf": "d8869404e8dee4a203543469620880dbe1033a7dece3266e38bf396d4d2bd057",
+          "assets/c1e3376b-60d5-4959-a189-d1cf9107c866.json": "87b66b0cc21f4d2c567beb22b53c2212dcc8a0ceca21317b96754f482febdfc2",
+          "assets/c1e3376b-60d5-4959-a189-d1cf9107c866.txt": "8fc5c82817fda374789cd82fda9ebf69d40f35bfa5fa503706df8e0ad8d7dd35",
+          "assets/c87fecb0-d978-41b4-92af-af4cedcd56c6.json": "5decc2145c31e42551bd4894ba2e237e5056a2bfc7ac9ebbddac5f206ad64e83",
+          "assets/c87fecb0-d978-41b4-92af-af4cedcd56c6.md": "460892aacb33dae567898bf3f5330c85619bf3919d6cbc362a6f7a0080582645",
+          "assets/e1a15584-1c5d-4c5b-a243-db9d45277148.docx": "f9f031a7a263f7021eb02367be35e4275f4dbdf82a6854270a68fb7fc7df8058",
+          "assets/e1a15584-1c5d-4c5b-a243-db9d45277148.json": "22a09f4f2977c1baea667f05aece52eaf76e0dc67c7f8da944ded3e1d015b219",
+          "assets/e9d48384-0c20-4644-bea5-547d8b5723b5.json": "65009277b2d661a846752b7cb284a1ae908f8fc4aef7d8ba8e9d26803693c45c",
+          "assets/e9d48384-0c20-4644-bea5-547d8b5723b5.md": "1a0da87a111b026c69ac93d865cccf6044f6bf3ac7c838f09d5058be5fe24983",
+          "assets/eed75480-a3c1-4fa5-9976-1033f64e9812.json": "72a66ade3b0a5d96abb98d0644b8873dab6caf53a42ddd640bb1eaea3bf5ee5e",
+          "assets/eed75480-a3c1-4fa5-9976-1033f64e9812.txt": "8b2cd2d7938d5765d38d46a89dee2513252815e8f5ccf583e587e88ade81ab7c",
+          "assets/f329900b-b5d2-4bf7-8403-b1b75c2af321.docx": "01f87acbd4ac3024939a559eb946b861d87cad0f78fb37805ca5c43c754666f7",
+          "assets/f329900b-b5d2-4bf7-8403-b1b75c2af321.json": "094710c6c91405e1fed868b2dc789c8767b217a4d2c67d0a8cdd93372e7bd27e",
+          "assets/f424688a-7a9e-4c9e-8f6a-f0e3a4c39e89.json": "998aebd3d4362e684fedbb6f9c54ad661e7254b05117edbc6f102891a8074125",
+          "assets/f424688a-7a9e-4c9e-8f6a-f0e3a4c39e89.txt": "c6c697dfc9a374e63d8de4d9d742cfb2821108982cc1d1f0b2568e3c48fe677f",
+          "assets.blocker": "4be1742071d28e5f0ce7fe6011fe0173d0cc630d8f3f46af3dd86b9bca7210b2",
+          "notes/ef6c8a7d-66fe-4936-91ec-045c97c38860.md": "9e60ff3e08cc17fe133b575f8ab26451dfaa54403fca111b1f1b8a4e125b53a5",
+          "reports/08ec9eea-9efb-46d1-9e29-cb987550c027.md": "8720f59a5310a3e37b278749a5579f822ddfb4c23dd8077a80531e51e0764eca",
+          "reports/0bc819e6-cbb3-4b3b-879f-2188b8d5a0b7.md": "263b7fd02452e9017af760d59086c4a6b0a1095408c0a12bf817b9adfbfad905",
+          "reports/17740ad5-cef3-463e-bba5-e723cb76375b.md": "c39aca804ae80de407e10dbe576f204dc41ad0b6e72635de164f50c2436f06b4",
+          "reports/18deddf9-a5e1-4709-95a4-ba497e973098.md": "e475893853ee37610e598e04ce0940fa9c17c5660a3951f24c0d95ed66e75c29",
+          "reports/3d3f83d5-7a92-43ca-b064-e6cfc7930283.md": "020f86a7aa0547e1846c0ebc2a79884bec614aabc4d6996b034f7486639483b9",
+          "reports/4caa6e34-dc00-4adf-8eb5-df9144caef14.md": "bcfc859c03a87f86e76f261daae492ee60f5048b7b5c7d73573c5aa760cd955d",
+          "reports/52fb41d9-ca9f-424f-8577-4ce2b13982a4.md": "3f00721d3cda065c571bd20b56c45cc8bb70aa8239f9f13d23a1bd51a4e2fde4",
+          "reports/638928e1-3d52-4446-8b43-d032524c1b0c.md": "00765b414732b95798eafbab7ce3dd11dfe7ae3dbbc8e5ef3712152351cf402f",
+          "reports/6f5280e5-d8d0-4e8d-b6ad-48dc9f656245.md": "36a01c45cf4e10df81510fa1d610dc3691410fcdecb784db2c529838e3ff2909",
+          "reports/74c8344a-a048-4b51-bf85-6ce402eb7d88.md": "043f4d94b05094af0eba5796bb00b5e473ef7cad97fbd9b7bebd77c507d7927c",
+          "reports/81e07a30-919f-44f4-9940-85af0517962a.md": "88bae9ec96690c3c2a3e28c7da18c831f0ec13d093998c40957e89b1fe215697",
+          "reports/8a459777-399c-460f-bbb0-064799ab6b55.md": "f788c4bf524ad03309e8e4bac39fd47d27819373e6cc1ce5fdfbe088a6032fa4",
+          "reports/8fece3f5-48a4-4253-b54e-2276c34e7b12.md": "e8fbea1831fce057e2384a8d22625f10b1a324104d2aa1dd58e1bca02d2d88de",
+          "reports/a5f1fb65-0f8c-4a95-ad00-568b0844f98b.md": "83d3b917199b8af0b40d2e8a7bb9e221d9afa5f2741e1b3cfa9027d55f0a9e18",
+          "reports/b948f518-66da-48f7-ac93-c642feed7102.md": "d5e941256257ebdd2eed6e11f8dccb0ed42b89c5b6bf7b9b4794650742d6c0b2",
+          "reports/c43f811f-e927-4dfd-9df2-b3ea1201a457.md": "486aec3637981f0b570e7e92ebd38af447bf5f9fbdd351c4ee8c90119af0b055",
+          "reports/c7274e85-5ea0-459d-b789-c18d30623296.md": "16cd06087c6528c467d56d37c902364e8163d010b46beafa4971c0daf1cc48fe",
+          "reports/c73bbe6b-9aee-46c3-bd67-32a2d7cf7fcb.md": "d612b3096c17475cc75fe08377c37e97ab4e828c46fa1ee2045813c6617d23fb",
+          "reports/ce467a05-789c-49f0-bb59-38e6ee1e1d71.md": "0d0d562b766d0fa08ac08aab7f24f4acb34d576f3808bb06b09dc00446983602",
+          "reports/e31f8f06-ad27-47e0-af5f-09fabe928b37.md": "a67c864fcd67c7ad4f6dde73def8da2311df6a5cb4b5a5f9ff4bc8e45559f9cb",
+          "reports.blocker": "4be1742071d28e5f0ce7fe6011fe0173d0cc630d8f3f46af3dd86b9bca7210b2"
+        }
+      }
+    },
+    {
+      "id": "E03-12-cross-file-association-write-failure-no-success",
+      "status": "PASS",
+      "elapsedMs": 3351,
+      "evidence": {
+        "response": {
+          "status": 500,
+          "json": {
+            "error": {
+              "code": "IMPORT_LINK_PENDING",
+              "message": "正文已写入正式 Raw（id 967568d1-a77e-45bc-866a-9d4c496d0958），原件已保留（assetId 41ae8045-5d66-4178-b6c9-ce56260f33b8，40990 字节，SHA-256 525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1），但原件关联记录写入失败：EISDIR: illegal operation on a directory, read。工作台会在此目录下次启动时自动补齐该关联；请不要重复导入同一文件，也不要手工移动 knowledge/raw/assets 中的文件。",
+              "details": {
+                "committed": true,
+                "recoverable": true,
+                "rawId": "967568d1-a77e-45bc-866a-9d4c496d0958",
+                "assetId": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+                "format": "pdf",
+                "fileName": "cross.pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "cause": "EISDIR: illegal operation on a directory, read",
+                "raw": {
+                  "title": "独立验收 ../ <script>标题",
+                  "sourceType": "report",
+                  "sourceName": "独立原件",
+                  "author": "验收作者",
+                  "publishedAt": "2026-10-03",
+                  "url": "https://example.com/report",
+                  "tags": [
+                    "中文标签",
+                    "渠道"
+                  ],
+                  "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。",
+                  "assetId": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+                  "assetFileName": "cross.pdf",
+                  "assetFormat": "pdf",
+                  "assetByteSize": 40990,
+                  "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                  "extractionParser": "pdfjs-dist 6.4.299",
+                  "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+                  "id": "967568d1-a77e-45bc-866a-9d4c496d0958",
+                  "importedAt": "2026-10-05T12:54:55.779Z",
+                  "status": "unprocessed",
+                  "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23"
+                },
+                "asset": {
+                  "id": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+                  "fileName": "cross.pdf",
+                  "format": "pdf",
+                  "declaredExtension": ".pdf",
+                  "byteSize": 40990,
+                  "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                  "storedFile": "41ae8045-5d66-4178-b6c9-ce56260f33b8.pdf",
+                  "createdAt": "2026-10-05T12:54:55.106Z",
+                  "status": "stored"
+                }
+              }
+            }
+          }
+        },
+        "raw": {
+          "items": [
+            {
+              "title": "独立验收 ../ <script>标题",
+              "sourceType": "report",
+              "sourceName": "独立原件",
+              "author": "验收作者",
+              "publishedAt": "2026-10-03",
+              "url": "https://example.com/report",
+              "tags": [
+                "中文标签",
+                "渠道"
+              ],
+              "assetId": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+              "assetFileName": "cross.pdf",
+              "assetFormat": "pdf",
+              "assetByteSize": 40990,
+              "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+              "extractionParser": "pdfjs-dist 6.4.299",
+              "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+              "id": "967568d1-a77e-45bc-866a-9d4c496d0958",
+              "importedAt": "2026-10-05T12:54:55.779Z",
+              "status": "unprocessed",
+              "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+              "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+            }
+          ]
+        },
+        "intercepted": "41ae8045-5d66-4178-b6c9-ce56260f33b8.json",
+        "recordBefore": {
+          "id": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+          "fileName": "cross.pdf",
+          "format": "pdf",
+          "declaredExtension": ".pdf",
+          "byteSize": 40990,
+          "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+          "storedFile": "41ae8045-5d66-4178-b6c9-ce56260f33b8.pdf",
+          "createdAt": "2026-10-05T12:54:55.106Z",
+          "status": "stored"
+        },
+        "blockedRestartAssets": {
+          "items": []
+        },
+        "afterRestart": {
+          "raw": {
+            "items": [
+              {
+                "title": "独立验收 ../ <script>标题",
+                "sourceType": "report",
+                "sourceName": "独立原件",
+                "author": "验收作者",
+                "publishedAt": "2026-10-03",
+                "url": "https://example.com/report",
+                "tags": [
+                  "中文标签",
+                  "渠道"
+                ],
+                "assetId": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+                "assetFileName": "cross.pdf",
+                "assetFormat": "pdf",
+                "assetByteSize": 40990,
+                "assetSha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "extractionParser": "pdfjs-dist 6.4.299",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。",
+                "id": "967568d1-a77e-45bc-866a-9d4c496d0958",
+                "importedAt": "2026-10-05T12:54:55.779Z",
+                "status": "unprocessed",
+                "bodySha256": "f6db214ad1ec1aab5e5cfdc4c9c4a81e0c275a6d5453e1949562a4fe9d053e23",
+                "body": "经销商库存周转动销分析报告\n报告编号：FMCG-B03-001\n一、背景\n华东区经销商平均库存周转天数为 38 天，动销率 62%。\n二、结论\n建议将安全库存下调 10%，并每周复核补货节奏。"
+              }
+            ]
+          },
+          "assets": {
+            "items": [
+              {
+                "id": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+                "fileName": "cross.pdf",
+                "format": "pdf",
+                "declaredExtension": ".pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "storedFile": "41ae8045-5d66-4178-b6c9-ce56260f33b8.pdf",
+                "createdAt": "2026-10-05T12:54:55.106Z",
+                "status": "parsed",
+                "rawId": "967568d1-a77e-45bc-866a-9d4c496d0958",
+                "parser": "pdfjs-dist 6.4.299",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+              }
+            ]
+          }
+        },
+        "secondRestart": {
+          "assets": {
+            "items": [
+              {
+                "id": "41ae8045-5d66-4178-b6c9-ce56260f33b8",
+                "fileName": "cross.pdf",
+                "format": "pdf",
+                "declaredExtension": ".pdf",
+                "byteSize": 40990,
+                "sha256": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+                "storedFile": "41ae8045-5d66-4178-b6c9-ce56260f33b8.pdf",
+                "createdAt": "2026-10-05T12:54:55.106Z",
+                "status": "parsed",
+                "rawId": "967568d1-a77e-45bc-866a-9d4c496d0958",
+                "parser": "pdfjs-dist 6.4.299",
+                "extractionNote": "pdfjs-dist 6.4.299 提取页面文字：共 1 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。"
+              }
+            ]
+          },
+          "rawCount": 1,
+          "files": {
+            "assets/41ae8045-5d66-4178-b6c9-ce56260f33b8.json": "b5543d76a63895ad5372c3e8cfe311c718b516464b4936a403037e26711e417a",
+            "assets/41ae8045-5d66-4178-b6c9-ce56260f33b8.pdf": "525ccaf7185a9b65c074916720fe8cd265b518fe7dd1506bde23d51c8307a8e1",
+            "reports/967568d1-a77e-45bc-866a-9d4c496d0958.md": "8764b2e1c0d5ba529529db871627516ba94917ad0a024f473336562a6a72c1de"
+          }
+        },
+        "explicitDuplicate": {
+          "rawId": "e6b240da-d2b1-4605-8c38-815735f06e3e",
+          "assetId": "9e8bc83a-3aaf-4b0b-a91c-1b5081a342b3"
+        }
+      }
+    },
+    {
+      "id": "E03-13-readme-node-minimum-vs-installed-pdfjs",
+      "status": "PASS",
+      "elapsedMs": 29,
+      "evidence": {
+        "readmeClaim": "需要 Node.js 22.13 或更高版本（**下限由锁定的 `pdfjs-dist 6.4.299` 的 `engines.node`（`>=22.13.0 || >=24`）决定**，其余依赖要求更低；`package.json` 的 `engines` 与此一致）。本批实际验证环境为 **Node v25.2.1 / Windows**；Node 22.13–24 未在本机实测，不声称已通过。仅开发测试用的 `jsdom` 声明 22.13.x 或 ≥24（Node 23.x 会打印一条 engines 警告，不影响运行）。在项目目录运行：",
+        "pdfjsVersion": "6.4.299",
+        "engines": {
+          "node": ">=22.13.0 || >=24"
+        },
+        "project": {
+          "node": ">=22.13.0"
+        },
+        "lockProject": {
+          "node": ">=22.13.0"
+        },
+        "lockPdfjs": {
+          "version": "6.4.299",
+          "resolved": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-6.4.299.tgz",
+          "integrity": "sha512-AVl138zALtfaAPvADulE0PZThbYzCBS79nL4pOSL/6Sm/4AH5A21BD9VHt97OlCuzJuCpmeZtAtkinisF4Vb1g==",
+          "license": "Apache-2.0",
+          "engines": {
+            "node": ">=22.13.0 || >=24"
+          },
+          "optionalDependencies": {
+            "@napi-rs/canvas": "^1.0.10"
+          }
+        },
+        "realParser": "pdfjs-dist 6.4.299"
+      }
+    },
+    {
+      "id": "E03-14-startup-stored-without-raw-safe-compensation",
+      "status": "PASS",
+      "elapsedMs": 1505,
+      "evidence": {
+        "fixture": "Explicit on-disk stored-without-Raw crash-state fixture; real original from HTTP upload, Raw deleted via HTTP.",
+        "before": {
+          "id": "4c8190c8-8335-4cb8-8a2c-88aab954a9be",
+          "fileName": "interrupted.txt",
+          "format": "txt",
+          "declaredExtension": ".txt",
+          "byteSize": 21,
+          "sha256": "14807c10384ff04c12769f0b3ce25be1f53665be51ad745416ef527448101b0f",
+          "storedFile": "4c8190c8-8335-4cb8-8a2c-88aab954a9be.txt",
+          "createdAt": "2026-10-05T12:54:58.507Z",
+          "status": "stored"
+        },
+        "after": {
+          "id": "4c8190c8-8335-4cb8-8a2c-88aab954a9be",
+          "fileName": "interrupted.txt",
+          "format": "txt",
+          "declaredExtension": ".txt",
+          "byteSize": 21,
+          "sha256": "14807c10384ff04c12769f0b3ce25be1f53665be51ad745416ef527448101b0f",
+          "storedFile": "4c8190c8-8335-4cb8-8a2c-88aab954a9be.txt",
+          "createdAt": "2026-10-05T12:54:58.507Z",
+          "status": "parse_failed",
+          "failure": {
+            "code": "IMPORT_INTERRUPTED",
+            "message": "上一次导入在创建正式 Raw 之前中断；原件已保留、未创建 Raw，可重新导入该文件。",
+            "at": "2026-10-05T12:54:58.926Z"
+          }
+        },
+        "rawCount": 0,
+        "originalSha": "14807c10384ff04c12769f0b3ce25be1f53665be51ad745416ef527448101b0f",
+        "secondRestartUnchanged": true
+      }
+    },
+    {
+      "id": "E03-15-delete-detach-write-failure-startup-repair",
+      "status": "PASS",
+      "elapsedMs": 1486,
+      "evidence": {
+        "response": {
+          "status": 200,
+          "json": {
+            "id": "8228389f-a941-48b7-a4db-f4a610681962",
+            "title": "独立验收 ../ <script>标题",
+            "assetId": "f62e5fc4-8486-469c-a4b7-bc1c8235d7b7",
+            "assetRetained": true,
+            "warnings": [
+              "原件记录（assetId f62e5fc4-8486-469c-a4b7-bc1c8235d7b7）的删除标记未写入，原件字节仍保留在 knowledge/raw/assets/。"
+            ]
+          },
+          "text": "{\"id\":\"8228389f-a941-48b7-a4db-f4a610681962\",\"title\":\"独立验收 ../ <script>标题\",\"assetId\":\"f62e5fc4-8486-469c-a4b7-bc1c8235d7b7\",\"assetRetained\":true,\"warnings\":[\"原件记录（assetId f62e5fc4-8486-469c-a4b7-bc1c8235d7b7）的删除标记未写入，原件字节仍保留在 knowledge/raw/assets/。\"]}",
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "311",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Mon, 05 Oct 2026 12:55:00 GMT",
+            "etag": "W/\"137-KEgfJG6TDXRWGVdsFLl1qhHybLQ\"",
+            "keep-alive": "timeout=5"
+          }
+        },
+        "repaired": {
+          "id": "f62e5fc4-8486-469c-a4b7-bc1c8235d7b7",
+          "fileName": "detach.txt",
+          "format": "txt",
+          "declaredExtension": ".txt",
+          "byteSize": 21,
+          "sha256": "c2ecc337170d5f6d4fd3c363de935b47c2319bdd0fd4ecd3206ece29cd3198f3",
+          "storedFile": "f62e5fc4-8486-469c-a4b7-bc1c8235d7b7.txt",
+          "createdAt": "2026-10-05T12:54:59.987Z",
+          "status": "detached",
+          "rawId": "8228389f-a941-48b7-a4db-f4a610681962",
+          "parser": "utf-8-strict",
+          "extractionNote": "按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。",
+          "detachedAt": "2026-10-05T12:55:00.419Z"
+        },
+        "originalSha": "c2ecc337170d5f6d4fd3c363de935b47c2319bdd0fd4ecd3206ece29cd3198f3",
+        "secondRestartUnchanged": true
+      }
+    },
+    {
+      "id": "FROZEN-VERSION",
+      "status": "PASS",
+      "changed": []
+    }
+  ],
+  "notes": [
+    "Real public HTTP and filesystem assertions; no product imports, no mocks.",
+    "Browser evidence supplied separately by main agent.",
+    {
+      "service": "http://127.0.0.1:60274",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\main",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60274 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\main)\nWarning: Indexing all PDF objects\n"
+    },
+    {
+      "service": "http://127.0.0.1:60298",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\main",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60298 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\main)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60309",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60309 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60320",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60320 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60331",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file",
+      "logs": "Raw/原件关联对账：补齐 1，补偿 0，标记原件已分离 0\nFMCG AI PM Workspace API: http://127.0.0.1:60331 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60342",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60342 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\cross-file)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60351",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\compensate",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60351 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\compensate)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60360",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\compensate",
+      "logs": "Raw/原件关联对账：补齐 0，补偿 1，标记原件已分离 0\nFMCG AI PM Workspace API: http://127.0.0.1:60360 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\compensate)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60367",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\compensate",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60367 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\compensate)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60375",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\detach",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60375 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\detach)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60385",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\detach",
+      "logs": "Raw/原件关联对账：补齐 0，补偿 0，标记原件已分离 1\nFMCG AI PM Workspace API: http://127.0.0.1:60385 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\detach)\n"
+    },
+    {
+      "service": "http://127.0.0.1:60393",
+      "dir": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\detach",
+      "logs": "FMCG AI PM Workspace API: http://127.0.0.1:60393 (data: C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b04-independent-b03-XAQwSM\\detach)\n"
+    }
+  ],
+  "finishedAt": "2026-10-05T12:55:01.006Z",
+  "summary": {
+    "PASS": 16,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

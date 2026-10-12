@@ -1,0 +1,174 @@
+{
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m03-http-bvhvqy",
+  "durationMs": 26365,
+  "primaryMeetingId": "86e91fd0-b255-4594-81bd-59ff272875c2",
+  "checks": [
+    {
+      "id": "H01-cloud-four-level-body-and-multipart-refused-before-decode",
+      "result": "PASS",
+      "details": {
+        "levels": 4,
+        "invalidUtf8AndMalformedJsonBlockedBeforeParse": true
+      }
+    },
+    {
+      "id": "H02-authorized-three-level-capabilities-and-body",
+      "result": "PASS",
+      "details": {
+        "threeLevels": true
+      }
+    },
+    {
+      "id": "H03-original-whitespace-BOM-CRLF-hash-preserved",
+      "result": "PASS",
+      "details": {
+        "meetingId": "86e91fd0-b255-4594-81bd-59ff272875c2",
+        "importId": "3b257ee3-f1a0-4590-bbd3-be0262627fe0",
+        "textSha256": "dd54eefa050e395060c68918e3046ad97d3dd96bd072490844cbde140577e91b"
+      }
+    },
+    {
+      "id": "H04-idempotent-retry-and-changed-key-conflict",
+      "result": "PASS",
+      "details": {
+        "oneVersion": true
+      }
+    },
+    {
+      "id": "H05-workcopy-edit-original-immutable-stale-rejected",
+      "result": "PASS",
+      "details": {
+        "originalUnchanged": true
+      }
+    },
+    {
+      "id": "H06-reimport-confirm-history-frozen-and-lost-response-retry",
+      "result": "PASS",
+      "details": {
+        "versionCount": 2,
+        "oldWorkingCopyPreserved": true
+      }
+    },
+    {
+      "id": "H07-valid-MD-upload-fatal-UTF8-BOM-byte-hash",
+      "result": "PASS",
+      "details": {
+        "originalFileBytes": 24,
+        "bomPreserved": true
+      }
+    },
+    {
+      "id": "H08-upload-invalid-codec-format-empty-and-size-no-write",
+      "result": "PASS",
+      "details": {
+        "variants": 5
+      }
+    },
+    {
+      "id": "H09-text-limits-unicode-types-and-fields",
+      "result": "PASS",
+      "details": {
+        "maxAccepted": 500000
+      }
+    },
+    {
+      "id": "H10-copy-policy-conflicts-include-count",
+      "result": "PASS",
+      "details": {
+        "noSilentDeleteOrHiddenBody": true
+      }
+    },
+    {
+      "id": "H11-clear-confirm-stale-archive-deletion-extra-confirm",
+      "result": "PASS",
+      "details": {
+        "explicitBodyDeletion": true
+      }
+    },
+    {
+      "id": "H12-clear-all-copies-and-replay-no-resurrection",
+      "result": "PASS",
+      "details": {
+        "allCopiesRemoved": true,
+        "oldRequestNotRestored": true
+      }
+    },
+    {
+      "id": "H13-summary-search-isolation-and-unavailable-Raw",
+      "result": "PASS",
+      "details": {
+        "summaryHasNoBodiesOrLedger": true
+      }
+    },
+    {
+      "id": "H14-concurrent-import-one-winner",
+      "result": "PASS",
+      "details": {
+        "distinctWinner": 1,
+        "identicalOperationReused": true
+      }
+    },
+    {
+      "id": "H15-policy-changed-during-upload-rechecked-at-commit",
+      "result": "PASS",
+      "details": {
+        "streamHeldUntilPolicyRevoked": true,
+        "lateBodyNotCommitted": true,
+        "status": 409
+      }
+    },
+    {
+      "id": "H16-real-rename-EIO-original-safe-atomic-retry",
+      "result": "PASS",
+      "details": {
+        "actualFilesystemError": true
+      }
+    },
+    {
+      "id": "H17-corruption-digest-active-duplicates-and-hidden-body",
+      "result": "PASS",
+      "details": {
+        "corruptVariants": 8,
+        "noOverwrite": true
+      }
+    },
+    {
+      "id": "H18-final-JSON-32MiB-limit-no-old-version-loss",
+      "result": "PASS",
+      "details": {
+        "versions": 33,
+        "bytes": 33019081
+      }
+    },
+    {
+      "id": "H19-old-no-ledger-record-and-same-root-restart",
+      "result": "PASS",
+      "details": {
+        "newVersionsAndOldSchemaRead": true
+      }
+    },
+    {
+      "id": "H20-multipart-reimport-and-invalid-forms-json-errors",
+      "result": "PASS",
+      "details": {
+        "uploadReimport": true,
+        "invalidForms": 3,
+        "malformedJsonControlled": true
+      }
+    },
+    {
+      "id": "H21-no-provider-no-old-assets-no-private-logs",
+      "result": "PASS",
+      "details": {
+        "providerCalls": 0,
+        "oldRootsUnchanged": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 21,
+    "fail": 0
+  },
+  "servicesClosed": true,
+  "providerCalls": 0
+}

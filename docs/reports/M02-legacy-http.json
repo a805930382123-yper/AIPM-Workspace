@@ -1,0 +1,574 @@
+{
+  "provider": "independent fake; real quality NOT_RUN",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-uisRhr",
+  "checks": [
+    {
+      "id": "E09-01-empty-no-autoseed",
+      "result": "PASS",
+      "details": {
+        "rawCount": 0,
+        "wikiCount": 0,
+        "thisWeekNewCount": 0,
+        "pendingConfirmationCount": 0,
+        "openAuditCount": 0,
+        "promptCount": 0,
+        "weekStartsOn": "2026-10-05",
+        "recentChanges": []
+      }
+    },
+    {
+      "id": "E09-02-confirm-required-and-concurrent-import",
+      "result": "PASS",
+      "details": {
+        "statuses": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "created": [
+          10,
+          0,
+          0,
+          0
+        ],
+        "ids": [
+          "1724757e-5a2e-445d-b788-ec9bbff0ba86",
+          "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+          "19ba022d-5ad9-4552-be23-f029fbee5da3",
+          "57dabd88-effb-4960-99a3-d71f5966e54a",
+          "a954fe16-78c3-4850-876b-63bceae28ab2",
+          "d8274815-4a76-4e0a-9c48-ba9e2f14312e",
+          "0c953773-b3d4-4059-b371-23dda8b92668",
+          "17317095-eea5-4356-9311-cbbe4ba8dd6a",
+          "4d24d2a6-0f67-4569-9fde-93beeea0f4f0",
+          "9342452c-05e7-4a14-a08e-ebe8984a8d52"
+        ],
+        "counts": {
+          "rawCount": 1,
+          "wikiCount": 5,
+          "thisWeekNewCount": 6,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 4,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-11T14:15:53.089Z",
+              "action": "create",
+              "id": "d8274815-4a76-4e0a-9c48-ba9e2f14312e",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.073Z",
+              "action": "create",
+              "id": "a954fe16-78c3-4850-876b-63bceae28ab2",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.056Z",
+              "action": "create",
+              "id": "57dabd88-effb-4960-99a3-d71f5966e54a",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.039Z",
+              "action": "create",
+              "id": "19ba022d-5ad9-4552-be23-f029fbee5da3",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.022Z",
+              "action": "create",
+              "id": "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "E09-02-persistent-demo-labels-and-edit-retention",
+      "result": "PASS",
+      "details": {
+        "editedWiki": "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+        "editedPrompt": "0c953773-b3d4-4059-b371-23dda8b92668",
+        "rawSha": "8dc04dc5743af522f0cd47af218d4436b13e73e30f4249dcea4beeb680efd7ea",
+        "storedBodyHasRequiredDemoHeader": true
+      }
+    },
+    {
+      "id": "E09-02-delete-never-resurrect",
+      "result": "PASS",
+      "details": {
+        "counts": {
+          "rawCount": 1,
+          "wikiCount": 4,
+          "thisWeekNewCount": 5,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 3,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-11T14:15:53.999Z",
+              "action": "delete",
+              "id": "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 2,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.277Z",
+              "action": "update",
+              "id": "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 2,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.089Z",
+              "action": "create",
+              "id": "d8274815-4a76-4e0a-9c48-ba9e2f14312e",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.073Z",
+              "action": "create",
+              "id": "a954fe16-78c3-4850-876b-63bceae28ab2",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.056Z",
+              "action": "create",
+              "id": "57dabd88-effb-4960-99a3-d71f5966e54a",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.039Z",
+              "action": "create",
+              "id": "19ba022d-5ad9-4552-be23-f029fbee5da3",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:53.022Z",
+              "action": "create",
+              "id": "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            }
+          ]
+        },
+        "deleted": [
+          "30a041d7-ac1d-4d9b-aba3-83169b5801cf",
+          "0c953773-b3d4-4059-b371-23dda8b92668"
+        ]
+      }
+    },
+    {
+      "id": "E09-06-no-key-manual-and-ai-explicit-errors",
+      "result": "PASS",
+      "details": {
+        "rawId": "90d12991-a312-4eea-a352-270290dea91b",
+        "wikiId": "be474741-d577-409e-a5fa-5e44f49c4854",
+        "promptId": "e5c851b9-2bde-42fc-8fe8-472563287ee3",
+        "errors": [
+          "LLM_NOT_CONFIGURED",
+          "LLM_NOT_CONFIGURED"
+        ]
+      }
+    },
+    {
+      "id": "E09-03-real-write-failure-and-manifest-retry",
+      "result": "PASS",
+      "details": {
+        "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-demo-fault-EMNpa1",
+        "first": {
+          "version": 1,
+          "created": [
+            {
+              "key": "sample-raw",
+              "type": "raw",
+              "id": "989e7349-236e-4342-bd17-16f98f86c200"
+            },
+            {
+              "key": "sample-prompt-0",
+              "type": "prompt",
+              "id": "363dcf96-5e85-412a-b9c5-644ffd1d78f4"
+            },
+            {
+              "key": "sample-prompt-1",
+              "type": "prompt",
+              "id": "7d2268c4-7d41-4aea-ac06-ba62fb7bfa6b"
+            },
+            {
+              "key": "sample-prompt-2",
+              "type": "prompt",
+              "id": "e9d02bb4-60a4-4498-8653-0a9d45fd89a7"
+            },
+            {
+              "key": "sample-prompt-3",
+              "type": "prompt",
+              "id": "3e8c5cb7-e967-47a6-92b0-c6048b6516ca"
+            }
+          ],
+          "reused": [],
+          "deleted": [],
+          "missing": [
+            {
+              "key": "sample-wiki-1",
+              "type": "wiki",
+              "id": "ccfd750a-4db8-4e1a-bf37-2824988f0e55"
+            },
+            {
+              "key": "sample-wiki-2",
+              "type": "wiki",
+              "id": "1209745a-a65c-4d3d-84fd-b5f97b9e0ae0"
+            },
+            {
+              "key": "sample-wiki-3",
+              "type": "wiki",
+              "id": "1282fca1-f8f2-4371-a671-3f6745e1ec41"
+            },
+            {
+              "key": "sample-wiki-4",
+              "type": "wiki",
+              "id": "f8bfe73b-3d20-4943-b7d8-19690b1a4ba9"
+            },
+            {
+              "key": "sample-wiki-5",
+              "type": "wiki",
+              "id": "9a522230-d82b-4a60-b543-c4fc4b7c866e"
+            }
+          ],
+          "conflicts": [
+            {
+              "key": "sample-wiki-1",
+              "id": "ccfd750a-4db8-4e1a-bf37-2824988f0e55",
+              "reason": "Independent B08 acceptance EIO"
+            },
+            {
+              "key": "sample-wiki-2",
+              "id": "1209745a-a65c-4d3d-84fd-b5f97b9e0ae0",
+              "reason": "Independent B08 acceptance EIO"
+            },
+            {
+              "key": "sample-wiki-3",
+              "id": "1282fca1-f8f2-4371-a671-3f6745e1ec41",
+              "reason": "Independent B08 acceptance EIO"
+            },
+            {
+              "key": "sample-wiki-4",
+              "id": "f8bfe73b-3d20-4943-b7d8-19690b1a4ba9",
+              "reason": "Independent B08 acceptance EIO"
+            },
+            {
+              "key": "sample-wiki-5",
+              "id": "9a522230-d82b-4a60-b543-c4fc4b7c866e",
+              "reason": "Independent B08 acceptance EIO"
+            }
+          ],
+          "complete": false
+        },
+        "observed": {
+          "method": "rename",
+          "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-demo-fault-EMNpa1\\knowledge\\wiki\\9a522230-d82b-4a60-b543-c4fc4b7c866e.md"
+        },
+        "retry": {
+          "version": 1,
+          "created": [
+            {
+              "key": "sample-wiki-1",
+              "type": "wiki",
+              "id": "ccfd750a-4db8-4e1a-bf37-2824988f0e55"
+            },
+            {
+              "key": "sample-wiki-2",
+              "type": "wiki",
+              "id": "1209745a-a65c-4d3d-84fd-b5f97b9e0ae0"
+            },
+            {
+              "key": "sample-wiki-3",
+              "type": "wiki",
+              "id": "1282fca1-f8f2-4371-a671-3f6745e1ec41"
+            },
+            {
+              "key": "sample-wiki-4",
+              "type": "wiki",
+              "id": "f8bfe73b-3d20-4943-b7d8-19690b1a4ba9"
+            },
+            {
+              "key": "sample-wiki-5",
+              "type": "wiki",
+              "id": "9a522230-d82b-4a60-b543-c4fc4b7c866e"
+            }
+          ],
+          "reused": [
+            {
+              "key": "sample-raw",
+              "type": "raw",
+              "id": "989e7349-236e-4342-bd17-16f98f86c200"
+            },
+            {
+              "key": "sample-prompt-0",
+              "type": "prompt",
+              "id": "363dcf96-5e85-412a-b9c5-644ffd1d78f4"
+            },
+            {
+              "key": "sample-prompt-1",
+              "type": "prompt",
+              "id": "7d2268c4-7d41-4aea-ac06-ba62fb7bfa6b"
+            },
+            {
+              "key": "sample-prompt-2",
+              "type": "prompt",
+              "id": "e9d02bb4-60a4-4498-8653-0a9d45fd89a7"
+            },
+            {
+              "key": "sample-prompt-3",
+              "type": "prompt",
+              "id": "3e8c5cb7-e967-47a6-92b0-c6048b6516ca"
+            }
+          ],
+          "deleted": [],
+          "missing": [],
+          "conflicts": [],
+          "complete": true
+        },
+        "counts": {
+          "rawCount": 1,
+          "wikiCount": 5,
+          "thisWeekNewCount": 6,
+          "pendingConfirmationCount": 0,
+          "openAuditCount": 0,
+          "promptCount": 4,
+          "weekStartsOn": "2026-10-05",
+          "recentChanges": [
+            {
+              "time": "2026-10-11T14:15:55.500Z",
+              "action": "create",
+              "id": "9a522230-d82b-4a60-b543-c4fc4b7c866e",
+              "title": "库存周转率",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:55.484Z",
+              "action": "create",
+              "id": "f8bfe73b-3d20-4943-b7d8-19690b1a4ba9",
+              "title": "门店补货流程",
+              "type": "business_process",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:55.468Z",
+              "action": "create",
+              "id": "1282fca1-f8f2-4371-a671-3f6745e1ec41",
+              "title": "快消行业渠道体系",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:55.447Z",
+              "action": "create",
+              "id": "1209745a-a65c-4d3d-84fd-b5f97b9e0ae0",
+              "title": "动销",
+              "type": "metric",
+              "revision": 1,
+              "isDemo": true
+            },
+            {
+              "time": "2026-10-11T14:15:55.431Z",
+              "action": "create",
+              "id": "ccfd750a-4db8-4e1a-bf37-2824988f0e55",
+              "title": "快速消费品 FMCG",
+              "type": "concept",
+              "revision": 1,
+              "isDemo": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "E09-03-manifest-failure-after-raw-commit",
+      "result": "PASS",
+      "details": {
+        "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-manifest-fault-B2U4xE",
+        "first": {
+          "version": 1,
+          "created": [
+            {
+              "key": "sample-raw",
+              "type": "raw",
+              "id": "2f5d0678-e7bb-4ad1-8812-47c1b7e8eaa2"
+            },
+            {
+              "key": "sample-wiki-1",
+              "type": "wiki",
+              "id": "2c22a0eb-9098-4aff-b51a-2affba7c54d3"
+            },
+            {
+              "key": "sample-wiki-2",
+              "type": "wiki",
+              "id": "1a77f77b-6896-41c5-9f58-832e71a2f283"
+            },
+            {
+              "key": "sample-wiki-3",
+              "type": "wiki",
+              "id": "ab5f772b-4045-43ab-a3eb-1dcd66251d1d"
+            },
+            {
+              "key": "sample-wiki-4",
+              "type": "wiki",
+              "id": "345e0e00-c9e1-4b4f-b284-f7e46698ec61"
+            },
+            {
+              "key": "sample-wiki-5",
+              "type": "wiki",
+              "id": "1c18cb2e-faef-468c-ad06-6935eed8b1e3"
+            },
+            {
+              "key": "sample-prompt-0",
+              "type": "prompt",
+              "id": "6ef71b0e-68b4-4ff7-859a-658694f9dec2"
+            },
+            {
+              "key": "sample-prompt-1",
+              "type": "prompt",
+              "id": "daafb896-df66-4ffc-8e8c-53fd8a9d1149"
+            },
+            {
+              "key": "sample-prompt-2",
+              "type": "prompt",
+              "id": "49971e16-671b-46ef-82d6-e317d3bb8baf"
+            },
+            {
+              "key": "sample-prompt-3",
+              "type": "prompt",
+              "id": "c664c45a-83c4-45a8-8a5d-aff822eb1a21"
+            }
+          ],
+          "reused": [],
+          "deleted": [],
+          "missing": [
+            {
+              "key": "sample-raw",
+              "type": "raw",
+              "id": "2f5d0678-e7bb-4ad1-8812-47c1b7e8eaa2"
+            }
+          ],
+          "conflicts": [
+            {
+              "key": "sample-raw",
+              "id": "2f5d0678-e7bb-4ad1-8812-47c1b7e8eaa2",
+              "reason": "B09 independent manifest EIO after asset commit"
+            }
+          ],
+          "complete": false
+        },
+        "observed": {
+          "method": "rename",
+          "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b09-manifest-fault-B2U4xE\\state\\demo-manifest.json",
+          "seen": 2
+        },
+        "retry": {
+          "version": 1,
+          "created": [],
+          "reused": [
+            {
+              "key": "sample-raw",
+              "type": "raw",
+              "id": "2f5d0678-e7bb-4ad1-8812-47c1b7e8eaa2"
+            },
+            {
+              "key": "sample-wiki-1",
+              "type": "wiki",
+              "id": "2c22a0eb-9098-4aff-b51a-2affba7c54d3"
+            },
+            {
+              "key": "sample-wiki-2",
+              "type": "wiki",
+              "id": "1a77f77b-6896-41c5-9f58-832e71a2f283"
+            },
+            {
+              "key": "sample-wiki-3",
+              "type": "wiki",
+              "id": "ab5f772b-4045-43ab-a3eb-1dcd66251d1d"
+            },
+            {
+              "key": "sample-wiki-4",
+              "type": "wiki",
+              "id": "345e0e00-c9e1-4b4f-b284-f7e46698ec61"
+            },
+            {
+              "key": "sample-wiki-5",
+              "type": "wiki",
+              "id": "1c18cb2e-faef-468c-ad06-6935eed8b1e3"
+            },
+            {
+              "key": "sample-prompt-0",
+              "type": "prompt",
+              "id": "6ef71b0e-68b4-4ff7-859a-658694f9dec2"
+            },
+            {
+              "key": "sample-prompt-1",
+              "type": "prompt",
+              "id": "daafb896-df66-4ffc-8e8c-53fd8a9d1149"
+            },
+            {
+              "key": "sample-prompt-2",
+              "type": "prompt",
+              "id": "49971e16-671b-46ef-82d6-e317d3bb8baf"
+            },
+            {
+              "key": "sample-prompt-3",
+              "type": "prompt",
+              "id": "c664c45a-83c4-45a8-8a5d-aff822eb1a21"
+            }
+          ],
+          "deleted": [],
+          "missing": [],
+          "conflicts": [],
+          "complete": true
+        },
+        "rawId": "2f5d0678-e7bb-4ad1-8812-47c1b7e8eaa2",
+        "rawSha": "8dc04dc5743af522f0cd47af218d4436b13e73e30f4249dcea4beeb680efd7ea"
+      }
+    }
+  ]
+}

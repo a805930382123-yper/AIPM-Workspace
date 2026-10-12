@@ -1,0 +1,58 @@
+{
+  "base": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m01-backup-8tbRFX",
+  "source": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m01-independent-UjwVak",
+  "durationMs": 5822,
+  "checks": [
+    {
+      "id": "M01-B01-new-backup-and-runtime-readback",
+      "result": "PASS",
+      "details": {
+        "actualCli": true,
+        "files": 18,
+        "byteHashesExact": true,
+        "meetingRuntimeReadsRestoredData": true
+      }
+    },
+    {
+      "id": "M01-B02-old-backup-without-meetings",
+      "result": "PASS",
+      "details": {
+        "version1ArchiveCompatible": true,
+        "emptyMeetingCatalogInitialized": true,
+        "legacyBytesPreserved": true
+      }
+    },
+    {
+      "id": "M01-B03-malicious-meeting-paths-and-digest",
+      "result": "PASS",
+      "details": {
+        "maliciousArchivesRejected": 9,
+        "noPartialTarget": true
+      }
+    },
+    {
+      "id": "M01-B04-meetings-junction-rejected",
+      "result": "PASS",
+      "details": {
+        "nestedJunctionRejected": true,
+        "meetingsRootJunctionRejected": true,
+        "outsideUnchanged": true
+      }
+    },
+    {
+      "id": "M01-B05-target-and-source-protection",
+      "result": "PASS",
+      "details": {
+        "nonemptyTargetPreserved": true,
+        "containedOutputAndMissingSourceRejected": true,
+        "sourceBytesUnchanged": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0
+  },
+  "servicesClosed": true,
+  "providerCalls": 0
+}

@@ -1,0 +1,78 @@
+{
+  "providerJson": {
+    "brief": {
+      "root": {
+        "taskName": "经销商首次访谈与订货流程分析",
+        "taskType": "客户访谈",
+        "role": "快消行业 AI 产品经理",
+        "goal": "还原订货流程并识别待确认的 AI 机会",
+        "context": "首次访谈，当前流程和数据能力未知",
+        "input": "访谈纪要、流程材料和用户补充信息",
+        "tasks": "1. 还原流程\n2. 识别角色与数据\n3. 记录痛点和待确认问题",
+        "constraints": "不虚构企业事实；资料不足时明确标注；区分事实与推断",
+        "output": "流程图、痛点清单、机会表和待确认问题"
+      }
+    },
+    "generate": {
+      "root": {
+        "preview": {
+          "name": "经销商订货流程访谈提纲",
+          "category": "customer",
+          "scenario": "首次访谈前准备",
+          "body": "你是{{角色}}。请根据以下材料还原流程。",
+          "inputRequirements": "访谈纪要、流程材料",
+          "outputRequirements": "流程图、痛点和待确认问题",
+          "relatedWikiIds": [],
+          "examples": "",
+          "tags": ["经销商", "访谈"],
+          "favorite": false
+        }
+      }
+    },
+    "optimize": {
+      "root": {
+        "checks": [
+          { "id": "goal", "status": "present", "evidence": "明确分析订货流程" },
+          { "id": "role", "status": "missing", "evidence": "未指定分析者角色" },
+          { "id": "context", "status": "missing", "evidence": "没有说明渠道与访谈阶段" },
+          { "id": "input", "status": "missing", "evidence": "没有列出所需材料" },
+          { "id": "tasks", "status": "present", "evidence": "要求识别适合 AI 的环节" },
+          { "id": "constraints", "status": "missing", "evidence": "没有限制虚构事实" },
+          { "id": "output", "status": "missing", "evidence": "未规定输出格式" },
+          { "id": "fact_inference", "status": "missing", "evidence": "没有区分事实和推断" },
+          { "id": "anti_fabrication", "status": "missing", "evidence": "没有要求资料不足时提问" }
+        ],
+        "improvements": [
+          { "dimensionId": "role", "issue": "未指定角色", "action": "设定为快消行业 AI 产品经理" },
+          { "dimensionId": "context", "issue": "缺业务背景", "action": "补充渠道、流程范围和访谈阶段" },
+          { "dimensionId": "input", "issue": "输入材料不明确", "action": "列出流程说明、数据样例和访谈纪要" },
+          { "dimensionId": "constraints", "issue": "缺少事实边界", "action": "要求不虚构，并标记资料缺口" },
+          { "dimensionId": "output", "issue": "输出格式不明确", "action": "规定流程、痛点表和待确认问题" },
+          { "dimensionId": "fact_inference", "issue": "事实与推断未区分", "action": "为每条结论标记类型和依据" },
+          { "dimensionId": "anti_fabrication", "issue": "缺少防虚构要求", "action": "证据不足时说明未知并提出问题" }
+        ],
+        "preview": {
+          "name": "订货流程 AI 机会分析",
+          "category": "business_analysis",
+          "scenario": "经销商访谈材料分析",
+          "body": "请分析以下材料，区分事实、推断和待确认问题。{{访谈材料}}",
+          "inputRequirements": "访谈材料与流程说明",
+          "outputRequirements": "流程、痛点、机会和待确认问题",
+          "relatedWikiIds": [],
+          "examples": "",
+          "tags": [],
+          "favorite": false
+        }
+      }
+    }
+  },
+  "apiExamples": {
+    "briefRequest": { "task": "第一次访谈经销商，了解订货流程和 AI 机会", "template": "customer_interview" },
+    "briefResponse": { "draftId": "<uuid>", "brief": "<Brief>", "wikiCandidates": [], "provider": { "name": "<provider>", "model": "<model>" } },
+    "generateRequest": { "brief": "<edited Brief>", "relatedWikiIds": ["<wiki uuid>"] },
+    "generateResponse": { "draftId": "<uuid>", "preview": "<B07 PromptInput>", "relatedWiki": [], "contextBudget": { "maxPerWiki": 3000, "maxTotal": 12000, "used": 0 }, "provider": null },
+    "optimizeRequest": { "body": "<original prompt>", "supplement": "<optional>" },
+    "optimizeResponse": { "draftId": "<uuid>", "originalBody": "<unchanged>", "checks": [], "improvements": [], "preview": "<B07 PromptInput>", "target": null, "provider": null },
+    "confirmRequest": { "requestId": "<draft uuid for new; stable uuid for version>", "mode": "new", "input": "<user-edited B07 PromptInput>" }
+  }
+}

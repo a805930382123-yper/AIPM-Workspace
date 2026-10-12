@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-12T12:52:56.848Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-oBXPn6",
+  "checks": [
+    {
+      "id": "E01-delete-Raw-after-actual-linked-commit-EIO",
+      "result": "FAIL",
+      "actual": {
+        "firstStatus": 500,
+        "deleteStatus": 200,
+        "afterReadStatus": 409,
+        "code": "CORRUPT_MEETING",
+        "linkStatus": "raw_deleted",
+        "registeredAtPresent": false
+      },
+      "error": "Deleting a partial Raw must not corrupt the meeting\n\n409 !== 200\n"
+    },
+    {
+      "id": "E02-linked-replay-rechecks-existing-Raw-origin",
+      "result": "FAIL",
+      "actual": {
+        "status": 200,
+        "reused": true
+      },
+      "error": "Linked receipt must not falsely certify mismatched restored Raw\n\n200 !== 409\n"
+    },
+    {
+      "id": "E03-long-title-surrogate-boundary-remains-usable",
+      "result": "PASS",
+      "actual": {
+        "linkTitleLength": 200,
+        "rawReadable": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 1,
+    "fail": 2
+  },
+  "providerCalls": 0,
+  "servicesClosed": true
+}

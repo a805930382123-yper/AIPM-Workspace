@@ -1,0 +1,151 @@
+{
+  "result": "PASS",
+  "sameDirectory": true,
+  "restartCount": 1,
+  "before": {
+    "knowledge": {
+      "logs\\wiki.jsonl": "9b3a4e5f91b2447a0c1785d4e047d582770afaefc0dc81da77a302978669fe27",
+      "raw\\articles\\f4b54a6b-6ce1-4323-b28f-a5b7a461b206.md": "83b7caff6270fe7d9fa652223d80ef2465b4ef17bb6a8121589e5e26489cb062",
+      "wiki\\c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f.md": "093b215353d6419770d8d93b88afe5721e2df30a9f1198e9b2900445176e22cb",
+      "wiki\\index.md": "8f7f35100cc5a1e53bcd893bc1bbdbb9f9da0a1d52259d84785c91fe81d7b004"
+    },
+    "prompts": {
+      "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8.json": "a5fc1474a389944ac94e3b6c3b953cc7083a21f827831473e623a16c4d8dbd28"
+    },
+    "drafts": {},
+    "state": {}
+  },
+  "after": {
+    "knowledge": {
+      "logs\\wiki.jsonl": "9b3a4e5f91b2447a0c1785d4e047d582770afaefc0dc81da77a302978669fe27",
+      "raw\\articles\\f4b54a6b-6ce1-4323-b28f-a5b7a461b206.md": "83b7caff6270fe7d9fa652223d80ef2465b4ef17bb6a8121589e5e26489cb062",
+      "wiki\\c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f.md": "093b215353d6419770d8d93b88afe5721e2df30a9f1198e9b2900445176e22cb",
+      "wiki\\index.md": "8f7f35100cc5a1e53bcd893bc1bbdbb9f9da0a1d52259d84785c91fe81d7b004"
+    },
+    "prompts": {
+      "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8.json": "a5fc1474a389944ac94e3b6c3b953cc7083a21f827831473e623a16c4d8dbd28"
+    },
+    "drafts": {},
+    "state": {}
+  },
+  "stats": {
+    "rawCount": 1,
+    "wikiCount": 1,
+    "thisWeekNewCount": 2,
+    "pendingConfirmationCount": 0,
+    "openAuditCount": 0,
+    "promptCount": 1,
+    "weekStartsOn": "2026-10-05",
+    "recentChanges": [
+      {
+        "time": "2026-10-08T14:44:05.386Z",
+        "action": "create",
+        "id": "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f",
+        "title": "B09无Key手动异常订单",
+        "type": "concept",
+        "revision": 1
+      }
+    ]
+  },
+  "prompts": [
+    {
+      "id": "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8",
+      "current": {
+        "id": "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8",
+        "name": "B09无Key手动模板",
+        "category": "office",
+        "scenario": "",
+        "body": " 手动模板第二版\n请核对{{客户名称}}的异常订单及待确认问题。\n 尾部 ",
+        "variables": [
+          "客户名称"
+        ],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [
+          "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f"
+        ],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-08T14:44:30.736Z",
+        "updatedAt": "2026-10-08T14:45:07.470Z",
+        "version": 2,
+        "source": "manual"
+      },
+      "versions": [
+        {
+          "version": 1,
+          "savedAt": "2026-10-08T14:44:30.736Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8",
+            "name": "B09无Key手动模板",
+            "category": "office",
+            "scenario": "",
+            "body": " 手动模板\n请核对{{客户名称}}的异常订单。\n 尾部 ",
+            "variables": [
+              "客户名称"
+            ],
+            "inputRequirements": "",
+            "outputRequirements": "",
+            "relatedWikiIds": [
+              "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f"
+            ],
+            "examples": "",
+            "tags": [],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:44:30.736Z",
+            "updatedAt": "2026-10-08T14:44:30.736Z",
+            "version": 1,
+            "source": "manual"
+          }
+        },
+        {
+          "version": 2,
+          "savedAt": "2026-10-08T14:45:07.470Z",
+          "changeSource": "manual",
+          "snapshot": {
+            "id": "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8",
+            "name": "B09无Key手动模板",
+            "category": "office",
+            "scenario": "",
+            "body": " 手动模板第二版\n请核对{{客户名称}}的异常订单及待确认问题。\n 尾部 ",
+            "variables": [
+              "客户名称"
+            ],
+            "inputRequirements": "",
+            "outputRequirements": "",
+            "relatedWikiIds": [
+              "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f"
+            ],
+            "examples": "",
+            "tags": [],
+            "favorite": false,
+            "createdAt": "2026-10-08T14:44:30.736Z",
+            "updatedAt": "2026-10-08T14:45:07.470Z",
+            "version": 2,
+            "source": "manual"
+          }
+        }
+      ],
+      "creation": {
+        "requestId": "a9c1a3dc-a5a2-4307-949b-ba0c8c6cecc8",
+        "input": {
+          "name": "B09无Key手动模板",
+          "category": "office",
+          "scenario": "",
+          "body": " 手动模板\n请核对{{客户名称}}的异常订单。\n 尾部 ",
+          "inputRequirements": "",
+          "outputRequirements": "",
+          "relatedWikiIds": [
+            "c9e93f4f-b1ab-4516-b1e2-59dc3d3b014f"
+          ],
+          "examples": "",
+          "tags": [],
+          "favorite": false
+        },
+        "createdAt": "2026-10-08T14:44:30.736Z"
+      }
+    }
+  ]
+}

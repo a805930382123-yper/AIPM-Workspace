@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-12T13:12:42.495Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-63jbWB",
+  "checks": [
+    {
+      "id": "E01-delete-Raw-after-actual-linked-commit-EIO",
+      "result": "PASS",
+      "actual": {
+        "firstStatus": 500,
+        "deleteStatus": 200,
+        "afterReadStatus": 200,
+        "linkStatus": "raw_deleted",
+        "registeredAtPresent": false
+      }
+    },
+    {
+      "id": "E02-linked-replay-rechecks-existing-Raw-origin",
+      "result": "PASS",
+      "actual": {
+        "status": 409,
+        "code": "RAW_LINK_INTEGRITY_ERROR"
+      }
+    },
+    {
+      "id": "E03-long-title-surrogate-boundary-remains-usable",
+      "result": "PASS",
+      "actual": {
+        "linkTitleLength": 200,
+        "rawReadable": true
+      }
+    },
+    {
+      "id": "E04-linked-replay-never-recreates-missing-Raw",
+      "result": "PASS",
+      "actual": {
+        "status": 409,
+        "code": "RAW_LINK_INTEGRITY_ERROR",
+        "noResurrection": true
+      }
+    },
+    {
+      "id": "E05-legacy-fingerprint-high-revision-retry-compatible",
+      "result": "PASS",
+      "actual": {
+        "restoredLegacyReceipt": true,
+        "originalBaseRevision": 10001,
+        "currentRevision": 10002,
+        "status": 201
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0
+  },
+  "providerCalls": 0,
+  "servicesClosed": true
+}

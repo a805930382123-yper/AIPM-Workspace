@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-12T13:48:59.249Z",
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-mDv3pl",
+  "restoredRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-m05-scenario-backup-Eg42UA\\restored",
+  "durationMs": 2944,
+  "checks": [
+    {
+      "id": "S01-defaults-metadata-catalog-links-and-isolation",
+      "result": "PASS",
+      "details": {
+        "emptyInitially": true,
+        "twoTags": true,
+        "realLinksPersisted": true,
+        "noImplicitRaw": true
+      }
+    },
+    {
+      "id": "S02-Sensitive-Restricted-and-direct-API-denied",
+      "result": "PASS",
+      "details": {
+        "twoImportRefusals": true,
+        "RestrictedLocalRefused": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "S03-upload-edit-reimport-explicit-register-immutable",
+      "result": "PASS",
+      "details": {
+        "actualMultipart": true,
+        "BOM_CRLF_unchanged": true,
+        "workingCopyNotRaw": true,
+        "twoVersionsTwoExplicitRaws": true
+      }
+    },
+    {
+      "id": "S04-same-root-restart-preserves-full-data",
+      "result": "PASS",
+      "details": {
+        "actualRestart": true,
+        "allBytesUnchanged": true
+      }
+    },
+    {
+      "id": "S05-actual-CLI-export-restore-and-runtime-readback",
+      "result": "PASS",
+      "details": {
+        "actualCli": true,
+        "actualRestoredService": true,
+        "byteHashesExact": true
+      }
+    },
+    {
+      "id": "S06-concurrent-revoke-versus-registration",
+      "result": "PASS",
+      "details": {
+        "revokeStatus": 200,
+        "registerStatus": 409,
+        "noUnauthorizedRaw": true
+      }
+    },
+    {
+      "id": "S07-unlink-clear-Raw-delete-archive-delete-restriction-retained",
+      "result": "PASS",
+      "details": {
+        "unlinkedRawNotChanged": true,
+        "clearKeepsRaw": true,
+        "deletedRawStateReadable": true,
+        "archiveDeletedRetainedRawStillRestricted": true
+      }
+    },
+    {
+      "id": "S08-no-Provider-implicit-assets-or-body-logs",
+      "result": "PASS",
+      "details": {
+        "providerCalls": 0,
+        "onlyExpectedRawAssetAdded": 1,
+        "countsReal": true,
+        "noBodyInServiceLog": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 8,
+    "fail": 0
+  },
+  "providerCalls": 0,
+  "servicesClosed": true
+}

@@ -1,0 +1,79 @@
+{
+  "at": "2026-10-11T15:51:37.599Z",
+  "records": [
+    {
+      "meeting_id": "4b9ce1c6-bb5b-4556-8a29-3b2521475b7c",
+      "title": "M03浏览器甲",
+      "revision": 5,
+      "mode": "local_archive",
+      "level": "Sensitive",
+      "localAuthorized": true,
+      "capabilities": {
+        "canImportMinutes": true,
+        "canRegisterRaw": false,
+        "canUseAi": false,
+        "importReason": "",
+        "rawReason": "本批不开放会议 Raw 登记。",
+        "aiReason": "本版不支持 Meeting 外部 AI 处理。"
+      },
+      "fileSHA256": "0e602a042995f88671bf9126a45bb3757d12579887140b296d4659c78a7b44b4",
+      "active": "2e1afbfd-118e-4e2b-aa5b-0dc4b12c9c86",
+      "imports": [
+        {
+          "id": "f1657b40-1561-47e1-94aa-7f366ab264b8",
+          "originalSha256": "d2d4221aad5faf4d02cbcf5296a73aa06076e6132aac078bff7ef8d381328d7a",
+          "storedSha256": "d2d4221aad5faf4d02cbcf5296a73aa06076e6132aac078bff7ef8d381328d7a",
+          "workingSha256": "0b83a782b8d3becb5725ce8374c02b6fbc8ad5670d41b71cbe3ccf46d4f872b9",
+          "originalChars": 353,
+          "workChars": 20,
+          "filename": null
+        },
+        {
+          "id": "2e1afbfd-118e-4e2b-aa5b-0dc4b12c9c86",
+          "originalSha256": "e3a50913db6bc14ff007cdca11f969acd10e5f3dbff54fa07890fc28481e7b36",
+          "storedSha256": "e3a50913db6bc14ff007cdca11f969acd10e5f3dbff54fa07890fc28481e7b36",
+          "workingSha256": "e3a50913db6bc14ff007cdca11f969acd10e5f3dbff54fa07890fc28481e7b36",
+          "originalChars": 21,
+          "workChars": 21,
+          "filename": "M03-upload-fixture.md"
+        }
+      ],
+      "ledgerCount": 2,
+      "apiAndDiskImportsEqual": true
+    },
+    {
+      "meeting_id": "9df71611-b2f7-45f3-a17d-379b8dc761b5",
+      "title": "M03浏览器乙",
+      "revision": 1,
+      "mode": "cloud_index",
+      "level": "Public",
+      "localAuthorized": false,
+      "capabilities": {
+        "canImportMinutes": false,
+        "canRegisterRaw": false,
+        "canUseAi": false,
+        "importReason": "请先切换到本地归档模式。",
+        "rawReason": "本批不开放会议 Raw 登记。",
+        "aiReason": "本版不支持 Meeting 外部 AI 处理。"
+      },
+      "fileSHA256": "b033aebe506604fe2a90e06a7f1a4989c847f3f0723600768f9c024ac5754995",
+      "active": null,
+      "imports": [],
+      "ledgerCount": 0,
+      "apiAndDiskImportsEqual": true
+    }
+  ],
+  "files": {
+    "catalog.json": "f3bd8cc74753c2d213ee9998a1346af7af3fc4657c6aaaad715abd0247f6f209",
+    "records\\4b9ce1c6-bb5b-4556-8a29-3b2521475b7c.json": "0e602a042995f88671bf9126a45bb3757d12579887140b296d4659c78a7b44b4",
+    "records\\9df71611-b2f7-45f3-a17d-379b8dc761b5.json": "b033aebe506604fe2a90e06a7f1a4989c847f3f0723600768f9c024ac5754995"
+  },
+  "oldRoots": {
+    "knowledge": {
+      "wiki\\index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+    },
+    "prompts": {},
+    "drafts": {},
+    "state": {}
+  }
+}

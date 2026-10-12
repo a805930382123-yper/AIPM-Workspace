@@ -1,0 +1,2 @@
+import fs from 'node:fs/promises';import path from 'node:path';import {fileSnapshot} from './b08-harness.mjs';
+const r=JSON.parse(await fs.readFile('docs/reports/FULL2-20261010-browser-runtime.json','utf8'));const snapshots={};for(const k of ['knowledge','prompts','drafts','state'])snapshots[k]=await fileSnapshot(path.join(r.dataRoot,k));await fs.writeFile('docs/reports/FULL2-20261010-browser-before-restart.json',JSON.stringify({dataRoot:r.dataRoot,snapshots},null,2));

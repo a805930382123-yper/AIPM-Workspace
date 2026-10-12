@@ -1,0 +1,478 @@
+{
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-sqld8o",
+  "provider": "unconfigured",
+  "uiLogs": "\n  VITE v6.4.3  ready in 481 ms\n\n  ➜  Local:   http://127.0.0.1:49389/\n",
+  "events": [
+    {
+      "id": "history-render-422",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{}}"
+    },
+    {
+      "id": "history-render-422",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称、业务流程。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\",\"业务流程\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{}}"
+    },
+    {
+      "id": "history-render-200-old",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 旧客户 制定 旧流程；重复客户 旧客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"旧客户\",\"业务流程\":\"旧流程\"}}"
+    },
+    {
+      "id": "history-render-new",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 新客户 制定 新流程；重复客户 新客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"新客户\",\"业务流程\":\"新流程\"}}"
+    },
+    {
+      "id": "history-render-200-old",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 旧客户 制定 旧流程；重复客户 旧客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"旧客户\",\"业务流程\":\"旧流程\"}}"
+    },
+    {
+      "id": "history-render-new",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":2,\"body\":\" 首行\\n请为 新客户 制定 新流程；重复客户 新客户。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"新客户\",\"业务流程\":\"新流程\"}}"
+    },
+    {
+      "id": "render-new-form-422",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"\",\"业务流程\":\"铺货 回访\"}}"
+    },
+    {
+      "id": "render-new-form-422",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 422,
+      "body": "{\"error\":{\"code\":\"MISSING_VARIABLES\",\"message\":\"还有未填写的变量：客户名称。请填写后再生成最终正文。\",\"details\":{\"missingVariables\":[\"客户名称\"]}}}",
+      "requestBody": "{\"baseVersion\":2,\"values\":{\"客户名称\":\"\",\"业务流程\":\"铺货 回访\"}}"
+    },
+    {
+      "id": "create-D",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:45.968Z\",\"updatedAt\":\"2026-10-07T15:17:45.968Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-E",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:46.638Z\",\"updatedAt\":\"2026-10-07T15:17:46.638Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-D",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:45.968Z\",\"updatedAt\":\"2026-10-07T15:17:45.968Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"c70d20a5-c57d-415e-8eef-10f4cb87e7fb\",\"name\":\"B07二返并发丁\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"丁正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-F",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:01.265Z\",\"updatedAt\":\"2026-10-07T15:18:01.265Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-F",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:01.265Z\",\"updatedAt\":\"2026-10-07T15:18:01.265Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"4f7ffdd2-fcc9-4574-b50e-b6f4a86242df\",\"name\":\"B07二返并发己\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"己正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-E",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:17:46.638Z\",\"updatedAt\":\"2026-10-07T15:17:46.638Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"a35795d0-e3b8-4bcf-9695-d55e7f088475\",\"name\":\"B07二返并发戊\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"戊正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-failed",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-failed",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-success",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:48.155Z\",\"updatedAt\":\"2026-10-07T15:18:48.155Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "retry-success",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:18:48.155Z\",\"updatedAt\":\"2026-10-07T15:18:48.155Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"d03338d1-7fbb-4b60-8c64-fcef44c43628\",\"name\":\"B07二返真实失败重试\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"失败重试原文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-G-failure",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"name\":\"B07二返迟到失败庚\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"庚不落盘\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-H",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:36.872Z\",\"updatedAt\":\"2026-10-07T15:19:36.872Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-G-failure",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"PROMPT_WRITE_FAILED\",\"message\":\"保存失败：Prompt 文件没有写入，原有内容和版本记录都没有改变，请重试。\",\"details\":{\"id\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"cause\":\"Independent B07 acceptance EIO\"}}}",
+      "requestBody": "{\"requestId\":\"dfc55f93-b1e2-4fb2-84b8-e892accc1ea1\",\"name\":\"B07二返迟到失败庚\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"庚不落盘\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-I",
+      "phase": "held",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:37.666Z\",\"updatedAt\":\"2026-10-07T15:19:37.666Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-H",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:36.872Z\",\"updatedAt\":\"2026-10-07T15:19:36.872Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"3037fa9d-04bf-44f5-b0bc-919eb463217c\",\"name\":\"B07二返并发辛\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"辛正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "create-I",
+      "phase": "released",
+      "url": "/api/prompts",
+      "method": "POST",
+      "status": 201,
+      "body": "{\"prompt\":{\"id\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"variables\":[],\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false,\"createdAt\":\"2026-10-07T15:19:37.666Z\",\"updatedAt\":\"2026-10-07T15:19:37.666Z\",\"version\":1,\"source\":\"manual\"},\"reused\":false}",
+      "requestBody": "{\"requestId\":\"8d5658a0-cc4a-4510-a749-7ce2fedbbac6\",\"name\":\"B07二返并发壬\",\"category\":\"industry_learning\",\"scenario\":\"\",\"body\":\"壬正文\",\"inputRequirements\":\"\",\"outputRequirements\":\"\",\"relatedWikiIds\":[],\"examples\":\"\",\"tags\":[],\"favorite\":false}"
+    },
+    {
+      "id": "update-conflict",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+      "method": "PUT",
+      "status": 409,
+      "body": "{\"error\":{\"code\":\"VERSION_CONFLICT\",\"message\":\"这条 Prompt 已经被保存为第 3 版，请刷新后重新编辑；你刚才的输入没有被覆盖。\",\"details\":{\"currentVersion\":3}}}",
+      "requestBody": "{\"name\":\"B07二返模板甲\",\"category\":\"business_analysis\",\"scenario\":\"本窗口未保存输入\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"978cb51a-3845-4a4c-a877-778b4f944528\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"二返\"],\"favorite\":true,\"baseVersion\":2}"
+    },
+    {
+      "id": "update-conflict",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+      "method": "PUT",
+      "status": 409,
+      "body": "{\"error\":{\"code\":\"VERSION_CONFLICT\",\"message\":\"这条 Prompt 已经被保存为第 3 版，请刷新后重新编辑；你刚才的输入没有被覆盖。\",\"details\":{\"currentVersion\":3}}}",
+      "requestBody": "{\"name\":\"B07二返模板甲\",\"category\":\"business_analysis\",\"scenario\":\"本窗口未保存输入\",\"body\":\" 首行\\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\\n尾部 \",\"inputRequirements\":\"甲输入\",\"outputRequirements\":\"甲输出\",\"relatedWikiIds\":[\"978cb51a-3845-4a4c-a877-778b4f944528\"],\"examples\":\"甲示例\",\"tags\":[\"甲标签\",\"二返\"],\"favorite\":true,\"baseVersion\":2}"
+    },
+    {
+      "id": "history-only-success",
+      "phase": "held",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":3,\"body\":\" 首行\\n请为 迟到的旧值 制定 旧结果；重复客户 迟到的旧值。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":3,\"values\":{\"客户名称\":\"迟到的旧值\",\"业务流程\":\"旧结果\"}}"
+    },
+    {
+      "id": "history-only-success",
+      "phase": "released",
+      "url": "/api/prompts/a9c6831e-3310-4b89-ae9b-3416bb6c3c25/render",
+      "method": "POST",
+      "status": 200,
+      "body": "{\"id\":\"a9c6831e-3310-4b89-ae9b-3416bb6c3c25\",\"version\":3,\"body\":\" 首行\\n请为 迟到的旧值 制定 旧结果；重复客户 迟到的旧值。\\n尾部 \",\"missingVariables\":[]}",
+      "requestBody": "{\"baseVersion\":3,\"values\":{\"客户名称\":\"迟到的旧值\",\"业务流程\":\"旧结果\"}}"
+    },
+    {
+      "id": "old-search",
+      "phase": "held",
+      "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"items\":[{\"id\":\"5ac45181-ee7a-4a95-9f0e-aecf65a846bb\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:14:06.431Z\",\"updatedAt\":\"2026-10-07T15:14:06.445Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":6,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}",
+      "requestBody": ""
+    },
+    {
+      "id": "old-search",
+      "phase": "released",
+      "url": "/api/prompts?q=B07%E6%A8%A1%E6%9D%BF%E4%B9%99",
+      "method": "GET",
+      "status": 200,
+      "body": "{\"items\":[{\"id\":\"5ac45181-ee7a-4a95-9f0e-aecf65a846bb\",\"name\":\"B07模板乙\",\"category\":\"office\",\"scenario\":\"普通办公\",\"body\":\"模板乙第二版无变量原文。\",\"variables\":[],\"inputRequirements\":\"乙输入\",\"outputRequirements\":\"乙输出\",\"relatedWikiIds\":[],\"examples\":\"乙示例\",\"tags\":[\"乙标签\"],\"favorite\":false,\"createdAt\":\"2026-10-07T15:14:06.431Z\",\"updatedAt\":\"2026-10-07T15:14:06.445Z\",\"version\":2,\"source\":\"manual\"}],\"categoryCounts\":{\"industry_learning\":6,\"business_analysis\":1,\"customer\":0,\"product\":0,\"ai\":0,\"office\":1}}",
+      "requestBody": ""
+    }
+  ],
+  "url": "http://127.0.0.1:49389/",
+  "api": "http://127.0.0.1:49350",
+  "proxy": "http://127.0.0.1:49388",
+  "clipboardUrl": "http://127.0.0.1:49388/clipboard-target",
+  "wikiId": "978cb51a-3845-4a4c-a877-778b4f944528",
+  "rawId": "387ab640-eade-45c2-8452-b0225d9c4aa8",
+  "bId": "5ac45181-ee7a-4a95-9f0e-aecf65a846bb",
+  "apiPid": 24528,
+  "uiPid": 36732,
+  "beforeRaw": {
+    "reports\\387ab640-eade-45c2-8452-b0225d9c4aa8.md": "b1b0a78c9305a7f897dbfa123f9ccc52edafd4be7fc67d9e831f4dab0df85c8e"
+  },
+  "beforeKnowledge": {
+    "logs\\wiki.jsonl": "57a75a06fd54007299a518f495d3e455fc09005165ad00933c17a034f917e9a1",
+    "raw\\reports\\387ab640-eade-45c2-8452-b0225d9c4aa8.md": "b1b0a78c9305a7f897dbfa123f9ccc52edafd4be7fc67d9e831f4dab0df85c8e",
+    "wiki\\978cb51a-3845-4a4c-a877-778b4f944528.md": "ed789be94bdd491858de246800603989e7e423fb973ffe490af171957e4f25b4",
+    "wiki\\index.md": "3227cce40e84739096b00929d84bad394e4077041d981d18220d6e3bd4f9d170"
+  },
+  "stopFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b07-independent-sqld8o\\.stop-browser",
+  "restartCount": 1,
+  "afterRaw": {
+    "reports\\387ab640-eade-45c2-8452-b0225d9c4aa8.md": "b1b0a78c9305a7f897dbfa123f9ccc52edafd4be7fc67d9e831f4dab0df85c8e"
+  },
+  "afterKnowledge": {
+    "logs\\wiki.jsonl": "57a75a06fd54007299a518f495d3e455fc09005165ad00933c17a034f917e9a1",
+    "raw\\reports\\387ab640-eade-45c2-8452-b0225d9c4aa8.md": "b1b0a78c9305a7f897dbfa123f9ccc52edafd4be7fc67d9e831f4dab0df85c8e",
+    "wiki\\978cb51a-3845-4a4c-a877-778b4f944528.md": "ed789be94bdd491858de246800603989e7e423fb973ffe490af171957e4f25b4",
+    "wiki\\index.md": "3227cce40e84739096b00929d84bad394e4077041d981d18220d6e3bd4f9d170"
+  },
+  "finalPrompts": {
+    "items": [
+      {
+        "id": "a9c6831e-3310-4b89-ae9b-3416bb6c3c25",
+        "name": "B07二返模板甲",
+        "category": "business_analysis",
+        "scenario": "另一窗口已保存的第三版",
+        "body": " 首行\n请为 {{客户名称}} 制定 {{业务流程}}；重复客户 {{ 客户名称 }}。\n尾部 ",
+        "variables": [
+          "客户名称",
+          "业务流程"
+        ],
+        "inputRequirements": "甲输入",
+        "outputRequirements": "甲输出",
+        "relatedWikiIds": [
+          "978cb51a-3845-4a4c-a877-778b4f944528"
+        ],
+        "examples": "甲示例",
+        "tags": [
+          "甲标签",
+          "二返"
+        ],
+        "favorite": true,
+        "createdAt": "2026-10-07T15:15:38.702Z",
+        "updatedAt": "2026-10-07T15:20:50.242Z",
+        "version": 3,
+        "source": "manual"
+      },
+      {
+        "id": "8d5658a0-cc4a-4510-a749-7ce2fedbbac6",
+        "name": "B07二返并发壬",
+        "category": "industry_learning",
+        "scenario": "",
+        "body": "壬正文",
+        "variables": [],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:19:37.666Z",
+        "updatedAt": "2026-10-07T15:19:37.666Z",
+        "version": 1,
+        "source": "manual"
+      },
+      {
+        "id": "3037fa9d-04bf-44f5-b0bc-919eb463217c",
+        "name": "B07二返并发辛",
+        "category": "industry_learning",
+        "scenario": "",
+        "body": "辛正文",
+        "variables": [],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:19:36.872Z",
+        "updatedAt": "2026-10-07T15:19:36.872Z",
+        "version": 1,
+        "source": "manual"
+      },
+      {
+        "id": "d03338d1-7fbb-4b60-8c64-fcef44c43628",
+        "name": "B07二返真实失败重试",
+        "category": "industry_learning",
+        "scenario": "",
+        "body": "失败重试原文",
+        "variables": [],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:18:48.155Z",
+        "updatedAt": "2026-10-07T15:18:48.155Z",
+        "version": 1,
+        "source": "manual"
+      },
+      {
+        "id": "4f7ffdd2-fcc9-4574-b50e-b6f4a86242df",
+        "name": "B07二返并发己",
+        "category": "industry_learning",
+        "scenario": "",
+        "body": "己正文",
+        "variables": [],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:18:01.265Z",
+        "updatedAt": "2026-10-07T15:18:01.265Z",
+        "version": 1,
+        "source": "manual"
+      },
+      {
+        "id": "a35795d0-e3b8-4bcf-9695-d55e7f088475",
+        "name": "B07二返并发戊",
+        "category": "industry_learning",
+        "scenario": "",
+        "body": "戊正文",
+        "variables": [],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:17:46.638Z",
+        "updatedAt": "2026-10-07T15:17:46.638Z",
+        "version": 1,
+        "source": "manual"
+      },
+      {
+        "id": "c70d20a5-c57d-415e-8eef-10f4cb87e7fb",
+        "name": "B07二返并发丁",
+        "category": "industry_learning",
+        "scenario": "",
+        "body": "丁正文",
+        "variables": [],
+        "inputRequirements": "",
+        "outputRequirements": "",
+        "relatedWikiIds": [],
+        "examples": "",
+        "tags": [],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:17:45.968Z",
+        "updatedAt": "2026-10-07T15:17:45.968Z",
+        "version": 1,
+        "source": "manual"
+      },
+      {
+        "id": "5ac45181-ee7a-4a95-9f0e-aecf65a846bb",
+        "name": "B07模板乙",
+        "category": "office",
+        "scenario": "普通办公",
+        "body": "模板乙第二版无变量原文。",
+        "variables": [],
+        "inputRequirements": "乙输入",
+        "outputRequirements": "乙输出",
+        "relatedWikiIds": [],
+        "examples": "乙示例",
+        "tags": [
+          "乙标签"
+        ],
+        "favorite": false,
+        "createdAt": "2026-10-07T15:14:06.431Z",
+        "updatedAt": "2026-10-07T15:14:06.445Z",
+        "version": 2,
+        "source": "manual"
+      }
+    ],
+    "categoryCounts": {
+      "industry_learning": 6,
+      "business_analysis": 1,
+      "customer": 0,
+      "product": 0,
+      "ai": 0,
+      "office": 1
+    }
+  },
+  "closed": {
+    "api": true,
+    "ui": true,
+    "proxy": true,
+    "fake": true
+  }
+}

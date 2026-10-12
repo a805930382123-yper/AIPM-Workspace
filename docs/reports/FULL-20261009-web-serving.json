@@ -1,0 +1,29 @@
+{
+  "scope": "HTTP serving only; browser engine unavailable; local fake config is not real provider",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html",
+      "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <script type=\"module\">import { injectIntoGlobalHook } from \"/@react-refresh\";\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$ = () => {};\nwindow.$RefreshSig$ = () => (type) => type;</script>\n\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"theme-color\" content=\"#f3f5f8\" />\n    <title>快消 AI 产品经理工作台</title>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/app/main.tsx\"></script>\n  </body>\n</html>\n"
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "body": "{\"ok\":true}"
+    },
+    {
+      "path": "/api/stats",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "body": "{\"rawCount\":0,\"wikiCount\":0,\"thisWeekNewCount\":0,\"pendingConfirmationCount\":0,\"openAuditCount\":0,\"promptCount\":0,\"weekStartsOn\":\"2026-10-05\",\"recentChanges\":[]}"
+    },
+    {
+      "path": "/api/llm/config",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "body": "{\"provider\":\"openai-compatible\",\"baseUrlHost\":\"127.0.0.1:49340\",\"model\":\"independent-b08-fake\",\"keyConfigured\":true,\"keyMask\":\"••••••••••••\",\"configured\":true,\"source\":\"env\",\"missing\":[],\"configFile\":\"E:\\\\AI\\\\Work\\\\AIPM Workspace\\\\.env.local\",\"envNames\":{\"baseUrl\":\"FMCG_LLM_BASE_URL\",\"model\":\"FMCG_LLM_MODEL\",\"apiKey\":\"FMCG_LLM_API_KEY\"}}"
+    }
+  ]
+}

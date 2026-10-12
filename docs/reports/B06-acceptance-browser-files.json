@@ -1,0 +1,1033 @@
+[
+  {
+    "phase": "preview",
+    "wiki": {
+      "title": "B06浏览器铺货率",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "a99dc66a-8faf-4909-ae13-2c1720aed8a3"
+      ],
+      "tags": [],
+      "aliases": [
+        "浏览器原别名"
+      ],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "B",
+      "review_status": "reviewed",
+      "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+      "domain": "fmcg",
+      "created": "2026-10-07T06:49:40.868Z",
+      "updated": "2026-10-07T06:49:40.868Z",
+      "revision": 1,
+      "body": "## 定义\n铺货率采用上架门店数除以目标门店数。\n## 人工保留\n不要删除这条人工备注。",
+      "links": []
+    },
+    "details": [
+      {
+        "audit": {
+          "id": "550ab91a-16f1-48a7-b1bf-5e5fa2116682",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "paragraph",
+          "severity": "error",
+          "comment": "浏览器段落纠错：请根据 Raw 改正铺货率口径，保留人工备注。",
+          "anchor": {
+            "before": "## 定义\n",
+            "text": "铺货率采用上架门店数除以目标门店数",
+            "after": "。\n## 人工保留\n不要删除这条人工备注。"
+          },
+          "pageBodySha256": "b89b07e008eaba323aa014c2a3b941fc5688f2297f45ff80b9c08050faa768f2",
+          "createdRevision": 1,
+          "revision": 2,
+          "createdAt": "2026-10-07T06:52:08.478Z",
+          "updatedAt": "2026-10-07T06:52:17.797Z",
+          "status": "open",
+          "location": {
+            "status": "found",
+            "start": 6,
+            "end": 23,
+            "method": "context",
+            "reason": "context"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [],
+          "pendingDraftId": "9460a3c9-d45a-4e87-b925-1a72dcb57702"
+        },
+        "draft": {
+          "id": "9460a3c9-d45a-4e87-b925-1a72dcb57702",
+          "auditId": "550ab91a-16f1-48a7-b1bf-5e5fa2116682",
+          "revision": 2,
+          "status": "pending",
+          "baseWikiRevision": 1,
+          "baseAuditRevision": 1,
+          "rawSnapshots": [
+            {
+              "rawId": "a99dc66a-8faf-4909-ae13-2c1720aed8a3",
+              "sha256": "d781ebbe8ec21118b96a364556e3bdd4af0c285cb3cb7c4f1afc26f48697b793"
+            }
+          ],
+          "replacement": "铺货率采用有销售门店数除以目标门店数（浏览器人工确认）",
+          "rationale": "依据Raw纠正口径，人工内容需保留",
+          "evidence": [
+            {
+              "rawId": "a99dc66a-8faf-4909-ae13-2c1720aed8a3",
+              "quote": "验收原始资料：铺货率采用有销售门店数除以目标门店数，统计周期为自然月。"
+            }
+          ],
+          "createdAt": "2026-10-07T06:52:17.797Z",
+          "updatedAt": "2026-10-07T06:55:50.154Z",
+          "provider": {
+            "name": "openai-compatible",
+            "model": "independent-b06-fake"
+          }
+        },
+        "conflicts": []
+      }
+    ],
+    "rawFiles": {
+      "reports\\a99dc66a-8faf-4909-ae13-2c1720aed8a3.md": "d511045ef0aca77e2c2102340e43c55dfde0444ac15361d267c4885a292d5d1e"
+    },
+    "wikiFiles": {
+      "c4b846bf-6138-4514-a4fa-21c9ae29bb32.md": "b49b43c146b1a7a8f847eb0f0fe667ff77ad839d3df305b2c3240239a2123c6e",
+      "index.md": "730c3f63e808c82b5857e5eb5242dfef3a809b6ad3915c37c959d40e5380d917"
+    },
+    "stats": {
+      "rawCount": 1,
+      "wikiCount": 1,
+      "thisWeekNewCount": 2,
+      "pendingConfirmationCount": 0,
+      "openAuditCount": 1,
+      "promptCount": 0,
+      "weekStartsOn": "2026-10-05",
+      "recentChanges": [
+        {
+          "time": "2026-10-07T06:49:40.876Z",
+          "action": "create",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 1
+        }
+      ]
+    }
+  },
+  {
+    "phase": "final",
+    "wiki": {
+      "title": "B06浏览器铺货率",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "a99dc66a-8faf-4909-ae13-2c1720aed8a3"
+      ],
+      "tags": [],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "B",
+      "review_status": "reviewed",
+      "aliases": [
+        "浏览器原别名"
+      ],
+      "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+      "domain": "fmcg",
+      "created": "2026-10-07T06:49:40.868Z",
+      "updated": "2026-10-07T06:57:32.883Z",
+      "revision": 3,
+      "body": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+      "links": []
+    },
+    "details": [
+      {
+        "audit": {
+          "id": "bbe506f5-bcd3-4aea-a917-4c21245764df",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器延期：等待业务补充资料。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+            "after": ""
+          },
+          "pageBodySha256": "a5e13ace78f3d172dade108f308ae2bbd0b3dfd5c807d166e3ce8b6e4d94f75d",
+          "createdRevision": 3,
+          "revision": 4,
+          "createdAt": "2026-10-07T06:57:55.316Z",
+          "updatedAt": "2026-10-07T06:58:12.201Z",
+          "status": "open",
+          "location": {
+            "status": "found",
+            "start": 0,
+            "end": 65,
+            "method": "page-snapshot",
+            "reason": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "deferred",
+              "reason": "待业务负责人确认",
+              "at": "2026-10-07T06:58:12.201Z",
+              "operationId": "1c4f1031-bc19-401c-bd67-eb269f3ca90c",
+              "requestHash": "50ce420cd6254bb570d20f2d059c83d9c46c59a880e7e2c62705651f92631fda"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "ebf1fcf1-15a0-4afa-acdf-e4da42da3e34",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器拒绝：人工核验后保留原页。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+            "after": ""
+          },
+          "pageBodySha256": "a5e13ace78f3d172dade108f308ae2bbd0b3dfd5c807d166e3ce8b6e4d94f75d",
+          "createdRevision": 3,
+          "revision": 2,
+          "createdAt": "2026-10-07T06:57:38.301Z",
+          "updatedAt": "2026-10-07T06:57:50.390Z",
+          "status": "resolved",
+          "location": {
+            "status": "found",
+            "start": 0,
+            "end": 65,
+            "method": "page-snapshot",
+            "reason": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "rejected",
+              "reason": "原页符合业务口径",
+              "at": "2026-10-07T06:57:50.390Z",
+              "operationId": "de909a38-8da0-44be-9bb1-83f1cb5a5ad3",
+              "requestHash": "b0caa371a06b352259d4537ff3c4919bf4284c23565b5e37a8dd9c25e1206400"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "3aa2c7e1-148d-47b4-a1ab-0324c2c0451b",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器整页接受：保留人工内容并补充确认记录。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。",
+            "after": ""
+          },
+          "pageBodySha256": "481de95a02063305fbb2ff5e14c9f2a76448a96b8240b7ba54ab6d1220959d85",
+          "createdRevision": 2,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:57:16.779Z",
+          "updatedAt": "2026-10-07T06:57:32.877Z",
+          "status": "resolved",
+          "location": {
+            "status": "stale",
+            "start": -1,
+            "end": -1,
+            "method": "page-changed",
+            "reason": "page-changed"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T06:57:32.877Z",
+              "operationId": "b3571b8c-bfef-4192-b607-301aef260ab5",
+              "wikiRevision": 3,
+              "draftId": "a4ac5896-3c98-4271-8724-0bb751efaeb2",
+              "requestHash": "7ccd8dec94ac0d0745f1db64c1cd2392dce97f5ce8a5f9db3be696e72fd7f1ea"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "550ab91a-16f1-48a7-b1bf-5e5fa2116682",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "paragraph",
+          "severity": "error",
+          "comment": "浏览器段落纠错：请根据 Raw 改正铺货率口径，保留人工备注。",
+          "anchor": {
+            "before": "## 定义\n",
+            "text": "铺货率采用上架门店数除以目标门店数",
+            "after": "。\n## 人工保留\n不要删除这条人工备注。"
+          },
+          "pageBodySha256": "b89b07e008eaba323aa014c2a3b941fc5688f2297f45ff80b9c08050faa768f2",
+          "createdRevision": 1,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:52:08.478Z",
+          "updatedAt": "2026-10-07T06:57:10.556Z",
+          "status": "resolved",
+          "location": {
+            "status": "missing",
+            "start": -1,
+            "end": -1,
+            "method": "missing",
+            "reason": "missing"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "partial",
+              "at": "2026-10-07T06:57:10.556Z",
+              "operationId": "144483c9-4a43-4e06-9414-71e916e14564",
+              "wikiRevision": 2,
+              "draftId": "9460a3c9-d45a-4e87-b925-1a72dcb57702",
+              "requestHash": "2efaa922569e0b416131571a39352125984c22da4ccc9bc194df20bf05be8158"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      }
+    ],
+    "rawFiles": {
+      "reports\\a99dc66a-8faf-4909-ae13-2c1720aed8a3.md": "d511045ef0aca77e2c2102340e43c55dfde0444ac15361d267c4885a292d5d1e"
+    },
+    "wikiFiles": {
+      "c4b846bf-6138-4514-a4fa-21c9ae29bb32.md": "220b1d95cd638a56e00b7e88122e29218e3b052f59357f63cf5a089630ba70e7",
+      "index.md": "730c3f63e808c82b5857e5eb5242dfef3a809b6ad3915c37c959d40e5380d917"
+    },
+    "stats": {
+      "rawCount": 1,
+      "wikiCount": 1,
+      "thisWeekNewCount": 2,
+      "pendingConfirmationCount": 0,
+      "openAuditCount": 1,
+      "promptCount": 0,
+      "weekStartsOn": "2026-10-05",
+      "recentChanges": [
+        {
+          "time": "2026-10-07T06:58:12.204Z",
+          "action": "audit",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T06:57:50.393Z",
+          "action": "audit",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T06:57:32.896Z",
+          "action": "audit",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T06:57:32.889Z",
+          "action": "update",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T06:57:10.576Z",
+          "action": "audit",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 2
+        },
+        {
+          "time": "2026-10-07T06:57:10.569Z",
+          "action": "update",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 2
+        },
+        {
+          "time": "2026-10-07T06:49:40.876Z",
+          "action": "create",
+          "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "title": "B06浏览器铺货率",
+          "type": "metric",
+          "revision": 1
+        }
+      ]
+    }
+  },
+  {
+    "phase": "post-ui-repair",
+    "wiki": {
+      "title": "B06浏览器铺货率",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "a99dc66a-8faf-4909-ae13-2c1720aed8a3"
+      ],
+      "tags": [],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "B",
+      "review_status": "reviewed",
+      "aliases": [
+        "浏览器原别名"
+      ],
+      "id": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+      "domain": "fmcg",
+      "created": "2026-10-07T06:49:40.868Z",
+      "updated": "2026-10-07T06:57:32.883Z",
+      "revision": 3,
+      "body": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+      "links": []
+    },
+    "details": [
+      {
+        "audit": {
+          "id": "bbe506f5-bcd3-4aea-a917-4c21245764df",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器延期：等待业务补充资料。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+            "after": ""
+          },
+          "pageBodySha256": "a5e13ace78f3d172dade108f308ae2bbd0b3dfd5c807d166e3ce8b6e4d94f75d",
+          "createdRevision": 3,
+          "revision": 4,
+          "createdAt": "2026-10-07T06:57:55.316Z",
+          "updatedAt": "2026-10-07T06:58:12.201Z",
+          "status": "open",
+          "location": {
+            "status": "found",
+            "start": 0,
+            "end": 65,
+            "method": "page-snapshot",
+            "reason": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "deferred",
+              "reason": "待业务负责人确认",
+              "at": "2026-10-07T06:58:12.201Z",
+              "operationId": "1c4f1031-bc19-401c-bd67-eb269f3ca90c",
+              "requestHash": "50ce420cd6254bb570d20f2d059c83d9c46c59a880e7e2c62705651f92631fda"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "ebf1fcf1-15a0-4afa-acdf-e4da42da3e34",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器拒绝：人工核验后保留原页。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+            "after": ""
+          },
+          "pageBodySha256": "a5e13ace78f3d172dade108f308ae2bbd0b3dfd5c807d166e3ce8b6e4d94f75d",
+          "createdRevision": 3,
+          "revision": 2,
+          "createdAt": "2026-10-07T06:57:38.301Z",
+          "updatedAt": "2026-10-07T06:57:50.390Z",
+          "status": "resolved",
+          "location": {
+            "status": "found",
+            "start": 0,
+            "end": 65,
+            "method": "page-snapshot",
+            "reason": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "rejected",
+              "reason": "原页符合业务口径",
+              "at": "2026-10-07T06:57:50.390Z",
+              "operationId": "de909a38-8da0-44be-9bb1-83f1cb5a5ad3",
+              "requestHash": "b0caa371a06b352259d4537ff3c4919bf4284c23565b5e37a8dd9c25e1206400"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "3aa2c7e1-148d-47b4-a1ab-0324c2c0451b",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器整页接受：保留人工内容并补充确认记录。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。",
+            "after": ""
+          },
+          "pageBodySha256": "481de95a02063305fbb2ff5e14c9f2a76448a96b8240b7ba54ab6d1220959d85",
+          "createdRevision": 2,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:57:16.779Z",
+          "updatedAt": "2026-10-07T06:57:32.877Z",
+          "status": "resolved",
+          "location": {
+            "status": "stale",
+            "start": -1,
+            "end": -1,
+            "method": "page-changed",
+            "reason": "page-changed"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T06:57:32.877Z",
+              "operationId": "b3571b8c-bfef-4192-b607-301aef260ab5",
+              "wikiRevision": 3,
+              "draftId": "a4ac5896-3c98-4271-8724-0bb751efaeb2",
+              "requestHash": "7ccd8dec94ac0d0745f1db64c1cd2392dce97f5ce8a5f9db3be696e72fd7f1ea"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "550ab91a-16f1-48a7-b1bf-5e5fa2116682",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "paragraph",
+          "severity": "error",
+          "comment": "浏览器段落纠错：请根据 Raw 改正铺货率口径，保留人工备注。",
+          "anchor": {
+            "before": "## 定义\n",
+            "text": "铺货率采用上架门店数除以目标门店数",
+            "after": "。\n## 人工保留\n不要删除这条人工备注。"
+          },
+          "pageBodySha256": "b89b07e008eaba323aa014c2a3b941fc5688f2297f45ff80b9c08050faa768f2",
+          "createdRevision": 1,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:52:08.478Z",
+          "updatedAt": "2026-10-07T06:57:10.556Z",
+          "status": "resolved",
+          "location": {
+            "status": "missing",
+            "start": -1,
+            "end": -1,
+            "method": "missing",
+            "reason": "missing"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "partial",
+              "at": "2026-10-07T06:57:10.556Z",
+              "operationId": "144483c9-4a43-4e06-9414-71e916e14564",
+              "wikiRevision": 2,
+              "draftId": "9460a3c9-d45a-4e87-b925-1a72dcb57702",
+              "requestHash": "2efaa922569e0b416131571a39352125984c22da4ccc9bc194df20bf05be8158"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      }
+    ],
+    "rawFiles": {
+      "reports\\a99dc66a-8faf-4909-ae13-2c1720aed8a3.md": "d511045ef0aca77e2c2102340e43c55dfde0444ac15361d267c4885a292d5d1e"
+    },
+    "wikiFiles": {
+      "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81.md": "a4471bce691a0521bec3cd8827b44063e553272f4f8856b292744cafe03b8803",
+      "8d050f47-468b-488d-a8c9-a2568b89e57e.md": "dbc1e1da40a7bdea6bf4d3dbf61ae15f123b30bb1eed256fe18fe61a899bb972",
+      "c4b846bf-6138-4514-a4fa-21c9ae29bb32.md": "220b1d95cd638a56e00b7e88122e29218e3b052f59357f63cf5a089630ba70e7",
+      "index.md": "1205aaf4cef975974cbcbe33efe9430a9eb2b45997ca26dc906432bf4198033e"
+    },
+    "stats": {
+      "rawCount": 1,
+      "wikiCount": 3,
+      "thisWeekNewCount": 4,
+      "pendingConfirmationCount": 0,
+      "openAuditCount": 3,
+      "promptCount": 0,
+      "weekStartsOn": "2026-10-05",
+      "recentChanges": [
+        {
+          "time": "2026-10-07T07:10:47.712Z",
+          "action": "audit",
+          "id": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "title": "B06浏览器冲突恢复",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T07:10:47.705Z",
+          "action": "update",
+          "id": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "title": "B06浏览器冲突恢复",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T07:00:54.519Z",
+          "action": "update",
+          "id": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+          "title": "B06浏览器冲突恢复复验",
+          "type": "metric",
+          "revision": 4
+        },
+        {
+          "time": "2026-10-07T07:00:23.380Z",
+          "action": "audit",
+          "id": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "title": "B06浏览器冲突恢复",
+          "type": "metric",
+          "revision": 2
+        },
+        {
+          "time": "2026-10-07T07:00:22.793Z",
+          "action": "update",
+          "id": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+          "title": "B06浏览器冲突恢复复验",
+          "type": "metric",
+          "revision": 3
+        },
+        {
+          "time": "2026-10-07T07:00:22.777Z",
+          "action": "update",
+          "id": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+          "title": "B06浏览器冲突恢复复验",
+          "type": "metric",
+          "revision": 2
+        },
+        {
+          "time": "2026-10-07T07:00:22.741Z",
+          "action": "create",
+          "id": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+          "title": "B06浏览器冲突恢复复验",
+          "type": "metric",
+          "revision": 1
+        },
+        {
+          "time": "2026-10-07T06:59:46.677Z",
+          "action": "update",
+          "id": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "title": "B06浏览器冲突恢复",
+          "type": "metric",
+          "revision": 2
+        }
+      ]
+    },
+    "allAudits": {
+      "items": [
+        {
+          "id": "48822ff7-3048-4955-a998-d07fddc53e75",
+          "wikiId": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "UI延迟建议B：同页切换应保留当前A草稿。",
+          "anchor": {
+            "before": "",
+            "text": "铺货率采用有销售门店数除以目标门店数。",
+            "after": ""
+          },
+          "pageBodySha256": "1915594f2b21ace7e725a91a4c5bbac02bb8e98a9c8022f80c53d7e85e4ed0b5",
+          "createdRevision": 2,
+          "revision": 2,
+          "createdAt": "2026-10-07T07:10:03.909Z",
+          "updatedAt": "2026-10-07T07:10:41.258Z",
+          "status": "open",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 19,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [],
+          "pendingDraftId": "659dc548-5c40-4704-9e04-98f7e8d0cf0a"
+        },
+        {
+          "id": "1817f1ad-d764-4e60-9fe6-41d32116fe16",
+          "wikiId": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "UI延迟建议A：原页保存，不污染其他选择。",
+          "anchor": {
+            "before": "",
+            "text": "铺货率采用有销售门店数除以目标门店数。",
+            "after": ""
+          },
+          "pageBodySha256": "1915594f2b21ace7e725a91a4c5bbac02bb8e98a9c8022f80c53d7e85e4ed0b5",
+          "createdRevision": 2,
+          "revision": 3,
+          "createdAt": "2026-10-07T07:09:07.991Z",
+          "updatedAt": "2026-10-07T07:10:47.693Z",
+          "status": "resolved",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 19,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T07:10:47.693Z",
+              "operationId": "88c30708-ccee-47a1-a66e-31016262e70e",
+              "wikiRevision": 3,
+              "draftId": "3bbe832b-bd84-4061-a5a5-a162fe123188",
+              "requestHash": "a1da02d9c65fa21ec49320f2eb8d8e74bc6808ba2f4d6739098684eb67be2b4d"
+            }
+          ]
+        },
+        {
+          "id": "14cfb915-e341-470e-bd01-5b4f9e2bf6e9",
+          "wikiId": "8d050f47-468b-488d-a8c9-a2568b89e57e",
+          "scope": "page",
+          "severity": "warning",
+          "comment": "浏览器冲突提示验收：中断后保留人工修改。",
+          "anchor": {
+            "before": "",
+            "text": "隔离冲突测试原正文。",
+            "after": ""
+          },
+          "pageBodySha256": "0cd7ee35e43239b9b288fdd8047f2c62760228b4704b4dfdafdf98f6c40cb15e",
+          "createdRevision": 1,
+          "revision": 2,
+          "createdAt": "2026-10-07T07:00:22.750Z",
+          "updatedAt": "2026-10-07T07:00:22.758Z",
+          "status": "open",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 10,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [],
+          "pendingDraftId": "b7f7da6b-4e4d-4909-9636-b0fbf14ee299"
+        },
+        {
+          "id": "5cd67409-2ca5-4176-9b8b-8287236f8652",
+          "wikiId": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "scope": "page",
+          "severity": "warning",
+          "comment": "浏览器冲突提示验收：中断后保留人工修改。",
+          "anchor": {
+            "before": "",
+            "text": "隔离冲突测试原正文。",
+            "after": ""
+          },
+          "pageBodySha256": "0cd7ee35e43239b9b288fdd8047f2c62760228b4704b4dfdafdf98f6c40cb15e",
+          "createdRevision": 1,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:59:46.652Z",
+          "updatedAt": "2026-10-07T07:00:23.380Z",
+          "status": "resolved",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 10,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T07:00:23.380Z",
+              "operationId": "d201736a-bf2c-4a06-8084-5b1b67742b36",
+              "wikiRevision": 2,
+              "draftId": "8407bdd8-9cbb-4aaf-b8f1-76fe9f68485e",
+              "requestHash": "e9e73b2dc66a65d491ceeb015ca5fd109fd8a2acd9ddb6ee6c870d7fad6bd164"
+            }
+          ]
+        },
+        {
+          "id": "bbe506f5-bcd3-4aea-a917-4c21245764df",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器延期：等待业务补充资料。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+            "after": ""
+          },
+          "pageBodySha256": "a5e13ace78f3d172dade108f308ae2bbd0b3dfd5c807d166e3ce8b6e4d94f75d",
+          "createdRevision": 3,
+          "revision": 4,
+          "createdAt": "2026-10-07T06:57:55.316Z",
+          "updatedAt": "2026-10-07T06:58:12.201Z",
+          "status": "open",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 65,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "deferred",
+              "reason": "待业务负责人确认",
+              "at": "2026-10-07T06:58:12.201Z",
+              "operationId": "1c4f1031-bc19-401c-bd67-eb269f3ca90c",
+              "requestHash": "50ce420cd6254bb570d20f2d059c83d9c46c59a880e7e2c62705651f92631fda"
+            }
+          ]
+        },
+        {
+          "id": "ebf1fcf1-15a0-4afa-acdf-e4da42da3e34",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器拒绝：人工核验后保留原页。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。\n浏览器整页确认补充。",
+            "after": ""
+          },
+          "pageBodySha256": "a5e13ace78f3d172dade108f308ae2bbd0b3dfd5c807d166e3ce8b6e4d94f75d",
+          "createdRevision": 3,
+          "revision": 2,
+          "createdAt": "2026-10-07T06:57:38.301Z",
+          "updatedAt": "2026-10-07T06:57:50.390Z",
+          "status": "resolved",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 65,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "rejected",
+              "reason": "原页符合业务口径",
+              "at": "2026-10-07T06:57:50.390Z",
+              "operationId": "de909a38-8da0-44be-9bb1-83f1cb5a5ad3",
+              "requestHash": "b0caa371a06b352259d4537ff3c4919bf4284c23565b5e37a8dd9c25e1206400"
+            }
+          ]
+        },
+        {
+          "id": "3aa2c7e1-148d-47b4-a1ab-0324c2c0451b",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "浏览器整页接受：保留人工内容并补充确认记录。",
+          "anchor": {
+            "before": "",
+            "text": "## 定义\n铺货率采用有销售门店数除以目标门店数（浏览器人工确认）。\n## 人工保留\n不要删除这条人工备注。",
+            "after": ""
+          },
+          "pageBodySha256": "481de95a02063305fbb2ff5e14c9f2a76448a96b8240b7ba54ab6d1220959d85",
+          "createdRevision": 2,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:57:16.779Z",
+          "updatedAt": "2026-10-07T06:57:32.877Z",
+          "status": "resolved",
+          "location": {
+            "status": "located",
+            "start": 0,
+            "end": 54,
+            "method": "page-snapshot"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T06:57:32.877Z",
+              "operationId": "b3571b8c-bfef-4192-b607-301aef260ab5",
+              "wikiRevision": 3,
+              "draftId": "a4ac5896-3c98-4271-8724-0bb751efaeb2",
+              "requestHash": "7ccd8dec94ac0d0745f1db64c1cd2392dce97f5ce8a5f9db3be696e72fd7f1ea"
+            }
+          ]
+        },
+        {
+          "id": "550ab91a-16f1-48a7-b1bf-5e5fa2116682",
+          "wikiId": "c4b846bf-6138-4514-a4fa-21c9ae29bb32",
+          "scope": "paragraph",
+          "severity": "error",
+          "comment": "浏览器段落纠错：请根据 Raw 改正铺货率口径，保留人工备注。",
+          "anchor": {
+            "before": "## 定义\n",
+            "text": "铺货率采用上架门店数除以目标门店数",
+            "after": "。\n## 人工保留\n不要删除这条人工备注。"
+          },
+          "pageBodySha256": "b89b07e008eaba323aa014c2a3b941fc5688f2297f45ff80b9c08050faa768f2",
+          "createdRevision": 1,
+          "revision": 3,
+          "createdAt": "2026-10-07T06:52:08.478Z",
+          "updatedAt": "2026-10-07T06:57:10.556Z",
+          "status": "resolved",
+          "location": {
+            "status": "located",
+            "start": 6,
+            "end": 23,
+            "method": "context"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "partial",
+              "at": "2026-10-07T06:57:10.556Z",
+              "operationId": "144483c9-4a43-4e06-9414-71e916e14564",
+              "wikiRevision": 2,
+              "draftId": "9460a3c9-d45a-4e87-b925-1a72dcb57702",
+              "requestHash": "2efaa922569e0b416131571a39352125984c22da4ccc9bc194df20bf05be8158"
+            }
+          ]
+        }
+      ]
+    },
+    "raceDetails": [
+      {
+        "audit": {
+          "id": "1817f1ad-d764-4e60-9fe6-41d32116fe16",
+          "wikiId": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "UI延迟建议A：原页保存，不污染其他选择。",
+          "anchor": {
+            "before": "",
+            "text": "铺货率采用有销售门店数除以目标门店数。",
+            "after": ""
+          },
+          "pageBodySha256": "1915594f2b21ace7e725a91a4c5bbac02bb8e98a9c8022f80c53d7e85e4ed0b5",
+          "createdRevision": 2,
+          "revision": 3,
+          "createdAt": "2026-10-07T07:09:07.991Z",
+          "updatedAt": "2026-10-07T07:10:47.693Z",
+          "status": "resolved",
+          "location": {
+            "status": "stale",
+            "start": -1,
+            "end": -1,
+            "method": "page-changed",
+            "reason": "page-changed"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [
+            {
+              "decision": "accepted",
+              "at": "2026-10-07T07:10:47.693Z",
+              "operationId": "88c30708-ccee-47a1-a66e-31016262e70e",
+              "wikiRevision": 3,
+              "draftId": "3bbe832b-bd84-4061-a5a5-a162fe123188",
+              "requestHash": "a1da02d9c65fa21ec49320f2eb8d8e74bc6808ba2f4d6739098684eb67be2b4d"
+            }
+          ]
+        },
+        "draft": null,
+        "conflicts": []
+      },
+      {
+        "audit": {
+          "id": "48822ff7-3048-4955-a998-d07fddc53e75",
+          "wikiId": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+          "scope": "page",
+          "severity": "suggestion",
+          "comment": "UI延迟建议B：同页切换应保留当前A草稿。",
+          "anchor": {
+            "before": "",
+            "text": "铺货率采用有销售门店数除以目标门店数。",
+            "after": ""
+          },
+          "pageBodySha256": "1915594f2b21ace7e725a91a4c5bbac02bb8e98a9c8022f80c53d7e85e4ed0b5",
+          "createdRevision": 2,
+          "revision": 2,
+          "createdAt": "2026-10-07T07:10:03.909Z",
+          "updatedAt": "2026-10-07T07:10:41.258Z",
+          "status": "open",
+          "location": {
+            "status": "stale",
+            "start": -1,
+            "end": -1,
+            "method": "page-changed",
+            "reason": "page-changed"
+          },
+          "relocationHistory": [],
+          "decisionHistory": [],
+          "pendingDraftId": "659dc548-5c40-4704-9e04-98f7e8d0cf0a"
+        },
+        "draft": {
+          "id": "659dc548-5c40-4704-9e04-98f7e8d0cf0a",
+          "auditId": "48822ff7-3048-4955-a998-d07fddc53e75",
+          "revision": 1,
+          "status": "pending",
+          "baseWikiRevision": 2,
+          "baseAuditRevision": 1,
+          "rawSnapshots": [
+            {
+              "rawId": "a99dc66a-8faf-4909-ae13-2c1720aed8a3",
+              "sha256": "d781ebbe8ec21118b96a364556e3bdd4af0c285cb3cb7c4f1afc26f48697b793"
+            }
+          ],
+          "replacement": "铺货率采用有销售门店数除以目标门店数。",
+          "rationale": "依据Raw纠正口径，人工内容需保留",
+          "evidence": [
+            {
+              "rawId": "a99dc66a-8faf-4909-ae13-2c1720aed8a3",
+              "quote": "验收原始资料：铺货率采用有销售门店数除以目标门店数，统计周期为自然月。"
+            }
+          ],
+          "createdAt": "2026-10-07T07:10:41.258Z",
+          "updatedAt": "2026-10-07T07:10:41.258Z",
+          "provider": {
+            "name": "openai-compatible",
+            "model": "independent-b06-fake"
+          }
+        },
+        "conflicts": []
+      }
+    ],
+    "raceWiki": {
+      "title": "B06浏览器冲突恢复",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "a99dc66a-8faf-4909-ae13-2c1720aed8a3"
+      ],
+      "tags": [],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "B",
+      "review_status": "reviewed",
+      "aliases": [],
+      "id": "2b1d2458-f3a9-4d9b-baaf-d0c7e0609d81",
+      "domain": "fmcg",
+      "created": "2026-10-07T06:59:46.635Z",
+      "updated": "2026-10-07T07:10:47.698Z",
+      "revision": 3,
+      "body": "铺货率采用有销售门店数除以目标门店数。\nUI返修后人工保存确认。",
+      "links": []
+    }
+  }
+]
