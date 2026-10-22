@@ -31,6 +31,8 @@ git config --global --add safe.directory 'E:/AI/Work/AIPM Workspace'
 
 推送失败会输出错误，本地提交仍保留。解决网络、认证或远程冲突后执行 `git push`；不使用强制推送覆盖远程。`git status -sb` 显示本地领先时表示尚有提交未同步。
 
+本次首次上传直连 GitHub 曾连接重置，随后使用 Windows 已启用的本机代理成功上传。该连接配置仅保存在本机 `.git/config`；代理端口变化后，应更新本地 `http.https://github.com/.proxy`，或在可以直连时用 `git config --local --unset http.https://github.com/.proxy` 移除。其他电脑使用各自可用的网络设置。
+
 ```powershell
 git rev-parse HEAD
 git ls-remote origin refs/heads/main
