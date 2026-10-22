@@ -278,8 +278,8 @@ function toKb02FactsReply(reply: FakeReply, original: FakeRequest, run: FakeRun)
   for(const key of Object.keys(value??{})) if(!['document','suggested_pages','evidence_format_version'].includes(key)) result[key]=value[key];
   return {...reply,content:contentOf(result)};
 }
-function parseKb02Planning(request: FakeRequest): {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>} {
-  const start=request.user.lastIndexOf('\n')+1; return JSON.parse(request.user.slice(start)) as {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>};
+function parseKb02Planning(request: FakeRequest): {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>;factUnits:Array<{id:string;text:string;memberIds:string[]}>;questionUnits:Array<{id:string;text:string;memberIds:string[]}>} {
+  const start=request.user.lastIndexOf('\n')+1; return JSON.parse(request.user.slice(start)) as {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>;factUnits:Array<{id:string;text:string;memberIds:string[]}>;questionUnits:Array<{id:string;text:string;memberIds:string[]}>};
 }
 function adaptKb02PlanningRequest(request: FakeRequest, run: FakeRun): FakeRequest {
   const payload=parseKb02Planning(request); const groups=new Map<string,{title:string;type:string;category:string;facts:Array<{text:string;evidence:any[]}>;questions:string[]}>();
@@ -293,14 +293,14 @@ function adaptKb02PlanningRequest(request: FakeRequest, run: FakeRun): FakeReque
 function toKb02PlanReply(reply: FakeReply, original: FakeRequest, run: FakeRun): FakeReply {
   if(reply.kind!=='content') return reply;
   let returned:any; try{returned=JSON.parse(reply.content);}catch{return reply;}
-  if((returned?.version===1||returned?.version===2)&&returned?.document&&Array.isArray(returned.pages)) return reply;
+  if((returned?.version===1||returned?.version===2||returned?.version===3)&&returned?.document&&Array.isArray(returned.pages)) return reply;
   const input=parseKb02Planning(original); const base=returned?.document??{};
-  const grouped=new Map<string,{title:string;type:string;category:string;factIds:string[];questionIds:string[]}>();
+  const grouped=new Map<string,{title:string;type:string;category:string;factUnitIds:string[];questionUnitIds:string[]}>();
   const factSeen=new Map<string,number>(); const questionSeen=new Map<string,number>();
-  for(const fact of input.facts){const key=`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`;const list=run.pageForFact.get(key)??[];const i=factSeen.get(key)??0;factSeen.set(key,i+1);const meta=list[i]??list[0]??{title:'业务事实',type:'concept',category:'other',documentTitle:'知识主题'};const page=grouped.get(meta.title)??{title:meta.title,type:meta.type,category:meta.category,factIds:[],questionIds:[]};page.factIds.push(fact.id);grouped.set(meta.title,page);}
-  for(const question of input.questions){const key=`${Number(question.id.match(/^q-c(\d+)-/u)?.[1] ?? 1)}\0${question.text}`;const list=run.pageForQuestion.get(key)??[];const i=questionSeen.get(key)??0;questionSeen.set(key,i+1);const title=list[i]??list[0]??grouped.keys().next().value;if(title){const page=grouped.get(title);if(page)page.questionIds.push(question.id);}}
-  if(!grouped.size&&input.facts.length){const page={title:'业务事实',type:'concept',category:'other',factIds:input.facts.map(x=>x.id),questionIds:[]};grouped.set(page.title,page);}
+  for(const unit of input.factUnits){const fact={...unit,id:unit.memberIds[0]};const key=`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`;const list=run.pageForFact.get(key)??[];const i=factSeen.get(key)??0;factSeen.set(key,i+1);const meta=list[i]??list[0]??{title:'业务事实',type:'concept',category:'other',documentTitle:'知识主题'};const page=grouped.get(meta.title)??{title:meta.title,type:meta.type,category:meta.category,factUnitIds:[],questionUnitIds:[]};page.factUnitIds.push(unit.id);grouped.set(meta.title,page);}
+  for(const unit of input.questionUnits){const question={...unit,id:unit.memberIds[0]};const key=`${Number(question.id.match(/^q-c(\d+)-/u)?.[1] ?? 1)}\0${question.text}`;const list=run.pageForQuestion.get(key)??[];const i=questionSeen.get(key)??0;questionSeen.set(key,i+1);const title=list[i]??list[0]??grouped.keys().next().value;if(title){const page=grouped.get(title);if(page)page.questionUnitIds.push(unit.id);}}
+  if(!grouped.size&&input.facts.length){const page={title:'业务事实',type:'concept',category:'other',factUnitIds:input.factUnits.map(x=>x.id),questionUnitIds:[]};grouped.set(page.title,page);}
   const inferredTitle=input.facts.map(fact=>run.pageForFact.get(`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`)?.[0]?.documentTitle).find(Boolean)??'知识主题';
-  return {...reply,content:contentOf({version:2,document:{title:String(base.title&&!String(base.title).startsWith('合并资料-')?base.title:inferredTitle),main_topic:String(base.main_topic??'业务事实')},pages:[...grouped.values()]})};
+  return {...reply,content:contentOf({version:3,document:{title:String(base.title&&!String(base.title).startsWith('合并资料-')?base.title:inferredTitle),main_topic:String(base.main_topic??'业务事实')},pages:[...grouped.values()]})};
 }
 

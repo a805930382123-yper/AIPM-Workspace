@@ -1,4 +1,4 @@
-import { buildKnowledgePlanningInput, KNOWLEDGE_PLANNING_INSTRUCTION } from './knowledge-planning.ts';
+import { buildKnowledgePlanningInput, expandKnowledgePlan, projectKnowledgePlan, KNOWLEDGE_PLANNING_INSTRUCTION, type KnowledgeWirePlan } from './knowledge-planning.ts';
 import { buildKnowledgeAtoms, coverageDiagnostic, hasCoverageErrors } from './knowledge-atoms.ts';
 import { chunkText } from './chunk.ts';
 import { buildEvidenceLocatorCatalog } from './locators.ts';
@@ -6,7 +6,7 @@ import { loadExtractionRules, FROZEN_BUDGETS } from './rules.ts';
 import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } from './provider.ts';
 import { validateSchema } from './schema-validator.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
-import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint, type KnowledgePlan } from './checkpoints.ts';
+import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -76,10 +76,17 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
     if (current.completedChunks.length !== chunks.length || current.completedChunks.some((part, index) => part.index !== index)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '已保存规划但未覆盖全部原文分块，已拒绝恢复。', 409);
     const factIds = current.completedChunks.flatMap(part => part.facts.map(item => item.id));
     const questionIds = current.completedChunks.flatMap(part => part.questions.map(item => item.id));
-    try { exact({ version: 2, ...current.plan, document: { title: current.plan.document.title, main_topic: current.plan.document.main_topic } }, bundle.kb02PlanningSchema, '检查点整篇主题规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划不符合当前严格schema，已拒绝恢复。', 409); }
+    if(Object.keys(current.plan.document).sort().join(',')!=='main_topic,summary,title')throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点文档结构不合法，已拒绝恢复。',409);
+    // The stored plan keeps original IDs; it is not a v3 Provider response.
+    const pagesSchema=bundle.kb02PlanningSchema.properties!.pages!, unitPage=pagesSchema.items!;
+    const {factUnitIds,questionUnitIds,...pageMetadata}=unitPage.properties!;
+    const storedSchema={...bundle.kb02PlanningSchema,properties:{...bundle.kb02PlanningSchema.properties,version:{type:'integer',enum:[2]},pages:{...pagesSchema,items:{...unitPage,required:unitPage.required!.map(key=>key==='factUnitIds'?'factIds':key==='questionUnitIds'?'questionIds':key),properties:{...pageMetadata,factIds:factUnitIds,questionIds:questionUnitIds}}}}};
+    try { exact({version:2,...current.plan,document:{title:current.plan.document.title,main_topic:current.plan.document.main_topic}},storedSchema,'检查点原ID规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点原ID规划不符合严格结构，已拒绝恢复。',409); }
     if (current.plan.document.summary !== sourceSummary(current.completedChunks.flatMap(part => part.facts.map(item => item.text)))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '规划摘要与原始事实不一致。', 409);
     const assignedFacts = current.plan.pages.flatMap(page => page.factIds); const assignedQuestions = current.plan.pages.flatMap(page => page.questionIds);
     if (!current.plan.pages.length || current.plan.pages.length > 50 || current.plan.pages.some(page => !page.factIds.length) || new Set(current.plan.pages.map(page => normalizeText(page.title).toLowerCase())).size !== current.plan.pages.length || factIds.some(id => assignedFacts.filter(item => item === id).length !== 1) || assignedFacts.some(id => !factIds.includes(id)) || questionIds.some(id => assignedQuestions.filter(item => item === id).length !== 1) || assignedQuestions.some(id => !questionIds.includes(id))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划引用或覆盖不完整，已拒绝恢复。', 409);
+    const planningInput=buildKnowledgePlanningInput(input.body,current.completedChunks,catalogByChunk);
+    try { exact(projectKnowledgePlan(current.plan,planningInput), bundle.kb02PlanningSchema, '检查点整篇主题规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划结构或等价记录归属不合法，已拒绝恢复。', 409); }
     try { assertNoKnownSecret(current.plan, input.provider.secrets ?? []); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划包含当前已知秘密，已拒绝恢复。', 409); }
   }
   return { bundle, chunks, catalogByChunk };
@@ -163,14 +170,16 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     if (result.finishReason === 'length') throw new LlmError('LLM_OUTPUT_TRUNCATED', '整篇主题规划响应被截断，未保存规划。', 502);
     const parsed = parse(result.text, input.provider, '整篇主题规划');
     exact(parsed, plannerSchema, '整篇主题规划');
-    const rawPlan = parsed as { version: number; document: Omit<KnowledgePlan['document'], 'summary'>; pages: KnowledgePlan['pages'] };
+    const wirePlan = parsed as KnowledgeWirePlan;
     const factIds = allFacts.map(item => item.id); const questionIds = allQuestions.map(item => item.id);
-    if (rawPlan.pages.some(page => [...page.factIds, ...page.questionIds].some(id => !/^[a-z0-9-]{1,64}$/u.test(id)))) throw new LlmError('LLM_SCHEMA_INVALID', '规划包含不符合ID语法的引用，未持久化错误载荷。', 502);
-    const diagnostic = coverageDiagnostic(factIds, questionIds, rawPlan.pages);
+    if (wirePlan.pages.some(page => [...page.factUnitIds, ...page.questionUnitIds].some(id => !/^[a-z0-9-]{1,64}$/u.test(id)))) throw new LlmError('LLM_SCHEMA_INVALID', '规划包含不符合ID语法的引用，未持久化错误载荷。', 502);
+    const diagnostic = coverageDiagnostic(planningInput.factUnits.map(unit=>unit.id), planningInput.questionUnits.map(unit=>unit.id), wirePlan.pages.map(page=>({title:page.title,factIds:page.factUnitIds,questionIds:page.questionUnitIds})));
     if (hasCoverageErrors(diagnostic)) {
       current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: { code: 'LLM_PLAN_COVERAGE_INVALID', message: '主题规划覆盖不完整或重复；可显式仅重新规划。', at: new Date().toISOString(), diagnostic } });
       throw new LlmError('LLM_PLAN_COVERAGE_INVALID', '主题规划覆盖不完整或重复，未组装草稿。', 502, diagnostic);
     }
+    const rawPlan = {document:wirePlan.document,pages:expandKnowledgePlan(wirePlan,planningInput)};
+    if(hasCoverageErrors(coverageDiagnostic(factIds,questionIds,rawPlan.pages)))throw new LlmError('LLM_PLAN_COVERAGE_INVALID','分配单元与原记录覆盖不一致，未组装草稿。',502);
     assertNoKnownSecret(rawPlan, input.provider.secrets ?? []);
     current = await input.saveCheckpoint({ ...current, plan: { document: { ...rawPlan.document, summary: sourceSummary(allFacts.map(item => item.text)) }, pages: rawPlan.pages }, stage: 'assembling', lastError: undefined });
   }

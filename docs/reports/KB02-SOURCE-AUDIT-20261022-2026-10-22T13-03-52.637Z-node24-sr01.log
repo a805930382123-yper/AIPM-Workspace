@@ -1,0 +1,65 @@
+✔ job file held get excludes update from another store but not another job (57.4192ms)
+✔ job file held get excludes insert from another store but not another job (41.8464ms)
+✔ job atomic replacement excludes get, list, generic JSON read and recovery scan across instances (52.5421ms)
+✔ job list keeps coordination until its real file handle closes (33.8546ms)
+✔ job recovery keeps coordination until its real file handle closes (33.057ms)
+✔ job mutations across instances retain independent fields and release after corrupt reads or persistent rename refusal (389.39ms)
+✔ job polling and independent recovery scans coexist with atomic updates without native rename rejection (292.8165ms)
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (509.1632ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (336.9668ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=false (596.5451ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=true (585.8848ms)
+✔ F-SR01-01 refuses externally changed binding and preserves bytes (455.029ms)
+✔ F-SR01-01 refuses externally changed history and preserves bytes (452.782ms)
+✔ F-SR01-01 refuses externally changed body and preserves bytes (451.6123ms)
+✔ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (618.641ms)
+✔ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (71.9538ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (107.1278ms)
+✔ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (511.3853ms)
+✔ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (475.0982ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (1045.1747ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (446.1957ms)
+✔ SR01 real atomic failed-job transient retry (212.3717ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic failed-job persistent explicit recovery (845.3106ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","rejectedRenames":12,"failedTargetBefore":"8618c59a056aed99afbacff6006a0322cbccc705fc8cc84cbd954144d3885550","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["247d560b75288bd0cfc57e77d40920261a4cb086e1bbb6c7518c3f8f621160f5","1ba12a149d1d00286e3f996bf7fdbbd9773acde7a3ade09f950d9f1d7741c178","13915d90ba0cbde806932157e89d19afbdeba4af42613453ae758de0a116d797"]}
+✔ SR01 real atomic done-checkpoint transient retry (161.1435ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":2}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (833.4153ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"709aba3391f010e90629e42411a2c84a43ef9b724af5478e7ac61aa1ea822c95","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":["3b574bf0-0713-4aae-8e81-a6c9de3fd602"],"finalJob":"completed","idempotentHashes":["3ebf3dc94f91b046848126f4126a8d010d857a56b1106ca34d43b9ec3c772c78","7b2a2fed76a1d0f76f20fecc936d6ad9fe99cc63e3b9f8cebf9f5bdf067eb01e","d7dc663829fae56cc952def16227a5771e6cbc529c065ab290eded86265d68d3"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (127.3503ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (810.2729ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","rejectedRenames":12,"failedTargetBefore":"074d62c687054e4c93ed3b803f8f77525be7f6707c3d5b3744dfd35c721a1078","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["63d5d10f150513745e02f28242fc9c23e882a86de9b87eaf5143c038637d5fd5","4777806ae2768db199721a64e02faf684df7248700501d927d5ef379b60da79e","e530ae2c1469721c7f6c906593749a959c3b289768143ebd5e88cbc16e0c97bb"]}
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (462.5674ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (429.8857ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (436.8284ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (414.8486ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (77.8209ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (406.1944ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3411.1491ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (1.718ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (7036.9036ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1367.4275ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (145.1376ms)
+✔ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (428.52ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (988.0968ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3522.5666ms)
+✔ SR01 start failure reload is actionable and late storage response cannot change a different Raw selection (552.5894ms)
+✔ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3786.7308ms)
+✔ F-SR01-01 React refresh selects new recovery id over old failed job and saves without regenerating (552.8917ms)
+✔ PA01 R01 real workflow records reject deep corruption consistently before reads and writes (863.9759ms)
+✔ PA01 R01 optional evidence and legacy unused snapshots remain readable editable confirmable (130.9981ms)
+✔ PA01 R02 499/500/501/1201 results are bounded with persistent hidden issues and correct rescan totals (4229.3757ms)
+✔ PA01 R02 file/byte/observer budgets remain bounded and partial count stays a lower bound (43.5865ms)
+✔ PA01 strict draft reads preserve corrupt bytes and return a healthy neighbor including manual evidence (47.7574ms)
+✔ PA01 recovery reuses full Prompt draft validation and retains deep shape problems (25.806ms)
+✔ PA01 recovery clears an observed missing draft only after rescanning (22.9463ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18181.2381

@@ -10,7 +10,7 @@
     "version": {
       "type": "integer",
       "enum": [
-        2
+        3
       ]
     },
     "document": {
@@ -44,8 +44,8 @@
           "title",
           "type",
           "category",
-          "factIds",
-          "questionIds"
+          "factUnitIds",
+          "questionUnitIds"
         ],
         "properties": {
           "title": {
@@ -80,7 +80,7 @@
               "other"
             ]
           },
-          "factIds": {
+          "factUnitIds": {
             "type": "array",
             "minItems": 1,
             "items": {
@@ -90,7 +90,7 @@
             },
             "maxItems": 256
           },
-          "questionIds": {
+          "questionUnitIds": {
             "type": "array",
             "items": {
               "type": "string",

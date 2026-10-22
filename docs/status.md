@@ -1,4 +1,16 @@
 # 工程状态
+## 当前验收：2026-10-22 同源返修工程通过，真实质量阻塞待验证
+
+用户明确授权按B模式继续当前KB02并完成状态及GitHub同步，不启动下一批。新接手 `/root/sol_repair`（GPT-6.1 Sol High）完成施工并冻结；新 `/root/astra_review`（GPT-6 Astra Medium）独立工程验收通过：Node25.2.1完整358/358、0skip，tsc/Vite，Node24.19 SR01 51/51、相关79/79，历史及新增独立探针各2/2；正式workspace/config和冻结完整性通过。见[施工交接](reports/KB02-SOURCE-20261022-builder-handoff.md)、[独立工程验收](reports/KB02-SOURCE-AUDIT-20261022-engineering.md)。
+
+主Agent放行后，seq127原失败记录诊断遭遇网络错误，无HTTP/模型响应，失败计账后累计127/200、本轮1/24、Prompt15/24不变。一次明确环境重执行申请被自动审批拒绝，命令未执行，未新增调用；需用户直接授权将隔离虚构验收资料发送到当前只读配置的open.bigmodel.cn。已提出包含具体资料、目的地及剩23次阶段额度的授权问题，答复前不外发、不绕过审批。见[真实阻塞记录](reports/KB02-SOURCE-AUDIT-20261022-real-blocker.md)。
+
+真实长文、短文及补充更新浏览器门禁尚未完成；工程通过不替代真实归属质量，F-04未关闭，KB02整体未通过，产品/tests保持冻结。正式workspace/config、历史证据与冻结完整性通过；未启动真实隔离服务或浏览器标签。下方记录为历史。
+
+## 当前执行：2026-10-22 同源跨区域错归返修
+
+用户已确认启动下一轮，沿用B模式，已派发 `/root/source_repair_sol`（sol_repair，GPT-6.1 Sol High）。依据seq121同源记录跨页错误先进行离线根因诊断，主Agent裁定最小方案后施工，冻结后独立验收。当前KB02仍未通过；真实预算126/200、Prompt15/24，施工零外发。主Agent拥有状态与验收文件，施工者不得提交；结束后按GitHub持续授权统一检查与同步，不启动其他批次。
+
 ## GitHub 同步配置：2026-10-22
 
 用户明确授权将现有项目上传至 [a805930382123-yper/AIPM-Workspace](https://github.com/a805930382123-yper/AIPM-Workspace)，并在后续每次任务修改完成、必要检查结束后提交并同步。已建立 `origin` 关联及提交后自动推送钩子，持续授权规则见 `AGENTS.md`，配置与失败重试见 [github-sync.md](github-sync.md)。本地资料、实际配置/密钥、依赖、构建与临时目录排除；本次仅配置版本同步，不改产品逻辑、不运行真实模型、不推进批次，KB02 未通过结论保持。远程同步结果须以实际推送及提交 SHA 核对为准。

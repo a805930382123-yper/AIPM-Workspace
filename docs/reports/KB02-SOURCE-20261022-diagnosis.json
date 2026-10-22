@@ -1,0 +1,64 @@
+{
+  "at": "2026-10-22T10:19:30.195Z",
+  "sequence": 121,
+  "inputCounts": {
+    "facts": 79,
+    "questions": 25,
+    "contexts": 42
+  },
+  "oldCoverageAccepted": true,
+  "diagnostic": {
+    "facts": {
+      "missing": [],
+      "duplicate": [],
+      "unknown": []
+    },
+    "questions": {
+      "missing": [],
+      "duplicate": [],
+      "unknown": []
+    },
+    "duplicateTitles": []
+  },
+  "duplicateUnits": 48,
+  "split": [
+    {
+      "sourceId": "s-45613-45652",
+      "column": "facts",
+      "kind": "fact",
+      "text": "虚构区域072026年9月有100家目标门店，17家在售，门店数铺货率17%。",
+      "ids": [
+        "f-c6-3",
+        "f-c7-1"
+      ],
+      "pages": [
+        "虚构区域06铺货率数据",
+        "虚构区域07铺货率数据"
+      ]
+    }
+  ],
+  "checkpointContainsBadPlan": true,
+  "facts": [
+    {
+      "text": "虚构区域072026年9月有100家目标门店，17家在售，门店数铺货率17%。",
+      "locatorIds": [
+        "c6-l016"
+      ],
+      "atomId": "c6-a0279",
+      "kind": "fact",
+      "id": "f-c6-3",
+      "chunkIndex": 5
+    },
+    {
+      "text": "虚构区域072026年9月有100家目标门店，17家在售，门店数铺货率17%。",
+      "locatorIds": [
+        "c7-l001"
+      ],
+      "atomId": "c7-a0002",
+      "kind": "fact",
+      "id": "f-c7-1",
+      "chunkIndex": 6
+    }
+  ],
+  "realProviderCalls": 0
+}

@@ -1,0 +1,478 @@
+diff --git a/rules/kb02-planning.schema.json b/rules/kb02-planning.schema.json
+index 4c1ccd8..a0dfd21 100644
+--- a/rules/kb02-planning.schema.json
++++ b/rules/kb02-planning.schema.json
+@@ -10,7 +10,7 @@
+     "version": {
+       "type": "integer",
+       "enum": [
+-        2
++        3
+       ]
+     },
+     "document": {
+@@ -44,8 +44,8 @@
+           "title",
+           "type",
+           "category",
+-          "factIds",
+-          "questionIds"
++          "factUnitIds",
++          "questionUnitIds"
+         ],
+         "properties": {
+           "title": {
+@@ -80,7 +80,7 @@
+               "other"
+             ]
+           },
+-          "factIds": {
++          "factUnitIds": {
+             "type": "array",
+             "minItems": 1,
+             "items": {
+@@ -90,7 +90,7 @@
+             },
+             "maxItems": 256
+           },
+-          "questionIds": {
++          "questionUnitIds": {
+             "type": "array",
+             "items": {
+               "type": "string",
+diff --git a/services/llm/knowledge-extraction.ts b/services/llm/knowledge-extraction.ts
+index e84f763..49acf30 100644
+--- a/services/llm/knowledge-extraction.ts
++++ b/services/llm/knowledge-extraction.ts
+@@ -1,4 +1,4 @@
+-import { buildKnowledgePlanningInput, KNOWLEDGE_PLANNING_INSTRUCTION } from './knowledge-planning.ts';
++import { buildKnowledgePlanningInput, expandKnowledgePlan, projectKnowledgePlan, KNOWLEDGE_PLANNING_INSTRUCTION, type KnowledgeWirePlan } from './knowledge-planning.ts';
+ import { buildKnowledgeAtoms, coverageDiagnostic, hasCoverageErrors } from './knowledge-atoms.ts';
+ import { chunkText } from './chunk.ts';
+ import { buildEvidenceLocatorCatalog } from './locators.ts';
+@@ -6,7 +6,7 @@ import { loadExtractionRules, FROZEN_BUDGETS } from './rules.ts';
+ import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } from './provider.ts';
+ import { validateSchema } from './schema-validator.ts';
+ import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
+-import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint, type KnowledgePlan } from './checkpoints.ts';
++import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
+ 
+ const exact = (value: unknown, schema: object, label: string) => {
+   const issues = validateSchema(value, schema as never);
+@@ -76,10 +76,17 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
+     if (current.completedChunks.length !== chunks.length || current.completedChunks.some((part, index) => part.index !== index)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '已保存规划但未覆盖全部原文分块，已拒绝恢复。', 409);
+     const factIds = current.completedChunks.flatMap(part => part.facts.map(item => item.id));
+     const questionIds = current.completedChunks.flatMap(part => part.questions.map(item => item.id));
+-    try { exact({ version: 2, ...current.plan, document: { title: current.plan.document.title, main_topic: current.plan.document.main_topic } }, bundle.kb02PlanningSchema, '检查点整篇主题规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划不符合当前严格schema，已拒绝恢复。', 409); }
++    if(Object.keys(current.plan.document).sort().join(',')!=='main_topic,summary,title')throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点文档结构不合法，已拒绝恢复。',409);
++    // The stored plan keeps original IDs; it is not a v3 Provider response.
++    const pagesSchema=bundle.kb02PlanningSchema.properties!.pages!, unitPage=pagesSchema.items!;
++    const {factUnitIds,questionUnitIds,...pageMetadata}=unitPage.properties!;
++    const storedSchema={...bundle.kb02PlanningSchema,properties:{...bundle.kb02PlanningSchema.properties,version:{type:'integer',enum:[2]},pages:{...pagesSchema,items:{...unitPage,required:unitPage.required!.map(key=>key==='factUnitIds'?'factIds':key==='questionUnitIds'?'questionIds':key),properties:{...pageMetadata,factIds:factUnitIds,questionIds:questionUnitIds}}}}};
++    try { exact({version:2,...current.plan,document:{title:current.plan.document.title,main_topic:current.plan.document.main_topic}},storedSchema,'检查点原ID规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点原ID规划不符合严格结构，已拒绝恢复。',409); }
+     if (current.plan.document.summary !== sourceSummary(current.completedChunks.flatMap(part => part.facts.map(item => item.text)))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '规划摘要与原始事实不一致。', 409);
+     const assignedFacts = current.plan.pages.flatMap(page => page.factIds); const assignedQuestions = current.plan.pages.flatMap(page => page.questionIds);
+     if (!current.plan.pages.length || current.plan.pages.length > 50 || current.plan.pages.some(page => !page.factIds.length) || new Set(current.plan.pages.map(page => normalizeText(page.title).toLowerCase())).size !== current.plan.pages.length || factIds.some(id => assignedFacts.filter(item => item === id).length !== 1) || assignedFacts.some(id => !factIds.includes(id)) || questionIds.some(id => assignedQuestions.filter(item => item === id).length !== 1) || assignedQuestions.some(id => !questionIds.includes(id))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划引用或覆盖不完整，已拒绝恢复。', 409);
++    const planningInput=buildKnowledgePlanningInput(input.body,current.completedChunks,catalogByChunk);
++    try { exact(projectKnowledgePlan(current.plan,planningInput), bundle.kb02PlanningSchema, '检查点整篇主题规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划结构或等价记录归属不合法，已拒绝恢复。', 409); }
+     try { assertNoKnownSecret(current.plan, input.provider.secrets ?? []); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划包含当前已知秘密，已拒绝恢复。', 409); }
+   }
+   return { bundle, chunks, catalogByChunk };
+@@ -163,14 +170,16 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{
+     if (result.finishReason === 'length') throw new LlmError('LLM_OUTPUT_TRUNCATED', '整篇主题规划响应被截断，未保存规划。', 502);
+     const parsed = parse(result.text, input.provider, '整篇主题规划');
+     exact(parsed, plannerSchema, '整篇主题规划');
+-    const rawPlan = parsed as { version: number; document: Omit<KnowledgePlan['document'], 'summary'>; pages: KnowledgePlan['pages'] };
++    const wirePlan = parsed as KnowledgeWirePlan;
+     const factIds = allFacts.map(item => item.id); const questionIds = allQuestions.map(item => item.id);
+-    if (rawPlan.pages.some(page => [...page.factIds, ...page.questionIds].some(id => !/^[a-z0-9-]{1,64}$/u.test(id)))) throw new LlmError('LLM_SCHEMA_INVALID', '规划包含不符合ID语法的引用，未持久化错误载荷。', 502);
+-    const diagnostic = coverageDiagnostic(factIds, questionIds, rawPlan.pages);
++    if (wirePlan.pages.some(page => [...page.factUnitIds, ...page.questionUnitIds].some(id => !/^[a-z0-9-]{1,64}$/u.test(id)))) throw new LlmError('LLM_SCHEMA_INVALID', '规划包含不符合ID语法的引用，未持久化错误载荷。', 502);
++    const diagnostic = coverageDiagnostic(planningInput.factUnits.map(unit=>unit.id), planningInput.questionUnits.map(unit=>unit.id), wirePlan.pages.map(page=>({title:page.title,factIds:page.factUnitIds,questionIds:page.questionUnitIds})));
+     if (hasCoverageErrors(diagnostic)) {
+       current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: { code: 'LLM_PLAN_COVERAGE_INVALID', message: '主题规划覆盖不完整或重复；可显式仅重新规划。', at: new Date().toISOString(), diagnostic } });
+       throw new LlmError('LLM_PLAN_COVERAGE_INVALID', '主题规划覆盖不完整或重复，未组装草稿。', 502, diagnostic);
+     }
++    const rawPlan = {document:wirePlan.document,pages:expandKnowledgePlan(wirePlan,planningInput)};
++    if(hasCoverageErrors(coverageDiagnostic(factIds,questionIds,rawPlan.pages)))throw new LlmError('LLM_PLAN_COVERAGE_INVALID','分配单元与原记录覆盖不一致，未组装草稿。',502);
+     assertNoKnownSecret(rawPlan, input.provider.secrets ?? []);
+     current = await input.saveCheckpoint({ ...current, plan: { document: { ...rawPlan.document, summary: sourceSummary(allFacts.map(item => item.text)) }, pages: rawPlan.pages }, stage: 'assembling', lastError: undefined });
+   }
+diff --git a/services/llm/knowledge-planning.ts b/services/llm/knowledge-planning.ts
+index 431bebd..edc8f1a 100644
+--- a/services/llm/knowledge-planning.ts
++++ b/services/llm/knowledge-planning.ts
+@@ -1,5 +1,5 @@
+ import { buildKnowledgeAtoms } from './knowledge-atoms.ts';
+-import type { CheckpointChunk } from './checkpoints.ts';
++import type { CheckpointChunk, KnowledgePlan } from './checkpoints.ts';
+ import type { EvidenceLocator } from './locators.ts';
+ import { LlmError } from './provider.ts';
+ 
+@@ -25,7 +25,47 @@ export function buildKnowledgePlanningInput(body: string, completedChunks: Check
+     return {id:item.id,text:item.text,...('kind' in item?{kind:item.kind}:{}),sourceId};
+   }));
+   const facts=records('facts'),questions=records('questions');
+-  return {facts,questions,sourceContexts:[...contexts.values()].sort((a,b)=>a.start-b.start||a.end-b.end)};
++  const units = (items: typeof facts | typeof questions, column: 'facts'|'questions') => {
++    const grouped = new Map<string, PlanningUnit>();
++    for (const item of items) {
++      const kind = 'kind' in item ? item.kind : undefined;
++      const key = JSON.stringify([item.sourceId, item.text, column, kind]);
++      let unit = grouped.get(key);
++      if (!unit) {
++        unit = { id: (column === 'facts' ? 'fu' : 'qu')+'-'+item.sourceId.slice(2)+(kind ? '-'+kind : ''), sourceId: item.sourceId, text: item.text, ...(kind ? {kind} : {}), memberIds: [] };
++        grouped.set(key, unit);
++      }
++      unit.memberIds.push(item.id);
++    }
++    return [...grouped.values()];
++  };
++  return {facts,questions,factUnits:units(facts,'facts'),questionUnits:units(questions,'questions'),sourceContexts:[...contexts.values()].sort((a,b)=>a.start-b.start||a.end-b.end)};
++}
++
++export type PlanningUnit = { id:string; sourceId:string; text:string; kind?:'fact'|'ambiguous'; memberIds:string[] };
++export type KnowledgePlanningInput = ReturnType<typeof buildKnowledgePlanningInput>;
++export type KnowledgeWirePlan = { version:3; document:Omit<KnowledgePlan['document'],'summary'>; pages:Array<{ title:string; type:string; category:string; factUnitIds:string[]; questionUnitIds:string[] }> };
++
++/** Called only after strict schema and unit coverage validation; never repairs missing references. */
++export function expandKnowledgePlan(plan:KnowledgeWirePlan, input:KnowledgePlanningInput): KnowledgePlan['pages'] {
++  const expand = (ids:string[], units:PlanningUnit[]) => ids.flatMap(id => {
++    const unit=units.find(item=>item.id===id);
++    if(!unit)throw new LlmError('LLM_PLAN_COVERAGE_INVALID','规划包含未知分配单元，未组装草稿。',502);
++    return unit.memberIds;
++  });
++  return plan.pages.map(({factUnitIds,questionUnitIds,...page})=>({...page,factIds:expand(factUnitIds,input.factUnits),questionIds:expand(questionUnitIds,input.questionUnits)}));
++}
++
++/** Persisted plans contain original IDs. Every fixed member must occur exactly once on one page. */
++export function projectKnowledgePlan(plan:KnowledgePlan, input:KnowledgePlanningInput):KnowledgeWirePlan {
++  const owners = (units:PlanningUnit[], key:'factIds'|'questionIds') => new Map(units.map(unit=>{
++    const assigned=unit.memberIds.map(id=>plan.pages.flatMap((page,index)=>page[key].filter(ref=>ref===id).map(()=>index)));
++    const owner=assigned[0]?.[0];
++    if(owner===undefined || assigned.some(pages=>pages.length!==1 || pages[0]!==owner))throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点等价记录分配不一致，已拒绝恢复。',409);
++    return [unit.id,owner] as const;
++  }));
++  const facts=owners(input.factUnits,'factIds'),questions=owners(input.questionUnits,'questionIds');
++  return {version:3,document:{title:plan.document.title,main_topic:plan.document.main_topic},pages:plan.pages.map((page,index)=>({title:page.title,type:page.type,category:page.category,factUnitIds:input.factUnits.filter(unit=>facts.get(unit.id)===index).map(unit=>unit.id),questionUnitIds:input.questionUnits.filter(unit=>questions.get(unit.id)===index).map(unit=>unit.id)}))};
+ }
+ 
+-export const KNOWLEDGE_PLANNING_INSTRUCTION='facts/questions已经完成业务分类，规划阶段不得再次过滤。ID仅用于引用，其c编号是机械分块号，没有主题或主体含义；不得按chunk分组建页。根据sourceContexts中精确原文位置及有界上下文判断各记录的主体、时间、条件和口径，附近其它陈述只帮助定位，不能作为新增事实。sourceContexts中的factIds/questionIds是同一原文区间的全部独立输入记录，不是可选别名：跨chunk同源记录应归于同一业务主题，两个分栏分别完整保留；不同位置即使文本相同也不能视为一条而丢ID。未知、否定、未来建议、待确认口径和ambiguous事实也必须归入有事实支撑的相关主题；同一原文在facts与questions同时出现时，两种ID必须分别进入factIds与questionIds，不可二选一。输出前逐项核对全部输入fact/question ID恰好各出现一次；不能用问题ID替代事实ID，不能因不单独建页而省略记录。';
++export const KNOWLEDGE_PLANNING_INSTRUCTION='facts/questions已经完成业务分类，规划阶段不得再次过滤。ID仅用于引用，其c编号是机械分块号，没有主题或主体含义；不得按chunk分组建页。根据sourceContexts中精确原文位置及有界上下文判断各记录的主体、时间、条件和口径，附近其它陈述只帮助定位，不能作为新增事实。factUnits/questionUnits是唯一可分配单位，memberIds在发送前已固定；同一单位的所有原ID是等价重复记录，必须整体归于一个业务主题，不能拆开、删减或再次过滤。sourceContexts.factIds/questionIds及facts/questions只供逐字核对原记录；输出只引用unit.id，分别写入factUnitIds/questionUnitIds，不能输出原记录ID。不同位置即使文本相同也不是同一unit；同一位置不同kind、事实与问题是独立unit，可按实际业务主题分别归属，不可二选一。一个atom可能包含多个业务断言，但重复完整文本没有不同语义投影，不能把它们臆解成不同事实而拆页。相同主题跨chunk合并；保留主体、日期、条件、口径及数值，不能把相邻主体混到一页。未知、否定、未来建议、待确认口径和ambiguous事实也必须归入有事实支撑的相关主题。输出前逐项核对全部输入fact/question unit ID分别且恰好出现一次；不得遗漏、重复、添加未知ID或把事实unit写入问题分栏。';
+diff --git a/services/llm/rules.ts b/services/llm/rules.ts
+index 868f798..afa446d 100644
+--- a/services/llm/rules.ts
++++ b/services/llm/rules.ts
+@@ -30,7 +30,7 @@ export type ExtractionRulesBundle = {
+ const TOP_LEVEL_RULE = 'JSON 顶层只有 document 与 suggested_pages 两个字段，不要增加其它字段。';
+ const EVIDENCE_RULE = 'source_evidence 的 quote 必须是从资料中原样复制的连续片段（不要改写、不要拼接），并给出该片段的 id 与 rawId；同一页面内 id 唯一。';
+ export const EXTRACTION_PROVIDER_FORMAT = 'locator-v2';
+-export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-7';
++export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-8';
+ 
+ function extractEnums(schema: JsonSchemaNode): { types: unknown[]; categories: unknown[] } {
+   const page = schema.properties?.suggested_pages?.items;
+diff --git a/tests/kb02-classification-priority.test.ts b/tests/kb02-classification-priority.test.ts
+index d89008b..5645cef 100644
+--- a/tests/kb02-classification-priority.test.ts
++++ b/tests/kb02-classification-priority.test.ts
+@@ -38,7 +38,7 @@ async function fixture(body = text) {
+     requests.push(r);
+     const planning=r.user.includes('请对下列全部已验证事实规划知识页');
+     const d=planning?JSON.parse(r.user.split('\n').at(-1)!):undefined;
+-    return {text:JSON.stringify(planning?{version:2,document:{title:'虚构业务边界',main_topic:'业务边界'},pages:[{title:'虚构业务边界',type:'metric',category:'metric',factIds:d.facts.map((x:{id:string})=>x.id),questionIds:d.questions.map((x:{id:string})=>x.id)}]}:respond(r)),bytes:1,finishReason:'stop'};
++    return {text:JSON.stringify(planning?{version:3,document:{title:'虚构业务边界',main_topic:'业务边界'},pages:[{title:'虚构业务边界',type:'metric',category:'metric',factUnitIds:d.factUnits.map((x:{id:string})=>x.id),questionUnitIds:d.questionUnits.map((x:{id:string})=>x.id)}]}:respond(r)),bytes:1,finishReason:'stop'};
+   }};
+   const args={raw,body,bodySha256:sha(body),provider,rulesDir:path.resolve('rules'),beforeCall:async(stage:'extracting'|'planning')=>checkpoint=await store.save({...checkpoint,stage,attempts:checkpoint.attempts+1}),saveCheckpoint:async(value:Omit<ExtractionCheckpoint,'integrity'>)=>checkpoint=await store.save(value)};
+   return {root,store,bundle,args,requests,get checkpoint(){return checkpoint;},reply:(fn:typeof respond)=>{respond=fn;},run:()=>runKnowledgePipeline({...args,checkpoint}),clean:()=>rm(root,{recursive:true,force:true})};
+@@ -122,7 +122,7 @@ test('KB02 Q02 full seq62 original response and exact original atom catalog stil
+ 
+ test('KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes',async()=>{
+   const originalBytes=await readFile(originalPath),old=JSON.parse(originalBytes.toString()),f=await fixture(old.body);try{
+-    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-7');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
++    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-8');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
+     assert.equal(old.oldCheckpoint.completedChunks.length,6);assert.equal(old.oldCheckpoint.completedChunks.flatMap((c:{facts:Array<{text:string}>})=>c.facts).filter((x:{text:string})=>/排版说明|长文验收附录/u.test(x.text)).length,11);
+     const checkpoint=await f.store.save(old.oldCheckpoint),file=path.join(f.root,'state/extraction-checkpoints',checkpoint.jobId+'.json'),bytes=await readFile(file);
+     const args={...f.args,raw:old.raw,checkpoint};
+diff --git a/tests/kb02-extraction-contract.test.ts b/tests/kb02-extraction-contract.test.ts
+index 8114fb0..0d5f01d 100644
+--- a/tests/kb02-extraction-contract.test.ts
++++ b/tests/kb02-extraction-contract.test.ts
+@@ -31,7 +31,7 @@ async function fixture(rulesDir = path.resolve('rules')) {
+     requests.push(r);
+     const planning = r.user.includes('请对下列全部已验证事实规划知识页');
+     const data = planning ? JSON.parse(r.user.split('\n').at(-1)!) : undefined;
+-    return { text: JSON.stringify(planning ? { version: 2, document: { title: '虚构指标', main_topic: '渠道' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factIds: data.facts.map((x: { id: string }) => x.id), questionIds: data.questions.map((x: { id: string }) => x.id) }] } : extraction(r)), bytes: 1, finishReason: 'stop' };
++    return { text: JSON.stringify(planning ? { version:3,document: { title: '虚构指标', main_topic: '渠道' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] } : extraction(r)), bytes: 1, finishReason: 'stop' };
+   } };
+   const args = { raw, body: text, bodySha256: sha(text), provider, rulesDir, beforeCall: async (stage: 'extracting' | 'planning') => checkpoint = await store.save({ ...checkpoint, stage, attempts: checkpoint.attempts + 1 }), saveCheckpoint: async (value: Omit<ExtractionCheckpoint, 'integrity'>) => checkpoint = await store.save(value) };
+   return { root, args, bundle, requests, store, get checkpoint() { return checkpoint; }, reply: (fn: typeof extraction) => { extraction = fn; }, run: () => runKnowledgePipeline({ ...args, checkpoint }), clean: () => rm(root, { recursive: true, force: true }) };
+@@ -55,7 +55,7 @@ test('KB02 Q01 sends the complete loaded schema and valid nonempty examples; dec
+     assert.equal(saved.sourceNotes?.[0].text, '虚构验收免责声明。');
+     assert.equal(saved.sourceNotes?.length, 1); // Additional layout atom may be omitted.
+     const planning = JSON.parse(f.requests[1].user.split('\n').at(-1)!);
+-    assert.deepEqual(Object.keys(planning).sort(), ['facts', 'questions', 'sourceContexts']);
++    assert.deepEqual(Object.keys(planning).sort(), ['factUnits', 'facts', 'questionUnits', 'questions', 'sourceContexts']);
+     for (const context of planning.sourceContexts) assert.equal(context.text, text.slice(context.contextStart, context.contextEnd));
+     assert(f.requests[1].system.includes('附近其它陈述只帮助定位，不能作为新增事实'));
+     assert.deepEqual(planning.facts.map((x: { text: string }) => x.text), ['在售20家。', '旧资料20家未注明维度。']);
+@@ -128,7 +128,7 @@ test('KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkp
+     const [schema, rules, facts, planning] = await Promise.all(['wiki-extract.schema.json', 'extraction-rules.yaml', 'kb02-facts.schema.json', 'kb02-planning.schema.json'].map(name => readFile(path.join('rules', name), 'utf8')));
+     const revision = 'kb02-atoms-planning-3', format = 'locator-v2';
+     const oldVersion = `b04-${f.bundle.rules.version}-${format}-${revision}-${sha(`${schema}\n${rules}\n${format}\n${revision}\n${facts}\n${planning}`).slice(0, 12)}`;
+-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-7'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
++    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-8'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
+     const old = await f.store.save({ ...f.checkpoint, rulesVersion: oldVersion });
+     const file = path.join(f.root, 'state/extraction-checkpoints', old.jobId + '.json'), bytes = await readFile(file);
+     await assert.rejects(validateKnowledgeCheckpoint({ ...f.args, checkpoint: old }), (e: unknown) => e instanceof LlmError && e.code === 'LLM_CHECKPOINT_INCOMPATIBLE' && e.status === 409);
+diff --git a/tests/kb02-final-classification.test.ts b/tests/kb02-final-classification.test.ts
+index 78a57cd..65770e0 100644
+--- a/tests/kb02-final-classification.test.ts
++++ b/tests/kb02-final-classification.test.ts
+@@ -32,7 +32,7 @@ async function setup(text=body){
+  const provider:LlmProvider={name:'fake',model:'final',complete:async r=>{
+   requests.push(r);const data=JSON.parse(r.user.split('\n').at(-1)!);
+   // Explicit fixture labels test plumbing only, never model quality or a product classifier.
+-  const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:2,document:{title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factIds:data.facts.map((a:{id:string})=>a.id),questionIds:data.questions.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
++  const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:3,document:{title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factUnitIds:data.factUnits.map((a:{id:string})=>a.id),questionUnitIds:data.questionUnits.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
+   return {text:JSON.stringify(output),bytes:1,finishReason:'stop'};
+  }};
+  const args={raw,body:text,bodySha256:sha(text),provider,rulesDir:path.resolve('rules'),beforeCall:async(stage:'extracting'|'planning')=>cp=await store.save({...cp,stage,attempts:cp.attempts+1}),saveCheckpoint:async(value:Omit<ExtractionCheckpoint,'integrity'>)=>cp=await store.save(value)};
+@@ -76,7 +76,7 @@ test('FINAL-01 original seq75 full directory and response preserve semantic fail
+   // Deliberate offline current-fingerprint rebind proves no filtering/forced placement workaround.
+   const cp=await f.store.save({...oldCp,rulesVersion:f.bundle.rulesVersion});
+   f.args.provider.complete=async r=>{f.requests.push(r);return {text:JSON.stringify(old.planning.response),bytes:1,finishReason:'stop'};};
+-  await assert.rejects(runKnowledgePipeline({...f.args,raw:{...f.args.raw,id:oldCp.rawId},checkpoint:cp,beforeCall:async(stage)=>({...cp,stage,attempts:cp.attempts+1})}),{code:'LLM_PLAN_COVERAGE_INVALID'});
++  await assert.rejects(runKnowledgePipeline({...f.args,raw:{...f.args.raw,id:oldCp.rawId},checkpoint:cp,beforeCall:async(stage)=>({...cp,stage,attempts:cp.attempts+1})}),{code:'LLM_SCHEMA_INVALID'});
+   assert.equal(f.requests.length,1);assert.equal((await f.store.get(cp.jobId))!.completedChunks[12].facts.find(a=>a.id==='f-c13-4')!.text,bad.text);assert(!(await f.store.get(cp.jobId))!.plan);
+   assert.deepEqual(await readFile(fixturePath),bytes);
+  }finally{await f.clean();}
+@@ -96,7 +96,7 @@ test('FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero
+   let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});
+   const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restartId=r.json.jobId;assert.notEqual(restartId,cp.jobId);
+   for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);
+-  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-7-/u);
++  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-8-/u);
+   await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
+  }finally{release();if(restartId)await f.runner.waitForSettlement(restartId);await h.close();await f.clean();}
+ });
+diff --git a/tests/kb02-pipeline.test.ts b/tests/kb02-pipeline.test.ts
+index 3324328..dcc06cb 100644
+--- a/tests/kb02-pipeline.test.ts
++++ b/tests/kb02-pipeline.test.ts
+@@ -23,8 +23,8 @@ test('KB02 facts/planning builds existing draft outcome and preserves fact/quest
+     let checkpoint = await store.save({ version: 1, jobId: '123e4567-e89b-42d3-a456-426614174001', rawId: raw.id, rawSha256: createHash('sha256').update(body).digest('hex'), pipelineVersion: KB02_PIPELINE_VERSION, rulesVersion: bundle.rulesVersion, providerIdentity: 'fake|fake-model', chunks: chunks.map(({ index, start, end }) => ({ index, start, end })), completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: new Date().toISOString() });
+     const provider: LlmProvider = { name: 'fake', model: 'fake-model', cacheIdentity: 'fake', complete: async (request: LlmCompletionRequest) => {
+       if (request.user.includes('请对下列全部已验证事实规划知识页')) {
+-        const payload = JSON.parse(request.user.slice(request.user.indexOf('{', request.user.indexOf('。') + 1))) as { facts: Array<{ id: string }>; questions: Array<{ id: string }> };
+-        return { text: JSON.stringify({ version: 2, document: { title: raw.title, main_topic: '区域销售' }, pages: [{ title: '区域销售', type: 'metric', category: 'metric', factIds: payload.facts.map(item => item.id), questionIds: payload.questions.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
++        const payload = JSON.parse(request.user.slice(request.user.indexOf('{', request.user.indexOf('。') + 1))) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
++        return { text: JSON.stringify({ version:3,document: { title: raw.title, main_topic: '区域销售' }, pages: [{ title: '区域销售', type: 'metric', category: 'metric', factUnitIds:payload.factUnits.map(item => item.id), questionUnitIds:payload.questionUnits.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
+       }
+       const atoms = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
+       return { text: JSON.stringify({ version: 2, facts: [{ atomId: atoms[0].id, kind: 'fact' }], questions: [{ atomId: atoms[1].id }], sourceNotes: [] }), finishReason: 'stop', bytes: 10 };
+@@ -50,8 +50,8 @@ test('KB02 resume reuses validated chunks and counts failed outbound attempts',
+     let failSecond = true; const seen: string[] = [];
+     const provider: LlmProvider = { name: 'fake', model: 'fake-model', complete: async (request: LlmCompletionRequest) => {
+       if (request.user.includes('请对下列全部已验证事实规划知识页')) {
+-        const json = request.user.slice(request.user.lastIndexOf('\n') + 1); const payload = JSON.parse(json) as { facts: Array<{ id: string }>; questions: Array<{ id: string }> };
+-        return { text: JSON.stringify({ version: 2, document: { title: '简报', main_topic: '销售' }, pages: [{ title: '销售', type: 'metric', category: 'metric', factIds: payload.facts.map(item => item.id), questionIds: payload.questions.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
++        const json = request.user.slice(request.user.lastIndexOf('\n') + 1); const payload = JSON.parse(json) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
++        return { text: JSON.stringify({ version:3,document: { title: '简报', main_topic: '销售' }, pages: [{ title: '销售', type: 'metric', category: 'metric', factUnitIds:payload.factUnits.map(item => item.id), questionUnitIds:payload.questionUnits.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
+       }
+       const atoms = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1)); const locator = atoms[0].id; const chunk = Number(locator?.match(/^c(\d+)/)?.[1]); seen.push(`c${chunk}`);
+       if (chunk === 2 && failSecond) { failSecond = false; throw new LlmError('FAKE_TIMEOUT', 'simulated timeout', 504); }
+diff --git a/tests/kb02-planning-budget.test.ts b/tests/kb02-planning-budget.test.ts
+index 2e90e02..1a44bd4 100644
+--- a/tests/kb02-planning-budget.test.ts
++++ b/tests/kb02-planning-budget.test.ts
+@@ -26,7 +26,7 @@ async function fixture() {
+     requests.push(request);
+     const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
+     const result = request.user.includes('请对下列全部已验证事实规划知识页')
+-      ? { version: 2, document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factIds: data.facts.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionIds: data.questions.map((x: { id: string }) => x.id) }] }
++      ? { version:3,document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }
+       : { version: 2, facts: data.map((x: { id: string }) => ({ atomId: x.id, kind: 'fact' })), questions: [], sourceNotes: [] };
+     return { text: JSON.stringify(result), bytes: 1, finishReason: 'stop' };
+   } };
+@@ -81,7 +81,7 @@ test('KB02 exhausted explicit replanning rejects before writes, retains diagnost
+     const saved = await f.checkpoint(job.id), before = await f.hashes(job.id);
+     assert.equal(saved?.attempts, 6);
+     assert.equal(saved?.completedChunks.length, 1);
+-    assert.deepEqual(saved?.lastError?.diagnostic?.facts.missing, ['f-c1-2']);
++    assert.deepEqual(saved?.lastError?.diagnostic?.facts.missing, ['fu-13-26-fact']);
+     assert.deepEqual(job.error?.details, saved?.lastError?.diagnostic);
+     for (let replay = 0; replay < 3; replay++) {
+       await assert.rejects(f.start({ planningRetry: true }), (error: unknown) => error instanceof JobError && error.code === 'LLM_ATTEMPT_LIMIT' && error.status === 409 && /累计 6 次调用上限.*显式重新生成/u.test(error.message));
+@@ -121,6 +121,6 @@ test('KB02 last available planning call stays in the same job with successful ch
+     assert.deepEqual((await f.checkpoint(job.id))!.completedChunks, chunk);
+     assert.equal(f.requests.length, 6);
+     assert.equal(f.requests.filter(r => !r.user.includes('请对下列全部已验证事实规划知识页')).length, 1);
+-    assert.deepEqual(JSON.parse(f.requests.at(-1)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['f-c1-2']);
++    assert.deepEqual(JSON.parse(f.requests.at(-1)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
+   } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
+ });
+diff --git a/tests/kb02-planning-context.test.ts b/tests/kb02-planning-context.test.ts
+index c0e2d85..624bb8f 100644
+--- a/tests/kb02-planning-context.test.ts
++++ b/tests/kb02-planning-context.test.ts
+@@ -20,7 +20,16 @@ const sha=(s:string|Buffer)=>createHash('sha256').update(s).digest('hex');
+ const chunks=(body:string)=>chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000});
+ const catalogs=(body:string)=>new Map(chunks(body).map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
+ const data=(r:LlmCompletionRequest)=>JSON.parse(r.user.split('\n').at(-1)!);
+-const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:2,document:{title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factIds:p.facts.map(i=>i.id),questionIds:p.questions.map(i=>i.id)}]});
++const projectOldFailure=(response:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:response.document,pages:response.pages.map((page:any)=>({title:page.title,type:page.type,category:page.category,factUnitIds:p.factUnits.filter(u=>u.memberIds.every(id=>page.factIds.includes(id))).map(u=>u.id),questionUnitIds:p.questionUnits.filter(u=>u.memberIds.every(id=>page.questionIds.includes(id))).map(u=>u.id)}))});
++const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:{title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factUnitIds:p.factUnits.map(i=>i.id),questionUnitIds:p.questionUnits.map(i=>i.id)}]});
++// Recreate only each old response's omissions on an otherwise schema-valid v3 plan.
++// The original bad assignments remain tested verbatim as v2; tests never repair runtime output.
++const projectOldOmissions=(source:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>{
++  const missing=source.checkpoint.lastError.diagnostic,plan=validPlan(p);
++  plan.pages[0].factUnitIds=p.factUnits.filter(u=>!u.memberIds.some(id=>missing.facts.missing.includes(id))).map(u=>u.id);
++  plan.pages[0].questionUnitIds=p.questionUnits.filter(u=>!u.memberIds.some(id=>missing.questions.missing.includes(id))).map(u=>u.id);
++  return plan;
++};
+ 
+ async function runFixture(source:{raw:any;checkpoint:ExtractionCheckpoint},response?:(r:LlmCompletionRequest)=>unknown,secrets:string[]=[]) {
+   const bundle=await loadExtractionRules('rules');
+@@ -51,7 +60,7 @@ test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area pla
+     assert(r.system.includes('不得按chunk分组建页'));assert(r.system.includes('不可二选一'));
+     for(const s of p.sourceContexts){assert.equal(s.text,old.raw.body.slice(s.contextStart,s.contextEnd));assert.equal(s.id,`s-${s.start}-${s.end}`);assert.equal(old.raw.body.slice(s.start,s.end),p.facts.find(i=>i.sourceId===s.id)?.text??p.questions.find(i=>i.sourceId===s.id)?.text);}
+     // Explicit fixture expectations are test labels, not runtime entity classification.
+-    return {version:2,document:{title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factIds:p.facts.filter(i=>old.expectedAreas[i.id]===area).map(i=>i.id),questionIds:p.questions.filter(i=>old.expectedAreas[i.id]===area).map(i=>i.id)};})};
++    return {version:3,document:{title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factUnitIds:p.factUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id),questionUnitIds:p.questionUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id)};})};
+   });
+   const done=await f.run(),payload=data(f.requests[0]);
+   assert.equal(f.requests.length,1);assert.equal(f.cp.attempts,16);assert.deepEqual(f.cp.completedChunks,before);
+@@ -63,9 +72,9 @@ test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area pla
+   assert.equal(sha(old.raw.body),old.raw.bodySha256);
+ });
+ 
+-for(const sequence of [100,104])test(`PLAN-03 original seq${sequence} response remains strict rejection with every original record retained`,async()=>{
+-  const old=(await fixture()).cases.find((c:any)=>c.sequence===sequence),f=await runFixture(old,()=>old.response),before=structuredClone(f.cp.completedChunks);
+-  await assert.rejects(f.run(),{code:'LLM_PLAN_COVERAGE_INVALID'});assert.equal(f.requests.length,1);assert(!f.cp.plan);assert.deepEqual(f.cp.completedChunks,before);assert.deepEqual(f.cp.lastError!.diagnostic,old.checkpoint.lastError.diagnostic);
++for(const sequence of [100,104])for(const contract of ['original-v2','missing-v3'])test(`PLAN-03 seq${sequence} ${contract} remains strict rejection with every original record retained`,async()=>{
++  const old=(await fixture()).cases.find((c:any)=>c.sequence===sequence),f=await runFixture(old,r=>contract==='original-v2'?old.response:projectOldOmissions(old,data(r))),before=structuredClone(f.cp.completedChunks);
++  await assert.rejects(f.run(),{code:contract==='original-v2'?'LLM_SCHEMA_INVALID':'LLM_PLAN_COVERAGE_INVALID'});assert.equal(f.requests.length,1);assert(!f.cp.plan);assert.deepEqual(f.cp.completedChunks,before);assert.deepEqual(coverageDiagnostic(old.checkpoint.completedChunks.flatMap((c:any)=>c.facts.map((i:any)=>i.id)),old.checkpoint.completedChunks.flatMap((c:any)=>c.questions.map((i:any)=>i.id)),old.response.pages),old.checkpoint.lastError.diagnostic);if(contract==='missing-v3'){const p=data(f.requests[0]),bad=projectOldOmissions(old,p);assert.deepEqual(f.cp.lastError!.diagnostic,coverageDiagnostic(p.factUnits.map((u:any)=>u.id),p.questionUnits.map((u:any)=>u.id),bad.pages.map((page:any)=>({title:page.title,factIds:page.factUnitIds,questionIds:page.questionUnitIds}))));}
+ });
+ 
+ test('PLAN-03 supplement keeps fact and question at the same source, including ambiguous business boundary',async()=>{
+@@ -114,9 +123,9 @@ test('PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit
+ });
+ 
+ test('PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts',async()=>{
+-  const old=(await fixture()).cases[1];let bad=true;const f=await runFixture(old,r=>bad?old.response:validPlan(data(r)));
++  const old=(await fixture()).cases[1];let bad=true;const f=await runFixture(old,r=>bad?projectOldFailure(old.response,data(r)):validPlan(data(r)));
+   await assert.rejects(f.run(),{code:'LLM_PLAN_COVERAGE_INVALID'});const before=structuredClone(f.cp.completedChunks),attempts=f.cp.attempts;bad=false;
+-  const done=await f.run(true);assert.equal(f.cp.attempts,attempts+1);assert.equal(done.outcome.callCount,attempts+1);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.requests.length,2);assert.deepEqual(data(f.requests[1]).sourceContexts,data(f.requests[0]).sourceContexts);assert.deepEqual(data(f.requests[1]).coverageFeedback.facts.missing,['f-c1-2']);
++  const done=await f.run(true);assert.equal(f.cp.attempts,attempts+1);assert.equal(done.outcome.callCount,attempts+1);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.requests.length,2);assert.deepEqual(data(f.requests[1]).sourceContexts,data(f.requests[0]).sourceContexts);assert.deepEqual(data(f.requests[1]).coverageFeedback.facts.missing,[data(f.requests[1]).factUnits.find((u:any)=>u.memberIds.includes('f-c1-2')).id]);
+ });
+ 
+ test('PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks',async()=>{
+@@ -129,7 +138,7 @@ test('PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; exp
+     const files=[path.join(f.root,'state/extraction-checkpoints',cp.jobId+'.json'),path.join(f.root,'state/extraction-jobs',cp.jobId+'.json'),path.join(f.root,'state/raw-processing',raw.id+'.json')],before=await Promise.all(files.map(p=>readFile(p)));
+     for(const options of [{},{planningRetry:true},{}]){const r=await h.request(`/api/raw/${raw.id}/extract`,options);assert.equal(r.status,409);assert.equal(r.json.error.code,'LLM_CHECKPOINT_INCOMPATIBLE');assert.deepEqual(await Promise.all(files.map(p=>readFile(p))),before);assert.equal(f.requests.length,0);}
+     let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restart=r.json.jobId;assert.notEqual(restart,cp.jobId);
+-    for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);const fresh=await store.get(restart);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-7-/u);
++    for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);const fresh=await store.get(restart);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-8-/u);
+     await f.runner.cancel(restart);release();await f.runner.waitForSettlement(restart);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
+   }finally{release();if(restart)await f.runner.waitForSettlement(restart);await h.close();await f.clean();}
+ });
+diff --git a/tests/kb02-r2.test.ts b/tests/kb02-r2.test.ts
+index 1a0994d..c938fec 100644
+--- a/tests/kb02-r2.test.ts
++++ b/tests/kb02-r2.test.ts
+@@ -19,7 +19,7 @@ const rulesDir=path.resolve('rules'),sha=(value:string)=>createHash('sha256').up
+ const raw={id:randomUUID(),title:'虚构渠道资料',sourceType:'report',sourceName:'隔离测试',tags:[] as string[]};
+ const body='目标100家，在售20家，铺货率20%。旧资料是20家及20%。在售已增至30家，铺货率30%。异常审批负责人未知。AI尚未上线，仅用于未来分析建议。虚构验收免责声明。';
+ const atomsFrom=(request:LlmCompletionRequest)=>JSON.parse(request.user.slice(request.user.lastIndexOf('\n')+1)) as Array<{id:string;text:string;fragment:boolean}>;
+-const planFrom=(request:LlmCompletionRequest)=>{const p=JSON.parse(request.user.slice(request.user.lastIndexOf('\n')+1));return {version:2,document:{title:'虚构渠道指标',main_topic:'渠道指标'},pages:[{title:'渠道指标',type:'metric',category:'metric',factIds:p.facts.map((x:any)=>x.id),questionIds:p.questions.map((x:any)=>x.id)}]};};
++const planFrom=(request:LlmCompletionRequest)=>{const p=JSON.parse(request.user.slice(request.user.lastIndexOf('\n')+1));return {version:3,document:{title:'虚构渠道指标',main_topic:'渠道指标'},pages:[{title:'渠道指标',type:'metric',category:'metric',factUnitIds:p.factUnits.map((x:any)=>x.id),questionUnitIds:p.questionUnits.map((x:any)=>x.id)}]};};
+ async function fixture(text=body){
+  const root=await mkdtemp(path.join(os.tmpdir(),'kb02-r2-native-')),store=new ExtractionCheckpointStore(root);await store.initialize();const rules=await loadExtractionRules(rulesDir),chunks=chunkText(text,{maxChunkChars:8000,overlap:400,maxRawChars:500000});
+  let checkpoint=await store.save({version:1,jobId:randomUUID(),rawId:raw.id,rawSha256:sha(text),pipelineVersion:KB02_PIPELINE_VERSION,rulesVersion:rules.rulesVersion,providerIdentity:'local|native',chunks:chunks.map(({index,start,end})=>({index,start,end})),completedChunks:[],attempts:0,stage:'extracting',updatedAt:new Date().toISOString()});
+@@ -36,8 +36,8 @@ test('KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source d
+ }finally{await f.clean();}});
+ test('KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success',async()=>{for(const change of [(x:any)=>({...x,text:'目标20家'}),(x:any)=>({...x,atomId:'c99-a0001'})]){const f=await fixture();try{f.provider.complete=async request=>({text:JSON.stringify({version:2,facts:[change({atomId:atomsFrom(request)[0].id,kind:'fact'})],questions:[],sourceNotes:[]}),bytes:1,finishReason:'stop'});await assert.rejects(f.run(),(e:any)=>['LLM_SCHEMA_INVALID','LLM_EVIDENCE_UNKNOWN_LOCATOR'].includes(e.code));assert.equal(f.checkpoint.completedChunks.length,0);}finally{await f.clean();}}});
+ test('KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks',async()=>{const f=await fixture();try{
+- const original=f.provider.complete;f.provider.complete=async request=>{if(!request.user.includes('请对下列全部已验证事实规划知识页'))return original(request);f.requestLog.push(request);const p=planFrom(request);p.pages[0].factIds.shift();p.pages[0].factIds.push(p.pages[0].factIds[0],'f-unknown');p.pages[0].questionIds=[];return {text:JSON.stringify(p),bytes:1,finishReason:'stop'};};
+- await assert.rejects(f.run(),(e:any)=>e.code==='LLM_PLAN_COVERAGE_INVALID');const diagnostic=f.checkpoint.lastError!.diagnostic!;assert.deepEqual(diagnostic.facts.missing,['f-c1-1']);assert.equal(diagnostic.facts.duplicate.length,1);assert.deepEqual(diagnostic.facts.unknown,['f-unknown']);assert.deepEqual(diagnostic.questions.missing,['q-c1-1']);assert(!f.checkpoint.plan);
++ const original=f.provider.complete;f.provider.complete=async request=>{if(!request.user.includes('请对下列全部已验证事实规划知识页'))return original(request);f.requestLog.push(request);const p=planFrom(request);p.pages[0].factUnitIds.shift();p.pages[0].factUnitIds.push(p.pages[0].factUnitIds[0],'f-unknown');p.pages[0].questionUnitIds=[];return {text:JSON.stringify(p),bytes:1,finishReason:'stop'};};
++ await assert.rejects(f.run(),(e:any)=>e.code==='LLM_PLAN_COVERAGE_INVALID');const diagnostic=f.checkpoint.lastError!.diagnostic!;assert.deepEqual(diagnostic.facts.missing,['fu-0-20-fact']);assert.equal(diagnostic.facts.duplicate.length,1);assert.deepEqual(diagnostic.facts.unknown,['f-unknown']);assert.deepEqual(diagnostic.questions.missing,['qu-48-58']);assert(!f.checkpoint.plan);
+  const saved=await f.store.get(f.checkpoint.jobId);assert.deepEqual(saved!.lastError!.diagnostic,diagnostic);f.provider.complete=async request=>{f.requestLog.push(request);assert(request.user.includes('coverageFeedback'));return {text:JSON.stringify(planFrom(request)),bytes:1,finishReason:'stop'};};const done=await f.run(true);assert.equal(done.outcome.callCount,3);assert.equal(f.checkpoint.completedChunks.length,1);assert.equal(f.requestLog.filter(x=>!x.user.includes('请对下列全部已验证事实规划知识页')).length,1);
+ }finally{await f.clean();}});
+ test('KB02 R2 summary, atom classification and current-secret tampering fail closed on restore',async()=>{const f=await fixture();try{await f.run();const checkpoint=structuredClone(f.checkpoint);for(const change of [(x:ExtractionCheckpoint)=>{x.plan!.document.summary='目标20家';},(x:ExtractionCheckpoint)=>{x.lastError={code:'LLM_PLAN_COVERAGE_INVALID',message:'x',at:new Date().toISOString(),diagnostic:{facts:{missing:[],duplicate:[],unknown:['native-synthetic-secret']},questions:{missing:[],duplicate:[],unknown:[]},duplicateTitles:[]}};},(x:ExtractionCheckpoint)=>{x.completedChunks[0].facts[0].text='目标20家';}]){const changed=structuredClone(checkpoint);change(changed);await assert.rejects(validateKnowledgeCheckpoint({...f.args,checkpoint:changed}),(e:any)=>e.code==='LLM_CHECKPOINT_CORRUPT');}}finally{await f.clean();}});
+diff --git a/tests/kb02-storage-recovery.test.ts b/tests/kb02-storage-recovery.test.ts
+index d20302d..bb47bf9 100644
+--- a/tests/kb02-storage-recovery.test.ts
++++ b/tests/kb02-storage-recovery.test.ts
+@@ -44,7 +44,7 @@ for (const mode of ['failed-job', 'done-checkpoint', 'coverage-checkpoint'] as F
+       assert.deepEqual((await f.drafts.list()).map(d => d.id), draftIds);
+       if (mode !== 'done-checkpoint') {
+         assert.equal(recovered.job?.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
+-        assert.deepEqual((await f.checkpoint(job.id))?.lastError?.diagnostic?.facts.missing, ['f-c1-2']);
++        assert.deepEqual((await f.checkpoint(job.id))?.lastError?.diagnostic?.facts.missing, ['fu-13-26-fact']);
+       }
+       const before = await f.hashes(job.id); await f.runner.reconcileStorage(job.id); assert.deepEqual(await f.hashes(job.id), before);
+       assert.equal(f.requests.length, calls);
+diff --git a/tests/llm.test.ts b/tests/llm.test.ts
+index 743e4b5..a464796 100644
+--- a/tests/llm.test.ts
++++ b/tests/llm.test.ts
+@@ -286,7 +286,7 @@ test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致
+   assert.equal(bundle.schema.additionalProperties, false);
+   assert.equal(bundle.schema.properties?.suggested_pages?.items?.additionalProperties, false);
+   assert.deepEqual(bundle.rules.budgets, FROZEN_BUDGETS);
+-  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-7-[0-9a-f]{12}$/);
++  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-8-[0-9a-f]{12}$/);
+   const prompt = buildSystemPrompt(bundle.rules, bundle.schema);
+   assert.match(prompt, /只输出一个 JSON 对象/);
+   assert.match(prompt, /一个条目只解决一个明确的知识问题/);
+diff --git a/tests/support/fake-llm.ts b/tests/support/fake-llm.ts
+index e501c1c..f56173f 100644
+--- a/tests/support/fake-llm.ts
++++ b/tests/support/fake-llm.ts
+@@ -278,8 +278,8 @@ function toKb02FactsReply(reply: FakeReply, original: FakeRequest, run: FakeRun)
+   for(const key of Object.keys(value??{})) if(!['document','suggested_pages','evidence_format_version'].includes(key)) result[key]=value[key];
+   return {...reply,content:contentOf(result)};
+ }
+-function parseKb02Planning(request: FakeRequest): {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>} {
+-  const start=request.user.lastIndexOf('\n')+1; return JSON.parse(request.user.slice(start)) as {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>};
++function parseKb02Planning(request: FakeRequest): {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>;factUnits:Array<{id:string;text:string;memberIds:string[]}>;questionUnits:Array<{id:string;text:string;memberIds:string[]}>} {
++  const start=request.user.lastIndexOf('\n')+1; return JSON.parse(request.user.slice(start)) as {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>;factUnits:Array<{id:string;text:string;memberIds:string[]}>;questionUnits:Array<{id:string;text:string;memberIds:string[]}>};
+ }
+ function adaptKb02PlanningRequest(request: FakeRequest, run: FakeRun): FakeRequest {
+   const payload=parseKb02Planning(request); const groups=new Map<string,{title:string;type:string;category:string;facts:Array<{text:string;evidence:any[]}>;questions:string[]}>();
+@@ -293,14 +293,14 @@ function adaptKb02PlanningRequest(request: FakeRequest, run: FakeRun): FakeReque
+ function toKb02PlanReply(reply: FakeReply, original: FakeRequest, run: FakeRun): FakeReply {
+   if(reply.kind!=='content') return reply;
+   let returned:any; try{returned=JSON.parse(reply.content);}catch{return reply;}
+-  if((returned?.version===1||returned?.version===2)&&returned?.document&&Array.isArray(returned.pages)) return reply;
++  if((returned?.version===1||returned?.version===2||returned?.version===3)&&returned?.document&&Array.isArray(returned.pages)) return reply;
+   const input=parseKb02Planning(original); const base=returned?.document??{};
+-  const grouped=new Map<string,{title:string;type:string;category:string;factIds:string[];questionIds:string[]}>();
++  const grouped=new Map<string,{title:string;type:string;category:string;factUnitIds:string[];questionUnitIds:string[]}>();
+   const factSeen=new Map<string,number>(); const questionSeen=new Map<string,number>();
+-  for(const fact of input.facts){const key=`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`;const list=run.pageForFact.get(key)??[];const i=factSeen.get(key)??0;factSeen.set(key,i+1);const meta=list[i]??list[0]??{title:'业务事实',type:'concept',category:'other',documentTitle:'知识主题'};const page=grouped.get(meta.title)??{title:meta.title,type:meta.type,category:meta.category,factIds:[],questionIds:[]};page.factIds.push(fact.id);grouped.set(meta.title,page);}
+-  for(const question of input.questions){const key=`${Number(question.id.match(/^q-c(\d+)-/u)?.[1] ?? 1)}\0${question.text}`;const list=run.pageForQuestion.get(key)??[];const i=questionSeen.get(key)??0;questionSeen.set(key,i+1);const title=list[i]??list[0]??grouped.keys().next().value;if(title){const page=grouped.get(title);if(page)page.questionIds.push(question.id);}}
+-  if(!grouped.size&&input.facts.length){const page={title:'业务事实',type:'concept',category:'other',factIds:input.facts.map(x=>x.id),questionIds:[]};grouped.set(page.title,page);}
++  for(const unit of input.factUnits){const fact={...unit,id:unit.memberIds[0]};const key=`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`;const list=run.pageForFact.get(key)??[];const i=factSeen.get(key)??0;factSeen.set(key,i+1);const meta=list[i]??list[0]??{title:'业务事实',type:'concept',category:'other',documentTitle:'知识主题'};const page=grouped.get(meta.title)??{title:meta.title,type:meta.type,category:meta.category,factUnitIds:[],questionUnitIds:[]};page.factUnitIds.push(unit.id);grouped.set(meta.title,page);}
++  for(const unit of input.questionUnits){const question={...unit,id:unit.memberIds[0]};const key=`${Number(question.id.match(/^q-c(\d+)-/u)?.[1] ?? 1)}\0${question.text}`;const list=run.pageForQuestion.get(key)??[];const i=questionSeen.get(key)??0;questionSeen.set(key,i+1);const title=list[i]??list[0]??grouped.keys().next().value;if(title){const page=grouped.get(title);if(page)page.questionUnitIds.push(unit.id);}}
++  if(!grouped.size&&input.facts.length){const page={title:'业务事实',type:'concept',category:'other',factUnitIds:input.factUnits.map(x=>x.id),questionUnitIds:[]};grouped.set(page.title,page);}
+   const inferredTitle=input.facts.map(fact=>run.pageForFact.get(`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`)?.[0]?.documentTitle).find(Boolean)??'知识主题';
+-  return {...reply,content:contentOf({version:2,document:{title:String(base.title&&!String(base.title).startsWith('合并资料-')?base.title:inferredTitle),main_topic:String(base.main_topic??'业务事实')},pages:[...grouped.values()]})};
++  return {...reply,content:contentOf({version:3,document:{title:String(base.title&&!String(base.title).startsWith('合并资料-')?base.title:inferredTitle),main_topic:String(base.main_topic??'业务事实')},pages:[...grouped.values()]})};
+ }
+ 
+diff --git a/tests/support/kb02-storage-fixture.ts b/tests/support/kb02-storage-fixture.ts
+index 8817673..3f7db02 100644
+--- a/tests/support/kb02-storage-fixture.ts
++++ b/tests/support/kb02-storage-fixture.ts
+@@ -27,7 +27,7 @@ export async function storageFixture() {
+     await hook?.(request);
+     const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
+     const result = request.user.includes('请对下列全部已验证事实规划知识页')
+-      ? { version: 2, document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factIds: data.facts.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionIds: data.questions.map((x: { id: string }) => x.id) }] }
++      ? { version:3,document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }
+       : { version: 2, facts: data.map((x: { id: string }) => ({ atomId: x.id, kind: 'fact' })), questions: [], sourceNotes: [] };
+     return { text: JSON.stringify(result), bytes: 1, finishReason: 'stop' };
+   } };

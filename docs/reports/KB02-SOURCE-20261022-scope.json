@@ -1,0 +1,26 @@
+{
+  "batch": "KB02-SOURCE-20261022",
+  "modified": [
+    "rules/kb02-planning.schema.json",
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/knowledge-planning.ts",
+    "services/llm/rules.ts",
+    "tests/kb02-classification-priority.test.ts",
+    "tests/kb02-extraction-contract.test.ts",
+    "tests/kb02-final-classification.test.ts",
+    "tests/kb02-pipeline.test.ts",
+    "tests/kb02-planning-budget.test.ts",
+    "tests/kb02-planning-context.test.ts",
+    "tests/kb02-r2.test.ts",
+    "tests/kb02-storage-recovery.test.ts",
+    "tests/llm.test.ts",
+    "tests/support/fake-llm.ts",
+    "tests/support/kb02-storage-fixture.ts"
+  ],
+  "addedTests": ["tests/kb02-source-assignment.test.ts"],
+  "scopeAddition": "Main Agent approved tests/kb02-storage-recovery.test.ts solely to migrate the exact missing-unit diagnostic assertion after first full run exposed two failures; all storage recovery/call count/evidence assertions retained.",
+  "constructionAssetPrefix": "KB02-SOURCE-20261022",
+  "independentAssetsOwner": "KB02-SOURCE-AUDIT-20261022 assets are independently owned and excluded from construction changes",
+  "realProviderCalls": 0,
+  "excluded": ["docs/status.md", "docs/agent-control.md", "workspace/", ".env.local", "config/", "Provider transport", "storage", "UI", "dependencies", "historical evidence"]
+}

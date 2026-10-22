@@ -30,7 +30,7 @@ export type ExtractionRulesBundle = {
 const TOP_LEVEL_RULE = 'JSON 顶层只有 document 与 suggested_pages 两个字段，不要增加其它字段。';
 const EVIDENCE_RULE = 'source_evidence 的 quote 必须是从资料中原样复制的连续片段（不要改写、不要拼接），并给出该片段的 id 与 rawId；同一页面内 id 唯一。';
 export const EXTRACTION_PROVIDER_FORMAT = 'locator-v2';
-export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-7';
+export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-8';
 
 function extractEnums(schema: JsonSchemaNode): { types: unknown[]; categories: unknown[] } {
   const page = schema.properties?.suggested_pages?.items;

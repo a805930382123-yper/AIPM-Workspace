@@ -23,8 +23,8 @@ test('KB02 facts/planning builds existing draft outcome and preserves fact/quest
     let checkpoint = await store.save({ version: 1, jobId: '123e4567-e89b-42d3-a456-426614174001', rawId: raw.id, rawSha256: createHash('sha256').update(body).digest('hex'), pipelineVersion: KB02_PIPELINE_VERSION, rulesVersion: bundle.rulesVersion, providerIdentity: 'fake|fake-model', chunks: chunks.map(({ index, start, end }) => ({ index, start, end })), completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: new Date().toISOString() });
     const provider: LlmProvider = { name: 'fake', model: 'fake-model', cacheIdentity: 'fake', complete: async (request: LlmCompletionRequest) => {
       if (request.user.includes('请对下列全部已验证事实规划知识页')) {
-        const payload = JSON.parse(request.user.slice(request.user.indexOf('{', request.user.indexOf('。') + 1))) as { facts: Array<{ id: string }>; questions: Array<{ id: string }> };
-        return { text: JSON.stringify({ version: 2, document: { title: raw.title, main_topic: '区域销售' }, pages: [{ title: '区域销售', type: 'metric', category: 'metric', factIds: payload.facts.map(item => item.id), questionIds: payload.questions.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
+        const payload = JSON.parse(request.user.slice(request.user.indexOf('{', request.user.indexOf('。') + 1))) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
+        return { text: JSON.stringify({ version:3,document: { title: raw.title, main_topic: '区域销售' }, pages: [{ title: '区域销售', type: 'metric', category: 'metric', factUnitIds:payload.factUnits.map(item => item.id), questionUnitIds:payload.questionUnits.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
       }
       const atoms = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
       return { text: JSON.stringify({ version: 2, facts: [{ atomId: atoms[0].id, kind: 'fact' }], questions: [{ atomId: atoms[1].id }], sourceNotes: [] }), finishReason: 'stop', bytes: 10 };
@@ -50,8 +50,8 @@ test('KB02 resume reuses validated chunks and counts failed outbound attempts', 
     let failSecond = true; const seen: string[] = [];
     const provider: LlmProvider = { name: 'fake', model: 'fake-model', complete: async (request: LlmCompletionRequest) => {
       if (request.user.includes('请对下列全部已验证事实规划知识页')) {
-        const json = request.user.slice(request.user.lastIndexOf('\n') + 1); const payload = JSON.parse(json) as { facts: Array<{ id: string }>; questions: Array<{ id: string }> };
-        return { text: JSON.stringify({ version: 2, document: { title: '简报', main_topic: '销售' }, pages: [{ title: '销售', type: 'metric', category: 'metric', factIds: payload.facts.map(item => item.id), questionIds: payload.questions.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
+        const json = request.user.slice(request.user.lastIndexOf('\n') + 1); const payload = JSON.parse(json) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
+        return { text: JSON.stringify({ version:3,document: { title: '简报', main_topic: '销售' }, pages: [{ title: '销售', type: 'metric', category: 'metric', factUnitIds:payload.factUnits.map(item => item.id), questionUnitIds:payload.questionUnits.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
       }
       const atoms = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1)); const locator = atoms[0].id; const chunk = Number(locator?.match(/^c(\d+)/)?.[1]); seen.push(`c${chunk}`);
       if (chunk === 2 && failSecond) { failSecond = false; throw new LlmError('FAKE_TIMEOUT', 'simulated timeout', 504); }

@@ -20,7 +20,16 @@ const sha=(s:string|Buffer)=>createHash('sha256').update(s).digest('hex');
 const chunks=(body:string)=>chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000});
 const catalogs=(body:string)=>new Map(chunks(body).map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
 const data=(r:LlmCompletionRequest)=>JSON.parse(r.user.split('\n').at(-1)!);
-const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:2,document:{title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factIds:p.facts.map(i=>i.id),questionIds:p.questions.map(i=>i.id)}]});
+const projectOldFailure=(response:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:response.document,pages:response.pages.map((page:any)=>({title:page.title,type:page.type,category:page.category,factUnitIds:p.factUnits.filter(u=>u.memberIds.every(id=>page.factIds.includes(id))).map(u=>u.id),questionUnitIds:p.questionUnits.filter(u=>u.memberIds.every(id=>page.questionIds.includes(id))).map(u=>u.id)}))});
+const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:{title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factUnitIds:p.factUnits.map(i=>i.id),questionUnitIds:p.questionUnits.map(i=>i.id)}]});
+// Recreate only each old response's omissions on an otherwise schema-valid v3 plan.
+// The original bad assignments remain tested verbatim as v2; tests never repair runtime output.
+const projectOldOmissions=(source:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>{
+  const missing=source.checkpoint.lastError.diagnostic,plan=validPlan(p);
+  plan.pages[0].factUnitIds=p.factUnits.filter(u=>!u.memberIds.some(id=>missing.facts.missing.includes(id))).map(u=>u.id);
+  plan.pages[0].questionUnitIds=p.questionUnits.filter(u=>!u.memberIds.some(id=>missing.questions.missing.includes(id))).map(u=>u.id);
+  return plan;
+};
 
 async function runFixture(source:{raw:any;checkpoint:ExtractionCheckpoint},response?:(r:LlmCompletionRequest)=>unknown,secrets:string[]=[]) {
   const bundle=await loadExtractionRules('rules');
@@ -51,7 +60,7 @@ test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area pla
     assert(r.system.includes('不得按chunk分组建页'));assert(r.system.includes('不可二选一'));
     for(const s of p.sourceContexts){assert.equal(s.text,old.raw.body.slice(s.contextStart,s.contextEnd));assert.equal(s.id,`s-${s.start}-${s.end}`);assert.equal(old.raw.body.slice(s.start,s.end),p.facts.find(i=>i.sourceId===s.id)?.text??p.questions.find(i=>i.sourceId===s.id)?.text);}
     // Explicit fixture expectations are test labels, not runtime entity classification.
-    return {version:2,document:{title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factIds:p.facts.filter(i=>old.expectedAreas[i.id]===area).map(i=>i.id),questionIds:p.questions.filter(i=>old.expectedAreas[i.id]===area).map(i=>i.id)};})};
+    return {version:3,document:{title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factUnitIds:p.factUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id),questionUnitIds:p.questionUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id)};})};
   });
   const done=await f.run(),payload=data(f.requests[0]);
   assert.equal(f.requests.length,1);assert.equal(f.cp.attempts,16);assert.deepEqual(f.cp.completedChunks,before);
@@ -63,9 +72,9 @@ test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area pla
   assert.equal(sha(old.raw.body),old.raw.bodySha256);
 });
 
-for(const sequence of [100,104])test(`PLAN-03 original seq${sequence} response remains strict rejection with every original record retained`,async()=>{
-  const old=(await fixture()).cases.find((c:any)=>c.sequence===sequence),f=await runFixture(old,()=>old.response),before=structuredClone(f.cp.completedChunks);
-  await assert.rejects(f.run(),{code:'LLM_PLAN_COVERAGE_INVALID'});assert.equal(f.requests.length,1);assert(!f.cp.plan);assert.deepEqual(f.cp.completedChunks,before);assert.deepEqual(f.cp.lastError!.diagnostic,old.checkpoint.lastError.diagnostic);
+for(const sequence of [100,104])for(const contract of ['original-v2','missing-v3'])test(`PLAN-03 seq${sequence} ${contract} remains strict rejection with every original record retained`,async()=>{
+  const old=(await fixture()).cases.find((c:any)=>c.sequence===sequence),f=await runFixture(old,r=>contract==='original-v2'?old.response:projectOldOmissions(old,data(r))),before=structuredClone(f.cp.completedChunks);
+  await assert.rejects(f.run(),{code:contract==='original-v2'?'LLM_SCHEMA_INVALID':'LLM_PLAN_COVERAGE_INVALID'});assert.equal(f.requests.length,1);assert(!f.cp.plan);assert.deepEqual(f.cp.completedChunks,before);assert.deepEqual(coverageDiagnostic(old.checkpoint.completedChunks.flatMap((c:any)=>c.facts.map((i:any)=>i.id)),old.checkpoint.completedChunks.flatMap((c:any)=>c.questions.map((i:any)=>i.id)),old.response.pages),old.checkpoint.lastError.diagnostic);if(contract==='missing-v3'){const p=data(f.requests[0]),bad=projectOldOmissions(old,p);assert.deepEqual(f.cp.lastError!.diagnostic,coverageDiagnostic(p.factUnits.map((u:any)=>u.id),p.questionUnits.map((u:any)=>u.id),bad.pages.map((page:any)=>({title:page.title,factIds:page.factUnitIds,questionIds:page.questionUnitIds}))));}
 });
 
 test('PLAN-03 supplement keeps fact and question at the same source, including ambiguous business boundary',async()=>{
@@ -114,9 +123,9 @@ test('PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit
 });
 
 test('PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts',async()=>{
-  const old=(await fixture()).cases[1];let bad=true;const f=await runFixture(old,r=>bad?old.response:validPlan(data(r)));
+  const old=(await fixture()).cases[1];let bad=true;const f=await runFixture(old,r=>bad?projectOldFailure(old.response,data(r)):validPlan(data(r)));
   await assert.rejects(f.run(),{code:'LLM_PLAN_COVERAGE_INVALID'});const before=structuredClone(f.cp.completedChunks),attempts=f.cp.attempts;bad=false;
-  const done=await f.run(true);assert.equal(f.cp.attempts,attempts+1);assert.equal(done.outcome.callCount,attempts+1);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.requests.length,2);assert.deepEqual(data(f.requests[1]).sourceContexts,data(f.requests[0]).sourceContexts);assert.deepEqual(data(f.requests[1]).coverageFeedback.facts.missing,['f-c1-2']);
+  const done=await f.run(true);assert.equal(f.cp.attempts,attempts+1);assert.equal(done.outcome.callCount,attempts+1);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.requests.length,2);assert.deepEqual(data(f.requests[1]).sourceContexts,data(f.requests[0]).sourceContexts);assert.deepEqual(data(f.requests[1]).coverageFeedback.facts.missing,[data(f.requests[1]).factUnits.find((u:any)=>u.memberIds.includes('f-c1-2')).id]);
 });
 
 test('PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks',async()=>{
@@ -129,7 +138,7 @@ test('PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; exp
     const files=[path.join(f.root,'state/extraction-checkpoints',cp.jobId+'.json'),path.join(f.root,'state/extraction-jobs',cp.jobId+'.json'),path.join(f.root,'state/raw-processing',raw.id+'.json')],before=await Promise.all(files.map(p=>readFile(p)));
     for(const options of [{},{planningRetry:true},{}]){const r=await h.request(`/api/raw/${raw.id}/extract`,options);assert.equal(r.status,409);assert.equal(r.json.error.code,'LLM_CHECKPOINT_INCOMPATIBLE');assert.deepEqual(await Promise.all(files.map(p=>readFile(p))),before);assert.equal(f.requests.length,0);}
     let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restart=r.json.jobId;assert.notEqual(restart,cp.jobId);
-    for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);const fresh=await store.get(restart);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-7-/u);
+    for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);const fresh=await store.get(restart);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-8-/u);
     await f.runner.cancel(restart);release();await f.runner.waitForSettlement(restart);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
   }finally{release();if(restart)await f.runner.waitForSettlement(restart);await h.close();await f.clean();}
 });

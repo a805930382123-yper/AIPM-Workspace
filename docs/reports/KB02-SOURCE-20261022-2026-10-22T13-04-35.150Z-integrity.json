@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-22T13:04:35.150Z",
+  "product": {
+    "changed": [],
+    "added": []
+  },
+  "tests": {
+    "changed": [],
+    "added": []
+  },
+  "fixtures": {
+    "changed": [],
+    "added": []
+  },
+  "acceptanceScripts": {
+    "changed": [],
+    "added": []
+  },
+  "protected": {
+    "checked": 2925,
+    "changed": [],
+    "added": []
+  },
+  "coordinatedAuditBaselineChanges": [
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-authorization.json",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-final-evidence.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-real-http.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-run.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-update-check.mjs"
+  ],
+  "coordinatedAuditAssets": [
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-boundary.test.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-browser-prepare.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-diagnostic.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-final-evidence.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-integrity.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-lab.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-prepare.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-quality.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-real-http.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-run.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-trace-hook.mjs",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-update-check.mjs",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-fullsuite.log",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-historical-boundary.log",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-independent-source-boundary.log",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-node24-version.log",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-run.json",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-tsc.log",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-2026-10-22T13-03-52.637Z-vite.log",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-authorization.json",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-baseline.json",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-integrity.json",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-preparation.md",
+    "docs/reports/KB02-SOURCE-AUDIT-20261022-takeover.md"
+  ],
+  "workspace": {
+    "changed": [],
+    "added": []
+  },
+  "config": {
+    "changed": [],
+    "added": []
+  },
+  "baselineProductChanges": [
+    "rules/kb02-planning.schema.json",
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/rules.ts",
+    "services/llm/knowledge-planning.ts"
+  ],
+  "baselineTestChanges": [
+    "tests/kb02-classification-priority.test.ts",
+    "tests/kb02-extraction-contract.test.ts",
+    "tests/kb02-final-classification.test.ts",
+    "tests/kb02-pipeline.test.ts",
+    "tests/kb02-planning-budget.test.ts",
+    "tests/kb02-planning-context.test.ts",
+    "tests/kb02-r2.test.ts",
+    "tests/kb02-storage-recovery.test.ts",
+    "tests/llm.test.ts",
+    "tests/support/fake-llm.ts",
+    "tests/support/kb02-storage-fixture.ts"
+  ],
+  "newTests": [
+    "tests/kb02-source-assignment.test.ts"
+  ],
+  "scopeExact": true,
+  "pass": true
+}

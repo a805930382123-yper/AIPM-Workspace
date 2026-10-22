@@ -32,7 +32,7 @@ async function setup(text=body){
  const provider:LlmProvider={name:'fake',model:'final',complete:async r=>{
   requests.push(r);const data=JSON.parse(r.user.split('\n').at(-1)!);
   // Explicit fixture labels test plumbing only, never model quality or a product classifier.
-  const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:2,document:{title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factIds:data.facts.map((a:{id:string})=>a.id),questionIds:data.questions.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
+  const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:3,document:{title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factUnitIds:data.factUnits.map((a:{id:string})=>a.id),questionUnitIds:data.questionUnits.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
   return {text:JSON.stringify(output),bytes:1,finishReason:'stop'};
  }};
  const args={raw,body:text,bodySha256:sha(text),provider,rulesDir:path.resolve('rules'),beforeCall:async(stage:'extracting'|'planning')=>cp=await store.save({...cp,stage,attempts:cp.attempts+1}),saveCheckpoint:async(value:Omit<ExtractionCheckpoint,'integrity'>)=>cp=await store.save(value)};
@@ -76,7 +76,7 @@ test('FINAL-01 original seq75 full directory and response preserve semantic fail
   // Deliberate offline current-fingerprint rebind proves no filtering/forced placement workaround.
   const cp=await f.store.save({...oldCp,rulesVersion:f.bundle.rulesVersion});
   f.args.provider.complete=async r=>{f.requests.push(r);return {text:JSON.stringify(old.planning.response),bytes:1,finishReason:'stop'};};
-  await assert.rejects(runKnowledgePipeline({...f.args,raw:{...f.args.raw,id:oldCp.rawId},checkpoint:cp,beforeCall:async(stage)=>({...cp,stage,attempts:cp.attempts+1})}),{code:'LLM_PLAN_COVERAGE_INVALID'});
+  await assert.rejects(runKnowledgePipeline({...f.args,raw:{...f.args.raw,id:oldCp.rawId},checkpoint:cp,beforeCall:async(stage)=>({...cp,stage,attempts:cp.attempts+1})}),{code:'LLM_SCHEMA_INVALID'});
   assert.equal(f.requests.length,1);assert.equal((await f.store.get(cp.jobId))!.completedChunks[12].facts.find(a=>a.id==='f-c13-4')!.text,bad.text);assert(!(await f.store.get(cp.jobId))!.plan);
   assert.deepEqual(await readFile(fixturePath),bytes);
  }finally{await f.clean();}
@@ -96,7 +96,7 @@ test('FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero 
   let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});
   const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restartId=r.json.jobId;assert.notEqual(restartId,cp.jobId);
   for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);
-  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-7-/u);
+  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-8-/u);
   await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
  }finally{release();if(restartId)await f.runner.waitForSettlement(restartId);await h.close();await f.clean();}
 });

@@ -1,0 +1,21 @@
+✔ SOURCE seq121 exact real failure passed old ID coverage and is refused as v2 without changing any extracted ID (113.4486ms)
+✔ SOURCE controlled real seq121 creates 14 correct areas with all 104 original IDs then saves and restores the new plan (136.4685ms)
+✔ SOURCE v3 missing units fail before expansion and only explicit retry resumes planning (118.9153ms)
+✔ SOURCE v3 duplicate units fail before expansion and only explicit retry resumes planning (125.5625ms)
+✔ SOURCE v3 unknown units fail before expansion and only explicit retry resumes planning (164.5879ms)
+✔ SOURCE v3 wrong-column units fail before expansion and only explicit retry resumes planning (138.8262ms)
+✔ SOURCE v3 split units fail before expansion and only explicit retry resumes planning (147.5771ms)
+✔ SOURCE current-rule tampered persisted split, unknown page field and metadata are rejected; valid plan remains restorable (151.41ms)
+✔ SOURCE same text at different Raw positions is not merged and may have distinct primary pages (19.987ms)
+✔ SOURCE same multi-business atom remains whole; duplicate full statements cannot invent separate semantic projections (23.9316ms)
+✔ SOURCE different kinds and fact/question units at the same span can belong to different topics without losing ambiguity (24.3765ms)
+✔ SOURCE exact text binding rejects a fabricated different fact projection before any Provider call (14.6368ms)
+✔ SOURCE old revision7 unfinished checkpoint fails preflight with no call/write and original extraction retained (27.2137ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1634.6338

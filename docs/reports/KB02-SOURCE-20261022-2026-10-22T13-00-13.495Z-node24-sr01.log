@@ -1,0 +1,151 @@
+✔ job file held get excludes update from another store but not another job (59.4534ms)
+✔ job file held get excludes insert from another store but not another job (45.367ms)
+✔ job atomic replacement excludes get, list, generic JSON read and recovery scan across instances (59.3535ms)
+✔ job list keeps coordination until its real file handle closes (40.8186ms)
+✔ job recovery keeps coordination until its real file handle closes (38.9329ms)
+✔ job mutations across instances retain independent fields and release after corrupt reads or persistent rename refusal (393.2662ms)
+✔ job polling and independent recovery scans coexist with atomic updates without native rename rejection (308.6545ms)
+Budget assertion snapshot: [{"node":"v24.19.0","job":{"status":"failed","stage":"planning","callCount":6,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"checkpoint":{"stage":"planning","attempts":6,"validatedChunks":1,"diagnosticPresent":true,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"rawStatus":"failed","requests":6,"execution":"settled","recovery":null}]
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (469.1985ms)
+Budget assertion snapshot: [{"node":"v24.19.0","job":{"status":"completed","stage":"done","callCount":6},"checkpoint":{"stage":"done","attempts":6,"validatedChunks":1,"diagnosticPresent":false},"rawStatus":"pending_confirmation","requests":6,"execution":"settled","recovery":null}]
+✖ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (324.6506ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=false (614.1472ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=true (574.9379ms)
+✔ F-SR01-01 refuses externally changed binding and preserves bytes (454.4949ms)
+✔ F-SR01-01 refuses externally changed history and preserves bytes (458.3587ms)
+✔ F-SR01-01 refuses externally changed body and preserves bytes (469.202ms)
+✔ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (571.5399ms)
+✔ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (71.3906ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (95.0071ms)
+✔ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (483.4021ms)
+✔ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (453.2796ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (1071.4581ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (429.0057ms)
+✔ SR01 real atomic failed-job transient retry (212.5004ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✖ SR01 real atomic failed-job persistent explicit recovery (854.1428ms)
+✔ SR01 real atomic done-checkpoint transient retry (151.4097ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":2}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (830.2481ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"44ffcf1c868ad90165bde78a6a1677cc348364c367cc89a973fbee82684db1bc","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":["5d59b2dc-547c-4313-a6ab-a7b79148618b"],"finalJob":"completed","idempotentHashes":["c3d455216822cfcd6c3f3b51fcb7f90fc343a13829fa9b118883b90ce5c5e762","e707096b2c2c0716e82f54ee02d6a3b9288a19e2380ef475ee4818415318df9b","a50a71466d68986164ef6611d3d1b32ecc28b5bd117e8722122025009470b954"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (150.494ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✖ SR01 real atomic coverage-checkpoint persistent explicit recovery (794.0053ms)
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (443.2828ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (411.964ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (425.5718ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (412.9198ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (79.0966ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (389.4654ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3311.8256ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (0.627ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (6815.2873ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1291.524ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (117.2978ms)
+✔ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (425.7575ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (1054.2822ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3518.8025ms)
+✔ SR01 start failure reload is actionable and late storage response cannot change a different Raw selection (533.9367ms)
+✔ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3722.4554ms)
+✔ F-SR01-01 React refresh selects new recovery id over old failed job and saves without regenerating (515.9343ms)
+✔ PA01 R01 real workflow records reject deep corruption consistently before reads and writes (961.1534ms)
+✔ PA01 R01 optional evidence and legacy unused snapshots remain readable editable confirmable (149.1416ms)
+✔ PA01 R02 499/500/501/1201 results are bounded with persistent hidden issues and correct rescan totals (4013.7875ms)
+✔ PA01 R02 file/byte/observer budgets remain bounded and partial count stays a lower bound (42.8652ms)
+✔ PA01 strict draft reads preserve corrupt bytes and return a healthy neighbor including manual evidence (52.166ms)
+✔ PA01 recovery reuses full Prompt draft validation and retains deep shape problems (45.9166ms)
+✔ PA01 recovery clears an observed missing draft only after rescanning (19.7979ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 47
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17751.2847
+
+✖ failing tests:
+
+test at tests\kb02-planning-budget.test.ts:1:4902
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (469.1985ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'fu-13-26-fact'
+  -   'f-c1-2'
+    ]
+  
+      at TestContext.<anonymous> (C:\Users\80593\AppData\Local\Temp\kb02-source-sol-WEuG1F\tests\kb02-planning-budget.test.ts:84:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'fu-13-26-fact' ],
+    expected: [ 'f-c1-2' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:6770
+✖ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (324.6506ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'fu-13-26-fact'
+  -   'f-c1-2'
+    ]
+  
+      at TestContext.<anonymous> (C:\Users\80593\AppData\Local\Temp\kb02-source-sol-WEuG1F\tests\kb02-planning-budget.test.ts:124:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'fu-13-26-fact' ],
+    expected: [ 'f-c1-2' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-storage-recovery.test.ts:1:896
+✖ SR01 real atomic failed-job persistent explicit recovery (854.1428ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'fu-13-26-fact'
+  -   'f-c1-2'
+    ]
+  
+      at TestContext.<anonymous> (C:\Users\80593\AppData\Local\Temp\kb02-source-sol-WEuG1F\tests\kb02-storage-recovery.test.ts:47:16)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'fu-13-26-fact' ],
+    expected: [ 'f-c1-2' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-storage-recovery.test.ts:1:896
+✖ SR01 real atomic coverage-checkpoint persistent explicit recovery (794.0053ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'fu-13-26-fact'
+  -   'f-c1-2'
+    ]
+  
+      at TestContext.<anonymous> (C:\Users\80593\AppData\Local\Temp\kb02-source-sol-WEuG1F\tests\kb02-storage-recovery.test.ts:47:16)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'fu-13-26-fact' ],
+    expected: [ 'f-c1-2' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

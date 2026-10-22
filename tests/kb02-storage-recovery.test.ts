@@ -44,7 +44,7 @@ for (const mode of ['failed-job', 'done-checkpoint', 'coverage-checkpoint'] as F
       assert.deepEqual((await f.drafts.list()).map(d => d.id), draftIds);
       if (mode !== 'done-checkpoint') {
         assert.equal(recovered.job?.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
-        assert.deepEqual((await f.checkpoint(job.id))?.lastError?.diagnostic?.facts.missing, ['f-c1-2']);
+        assert.deepEqual((await f.checkpoint(job.id))?.lastError?.diagnostic?.facts.missing, ['fu-13-26-fact']);
       }
       const before = await f.hashes(job.id); await f.runner.reconcileStorage(job.id); assert.deepEqual(await f.hashes(job.id), before);
       assert.equal(f.requests.length, calls);

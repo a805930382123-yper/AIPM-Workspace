@@ -26,7 +26,7 @@ async function fixture() {
     requests.push(request);
     const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
     const result = request.user.includes('请对下列全部已验证事实规划知识页')
-      ? { version: 2, document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factIds: data.facts.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionIds: data.questions.map((x: { id: string }) => x.id) }] }
+      ? { version:3,document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }
       : { version: 2, facts: data.map((x: { id: string }) => ({ atomId: x.id, kind: 'fact' })), questions: [], sourceNotes: [] };
     return { text: JSON.stringify(result), bytes: 1, finishReason: 'stop' };
   } };
@@ -81,7 +81,7 @@ test('KB02 exhausted explicit replanning rejects before writes, retains diagnost
     const saved = await f.checkpoint(job.id), before = await f.hashes(job.id);
     assert.equal(saved?.attempts, 6);
     assert.equal(saved?.completedChunks.length, 1);
-    assert.deepEqual(saved?.lastError?.diagnostic?.facts.missing, ['f-c1-2']);
+    assert.deepEqual(saved?.lastError?.diagnostic?.facts.missing, ['fu-13-26-fact']);
     assert.deepEqual(job.error?.details, saved?.lastError?.diagnostic);
     for (let replay = 0; replay < 3; replay++) {
       await assert.rejects(f.start({ planningRetry: true }), (error: unknown) => error instanceof JobError && error.code === 'LLM_ATTEMPT_LIMIT' && error.status === 409 && /累计 6 次调用上限.*显式重新生成/u.test(error.message));
@@ -121,6 +121,6 @@ test('KB02 last available planning call stays in the same job with successful ch
     assert.deepEqual((await f.checkpoint(job.id))!.completedChunks, chunk);
     assert.equal(f.requests.length, 6);
     assert.equal(f.requests.filter(r => !r.user.includes('请对下列全部已验证事实规划知识页')).length, 1);
-    assert.deepEqual(JSON.parse(f.requests.at(-1)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['f-c1-2']);
+    assert.deepEqual(JSON.parse(f.requests.at(-1)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
   } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
 });

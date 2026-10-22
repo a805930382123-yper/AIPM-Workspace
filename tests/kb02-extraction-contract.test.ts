@@ -31,7 +31,7 @@ async function fixture(rulesDir = path.resolve('rules')) {
     requests.push(r);
     const planning = r.user.includes('请对下列全部已验证事实规划知识页');
     const data = planning ? JSON.parse(r.user.split('\n').at(-1)!) : undefined;
-    return { text: JSON.stringify(planning ? { version: 2, document: { title: '虚构指标', main_topic: '渠道' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factIds: data.facts.map((x: { id: string }) => x.id), questionIds: data.questions.map((x: { id: string }) => x.id) }] } : extraction(r)), bytes: 1, finishReason: 'stop' };
+    return { text: JSON.stringify(planning ? { version:3,document: { title: '虚构指标', main_topic: '渠道' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] } : extraction(r)), bytes: 1, finishReason: 'stop' };
   } };
   const args = { raw, body: text, bodySha256: sha(text), provider, rulesDir, beforeCall: async (stage: 'extracting' | 'planning') => checkpoint = await store.save({ ...checkpoint, stage, attempts: checkpoint.attempts + 1 }), saveCheckpoint: async (value: Omit<ExtractionCheckpoint, 'integrity'>) => checkpoint = await store.save(value) };
   return { root, args, bundle, requests, store, get checkpoint() { return checkpoint; }, reply: (fn: typeof extraction) => { extraction = fn; }, run: () => runKnowledgePipeline({ ...args, checkpoint }), clean: () => rm(root, { recursive: true, force: true }) };
@@ -55,7 +55,7 @@ test('KB02 Q01 sends the complete loaded schema and valid nonempty examples; dec
     assert.equal(saved.sourceNotes?.[0].text, '虚构验收免责声明。');
     assert.equal(saved.sourceNotes?.length, 1); // Additional layout atom may be omitted.
     const planning = JSON.parse(f.requests[1].user.split('\n').at(-1)!);
-    assert.deepEqual(Object.keys(planning).sort(), ['facts', 'questions', 'sourceContexts']);
+    assert.deepEqual(Object.keys(planning).sort(), ['factUnits', 'facts', 'questionUnits', 'questions', 'sourceContexts']);
     for (const context of planning.sourceContexts) assert.equal(context.text, text.slice(context.contextStart, context.contextEnd));
     assert(f.requests[1].system.includes('附近其它陈述只帮助定位，不能作为新增事实'));
     assert.deepEqual(planning.facts.map((x: { text: string }) => x.text), ['在售20家。', '旧资料20家未注明维度。']);
@@ -128,7 +128,7 @@ test('KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkp
     const [schema, rules, facts, planning] = await Promise.all(['wiki-extract.schema.json', 'extraction-rules.yaml', 'kb02-facts.schema.json', 'kb02-planning.schema.json'].map(name => readFile(path.join('rules', name), 'utf8')));
     const revision = 'kb02-atoms-planning-3', format = 'locator-v2';
     const oldVersion = `b04-${f.bundle.rules.version}-${format}-${revision}-${sha(`${schema}\n${rules}\n${format}\n${revision}\n${facts}\n${planning}`).slice(0, 12)}`;
-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-7'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
+    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-8'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
     const old = await f.store.save({ ...f.checkpoint, rulesVersion: oldVersion });
     const file = path.join(f.root, 'state/extraction-checkpoints', old.jobId + '.json'), bytes = await readFile(file);
     await assert.rejects(validateKnowledgeCheckpoint({ ...f.args, checkpoint: old }), (e: unknown) => e instanceof LlmError && e.code === 'LLM_CHECKPOINT_INCOMPATIBLE' && e.status === 409);

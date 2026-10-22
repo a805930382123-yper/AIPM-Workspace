@@ -1,0 +1,10 @@
+import fs from 'node:fs/promises';import path from 'node:path';import {createHash} from 'node:crypto';
+const prefix='docs/reports/KB02-SOURCE-20261022-',name='KB02-SOURCE-20261022',sha=b=>createHash('sha256').update(b).digest('hex');
+async function files(d){let out=[];try{for(const e of await fs.readdir(d,{withFileTypes:true})){const p=path.posix.join(d,e.name);if(e.isDirectory())out.push(...await files(p));else if(e.isFile())out.push(p);}}catch(e){if(e.code!=='ENOENT')throw e;}return out;}
+async function snap(list){return Object.fromEntries(await Promise.all(list.map(async p=>[p,sha(await fs.readFile(p))])));}
+const prior=JSON.parse(await fs.readFile('docs/reports/KB02-PLAN-20261022-sol-frozen.json','utf8'));
+const product=await snap(Object.keys(prior.product)),tests=await snap((await files('tests')).filter(p=>!p.startsWith('tests/acceptance/'))),protectedFiles=(await Promise.all(['docs/reports','tests/acceptance','workspace','config'].map(files))).flat().filter(p=>!path.basename(p).startsWith(name));
+const config=await snap((await fs.readdir('.')).filter(p=>/^(\.env(?:\..*)?|package(?:-lock)?\.json|tsconfig\.json)$/u.test(p)));
+for(const p of ['services/llm/knowledge-planning.ts','services/llm/knowledge-extraction.ts','services/llm/rules.ts','rules/kb02-planning.schema.json',...Object.keys(tests).filter(p=>['tests/support/fake-llm.ts','tests/support/kb02-storage-fixture.ts','tests/kb02-planning-budget.test.ts','tests/kb02-pipeline.test.ts','tests/kb02-r2.test.ts','tests/kb02-planning-context.test.ts','tests/kb02-extraction-contract.test.ts','tests/kb02-final-classification.test.ts','tests/kb02-classification-priority.test.ts','tests/llm.test.ts'].includes(p))])await fs.copyFile(p,prefix+'before-'+p.replaceAll('/','_'));
+await fs.writeFile(prefix+'baseline.json',JSON.stringify({at:new Date().toISOString(),product,tests,protected:await snap(protectedFiles),workspace:await snap(await files('workspace')),config},null,2));
+console.log({product:Object.keys(product).length,tests:Object.keys(tests).length,protected:protectedFiles.length,config:Object.keys(config).length});
