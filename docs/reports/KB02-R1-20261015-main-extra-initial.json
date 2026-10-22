@@ -1,0 +1,152 @@
+{
+  "at": "2026-10-15T06:02:15.465Z",
+  "checks": [
+    {
+      "id": "X01-oversized-checkpoint",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true,
+        "bytes": 33554433
+      }
+    },
+    {
+      "id": "X02-partial-coverage-with-forged-complete-plan",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true
+      }
+    },
+    {
+      "id": "X03-duplicate-stable-fact-identity",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true
+      }
+    },
+    {
+      "id": "X04-unknown-nested-checkpoint-field",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true
+      }
+    },
+    {
+      "id": "X05-max-raw-budget-66-chunks-resumable",
+      "result": "PASS",
+      "evidence": {
+        "characters": 500000,
+        "chunks": 66,
+        "attempts": 68,
+        "sameJob": true,
+        "maxSupportedRawUnchanged": true
+      }
+    },
+    {
+      "id": "X06-duplicate-evidence-cannot-hide-missing-reference",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true
+      }
+    },
+    {
+      "id": "X07-fact-identity-must-match-actual-chunk",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true
+      }
+    },
+    {
+      "id": "X08-rehashed-attempt-ledger-rollback",
+      "result": "PASS",
+      "evidence": {
+        "status": 409,
+        "noCall": true,
+        "stateExact": true
+      }
+    },
+    {
+      "id": "X09-confirmed-raw-explicit-new-extraction-is-new-job",
+      "result": "PASS",
+      "evidence": {
+        "newLogicalJob": true,
+        "newRulesApplied": true,
+        "newCalls": 2,
+        "oldCheckpointExact": true,
+        "oldConfirmedDraftPreserved": true,
+        "noNewFormalWrite": true
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "X01-oversized-checkpoint",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-ZrSduo",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X02-partial-coverage-with-forged-complete-plan",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-LskBTt",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X03-duplicate-stable-fact-identity",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-wUZ4hl",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X04-unknown-nested-checkpoint-field",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-mDFkXr",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X05-max-raw-budget-66-chunks-resumable",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-lfHJyv",
+      "calls": 68,
+      "closed": true
+    },
+    {
+      "id": "X06-duplicate-evidence-cannot-hide-missing-reference",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-UJkNaF",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X07-fact-identity-must-match-actual-chunk",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-cSS0Z5",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X08-rehashed-attempt-ledger-rollback",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-Duen0M",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "X09-confirmed-raw-explicit-new-extraction-is-new-job",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-qJGhIi",
+      "calls": 4,
+      "closed": true
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 0
+  }
+}

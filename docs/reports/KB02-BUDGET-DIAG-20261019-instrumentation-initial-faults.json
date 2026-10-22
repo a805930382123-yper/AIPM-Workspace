@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-19T15:56:07.326Z",
+  "scope": "original two default tests, explicit diagnostic preload; localhost fake only, no product/test changes",
+  "batch": "faults",
+  "rows": [
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "faults-failed-job-rename",
+      "mode": "failed-job-rename",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "--test-name-pattern=exhausted explicit",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 287,
+      "summary": [
+        "ℹ tests 1",
+        "ℹ pass 0",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 189.6914"
+      ]
+    },
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "faults-done-checkpoint-rename",
+      "mode": "done-checkpoint-rename",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "--test-name-pattern=last available",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 280,
+      "summary": [
+        "ℹ tests 1",
+        "ℹ pass 0",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 187.1559"
+      ]
+    },
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "faults-coverage-checkpoint-rename",
+      "mode": "coverage-checkpoint-rename",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "--test-name-pattern=exhausted explicit",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 283,
+      "summary": [
+        "ℹ tests 1",
+        "ℹ pass 0",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 188.5578"
+      ]
+    }
+  ],
+  "eventSummary": [],
+  "sourceChanges": [],
+  "externalCalls": 0
+}

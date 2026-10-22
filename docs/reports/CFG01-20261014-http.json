@@ -1,0 +1,331 @@
+{
+  "date": "2026-10-14",
+  "batchStarted": "2026-10-13",
+  "scope": "real product HTTP/config/adapter -> local fake; no real credentials/provider",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-2CqURR",
+  "configFile": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-2CqURR\\provider.env",
+  "durationMs": 19951,
+  "checks": [
+    {
+      "id": "C01-empty-summary",
+      "result": "PASS",
+      "details": {
+        "configured": false,
+        "noProviderCalls": true
+      }
+    },
+    {
+      "id": "C02-first-save-requires-key",
+      "result": "PASS",
+      "details": {
+        "requiredKey": true,
+        "noWrites": true
+      }
+    },
+    {
+      "id": "C01-new-fields-after-unrelated-no-newline",
+      "result": "PASS",
+      "details": {
+        "unrelatedContentPreserved": true,
+        "appendSeparated": true
+      }
+    },
+    {
+      "id": "C01-first-save-no-provider",
+      "result": "PASS",
+      "details": {
+        "configured": true,
+        "noProviderCalls": true,
+        "noBusinessWrites": true,
+        "unrelatedLinePreserved": true
+      }
+    },
+    {
+      "id": "C01-keep-key-and-normalize-url",
+      "result": "PASS",
+      "details": {
+        "keptKey": true,
+        "noProviderCalls": true
+      }
+    },
+    {
+      "id": "C03-test-saved-fixed-message",
+      "result": "PASS",
+      "details": {
+        "fixedRequest": {
+          "model": "cfg01-model-b",
+          "stream": false,
+          "temperature": 0,
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are a connectivity check. Return only the word OK."
+            },
+            {
+              "role": "user",
+              "content": "Reply with OK."
+            }
+          ]
+        },
+        "authenticated": true,
+        "noBusinessWrites": true
+      }
+    },
+    {
+      "id": "C01-replace-key",
+      "result": "PASS",
+      "details": {
+        "replacementStored": true,
+        "noKeyInSummary": true
+      }
+    },
+    {
+      "id": "C01-config-excluded-from-real-backup",
+      "result": "PASS",
+      "details": {
+        "archiveFiles": 2,
+        "configAndKeyExcluded": true
+      }
+    },
+    {
+      "id": "C02-stale-revision",
+      "result": "PASS",
+      "details": {
+        "status": 409,
+        "oldFilePreserved": true
+      }
+    },
+    {
+      "id": "C02-external-edit-conflict",
+      "result": "PASS",
+      "details": {
+        "status": 409,
+        "externalLinePreserved": true
+      }
+    },
+    {
+      "id": "C02-concurrent-same-revision",
+      "result": "PASS",
+      "details": {
+        "oneCommitOneConflict": true
+      }
+    },
+    {
+      "id": "C04-direct-validation-and-origin-guards",
+      "result": "PASS",
+      "details": {
+        "refused": 37,
+        "noProviderCalls": true,
+        "oldFileAndBusinessUnchanged": true
+      }
+    },
+    {
+      "id": "C02-isolated-writeFile-failure",
+      "result": "PASS",
+      "details": {
+        "faultActuallyObserved": true,
+        "oldFilePreserved": true,
+        "noBusinessWrites": true
+      }
+    },
+    {
+      "id": "C02-isolated-rename-failure",
+      "result": "PASS",
+      "details": {
+        "faultActuallyObserved": true,
+        "oldFilePreserved": true,
+        "noBusinessWrites": true
+      }
+    },
+    {
+      "id": "C02-isolated-readFile-failure",
+      "result": "PASS",
+      "details": {
+        "faultActuallyObserved": true,
+        "oldFilePreserved": true,
+        "noBusinessWrites": true
+      }
+    },
+    {
+      "id": "C03-auth",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_AUTH_FAILED",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-rate",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_RATE_LIMITED",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-invalid-wire",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_PROVIDER_ERROR",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-empty",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_EMPTY_RESULT",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-secret-echo",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-secret-escaped",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_OUTPUT_CONTAINS_SECRET",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-timeout",
+      "result": "PASS",
+      "details": {
+        "errorCode": "LLM_TIMEOUT",
+        "noBusinessWrites": true,
+        "noKeyInResponse": true
+      }
+    },
+    {
+      "id": "C03-network-failure",
+      "result": "PASS",
+      "details": {
+        "safeNetworkFailure": true,
+        "noBusinessWrites": true
+      }
+    },
+    {
+      "id": "C06-hot-change-and-old-job-snapshot",
+      "result": "PASS",
+      "details": {
+        "newRequestUsesNewConfig": true,
+        "oldJobKeepsOriginalConfig": true,
+        "rawUnchanged": true
+      }
+    },
+    {
+      "id": "C01-same-root-restart-and-old-token",
+      "result": "PASS",
+      "details": {
+        "persisted": true,
+        "oldRevisionRejected": true,
+        "businessUnchanged": true
+      }
+    },
+    {
+      "id": "C02-environment-override-lock",
+      "result": "PASS",
+      "details": {
+        "partialEnvironmentLocksEntireEditor": true,
+        "noLocalFileMutation": true
+      }
+    },
+    {
+      "id": "C01-explicit-clear-and-manual-availability",
+      "result": "PASS",
+      "details": {
+        "cleared": true,
+        "manualAvailable": true,
+        "noProviderCalls": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 27,
+    "fail": 0
+  },
+  "servicesClosed": true,
+  "logsNoCredentials": true,
+  "fakeClosed": true,
+  "providerRequests": [
+    {
+      "path": "/v1/chat/completions",
+      "model": "cfg01-model-b",
+      "authenticated": true,
+      "credentialIndex": 0
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "race-one",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "cfg01-old-job",
+      "authenticated": true,
+      "credentialIndex": 0
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "cfg01-new-job",
+      "authenticated": true,
+      "credentialIndex": 1
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "cfg01-environment-model",
+      "authenticated": true,
+      "credentialIndex": 1
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-14T15:07:25.087Z",
+  "scope": "In-memory actual LLMService and locator catalog; no external Provider, HTTP, storage or browser.",
+  "sharedSlice": {
+    "start": 7600,
+    "end": 7800
+  },
+  "checks": [
+    {
+      "id": "SP01-overlap-same-page-same-id-same-slice",
+      "expectation": "Valid chunk-local evidence can be aggregated without duplicate evidence IDs.",
+      "result": "PASS",
+      "calls": 2,
+      "chunkCount": 2,
+      "evidenceCount": 1,
+      "evidence": [
+        {
+          "id": "e1",
+          "start": 7600,
+          "end": 7800,
+          "chunkIndex": 0
+        }
+      ]
+    },
+    {
+      "id": "SP02-overlap-distinct-id-control",
+      "expectation": "The identical valid locator choices should succeed with unrelated provider evidence IDs.",
+      "result": "PASS",
+      "calls": 2,
+      "chunkCount": 2,
+      "evidenceCount": 2,
+      "evidence": [
+        {
+          "id": "e1",
+          "start": 7600,
+          "end": 7800,
+          "chunkIndex": 0
+        },
+        {
+          "id": "e2",
+          "start": 7600,
+          "end": 7800,
+          "chunkIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "SP03-106400-catalog-actual-cover",
+      "result": "PASS",
+      "length": 106400,
+      "chunkCount": 14,
+      "tail": 106400
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 0
+  }
+}

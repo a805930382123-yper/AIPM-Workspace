@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-21T10:05:12.130Z",
+  "mode": "probe",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-io-diag-ZAEZNu",
+  "runtime": "v24.20.0",
+  "eventsDirectory": "E:\\AI\\Work\\AIPM Workspace\\docs\\reports\\KB02-SR01-IO-DIAG-20261021-2026-10-21T10-05-12.115Z-events",
+  "copyChanges": [],
+  "realProviderCalls": 0,
+  "rows": [
+    {
+      "name": "probe-system",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "tests/acceptance/kb02-sr01-io-diag-20261021-probe.mjs"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 170,
+      "summary": []
+    },
+    {
+      "name": "probe-bundle",
+      "command": [
+        "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "tests/acceptance/kb02-sr01-io-diag-20261021-probe.mjs"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 844,
+      "summary": []
+    }
+  ],
+  "afterCopyChanges": [],
+  "sourceChanges": []
+}

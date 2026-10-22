@@ -1,0 +1,724 @@
+{
+  "at": "2026-10-19T15:56:49.698Z",
+  "scope": "original two default tests, explicit diagnostic preload; localhost fake only, no product/test changes",
+  "batch": "faults",
+  "rows": [
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "faults-failed-job-rename",
+      "mode": "failed-job-rename",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "--test-name-pattern=exhausted explicit",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 15878,
+      "summary": [
+        "ℹ tests 1",
+        "ℹ pass 0",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 15784.2016"
+      ]
+    },
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "faults-done-checkpoint-rename",
+      "mode": "done-checkpoint-rename",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "--test-name-pattern=last available",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 883,
+      "summary": [
+        "ℹ tests 1",
+        "ℹ pass 0",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 780.7198"
+      ]
+    },
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "faults-coverage-checkpoint-rename",
+      "mode": "coverage-checkpoint-rename",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "--test-name-pattern=exhausted explicit",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 714,
+      "summary": [
+        "ℹ tests 1",
+        "ℹ pass 0",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 622.8819"
+      ]
+    }
+  ],
+  "eventSummary": [
+    {
+      "file": "faults-coverage-checkpoint-rename-9220.json",
+      "node": "v25.2.1",
+      "mode": "coverage-checkpoint-rename",
+      "events": 32,
+      "failures": [
+        {
+          "ms": 152.6279,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 187.4624,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 233.0716,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 297.1276,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 389.3254,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 498.1221,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 499.9238,
+          "kind": "ExtractionCheckpointStore",
+          "method": "save",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj",
+          "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-GLN0Hj/state/extraction-checkpoints/2f47f3d2-10cc-428f-9166-64938a3b6f44.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\.2f47f3d2-10cc-428f-9166-64938a3b6f44.json.539a7e36-509a-4902-8cd4-0b44763587b6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj\\state\\extraction-checkpoints\\2f47f3d2-10cc-428f-9166-64938a3b6f44.json"
+          }
+        },
+        {
+          "ms": 538.0824,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj",
+          "id": "251a3940-8db5-409a-a0ea-ddd65b8f5539",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_PLANNING_RETRY_UNAVAILABLE",
+            "message": "仅重新规划需要兼容的完整提取检查点及覆盖失败诊断。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 149.8897,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj",
+          "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+          "ok": true,
+          "value": {
+            "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+            "status": "running",
+            "stage": "planning",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 171.431,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj",
+          "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+          "ok": true,
+          "value": {
+            "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+            "status": "running",
+            "stage": "planning",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 510.6109,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj",
+          "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+          "ok": true,
+          "value": {
+            "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+            "status": "failed",
+            "stage": "planning",
+            "callCount": 2,
+            "error": {
+              "code": "LLM_INTERNAL_ERROR",
+              "message": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "at": "2026-10-19T15:56:49.601Z",
+              "retryable": true
+            },
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "reason": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 529.1562,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-GLN0Hj",
+          "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+          "ok": true,
+          "value": {
+            "id": "2f47f3d2-10cc-428f-9166-64938a3b6f44",
+            "status": "failed",
+            "stage": "planning",
+            "callCount": 2,
+            "error": {
+              "code": "LLM_INTERNAL_ERROR",
+              "message": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "at": "2026-10-19T15:56:49.601Z",
+              "retryable": true
+            },
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "reason": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "faults-done-checkpoint-rename-2768.json",
+      "node": "v25.2.1",
+      "mode": "done-checkpoint-rename",
+      "events": 99,
+      "failures": [
+        {
+          "ms": 339.1115,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        },
+        {
+          "ms": 371.2175,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        },
+        {
+          "ms": 417.5931,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        },
+        {
+          "ms": 479.7129,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        },
+        {
+          "ms": 571.7687,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        },
+        {
+          "ms": 680.8592,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        },
+        {
+          "ms": 682.5276,
+          "kind": "ExtractionCheckpointStore",
+          "method": "save",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp",
+          "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wmNfbp/state/extraction-checkpoints/2e590136-65ee-4619-8b7a-efbac02c9962.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\.2e590136-65ee-4619-8b7a-efbac02c9962.json.8f365b27-6fd1-42e2-a72c-e2a1e8275bb8.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp\\state\\extraction-checkpoints\\2e590136-65ee-4619-8b7a-efbac02c9962.json"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 337.7577,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp",
+          "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+          "ok": true,
+          "value": {
+            "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 355.2278,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp",
+          "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+          "ok": true,
+          "value": {
+            "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 689.2491,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp",
+          "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+          "ok": true,
+          "value": {
+            "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+            "status": "failed",
+            "stage": "assembling",
+            "callCount": 6,
+            "error": {
+              "code": "LLM_INTERNAL_ERROR",
+              "message": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "at": "2026-10-19T15:56:48.909Z",
+              "retryable": true
+            },
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "reason": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 696.228,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wmNfbp",
+          "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+          "ok": true,
+          "value": {
+            "id": "2e590136-65ee-4619-8b7a-efbac02c9962",
+            "status": "failed",
+            "stage": "assembling",
+            "callCount": 6,
+            "error": {
+              "code": "LLM_INTERNAL_ERROR",
+              "message": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "at": "2026-10-19T15:56:48.909Z",
+              "retryable": true
+            },
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "reason": "Synthetic diagnostic EPERM at C:/[redacted].json",
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "faults-failed-job-rename-23996.json",
+      "node": "v25.2.1",
+      "mode": "failed-job-rename",
+      "events": 29,
+      "failures": [
+        {
+          "ms": 156.3142,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        },
+        {
+          "ms": 185.942,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        },
+        {
+          "ms": 232.7388,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        },
+        {
+          "ms": 295.9828,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        },
+        {
+          "ms": 388.8595,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        },
+        {
+          "ms": 495.6751,
+          "kind": "rename",
+          "synthetic": true,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        },
+        {
+          "ms": 497.3043,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+          "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 144.4895,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+          "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+          "ok": true,
+          "value": {
+            "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+            "status": "running",
+            "stage": "planning",
+            "callCount": 1,
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 1,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 144.6874,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+          "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+          "ok": true,
+          "value": {
+            "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+            "status": "running",
+            "stage": "planning",
+            "callCount": 1,
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 1,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 146.2485,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+          "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+          "ok": true,
+          "value": {
+            "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+            "status": "running",
+            "stage": "planning",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 153.0988,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+          "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+          "ok": true,
+          "value": {
+            "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+            "status": "running",
+            "stage": "planning",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "planning",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "sourceChanges": [],
+  "externalCalls": 0
+}

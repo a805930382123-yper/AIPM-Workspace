@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-16T04:46:05.405Z",
+  "scope": "React + actual isolated HTTP in jsdom; not a real browser",
+  "rows": [
+    {
+      "id": "C16-deleted-restored-target-blocks-with-preserved-input",
+      "result": "PASS",
+      "evidence": {
+        "missingTargetBlocked": true,
+        "inputPreserved": true
+      }
+    },
+    {
+      "id": "C17-restore-invalidates-inflight-check-response",
+      "result": "PASS",
+      "evidence": {
+        "lateCheckIgnored": true,
+        "restoredBindingUsed": true
+      }
+    },
+    {
+      "id": "C18-ready-target-conflict-survives-preview-edit",
+      "result": "PASS",
+      "evidence": {
+        "editedPreviewCannotClearTargetGuard": true
+      }
+    },
+    {
+      "id": "C19-return-to-original-requires-new-check",
+      "result": "PASS",
+      "evidence": {
+        "staleDraftCleared": true,
+        "originalPreserved": true
+      }
+    },
+    {
+      "id": "C20-unmounted-restore-cannot-mutate-next-editor",
+      "result": "PASS",
+      "evidence": {
+        "unmountedRestoreIgnored": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0
+  },
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-LLddWv",
+  "fakeCalls": 8,
+  "externalCalls": 0,
+  "closed": true
+}

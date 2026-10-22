@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-14T14:45:23.134Z",
+  "kind": "Adapter budgets/error mechanics, all fetch intercepted, no network",
+  "durationMs": 83,
+  "checks": [
+    {
+      "id": "P01-budget-frozen-contract",
+      "result": "PASS",
+      "evidence": {
+        "maxChunkChars": 8000,
+        "chunkOverlap": 400,
+        "maxOutputBytesPerCall": 2097152,
+        "maxSuggestedPages": 50,
+        "maxConcurrentChunks": 2,
+        "callTimeoutMs": 60000,
+        "totalDeadlineMs": 600000,
+        "maxRawChars": 500000
+      }
+    },
+    {
+      "id": "P02-declared-output-byte-budget",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_RESPONSE_TOO_LARGE",
+        "message": "Provider 响应 5000 字节，超过单次输出上限 4096 字节。"
+      }
+    },
+    {
+      "id": "P03-stream-output-byte-budget",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_RESPONSE_TOO_LARGE",
+        "message": "Provider 响应超过单次输出上限 4096 字节（已读取 5000 字节）。"
+      }
+    },
+    {
+      "id": "P04-auth-error-redaction",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_AUTH_FAILED",
+        "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：synthetic echo [redacted]）"
+      }
+    },
+    {
+      "id": "P05-auth-error-output-budget",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_RESPONSE_TOO_LARGE",
+        "message": "Provider 响应超过单次输出上限 4096 字节（已读取 5024 字节）。"
+      }
+    },
+    {
+      "id": "P06-timeout-is-visible",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_TIMEOUT",
+        "message": "调用 Provider 超过 30 ms 超时上限，未产生草稿。"
+      }
+    },
+    {
+      "id": "P07-explicit-cancel-is-visible",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_CANCELLED",
+        "message": "调用已被取消。"
+      }
+    },
+    {
+      "id": "P08-truncation-rejected",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_OUTPUT_TRUNCATED",
+        "message": "Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。"
+      }
+    },
+    {
+      "id": "P09-invalid-wire-json-rejected",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_PROVIDER_ERROR",
+        "message": "Provider 返回的不是合法 JSON 响应。"
+      }
+    },
+    {
+      "id": "P10-known-key-nested-json-value-rejected",
+      "result": "PASS",
+      "evidence": {
+        "keyAndNestedValueRejected": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 10,
+    "fail": 0
+  },
+  "interceptedFetchCalls": 8
+}

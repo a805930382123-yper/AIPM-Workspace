@@ -1,0 +1,315 @@
+// B04: extraction jobs. A job owns one provider run for one Raw; its state is persisted so an
+// interrupted run is visible and retryable instead of leaving a permanent "processing" state.
+import path from 'node:path';
+import {isJob} from '../storage/record-validators.ts';
+import { mkdir } from 'node:fs/promises';
+import type { LLMService, ExtractProgress } from './service.ts';
+import { assertNoKnownSecret, LlmError, sanitizeDeep, sanitizeProviderText, type LlmProvider } from './provider.ts';
+import { SerialQueue, StorageError, scanJsonRecords, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
+import type { DraftStore } from '../wiki/drafts.ts';
+import type { RawStateStore } from '../raw/state.ts';
+import type { RawStore } from '../raw/store.ts';
+import { assertRawNotMeeting } from '../meeting/source-policy.ts';
+import { createHash } from 'node:crypto';
+import { chunkText } from './chunk.ts';
+import { loadExtractionRules } from './rules.ts';
+import { runKnowledgePipeline, validateKnowledgeCheckpoint } from './knowledge-extraction.ts';
+import { ExtractionCheckpointStore, KB02_PIPELINE_VERSION, knowledgeCallLimit, type ExtractionCheckpoint } from './checkpoints.ts';
+
+export const JOB_STATUSES = ['running', 'completed', 'failed', 'cancelled'] as const;
+export type JobStatus = typeof JOB_STATUSES[number];
+export type JobStage = ExtractProgress['stage'] | 'done';
+export type ExtractionJob = {
+  id: string; rawId: string; status: JobStatus; stage: JobStage;
+  chunksTotal: number; chunksDone: number; pagesFound: number;
+  provider: { name: string; model: string };
+  error?: { code: string; message: string; at: string; retryable: boolean; details?: unknown };
+  draftId?: string; cancelRequested: boolean; callCount: number;
+  startedAt: string; finishedAt?: string; updatedAt: string;
+  pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number };
+};
+
+const NON_RETRYABLE = new Set(['LLM_NOT_CONFIGURED', 'LLM_AUTH_FAILED', 'LLM_RAW_TOO_LARGE', 'LLM_TOO_MANY_PAGES', 'LLM_OUTPUT_CONTAINS_SECRET']);
+
+/** F04-10: reports where a secret appeared without ever returning the value itself. */
+export function findSecretHits(value: unknown, secrets: readonly string[], at = '$', hits: string[] = []): string[] {
+  const usable = secrets.filter(secret => typeof secret === 'string' && secret.length > 0);
+  if (!usable.length) return hits;
+  if (typeof value === 'string') {
+    if (usable.some(secret => value.includes(secret))) hits.push(at);
+    return hits;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => findSecretHits(item, usable, `${at}[${index}]`, hits));
+    return hits;
+  }
+  if (value && typeof value === 'object') {
+    for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
+      if (usable.some(secret => key.includes(secret))) hits.push(at);
+      findSecretHits(item, usable, `${at}.[redacted-key]`, hits);
+    }
+  }
+  return hits;
+}
+
+export class JobError extends Error {
+  constructor(public code: string, message: string, public status = 400, public details?: unknown) { super(message); }
+}
+
+export class ExtractionJobStore {
+  private readonly queue = new SerialQueue();
+  constructor(public readonly root: string) {}
+  private directory() { return path.join(this.root, 'state', 'extraction-jobs'); }
+  private fileFor(id: string) { return path.join(this.directory(), `${id}.json`); }
+  async initialize() { await mkdir(this.directory(), { recursive: true }); }
+  async get(id: string): Promise<ExtractionJob | undefined> {
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined;
+    const job=await readJsonRecord<ExtractionJob>(this.root,this.fileFor(id),(v):v is ExtractionJob=>isJob(v,id));if(job===undefined)return undefined;if(!isJob(job,id))throw new StorageError('STORAGE_CORRUPT','提取任务记录结构无效，原文件已保留。',500,{category:'recovery',nextAction:'inspect_or_restore'});return job;
+  }
+  async list(): Promise<ExtractionJob[]> {
+    const records=await scanJsonRecords<ExtractionJob>(this.directory(),(v,file):v is ExtractionJob=>isJob(v,path.basename(file,'.json')),this.root);
+    return records.records.map(x=>x.value);
+  }  async update(id: string, patch: Partial<ExtractionJob>): Promise<ExtractionJob> {
+    return this.queue.run(async () => {
+      const current = await this.get(id);
+      if (!current) throw new JobError('JOB_NOT_FOUND', '没有找到这个提取任务。', 404);
+      const next: ExtractionJob = { ...current, ...patch, updatedAt: new Date().toISOString() };
+      await writeJsonAtomic(this.fileFor(id), next);
+      return next;
+    });
+  }
+  async insert(job: ExtractionJob): Promise<ExtractionJob> {
+    await writeJsonAtomic(this.fileFor(job.id), job);
+    return job;
+  }
+}
+
+export class ExtractionRunner {
+  private readonly controllers = new Map<string, AbortController>();
+  private readonly tasks = new Map<string, Promise<void>>();
+  private readonly recovery = new Map<string, { issue: {code: string; message: string; persisted: false; phase: string; details?: unknown}; checkpoint: Omit<ExtractionCheckpoint, 'integrity'>; failure?: ExtractionJob['error'] }>();
+
+  async readJob(id: string) {
+    return { job: await this.deps.jobs.get(id), recovery: this.recovery.get(id)?.issue, settled: !this.tasks.has(id) };
+  }
+  async waitForSettlement(id: string) { await this.tasks.get(id); return this.readJob(id); }
+
+  /** Explicit, storage-only recovery. The disk getter remains the source of persisted status. */
+  async reconcileStorage(id: string) {
+    return this.startQueue.run(async () => {
+      if (this.tasks.has(id)) throw new JobError('LLM_JOB_ALREADY_RUNNING', '任务仍在收尾。', 409);
+      const pending = this.recovery.get(id);
+      if (!pending) return this.readJob(id);
+      const job = await this.deps.jobs.get(id);
+      if (!job) throw new JobError('JOB_NOT_FOUND', '没有找到任务。', 404);
+      const draft = pending.checkpoint.draftId ? await this.deps.drafts.get(pending.checkpoint.draftId) : undefined;
+      if (pending.checkpoint.draftId && (!draft || draft.jobId !== id || draft.rawId !== job.rawId || draft.status === 'discarded')) throw new JobError('STORAGE_RECONCILE_CONFLICT', '已有草稿不能安全对账。', 409);
+      const cp = await new ExtractionCheckpointStore(this.deps.root).save(pending.checkpoint);
+      const at = new Date().toISOString();
+      const failure = pending.failure ?? { code: 'STORAGE_WRITE_FAILED', message: pending.issue.message, at, retryable: true };
+      await this.deps.rawStates.set(job.rawId, draft
+        ? { status: 'pending_confirmation', reason: '存储恢复后对账已有草稿', jobId: id, draftId: draft.id }
+        : { status: 'failed', reason: '存储恢复后保留原失败', jobId: id, lastError: failure });
+      await this.deps.jobs.update(id, { status: draft ? 'completed' : 'failed', stage: cp.stage, draftId: draft?.id, callCount: Math.max(job.callCount, cp.attempts), chunksDone: cp.completedChunks.length, finishedAt: at, error: draft ? undefined : failure });
+      this.recovery.delete(id);
+      return this.readJob(id);
+    });
+  }
+  /** F04-08: starts are serialized here too, so the service alone never creates two jobs. */
+  private readonly startQueue = new SerialQueue();
+
+  constructor(private readonly deps: {
+    root: string; llm: LLMService; jobs: ExtractionJobStore; drafts: DraftStore;
+    rawStates: RawStateStore; rawStore: RawStore; provider: () => LlmProvider | undefined;
+    draftRules: () => Promise<{ types: string[]; categories: string[]; knowledge_status: string[]; confidence: string[]; source_level: string[]; review_status: string[] }>;
+    rulesDir: string;
+  }) {}
+
+  /** Starts an extraction, or returns the existing active job/draft for the same Raw. */
+  async start(rawId: string, options: { newJobId: string; now: string; restart?: boolean; planningRetry?: boolean }): Promise<{ job: ExtractionJob; reused: boolean }> {
+    return this.startQueue.run(() => this.startOnce(rawId, options));
+  }
+
+  private async startOnce(rawId: string, options: { newJobId: string; now: string; restart?: boolean; planningRetry?: boolean }): Promise<{ job: ExtractionJob; reused: boolean }> {
+    const raw = await this.deps.rawStore.get(rawId);
+    assertRawNotMeeting(raw);
+    if (!raw) throw new JobError('NOT_FOUND', '没有找到这条原始资料。', 404);
+    const state = await this.deps.rawStates.get(rawId);
+    if (state.jobId && this.recovery.has(state.jobId)) throw new JobError('STORAGE_RECONCILE_REQUIRED', '上次任务存储未完成，请显式对账后继续。', 409);
+    if (this.recovery.size >= 100) throw new JobError('STORAGE_RECOVERY_CAPACITY', '待对账任务已达本进程上限，请先处理。', 503);
+    const checkpoints = new ExtractionCheckpointStore(this.deps.root);
+    const existingDraft = await this.deps.drafts.findActiveForRaw(rawId);
+    if (state.status === 'processing' && state.jobId) {
+      const job = await this.deps.jobs.get(state.jobId);
+      if (job && job.status === 'running') return { job, reused: true };
+    }
+    if (existingDraft) {
+      if (options.planningRetry) throw new JobError('LLM_PLANNING_RETRY_UNAVAILABLE', '已有完整草稿，不可仅重新规划。', 409);
+      let job = await this.deps.jobs.get(existingDraft.jobId);
+      if (job && job.status !== 'completed') {
+        job = await this.deps.jobs.update(existingDraft.jobId, { status: 'completed', stage: 'done', draftId: existingDraft.id, finishedAt: new Date().toISOString(), error: undefined });
+        const cpStore = new ExtractionCheckpointStore(this.deps.root);
+        const cp = await cpStore.get(existingDraft.jobId).catch(() => undefined);
+        if (cp) await cpStore.save({ ...cp, draftId: existingDraft.id, stage: 'done', lastError: undefined });
+        await this.deps.rawStates.set(rawId, { status: 'pending_confirmation', reason: '已恢复先前完成的审核草稿', jobId: existingDraft.jobId, draftId: existingDraft.id });
+      }
+      if (job) return { job, reused: true };
+      const view: ExtractionJob = { id: existingDraft.jobId, rawId, status: 'completed', stage: 'done', chunksTotal: existingDraft.extraction.chunkCount, chunksDone: existingDraft.extraction.chunkCount, pagesFound: existingDraft.pages.length, provider: existingDraft.provider, draftId: existingDraft.id, cancelRequested: false, callCount: existingDraft.extraction.callCount, startedAt: existingDraft.createdAt, finishedAt: existingDraft.updatedAt, updatedAt: existingDraft.updatedAt };
+      return { job: view, reused: true };
+    }
+    const prior = !options.restart && state.jobId ? await this.deps.jobs.get(state.jobId) : undefined;
+    const savedCheckpoint = prior && prior.status !== 'completed' ? await checkpoints.get(prior.id) : undefined;
+    const provider = this.deps.provider();
+    if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法执行 AI 整理。', 400);
+    const providerIdentity = `${provider.cacheIdentity ?? provider.name}|${provider.model}`;
+    let resume: ExtractionCheckpoint | undefined;
+    let jobId = options.newJobId;
+    if (!options.restart && state.jobId) {
+      const priorCheckpoint = savedCheckpoint;
+      if (priorCheckpoint) {
+        if (prior?.status === 'running') throw new JobError('LLM_JOB_ALREADY_RUNNING', '此 Raw 已有运行中的提取任务。', 409);
+        if (priorCheckpoint.stage !== 'done') {
+          if (prior && (priorCheckpoint.attempts < prior.callCount || priorCheckpoint.attempts < priorCheckpoint.completedChunks.length + (priorCheckpoint.plan ? 1 : 0))) throw new JobError('LLM_CHECKPOINT_CORRUPT', '检查点累计调用次数低于已持久化作业记录，已拒绝恢复。', 409);
+          const bundle = await loadExtractionRules(this.deps.rulesDir);
+          const chunks = chunkText(raw.body, { maxChunkChars: bundle.rules.budgets.maxChunkChars, overlap: bundle.rules.budgets.chunkOverlap, maxRawChars: bundle.rules.budgets.maxRawChars }).map(({ index, start, end }) => ({ index, start, end }));
+          const actualSha = createHash('sha256').update(raw.body).digest('hex');
+          if (priorCheckpoint.rawId !== raw.id || priorCheckpoint.rawSha256 !== actualSha || priorCheckpoint.rulesVersion !== bundle.rulesVersion || priorCheckpoint.pipelineVersion !== KB02_PIPELINE_VERSION || priorCheckpoint.providerIdentity !== providerIdentity || JSON.stringify(priorCheckpoint.chunks) !== JSON.stringify(chunks)) throw new JobError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则、Provider或pipeline已变化；检查点保留，请显式重新生成。', 409);
+          await validateKnowledgeCheckpoint({ raw: { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, tags: raw.tags ?? [] }, body: raw.body, bodySha256: actualSha, provider, rulesDir: this.deps.rulesDir, checkpoint: priorCheckpoint });
+          resume = priorCheckpoint;
+          jobId = state.jobId;
+        }
+      }
+    }
+    if (options.planningRetry && (options.restart || !resume || resume.plan || resume.completedChunks.length !== resume.chunks.length || resume.lastError?.code !== 'LLM_PLAN_COVERAGE_INVALID' || !resume.lastError.diagnostic)) throw new JobError('LLM_PLANNING_RETRY_UNAVAILABLE', '仅重新规划需要兼容的完整提取检查点及覆盖失败诊断。', 409);
+    if (options.planningRetry && resume && resume.attempts >= knowledgeCallLimit(resume.chunks.length)) throw new JobError('LLM_ATTEMPT_LIMIT', `已达到此任务累计 ${knowledgeCallLimit(resume.chunks.length)} 次调用上限，请检查资料后显式重新生成。`, 409);
+    const revertStatus = state.status === 'unprocessed' || state.status === 'generated' ? state.status : (state.revertStatus ?? 'unprocessed');
+    const bundle = await loadExtractionRules(this.deps.rulesDir);
+    const chunks = chunkText(raw.body, { maxChunkChars: bundle.rules.budgets.maxChunkChars, overlap: bundle.rules.budgets.chunkOverlap, maxRawChars: bundle.rules.budgets.maxRawChars }).map(({ index, start, end }) => ({ index, start, end }));
+    const actualSha = createHash('sha256').update(raw.body).digest('hex');
+    const checkpoint = resume ?? await checkpoints.save({ version: 1, jobId, rawId, rawSha256: actualSha, pipelineVersion: KB02_PIPELINE_VERSION, rulesVersion: bundle.rulesVersion, providerIdentity, chunks, completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: options.now });
+    const job: ExtractionJob = { id: jobId, rawId, status: 'running', stage: checkpoint.stage, chunksTotal: chunks.length, chunksDone: checkpoint.completedChunks.length, pagesFound: checkpoint.completedChunks.reduce((sum, item) => sum + item.facts.length, 0), provider: { name: provider.name, model: provider.model }, cancelRequested: false, callCount: checkpoint.attempts, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: chunks.length, resumable: !!resume, reason: checkpoint.lastError?.message, attempts: checkpoint.attempts, reusedChunks: resume?.completedChunks.length ?? 0 }, startedAt: resume ? (await this.deps.jobs.get(jobId))?.startedAt ?? options.now : options.now, updatedAt: options.now };
+    if (resume) await this.deps.jobs.update(jobId, { status: 'running', stage: checkpoint.stage, chunksTotal: chunks.length, chunksDone: checkpoint.completedChunks.length, callCount: checkpoint.attempts, error: undefined, finishedAt: undefined, cancelRequested: false });
+    else await this.deps.jobs.insert(job);
+    await this.deps.rawStates.set(rawId, { status: 'processing', reason: resume ? '已验证检查点恢复提取' : 'AI 整理已启动', jobId, revertStatus });
+    const task = this.runKnowledge(job, raw, provider, checkpoint, options.planningRetry === true).finally(() => { this.tasks.delete(job.id); });
+    this.tasks.set(job.id, task);
+    // The explicit task is observable through waitForSettlement; no rejected task is left unhandled.
+    void task.catch(error => { console.error('Extraction settlement failed', { code: error instanceof StorageError ? error.code : 'SETTLEMENT_FAILED' }); });
+    return { job, reused: false };
+  }
+
+  private async runKnowledge(job: ExtractionJob, raw: { id: string; title: string; bodySha256: string; body: string; sourceType: string; sourceName: string; author?: string; publishedAt?: string; url?: string; tags: string[] }, provider: LlmProvider, initial: ExtractionCheckpoint, planningRetry = false): Promise<void> {
+    const controller = new AbortController(); const secrets = provider.secrets ?? []; const checkpoints = new ExtractionCheckpointStore(this.deps.root); let checkpoint = initial; const reusedChunks = initial.completedChunks.length;
+    this.controllers.set(job.id, controller);
+    let checkpointIntent: Omit<ExtractionCheckpoint, 'integrity'> = initial;
+    let phase = 'pipeline';
+    const progressWrites: Promise<unknown>[] = [];
+    const saveCheckpoint = async (value: Omit<ExtractionCheckpoint, 'integrity'>) => { checkpointIntent = value; phase = value.stage === 'done' ? 'done-checkpoint' : value.lastError?.diagnostic ? 'coverage-checkpoint' : 'checkpoint'; checkpoint = await checkpoints.save(value); return checkpoint; };
+    const retain = (error: StorageError, failure?: ExtractionJob['error']) => {
+      this.recovery.set(job.id, { issue: {code: error.code, message: error.message, persisted: false, phase, details: error.details}, checkpoint: checkpointIntent, failure });
+    };
+    try {
+      const { outcome } = await runKnowledgePipeline({
+        raw: { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, tags: raw.tags ?? [] },
+        body: raw.body, bodySha256: createHash('sha256').update(raw.body).digest('hex'), provider, rulesDir: this.deps.rulesDir, checkpoint, signal: controller.signal,
+        saveCheckpoint, planningRetry,
+        beforeCall: async stage => {
+          if (controller.signal.aborted) throw new LlmError('LLM_CANCELLED', '提取已被取消。', 409);
+          const maxCalls = knowledgeCallLimit(checkpoint.chunks.length);
+          if (checkpoint.attempts >= maxCalls) throw new LlmError('LLM_ATTEMPT_LIMIT', `已达到此任务累计 ${maxCalls} 次调用上限，请检查资料后显式重新生成。`, 429);
+          checkpoint = await saveCheckpoint({ ...checkpoint, attempts: checkpoint.attempts + 1, stage, lastError: undefined });
+          await this.deps.jobs.update(job.id, { callCount: checkpoint.attempts, stage, chunksDone: checkpoint.completedChunks.length, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, attempts: checkpoint.attempts, reusedChunks: checkpoint.completedChunks.length } });
+          return checkpoint;
+        },
+        onProgress: progress => { const progressWrite = this.deps.jobs.update(job.id, { stage: progress.stage, chunksTotal: progress.chunksTotal, chunksDone: progress.chunksDone, pagesFound: progress.pagesFound, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, reason: checkpoint.lastError?.message, attempts: checkpoint.attempts, reusedChunks } }); progressWrites.push(progressWrite); void progressWrite.catch(() => undefined); },
+      });
+      await Promise.all(progressWrites);
+      if (controller.signal.aborted) { await this.finishCancelled(job); return; }
+      assertNoKnownSecret(outcome, secrets);
+      const draft = await this.deps.drafts.create({ raw: { id: raw.id, title: raw.title, bodySha256: raw.bodySha256, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url }, outcome, jobId: job.id, body: raw.body, rules: await this.deps.draftRules() });
+      checkpoint = await saveCheckpoint({ ...checkpoint, draftId: draft.id, stage: 'done', lastError: undefined });
+      if (controller.signal.aborted) { await this.deps.drafts.discard(draft.id, undefined).catch(() => undefined); await this.finishCancelled(job); return; }
+      phase = 'completed-raw-state';
+      await this.deps.rawStates.set(raw.id, { status: 'pending_confirmation', reason: '提取完成，等待人工审核', jobId: job.id, draftId: draft.id });
+      phase = 'completed-job';
+      await this.deps.jobs.update(job.id, { status: 'completed', stage: 'done', draftId: draft.id, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: 'done', validatedChunks: checkpoint.chunks.length, totalChunks: checkpoint.chunks.length, resumable: false, attempts: checkpoint.attempts, reusedChunks }, callCount: checkpoint.attempts, chunksTotal: checkpoint.chunks.length, chunksDone: checkpoint.chunks.length, pagesFound: draft.pages.length, finishedAt: new Date().toISOString() });
+    } catch (error) {
+      await Promise.allSettled(progressWrites);
+      if (error instanceof StorageError && error.code === 'STORAGE_WRITE_FAILED') { retain(error, checkpointIntent.lastError ? { ...checkpointIntent.lastError, retryable: true, details: checkpointIntent.lastError.diagnostic } : undefined); return; }
+      if (controller.signal.aborted) { await this.finishCancelled(job); return; }
+      const rawCode = error instanceof LlmError || error instanceof JobError ? (error as { code: string }).code : 'LLM_INTERNAL_ERROR';
+      const rawMessage = error instanceof Error ? error.message : '未知错误';
+      const code = sanitizeProviderText(rawCode, secrets) || 'LLM_PROVIDER_ERROR'; const message = sanitizeProviderText(rawMessage, secrets);
+      const retryable = !NON_RETRYABLE.has(code);
+      const failure = { code, message, at: new Date().toISOString(), retryable, ...(error instanceof LlmError && error.details !== undefined ? {details: sanitizeDeep(error.details, secrets)} : {}) };
+      try {
+        await saveCheckpoint({ ...checkpoint, lastError: { code, message, at: failure.at, ...(code === 'LLM_PLAN_COVERAGE_INVALID' && checkpoint.lastError?.diagnostic ? { diagnostic: checkpoint.lastError.diagnostic } : {}) } });
+        phase = 'failed-raw-state';
+        await this.deps.rawStates.set(raw.id, { status: 'failed', reason: '提取失败：' + code, lastError: failure, jobId: job.id });
+        phase = 'failed-job';
+        await this.deps.jobs.update(job.id, { status: 'failed', stage: checkpoint.stage, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, reason: message, attempts: checkpoint.attempts, reusedChunks }, finishedAt: new Date().toISOString(), callCount: checkpoint.attempts, error: failure });
+      } catch (storageError) {
+        if (!(storageError instanceof StorageError)) throw storageError;
+        retain(storageError, failure);
+      }
+    } finally { this.controllers.delete(job.id); }
+  }
+
+  private async finishCancelled(job: ExtractionJob): Promise<void> {
+    const state = await this.deps.rawStates.get(job.rawId);
+    await this.deps.rawStates.set(job.rawId, { status: state.revertStatus ?? 'unprocessed', reason: 'AI 整理已取消，晚到的结果不会写入草稿' }).catch(() => undefined);
+    await this.deps.jobs.update(job.id, { status: 'cancelled', stage: 'done', finishedAt: new Date().toISOString() }).catch(() => undefined);
+  }
+  /** Explicit cancel: the late provider answer must not create a draft. */
+  async cancel(jobId: string): Promise<ExtractionJob> {
+    const job = await this.deps.jobs.get(jobId);
+    if (!job) throw new JobError('JOB_NOT_FOUND', '没有找到这个提取任务。', 404);
+    if (job.status !== 'running') return job;
+    await this.deps.jobs.update(jobId, { cancelRequested: true }).catch(() => undefined);
+    this.controllers.get(jobId)?.abort();
+    const current = await this.deps.jobs.get(jobId);
+    return current ?? job;
+  }
+
+  /** Startup reconciliation: a job that was running when the process stopped is an interruption. */
+  async reconcile(): Promise<{ interrupted: string[]; statesFixed: string[] }> {
+    const interrupted: string[] = [];
+    const jobs = await this.deps.jobs.list();
+    for (const job of jobs) {
+      if (job.status !== 'running') continue;
+      const at = new Date().toISOString();
+      await this.deps.jobs.update(job.id, {
+        status: 'failed', stage: 'done', finishedAt: at,
+        error: { code: 'LLM_INTERRUPTED', message: '上一轮提取在工作台停止时中断，未生成草稿；可以直接重试。', at, retryable: true },
+      }).catch(() => undefined);
+      interrupted.push(job.id);
+    }
+    const statesFixed: string[] = [];
+    for (const state of await this.deps.rawStates.list()) {
+      if (state.status !== 'processing') continue;
+      const job = state.jobId ? await this.deps.jobs.get(state.jobId) : undefined;
+      if (job?.status === 'completed' && job.draftId) {
+        const draft = await this.deps.drafts.get(job.draftId);
+        if (draft && draft.status !== 'discarded') {
+          await this.deps.rawStates.set(state.rawId, { status: 'pending_confirmation', reason: '重启后恢复待审核草稿', jobId: job.id, draftId: draft.id });
+          statesFixed.push(`${state.rawId}:pending_confirmation`);
+          continue;
+        }
+      }
+      await this.deps.rawStates.set(state.rawId, {
+        status: 'failed', reason: '重启后确认这是一个中断的提取任务',
+        lastError: { code: 'LLM_INTERRUPTED', message: '上一轮提取在工作台停止时中断，未生成草稿；可以直接重试。', at: new Date().toISOString(), retryable: true },
+      });
+      statesFixed.push(`${state.rawId}:failed`);
+    }
+    return { interrupted, statesFixed };
+  }
+}
+
+
+
+
+
+
+
+

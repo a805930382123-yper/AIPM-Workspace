@@ -1,0 +1,593 @@
+{
+  "checks": [
+    {
+      "id": "KB02-REAL-UPDATE-new-source-candidates-conflict-explicit-confirm",
+      "result": "PASS",
+      "details": {
+        "prepared": true,
+        "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+        "draftId": "3f838436-8618-471b-83eb-ae3466ae7cf7",
+        "pageId": "3b24c0c3-fa7a-4b52-80c9-3e36738b1b14",
+        "targetWikiId": "10df785e-7ad2-45e0-9059-5aec26925bcf"
+      },
+      "elapsedMs": 23537
+    }
+  ],
+  "artifacts": {
+    "longRaw": {
+      "id": "cf3228b6-5663-4e25-b478-37c201e0b657",
+      "chars": 106400,
+      "sha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7"
+    },
+    "job-cf3228b6-5663-4e25-b478-37c201e0b657": {
+      "jobId": "b0809842-a1d4-44d9-828d-470ee18b49ac",
+      "rawId": "cf3228b6-5663-4e25-b478-37c201e0b657",
+      "status": "failed",
+      "stage": "planning",
+      "progress": {
+        "chunksTotal": 14,
+        "chunksDone": 14,
+        "pagesFound": 80
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-22T03:40:53.547Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c13-4"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 15,
+      "startedAt": "2026-10-22T03:38:39.416Z",
+      "finishedAt": "2026-10-22T03:40:53.607Z",
+      "cancelRequested": false,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 14,
+        "totalChunks": 14,
+        "resumable": true,
+        "attempts": 15,
+        "reusedChunks": 0,
+        "reason": "主题规划覆盖不完整或重复，未组装草稿。"
+      },
+      "execution": "settled",
+      "recovery": null
+    },
+    "job-1a23bcf7-5853-45dd-b273-ffd5db4f8afe": {
+      "jobId": "c8e03055-c424-4409-b4d4-26e25cf7d934",
+      "rawId": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+      "status": "completed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 1,
+        "pagesFound": 2
+      },
+      "draftId": "82b43027-5b5c-4c7c-9404-39a56c4746ed",
+      "error": null,
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 2,
+      "startedAt": "2026-10-22T03:42:17.424Z",
+      "finishedAt": "2026-10-22T03:42:29.321Z",
+      "cancelRequested": false,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "done",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": false,
+        "attempts": 2,
+        "reusedChunks": 0
+      },
+      "execution": "settled",
+      "recovery": null
+    },
+    "shortRaw": {
+      "id": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+      "chars": 134,
+      "sha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515"
+    },
+    "shortDraft": {
+      "id": "82b43027-5b5c-4c7c-9404-39a56c4746ed",
+      "rawId": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+      "rawSha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+      "rawTitle": "验收资料 KB02虚构短文",
+      "rawMeta": {
+        "rawId": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+        "title": "验收资料 KB02虚构短文",
+        "sourceType": "report",
+        "sourceName": "隔离样本 KB02虚构短文",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture"
+      },
+      "status": "pending_confirmation",
+      "revision": 1,
+      "createdAt": "2026-10-22T03:42:29.266Z",
+      "updatedAt": "2026-10-22T03:42:29.266Z",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a-kb02-2",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "jobId": "c8e03055-c424-4409-b4d4-26e25cf7d934",
+      "document": {
+        "title": "虚构饮料甲铺货率及AI异常提示状态",
+        "main_topic": "虚构饮料甲在甲桥区域的铺货率与AI异常提示的未落地状态",
+        "summary": "来源事实：\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。\n铺货率定义为在售门店数除以目标门店数，即20÷100=20%。\n这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；\nAI异常提示只是未来建议，没有上线或收益事实。"
+      },
+      "pages": [
+        {
+          "pageId": "edb301c1-943b-4cf5-aced-bae02c477f66",
+          "title": "铺货率（甲桥区域，2026年9月）",
+          "type": "metric",
+          "category": "metric",
+          "one_line_definition": "铺货率（甲桥区域，2026年9月）",
+          "source_facts": [
+            {
+              "text": "虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            },
+            {
+              "text": "铺货率定义为在售门店数除以目标门店数，即20÷100=20%。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            },
+            {
+              "text": "这里的门店数不能解释为销量。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            }
+          ],
+          "ai_organized": [],
+          "ai_inferences": [],
+          "related_pages": [],
+          "open_questions": [],
+          "source_evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+              "quote": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。",
+              "start": 0,
+              "end": 134,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 134
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n铺货率（甲桥区域，2026年9月）\n\n## 来源事实\n\n- 虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。（证据 c1-l001）\n- 铺货率定义为在售门店数除以目标门店数，即20÷100=20%。（证据 c1-l001）\n- 这里的门店数不能解释为销量。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 暂无\n\n## 来源证据\n\n- c1-l001｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[虚构饮料甲铺货率及AI异常提示状态]]（Raw 1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n"
+        },
+        {
+          "pageId": "e145f99a-c700-449f-b10f-6c9be6d3e44a",
+          "title": "AI异常提示与异常审批负责人待确认",
+          "type": "concept",
+          "category": "ai_application",
+          "one_line_definition": "AI异常提示与异常审批负责人待确认",
+          "source_facts": [
+            {
+              "text": "异常审批负责人待访谈确认；",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            },
+            {
+              "text": "AI异常提示只是未来建议，没有上线或收益事实。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            }
+          ],
+          "ai_organized": [],
+          "ai_inferences": [],
+          "related_pages": [],
+          "open_questions": [
+            "异常审批负责人待访谈确认；"
+          ],
+          "source_evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+              "quote": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。",
+              "start": 0,
+              "end": 134,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 134
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\nAI异常提示与异常审批负责人待确认\n\n## 来源事实\n\n- 异常审批负责人待访谈确认；（证据 c1-l001）\n- AI异常提示只是未来建议，没有上线或收益事实。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 异常审批负责人待访谈确认；\n\n## 来源证据\n\n- c1-l001｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[虚构饮料甲铺货率及AI异常提示状态]]（Raw 1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n"
+        }
+      ],
+      "source": {
+        "title": "虚构饮料甲铺货率及AI异常提示状态",
+        "category": "other",
+        "summary": "来源事实：\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。\n铺货率定义为在售门店数除以目标门店数，即20÷100=20%。\n这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；\nAI异常提示只是未来建议，没有上线或收益事实。",
+        "key_takeaways": [],
+        "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 KB02虚构短文\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 KB02虚构短文（1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n来源事实：\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。\n铺货率定义为在售门店数除以目标门店数，即20÷100=20%。\n这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；\nAI异常提示只是未来建议，没有上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 铺货率（甲桥区域，2026年9月）（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- AI异常提示与异常审批负责人待确认（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 KB02虚构短文（Raw 1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C"
+      },
+      "warnings": [
+        "本草稿由 kb02-2 精简事实与整篇规划程序组装；AI 整理和推断字段为空，未生成推断。",
+        "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+      ],
+      "extraction": {
+        "callCount": 2,
+        "chunkCount": 1,
+        "pagesFound": 2
+      },
+      "sourceRenderedBody": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 KB02虚构短文\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 KB02虚构短文（1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n来源事实：\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。\n铺货率定义为在售门店数除以目标门店数，即20÷100=20%。\n这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；\nAI异常提示只是未来建议，没有上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 铺货率（甲桥区域，2026年9月）（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- AI异常提示与异常审批负责人待确认（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 KB02虚构短文（Raw 1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "preview": {
+        "rawExists": true,
+        "rawSha256Matches": true,
+        "sourceReuse": null,
+        "sourceAmbiguous": null,
+        "titleConflicts": [],
+        "batchDuplicateTitles": []
+      },
+      "raw": {
+        "id": "1a23bcf7-5853-45dd-b273-ffd5db4f8afe",
+        "title": "验收资料 KB02虚构短文",
+        "sourceType": "report",
+        "sourceName": "隔离样本 KB02虚构短文",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture",
+        "importedAt": "2026-10-22T03:42:17.361Z",
+        "bodySha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515"
+      }
+    },
+    "shortConfirm": {
+      "operationId": "c2362204-3581-4d52-bdb1-f56f3f8c5b10",
+      "status": "completed",
+      "reused": false,
+      "sourceReused": false,
+      "sourceId": "a504b13b-c9d3-48a8-91a4-5ca228dfdd16",
+      "wikiIds": [
+        "10df785e-7ad2-45e0-9059-5aec26925bcf"
+      ],
+      "sourceReuseId": null,
+      "writtenWikiIds": [
+        "a504b13b-c9d3-48a8-91a4-5ca228dfdd16",
+        "10df785e-7ad2-45e0-9059-5aec26925bcf"
+      ],
+      "phases": [
+        {
+          "name": "source",
+          "status": "done",
+          "at": "2026-10-22T03:42:30.002Z"
+        },
+        {
+          "name": "pages",
+          "status": "done",
+          "at": "2026-10-22T03:42:30.007Z"
+        },
+        {
+          "name": "index",
+          "status": "done",
+          "at": "2026-10-22T03:42:30.247Z"
+        },
+        {
+          "name": "log",
+          "status": "done",
+          "at": "2026-10-22T03:42:30.251Z"
+        },
+        {
+          "name": "state",
+          "status": "done",
+          "at": "2026-10-22T03:42:30.267Z"
+        }
+      ],
+      "warnings": []
+    },
+    "shortMetricWiki": {
+      "title": "铺货率（甲桥区域，2026年9月）",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "1a23bcf7-5853-45dd-b273-ffd5db4f8afe"
+      ],
+      "tags": [
+        "KB02虚构"
+      ],
+      "aliases": [],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "C",
+      "review_status": "unreviewed",
+      "body": "## 一句话说明\n\n铺货率（甲桥区域，2026年9月）\n\n## 来源事实\n\n- 虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。（证据 c1-l001）\n- 铺货率定义为在售门店数除以目标门店数，即20÷100=20%。（证据 c1-l001）\n- 这里的门店数不能解释为销量。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 暂无\n\n## 来源证据\n\n- c1-l001｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[虚构饮料甲铺货率及AI异常提示状态]]（Raw 1a23bcf7-5853-45dd-b273-ffd5db4f8afe）\n\n\n## 人工备注\nKB02_HUMAN 异常审批负责人需访谈确认，保留原口径。",
+      "id": "10df785e-7ad2-45e0-9059-5aec26925bcf",
+      "domain": "fmcg",
+      "created": "2026-10-22T03:42:29.662Z",
+      "updated": "2026-10-22T03:42:30.625Z",
+      "revision": 2
+    },
+    "job-a0348482-2d04-457b-b936-bd181396af0c": {
+      "jobId": "f4b42d03-634f-4f80-b4ae-c37ea9728c09",
+      "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+      "status": "completed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 1,
+        "pagesFound": 3
+      },
+      "draftId": "3f838436-8618-471b-83eb-ae3466ae7cf7",
+      "error": null,
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 2,
+      "startedAt": "2026-10-22T03:43:58.135Z",
+      "finishedAt": "2026-10-22T03:44:21.318Z",
+      "cancelRequested": false,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "done",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": false,
+        "attempts": 2,
+        "reusedChunks": 0
+      },
+      "execution": "settled",
+      "recovery": null
+    },
+    "updateRaw": {
+      "id": "a0348482-2d04-457b-b936-bd181396af0c",
+      "chars": 160,
+      "sha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197"
+    },
+    "updateDraft": {
+      "id": "3f838436-8618-471b-83eb-ae3466ae7cf7",
+      "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+      "rawSha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197",
+      "rawTitle": "验收资料 KB02虚构铺货率复核",
+      "rawMeta": {
+        "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+        "title": "验收资料 KB02虚构铺货率复核",
+        "sourceType": "report",
+        "sourceName": "隔离样本 KB02虚构铺货率复核",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture"
+      },
+      "status": "pending_confirmation",
+      "revision": 1,
+      "createdAt": "2026-10-22T03:44:21.290Z",
+      "updatedAt": "2026-10-22T03:44:21.290Z",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a-kb02-2",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "jobId": "f4b42d03-634f-4f80-b4ae-c37ea9728c09",
+      "document": {
+        "title": "虚构饮料甲铺货率与业务规则知识页规划",
+        "main_topic": "虚构饮料甲甲桥区域铺货率及配套业务规则",
+        "summary": "来源事实：\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。\n旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。\nAI异常提示为未来建议，无上线或收益事实。"
+      },
+      "pages": [
+        {
+          "pageId": "3b24c0c3-fa7a-4b52-80c9-3e36738b1b14",
+          "title": "甲桥区域铺货率（2026年9月）",
+          "type": "metric",
+          "category": "metric",
+          "one_line_definition": "甲桥区域铺货率（2026年9月）",
+          "source_facts": [
+            {
+              "text": "虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            },
+            {
+              "text": "旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            }
+          ],
+          "ai_organized": [],
+          "ai_inferences": [],
+          "related_pages": [],
+          "open_questions": [
+            "旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。",
+            "原文口径或边界待确认：旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。"
+          ],
+          "source_evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+              "quote": "【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。",
+              "start": 0,
+              "end": 160,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 160
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n甲桥区域铺货率（2026年9月）\n\n## 来源事实\n\n- 虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。（证据 c1-l001）\n- 旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n- 原文口径或边界待确认：旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n\n## 来源证据\n\n- c1-l001｜原文 [0, 160)：【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[虚构饮料甲铺货率与业务规则知识页规划]]（Raw a0348482-2d04-457b-b936-bd181396af0c）\n"
+        },
+        {
+          "pageId": "9b0ec667-0c5e-4e18-9173-e4e713a5fc71",
+          "title": "财务回款核对规则",
+          "type": "business_process",
+          "category": "sales",
+          "one_line_definition": "财务回款核对规则",
+          "source_facts": [
+            {
+              "text": "补充规则：财务每周核对回款一次。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            }
+          ],
+          "ai_organized": [],
+          "ai_inferences": [],
+          "related_pages": [],
+          "open_questions": [],
+          "source_evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+              "quote": "【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。",
+              "start": 0,
+              "end": 160,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 160
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n财务回款核对规则\n\n## 来源事实\n\n- 补充规则：财务每周核对回款一次。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 暂无\n\n## 来源证据\n\n- c1-l001｜原文 [0, 160)：【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[虚构饮料甲铺货率与业务规则知识页规划]]（Raw a0348482-2d04-457b-b936-bd181396af0c）\n"
+        },
+        {
+          "pageId": "35b190c1-daa3-4b3e-978b-dfea88b852de",
+          "title": "AI异常提示建议",
+          "type": "concept",
+          "category": "ai_application",
+          "one_line_definition": "AI异常提示建议",
+          "source_facts": [
+            {
+              "text": "AI异常提示为未来建议，无上线或收益事实。",
+              "evidenceIds": [
+                "c1-l001"
+              ]
+            }
+          ],
+          "ai_organized": [],
+          "ai_inferences": [],
+          "related_pages": [],
+          "open_questions": [
+            "异常审批负责人仍需访谈确认。"
+          ],
+          "source_evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "a0348482-2d04-457b-b936-bd181396af0c",
+              "quote": "【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。",
+              "start": 0,
+              "end": 160,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "source_supported",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 160
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\nAI异常提示建议\n\n## 来源事实\n\n- AI异常提示为未来建议，无上线或收益事实。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 异常审批负责人仍需访谈确认。\n\n## 来源证据\n\n- c1-l001｜原文 [0, 160)：【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[虚构饮料甲铺货率与业务规则知识页规划]]（Raw a0348482-2d04-457b-b936-bd181396af0c）\n"
+        }
+      ],
+      "source": {
+        "title": "虚构饮料甲铺货率与业务规则知识页规划",
+        "category": "other",
+        "summary": "来源事实：\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。\n旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。\nAI异常提示为未来建议，无上线或收益事实。",
+        "key_takeaways": [],
+        "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 KB02虚构铺货率复核\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 KB02虚构铺货率复核（a0348482-2d04-457b-b936-bd181396af0c）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n来源事实：\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。\n旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。\nAI异常提示为未来建议，无上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 甲桥区域铺货率（2026年9月）（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 财务回款核对规则（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n- AI异常提示建议（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 KB02虚构铺货率复核（Raw a0348482-2d04-457b-b936-bd181396af0c）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C"
+      },
+      "warnings": [
+        "本草稿由 kb02-2 精简事实与整篇规划程序组装；AI 整理和推断字段为空，未生成推断。",
+        "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+      ],
+      "extraction": {
+        "callCount": 2,
+        "chunkCount": 1,
+        "pagesFound": 3
+      },
+      "sourceRenderedBody": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 KB02虚构铺货率复核\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 KB02虚构铺货率复核（a0348482-2d04-457b-b936-bd181396af0c）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n来源事实：\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。\n旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。\nAI异常提示为未来建议，无上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 甲桥区域铺货率（2026年9月）（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 财务回款核对规则（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n- AI异常提示建议（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 KB02虚构铺货率复核（Raw a0348482-2d04-457b-b936-bd181396af0c）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "preview": {
+        "rawExists": true,
+        "rawSha256Matches": true,
+        "sourceReuse": null,
+        "sourceAmbiguous": null,
+        "titleConflicts": [],
+        "batchDuplicateTitles": []
+      },
+      "raw": {
+        "id": "a0348482-2d04-457b-b936-bd181396af0c",
+        "title": "验收资料 KB02虚构铺货率复核",
+        "sourceType": "report",
+        "sourceName": "隔离样本 KB02虚构铺货率复核",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture",
+        "importedAt": "2026-10-22T03:43:58.102Z",
+        "bodySha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197"
+      }
+    }
+  }
+}

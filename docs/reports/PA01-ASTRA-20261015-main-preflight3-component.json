@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-15T14:24:57.902Z",
+  "scope": "React + actual isolated HTTP in jsdom; not a real browser",
+  "rows": [
+    {
+      "id": "C01-check-edit-original-must-recheck-before-rewrite",
+      "result": "PASS",
+      "evidence": {
+        "blockedStaleRewrite": true
+      }
+    },
+    {
+      "id": "C02-check-edit-supplement-must-recheck",
+      "result": "PASS",
+      "evidence": {
+        "invalidated": true
+      }
+    },
+    {
+      "id": "C03-restore-supplement-and-target-binding",
+      "result": "PASS",
+      "evidence": {
+        "allSnapshotFieldsRestored": true
+      }
+    },
+    {
+      "id": "C04-late-restore-must-not-overwrite-user-edit",
+      "result": "PASS",
+      "evidence": {
+        "lateIgnored": true
+      }
+    },
+    {
+      "id": "C05-rewrite-failure-keeps-checks-and-retry-success",
+      "result": "PASS",
+      "evidence": {
+        "checks": 9,
+        "retryOnlyRewrite": true
+      }
+    },
+    {
+      "id": "C06-manual-Brief-with-existing-Wiki-must-offer-selection",
+      "result": "PASS",
+      "evidence": {
+        "existingWikiSelectable": true
+      }
+    },
+    {
+      "id": "C07-global-corrupt-notice-safe-and-refresh-removes-fixed",
+      "result": "PASS",
+      "evidence": {
+        "safe": true,
+        "fixedAfterRefresh": true
+      }
+    },
+    {
+      "id": "C08-two-restores-reversed-completion",
+      "result": "PASS",
+      "evidence": {
+        "newestRestoreWins": true
+      }
+    },
+    {
+      "id": "C09-late-restore-preserves-edited-supplement",
+      "result": "PASS",
+      "evidence": {
+        "supplementPreserved": true
+      }
+    },
+    {
+      "id": "C10-target-change-invalidates-old-check",
+      "result": "PASS",
+      "evidence": {
+        "targetInvalidated": true
+      }
+    },
+    {
+      "id": "C11-initial-clean-runtime-recovery-discovery",
+      "result": "PASS",
+      "evidence": {
+        "runtimeVisible": true
+      }
+    },
+    {
+      "id": "C12-manual-Brief-late-Wiki-list",
+      "result": "PASS",
+      "evidence": {
+        "lateBackgroundSelectable": true
+      }
+    },
+    {
+      "id": "C13-late-save-receipt-keeps-new-editor-input",
+      "result": "PASS",
+      "evidence": {
+        "lateReceiptReconciled": true,
+        "newInputPreserved": true
+      }
+    },
+    {
+      "id": "C14-confirmed-draft-restores-actual-receipt-version",
+      "result": "PASS",
+      "evidence": {
+        "confirmedReceiptRestored": true,
+        "version": 1
+      }
+    },
+    {
+      "id": "C15-restore-target-version-conflict-explicitly-blocks",
+      "result": "PASS",
+      "evidence": {
+        "staleTargetExplicitlyBlocked": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 15,
+    "fail": 0
+  },
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-standards-KZKE3d",
+  "fakeCalls": 13,
+  "externalCalls": 0,
+  "closed": true
+}

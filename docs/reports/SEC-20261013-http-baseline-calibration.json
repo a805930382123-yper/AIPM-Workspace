@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-13",
+  "phase": "baseline",
+  "scope": "actual product HTTP + real adapter + localhost fake, no external provider",
+  "durationMs": 2324,
+  "checks": [
+    {
+      "id": "long-synthesis-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "long-update-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "long-brief-value",
+      "result": "FAIL",
+      "reason": "No credential in any data file"
+    },
+    {
+      "id": "long-generate-value",
+      "result": "FAIL",
+      "reason": "No credential in any data file"
+    },
+    {
+      "id": "long-optimize-value",
+      "result": "FAIL",
+      "reason": "No credential in any data file"
+    },
+    {
+      "id": "long-extract-value",
+      "result": "FAIL",
+      "reason": "No credential in any data file"
+    },
+    {
+      "id": "short-synthesis-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "short-update-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "short-brief-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "short-generate-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "short-optimize-value",
+      "result": "FAIL",
+      "reason": "Credential output must be rejected before schema/write\n\n201 !== 502\n"
+    },
+    {
+      "id": "short-extract-value",
+      "result": "FAIL",
+      "reason": "Credential output must fail extraction\n+ actual - expected\n\n+ 'completed'\n- 'failed'\n"
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 12
+  },
+  "services": [
+    {
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-ELR4ox",
+      "ports": [
+        56296
+      ],
+      "servicesClosed": true,
+      "fakeClosed": true
+    },
+    {
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-jvx67c",
+      "ports": [
+        56312
+      ],
+      "servicesClosed": true,
+      "fakeClosed": true
+    }
+  ]
+}

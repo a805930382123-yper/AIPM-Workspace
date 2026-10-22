@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-14T15:11:58.856Z",
+  "checks": [
+    {
+      "id": "FC01-budget-completed-traces",
+      "result": "PASS",
+      "historical": 16,
+      "newAttempts": 11,
+      "completedTrace": 11,
+      "cumulative": 27,
+      "remaining": 13,
+      "cap": 40
+    },
+    {
+      "id": "FC02-real-final-wire",
+      "result": "PASS",
+      "finalProductCalls": 6,
+      "allLow": true,
+      "allJsonObject": true
+    },
+    {
+      "id": "FC03-longRaw",
+      "result": "PASS",
+      "rawId": "46213aeb-d16d-4471-bfdf-db17ee7c581b",
+      "chars": 106400,
+      "sha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7"
+    },
+    {
+      "id": "FC03-shortRaw",
+      "result": "PASS",
+      "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+      "chars": 134,
+      "sha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515"
+    },
+    {
+      "id": "FC03-updateRaw",
+      "result": "PASS",
+      "rawId": "ceaddd55-3d1d-42f3-bad1-2fe87a10103c",
+      "chars": 160,
+      "sha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197"
+    },
+    {
+      "id": "FC04-failed-long-no-partial-draft",
+      "result": "PASS",
+      "jobId": "e7cdda8c-1675-48a3-a952-14f25b0b2334",
+      "error": "LLM_SCHEMA_INVALID",
+      "partialDrafts": []
+    },
+    {
+      "id": "FC05-initial-ledger-snapshot-calibration",
+      "result": "INVALID_EARLY_EXPECTATION",
+      "reason": "Both real-http safety probes compared attempt and completed counts immediately after one concurrent chunk rejected; its peer trace was still pending. FC01 checks the completed ledger after all calls. Failed/pending attempts were always counted before external fetch."
+    }
+  ],
+  "summary": {
+    "pass": 6,
+    "fail": 0,
+    "calibrations": 1
+  }
+}

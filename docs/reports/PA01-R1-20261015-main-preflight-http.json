@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-15T09:13:43.511Z",
+  "scope": "actual product HTTP + authenticated localhost fake only",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-PVzp4Z",
+  "rows": [
+    {
+      "id": "H01-client-invalid-Brief-HTTP400",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"LLM_SCHEMA_MISMATCH\",\"message\":\"Provider 返回的Brief 字段或结构不符合共同契约。\",\"details\":{\"requestId\":\"9eb79895-f01d-4912-80b7-94857a397e93\",\"stage\":\"brief\",\"category\":\"response_invalid\",\"retryable\":true,\"errors\":[{\"path\":\"$.context\",\"expected\":\"string\",\"actualType\":\"array\"}],\"totalErrors\":1,\"nextAction\":\"retry_stage\"}}}\n\n502 !== 400\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-r1-20261015-main-preflight-http.mjs:4:224\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-r1-20261015-main-preflight-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-r1-20261015-main-preflight-http.mjs:4:1"
+    },
+    {
+      "id": "H02-Brief-invalid-JSON-safe-stage-diagnostic",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_INVALID_JSON",
+          "message": "Provider 返回的内容不是合法 JSON，未生成草稿。",
+          "details": {
+            "requestId": "bce471cb-0e49-4fb0-b207-45fdf3bd4b6e",
+            "stage": "brief",
+            "startedAt": "2026-10-15T09:13:43.112Z",
+            "finishedAt": "2026-10-15T09:13:43.155Z",
+            "durationMs": 43,
+            "status": "failed",
+            "finishReason": null,
+            "bytes": 0,
+            "category": "response_invalid",
+            "retryable": true,
+            "preserved": false,
+            "nextAction": "retry_stage"
+          }
+        }
+      }
+    },
+    {
+      "id": "H03-check-auth-classified",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_AUTH_FAILED",
+          "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：Synthetic auth failure）",
+          "details": {
+            "requestId": "22ee7082-8362-4c14-9bfb-77edef324724",
+            "stage": "check",
+            "startedAt": "2026-10-15T09:13:43.168Z",
+            "finishedAt": "2026-10-15T09:13:43.195Z",
+            "durationMs": 27,
+            "status": "failed",
+            "finishReason": null,
+            "bytes": 0,
+            "category": "auth",
+            "retryable": false,
+            "preserved": false,
+            "nextAction": "check_configuration"
+          }
+        }
+      }
+    },
+    {
+      "id": "H04-truncated-rewrite-must-be-response-invalid",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_OUTPUT_TRUNCATED",
+          "message": "Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。",
+          "details": {
+            "requestId": "132dc551-8962-481d-be8c-6d7728a2eea8",
+            "stage": "rewrite",
+            "category": "response_invalid",
+            "retryable": true,
+            "preserved": [
+              "originalBody",
+              "checks",
+              "improvements"
+            ],
+            "draftId": "e6cdd486-8c6f-48f4-951a-d766a1dac4ad",
+            "nextAction": "retry_rewrite"
+          }
+        }
+      }
+    },
+    {
+      "id": "H05-known-secret-restored-check-outbound-blocked",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true
+      }
+    },
+    {
+      "id": "H06-restored-draft-read-must-not-expose-known-secret",
+      "result": "PASS",
+      "evidence": {
+        "safeRead": true
+      }
+    },
+    {
+      "id": "H07-client-disconnect-cancels-rewrite-and-preserves-check",
+      "result": "PASS",
+      "evidence": {
+        "stage": "failed",
+        "checks": 9,
+        "attempts": 1,
+        "lastError": {
+          "category": "cancelled",
+          "retryable": false
+        },
+        "localCalls": 1
+      }
+    },
+    {
+      "id": "H08-corrupt-Prompt-draft-not-404-health-neighbor-unchanged",
+      "result": "PASS",
+      "evidence": {
+        "corrupt500": true,
+        "neighborPresent": true,
+        "bytesUnchanged": true,
+        "calls": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 7,
+    "fail": 1
+  },
+  "fakeCalls": 9,
+  "externalCalls": 0,
+  "closed": true
+}

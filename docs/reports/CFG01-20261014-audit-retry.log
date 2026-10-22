@@ -1,0 +1,36 @@
+✔ B06 Anchor supports context after line movement and rejects duplicate/missing/page-stale targets (1.1699ms)
+✔ B06 four decisions preserve history, only accepted/partial write, and accepted retry is idempotent (370.8092ms)
+✖ B06 failed Audit log leaves open operation evidence and restart reconciles it (35.3324ms)
+✖ B06 recovery preserves conflict manifests and does not resolve against changed Wiki or Raw bytes (208.7739ms)
+✔ B06 a slow Provider cannot save or revive a suggestion after a human resolves the Audit (71.1686ms)
+✔ B06 Wiki Lint reads disk directly and reports all 11 frozen codes without repairing files (278.3218ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 4
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1261.3786
+
+✖ failing tests:
+
+test at tests\audit.test.ts:1:4657
+✖ B06 failed Audit log leaves open operation evidence and restart reconciles it (35.3324ms)
+  Error: Wiki 已保存（459a4764-7ebc-44dc-8352-5a9de67717ec，第 1 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。
+      at WikiStore.commitChange (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:349:13)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:201:7) {
+    code: 'DERIVED_FILES_PENDING',
+    status: 500,
+    details: { committed: true, id: '459a4764-7ebc-44dc-8352-5a9de67717ec', revision: 1, operationId: '9ff9ac73-b114-45c2-9102-44db6d1e3c8d', recoverable: true, cause: "EPERM: operation not permitted, rename 'E:\\AI\\Work\\AIPM Workspace\\.test-b06-recover-cp9tMI\\state\\wiki-operations\\.9ff9ac73-b114-45c2-9102-44db6d1e3c8d.json.4d8b7b78-7b08-4baa-bd69-736490331931.tmp' -> 'E:\\AI\\Work\\AIPM Workspace\\.test-b06-recover-cp9tMI\\state\\wiki-operations\\9ff9ac73-b114-45c2-9102-44db6d1e3c8d.json'" }
+  }
+
+test at tests\audit.test.ts:1:6750
+✖ B06 recovery preserves conflict manifests and does not resolve against changed Wiki or Raw bytes (208.7739ms)
+  Error: Wiki 已保存（75773962-5418-4130-87ab-bfefe91b5b53，第 3 版），但 Index 或 Log 尚未完成。记录已保存在本机待恢复队列，重新启动工作台会自动修复；请先刷新列表，不要重复创建。
+      at WikiStore.commitChange (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:349:13)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:216:7) {
+    code: 'DERIVED_FILES_PENDING',
+    status: 500,
+    details: { committed: true, id: '75773962-5418-4130-87ab-bfefe91b5b53', revision: 3, operationId: 'b867a8b0-66a4-446a-a110-536428ad68f0', recoverable: true, cause: "EPERM: operation not permitted, rename 'E:\\AI\\Work\\AIPM Workspace\\.test-b06-wiki-revision-COI4Fl\\state\\wiki-operations\\.b867a8b0-66a4-446a-a110-536428ad68f0.json.8a143dfe-1c6c-48c0-b775-5bab106f441c.tmp' -> 'E:\\AI\\Work\\AIPM Workspace\\.test-b06-wiki-revision-COI4Fl\\state\\wiki-operations\\b867a8b0-66a4-446a-a110-536428ad68f0.json'" }
+  }

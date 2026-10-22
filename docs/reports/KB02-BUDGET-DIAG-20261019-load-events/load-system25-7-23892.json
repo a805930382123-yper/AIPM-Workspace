@@ -1,0 +1,5206 @@
+{
+  "node": "v25.2.1",
+  "mode": "observe",
+  "pid": 23892,
+  "roots": [
+    "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+    "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11"
+  ],
+  "events": [
+    {
+      "ms": 176.9846,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 179.599,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 182.2383,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "processing",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7"
+      }
+    },
+    {
+      "ms": 183.5076,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 1,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 184.522,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 189.8548,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 190.5252,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 191.0392,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 193.3892,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 195.5557,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 197.4124,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 200.7768,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 201.0887,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 201.9327,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 204.3612,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 204.7635,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 205.1977,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 207.7595,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 210.6644,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.194Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 213.6405,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.197Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 215.9724,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 218.2246,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "failed",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.200Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 221.5531,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 2,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.204Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 238.3926,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 2,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.204Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 246.3521,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.197Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 255.0284,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 257.7765,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "processing",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7"
+      }
+    },
+    {
+      "ms": 258.0731,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 2,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 2,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 259.6348,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 264.2532,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 267.3267,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 267.7488,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 268.2389,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 270.387,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 272.9607,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.256Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 275.2432,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.259Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 277.9603,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "failed",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.261Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 278.4859,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 280.4722,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 3,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.264Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 300.0321,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 3,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.264Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 309.1548,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.259Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 319.1855,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 322.1841,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "processing",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7"
+      }
+    },
+    {
+      "ms": 322.5293,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 3,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 3,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 323.1627,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 327.8898,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 330.9472,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 331.0639,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 331.8155,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 334.5018,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 337.8415,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.321Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 340.9735,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.324Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 344.4591,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "failed",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.327Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 344.9892,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 354.1635,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 4,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.330Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 361.5186,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 4,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.330Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 367.6323,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.324Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 372.405,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 374.1997,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "processing",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7"
+      }
+    },
+    {
+      "ms": 374.3255,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 4,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 4,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 375.2716,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 376.7395,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 379.1196,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 379.3964,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 379.7254,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 381.9437,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 385.4843,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.368Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 386.9857,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 389.8803,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.371Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 392.6145,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "failed",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.376Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 397.2845,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 5,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.379Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 399.8003,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 5,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.379Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 408.0208,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.371Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 416.6509,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 419.5366,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "processing",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7"
+      }
+    },
+    {
+      "ms": 419.7429,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 5,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 5,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 421.1521,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 423.9266,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 427.4585,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 428.1565,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 428.5451,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 430.9626,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 431.7937,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 433.8542,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.417Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 436.1303,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.420Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 438.5927,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "failed",
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.422Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 441.0961,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 6,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.424Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 455.4533,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 6,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.424Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 459.9985,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.420Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 471.5246,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.420Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 474.4357,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "LLM_ATTEMPT_LIMIT",
+        "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+      }
+    },
+    {
+      "ms": 483.9957,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.420Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 487.1681,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "LLM_ATTEMPT_LIMIT",
+        "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+      }
+    },
+    {
+      "ms": 495.2378,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.420Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 498.3781,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "LLM_ATTEMPT_LIMIT",
+        "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+      }
+    },
+    {
+      "ms": 504.5083,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 508.15,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 513.1246,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "processing",
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b"
+      }
+    },
+    {
+      "ms": 513.4092,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 1,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 514.1924,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 519.8514,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 521.0591,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 521.8239,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 526.387,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 527.7139,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 529.8905,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 533.4793,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "planning",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 534.1606,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 535.5098,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 536.9581,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 539.3988,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 539.9661,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 542.8083,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 545.7483,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "assembling",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 548.2804,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "assembling",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 549.393,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 552.5345,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 555.5507,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "stage": "done",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 558.4368,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+      "ok": true,
+      "value": {
+        "rawId": "d64ef483-1356-4396-9ba3-70f3caf0e9e3",
+        "status": "pending_confirmation",
+        "jobId": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b"
+      }
+    },
+    {
+      "ms": 558.8365,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 561.0698,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 581.1149,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+      "ok": true,
+      "value": {
+        "id": "cf91d0e9-a753-48ac-91b8-57bc1b8a8e8b",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 585.8198,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3tS0wv",
+      "id": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+      "ok": true,
+      "value": {
+        "jobId": "ccd1dbc0-d126-447d-acb9-979585d28bb7",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.420Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 627.4612,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 630.1161,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 632.9067,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "processing",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c"
+      }
+    },
+    {
+      "ms": 633.1412,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 1,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 635.3467,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 639.0363,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 639.5413,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 640.1936,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 642.9791,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 646.2078,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 646.7576,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 648.8988,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 649.1107,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 649.5339,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 651.8761,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 652.4582,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 652.7643,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 655.3772,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 656.8925,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 657.6522,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.641Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 660.0828,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.644Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 663.8453,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "failed",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.646Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 666.7152,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 2,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.650Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 667.199,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 2,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.650Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 673.0541,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.644Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 681.3482,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 684.6188,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "processing",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c"
+      }
+    },
+    {
+      "ms": 684.8476,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 2,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 2,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 685.6434,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 689.5706,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 691.9454,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 692.261,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 692.7784,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 695.671,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 696.7935,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 700.1276,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.682Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 705.0175,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.686Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 708.1893,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "failed",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.691Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 710.8341,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 3,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.694Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 720.0125,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 3,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.694Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 730.6621,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.686Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 745.2664,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 748.7386,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "processing",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c"
+      }
+    },
+    {
+      "ms": 749.01,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 3,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 3,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 751.5838,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 753.8016,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 3,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 756.7306,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 756.8468,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 757.1487,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 759.7289,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 761.8832,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 762.2906,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.746Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 765.1798,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.748Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 768.1502,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "failed",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.751Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 771.327,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 4,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.754Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 771.9359,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 4,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.754Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 777.2715,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.748Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 786.6946,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 789.8197,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "processing",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c"
+      }
+    },
+    {
+      "ms": 790.0975,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 4,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 4,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 791.8217,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 797.1588,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 803.5079,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 805.2661,
+      "kind": "rename",
+      "synthetic": false,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11\\state\\extraction-jobs\\.74c1fe46-c4f2-4362-8531-f0d8379a118c.json.4748957c-0b72-4602-9d83-02027aeb21d7.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11\\state\\extraction-jobs\\74c1fe46-c4f2-4362-8531-f0d8379a118c.json'",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11\\state\\extraction-jobs\\.74c1fe46-c4f2-4362-8531-f0d8379a118c.json.4748957c-0b72-4602-9d83-02027aeb21d7.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11\\state\\extraction-jobs\\74c1fe46-c4f2-4362-8531-f0d8379a118c.json"
+      }
+    },
+    {
+      "ms": 830.1737,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 830.4479,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 832.425,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 835.8244,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:55:37.818Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 838.975,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.822Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 839.7325,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 841.601,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "failed",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.825Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 843.6346,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 5,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.828Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 862.1168,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "failed",
+        "stage": "planning",
+        "callCount": 5,
+        "error": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.828Z",
+          "retryable": true,
+          "details": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        },
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 866.6421,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.822Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 875.1871,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:55:37.822Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 880.7692,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 883.2359,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "processing",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c"
+      }
+    },
+    {
+      "ms": 883.3945,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+          "status": "running",
+          "stage": "planning",
+          "callCount": 5,
+          "checkpoint": {
+            "stage": "planning",
+            "validatedChunks": 1,
+            "totalChunks": 1,
+            "resumable": true,
+            "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+            "attempts": 5,
+            "reusedChunks": 1
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 884.5692,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "reason": "主题规划覆盖不完整或重复，未组装草稿。",
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 886.7106,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 888.898,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "planning",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 889.0169,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 889.2664,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 891.3498,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 894.4627,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "assembling",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 895.1499,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 897.5923,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "assembling",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 902.4359,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 905.289,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "done",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 905.8678,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 908.3485,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+      "ok": true,
+      "value": {
+        "rawId": "0be2d896-6937-48f6-8d57-0568e5ef3ffa",
+        "status": "pending_confirmation",
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c"
+      }
+    },
+    {
+      "ms": 912.6352,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 922.2172,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 6,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 6,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 925.8987,
+      "kind": "ExtractionCheckpointStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-X7bk11",
+      "id": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+      "ok": true,
+      "value": {
+        "jobId": "74c1fe46-c4f2-4362-8531-f0d8379a118c",
+        "stage": "done",
+        "attempts": 6,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-15T03:36:44.521Z",
+  "scope": "React + actual isolated HTTP in jsdom; not actual browser",
+  "durationMs": 6702,
+  "checks": [
+    {
+      "id": "C01-failed-progress-and-continue-body",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\kb02-20261015-standards-component.mjs:24:598)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\kb02-20261015-standards-component.mjs:20:71)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\kb02-20261015-standards-component.mjs:23:2)"
+    },
+    {
+      "id": "C02-corrupt-continue-error-and-explicit-restart",
+      "result": "PASS",
+      "evidence": {
+        "corruptErrorVisible": true,
+        "normalContinueNoCalls": true,
+        "explicitRestartBody": {
+          "restart": true
+        }
+      }
+    },
+    {
+      "id": "C03-live-planning-stage-no-partial-review",
+      "result": "PASS",
+      "evidence": {
+        "planningVisible": true,
+        "validatedCountVisible": true,
+        "noPartialDraft": true
+      }
+    },
+    {
+      "id": "C04-reload-failed-checkpoint-readonly",
+      "result": "PASS",
+      "evidence": {
+        "restoredJob": "6ace8dd0-0a67-4e38-8097-8b34a77a5664",
+        "controlsVisible": true,
+        "reloadCalls": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 1
+  },
+  "requests": [
+    {
+      "path": "/api/extraction-jobs/793d988a-4a0e-446a-9675-ee3b277d1434",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/38b220ef-32b9-40ab-8772-3d6bd6a64ac7/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/extraction-jobs/09116391-c2f9-4c63-b3ef-fcbe4546b1aa",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/b7ce85e8-0536-437a-8e5c-5df5dee507df/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/raw/b7ce85e8-0536-437a-8e5c-5df5dee507df/extract",
+      "method": "POST",
+      "body": {
+        "restart": true
+      }
+    },
+    {
+      "path": "/api/extraction-jobs/6c769835-94eb-4f06-b230-ccb2b1ba5872",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/6ace8dd0-0a67-4e38-8097-8b34a77a5664",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    }
+  ],
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-BWroPO",
+  "fakeCalls": 10,
+  "closed": true
+}

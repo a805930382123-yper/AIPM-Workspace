@@ -1,0 +1,1249 @@
+{
+  "at": "2026-10-19T15:58:55.157Z",
+  "scope": "original tests, explicit diagnostic preload; localhost fake only, no source product/test changes",
+  "batch": "full24",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y",
+  "copyMismatches": [],
+  "testFiles": 40,
+  "rows": [
+    {
+      "nodeLabel": "bundle24",
+      "nodePath": "C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "tag": "full24",
+      "mode": "observe",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 18771,
+      "summary": [
+        "ℹ tests 265",
+        "ℹ pass 265",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 18647.6549"
+      ]
+    }
+  ],
+  "eventSummary": [
+    {
+      "file": "full24-10204.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 579,
+      "failures": [
+        {
+          "ms": 2434.8931,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\.ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json.c2b406a2-dea8-465f-aef7-e23d810fe526.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\.ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json.c2b406a2-dea8-465f-aef7-e23d810fe526.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json"
+          }
+        },
+        {
+          "ms": 2474.7739,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\.ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json.c2b406a2-dea8-465f-aef7-e23d810fe526.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\.ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json.c2b406a2-dea8-465f-aef7-e23d810fe526.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\state\\extraction-jobs\\ad7f9a11-5675-4d1e-b08a-6a5e1b76dfab.json"
+          }
+        },
+        {
+          "ms": 2750.4422,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\knowledge\\wiki\\.index.md.b0f7a4ce-011b-48bf-89f6-ebdd74cbfb3e.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\knowledge\\wiki\\index.md'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\knowledge\\wiki\\.index.md.b0f7a4ce-011b-48bf-89f6-ebdd74cbfb3e.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-uyp5BA\\knowledge\\wiki\\index.md"
+          }
+        },
+        {
+          "ms": 4924.9285,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-2r8VQu\\state\\extraction-jobs\\.0d9d54de-6bef-4156-bd9a-39a341d24b1f.json.86c810a4-36dc-43c3-bb7c-4fd3b2848218.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-2r8VQu\\state\\extraction-jobs\\0d9d54de-6bef-4156-bd9a-39a341d24b1f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-2r8VQu\\state\\extraction-jobs\\.0d9d54de-6bef-4156-bd9a-39a341d24b1f.json.86c810a4-36dc-43c3-bb7c-4fd3b2848218.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-2r8VQu\\state\\extraction-jobs\\0d9d54de-6bef-4156-bd9a-39a341d24b1f.json"
+          }
+        },
+        {
+          "ms": 5373.4482,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-WdzgVE",
+          "id": "085b959c-e19f-42c5-978a-08100de00c2e",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_NOT_CONFIGURED",
+            "message": "尚未配置产品 LLM Provider，无法执行 AI 整理。"
+          }
+        },
+        {
+          "ms": 5913.8445,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-QUi9fW",
+          "id": "f3e98bcb-5c9e-43ea-a957-dbd61554ee3c",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_RAW_TOO_LARGE",
+            "message": "原文 500001 字符，超过本批 500000 字符预算；原文完整保留，未做截尾。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 6380.9956,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-g0pdBm",
+          "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+          "ok": true,
+          "value": {
+            "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 6387.7173,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-g0pdBm",
+          "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+          "ok": true,
+          "value": {
+            "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 6389.6845,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-g0pdBm",
+          "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+          "ok": true,
+          "value": {
+            "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 6403.1152,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-flow-g0pdBm",
+          "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+          "ok": true,
+          "value": {
+            "id": "5915f31b-3772-498b-8d4f-a1f85922b77b",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "full24-12380.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 6,
+      "failures": [
+        {
+          "ms": 1595.9233,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json"
+          }
+        },
+        {
+          "ms": 1632.749,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json"
+          }
+        },
+        {
+          "ms": 1679.9785,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json"
+          }
+        },
+        {
+          "ms": 1742.0596,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json"
+          }
+        },
+        {
+          "ms": 1836.6988,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json"
+          }
+        },
+        {
+          "ms": 1946.2474,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\.e3c4170a-a3c2-407b-b900-e4de59098228.json.0bebc64a-3f1f-4709-aa91-8bc6ff98db87.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-prompt-x2pS33\\prompts\\e3c4170a-a3c2-407b-b900-e4de59098228.json"
+          }
+        }
+      ],
+      "lastJobs": []
+    },
+    {
+      "file": "full24-25372.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 1061.1777,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-EjLDiQ",
+          "id": "1c83044b-57a9-46eb-899e-835139bc08c7",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 1075.8266,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-EjLDiQ",
+          "id": "1c83044b-57a9-46eb-899e-835139bc08c7",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 1089.7512,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-EjLDiQ",
+          "id": "1c83044b-57a9-46eb-899e-835139bc08c7",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 1667.1686,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-xN7Qr5",
+          "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+          "ok": true,
+          "value": {
+            "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 1667.9976,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-xN7Qr5",
+          "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+          "ok": true,
+          "value": {
+            "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 1680.4957,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-xN7Qr5",
+          "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+          "ok": true,
+          "value": {
+            "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 1705.6671,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-xN7Qr5",
+          "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+          "ok": true,
+          "value": {
+            "id": "8f753130-1e98-45c1-89fa-1ec20bdb1604",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "full24-30820.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 19,
+      "failures": [
+        {
+          "ms": 683.6402,
+          "kind": "ExtractionCheckpointStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-kb02-corrupt-SGAIMW",
+          "id": "123e4567-e89b-42d3-a456-426614174003",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_CHECKPOINT_CORRUPT",
+            "message": "提取检查点完整性校验失败，已拒绝恢复；原记录仍保留。"
+          }
+        }
+      ],
+      "lastJobs": []
+    },
+    {
+      "file": "full24-32880.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 1,
+      "failures": [
+        {
+          "ms": 2556.9401,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.m04-raw-test-jcVyjD",
+          "id": "3d1397e0-dce6-4f15-874e-4423c161287f",
+          "ok": false,
+          "error": {
+            "name": "SourcePolicyError",
+            "code": "MEETING_SOURCE_RESTRICTED",
+            "message": "Meeting Raw 仅允许本机保存，不能进入AI处理。"
+          }
+        }
+      ],
+      "lastJobs": []
+    },
+    {
+      "file": "full24-33276.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 370,
+      "failures": [
+        {
+          "ms": 637.0974,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\.3f657cf7-0241-4ec4-b769-b514b9192f1e.json.a4f268a4-bfd0-474a-8e47-a7b1bdef6bef.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\3f657cf7-0241-4ec4-b769-b514b9192f1e.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\.3f657cf7-0241-4ec4-b769-b514b9192f1e.json.a4f268a4-bfd0-474a-8e47-a7b1bdef6bef.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\3f657cf7-0241-4ec4-b769-b514b9192f1e.json"
+          }
+        },
+        {
+          "ms": 665.6231,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\.3f657cf7-0241-4ec4-b769-b514b9192f1e.json.a4f268a4-bfd0-474a-8e47-a7b1bdef6bef.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\3f657cf7-0241-4ec4-b769-b514b9192f1e.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\.3f657cf7-0241-4ec4-b769-b514b9192f1e.json.a4f268a4-bfd0-474a-8e47-a7b1bdef6bef.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-CYTAVk\\state\\extraction-jobs\\3f657cf7-0241-4ec4-b769-b514b9192f1e.json"
+          }
+        },
+        {
+          "ms": 1245.2342,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\.884e96ca-cb30-4235-bf62-2fe13b773554.json.e3adcdd7-149b-49d8-a071-9c58f34ec205.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\884e96ca-cb30-4235-bf62-2fe13b773554.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\.884e96ca-cb30-4235-bf62-2fe13b773554.json.e3adcdd7-149b-49d8-a071-9c58f34ec205.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\884e96ca-cb30-4235-bf62-2fe13b773554.json"
+          }
+        },
+        {
+          "ms": 1335.6084,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\.884e96ca-cb30-4235-bf62-2fe13b773554.json.45c8975d-b4d7-48f1-87d1-d2c2cd472fe6.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\884e96ca-cb30-4235-bf62-2fe13b773554.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\.884e96ca-cb30-4235-bf62-2fe13b773554.json.45c8975d-b4d7-48f1-87d1-d2c2cd472fe6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\884e96ca-cb30-4235-bf62-2fe13b773554.json"
+          }
+        },
+        {
+          "ms": 1362.6577,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\.884e96ca-cb30-4235-bf62-2fe13b773554.json.45c8975d-b4d7-48f1-87d1-d2c2cd472fe6.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\884e96ca-cb30-4235-bf62-2fe13b773554.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\.884e96ca-cb30-4235-bf62-2fe13b773554.json.45c8975d-b4d7-48f1-87d1-d2c2cd472fe6.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-LJizy9\\state\\extraction-jobs\\884e96ca-cb30-4235-bf62-2fe13b773554.json"
+          }
+        },
+        {
+          "ms": 1943.5145,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.a0c2cd23-ba38-4564-be5e-6f6ae8cdf00e.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.a0c2cd23-ba38-4564-be5e-6f6ae8cdf00e.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json"
+          }
+        },
+        {
+          "ms": 1982.3094,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.a0c2cd23-ba38-4564-be5e-6f6ae8cdf00e.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.a0c2cd23-ba38-4564-be5e-6f6ae8cdf00e.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json"
+          }
+        },
+        {
+          "ms": 2083.5533,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.df1914f5-892b-4360-bd03-060000b30f31.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.df1914f5-892b-4360-bd03-060000b30f31.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json"
+          }
+        },
+        {
+          "ms": 2106.3173,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.df1914f5-892b-4360-bd03-060000b30f31.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\.c88a388d-53c0-4bd0-b614-ded2725b31d4.json.df1914f5-892b-4360-bd03-060000b30f31.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-65ZN6H\\state\\extraction-jobs\\c88a388d-53c0-4bd0-b614-ded2725b31d4.json"
+          }
+        },
+        {
+          "ms": 2865.3949,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\.c2105e18-7bb4-443e-bde1-169be53eb153.json.9c7255f4-f849-4256-8033-653088ca797b.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\c2105e18-7bb4-443e-bde1-169be53eb153.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\.c2105e18-7bb4-443e-bde1-169be53eb153.json.9c7255f4-f849-4256-8033-653088ca797b.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\c2105e18-7bb4-443e-bde1-169be53eb153.json"
+          }
+        },
+        {
+          "ms": 2888.3197,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\.c2105e18-7bb4-443e-bde1-169be53eb153.json.9c7255f4-f849-4256-8033-653088ca797b.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\c2105e18-7bb4-443e-bde1-169be53eb153.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\.c2105e18-7bb4-443e-bde1-169be53eb153.json.9c7255f4-f849-4256-8033-653088ca797b.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-571fp4\\state\\extraction-jobs\\c2105e18-7bb4-443e-bde1-169be53eb153.json"
+          }
+        },
+        {
+          "ms": 4650.1182,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\knowledge\\wiki\\.index.md.0a361dc6-fdc8-46ff-a81e-ab1daa0aaa43.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\knowledge\\wiki\\index.md'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\knowledge\\wiki\\.index.md.0a361dc6-fdc8-46ff-a81e-ab1daa0aaa43.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\knowledge\\wiki\\index.md"
+          }
+        },
+        {
+          "ms": 4721.7223,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 4745.0175,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 4790.5649,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 4853.4414,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 4948.742,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5054.5258,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.399dad88-576b-41b3-8c44-db0b111f086d.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5059.1442,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5085.6412,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5131.8345,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5193.9959,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5287.8675,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5397.4033,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.fdd2ea94-c5d3-45c6-a613-8c7f4a9f0397.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5400.0239,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5429.1532,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5475.6745,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5538.5092,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5633.6013,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        },
+        {
+          "ms": 5743.0639,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\.a2dd8848-c214-49d7-af88-33e46145223f.json.5fbb6294-3b7a-42f4-ba64-67eb4cc0aace.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-jUAtmj\\state\\wiki-commits\\a2dd8848-c214-49d7-af88-33e46145223f.json"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 6360.6331,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-Vo7k5U",
+          "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+          "ok": true,
+          "value": {
+            "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 6366.0005,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-Vo7k5U",
+          "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+          "ok": true,
+          "value": {
+            "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 6368.3628,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-Vo7k5U",
+          "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+          "ok": true,
+          "value": {
+            "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 6383.3416,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair-Vo7k5U",
+          "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+          "ok": true,
+          "value": {
+            "id": "dce0e0ca-87dd-446b-9648-e8514f53109c",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 2,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 2,
+              "reusedChunks": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "full24-33432.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 104,
+      "failures": [],
+      "lastJobs": [
+        {
+          "ms": 1363.9681,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+          "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+          "ok": true,
+          "value": {
+            "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": true,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 1377.981,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+          "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+          "ok": true,
+          "value": {
+            "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": true,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 1381.2581,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+          "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+          "ok": true,
+          "value": {
+            "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": false,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 1387.3886,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+          "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+          "ok": true,
+          "value": {
+            "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": false,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "full24-33516.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 1,
+      "failures": [
+        {
+          "ms": 846.0176,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-wiki-zGcKzQ\\knowledge\\wiki\\.index.md.5f75a632-085d-45f0-8977-735f3ab00f75.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-wiki-zGcKzQ\\knowledge\\wiki\\index.md'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-wiki-zGcKzQ\\knowledge\\wiki\\.index.md.5f75a632-085d-45f0-8977-735f3ab00f75.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-data-wiki-zGcKzQ\\knowledge\\wiki\\index.md"
+          }
+        }
+      ],
+      "lastJobs": []
+    },
+    {
+      "file": "full24-33768.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 222,
+      "failures": [
+        {
+          "ms": 2017.2683,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\.62fb192c-2f85-467f-9a34-0f8ef008c851.json.8a6ac484-cf37-472f-9178-14afa14b15c9.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\62fb192c-2f85-467f-9a34-0f8ef008c851.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\.62fb192c-2f85-467f-9a34-0f8ef008c851.json.8a6ac484-cf37-472f-9178-14afa14b15c9.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\62fb192c-2f85-467f-9a34-0f8ef008c851.json"
+          }
+        },
+        {
+          "ms": 2049.7336,
+          "kind": "rename",
+          "synthetic": false,
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "EPERM",
+            "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\.62fb192c-2f85-467f-9a34-0f8ef008c851.json.8a6ac484-cf37-472f-9178-14afa14b15c9.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\62fb192c-2f85-467f-9a34-0f8ef008c851.json'",
+            "syscall": "rename",
+            "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\.62fb192c-2f85-467f-9a34-0f8ef008c851.json.8a6ac484-cf37-472f-9178-14afa14b15c9.tmp",
+            "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD\\state\\extraction-jobs\\62fb192c-2f85-467f-9a34-0f8ef008c851.json"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 2097.0608,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD",
+          "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+          "ok": true,
+          "value": {
+            "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": true,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 2097.8572,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD",
+          "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+          "ok": true,
+          "value": {
+            "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": true,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 2101.0971,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD",
+          "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+          "ok": true,
+          "value": {
+            "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": false,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        },
+        {
+          "ms": 2110.0888,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair3-m2RxUD",
+          "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+          "ok": true,
+          "value": {
+            "id": "62fb192c-2f85-467f-9a34-0f8ef008c851",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 5,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 4,
+              "totalChunks": 4,
+              "resumable": false,
+              "attempts": 5,
+              "reusedChunks": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "sourceChanges": [],
+  "externalCalls": 0
+}

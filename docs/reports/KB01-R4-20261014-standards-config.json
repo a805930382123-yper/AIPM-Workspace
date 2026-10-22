@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-14",
+  "batchStarted": "2026-10-13",
+  "scope": "real product HTTP/config/adapter -> local fake; no real credentials/provider",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-cfg01-sMmtTs",
+  "configFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-cfg01-sMmtTs\\provider.env",
+  "durationMs": 836,
+  "checks": [
+    {
+      "id": "C06-hot-change-and-old-job-snapshot",
+      "result": "PASS",
+      "details": {
+        "newRequestUsesNewConfig": true,
+        "oldJobKeepsOriginalConfig": true,
+        "rawUnchanged": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 1,
+    "fail": 0
+  },
+  "servicesClosed": true,
+  "logsNoCredentials": true,
+  "fakeClosed": true,
+  "providerRequests": [
+    {
+      "path": "/v1/chat/completions",
+      "model": "cfg01-old-job",
+      "authenticated": true,
+      "credentialIndex": 0
+    },
+    {
+      "path": "/v1/chat/completions",
+      "model": "cfg01-new-job",
+      "authenticated": true,
+      "credentialIndex": 1
+    }
+  ]
+}

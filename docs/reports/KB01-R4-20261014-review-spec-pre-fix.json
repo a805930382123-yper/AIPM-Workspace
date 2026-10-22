@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-14",
+  "axis": "Spec",
+  "status": "FAIL",
+  "versionScope": "R4 first freeze and actual pre-fix in-memory runs; subsequent construction was detected, so this is not a final freeze acceptance",
+  "comparison": "baseline/frozen SHA-256 inventory, no Git diff available",
+  "uniqueFindings": [
+    {
+      "id": "SP-F01",
+      "priority": 2,
+      "title": "合法 overlap 相同证据重复追加导致长文整体失败",
+      "file": "services/llm/service.ts",
+      "lines": [296, 318],
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-probes.json",
+      "observed": "Two valid v2 chunks referencing their chunk-local anchor for the identical Raw [7600,7800) with same page and local e1 fail with LLM_EVIDENCE_DUPLICATE_ID; changing only second local ID to e2 succeeds",
+      "origin": "Pre-existing merge implementation; directly affects authorized R4 long-document behavior",
+      "status": "OPEN_AT_PRE_FIX"
+    },
+    {
+      "id": "SP-F02",
+      "priority": 2,
+      "title": "确认等待期间取消勾选后仍提交旧选集",
+      "file": "app/pages/DraftReviewPage.tsx",
+      "lines": [164, 171, 175, 263],
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-ui-race.json",
+      "observed": "Actual component waits for duplicate response; checkbox remains enabled and becomes visibly false; released response issues PATCH selected=true and POST confirm selectedPageIds=[page-1]",
+      "status": "OPEN_AT_PRE_FIX"
+    }
+  ],
+  "checks": [
+    {"id": "SP01", "result": "FAIL", "scope": "Actual LLMService, in-memory v2 provider"},
+    {"id": "SP02", "result": "PASS", "scope": "Identical overlap anchors with distinct local evidence IDs control"},
+    {"id": "SP03", "result": "PASS", "scope": "106400 UTF-16 characters; 14 actual chunks; exact bounded contiguous locator catalogs"},
+    {"id": "SP04", "result": "FAIL", "scope": "Actual DraftReviewPage, jsdom, memory fetch"}
+  ],
+  "externalProviderCalls": 0,
+  "productModifications": 0,
+  "formalWorkspaceAccess": false,
+  "envLocalAccess": false,
+  "limits": ["Not fullsuite", "Not actual HTTP", "Not real browser", "Not real Provider quality", "Standards assessed by independent reviewer", "Final freeze required after repair"]
+}

@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-16T13:56:01.543Z",
+  "scope": "actual localhost HTTP; synthetic fixture; zero external calls",
+  "rows": [
+    {
+      "id": "S01-budget-exhausted-planningRetry",
+      "result": "FAIL",
+      "expected": "409 before side effects; preserve checkpoint/job/state bytes",
+      "actual": {
+        "httpStatus": 202,
+        "initialResponseStatus": "running",
+        "finalStatus": "failed",
+        "finalError": "LLM_ATTEMPT_LIMIT",
+        "additionalProviderCalls": 0,
+        "unchanged": [
+          false,
+          false,
+          false
+        ],
+        "beforeDiagnostic": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        },
+        "afterLastError": {
+          "code": "LLM_ATTEMPT_LIMIT",
+          "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。",
+          "at": "2026-10-16T13:56:01.204Z"
+        }
+      }
+    },
+    {
+      "id": "S02-cancel-explicit-planner-late-response",
+      "result": "PASS",
+      "actual": {
+        "status": "cancelled",
+        "stage": "planning",
+        "attempts": 3,
+        "planSaved": false,
+        "drafts": 0,
+        "rawStatus": "unprocessed",
+        "providerCalls": 1
+      }
+    }
+  ],
+  "closed": true
+}

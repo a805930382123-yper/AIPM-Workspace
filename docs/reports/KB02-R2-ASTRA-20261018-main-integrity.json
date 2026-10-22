@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-18T02:42:47.556Z",
+  "baseline": "KB02-R2-ASTRA-20261016-main-baseline.json",
+  "productCount": 97,
+  "testCount": 59,
+  "protectedCount": 2014,
+  "productDrift": [],
+  "testDrift": [],
+  "protectedDrift": [
+    {
+      "path": "docs/reports/PA01-R1-20261015-baseline.json",
+      "before": "ac255cf5cb9f239108243f80bbe9cb1159d3bee905b82f5a0678124c6deda302",
+      "after": "ae00f896b1ba923d914d7586dfce608e39d49899b93bec76cf9f3bc8f3d35229"
+    },
+    {
+      "path": "docs/reports/PA01-R1-20261015-main-preflight3-probes.json",
+      "before": "a2b81ff09eaebf36722d795a44be5be3be0d58561cf8ac00aeaba931fc27846e",
+      "after": "3a0262f001085e8b8daf7d31c249ad0f3dd9ad9cfcd21f95cf3669a883e6d30b"
+    },
+    {
+      "path": "docs/reports/PA01-SOL-20261016-builder-preflight3-component.json",
+      "before": "c44516320143b2b3f321887d817a3c676e4ca6aa2d313d89ccb52bfcb3e48e76",
+      "after": "9f772877037865987f54896504825259a9fc7f919acc732852e070c6934df615"
+    },
+    {
+      "path": "tests/acceptance/pa01-r1-20261015-main-preflight3-probes.mjs",
+      "before": "1121429ba00c939f7947b5e85667ca8103ffba5453d0d24114b8cca3462fb84f",
+      "after": "69eda325b3f98982cf0ebfa27696b7cbaefe9e51918c0e2a5d8e7604d3f2d994"
+    }
+  ],
+  "workspaceDrift": [],
+  "workspaceAdded": [],
+  "configUnchanged": true,
+  "historicalDriftNote": "Four PA01 historical artifacts already observed changed before continuation safety checks; cause unknown, not restored or attributed to KB02. No blanket protected-files PASS.",
+  "externalProviderCallsThisReview": 0
+}

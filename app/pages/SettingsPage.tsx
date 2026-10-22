@@ -1,24 +1,58 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { LlmConfigSummary } from '../api';
-import { api, llmConfig } from '../api';
+import { api, clearLlmConfig, llmConfig, saveLlmConfig, testLlmConfig } from '../api';
 
 export function SettingsPage({ onOpenExampleTask = () => undefined, onImported = () => undefined }: { onOpenExampleTask?: (task: string) => void; onImported?: () => void }) {
   const [config, setConfig] = useState<LlmConfigSummary | null>(null);
   const [error, setError] = useState('');
+  const [baseUrl, setBaseUrl] = useState('');
+  const [model, setModel] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [configBusy, setConfigBusy] = useState(false);
+  const [configLoading, setConfigLoading] = useState(true);
+  const [configMessage, setConfigMessage] = useState('');
+  const [configError, setConfigError] = useState('');
+  const [testMessage, setTestMessage] = useState('');
+  const sequence = useRef(0);
   const [demo, setDemo] = useState<{version:number; imported:boolean; items:Array<{key:string;type:string;id:string;title:string;status:string}>; exampleTask:{title:string;task:string}} | null>(null);
   const [demoBusy, setDemoBusy] = useState(false);
   const [demoMessage, setDemoMessage] = useState('');
   const [demoError, setDemoError] = useState('');
   useEffect(() => {
     let active = true;
-    api<LlmConfigSummary>('/api/llm/config').then(value => { if (active) setConfig(value); })
-      .catch(problem => { if (active) setError(problem instanceof Error ? problem.message : '无法读取 LLM 配置。'); });
+    const configRequest = ++sequence.current;
+    api<LlmConfigSummary>('/api/llm/config').then(value => { if (active && configRequest === sequence.current) { setConfig(value); setBaseUrl(value.baseUrl); setModel(value.model ?? ''); } })
+      .catch(problem => { if (active && configRequest === sequence.current) setError(problem instanceof Error ? problem.message : '无法读取 LLM 配置。'); })
+      .finally(() => { if (active && configRequest === sequence.current) setConfigLoading(false); });
     api<NonNullable<typeof demo>>('/api/demo').then(value => { if (active) setDemo(value); }).catch(problem => { if (active) setDemoError(problem instanceof Error ? problem.message : '无法读取演示数据状态。'); });
-    return () => { active = false; };
+    return () => { active = false; sequence.current++; };
   }, []);
   const reload = async () => {
-    setError('');
-    try { setConfig(await llmConfig()); } catch (problem) { setError(problem instanceof Error ? problem.message : '无法读取 LLM 配置。'); }
+    setError(''); setConfigError(''); setConfigLoading(true);
+    const id = ++sequence.current; setConfigMessage(''); setTestMessage('');
+    try { const value = await llmConfig(); if (id === sequence.current) { setConfig(value); setBaseUrl(value.baseUrl); setModel(value.model ?? ''); } } catch (problem) { if (id === sequence.current) setError(problem instanceof Error ? problem.message : '无法读取 LLM 配置。'); }
+    finally { if (id === sequence.current) setConfigLoading(false); }
+  };
+  const changed = Boolean(config && (baseUrl !== config.baseUrl || model !== (config.model ?? '') || apiKey.length > 0));
+  const saveConfig = async () => {
+    if (!config) return; const id = ++sequence.current; setConfigBusy(true); setConfigError(''); setConfigMessage(''); setTestMessage('');
+    try { const value = await saveLlmConfig(config, { baseUrl, model, ...(apiKey ? { apiKey } : {}) }); if (id === sequence.current) { setConfig(value); setBaseUrl(value.baseUrl); setModel(value.model ?? ''); setApiKey(''); setConfigMessage('本机配置已保存；尚未测试连接。'); } }
+    catch (problem) { if (id === sequence.current) setConfigError(problem instanceof Error ? problem.message : '保存配置失败。'); }
+    finally { if (id === sequence.current) setConfigBusy(false); }
+  };
+  const testConfig = async () => {
+    if (!config || changed) { setConfigError('有未保存的修改，请先保存再测试连接。'); return; }
+    const id = ++sequence.current; setConfigBusy(true); setConfigError(''); setConfigMessage(''); setTestMessage('');
+    try { const result = await testLlmConfig(config); if (id === sequence.current) setTestMessage(`${result.message}（${result.elapsedMs} ms）`); }
+    catch (problem) { if (id === sequence.current) setConfigError(problem instanceof Error ? problem.message : '连接测试失败。'); }
+    finally { if (id === sequence.current) setConfigBusy(false); }
+  };
+  const clearConfig = async () => {
+    if (!config || !window.confirm('清除本机 .env.local 中的 Provider 地址、模型和 API Key？环境变量不会被清除。')) return;
+    const id = ++sequence.current; setConfigBusy(true); setConfigError(''); setConfigMessage(''); setTestMessage('');
+    try { const value = await clearLlmConfig(config); if (id === sequence.current) { setConfig(value); setBaseUrl(''); setModel(''); setApiKey(''); setConfigMessage('本机配置已清除。'); } }
+    catch (problem) { if (id === sequence.current) setConfigError(problem instanceof Error ? problem.message : '清除配置失败。'); }
+    finally { if (id === sequence.current) setConfigBusy(false); }
   };
   const importDemo = async () => {
     setDemoBusy(true); setDemoError(''); setDemoMessage('');
@@ -31,7 +65,7 @@ export function SettingsPage({ onOpenExampleTask = () => undefined, onImported =
     finally { setDemoBusy(false); }
   };
   return <div className="page settings-page">
-    <div className="page-heading"><div><p className="eyebrow">设置 · 本机服务端配置</p><h1>设置</h1><p className="subheading">产品只调用你自己配置的服务端 Provider；API Key 不出现在页面、草稿、Wiki 或日志中。</p></div><button className="secondary-button" onClick={() => void reload()}>重新读取</button></div>
+    <div className="page-heading"><div><p className="eyebrow">设置 · 本机服务端配置</p><h1>设置</h1><p className="subheading">产品只调用你自己配置的服务端 Provider；API Key 不出现在页面、草稿、Wiki 或日志中。</p></div><button className="secondary-button" onClick={() => void reload()} disabled={configBusy || configLoading}>重新读取</button></div>
     {error && <div className="form-error" role="alert"><p>{error}</p></div>}
     <section className="panel settings-panel">
       <div className="panel-heading"><div><h2>LLM Provider</h2><p>单一 OpenAI-compatible Chat Completions 适配器（非流式）</p></div><span className={`config-badge ${config?.configured ? 'ok' : 'off'}`}>{config ? (config.configured ? '已配置' : '未配置') : '读取中…'}</span></div>
@@ -44,6 +78,16 @@ export function SettingsPage({ onOpenExampleTask = () => undefined, onImported =
           <div className="meta"><span>配置来源</span><b>{config?.source === 'env' ? '环境变量' : config?.source === 'local-file' ? '本地 .env.local' : '无'}</b></div>
           <div className="meta"><span>Key 是否已配置</span><b>{config?.keyConfigured ? '是（仅显示掩码）' : '否'}</b></div>
         </div>
+        <div className="settings-config-form">
+          {config?.environmentLocked && <p className="notice-warn">当前由启动环境变量覆盖，配置为只读。请先在启动终端移除 FMCG_LLM_* 覆盖并重启服务端，再从这里编辑。</p>}
+          <label>API Base URL<input aria-label="API Base URL" value={baseUrl} onChange={event => { sequence.current++; setBaseUrl(event.target.value); setTestMessage(''); setConfigMessage(''); }} placeholder="https://api.example.com/v1" disabled={configLoading || configBusy || config?.environmentLocked} /></label>
+          <label>模型 ID<input aria-label="模型 ID" value={model} onChange={event => { sequence.current++; setModel(event.target.value); setTestMessage(''); setConfigMessage(''); }} disabled={configLoading || configBusy || config?.environmentLocked} /></label>
+          <label>API Key<input aria-label="API Key" type="password" autoComplete="new-password" value={apiKey} onChange={event => { sequence.current++; setApiKey(event.target.value); setTestMessage(''); setConfigMessage(''); }} placeholder={config?.keyConfigured ? '留空以保留已保存的 Key' : '首次保存时必填'} disabled={configLoading || configBusy || config?.environmentLocked} /></label>
+          <p className="field-help">已配置时，API Key 留空会保留旧值；新 Key 仅在点击保存后发送到本机服务端，保存后输入框会清空。</p>
+          <p className="field-help">连接测试会向此 Provider 发送固定的非业务消息，可能产生少量 API 费用。不会发送 Raw、Wiki、Prompt、会议内容或草稿，也不会写入业务资产。</p>
+          <div className="settings-config-actions"><button className="primary-button" onClick={() => void saveConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked}>{configBusy ? '处理中…' : '保存配置'}</button><button className="secondary-button" onClick={() => void testConfig()} disabled={!config?.configured || configLoading || configBusy || changed}>测试连接</button><button className="secondary-button" onClick={() => void clearConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked || (!config.keyConfigured && config.source !== 'local-file')}>清除本机配置</button></div>
+          {configMessage && <p role="status" className="notice-ok">{configMessage}</p>}{testMessage && <p role="status" className="notice-ok">连接测试成功：{testMessage}</p>}{configError && <p role="alert" className="form-error">{configError}</p>}
+        </div>
         {config && !config.configured && <p className="notice-warn">尚未配置：{config.missing.join('、')}。未配置时导入、手动 Wiki、搜索与导出仍可用；点击「AI 整理知识」会返回明确的缺配置错误。</p>}
         <div className="settings-help">
           <h3>如何配置</h3>
@@ -52,7 +96,7 @@ export function SettingsPage({ onOpenExampleTask = () => undefined, onImported =
 $env:${config?.envNames.model ?? 'FMCG_LLM_MODEL'} = '<模型名>'
 $env:${config?.envNames.apiKey ?? 'FMCG_LLM_API_KEY'} = '<你的 API Key>'
 npm run dev`}</pre>
-          <p>只有服务端读取这些配置：浏览器端不保存 Key，接口只返回是否已配置与统一掩码。修改后无需重启页面，重新读取即可生效。</p>
+          <p>环境变量优先级高于 .env.local，并会锁定本页编辑。仅在设置页明确保存后，新 AI 请求使用新配置；已经开始的任务继续使用开始时的配置快照。</p>
         </div>
       </div>
     </section>

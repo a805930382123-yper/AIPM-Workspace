@@ -1,0 +1,95 @@
+{
+  "at": "2026-10-14T14:51:50.722Z",
+  "scope": "actual isolated HTTP, localhost fake, no real Provider quality",
+  "checks": [
+    {
+      "id": "V01-valid-later-repeated-CRLF-emoji",
+      "result": "PASS",
+      "details": {
+        "start": 1072,
+        "end": 1099,
+        "quoteLength": 27,
+        "rawExact": true,
+        "noFormalWrite": true
+      }
+    },
+    {
+      "id": "V02-unknown-locator",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_EVIDENCE_UNKNOWN_LOCATOR",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V03-cross-chunk-locator",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_EVIDENCE_UNKNOWN_LOCATOR",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V04-mixed-v2-quote",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_SCHEMA_INVALID",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V05-page-reference-missing",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_EVIDENCE_UNKNOWN_ID",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V06-known-secret-in-locator",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_OUTPUT_CONTAINS_SECRET",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V07-version-missing-not-coerced",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_SCHEMA_INVALID",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V09-derived-Raw-secret-rejected",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_OUTPUT_CONTAINS_SECRET",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    },
+    {
+      "id": "V08-unknown-top-field",
+      "result": "PASS",
+      "details": {
+        "error": "LLM_SCHEMA_INVALID",
+        "rawExact": true,
+        "noDraftOrFormalWrite": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 0
+  },
+  "fakeCalls": 9,
+  "servicesClosed": true
+}

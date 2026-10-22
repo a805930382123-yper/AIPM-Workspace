@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-15T14:25:08.499Z",
+  "rows": [
+    {
+      "id": "R01-isolated-single-file-deduplication",
+      "result": "PASS",
+      "evidence": {
+        "scanned": true,
+        "partial": false,
+        "overflow": false,
+        "scannedFiles": 1,
+        "scannedBytes": 4,
+        "items": [
+          {
+            "id": "7abbe74bc7775f34",
+            "kind": "prompt-drafts",
+            "reason": "parse"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R02-real-commit-reconcile-must-not-rewrite-invalid-shape",
+      "result": "PASS",
+      "evidence": {
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "R03-registry-root-isolation",
+      "result": "PASS",
+      "evidence": {
+        "rootIsolation": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 0
+  },
+  "externalCalls": 0
+}

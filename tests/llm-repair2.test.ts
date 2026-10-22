@@ -17,7 +17,7 @@ import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { OpenAiCompatibleProvider } from '../services/llm/provider.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
 import { validateRaw } from '../server/validation.ts';
-import { buildPayloadForChunk, chunkFromPrompt, contentOf, isMergePrompt, mergeEntriesFromPrompt, rawIdFromPrompt, startFakeProvider, type FakePageSpec, type FakeProvider } from './support/fake-llm.ts';
+import { buildPayloadForChunk, chunkFromPrompt, contentOf, isPlanningPrompt, planningPayloadFromPrompt, rawIdFromPrompt, startFakeProvider, type FakePageSpec, type FakeProvider } from './support/fake-llm.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rulesDir = path.join(root, 'rules');
@@ -151,7 +151,7 @@ test('F04-05 残留：正式 Source 的所有派生段落以本次确认选集�
     });
   });
   try {
-    const raw = await context.createRaw('渠道动销资料正文。', '选集一致性');
+    const raw = await context.createRaw('渠道动销资料正文。库存周转资料正文。', '选集一致性');
     const draft = await context.draftFor(raw.id);
     assert.equal(draft.pages.length, 2);
     assert.equal(draft.pages.every(page => page.selected === false), true, '新草稿默认未选');
@@ -181,9 +181,9 @@ test('F04-05 残留：正式 Source 的所有派生段落以本次确认选集�
     assert.equal((body.match(/人工改名但未在草稿勾选/gu) ?? []).length, (body.match(/\[\[人工改名但未在草稿勾选\]\]/gu) ?? []).length, '被确认的页只以链接形式出现');
     // 3) Key Takeaways 必须包含被确认页的定义，不能是"暂无"。
     const takeaways = body.split('## Key Takeaways')[1]?.split('## 涉及概念')[0] ?? '';
-    assert.ok(takeaways.includes('被确认页的定义应当进入 Key Takeaways'), `Key Takeaways 必须包含被确认页定义：${takeaways}`);
+    assert.ok(takeaways.includes('被确认的页'), `Key Takeaways 必须包含被确认页定义：${takeaways}`);
     assert.equal(/暂无/u.test(takeaways), false, 'Key Takeaways 不得为暂无');
-    assert.equal(takeaways.includes('未确认页的定义'), false, '未确认页的定义不得进入 Key Takeaways');
+    assert.equal(takeaways.includes('未确认的页'), false, '未确认页的定义不得进入 Key Takeaways');
     // 4) 正式页与 Source 一起落盘，链接可解析。
     assert.equal((await context.wikiFiles()).length, 2);
   } finally { await context.clean(); }
@@ -220,38 +220,14 @@ test('F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范�
         assert.equal(raw.body.slice(evidence.start, evidence.end), evidence.quote, '草稿证据必须能按完整 Raw 核验');
       }
     }
-    const mergeRequests = context.fake.requests.filter(request => isMergePrompt(request.user));
+    const mergeRequests = context.fake.requests.filter(request => isPlanningPrompt(request.user));
     assert.equal(mergeRequests.length, 1, '四块摘要不同必须真正发起一次结构化汇总');
-    const entries = mergeEntriesFromPrompt(mergeRequests[0].user);
-    assert.equal(entries.length, draft.extraction.chunkCount, '汇总输入必须覆盖每一块');
-    let factCount = 0;
-    for (const entry of entries) {
-      assert.equal(typeof entry.chunkRange.start, 'number');
-      for (const page of entry.pages) {
-        for (const fact of page.source_facts) {
-          factCount += 1;
-          for (const evidence of fact.evidence) {
-            assert.equal(typeof evidence.rawId, 'string', '汇总输入的证据必须保留 Raw 来源');
-            assert.equal(evidence.rawId, raw.id);
-            assert.equal(typeof evidence.start, 'number', `汇总输入的证据缺全局 start（第 ${entry.chunk} 段）：${JSON.stringify(evidence)}`);
-            assert.equal(typeof evidence.end, 'number', `汇总输入的证据缺全局 end（第 ${entry.chunk} 段）`);
-            assert.equal(typeof evidence.quote, 'string');
-            assert.equal(raw.body.slice(evidence.start as number, evidence.end as number), evidence.quote, '汇总输入的位置必须与完整 Raw 精确一致');
-          }
-        }
-      }
-    }
-    assert.ok(factCount >= 4, '每块至少一条事实进入汇总输入');
-    // 与草稿的规范化位置逐字段一致。
-    const byQuote = new Map(draft.pages.flatMap(page => page.source_evidence).map(evidence => [evidence.quote, evidence]));
-    const mergeEvidence = entries.flatMap(entry => entry.pages.flatMap(page => page.source_facts.flatMap(fact => fact.evidence)));
-    for (const evidence of mergeEvidence) {
-      const normalized = byQuote.get(String(evidence.quote));
-      assert.ok(normalized, `汇总输入的证据必须在草稿中找到：${String(evidence.quote)}`);
-      assert.equal(evidence.start, normalized?.start, '汇总输入的位置必须等于草稿规范化后的位置');
-      assert.equal(evidence.end, normalized?.end);
-    }
-    assert.equal(raw.body.includes(String(mergeEvidence[0]?.quote)), true);
+    const planned = planningPayloadFromPrompt(mergeRequests[0].user);
+    assert.equal(planned.facts.length, 4, '规划输入覆盖四块全部事实');
+    assert.equal(new Set(planned.facts.map(item => item.id)).size, 4, '规划事实ID唯一');
+    assert.doesNotMatch(mergeRequests[0].user, /locatorId|source_evidence|quote/);
+    assert.deepEqual(draft.pages.flatMap(page => page.source_facts.map(fact => fact.text)).sort(), planned.facts.map(item => item.text).sort(), '最终页逐条保留全部规划事实');
+    for (const page of draft.pages) for (const fact of page.source_facts) for (const id of fact.evidenceIds) assert.ok(page.source_evidence.some(ev => ev.id === id && raw.body.slice(ev.start, ev.end) === ev.quote && ev.rawId === raw.id), '最终证据必须指向本Raw原文位置');
   } finally { await context.clean(); }
 });
 

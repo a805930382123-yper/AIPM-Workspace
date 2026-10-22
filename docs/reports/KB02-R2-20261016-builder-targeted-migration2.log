@@ -1,0 +1,422 @@
+✔ B05 五维候选显示标题、别名、分类、标签和内容理由，分类单独命中权重低 (126.5487ms)
+✔ B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认幂等 (335.6973ms)
+✔ B05 非法综合分类在保存草稿前拒绝 (76.2136ms)
+✔ B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认 (94.4501ms)
+✔ B05 重启恢复完成提交后收敛workflow，completed manifest不覆盖后续人工编辑 (297.273ms)
+✔ B05 更新预览保留两套公式，Raw证据可定位，旧revision会拒绝覆盖 (292.3466ms)
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (87.4887ms)
+✔ KB02 resume reuses validated chunks and counts failed outbound attempts (72.036ms)
+✔ KB02 corrupted checkpoint integrity fails closed (27.7525ms)
+✖ E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log (260.3616ms)
+✖ E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变 (269.8497ms)
+✖ E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份 (115.3754ms)
+✖ E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面 (104.8215ms)
+✔ E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值 (1117.6275ms)
+✖ E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证据越界/截断/超限都不写正式知识 (1170.7595ms)
+✔ locator v2 映射后再次扫凭证：Raw锚点包含已知Key时失败且不生成草稿或正式Wiki (47.4218ms)
+✔ E04-01 无配置：未配置 Provider 时明确失败且零正式变化（手动链路仍可用） (32.5655ms)
+✖ E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败 (87.8134ms)
+✖ E04-09 超过 50 条建议：明确预算失败，不静默丢弃 (95.5438ms)
+✖ E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核 (76.6937ms)
+✖ E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突 (62.1031ms)
+✖ E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑 (157.9932ms)
+✖ E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变 (2036.8831ms)
+✔ E04-06 HTTP 失败注入：鉴权/限流/非法JSON 都不写正式知识且状态可重试 (1624.6671ms)
+✔ E04-01 HTTP 无配置：缺 Key 不阻止启动，AI 明确报错，手动链路仍可用 (948.2058ms)
+✔ E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审核草稿时禁止删除 Raw (2638.701ms)
+✔ F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串行且不留孤儿草稿 (3039.5166ms)
+✖ F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据 (1382.1452ms)
+✖ F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集 (988.536ms)
+✔ F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验 (1087.5395ms)
+✖ E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志 (924.5874ms)
+✔ F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都不含密钥 (393.9218ms)
+✖ F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它 (298.0556ms)
+✖ F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断 (259.5064ms)
+✔ F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿 (1738.0925ms)
+✔ F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全 (1552.7403ms)
+✖ F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本 (234.5746ms)
+✖ F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现 (63.0031ms)
+✖ F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供 (373.7853ms)
+✔ F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功 (686.4717ms)
+✖ F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准 (84.5077ms)
+✖ F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end (205.6173ms)
+✔ F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (310.2467ms)
+✔ F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (186.7168ms)
+✖ F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总 (298.6724ms)
+✔ F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据 (474.3763ms)
+✔ PA01 R01 real workflow records reject deep corruption consistently before reads and writes (1236.2771ms)
+✔ PA01 R01 optional evidence and legacy unused snapshots remain readable editable confirmable (152.423ms)
+✔ PA01 R02 499/500/501/1201 results are bounded with persistent hidden issues and correct rescan totals (7737.0057ms)
+✔ PA01 R02 file/byte/observer budgets remain bounded and partial count stays a lower bound (74.8431ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 28
+ℹ fail 22
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20065.292
+
+✖ failing tests:
+
+test at tests\llm-flow.test.ts:1:5139
+✖ E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log (260.3616ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:101:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:5:3749
+✖ E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变 (269.8497ms)
+  AssertionError [ERR_ASSERTION]: 拒绝写入结构非法或超过持久化上限的检查点。
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:178:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:7:1411
+✖ E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份 (115.3754ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:205:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:11:1357
+✖ E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面 (104.8215ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:283:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:4851
+✖ E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证据越界/截断/超限都不写正式知识 (1170.7595ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'LLM_CHECKPOINT_CORRUPT'
+  - 'LLM_NETWORK_ERROR'
+         ^
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:408:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'LLM_CHECKPOINT_CORRUPT',
+    expected: 'LLM_NETWORK_ERROR',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:12818
+✖ E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败 (87.8134ms)
+  AssertionError [ERR_ASSERTION]: 拒绝写入结构非法或超过持久化上限的检查点。
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:480:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:17164
+✖ E04-09 超过 50 条建议：明确预算失败，不静默丢弃 (95.5438ms)
+  AssertionError [ERR_ASSERTION]: 规划超过50页的schema上限必须明确失败
+  + actual - expected
+  
+  + 'LLM_PROVIDER_ERROR'
+  - 'LLM_SCHEMA_INVALID'
+         ^
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:534:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'LLM_PROVIDER_ERROR',
+    expected: 'LLM_SCHEMA_INVALID',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:14:589
+✖ E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核 (76.6937ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:565:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:14:2321
+✖ E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突 (62.1031ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:587:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:16:4143
+✖ E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑 (157.9932ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'WIKI_TITLE_CONFLICT'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-flow.test.ts:684:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'WIKI_TITLE_CONFLICT',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:4036
+✖ E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变 (2036.8831ms)
+  AssertionError [ERR_ASSERTION]: {"jobId":"30008e50-9c6c-4a85-bc93-9a4e4ecbdfb8","rawId":"cb73046c-6143-4e27-986a-094fceb0f136","status":"failed","stage":"extracting","progress":{"chunksTotal":1,"chunksDone":0,"pagesFound":0},"draftId":null,"error":{"code":"LLM_CHECKPOINT_CORRUPT","message":"拒绝写入结构非法或超过持久化上限的检查点。","at":"2026-10-16T08:04:56.566Z","retryable":true},"provider":{"name":"openai-compatible","model":"fake-model"},"callCount":1,"startedAt":"2026-10-16T08:04:56.471Z","finishedAt":"2026-10-16T08:04:56.566Z","cancelRequested":false,"pipelineVersion":"kb02-2","checkpoint":{"stage":"extracting","validatedChunks":0,"totalChunks":1,"resumable":true,"reason":"拒绝写入结构非法或超过持久化上限的检查点。","attempts":1,"reusedChunks":0}}
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-http.test.ts:139:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:21561
+✖ F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据 (1382.1452ms)
+  AssertionError [ERR_ASSERTION]: {"error":{"code":"WIKI_TITLE_CONFLICT","message":"标题或别名「业务事实」已被现有 Wiki「业务事实」（620f5491-a196-47d3-a86e-7a392ee4fa0e）占用；请改名，或返回审核页选择“更新已有页”“仍创建新页”或“暂不处理”。显式新建会生成独立页面，关联链接可能产生歧义。","details":{"title":"业务事实","existingId":"620f5491-a196-47d3-a86e-7a392ee4fa0e","existingTitle":"业务事实","batch":"B05"}}}
+  
+  409 !== 201
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-http.test.ts:470:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:26000
+✖ F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集 (988.536ms)
+  TypeError: Cannot read properties of undefined (reading 'every')
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-http.test.ts:499:30)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\llm-http.test.ts:2:34527
+✖ E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志 (924.5874ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-http.test.ts:617:66)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\llm-repair.test.ts:1:7202
+✖ F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它 (298.0556ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'completed'
+  - 'failed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair.test.ts:143:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'completed',
+    expected: 'failed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:8643
+✖ F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断 (259.5064ms)
+  AssertionError [ERR_ASSERTION]: 拒绝写入结构非法或超过持久化上限的检查点。
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair.test.ts:185:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:24217
+✖ F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本 (234.5746ms)
+  Error: 标题或别名「业务事实」已被现有 Wiki「业务事实」（ae3cb1a8-dd2a-40b6-9847-0bc92b2621a8）占用；请改名，或返回审核页选择“更新已有页”“仍创建新页”或“暂不处理”。显式新建会生成独立页面，关联链接可能产生歧义。
+      at WikiCommitService.checkConflicts (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\services\wiki\commits.ts:247:13)
+      at async WikiCommitService.confirm (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\services\wiki\commits.ts:163:22) {
+    code: 'WIKI_TITLE_CONFLICT',
+    status: 409,
+    details: { title: '业务事实', existingId: 'ae3cb1a8-dd2a-40b6-9847-0bc92b2621a8', existingTitle: '业务事实', batch: 'B05' }
+  }
+
+test at tests\llm-repair.test.ts:1:27142
+✖ F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现 (63.0031ms)
+  AssertionError [ERR_ASSERTION]: 原子陈述ID未知或跨块。
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair.test.ts:439:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:30015
+✖ F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供 (373.7853ms)
+  Error: 标题或别名「业务事实」已被现有 Wiki「业务事实」（e1c15a6e-b6b9-4ef2-a30c-f1e13b176d7d）占用；请改名，或返回审核页选择“更新已有页”“仍创建新页”或“暂不处理”。显式新建会生成独立页面，关联链接可能产生歧义。
+      at WikiCommitService.checkConflicts (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\services\wiki\commits.ts:247:13)
+      at async WikiCommitService.confirm (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\services\wiki\commits.ts:163:22) {
+    code: 'WIKI_TITLE_CONFLICT',
+    status: 409,
+    details: { title: '业务事实', existingId: 'e1c15a6e-b6b9-4ef2-a30c-f1e13b176d7d', existingTitle: '业务事实', batch: 'B05' }
+  }
+
+test at tests\llm-repair2.test.ts:1:7167
+✖ F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准 (84.5077ms)
+  AssertionError [ERR_ASSERTION]: 原子陈述ID未知或跨块。
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair2.test.ts:71:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair2.test.ts:155:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair2.test.ts:1:10594
+✖ F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end (205.6173ms)
+  AssertionError [ERR_ASSERTION]: 四块必须各产出一条建议，实际 1
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair2.test.ts:214:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:8660
+✖ F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总 (298.6724ms)
+  AssertionError [ERR_ASSERTION]: 四个不同标题必须保留四条建议
+  
+  1 !== 4
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-r2-targeted-ZgP7aa\tests\llm-repair3.test.ts:194:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

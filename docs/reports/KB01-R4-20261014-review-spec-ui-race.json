@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-14T14:43:54.086Z",
+  "scope": "Actual DraftReviewPage in jsdom + memory fetch; no real browser/HTTP/Provider",
+  "id": "SP04-selection-changed-during-confirm-candidate-await",
+  "result": "FAIL",
+  "expected": "No formal confirm for a visibly deselected page, or controls locked before the user can change selection.",
+  "checkboxEnabledDuringConfirm": true,
+  "visibleSelectionAfterChange": false,
+  "submittedPageIds": [
+    "page-1"
+  ],
+  "calls": [
+    {
+      "path": "/api/drafts/draft-race",
+      "method": "PATCH",
+      "body": {
+        "baseRevision": 1,
+        "document": {
+          "title": "虚构资料",
+          "main_topic": "主题",
+          "summary": "摘要"
+        },
+        "source": {
+          "title": "虚构资料",
+          "summary": "摘要",
+          "body": "摘要",
+          "category": "other",
+          "knowledge_status": "source_supported",
+          "confidence": "low",
+          "source_level": "C",
+          "key_takeaways": []
+        },
+        "pages": [
+          {
+            "pageId": "page-1",
+            "selected": true,
+            "title": "原始标题",
+            "type": "concept",
+            "category": "other",
+            "one_line_definition": "定义",
+            "source_facts": [
+              {
+                "text": "虚构事实",
+                "evidenceIds": [
+                  "e1"
+                ]
+              }
+            ],
+            "ai_organized": [],
+            "ai_inferences": [],
+            "related_pages": [],
+            "open_questions": [],
+            "source_evidence": [
+              {
+                "id": "e1",
+                "rawId": "raw-race",
+                "quote": "虚构事实。",
+                "start": 0,
+                "end": 5
+              }
+            ],
+            "knowledge_status": "source_supported",
+            "confidence": "low",
+            "source_level": "C"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/api/drafts/draft-race/confirm",
+      "method": "POST",
+      "body": {
+        "baseRevision": 1,
+        "selectedPageIds": [
+          "page-1"
+        ],
+        "idempotencyKey": "4d85195d-5532-45cc-8e69-21a2dba8371a"
+      }
+    }
+  ]
+}

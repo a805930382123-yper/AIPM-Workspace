@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-15T14:04:18.230Z",
+  "sandboxBuild": {
+    "at": "2026-10-15T13:59:06.477Z",
+    "copyMismatches": [],
+    "tscExitCode": 0,
+    "viteExitCode": 1,
+    "reason": "Vite/esbuild cannot read temporary snapshot ancestor directory: Access is denied; config could not resolve",
+    "classification": "environment permission limitation"
+  },
+  "resolution": {
+    "sameCommand": "node tests/acceptance/pa01-sol-20261015-builder-build.mjs",
+    "requireEscalated": true,
+    "sameFrozenCopy": true,
+    "aclChanged": false,
+    "finalReport": "docs/reports/PA01-SOL-20261015-builder-build.json"
+  },
+  "notes": [
+    "Earlier build approval wait was interrupted after 528.6 seconds, without an exec session id; no build result was claimed.",
+    "Default tsc unused-import error was separately preserved and fixed before final freeze."
+  ]
+}

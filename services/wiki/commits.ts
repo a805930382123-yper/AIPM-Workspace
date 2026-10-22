@@ -4,7 +4,8 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { SerialQueue, listJsonRecords, readJsonFile, writeJsonAtomic } from '../storage/files.ts';
+import {isCommitManifest} from '../storage/record-validators.ts';
+import { SerialQueue, StorageError, scanJsonRecords, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
 import { derivedTakeaways, type DraftRecord, type DraftStore } from './drafts.ts';
 import { renderPageBody, renderSourceBody } from './render.ts';
 import { WikiError, WikiStore, type WikiRecord } from './store.ts';
@@ -63,13 +64,12 @@ export class WikiCommitService {
 
   async get(operationId: string): Promise<CommitManifest | undefined> {
     if (!/^[0-9a-f-]{36}$/i.test(operationId)) return undefined;
-    return readJsonFile<CommitManifest>(this.fileFor(operationId));
+    const m=await readJsonRecord<CommitManifest>(this.deps.root,this.fileFor(operationId),(v):v is CommitManifest=>isCommitManifest(v,operationId));if(m===undefined)return undefined;if(!isCommitManifest(m,operationId))throw new StorageError('STORAGE_CORRUPT','提交清单结构无效，原文件已保留；恢复执行已停止。',500,{category:'recovery',nextAction:'inspect_or_restore'});return m;
   }
   async list(): Promise<CommitManifest[]> {
-    const records = await listJsonRecords<CommitManifest>(this.directory());
-    return records.map(record => record.value).filter(value => value && typeof value.operationId === 'string');
-  }
-  async findByDraft(draftId: string): Promise<CommitManifest | undefined> {
+    const records=await scanJsonRecords<CommitManifest>(this.directory(),(v,file):v is CommitManifest=>isCommitManifest(v,path.basename(file,'.json')),this.deps.root);
+    return records.records.map(x=>x.value);
+  }  async findByDraft(draftId: string): Promise<CommitManifest | undefined> {
     return (await this.list()).find(manifest => manifest.draftId === draftId);
   }
 

@@ -1,0 +1,877 @@
+✔ explicitly linked Raw missing from refreshed list stays selected and never displays another Raw (240.2498ms)
+✔ missing explicit target survives a transport failure and reconnect, then ordinary Raw navigation clears it (304.2986ms)
+✔ a user Raw selection made during a pending refresh wins over the stale preferred target (211.6021ms)
+✔ Home recent Raw navigation preserves the clicked older Raw ID (84.5244ms)
+✔ deleting the selected Raw returns to the first remaining real item (201.3408ms)
+✔ a settled background job refresh follows the current Raw selection, not the poll closure selection (161.231ms)
+✔ App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw退出工作流且Raw选择保留 (360.2687ms)
+✔ Audit rejects parsed Provider secrets in every output field without changing pending state, then clean retry succeeds (1118.1759ms)
+✔ B06 Anchor supports context after line movement and rejects duplicate/missing/page-stale targets (1.9655ms)
+✔ B06 four decisions preserve history, only accepted/partial write, and accepted retry is idempotent (1559.1683ms)
+✔ B06 failed Audit log leaves open operation evidence and restart reconciles it (1397.2046ms)
+✔ B06 recovery preserves conflict manifests and does not resolve against changed Wiki or Raw bytes (1093.4979ms)
+✔ B06 a slow Provider cannot save or revive a suggestion after a human resolves the Audit (73.7376ms)
+✔ B06 Wiki Lint reads disk directly and reports all 11 frozen codes without repairing files (279.9175ms)
+✔ B05 五维候选显示标题、别名、分类、标签和内容理由，分类单独命中权重低 (498.3003ms)
+✔ B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认幂等 (455.8647ms)
+✔ B05 非法综合分类在保存草稿前拒绝 (577.7606ms)
+✔ B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认 (171.6074ms)
+✔ B05 重启恢复完成提交后收敛workflow，completed manifest不覆盖后续人工编辑 (1332.9066ms)
+✔ B05 更新预览保留两套公式，Raw证据可定位，旧revision会拒绝覆盖 (443.3819ms)
+✔ Markdown/TXT 真实文件：严格 UTF-8、去掉 BOM、正文逐字符一致且不 trim (21.1195ms)
+✔ DOCX/PDF 真实文件：实际解析库提取的正文与已知样本一致 (1816.2433ms)
+Warning: Indexing all PDF objects
+✔ 损坏、扫描件、伪扩展名与不支持编码给出可区分的错误码 (20.1028ms)
+✔ 原件按原始字节落盘，SHA-256 与源文件一致，文件名不参与路径 (21.6729ms)
+✔ 文件导入成功：正文与原件都入库，元数据、哈希与关联可回读 (317.411ms)
+✔ 解析失败保留隔离原件与失败记录，不创建正式 Raw、不增加统计 (493.8673ms)
+✔ 超限文件在接收阶段拒绝；超限正文保留原件但不创建 Raw (108.3891ms)
+✔ 文件名与标题不参与路径：含路径字符与 HTML 时仍在 assets 内且只作元数据 (29.8175ms)
+✔ 重复导入生成独立记录与独立原件，旧资料字节哈希不变 (43.0874ms)
+✔ 删除：无引用可删且原件保留；被正式 Wiki 引用时由服务端重新检查后阻止 (69.5749ms)
+✔ 重新导入：创建新 ID 的 Raw，旧记录与旧原件保持不变 (47.089ms)
+✔ 既有粘贴导入与校验契约不受影响 (2.8629ms)
+✔ 解析失败不留下正式 Raw 文件，且失败记录在重新读取后仍可解释 (25.0081ms)
+✔ 提取正文继续遵守 500,000 字符上限常量，服务端与文档同源 (0.2638ms)
+Warning: Indexing all PDF objects
+✔ 解析层不会因为扩展名而跳过内容检查 (3.6266ms)
+✔ F03-01 关联写入失败：非成功状态、给出已提交 ID，并说明未创建 Raw 不成立 (30.2379ms)
+✔ F03-01 启动对账：补齐关联、补偿中断导入、分离失效关联，且不受被阻断记录影响 (79.0445ms)
+✔ F03-04/子路径：列表同步只依赖已提交结果，重复同步不会重复添加 (59.3811ms)
+✔ M04 compatibility: ordinary legacy meeting category remains available for file imports (122.4059ms)
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (64.9177ms)
+✖ KB02 resume reuses validated chunks and counts failed outbound attempts (26.8206ms)
+✔ KB02 corrupted checkpoint integrity fails closed (12.578ms)
+✖ E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log (400.6315ms)
+✖ E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变 (138.5422ms)
+✖ E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份 (67.5811ms)
+✖ E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面 (87.7156ms)
+✖ E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值 (1006.8772ms)
+✖ E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证据越界/截断/超限都不写正式知识 (401.4418ms)
+✖ locator v2 映射后再次扫凭证：Raw锚点包含已知Key时失败且不生成草稿或正式Wiki (59.3301ms)
+✔ E04-01 无配置：未配置 Provider 时明确失败且零正式变化（手动链路仍可用） (31.7398ms)
+✖ E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败 (80.5241ms)
+✖ E04-09 超过 50 条建议：明确预算失败，不静默丢弃 (61.9426ms)
+✖ E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核 (82.5272ms)
+✖ E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突 (80.3188ms)
+✖ E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑 (120.1533ms)
+✖ E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变 (5194.9222ms)
+✔ E04-06 HTTP 失败注入：鉴权/限流/非法JSON 都不写正式知识且状态可重试 (1506.0873ms)
+✔ E04-01 HTTP 无配置：缺 Key 不阻止启动，AI 明确报错，手动链路仍可用 (1239.2591ms)
+✖ E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审核草稿时禁止删除 Raw (2542.8965ms)
+✖ F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串行且不留孤儿草稿 (954.3294ms)
+✖ F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据 (989.2481ms)
+✖ F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集 (878.6139ms)
+✖ F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验 (990.9334ms)
+✖ E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志 (979.484ms)
+✖ F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都不含密钥 (139.3434ms)
+✖ F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它 (81.3837ms)
+✖ F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断 (61.6785ms)
+✖ F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿 (64.3558ms)
+✖ F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全 (134.3751ms)
+✖ F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本 (283.5784ms)
+✖ F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现 (95.7226ms)
+✖ F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供 (60.3871ms)
+✖ F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功 (352.0854ms)
+✖ F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准 (125.5575ms)
+✖ F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end (124.9796ms)
+✖ F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (184.5422ms)
+✖ F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (89.6841ms)
+✖ F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总 (116.5373ms)
+✖ F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据 (131.1391ms)
+✔ 分块：覆盖完整原文、重叠 400、全局索引连续、不拆代理对 (3.7385ms)
+✔ 分块：10 万字符中文长文含 emoji/CRLF/空白时完整覆盖且不截尾 (0.9468ms)
+✔ 分块：超过 500,000 字符预算时明确失败，不静默截尾 (0.3175ms)
+✔ Evidence locator目录：句段优先、连续全覆盖、CRLF/emoji安全且重复位置各有ID (3.4484ms)
+✔ locator v2：服务端按chunk锚点派生Raw引文/全局范围，旧quote响应继续兼容 (24.2005ms)
+✔ 相邻chunk合并：同ID、Raw范围和原文的重叠证据只保留一份 (15.7129ms)
+✔ 多chunk合并：provider合法ID占用生成后缀时循环选空位并保留全部引用 (11.2624ms)
+✔ locator v2和legacy：未知/跨chunk/混合定位与页间证据引用均fail closed (21.9089ms)
+✔ 规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致、system prompt 含规则与结构 (2.0115ms)
+✔ 规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败 (19.4417ms)
+✔ 结构校验：未知字段、错误枚举、错误类型、缺字段都被拒绝 (3.1599ms)
+✔ 证据定位：唯一匹配取全局索引，重复出现报歧义，找不到/越界/跨块明确失败 (0.6483ms)
+✔ 证据引用：重复 id 与未知引用被拒绝 (0.1677ms)
+✔ 配置：环境变量优先于本地文件、摘要只给掩码与主机 (6.2977ms)
+✔ Provider 适配器：真实 HTTP 下的超时、响应超限、鉴权与截断都以明确错误码失败 (205.6784ms)
+✔ 渲染：事实/整理/推断/问题/证据分节，Source 是摘要而非全文 (1.2262ms)
+✔ successful Meeting Raw registration refreshes the shared Raw cache and linked Raw can be opened by ID (146.9127ms)
+✔ failed Meeting Raw registration does not refresh the shared Raw cache (17.1414ms)
+✔ large meeting record exports as canonical base64 without regex stack overflow (1127.2268ms)
+✔ malformed base64 is rejected before creating a restore target (29.5572ms)
+✔ original text bytes survive BOM, CRLF, edits, reimport, and idempotent retries; clear tombstones old requests (82.3185ms)
+✔ strict record validation verifies text digest, active version, policy, and request ledger links (36.1018ms)
+✔ HTTP checks authorization before parsing, handles UTF-8 multipart names, and hides idempotency ledger (132.705ms)
+✔ M04 registers the selected original as immutable local-only Raw and retries idempotently (88.8281ms)
+✔ linked replay verifies the persisted Raw and refuses missing or mismatched origins without recreating it (44.3979ms)
+✔ deleting a Raw after pending or failed partial registration leaves readable raw_deleted history without fake registered time (103.0817ms)
+✔ interrupted pending registration resumes without creating a duplicate Raw (42.1994ms)
+✔ Sensitive and Restricted are denied, forged fields fail, and ordinary Raw API cannot create Meeting Raw (29.3782ms)
+✔ active Raw projection follows the active imported version and clear preserves every Raw link (49.0654ms)
+✔ derived Raw metadata stays within schema for legal 195, 196, and 200 character titles (107.3463ms)
+✔ same registration retry tolerates a newer revision while retaining the fixed ID (50.6587ms)
+✔ legacy high-revision receipt retries by durable business identity, while inputs, authorization, source digest, and Raw are rechecked (79.1407ms)
+✔ failed bridge retry uses the same fixed Raw ID after meeting metadata changes (49.9277ms)
+✔ missing source records fail closed for explicit Wiki source links and shared policy checks (36.0261ms)
+✔ meeting registration HTTP contract enforces exact fields and stable errors (116.7684ms)
+✔ all old AI/Wiki/Prompt/Audit entrypoints deny Meeting Raw before providers or writes (80.3409ms)
+✔ Raw link UI retries failed request unchanged, confirms explicitly, and reloads conflict (143.9723ms)
+✔ late Raw response from a previous meeting cannot refresh the current meeting after a component rerender (45.5582ms)
+✔ Meeting UI retries create with the same requestId after a lost response (176.5195ms)
+✔ Meeting defaults, single initialization and idempotent creation (67.4892ms)
+✔ policy confirmation and Restricted conversion clear only the allowlisted metadata (31.9046ms)
+✔ policy grants and revocations are internally consistent (67.8472ms)
+✔ Restricted conversion returns field names and clears restricted metadata after confirmation (23.2275ms)
+✔ revision, validation, stopped catalog choices, and corrupt records fail without overwrite (25.1273ms)
+✔ creation stores only a digest and retries survive later metadata clearing and type stop (29.5276ms)
+✔ catalog damage is never treated as absent or overwritten (5.9408ms)
+✔ missing catalog with records is not silently reseeded (12.4808ms)
+✔ catalog persistence rejects unknown keys, malformed names, duplicates and missing references (24.8639ms)
+✔ default catalog type names remain editable while stable IDs keep historical references valid (13.6581ms)
+✔ unknown input keys and corrupted stored shapes are rejected without echo or overwrite (122.3071ms)
+✔ inactive directory entries remain readable but reject new selection (60.2448ms)
+✔ Restricted creation rejects disallowed metadata instead of silently dropping it (7.255ms)
+✔ record directory junctions are rejected before reads (31.7172ms)
+✔ HTTP contract returns detail capabilities, summary list, and stable error envelopes (149.1233ms)
+✔ backup includes meetings and accepts legacy archives without meetings (96.8329ms)
+✔ B08 Generator 保存预览草稿，编辑字段后显式确认；重试不重复创建且来源明确 (95.2256ms)
+✔ B08 Wiki 背景只采用实际勾选页面片段，记录预算和知识状态 (64.148ms)
+✔ B08 Wiki 多段摘录把段落分隔符计入每页与总预算 (127.0535ms)
+✔ B08 Optimizer 校验九维缺项，更新原 Prompt 只追加 ai_optimized 版本 (29.4652ms)
+✔ B08 Provider 非法 JSON 和不完整 Schema 不落草稿或正式 Prompt (11.7647ms)
+✔ B08 Provider Prompt 预览复用 B07 严格分类与字段长度规则，失败不落草稿 (43.7067ms)
+✔ B07 UI：切换模板时身份、变量、预览与消息互不串页，迟到的旧响应不会覆盖当前选择 (703.347ms)
+✔ B07 UI：未填变量时不能复制、不出现成功提示，剪贴板失败时给出可手动选择的最终正文 (410.3141ms)
+✔ B07 UI：无变量模板可直接复制；查看历史版本为只读，且不请求当前版本的渲染 (393.6043ms)
+✔ B07 UI：保存冲突时保留用户输入并提示刷新；删除必须二次确认目标 (449.8971ms)
+✔ B07/B08 UI：Generator 与 Optimizer 入口已开放，Library 新建仍走 requestId 且只提交可编辑字段 (341.7607ms)
+✔ 返修 F07-02：变量改动后旧渲染结果不能再作为本次结果复制 (517.0689ms)
+✔ 返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选择 (880.3952ms)
+✔ 返修 F07-04：迟到的 render 既不锁死新记录，也不误解锁新记录自己的请求 (481.4323ms)
+✔ 返修 F07-05：迟到的保存响应不得清空之后新建的表单 (506.5388ms)
+✔ 返修 F07-05：迟到的冲突响应不得把错误串到新表单 (394.5741ms)
+✔ 返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误清新建表单 (1747.4433ms)
+✔ 返修 F07-04 残留：同模板打开历史/返回当前都作废在途 render，错误与缺值不得回灌 (843.9967ms)
+✔ 返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally 不得清掉后一张表单的占用 (697.4527ms)
+✔ 返修 F07-07：重复点击当前模板仍能看到完整历史，重复选择不得清空版本列表 (1570.5404ms)
+✔ 返修 F07-07：初次历史仍在途中时重复点当前行，必须重新读取并最终加载完整历史 (417.3377ms)
+✔ 变量扫描：中文、重复、边界空格，以及必须原样保留的畸形占位符 (2.7045ms)
+✔ 变量填充：单次替换、字面值、缺值与 0 (0.4146ms)
+✔ 变量值只接受由自己键读取的字符串，原型键不会污染原型 (0.7782ms)
+✔ 输入校验：白名单字段、系统字段与长度上限 (24.4338ms)
+✔ 创建：requestId 成为 id，版本 1，变量由服务端提取，文件同时保存 current 与快照 (69.1293ms)
+✔ 保存：每次有效保存追加完整快照并递增版本；同内容保存不产生版本也不改时间 (65.8389ms)
+✔ 冲突：同 baseVersion 只有一个成功，过期写入与删除返回 409 且不改动资产 (107.4747ms)
+✔ 创建重试：同 requestId 同内容返回当前对象，不同内容 409，已回收 id 不复活 (148.1791ms)
+✔ 删除：原子转移到回收区，从读取/版本接口消失，其他 Prompt 不受影响 (63.2141ms)
+✔ 列表：中文名称/标签/正文搜索、分类标签收藏筛选与分类计数 (224.6763ms)
+✔ 变量渲染：纯计算、缺值 422、未知键 400、版本不符 409，都不改文件 (34.1332ms)
+✔ 导出：YAML 元数据 + 正文原文，围栏与反引号不会被破坏 (24.0325ms)
+✔ 关联 Wiki：已失效的旧关联仍可读，新增不存在的关联被拒绝 (143.7931ms)
+✔ 统计：只统计顶层有效的 current 记录，回收/临时/其他 JSON 一律不算 (89.0895ms)
+✔ 返修 F07-01：结构损坏或身份不一致的记录不计为有效，直接读取给出受控错误且文件保持原样 (97.8602ms)
+✔ 分类规则文件提供六个固定分类且不带任何预置 Prompt (24.5073ms)
+✔ 保存失败时报告可读错误，且不产生新版本或半成品文件 (395.6757ms)
+✔ 系统字段由服务端维护：客户端提交的一律被拒绝 (72.5586ms)
+✔ settings saves, clears the password field, tests only after save, and confirms clearing (149.0194ms)
+✔ initial and reload reads lock editing until the returned configuration is loaded (39.2665ms)
+✔ a configuration response arriving after unmount does not update the page (16.7746ms)
+✔ configuration reader distinguishes missing files from read failures and honors per-field environment precedence (36.111ms)
+✔ manager saves atomically, preserves unrelated bytes, retains or replaces Key, and rejects stale revisions (225.6206ms)
+✔ old local keys are protected under environment overrides and quoted keys round-trip unchanged into adapter auth (53.5333ms)
+✔ environment overrides lock mutations but permit an explicit connection test; API enforces token, origin, content type and fields (162.3445ms)
+✔ provider caps non-success response bodies without Content-Length and keeps ordinary auth errors safe (22.3816ms)
+✔ tagged UTF-8/base64url configuration values round-trip exactly and legacy manual escapes remain literal (26.5771ms)
+✔ manager rejects unpaired surrogates before any file write (14.0333ms)
+✔ shared secret guard rejects mixed, partial, malformed, deep-encoded and environment credentials without writing or fetching (38.2519ms)
+✔ knowledge GLM-5.3-Flash on exact official hosts receives low reasoning and JSON mode (27.2856ms)
+✔ no reasoning hint for spoofed hosts, other models, or calls without knowledge purpose (2.8161ms)
+✔ knowledge purpose does not extend the configured timeout budget (22.7491ms)
+✔ knowledge purpose preserves caller cancellation within the existing request budget (24.1451ms)
+✔ Raw get/list reject missing, malformed, or mismatched bodySha256; restored bytes remain readable (51.0055ms)
+✔ first extraction rejects a corrupt Raw before reading state, jobs, drafts, or Provider (0.9788ms)
+✔ Raw 文本逐字符持久化，正文包含分隔线、中文和首尾空白 (40.8437ms)
+✔ 无效导入不会创建文件，标题不会影响文件路径 (22.3313ms)
+✔ 首页六项统计从空目录返回零，Raw 导入后即时计数 (50.9124ms)
+✔ 本周新增只包含上海时间周一零点到下周周一零点 (40.9853ms)
+✔ Wiki统计只计页面，不把index.md计作知识条目 (30.0015ms)
+✔ 十万字符正文允许保存，超过上限会返回明确错误 (4.8857ms)
+✔ SEC output gate checks nonempty short and long credentials in nested JSON keys and values (2.2899ms)
+✔ SEC Brief, Prompt generation, and optimization reject tainted output before saving drafts (52.9728ms)
+✔ SEC Raw extraction rejects a tainted chunk before a later chunk or merge request (16.2777ms)
+A component is changing a controlled input to be uncontrolled. This is likely caused by the value changing from a defined to undefined, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components
+✔ B04 设置页：显示 Provider/模型/掩码，绝不显示 Key (48.0435ms)
+✔ B04 设置页：未配置时给出缺失项与手动链路提示 (13.0354ms)
+✖ B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口 (61.8442ms)
+✔ B04 审核页：分栏预览、选择与确认只提交选中项 (92.209ms)
+✔ B04 审核页：Source 编辑与页面编辑一起持久化，且不丢 Raw 元数据 (77.1922ms)
+✔ B04 审核页：新草稿默认全不选，零选择不能确认 (70.8211ms)
+✔ B04 审核页：保存编辑、删除、合并与放弃都走明确的接口 (188.5997ms)
+✔ B04 审核页：冲突提示与部分提交面板 (113.0069ms)
+✔ B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁 (168.6184ms)
+✔ B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍使用可见快照 (292.2627ms)
+✔ F03-03 重新导入未经编辑的两个标签仍是两项 (101.6349ms)
+✔ F03-03 用户编辑标签时支持中文逗号、英文逗号与顿号 (34.5495ms)
+✔ F03-04 上传成功后关闭结果面板，列表与统计已同步 (83.8428ms)
+✔ F03-04 继续导入下一条也保持列表同步，且不重复上传 (90.858ms)
+✔ F03-01 部分提交：界面显示待恢复、不显示成功，并立即同步已创建的 Raw (94.4296ms)
+✔ F03-04 前端超限拦截：超过 20 MiB 的文件不会上传 (94.0497ms)
+✔ F03-04 右上角关闭与查看这条资料同样保持同步，首页计数一致 (170.0712ms)
+✔ UI 最终确认删除与引用阻止：确认后列表同步，被引用时按钮禁用 (72.1277ms)
+✔ F03-01 关联写入成功后不出现待恢复面板 (73.7429ms)
+✔ 粘贴导入对话框保留原有文本流程与字符上限 (38.329ms)
+✔ 文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界 (2.2898ms)
+✔ Raw 详情区分“原件已保留”和粘贴资料 (10.8871ms)
+✔ 导入入口渲染出对话框，空列表也有导入按钮 (15.103ms)
+✔ 删除确认先检查引用，未确认前不能删除 (5.0559ms)
+✔ 规则文件为UI提供六类型、13分类、枚举、Source Policy和真实页面模板 (56.4132ms)
+✔ 统计读取统一created字段，Index和回收页不算正式Wiki或本周新增 (101.1903ms)
+✔ 六种Wiki都可创建、回读与导出；YAML符合统一结构且不重复写正文 (155.273ms)
+✔ 五字段中文搜索含分类label，13分类数量不受搜索条件影响 (49.1062ms)
+✔ 改名自动保留旧标题别名；Wikilink唯一解析、缺失与歧义明确 (77.3485ms)
+✔ revision冲突阻止覆盖；删除前返回入链并将资产移出有效Wiki目录 (194.4714ms)
+✔ verified需要Raw且reviewed；source_supported只需要有效Raw；Raw摘要保持不变 (124.2927ms)
+✔ Index失败明确报告已提交revision并在重启时通过pending记录恢复 (40.7471ms)
+ℹ tests 231
+ℹ suites 0
+ℹ pass 195
+ℹ fail 36
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 38971.1357
+
+✖ failing tests:
+
+test at tests\kb02-pipeline.test.ts:1:3918
+✖ KB02 resume reuses validated chunks and counts failed outbound attempts (26.8206ms)
+  Error: 检查点中的事实/问题locator无效，已拒绝恢复。
+      at runKnowledgePipeline (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\services\llm\knowledge-extraction.ts:50:393)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\kb02-pipeline.test.ts:63:21)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'LLM_CHECKPOINT_CORRUPT',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\llm-flow.test.ts:1:5150
+✖ E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log (400.6315ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:101:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:5:3550
+✖ E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变 (138.5422ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:174:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:7:1321
+✖ E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份 (67.5811ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:201:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:11:1357
+✖ E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面 (87.7156ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:279:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:2599
+✖ E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值 (1006.8772ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:352:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:4750
+✖ E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证据越界/截断/超限都不写正式知识 (401.4418ms)
+  AssertionError [ERR_ASSERTION]: 截断 错误码应为 LLM_OUTPUT_TRUNCATED，实际 LLM_PROVIDER_ERROR：Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'LLM_PROVIDER_ERROR'
+  - 'LLM_OUTPUT_TRUNCATED'
+         ^
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:385:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'LLM_PROVIDER_ERROR',
+    expected: 'LLM_OUTPUT_TRUNCATED',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:9367
+✖ locator v2 映射后再次扫凭证：Raw锚点包含已知Key时失败且不生成草稿或正式Wiki (59.3301ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'LLM_PROVIDER_ERROR'
+  - 'LLM_OUTPUT_CONTAINS_SECRET'
+         ^
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:432:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'LLM_PROVIDER_ERROR',
+    expected: 'LLM_OUTPUT_CONTAINS_SECRET',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:13255
+✖ E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败 (80.5241ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:485:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:17654
+✖ E04-09 超过 50 条建议：明确预算失败，不静默丢弃 (61.9426ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'LLM_PROVIDER_ERROR'
+  - 'LLM_TOO_MANY_PAGES'
+         ^
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:550:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'LLM_PROVIDER_ERROR',
+    expected: 'LLM_TOO_MANY_PAGES',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:14:494
+✖ E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核 (82.5272ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:581:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:14:2226
+✖ E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突 (80.3188ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:603:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:16:4143
+✖ E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑 (120.1533ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-flow.test.ts:690:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:4036
+✖ E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变 (5194.9222ms)
+  AssertionError [ERR_ASSERTION]: {"jobId":"27b6fc91-5715-457a-a346-68aeae485f3f","rawId":"f7c82ea3-6d23-48fe-9c23-12243991bc83","status":"failed","stage":"extracting","progress":{"chunksTotal":1,"chunksDone":0,"pagesFound":0},"draftId":null,"error":{"code":"LLM_PROVIDER_ERROR","message":"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）","at":"2026-10-15T03:35:35.968Z","retryable":true},"provider":{"name":"openai-compatible","model":"fake-model"},"callCount":1,"startedAt":"2026-10-15T03:35:35.875Z","finishedAt":"2026-10-15T03:35:35.968Z","cancelRequested":false,"pipelineVersion":"kb02-1","checkpoint":{"stage":"extracting","validatedChunks":0,"totalChunks":1,"resumable":true,"reason":"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）","attempts":1,"reusedChunks":0}}
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:139:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:16807
+✖ E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审核草稿时禁止删除 Raw (2542.8965ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'cancelled'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:344:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'cancelled',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:18956
+✖ F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串行且不留孤儿草稿 (954.3294ms)
+  AssertionError [ERR_ASSERTION]: 并发提取只能产生一份草稿
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:383:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:21549
+✖ F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据 (989.2481ms)
+  TypeError: Cannot read properties of undefined (reading 'every')
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:436:35)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\llm-http.test.ts:2:25976
+✖ F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集 (878.6139ms)
+  TypeError: Cannot read properties of undefined (reading 'every')
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:499:30)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\llm-http.test.ts:2:30039
+✖ F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验 (990.9334ms)
+  AssertionError [ERR_ASSERTION]: {"jobId":"da142b43-7e9e-4c55-abbf-d37c6236e997","rawId":"8dfdaede-bec3-4fea-862b-a665dcd06fe9","status":"failed","stage":"extracting","progress":{"chunksTotal":4,"chunksDone":0,"pagesFound":0},"draftId":null,"error":{"code":"LLM_PROVIDER_ERROR","message":"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）","at":"2026-10-15T03:35:45.075Z","retryable":true},"provider":{"name":"openai-compatible","model":"fake-model"},"callCount":1,"startedAt":"2026-10-15T03:35:44.989Z","finishedAt":"2026-10-15T03:35:45.075Z","cancelRequested":false,"pipelineVersion":"kb02-1","checkpoint":{"stage":"extracting","validatedChunks":0,"totalChunks":4,"resumable":true,"reason":"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）","attempts":1,"reusedChunks":0}}
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:568:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:34163
+✖ E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志 (979.484ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-http.test.ts:627:66)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\llm-repair.test.ts:1:4786
+✖ F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都不含密钥 (139.3434ms)
+  AssertionError [ERR_ASSERTION]: 仍要给出可用于诊断的（已脱敏）形状信息
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:114:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '{"id":"a756e107-d8ec-40a9-8439-7173d21e8f0b","rawId":"8e4f64d7-bdc1-438c-904d-11c557e626e2","status":"failed","stage":"extracting","chunksTotal":1,"chunksDone":0,"pagesFound":0,"provider":{"name":"openai-compatible","model":"fake-model"},"cancelRequested":false,"callCount":1,"pipelineVersion":"kb02-1","checkpoint":{"stage":"extracting","validatedChunks":0,"totalChunks":1,"resumable":true,"reason":"第1段精简事实不是合法 JSON，未修补返回。","attempts":1,"reusedChunks":0},"startedAt":"2026-10-15T03:35:34.072Z","updatedAt":"2026-10-15T03:35:34.128Z","finishedAt":"2026-10-15T03:35:34.127Z","error":{"code":"LLM_INVALID_JSON","message":"第1段精简事实不是合法 JSON，未修补返回。","at":"2026-10-15T03:35:34.127Z","retryable":true}}',
+    expected: /preview/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:7135
+✖ F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它 (81.3837ms)
+  AssertionError [ERR_ASSERTION]: 必须拒绝含密钥的输出
+  + actual - expected
+  
+  + 'LLM_PROVIDER_ERROR'
+  - 'LLM_OUTPUT_CONTAINS_SECRET'
+         ^
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:145:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'LLM_PROVIDER_ERROR',
+    expected: 'LLM_OUTPUT_CONTAINS_SECRET',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:8590
+✖ F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断 (61.6785ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:186:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:13441
+✖ F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿 (64.3558ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:238:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:16724
+✖ F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全 (134.3751ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:284:21)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:22954
+✖ F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本 (283.5784ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:387:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:25879
+✖ F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现 (95.7226ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:434:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:28752
+✖ F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供 (60.3871ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:77:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair.test.ts:480:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair2.test.ts:1:4832
+✖ F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功 (352.0854ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair2.test.ts:71:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair2.test.ts:102:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair2.test.ts:1:7161
+✖ F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准 (125.5575ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair2.test.ts:71:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair2.test.ts:155:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair2.test.ts:1:10650
+✖ F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end (124.9796ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at Object.draftFor (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair2.test.ts:71:12)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair2.test.ts:213:19)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:5285
+✖ F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (184.5422ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair3.test.ts:156:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:5285
+✖ F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (89.6841ms)
+  AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）
+  + actual - expected
+  
+  + 'failed'
+  - 'completed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair3.test.ts:156:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:9514
+✖ F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总 (116.5373ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 4
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair3.test.ts:225:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:11438
+✖ F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据 (131.1391ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(draft)
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\llm-repair3.test.ts:253:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\ui-b04.test.tsx:1:14051
+✖ B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口 (61.8442ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /调用 Provider 提取/. Input:
+  
+  '<div class="page raw-page"><div class="page-heading raw-heading"><div><p class="eyebrow">原始资料 · 事实来源</p><h1>Raw 原始资料</h1><p class="subheading">保存文章、报告与业务记录的原文。保存后不会被 AI 改写。</p></div><div class="action-group"><button class="secondary-button" disabled="">多来源综合</button><button class="primary-button"><span>＋</span> 导入资料</button></div></div><div class="raw-workspace"><section class="panel raw-list-panel"><div class="list-title"><div><h2>所有资料</h2><span>1 条</span></div></div><div class="raw-list"><button class="raw-list-item selected"><span class="file-icon">文</span><span class="recent-copy"><b>渠道动销资料</b><small>网页文章 · 来源</small><small>2026年10月5日 08:00 · AI 处理中</small></span></button></div></section><section class="panel raw-detail-panel"><article class="raw-detail"><div class="detail-actions"><span class="status ai-status processing"><i></i>AI 处理中</span><span class="detail-type">网页文章</span><div class="action-group"><button class="text-button">取消整理</button><button class="text-button">重新导入</button><button class="text-button danger">删除</button></div></div><p class="ai-progress">提取精简事实 · 已验证 1/3 段 · 已有 2 条建议</p><h2>渠道动销资料</h2><div class="detail-source">来源</div><div class="metadata-grid"><div class="meta"><span>导入时间</span><b class="">2026年10月5日 08:00</b></div><div class="meta"><span>原发布日期</span><b class="">未填写</b></div><div class="meta"><span>来源链接</span><b class="">未填写</b></div><div class="meta"><span>资料 ID</span><b class="mono">11111111-1111-4111-8111-111111111111</b></div></div><div class="tag-row"><span class="tag">渠道</span></div><div class="body-divider"><span>原始正文</span><span>SHA-256 已保存</span></div><pre class="raw-body">渠道动销分析：动销率衡量门店销售速度。\n' +
+    '经销商库存周转。</pre><div class="hash-line">正文校验值 <code>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</code></div></article></section></div></div>'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\fmcg-kb02-builder-5MSS3V\tests\ui-b04.test.tsx:194:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<div class="page raw-page"><div class="page-heading raw-heading"><div><p class="eyebrow">原始资料 · 事实来源</p><h1>Raw 原始资料</h1><p class="subheading">保存文章、报告与业务记录的原文。保存后不会被 AI 改写。</p></div><div class="action-group"><button class="secondary-button" disabled="">多来源综合</button><button class="primary-button"><span>＋</span> 导入资料</button></div></div><div class="raw-workspace"><section class="panel raw-list-panel"><div class="list-title"><div><h2>所有资料</h2><span>1 条</span></div></div><div class="raw-list"><button class="raw-list-item selected"><span class="file-icon">文</span><span class="recent-copy"><b>渠道动销资料</b><small>网页文章 · 来源</small><small>2026年10月5日 08:00 · AI 处理中</small></span></button></div></section><section class="panel raw-detail-panel"><article class="raw-detail"><div class="detail-actions"><span class="status ai-status processing"><i></i>AI 处理中</span><span class="detail-type">网页文章</span><div class="action-group"><button class="text-button">取消整理</button><button class="text-button">重新导入</button><button class="text-button danger">删除</button></div></div><p class="ai-progress">提取精简事实 · 已验证 1/3 段 · 已有 2 条建议</p><h2>渠道动销资料</h2><div class="detail-source">来源</div><div class="metadata-grid"><div class="meta"><span>导入时间</span><b class="">2026年10月5日 08:00</b></div><div class="meta"><span>原发布日期</span><b class="">未填写</b></div><div class="meta"><span>来源链接</span><b class="">未填写</b></div><div class="meta"><span>资料 ID</span><b class="mono">11111111-1111-4111-8111-111111111111</b></div></div><div class="tag-row"><span class="tag">渠道</span></div><div class="body-divider"><span>原始正文</span><span>SHA-256 已保存</span></div><pre class="raw-body">渠道动销分析：动销率衡量门店销售速度。\n经销商库存周转。</pre><div class="hash-line">正文校验值 <code>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</code></div></article></section></div></div>',
+    expected: /调用 Provider 提取/,
+    operator: 'match',
+    diff: 'simple'
+  }

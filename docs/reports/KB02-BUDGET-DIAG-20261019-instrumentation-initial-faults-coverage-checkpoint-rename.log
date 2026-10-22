@@ -1,0 +1,22 @@
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (17.1856ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 188.5578
+
+✖ failing tests:
+
+test at tests\kb02-planning-budget.test.ts:1:3538
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (17.1856ms)
+  SyntaxError: No number after minus sign in JSON at position 1 (line 1 column 2)
+      at parse (<anonymous>)
+      at async fs.rename (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-budget-diag-20261019-hook.mjs:50:20)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\services\raw\store.ts:132:7)
+      at async fixture (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:22:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:53:13)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)

@@ -1,0 +1,2777 @@
+{
+  "at": "2026-10-22T07:35:35.107Z",
+  "realProviderCalls": 0,
+  "checks": [
+    {
+      "name": "100 exact raw/checkpoint hash",
+      "ok": true
+    },
+    {
+      "name": "100 trace input all facts/questions byte-exact",
+      "ok": true
+    },
+    {
+      "name": "100 original response still rejected by coverage",
+      "ok": true
+    },
+    {
+      "name": "100 exact original missing diagnostics",
+      "ok": true
+    },
+    {
+      "name": "100 product pipeline offline replay rejects no plan",
+      "ok": true
+    },
+    {
+      "name": "100 candidate retains all IDs/text/classification",
+      "ok": true
+    },
+    {
+      "name": "100 candidate context exact and within bounds",
+      "ok": true
+    },
+    {
+      "name": "100 candidate within unchanged 192KiB",
+      "ok": true
+    },
+    {
+      "name": "all 106 records have original area visible in local preceding context",
+      "ok": true
+    },
+    {
+      "name": "104 exact raw/checkpoint hash",
+      "ok": true
+    },
+    {
+      "name": "104 trace input all facts/questions byte-exact",
+      "ok": true
+    },
+    {
+      "name": "104 original response still rejected by coverage",
+      "ok": true
+    },
+    {
+      "name": "104 exact original missing diagnostics",
+      "ok": true
+    },
+    {
+      "name": "104 product pipeline offline replay rejects no plan",
+      "ok": true
+    },
+    {
+      "name": "104 candidate retains all IDs/text/classification",
+      "ok": true
+    },
+    {
+      "name": "104 candidate context exact and within bounds",
+      "ok": true
+    },
+    {
+      "name": "104 candidate within unchanged 192KiB",
+      "ok": true
+    },
+    {
+      "name": "same text at distinct source positions is not one record",
+      "ok": true
+    }
+  ],
+  "cases": [
+    {
+      "sequence": 100,
+      "rawHash": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7",
+      "sourceTraceHash": "f3277eebea82cb770e60758878ae3539d6ff03104284bd410ecec11a7215b4ce",
+      "checkpointHash": "9adbc9d3cee5f85bad0f06179905f96839f303d5d02bc91b0de8ceee7149e84e",
+      "facts": 81,
+      "questions": 25,
+      "inputBytes": 10670,
+      "candidateInputBytes": 65149,
+      "sourceContextCount": 42,
+      "diagnostic": {
+        "facts": {
+          "missing": [],
+          "duplicate": [],
+          "unknown": []
+        },
+        "questions": {
+          "missing": [
+            "q-c6-1",
+            "q-c6-2"
+          ],
+          "duplicate": [],
+          "unknown": []
+        },
+        "duplicateTitles": []
+      },
+      "wrongRegionRecords": 50,
+      "pagesWithWrongRegion": 13,
+      "sameColumnOverlapGroups": 50,
+      "sameColumnOverlapExtraRecords": 50,
+      "duplicates": [
+        {
+          "column": "facts",
+          "start": 7613,
+          "end": 7652,
+          "ids": [
+            "f-c1-4",
+            "f-c2-1"
+          ],
+          "pages": [
+            "虚构区域01 2026年9月门店数铺货率",
+            "虚构区域02 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 7652,
+          "end": 7670,
+          "ids": [
+            "f-c1-5",
+            "f-c2-2"
+          ],
+          "pages": [
+            "虚构区域01 2026年9月门店数铺货率",
+            "虚构区域02 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 7670,
+          "end": 7690,
+          "ids": [
+            "f-c1-6",
+            "f-c2-3"
+          ],
+          "pages": [
+            "虚构区域01 2026年9月门店数铺货率",
+            "虚构区域02 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 15213,
+          "end": 15252,
+          "ids": [
+            "f-c2-4",
+            "f-c3-1"
+          ],
+          "pages": [
+            "虚构区域02 2026年9月门店数铺货率",
+            "虚构区域03 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 15252,
+          "end": 15270,
+          "ids": [
+            "f-c2-5",
+            "f-c3-2"
+          ],
+          "pages": [
+            "虚构区域02 2026年9月门店数铺货率",
+            "虚构区域03 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 15270,
+          "end": 15290,
+          "ids": [
+            "f-c2-6",
+            "f-c3-3"
+          ],
+          "pages": [
+            "虚构区域02 2026年9月门店数铺货率",
+            "虚构区域03 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 22813,
+          "end": 22852,
+          "ids": [
+            "f-c3-4",
+            "f-c4-1"
+          ],
+          "pages": [
+            "虚构区域03 2026年9月门店数铺货率",
+            "虚构区域04 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 22852,
+          "end": 22870,
+          "ids": [
+            "f-c3-5",
+            "f-c4-2"
+          ],
+          "pages": [
+            "虚构区域03 2026年9月门店数铺货率",
+            "虚构区域04 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 22870,
+          "end": 22890,
+          "ids": [
+            "f-c3-6",
+            "f-c4-3"
+          ],
+          "pages": [
+            "虚构区域03 2026年9月门店数铺货率",
+            "虚构区域04 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 30413,
+          "end": 30452,
+          "ids": [
+            "f-c4-4",
+            "f-c5-1"
+          ],
+          "pages": [
+            "虚构区域04 2026年9月门店数铺货率",
+            "虚构区域05 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 30452,
+          "end": 30470,
+          "ids": [
+            "f-c4-5",
+            "f-c5-2"
+          ],
+          "pages": [
+            "虚构区域04 2026年9月门店数铺货率",
+            "虚构区域05 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 30470,
+          "end": 30490,
+          "ids": [
+            "f-c4-6",
+            "f-c5-3"
+          ],
+          "pages": [
+            "虚构区域04 2026年9月门店数铺货率",
+            "虚构区域05 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 38013,
+          "end": 38052,
+          "ids": [
+            "f-c5-4",
+            "f-c6-1"
+          ],
+          "pages": [
+            "虚构区域05 2026年9月门店数铺货率",
+            "虚构区域06 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 38052,
+          "end": 38070,
+          "ids": [
+            "f-c5-5",
+            "f-c6-2"
+          ],
+          "pages": [
+            "虚构区域05 2026年9月门店数铺货率",
+            "虚构区域06 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 38070,
+          "end": 38090,
+          "ids": [
+            "f-c5-6",
+            "f-c6-3"
+          ],
+          "pages": [
+            "虚构区域05 2026年9月门店数铺货率",
+            "虚构区域06 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 45613,
+          "end": 45652,
+          "ids": [
+            "f-c6-4",
+            "f-c7-1"
+          ],
+          "pages": [
+            "虚构区域06 2026年9月门店数铺货率",
+            "虚构区域07 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 45652,
+          "end": 45670,
+          "ids": [
+            "f-c6-5",
+            "f-c7-2"
+          ],
+          "pages": [
+            "虚构区域06 2026年9月门店数铺货率",
+            "虚构区域07 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 45670,
+          "end": 45690,
+          "ids": [
+            "f-c6-6",
+            "f-c7-3"
+          ],
+          "pages": [
+            "虚构区域06 2026年9月门店数铺货率",
+            "虚构区域07 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 53213,
+          "end": 53252,
+          "ids": [
+            "f-c7-4",
+            "f-c8-1"
+          ],
+          "pages": [
+            "虚构区域07 2026年9月门店数铺货率",
+            "虚构区域08 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 53252,
+          "end": 53270,
+          "ids": [
+            "f-c7-5",
+            "f-c8-2"
+          ],
+          "pages": [
+            "虚构区域07 2026年9月门店数铺货率",
+            "虚构区域08 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 53270,
+          "end": 53290,
+          "ids": [
+            "f-c7-6",
+            "f-c8-3"
+          ],
+          "pages": [
+            "虚构区域07 2026年9月门店数铺货率",
+            "虚构区域08 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 60813,
+          "end": 60852,
+          "ids": [
+            "f-c8-4",
+            "f-c9-1"
+          ],
+          "pages": [
+            "虚构区域08 2026年9月门店数铺货率",
+            "虚构区域09 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 60852,
+          "end": 60870,
+          "ids": [
+            "f-c8-5",
+            "f-c9-2"
+          ],
+          "pages": [
+            "虚构区域08 2026年9月门店数铺货率",
+            "虚构区域09 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 60870,
+          "end": 60890,
+          "ids": [
+            "f-c8-6",
+            "f-c9-3"
+          ],
+          "pages": [
+            "虚构区域08 2026年9月门店数铺货率",
+            "虚构区域09 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 68414,
+          "end": 68453,
+          "ids": [
+            "f-c9-4",
+            "f-c10-1"
+          ],
+          "pages": [
+            "虚构区域09 2026年9月门店数铺货率",
+            "虚构区域10 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 68453,
+          "end": 68471,
+          "ids": [
+            "f-c9-5",
+            "f-c10-2"
+          ],
+          "pages": [
+            "虚构区域09 2026年9月门店数铺货率",
+            "虚构区域10 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 68471,
+          "end": 68491,
+          "ids": [
+            "f-c9-6",
+            "f-c10-3"
+          ],
+          "pages": [
+            "虚构区域09 2026年9月门店数铺货率",
+            "虚构区域10 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 76014,
+          "end": 76053,
+          "ids": [
+            "f-c10-4",
+            "f-c11-1"
+          ],
+          "pages": [
+            "虚构区域10 2026年9月门店数铺货率",
+            "虚构区域11 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 76053,
+          "end": 76071,
+          "ids": [
+            "f-c10-5",
+            "f-c11-2"
+          ],
+          "pages": [
+            "虚构区域10 2026年9月门店数铺货率",
+            "虚构区域11 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 76071,
+          "end": 76091,
+          "ids": [
+            "f-c10-6",
+            "f-c11-3"
+          ],
+          "pages": [
+            "虚构区域10 2026年9月门店数铺货率",
+            "虚构区域11 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 83614,
+          "end": 83653,
+          "ids": [
+            "f-c11-4",
+            "f-c12-1"
+          ],
+          "pages": [
+            "虚构区域11 2026年9月门店数铺货率",
+            "虚构区域12 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 83653,
+          "end": 83671,
+          "ids": [
+            "f-c11-5",
+            "f-c12-2"
+          ],
+          "pages": [
+            "虚构区域11 2026年9月门店数铺货率",
+            "虚构区域12 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 83671,
+          "end": 83691,
+          "ids": [
+            "f-c11-6",
+            "f-c12-3"
+          ],
+          "pages": [
+            "虚构区域11 2026年9月门店数铺货率",
+            "虚构区域12 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 91214,
+          "end": 91253,
+          "ids": [
+            "f-c12-4",
+            "f-c13-1"
+          ],
+          "pages": [
+            "虚构区域12 2026年9月门店数铺货率",
+            "虚构区域13 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 91253,
+          "end": 91271,
+          "ids": [
+            "f-c12-5",
+            "f-c13-2"
+          ],
+          "pages": [
+            "虚构区域12 2026年9月门店数铺货率",
+            "虚构区域13 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 91271,
+          "end": 91291,
+          "ids": [
+            "f-c12-6",
+            "f-c13-3"
+          ],
+          "pages": [
+            "虚构区域12 2026年9月门店数铺货率",
+            "虚构区域13 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 98814,
+          "end": 98853,
+          "ids": [
+            "f-c13-4",
+            "f-c14-1"
+          ],
+          "pages": [
+            "虚构区域13 2026年9月门店数铺货率",
+            "虚构区域14 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 98853,
+          "end": 98871,
+          "ids": [
+            "f-c13-5",
+            "f-c14-2"
+          ],
+          "pages": [
+            "虚构区域13 2026年9月门店数铺货率",
+            "虚构区域14 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "facts",
+          "start": 98871,
+          "end": 98891,
+          "ids": [
+            "f-c13-6",
+            "f-c14-3"
+          ],
+          "pages": [
+            "虚构区域13 2026年9月门店数铺货率",
+            "虚构区域14 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 7670,
+          "end": 7690,
+          "ids": [
+            "q-c1-2",
+            "q-c2-1"
+          ],
+          "pages": [
+            "虚构区域01 2026年9月门店数铺货率",
+            "虚构区域02 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 15270,
+          "end": 15290,
+          "ids": [
+            "q-c2-2",
+            "q-c3-1"
+          ],
+          "pages": [
+            "虚构区域02 2026年9月门店数铺货率",
+            "虚构区域03 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 22870,
+          "end": 22890,
+          "ids": [
+            "q-c3-2",
+            "q-c4-1"
+          ],
+          "pages": [
+            "虚构区域03 2026年9月门店数铺货率",
+            "虚构区域04 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 30470,
+          "end": 30490,
+          "ids": [
+            "q-c4-2",
+            "q-c5-1"
+          ],
+          "pages": [
+            "虚构区域04 2026年9月门店数铺货率",
+            "虚构区域05 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 38070,
+          "end": 38090,
+          "ids": [
+            "q-c5-2",
+            "q-c6-1"
+          ],
+          "pages": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 45670,
+          "end": 45690,
+          "ids": [
+            "q-c6-2",
+            "q-c7-1"
+          ],
+          "pages": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 53270,
+          "end": 53290,
+          "ids": [
+            "q-c7-2",
+            "q-c8-1"
+          ],
+          "pages": [
+            "虚构区域07 2026年9月门店数铺货率",
+            "虚构区域08 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 76071,
+          "end": 76091,
+          "ids": [
+            "q-c10-2",
+            "q-c11-1"
+          ],
+          "pages": [
+            "虚构区域10 2026年9月门店数铺货率",
+            "虚构区域11 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 83671,
+          "end": 83691,
+          "ids": [
+            "q-c11-2",
+            "q-c12-1"
+          ],
+          "pages": [
+            "虚构区域11 2026年9月门店数铺货率",
+            "虚构区域12 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 91271,
+          "end": 91291,
+          "ids": [
+            "q-c12-2",
+            "q-c13-1"
+          ],
+          "pages": [
+            "虚构区域12 2026年9月门店数铺货率",
+            "虚构区域13 2026年9月门店数铺货率"
+          ]
+        },
+        {
+          "column": "questions",
+          "start": 98871,
+          "end": 98891,
+          "ids": [
+            "q-c13-2",
+            "q-c14-1"
+          ],
+          "pages": [
+            "虚构区域13 2026年9月门店数铺货率",
+            "虚构区域14 2026年9月门店数铺货率"
+          ]
+        }
+      ],
+      "bindings": [
+        {
+          "text": "虚构区域012026年9月有100家目标门店，11家在售，门店数铺货率11%。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0002",
+          "kind": "fact",
+          "id": "f-c1-1",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 13,
+          "end": 52,
+          "expectedRegion": "01",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0003",
+          "kind": "fact",
+          "id": "f-c1-2",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 52,
+          "end": 70,
+          "expectedRegion": "01",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0004",
+          "kind": "fact",
+          "id": "f-c1-3",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 70,
+          "end": 90,
+          "expectedRegion": "01",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域022026年9月有100家目标门店，12家在售，门店数铺货率12%。",
+          "locatorIds": [
+            "c1-l016"
+          ],
+          "atomId": "c1-a0279",
+          "kind": "fact",
+          "id": "f-c1-4",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 7613,
+          "end": 7652,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c1-l016"
+          ],
+          "atomId": "c1-a0280",
+          "kind": "fact",
+          "id": "f-c1-5",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 7652,
+          "end": 7670,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c1-l016"
+          ],
+          "atomId": "c1-a0281",
+          "kind": "fact",
+          "id": "f-c1-6",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 7670,
+          "end": 7690,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域022026年9月有100家目标门店，12家在售，门店数铺货率12%。",
+          "locatorIds": [
+            "c2-l001"
+          ],
+          "atomId": "c2-a0002",
+          "kind": "fact",
+          "id": "f-c2-1",
+          "chunkIndex": 1,
+          "column": "facts",
+          "start": 7613,
+          "end": 7652,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c2-l001"
+          ],
+          "atomId": "c2-a0003",
+          "kind": "fact",
+          "id": "f-c2-2",
+          "chunkIndex": 1,
+          "column": "facts",
+          "start": 7652,
+          "end": 7670,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c2-l001"
+          ],
+          "atomId": "c2-a0004",
+          "kind": "fact",
+          "id": "f-c2-3",
+          "chunkIndex": 1,
+          "column": "facts",
+          "start": 7670,
+          "end": 7690,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域032026年9月有100家目标门店，13家在售，门店数铺货率13%。",
+          "locatorIds": [
+            "c2-l016"
+          ],
+          "atomId": "c2-a0279",
+          "kind": "fact",
+          "id": "f-c2-4",
+          "chunkIndex": 1,
+          "column": "facts",
+          "start": 15213,
+          "end": 15252,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c2-l016"
+          ],
+          "atomId": "c2-a0280",
+          "kind": "fact",
+          "id": "f-c2-5",
+          "chunkIndex": 1,
+          "column": "facts",
+          "start": 15252,
+          "end": 15270,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c2-l016"
+          ],
+          "atomId": "c2-a0281",
+          "kind": "fact",
+          "id": "f-c2-6",
+          "chunkIndex": 1,
+          "column": "facts",
+          "start": 15270,
+          "end": 15290,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域032026年9月有100家目标门店，13家在售，门店数铺货率13%。",
+          "locatorIds": [
+            "c3-l001"
+          ],
+          "atomId": "c3-a0002",
+          "kind": "fact",
+          "id": "f-c3-1",
+          "chunkIndex": 2,
+          "column": "facts",
+          "start": 15213,
+          "end": 15252,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c3-l001"
+          ],
+          "atomId": "c3-a0003",
+          "kind": "fact",
+          "id": "f-c3-2",
+          "chunkIndex": 2,
+          "column": "facts",
+          "start": 15252,
+          "end": 15270,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c3-l001"
+          ],
+          "atomId": "c3-a0004",
+          "kind": "fact",
+          "id": "f-c3-3",
+          "chunkIndex": 2,
+          "column": "facts",
+          "start": 15270,
+          "end": 15290,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域042026年9月有100家目标门店，14家在售，门店数铺货率14%。",
+          "locatorIds": [
+            "c3-l016"
+          ],
+          "atomId": "c3-a0279",
+          "kind": "fact",
+          "id": "f-c3-4",
+          "chunkIndex": 2,
+          "column": "facts",
+          "start": 22813,
+          "end": 22852,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c3-l016"
+          ],
+          "atomId": "c3-a0280",
+          "kind": "fact",
+          "id": "f-c3-5",
+          "chunkIndex": 2,
+          "column": "facts",
+          "start": 22852,
+          "end": 22870,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c3-l016"
+          ],
+          "atomId": "c3-a0281",
+          "kind": "fact",
+          "id": "f-c3-6",
+          "chunkIndex": 2,
+          "column": "facts",
+          "start": 22870,
+          "end": 22890,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域042026年9月有100家目标门店，14家在售，门店数铺货率14%。",
+          "locatorIds": [
+            "c4-l001"
+          ],
+          "atomId": "c4-a0002",
+          "kind": "fact",
+          "id": "f-c4-1",
+          "chunkIndex": 3,
+          "column": "facts",
+          "start": 22813,
+          "end": 22852,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c4-l001"
+          ],
+          "atomId": "c4-a0003",
+          "kind": "fact",
+          "id": "f-c4-2",
+          "chunkIndex": 3,
+          "column": "facts",
+          "start": 22852,
+          "end": 22870,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c4-l001"
+          ],
+          "atomId": "c4-a0004",
+          "kind": "fact",
+          "id": "f-c4-3",
+          "chunkIndex": 3,
+          "column": "facts",
+          "start": 22870,
+          "end": 22890,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域052026年9月有100家目标门店，15家在售，门店数铺货率15%。",
+          "locatorIds": [
+            "c4-l016"
+          ],
+          "atomId": "c4-a0279",
+          "kind": "fact",
+          "id": "f-c4-4",
+          "chunkIndex": 3,
+          "column": "facts",
+          "start": 30413,
+          "end": 30452,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c4-l016"
+          ],
+          "atomId": "c4-a0280",
+          "kind": "fact",
+          "id": "f-c4-5",
+          "chunkIndex": 3,
+          "column": "facts",
+          "start": 30452,
+          "end": 30470,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c4-l016"
+          ],
+          "atomId": "c4-a0281",
+          "kind": "fact",
+          "id": "f-c4-6",
+          "chunkIndex": 3,
+          "column": "facts",
+          "start": 30470,
+          "end": 30490,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域052026年9月有100家目标门店，15家在售，门店数铺货率15%。",
+          "locatorIds": [
+            "c5-l001"
+          ],
+          "atomId": "c5-a0002",
+          "kind": "fact",
+          "id": "f-c5-1",
+          "chunkIndex": 4,
+          "column": "facts",
+          "start": 30413,
+          "end": 30452,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c5-l001"
+          ],
+          "atomId": "c5-a0003",
+          "kind": "fact",
+          "id": "f-c5-2",
+          "chunkIndex": 4,
+          "column": "facts",
+          "start": 30452,
+          "end": 30470,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c5-l001"
+          ],
+          "atomId": "c5-a0004",
+          "kind": "fact",
+          "id": "f-c5-3",
+          "chunkIndex": 4,
+          "column": "facts",
+          "start": 30470,
+          "end": 30490,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域062026年9月有100家目标门店，16家在售，门店数铺货率16%。",
+          "locatorIds": [
+            "c5-l016"
+          ],
+          "atomId": "c5-a0279",
+          "kind": "fact",
+          "id": "f-c5-4",
+          "chunkIndex": 4,
+          "column": "facts",
+          "start": 38013,
+          "end": 38052,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c5-l016"
+          ],
+          "atomId": "c5-a0280",
+          "kind": "fact",
+          "id": "f-c5-5",
+          "chunkIndex": 4,
+          "column": "facts",
+          "start": 38052,
+          "end": 38070,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c5-l016"
+          ],
+          "atomId": "c5-a0281",
+          "kind": "fact",
+          "id": "f-c5-6",
+          "chunkIndex": 4,
+          "column": "facts",
+          "start": 38070,
+          "end": 38090,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域062026年9月有100家目标门店，16家在售，门店数铺货率16%。",
+          "locatorIds": [
+            "c6-l001"
+          ],
+          "atomId": "c6-a0002",
+          "kind": "fact",
+          "id": "f-c6-1",
+          "chunkIndex": 5,
+          "column": "facts",
+          "start": 38013,
+          "end": 38052,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域06 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c6-l001"
+          ],
+          "atomId": "c6-a0003",
+          "kind": "fact",
+          "id": "f-c6-2",
+          "chunkIndex": 5,
+          "column": "facts",
+          "start": 38052,
+          "end": 38070,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域06 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c6-l001"
+          ],
+          "atomId": "c6-a0004",
+          "kind": "fact",
+          "id": "f-c6-3",
+          "chunkIndex": 5,
+          "column": "facts",
+          "start": 38070,
+          "end": 38090,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域06 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域072026年9月有100家目标门店，17家在售，门店数铺货率17%。",
+          "locatorIds": [
+            "c6-l016"
+          ],
+          "atomId": "c6-a0279",
+          "kind": "fact",
+          "id": "f-c6-4",
+          "chunkIndex": 5,
+          "column": "facts",
+          "start": 45613,
+          "end": 45652,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域06 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c6-l016"
+          ],
+          "atomId": "c6-a0280",
+          "kind": "fact",
+          "id": "f-c6-5",
+          "chunkIndex": 5,
+          "column": "facts",
+          "start": 45652,
+          "end": 45670,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域06 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c6-l016"
+          ],
+          "atomId": "c6-a0281",
+          "kind": "fact",
+          "id": "f-c6-6",
+          "chunkIndex": 5,
+          "column": "facts",
+          "start": 45670,
+          "end": 45690,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域06 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域072026年9月有100家目标门店，17家在售，门店数铺货率17%。",
+          "locatorIds": [
+            "c7-l001"
+          ],
+          "atomId": "c7-a0002",
+          "kind": "fact",
+          "id": "f-c7-1",
+          "chunkIndex": 6,
+          "column": "facts",
+          "start": 45613,
+          "end": 45652,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c7-l001"
+          ],
+          "atomId": "c7-a0003",
+          "kind": "fact",
+          "id": "f-c7-2",
+          "chunkIndex": 6,
+          "column": "facts",
+          "start": 45652,
+          "end": 45670,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c7-l001"
+          ],
+          "atomId": "c7-a0004",
+          "kind": "fact",
+          "id": "f-c7-3",
+          "chunkIndex": 6,
+          "column": "facts",
+          "start": 45670,
+          "end": 45690,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域082026年9月有100家目标门店，18家在售，门店数铺货率18%。",
+          "locatorIds": [
+            "c7-l016"
+          ],
+          "atomId": "c7-a0279",
+          "kind": "fact",
+          "id": "f-c7-4",
+          "chunkIndex": 6,
+          "column": "facts",
+          "start": 53213,
+          "end": 53252,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c7-l016"
+          ],
+          "atomId": "c7-a0280",
+          "kind": "fact",
+          "id": "f-c7-5",
+          "chunkIndex": 6,
+          "column": "facts",
+          "start": 53252,
+          "end": 53270,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c7-l016"
+          ],
+          "atomId": "c7-a0281",
+          "kind": "fact",
+          "id": "f-c7-6",
+          "chunkIndex": 6,
+          "column": "facts",
+          "start": 53270,
+          "end": 53290,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域082026年9月有100家目标门店，18家在售，门店数铺货率18%。",
+          "locatorIds": [
+            "c8-l001"
+          ],
+          "atomId": "c8-a0002",
+          "kind": "fact",
+          "id": "f-c8-1",
+          "chunkIndex": 7,
+          "column": "facts",
+          "start": 53213,
+          "end": 53252,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c8-l001"
+          ],
+          "atomId": "c8-a0003",
+          "kind": "fact",
+          "id": "f-c8-2",
+          "chunkIndex": 7,
+          "column": "facts",
+          "start": 53252,
+          "end": 53270,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c8-l001"
+          ],
+          "atomId": "c8-a0004",
+          "kind": "fact",
+          "id": "f-c8-3",
+          "chunkIndex": 7,
+          "column": "facts",
+          "start": 53270,
+          "end": 53290,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域092026年9月有100家目标门店，19家在售，门店数铺货率19%。",
+          "locatorIds": [
+            "c8-l016"
+          ],
+          "atomId": "c8-a0279",
+          "kind": "fact",
+          "id": "f-c8-4",
+          "chunkIndex": 7,
+          "column": "facts",
+          "start": 60813,
+          "end": 60852,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c8-l016"
+          ],
+          "atomId": "c8-a0280",
+          "kind": "fact",
+          "id": "f-c8-5",
+          "chunkIndex": 7,
+          "column": "facts",
+          "start": 60852,
+          "end": 60870,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c8-l016"
+          ],
+          "atomId": "c8-a0281",
+          "kind": "fact",
+          "id": "f-c8-6",
+          "chunkIndex": 7,
+          "column": "facts",
+          "start": 60870,
+          "end": 60890,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域092026年9月有100家目标门店，19家在售，门店数铺货率19%。",
+          "locatorIds": [
+            "c9-l001"
+          ],
+          "atomId": "c9-a0002",
+          "kind": "fact",
+          "id": "f-c9-1",
+          "chunkIndex": 8,
+          "column": "facts",
+          "start": 60813,
+          "end": 60852,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域09 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c9-l001"
+          ],
+          "atomId": "c9-a0003",
+          "kind": "fact",
+          "id": "f-c9-2",
+          "chunkIndex": 8,
+          "column": "facts",
+          "start": 60852,
+          "end": 60870,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域09 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c9-l001"
+          ],
+          "atomId": "c9-a0004",
+          "kind": "fact",
+          "id": "f-c9-3",
+          "chunkIndex": 8,
+          "column": "facts",
+          "start": 60870,
+          "end": 60890,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域09 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域102026年9月有100家目标门店，20家在售，门店数铺货率20%。",
+          "locatorIds": [
+            "c9-l016"
+          ],
+          "atomId": "c9-a0279",
+          "kind": "fact",
+          "id": "f-c9-4",
+          "chunkIndex": 8,
+          "column": "facts",
+          "start": 68414,
+          "end": 68453,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域09 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c9-l016"
+          ],
+          "atomId": "c9-a0280",
+          "kind": "fact",
+          "id": "f-c9-5",
+          "chunkIndex": 8,
+          "column": "facts",
+          "start": 68453,
+          "end": 68471,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域09 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c9-l016"
+          ],
+          "atomId": "c9-a0281",
+          "kind": "fact",
+          "id": "f-c9-6",
+          "chunkIndex": 8,
+          "column": "facts",
+          "start": 68471,
+          "end": 68491,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域09 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域102026年9月有100家目标门店，20家在售，门店数铺货率20%。",
+          "locatorIds": [
+            "c10-l001"
+          ],
+          "atomId": "c10-a0002",
+          "kind": "fact",
+          "id": "f-c10-1",
+          "chunkIndex": 9,
+          "column": "facts",
+          "start": 68414,
+          "end": 68453,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c10-l001"
+          ],
+          "atomId": "c10-a0003",
+          "kind": "fact",
+          "id": "f-c10-2",
+          "chunkIndex": 9,
+          "column": "facts",
+          "start": 68453,
+          "end": 68471,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c10-l001"
+          ],
+          "atomId": "c10-a0004",
+          "kind": "fact",
+          "id": "f-c10-3",
+          "chunkIndex": 9,
+          "column": "facts",
+          "start": 68471,
+          "end": 68491,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域112026年9月有100家目标门店，21家在售，门店数铺货率21%。",
+          "locatorIds": [
+            "c10-l016"
+          ],
+          "atomId": "c10-a0273",
+          "kind": "fact",
+          "id": "f-c10-4",
+          "chunkIndex": 9,
+          "column": "facts",
+          "start": 76014,
+          "end": 76053,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c10-l016"
+          ],
+          "atomId": "c10-a0274",
+          "kind": "fact",
+          "id": "f-c10-5",
+          "chunkIndex": 9,
+          "column": "facts",
+          "start": 76053,
+          "end": 76071,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c10-l016"
+          ],
+          "atomId": "c10-a0275",
+          "kind": "fact",
+          "id": "f-c10-6",
+          "chunkIndex": 9,
+          "column": "facts",
+          "start": 76071,
+          "end": 76091,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域112026年9月有100家目标门店，21家在售，门店数铺货率21%。",
+          "locatorIds": [
+            "c11-l001"
+          ],
+          "atomId": "c11-a0002",
+          "kind": "fact",
+          "id": "f-c11-1",
+          "chunkIndex": 10,
+          "column": "facts",
+          "start": 76014,
+          "end": 76053,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c11-l001"
+          ],
+          "atomId": "c11-a0003",
+          "kind": "fact",
+          "id": "f-c11-2",
+          "chunkIndex": 10,
+          "column": "facts",
+          "start": 76053,
+          "end": 76071,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c11-l001"
+          ],
+          "atomId": "c11-a0004",
+          "kind": "fact",
+          "id": "f-c11-3",
+          "chunkIndex": 10,
+          "column": "facts",
+          "start": 76071,
+          "end": 76091,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域122026年9月有100家目标门店，22家在售，门店数铺货率22%。",
+          "locatorIds": [
+            "c11-l016"
+          ],
+          "atomId": "c11-a0273",
+          "kind": "fact",
+          "id": "f-c11-4",
+          "chunkIndex": 10,
+          "column": "facts",
+          "start": 83614,
+          "end": 83653,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c11-l016"
+          ],
+          "atomId": "c11-a0274",
+          "kind": "fact",
+          "id": "f-c11-5",
+          "chunkIndex": 10,
+          "column": "facts",
+          "start": 83653,
+          "end": 83671,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c11-l016"
+          ],
+          "atomId": "c11-a0275",
+          "kind": "fact",
+          "id": "f-c11-6",
+          "chunkIndex": 10,
+          "column": "facts",
+          "start": 83671,
+          "end": 83691,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域122026年9月有100家目标门店，22家在售，门店数铺货率22%。",
+          "locatorIds": [
+            "c12-l001"
+          ],
+          "atomId": "c12-a0002",
+          "kind": "fact",
+          "id": "f-c12-1",
+          "chunkIndex": 11,
+          "column": "facts",
+          "start": 83614,
+          "end": 83653,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c12-l001"
+          ],
+          "atomId": "c12-a0003",
+          "kind": "fact",
+          "id": "f-c12-2",
+          "chunkIndex": 11,
+          "column": "facts",
+          "start": 83653,
+          "end": 83671,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c12-l001"
+          ],
+          "atomId": "c12-a0004",
+          "kind": "fact",
+          "id": "f-c12-3",
+          "chunkIndex": 11,
+          "column": "facts",
+          "start": 83671,
+          "end": 83691,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域132026年9月有100家目标门店，23家在售，门店数铺货率23%。",
+          "locatorIds": [
+            "c12-l016"
+          ],
+          "atomId": "c12-a0273",
+          "kind": "fact",
+          "id": "f-c12-4",
+          "chunkIndex": 11,
+          "column": "facts",
+          "start": 91214,
+          "end": 91253,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c12-l016"
+          ],
+          "atomId": "c12-a0274",
+          "kind": "fact",
+          "id": "f-c12-5",
+          "chunkIndex": 11,
+          "column": "facts",
+          "start": 91253,
+          "end": 91271,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c12-l016"
+          ],
+          "atomId": "c12-a0275",
+          "kind": "fact",
+          "id": "f-c12-6",
+          "chunkIndex": 11,
+          "column": "facts",
+          "start": 91271,
+          "end": 91291,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域132026年9月有100家目标门店，23家在售，门店数铺货率23%。",
+          "locatorIds": [
+            "c13-l001"
+          ],
+          "atomId": "c13-a0002",
+          "kind": "fact",
+          "id": "f-c13-1",
+          "chunkIndex": 12,
+          "column": "facts",
+          "start": 91214,
+          "end": 91253,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c13-l001"
+          ],
+          "atomId": "c13-a0003",
+          "kind": "fact",
+          "id": "f-c13-2",
+          "chunkIndex": 12,
+          "column": "facts",
+          "start": 91253,
+          "end": 91271,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c13-l001"
+          ],
+          "atomId": "c13-a0004",
+          "kind": "fact",
+          "id": "f-c13-3",
+          "chunkIndex": 12,
+          "column": "facts",
+          "start": 91271,
+          "end": 91291,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "虚构区域142026年9月有100家目标门店，24家在售，门店数铺货率24%。",
+          "locatorIds": [
+            "c13-l016"
+          ],
+          "atomId": "c13-a0273",
+          "kind": "fact",
+          "id": "f-c13-4",
+          "chunkIndex": 12,
+          "column": "facts",
+          "start": 98814,
+          "end": 98853,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c13-l016"
+          ],
+          "atomId": "c13-a0274",
+          "kind": "fact",
+          "id": "f-c13-5",
+          "chunkIndex": 12,
+          "column": "facts",
+          "start": 98853,
+          "end": 98871,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c13-l016"
+          ],
+          "atomId": "c13-a0275",
+          "kind": "fact",
+          "id": "f-c13-6",
+          "chunkIndex": 12,
+          "column": "facts",
+          "start": 98871,
+          "end": 98891,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "虚构区域142026年9月有100家目标门店，24家在售，门店数铺货率24%。",
+          "locatorIds": [
+            "c14-l001"
+          ],
+          "atomId": "c14-a0002",
+          "kind": "fact",
+          "id": "f-c14-1",
+          "chunkIndex": 13,
+          "column": "facts",
+          "start": 98814,
+          "end": 98853,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域14 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "此区域与其它附录区域独立，不能混用。",
+          "locatorIds": [
+            "c14-l001"
+          ],
+          "atomId": "c14-a0003",
+          "kind": "fact",
+          "id": "f-c14-2",
+          "chunkIndex": 13,
+          "column": "facts",
+          "start": 98853,
+          "end": 98871,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域14 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c14-l001"
+          ],
+          "atomId": "c14-a0004",
+          "kind": "fact",
+          "id": "f-c14-3",
+          "chunkIndex": 13,
+          "column": "facts",
+          "start": 98871,
+          "end": 98891,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域14 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0004",
+          "id": "q-c1-1",
+          "chunkIndex": 0,
+          "column": "questions",
+          "start": 70,
+          "end": 90,
+          "expectedRegion": "01",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c1-l016"
+          ],
+          "atomId": "c1-a0281",
+          "id": "q-c1-2",
+          "chunkIndex": 0,
+          "column": "questions",
+          "start": 7670,
+          "end": 7690,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域01 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c2-l001"
+          ],
+          "atomId": "c2-a0004",
+          "id": "q-c2-1",
+          "chunkIndex": 1,
+          "column": "questions",
+          "start": 7670,
+          "end": 7690,
+          "expectedRegion": "02",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c2-l016"
+          ],
+          "atomId": "c2-a0281",
+          "id": "q-c2-2",
+          "chunkIndex": 1,
+          "column": "questions",
+          "start": 15270,
+          "end": 15290,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域02 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c3-l001"
+          ],
+          "atomId": "c3-a0004",
+          "id": "q-c3-1",
+          "chunkIndex": 2,
+          "column": "questions",
+          "start": 15270,
+          "end": 15290,
+          "expectedRegion": "03",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c3-l016"
+          ],
+          "atomId": "c3-a0281",
+          "id": "q-c3-2",
+          "chunkIndex": 2,
+          "column": "questions",
+          "start": 22870,
+          "end": 22890,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域03 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c4-l001"
+          ],
+          "atomId": "c4-a0004",
+          "id": "q-c4-1",
+          "chunkIndex": 3,
+          "column": "questions",
+          "start": 22870,
+          "end": 22890,
+          "expectedRegion": "04",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c4-l016"
+          ],
+          "atomId": "c4-a0281",
+          "id": "q-c4-2",
+          "chunkIndex": 3,
+          "column": "questions",
+          "start": 30470,
+          "end": 30490,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域04 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c5-l001"
+          ],
+          "atomId": "c5-a0004",
+          "id": "q-c5-1",
+          "chunkIndex": 4,
+          "column": "questions",
+          "start": 30470,
+          "end": 30490,
+          "expectedRegion": "05",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c5-l016"
+          ],
+          "atomId": "c5-a0281",
+          "id": "q-c5-2",
+          "chunkIndex": 4,
+          "column": "questions",
+          "start": 38070,
+          "end": 38090,
+          "expectedRegion": "06",
+          "assigned": [
+            "虚构区域05 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c6-l001"
+          ],
+          "atomId": "c6-a0004",
+          "id": "q-c6-1",
+          "chunkIndex": 5,
+          "column": "questions",
+          "start": 38070,
+          "end": 38090,
+          "expectedRegion": "06",
+          "assigned": [],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c6-l016"
+          ],
+          "atomId": "c6-a0281",
+          "id": "q-c6-2",
+          "chunkIndex": 5,
+          "column": "questions",
+          "start": 45670,
+          "end": 45690,
+          "expectedRegion": "07",
+          "assigned": [],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c7-l001"
+          ],
+          "atomId": "c7-a0004",
+          "id": "q-c7-1",
+          "chunkIndex": 6,
+          "column": "questions",
+          "start": 45670,
+          "end": 45690,
+          "expectedRegion": "07",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c7-l016"
+          ],
+          "atomId": "c7-a0281",
+          "id": "q-c7-2",
+          "chunkIndex": 6,
+          "column": "questions",
+          "start": 53270,
+          "end": 53290,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域07 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c8-l001"
+          ],
+          "atomId": "c8-a0004",
+          "id": "q-c8-1",
+          "chunkIndex": 7,
+          "column": "questions",
+          "start": 53270,
+          "end": 53290,
+          "expectedRegion": "08",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c8-l016"
+          ],
+          "atomId": "c8-a0281",
+          "id": "q-c8-2",
+          "chunkIndex": 7,
+          "column": "questions",
+          "start": 60870,
+          "end": 60890,
+          "expectedRegion": "09",
+          "assigned": [
+            "虚构区域08 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c10-l001"
+          ],
+          "atomId": "c10-a0004",
+          "id": "q-c10-1",
+          "chunkIndex": 9,
+          "column": "questions",
+          "start": 68471,
+          "end": 68491,
+          "expectedRegion": "10",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c10-l016"
+          ],
+          "atomId": "c10-a0275",
+          "id": "q-c10-2",
+          "chunkIndex": 9,
+          "column": "questions",
+          "start": 76071,
+          "end": 76091,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域10 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c11-l001"
+          ],
+          "atomId": "c11-a0004",
+          "id": "q-c11-1",
+          "chunkIndex": 10,
+          "column": "questions",
+          "start": 76071,
+          "end": 76091,
+          "expectedRegion": "11",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c11-l016"
+          ],
+          "atomId": "c11-a0275",
+          "id": "q-c11-2",
+          "chunkIndex": 10,
+          "column": "questions",
+          "start": 83671,
+          "end": 83691,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域11 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c12-l001"
+          ],
+          "atomId": "c12-a0004",
+          "id": "q-c12-1",
+          "chunkIndex": 11,
+          "column": "questions",
+          "start": 83671,
+          "end": 83691,
+          "expectedRegion": "12",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c12-l016"
+          ],
+          "atomId": "c12-a0275",
+          "id": "q-c12-2",
+          "chunkIndex": 11,
+          "column": "questions",
+          "start": 91271,
+          "end": 91291,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域12 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c13-l001"
+          ],
+          "atomId": "c13-a0004",
+          "id": "q-c13-1",
+          "chunkIndex": 12,
+          "column": "questions",
+          "start": 91271,
+          "end": 91291,
+          "expectedRegion": "13",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c13-l016"
+          ],
+          "atomId": "c13-a0275",
+          "id": "q-c13-2",
+          "chunkIndex": 12,
+          "column": "questions",
+          "start": 98871,
+          "end": 98891,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域13 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": true
+        },
+        {
+          "text": "异常审批负责人未知，AI仅未来分析建议。",
+          "locatorIds": [
+            "c14-l001"
+          ],
+          "atomId": "c14-a0004",
+          "id": "q-c14-1",
+          "chunkIndex": 13,
+          "column": "questions",
+          "start": 98871,
+          "end": 98891,
+          "expectedRegion": "14",
+          "assigned": [
+            "虚构区域14 2026年9月门店数铺货率"
+          ],
+          "wrongRegion": false
+        }
+      ]
+    },
+    {
+      "sequence": 104,
+      "rawHash": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197",
+      "sourceTraceHash": "f3277eebea82cb770e60758878ae3539d6ff03104284bd410ecec11a7215b4ce",
+      "checkpointHash": "89831eba2133b1160d49347b38d686b5bb8ccae5abccd9d67ac6c40a5bc35c83",
+      "facts": 4,
+      "questions": 2,
+      "inputBytes": 741,
+      "candidateInputBytes": 3701,
+      "sourceContextCount": 5,
+      "diagnostic": {
+        "facts": {
+          "missing": [
+            "f-c1-2"
+          ],
+          "duplicate": [],
+          "unknown": []
+        },
+        "questions": {
+          "missing": [],
+          "duplicate": [],
+          "unknown": []
+        },
+        "duplicateTitles": []
+      },
+      "wrongRegionRecords": 0,
+      "pagesWithWrongRegion": 0,
+      "sameColumnOverlapGroups": 0,
+      "sameColumnOverlapExtraRecords": 0,
+      "duplicates": [],
+      "bindings": [
+        {
+          "text": "虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0002",
+          "kind": "fact",
+          "id": "f-c1-1",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 17,
+          "end": 67,
+          "assigned": [
+            "甲桥区域铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0003",
+          "kind": "ambiguous",
+          "id": "f-c1-2",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 67,
+          "end": 108,
+          "assigned": [],
+          "wrongRegion": false
+        },
+        {
+          "text": "补充规则：财务每周核对回款一次。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0005",
+          "kind": "fact",
+          "id": "f-c1-3",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 109,
+          "end": 125,
+          "assigned": [
+            "财务回款核对规则"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "AI异常提示为未来建议，无上线或收益事实。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0007",
+          "kind": "fact",
+          "id": "f-c1-4",
+          "chunkIndex": 0,
+          "column": "facts",
+          "start": 139,
+          "end": 160,
+          "assigned": [
+            "AI异常提示的定位说明"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0003",
+          "id": "q-c1-1",
+          "chunkIndex": 0,
+          "column": "questions",
+          "start": 67,
+          "end": 108,
+          "assigned": [
+            "甲桥区域铺货率"
+          ],
+          "wrongRegion": false
+        },
+        {
+          "text": "异常审批负责人仍需访谈确认。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0006",
+          "id": "q-c1-2",
+          "chunkIndex": 0,
+          "column": "questions",
+          "start": 125,
+          "end": 139,
+          "assigned": [
+            "AI异常提示的定位说明"
+          ],
+          "wrongRegion": false
+        }
+      ]
+    }
+  ],
+  "calibration": [
+    "Baseline script initial syntax error corrected before baseline; first inline trace inspection used seq instead of sequence and failed read-only. Neither invoked a provider."
+  ],
+  "candidateInstruction": "facts/questions已经完成业务分类，规划阶段不得再次过滤。ID仅用于引用，其c编号是机械分块号，没有主题或主体含义；不得按chunk分组建页。根据sourceContexts中精确原文位置及有界上下文判断各记录的主体、时间、条件和口径，附近其它陈述只帮助定位，不能作为新增事实。sourceContexts中的factIds/questionIds是同一原文区间的全部独立输入记录，不是可选别名：跨chunk同源记录应归于同一业务主题，两个分栏分别完整保留；不同位置即使文本相同也不能视为一条而丢ID。未知、否定、未来建议、待确认口径和ambiguous事实也必须归入有事实支撑的相关主题；同一原文在facts与questions同时出现时，两种ID必须分别进入factIds与questionIds，不可二选一。输出前逐项核对全部输入fact/question ID恰好各出现一次；不能用问题ID替代事实ID，不能因不单独建页而省略记录。"
+}

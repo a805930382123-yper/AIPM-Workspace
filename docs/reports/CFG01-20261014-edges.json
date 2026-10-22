@@ -1,0 +1,123 @@
+{
+  "scope": "independent real product HTTP + isolated filesystem; fictional credentials",
+  "durationMs": 7235,
+  "checks": [
+    {
+      "id": "FCFG01-cold-read-failure-manual-available",
+      "result": "PASS",
+      "details": {
+        "healthAndManualAvailable": true,
+        "configExplicitlyFailed": true,
+        "noProviderCalls": true
+      }
+    },
+    {
+      "id": "FCFG01-live-read-failure-and-recovery",
+      "result": "PASS",
+      "details": {
+        "manualAvailable": true,
+        "failedAiNoWrites": true,
+        "restoredConfigHotWorks": true
+      }
+    },
+    {
+      "id": "FCFG01-complete-env-ignores-unreadable-file",
+      "result": "PASS",
+      "details": {
+        "completeEnvOperational": true
+      }
+    },
+    {
+      "id": "FCFG02-inactive-local-key-summary-and-ai",
+      "result": "PASS",
+      "details": {
+        "knownLocalAndEnvironmentKeysSafe": true,
+        "invalidConfigNotUsed": true
+      }
+    },
+    {
+      "id": "FCFG02-replacement-cannot-expose-old-key",
+      "result": "PASS",
+      "details": {
+        "oldAndNewCredentialsCheckedBeforeWrite": true
+      }
+    },
+    {
+      "id": "FCFG03-quoted-and-backslash-key-roundtrip",
+      "result": "PASS",
+      "details": {
+        "acceptedUnchanged": 3,
+        "rejectedExplicitly": 0,
+        "noSilentKeyChange": true
+      }
+    },
+    {
+      "id": "FCFG04-external-edit-during-temp-write",
+      "result": "PASS",
+      "details": {
+        "externalEditPreserved": true,
+        "httpStatus": 409,
+        "tempCleaned": true
+      }
+    },
+    {
+      "id": "FCFG06-non2xx-response-budget",
+      "result": "PASS",
+      "details": {
+        "errorBodyCapped": true,
+        "errorCode": "LLM_RESPONSE_TOO_LARGE",
+        "noBusinessWrites": true
+      }
+    },
+    {
+      "id": "FCFG07-raw-delimiters-and-encoded-known-key",
+      "result": "PASS",
+      "details": {
+        "emptyQueryHashAndKnownKeyRejected": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 0
+  },
+  "ownedServices": [
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-k61cyo",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-wdCjZ0",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-GLNDd8",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-rOMPv8",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-i9yMf2",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-NnsH22",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-mMaYnT",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-rmL32v",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-cfg01-uLmZCb",
+      "closed": true
+    }
+  ],
+  "servicesClosed": true
+}

@@ -1,0 +1,148 @@
+{
+  "at": "2026-10-15T10:29:39.759Z",
+  "scope": "actual product HTTP + authenticated localhost fake only",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-aDbMVL",
+  "rows": [
+    {
+      "id": "H01-client-invalid-Brief-HTTP400",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_SCHEMA_MISMATCH",
+          "message": "Brief 字段或结构无效。",
+          "details": {
+            "requestId": "f82dc84f-c5dc-43f6-880f-5d01119b620e",
+            "stage": "generate",
+            "category": "user_input",
+            "retryable": false,
+            "errors": [
+              {
+                "path": "$.context",
+                "expected": "string",
+                "actualType": "array"
+              }
+            ],
+            "totalErrors": 1,
+            "nextAction": "review_input"
+          }
+        }
+      }
+    },
+    {
+      "id": "H02-Brief-invalid-JSON-safe-stage-diagnostic",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_INVALID_JSON",
+          "message": "Provider 返回的内容不是合法 JSON，未生成草稿。",
+          "details": {
+            "requestId": "2cf5356e-e37e-4d30-bfc2-640d5ce10bd9",
+            "stage": "brief",
+            "startedAt": "2026-10-15T10:29:39.343Z",
+            "finishedAt": "2026-10-15T10:29:39.388Z",
+            "durationMs": 45,
+            "status": "failed",
+            "finishReason": null,
+            "bytes": 0,
+            "category": "response_invalid",
+            "retryable": true,
+            "preserved": false,
+            "nextAction": "retry_stage"
+          }
+        }
+      }
+    },
+    {
+      "id": "H03-check-auth-classified",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_AUTH_FAILED",
+          "message": "Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：Synthetic auth failure）",
+          "details": {
+            "requestId": "f4b220b0-0c76-4776-a4eb-0ae59a6be159",
+            "stage": "check",
+            "startedAt": "2026-10-15T10:29:39.400Z",
+            "finishedAt": "2026-10-15T10:29:39.416Z",
+            "durationMs": 16,
+            "status": "failed",
+            "finishReason": null,
+            "bytes": 0,
+            "category": "auth",
+            "retryable": false,
+            "preserved": false,
+            "nextAction": "check_configuration"
+          }
+        }
+      }
+    },
+    {
+      "id": "H04-truncated-rewrite-must-be-response-invalid",
+      "result": "PASS",
+      "evidence": {
+        "error": {
+          "code": "LLM_OUTPUT_TRUNCATED",
+          "message": "Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。",
+          "details": {
+            "requestId": "9195e0a6-b32e-4a3c-87aa-bffee3afd7ad",
+            "stage": "rewrite",
+            "category": "response_invalid",
+            "retryable": true,
+            "preserved": [
+              "originalBody",
+              "checks",
+              "improvements"
+            ],
+            "draftId": "d2c2e6e8-57a2-4d08-86c0-1666526bf44e",
+            "nextAction": "retry_rewrite"
+          }
+        }
+      }
+    },
+    {
+      "id": "H05-known-secret-restored-check-outbound-blocked",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true
+      }
+    },
+    {
+      "id": "H06-restored-draft-read-must-not-expose-known-secret",
+      "result": "PASS",
+      "evidence": {
+        "safeRead": true
+      }
+    },
+    {
+      "id": "H07-client-disconnect-cancels-rewrite-and-preserves-check",
+      "result": "PASS",
+      "evidence": {
+        "stage": "failed",
+        "checks": 9,
+        "attempts": 1,
+        "lastError": {
+          "category": "cancelled",
+          "retryable": false
+        },
+        "localCalls": 1
+      }
+    },
+    {
+      "id": "H08-corrupt-Prompt-draft-not-404-health-neighbor-unchanged",
+      "result": "PASS",
+      "evidence": {
+        "corrupt500": true,
+        "neighborPresent": true,
+        "bytesUnchanged": true,
+        "calls": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 8,
+    "fail": 0
+  },
+  "fakeCalls": 9,
+  "externalCalls": 0,
+  "closed": true
+}

@@ -1,0 +1,276 @@
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (365.3893ms)
+✖ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (380.7048ms)
+✖ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (341.5674ms)
+✖ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (346.8576ms)
+✖ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (372.9703ms)
+✖ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (358.8119ms)
+✖ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (343.3344ms)
+✖ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (348.4134ms)
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (50.616ms)
+✔ KB02 resume reuses validated chunks and counts failed outbound attempts (48.7705ms)
+✔ KB02 corrupted checkpoint integrity fails closed (20.6793ms)
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (20.1518ms)
+✖ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (13.5423ms)
+✖ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (366.4239ms)
+✖ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (346.4257ms)
+✖ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (359.7371ms)
+✖ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (345.868ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (26.9511ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.772ms)
+✖ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (345.5422ms)
+✖ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (23.0564ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 5
+ℹ fail 16
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3190.8013
+
+✖ failing tests:
+
+test at tests\kb02-extraction-contract.test.ts:1:3550
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (365.3893ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-R47kEJ\state\extraction-checkpoints\.bdd38350-e2b6-45e3-9a02-a76adf21181d.json.fa17b5ff-1937-444f-8090-2e928f2ad87e.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-R47kEJ\state\extraction-checkpoints\bdd38350-e2b6-45e3-9a02-a76adf21181d.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-R47kEJ\\state\\extraction-checkpoints\\.bdd38350-e2b6-45e3-9a02-a76adf21181d.json.fa17b5ff-1937-444f-8090-2e928f2ad87e.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-R47kEJ\\state\\extraction-checkpoints\\bdd38350-e2b6-45e3-9a02-a76adf21181d.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:5518
+✖ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (380.7048ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-rSNfsg\state\extraction-checkpoints\.bba66e64-0698-4100-a47d-7640e9056d63.json.69c5bc2a-e3eb-430f-af83-ad1f0ba3e507.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-rSNfsg\state\extraction-checkpoints\bba66e64-0698-4100-a47d-7640e9056d63.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-rSNfsg\\state\\extraction-checkpoints\\.bba66e64-0698-4100-a47d-7640e9056d63.json.69c5bc2a-e3eb-430f-af83-ad1f0ba3e507.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-rSNfsg\\state\\extraction-checkpoints\\bba66e64-0698-4100-a47d-7640e9056d63.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:6714
+✖ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (341.5674ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-VmNAjT\state\extraction-checkpoints\.96072891-0921-48de-8c0b-b79865214da2.json.e9619e2f-21fd-4618-a2a3-869e721ce5ad.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-VmNAjT\state\extraction-checkpoints\96072891-0921-48de-8c0b-b79865214da2.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-VmNAjT\\state\\extraction-checkpoints\\.96072891-0921-48de-8c0b-b79865214da2.json.e9619e2f-21fd-4618-a2a3-869e721ce5ad.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-VmNAjT\\state\\extraction-checkpoints\\96072891-0921-48de-8c0b-b79865214da2.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:6714
+✖ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (346.8576ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-3EQymT\state\extraction-checkpoints\.f161b905-1a62-4eec-9004-c56f7de61c75.json.88972f85-8986-44fe-8ce3-0f80f7508719.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-3EQymT\state\extraction-checkpoints\f161b905-1a62-4eec-9004-c56f7de61c75.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-3EQymT\\state\\extraction-checkpoints\\.f161b905-1a62-4eec-9004-c56f7de61c75.json.88972f85-8986-44fe-8ce3-0f80f7508719.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-3EQymT\\state\\extraction-checkpoints\\f161b905-1a62-4eec-9004-c56f7de61c75.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:6714
+✖ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (372.9703ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-cIlBeX\state\extraction-checkpoints\.9a7d63c0-444a-458b-8033-fe8c1496db88.json.0de2c676-233e-41f5-84c2-9637743d0462.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-cIlBeX\state\extraction-checkpoints\9a7d63c0-444a-458b-8033-fe8c1496db88.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-cIlBeX\\state\\extraction-checkpoints\\.9a7d63c0-444a-458b-8033-fe8c1496db88.json.0de2c676-233e-41f5-84c2-9637743d0462.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-cIlBeX\\state\\extraction-checkpoints\\9a7d63c0-444a-458b-8033-fe8c1496db88.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:6714
+✖ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (358.8119ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-R8F54r\state\extraction-checkpoints\.fc3693b6-97ca-4bf1-977c-d59eb40c30e6.json.d1e24279-6db2-4900-887a-b4edfe7d6b48.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-R8F54r\state\extraction-checkpoints\fc3693b6-97ca-4bf1-977c-d59eb40c30e6.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-R8F54r\\state\\extraction-checkpoints\\.fc3693b6-97ca-4bf1-977c-d59eb40c30e6.json.d1e24279-6db2-4900-887a-b4edfe7d6b48.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-R8F54r\\state\\extraction-checkpoints\\fc3693b6-97ca-4bf1-977c-d59eb40c30e6.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:7329
+✖ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (343.3344ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-rDIczf\state\extraction-checkpoints\.d61ea65a-3e33-47bd-a259-8764fa5f9a2d.json.7267a69c-a4c4-4442-b54d-4c06716001a1.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-rDIczf\state\extraction-checkpoints\d61ea65a-3e33-47bd-a259-8764fa5f9a2d.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-rDIczf\\state\\extraction-checkpoints\\.d61ea65a-3e33-47bd-a259-8764fa5f9a2d.json.7267a69c-a4c4-4442-b54d-4c06716001a1.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-rDIczf\\state\\extraction-checkpoints\\d61ea65a-3e33-47bd-a259-8764fa5f9a2d.json'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:8602
+✖ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (348.4134ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-61XPs9\state\extraction-checkpoints\.5244f2f7-df01-4ac1-b2bc-c349ff1f5a6e.json.3edd3467-6ead-4912-bb93-9159c506a883.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-q01-61XPs9\state\extraction-checkpoints\5244f2f7-df01-4ac1-b2bc-c349ff1f5a6e.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-61XPs9\\state\\extraction-checkpoints\\.5244f2f7-df01-4ac1-b2bc-c349ff1f5a6e.json.3edd3467-6ead-4912-bb93-9159c506a883.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-q01-61XPs9\\state\\extraction-checkpoints\\5244f2f7-df01-4ac1-b2bc-c349ff1f5a6e.json'
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:3538
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (20.1518ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-budget-bZuXeH\knowledge\raw\reports\.9f8a5807-9f0e-4d49-929d-2e0298d1e847.b6fa1d83-1eb5-4cd3-bed1-14d5d4c255f4.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-budget-bZuXeH\knowledge\raw\reports\9f8a5807-9f0e-4d49-929d-2e0298d1e847.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\services\raw\store.ts:132:7)
+      at async fixture (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:22:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:53:13)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-budget-bZuXeH\\knowledge\\raw\\reports\\.9f8a5807-9f0e-4d49-929d-2e0298d1e847.b6fa1d83-1eb5-4cd3-bed1-14d5d4c255f4.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-budget-bZuXeH\\knowledge\\raw\\reports\\9f8a5807-9f0e-4d49-929d-2e0298d1e847.md'
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:4901
+✖ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (13.5423ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-budget-2SXTH0\knowledge\raw\reports\.4a4ce04b-4bd9-476c-99e7-d7ab27d887ad.e91af3bc-28c6-4a0a-882c-835ba0b6a937.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-budget-2SXTH0\knowledge\raw\reports\4a4ce04b-4bd9-476c-99e7-d7ab27d887ad.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\services\raw\store.ts:132:7)
+      at async fixture (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:22:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:85:13)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-budget-2SXTH0\\knowledge\\raw\\reports\\.4a4ce04b-4bd9-476c-99e7-d7ab27d887ad.e91af3bc-28c6-4a0a-882c-835ba0b6a937.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-budget-2SXTH0\\knowledge\\raw\\reports\\4a4ce04b-4bd9-476c-99e7-d7ab27d887ad.md'
+  }
+
+test at tests\kb02-r2.test.ts:1:3913
+✖ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (366.4239ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-2x6JlR\state\extraction-checkpoints\.b940b2b8-f438-4e0a-8a10-0bd1b6f0a72c.json.c7ffc064-3fcc-4076-85bd-86de8483c132.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-2x6JlR\state\extraction-checkpoints\b940b2b8-f438-4e0a-8a10-0bd1b6f0a72c.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-2x6JlR\\state\\extraction-checkpoints\\.b940b2b8-f438-4e0a-8a10-0bd1b6f0a72c.json.c7ffc064-3fcc-4076-85bd-86de8483c132.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-2x6JlR\\state\\extraction-checkpoints\\b940b2b8-f438-4e0a-8a10-0bd1b6f0a72c.json'
+  }
+
+test at tests\kb02-r2.test.ts:1:5259
+✖ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (346.4257ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-bSpQaa\state\extraction-checkpoints\.a80884f1-e4b6-4a7b-aac4-d8fe9617cfb8.json.97bdbebb-c458-440b-86ef-99dd7f7e8c6a.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-bSpQaa\state\extraction-checkpoints\a80884f1-e4b6-4a7b-aac4-d8fe9617cfb8.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-bSpQaa\\state\\extraction-checkpoints\\.a80884f1-e4b6-4a7b-aac4-d8fe9617cfb8.json.97bdbebb-c458-440b-86ef-99dd7f7e8c6a.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-bSpQaa\\state\\extraction-checkpoints\\a80884f1-e4b6-4a7b-aac4-d8fe9617cfb8.json'
+  }
+
+test at tests\kb02-r2.test.ts:1:5870
+✖ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (359.7371ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-Ph9SoQ\state\extraction-checkpoints\.3a2ff3e0-43d8-4770-84cc-f53bc2075fbd.json.60ea144d-0d6a-46ea-8f6c-98c305c7b8a0.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-Ph9SoQ\state\extraction-checkpoints\3a2ff3e0-43d8-4770-84cc-f53bc2075fbd.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-Ph9SoQ\\state\\extraction-checkpoints\\.3a2ff3e0-43d8-4770-84cc-f53bc2075fbd.json.60ea144d-0d6a-46ea-8f6c-98c305c7b8a0.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-Ph9SoQ\\state\\extraction-checkpoints\\3a2ff3e0-43d8-4770-84cc-f53bc2075fbd.json'
+  }
+
+test at tests\kb02-r2.test.ts:1:7424
+✖ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (345.868ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-l32jRf\state\extraction-checkpoints\.1833fbcb-0a28-416a-8ba7-106d36d1431e.json.e96d7a05-85e4-43ab-9626-d6ea3daa46ce.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-l32jRf\state\extraction-checkpoints\1833fbcb-0a28-416a-8ba7-106d36d1431e.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-l32jRf\\state\\extraction-checkpoints\\.1833fbcb-0a28-416a-8ba7-106d36d1431e.json.e96d7a05-85e4-43ab-9626-d6ea3daa46ce.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-l32jRf\\state\\extraction-checkpoints\\1833fbcb-0a28-416a-8ba7-106d36d1431e.json'
+  }
+
+test at tests\kb02-r2.test.ts:1:9523
+✖ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (345.5422ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-4AweRf\state\extraction-checkpoints\.0bc0c9a7-ab04-476a-afd4-a0e4abd16821.json.2d2b7269-480c-40d3-8f20-a2884332cb9f.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-native-4AweRf\state\extraction-checkpoints\0bc0c9a7-ab04-476a-afd4-a0e4abd16821.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:19:11)
+      at async writeFileAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:33:5)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:41:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:111:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-4AweRf\\state\\extraction-checkpoints\\.0bc0c9a7-ab04-476a-afd4-a0e4abd16821.json.2d2b7269-480c-40d3-8f20-a2884332cb9f.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-native-4AweRf\\state\\extraction-checkpoints\\0bc0c9a7-ab04-476a-afd4-a0e4abd16821.json'
+  }
+
+test at tests\kb02-r2.test.ts:1:9820
+✖ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (23.0564ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-update-gKP4m6\knowledge\wiki\.index.md.858ad59d-c9e0-45ce-bfbf-69a3e6c34a36.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\AC\Temp\kb02-r2-update-gKP4m6\knowledge\wiki\index.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async writeAtomic (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:66:5)
+      at async WikiStore.rebuildIndex (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:330:5)
+      at async WikiStore.recoverPending (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:380:5)
+      at async WikiStore.initialize (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:99:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-r2.test.ts:48:92)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-update-gKP4m6\\knowledge\\wiki\\.index.md.858ad59d-c9e0-45ce-bfbf-69a3e6c34a36.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{4a561d30-1969-4877-aa1c-6482c33a4d43}\\AC\\Temp\\kb02-r2-update-gKP4m6\\knowledge\\wiki\\index.md'
+  }

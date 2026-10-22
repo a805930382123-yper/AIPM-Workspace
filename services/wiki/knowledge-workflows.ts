@@ -1,10 +1,12 @@
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
+import {isWorkflow,isWorkflowManifest} from '../storage/record-validators.ts';
 import { mkdir } from 'node:fs/promises';
-import { listJsonRecords, readJsonFile, writeJsonAtomic } from '../storage/files.ts';
+import { scanJsonRecords, StorageError, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
 import { RawIntegrityError, type RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting, assertRawsNotMeeting } from '../meeting/source-policy.ts';
-import type { LlmProvider } from '../llm/provider.ts';
+import { assertNoKnownSecret, LlmError, sanitizeDeep, sanitizeProviderText, type LlmProvider } from '../llm/provider.ts';
+import { buildEvidenceLocatorCatalog } from '../llm/locators.ts';
 import { WikiError, type WikiInput, type WikiRecord, type WikiStore } from './store.ts';
 
 export type KnowledgeWorkflow = {
@@ -33,20 +35,34 @@ export class KnowledgeWorkflowStore {
   async initialize() { await mkdir(this.dir(), { recursive: true }); await mkdir(this.operationsDir(), { recursive: true }); await this.reconcile(); }
   private operationsDir() { return path.join(this.root, 'state', 'knowledge-commits'); }
   private operationFile(id: string) { return path.join(this.operationsDir(), `${id}.json`); }
-  async get(id: string) { if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined; return readJsonFile<KnowledgeWorkflow>(this.file(id)); }
-  async getCommit(id: string) { if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined; return readJsonFile<WorkflowManifest>(this.operationFile(id)); }
-  async list() { return (await listJsonRecords<KnowledgeWorkflow>(this.dir())).map(x => x.value).filter(Boolean); }
+  async get(id: string) { if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined; const v=await readJsonRecord<KnowledgeWorkflow>(this.root,this.file(id),(x):x is KnowledgeWorkflow=>isWorkflow(x,id));if(v===undefined)return undefined;if(!isWorkflow(v,id))throw new StorageError('STORAGE_CORRUPT','知识工作流记录结构无效，原文件已保留。',500,{category:'recovery',nextAction:'inspect_or_restore'});return v; }
+  async getCommit(id: string) { if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined; const v=await readJsonRecord<WorkflowManifest>(this.root,this.operationFile(id),(x):x is WorkflowManifest=>isWorkflowManifest(x,id));if(v===undefined)return undefined;if(!isWorkflowManifest(v,id))throw new StorageError('STORAGE_CORRUPT','知识提交清单结构无效，原文件已保留；恢复执行已停止。',500,{category:'recovery',nextAction:'inspect_or_restore'});return v; }
+  async list() { return (await scanJsonRecords<KnowledgeWorkflow>(this.dir(),(v,file):v is KnowledgeWorkflow=>isWorkflow(v,path.basename(file,'.json')),this.root)).records.map(x=>x.value); }
   async save(record: KnowledgeWorkflow) { await writeJsonAtomic(this.file(record.id), record); return record; }
 
   async createUpdate(args: { draftId: string; pageId: string; baseRevision: number; targetWikiId: string; draft: any; raw: any; target: WikiRecord; provider: LlmProvider }) {
     assertRawNotMeeting(args.raw);
     for (const id of args.target.sources) assertRawNotMeeting(await this.raws.get(id));
+    if (args.draft.id !== args.draftId || args.draft.rawId !== args.raw?.id || args.target.id !== args.targetWikiId) throw new WikiError('EVIDENCE_INVALID', '更新来源、草稿或目标绑定不一致。', 409);
     if (args.draft.revision !== args.baseRevision) throw new WikiError('DRAFT_REVISION_CONFLICT', '提取草稿已变化，请刷新后重新选择更新。', 409, { currentRevision: args.draft.revision });
     if (!args.raw || this.actualRawSha(args.raw) !== args.raw.bodySha256 || args.raw.bodySha256 !== args.draft.rawSha256) throw new WikiError('RAW_CHANGED', '原文已变化或校验值与实际正文不一致，不能生成更新预览。', 409);
     const page = args.draft.pages.find((item: any) => item.pageId === args.pageId);
     if (!page) throw new WikiError('PAGE_NOT_FOUND', '提取草稿中没有这条建议。', 404);
-    const user = JSON.stringify({ existing: { title: args.target.title, type: args.target.type, category: args.target.category, body: args.target.body, revision: args.target.revision, sources: args.target.sources }, newSource: { rawId: args.raw.id, rawTitle: args.raw.title, body: args.raw.body, facts: page.source_facts, evidence: page.source_evidence, organized: page.ai_organized, inferences: page.ai_inferences, questions: page.open_questions } });
-    const output = await this.call(args.provider, '你是知识更新建议器。仅输出JSON。保留现有内容；逐条区分建议增加、来源冲突、推断、待确认问题。不得丢弃任何相反指标或来源。事实只能来自提供内容，不要编造。suggestedAdditions/conflicts/agreement每项必须为{text,rawId,quote,start,end}，quote必须是对应Raw的连续原文，start/end为UTF-16左闭右开全局索引。推断和问题是字符串数组。结构：{"suggestedAdditions":[object],"conflicts":[object],"inferences":[string],"openQuestions":[string],"agreement":[object]}', user);
+    const evidenceDirectory = this.updateEvidenceDirectory(page, args.raw);
+    await this.assertUpdateTarget(args.target);
+    const existingLocators = this.updateExistingLocators(args.target);
+    assertNoKnownSecret({ page, evidenceDirectory, existingLocators }, args.provider.secrets);
+    const user = JSON.stringify({ existing: { wikiId: args.target.id, title: args.target.title, type: args.target.type, category: args.target.category, body: args.target.body, revision: args.target.revision, sources: args.target.sources, locators: existingLocators }, newSource: { rawId: args.raw.id, rawTitle: args.raw.title, body: args.raw.body, facts: page.source_facts, evidence: evidenceDirectory, organized: page.ai_organized, inferences: page.ai_inferences, questions: page.open_questions } });
+    const output = await this.call(args.provider, '你是知识更新建议器。只输出一个合法 JSON 对象，不输出 Markdown、代码围栏或前后说明。输出字段严格为 suggestedAdditions、conflicts、inferences、openQuestions、agreement；五个字段都必须出现且为数组。结构示例：{"suggestedAdditions":[],"conflicts":[],"inferences":[],"openQuestions":[],"agreement":[]}。每个 suggestedAdditions/conflicts 元素严格只包含 text、evidenceId 两个字段；每个 agreement 元素严格只包含 text、evidenceId、existingLocatorId 三个字段。evidenceId只能选newSource.evidence中已经校验且属于选中建议的id；existingLocatorId只能选existing.locators中绑定本次旧Wiki及revision的id，两侧ID不可互换。不得猜测、补造或沿用其他目标/旧版本的ID。只围绕被选中的知识建议与指定旧 Wiki 进行更新，不从其他主题补充内容。不得返回或计算quote/rawId/start/end。没有支持证据则不生成事实建议。newSource.facts 中没有可支持的建议时，suggestedAdditions 可为空数组。agreement仅表达两侧都支持的最小共同命题：逐断言判断，复合句中每项断言均须两侧支持，不能因共同支持一部分便把其余部分也称共同观点。新来源未提及不等于新来源同意。旧侧独有内容保留existing，不生成agreement；新侧独有且有证据的内容进入suggestedAdditions。无法证明一致则agreement为空，可记录待确认问题，不用“均/双方/两侧”等措辞扩大支持。正反例：旧侧“目标门店100家”和新侧“目标门店总数为100家”可得共同命题“目标门店100家”；旧侧还说“门店数不等于销量”而新侧未提及，则不能写“双方均强调门店数不等于销量”，也不能附在共同的门店数或计算公式后面；旧20%与新30%必须列conflicts，保留两种数值及口径；“不知道/未上线/将来建议”不能改为肯定事实。选中双侧原文只是定位约束，仍必须核对每个断言的语义支持。保留旧 Wiki 原内容，不把未确认推断写成事实。遇到两侧不一致，分别保留各自陈述、数值和时间/统计口径；口径或可比性未确认时明确标为待确认，不判定一致、不自行计算或调和。推断与待确认问题用字符串数组表达。', user, 'evidence-id');
+    for (const field of ['suggestedAdditions','conflicts','agreement']) output[field] = output[field].map((item: { text: string; evidenceId: string; existingLocatorId?: string }) => {
+      const evidence = evidenceDirectory.find(entry => entry.id === item.evidenceId);
+      if (!evidence) throw new WikiError('EVIDENCE_INVALID', '更新建议选择未知或非本条建议的证据ID。', 502);
+      if (field === 'agreement' && !existingLocators.some(entry => entry.id === item.existingLocatorId)) throw new WikiError('EVIDENCE_INVALID', '一致观点未选择本次旧Wiki版本的有效定位ID。', 502);
+      // Internal double-sided bindings are checked above; keep persisted evidence/UI contracts unchanged.
+      return { text: item.text, rawId: evidence.rawId, quote: evidence.quote, start: evidence.start, end: evidence.end };
+    });
+    await this.assertUpdateTarget(args.target);
+    assertNoKnownSecret(output, args.provider.secrets);
     this.validateEvidence(output, [args.raw]);
     const record: KnowledgeWorkflow = {
       id: randomUUID(), kind: 'update', status: 'pending_confirmation', revision: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
@@ -85,16 +101,29 @@ export class KnowledgeWorkflowStore {
     return this.save(record);
   }
 
-  private async call(provider: LlmProvider, system: string, user: string): Promise<any> {
-    const result = await provider.complete({ system, user, timeoutMs: 90000, maxOutputBytes: 256_000 });
+  private async call(provider: LlmProvider, system: string, user: string, format: 'legacy' | 'evidence-id' = 'legacy'): Promise<any> {
+    let result;
+    try { result = await provider.complete({ system, user, timeoutMs: 90000, maxOutputBytes: 256_000, purpose: 'knowledge' }); }
+    catch (error) {
+      const code = sanitizeProviderText((error as { code?: unknown }).code ?? 'LLM_PROVIDER_ERROR', provider.secrets) || 'LLM_PROVIDER_ERROR';
+      const message = sanitizeProviderText(error instanceof Error ? error.message : 'Provider 调用失败', provider.secrets);
+      const details = (error as { details?: unknown }).details;
+      throw new LlmError(code, message, (error as { status?: number }).status ?? 502, details === undefined ? undefined : sanitizeDeep(details, provider.secrets));
+    }
     let parsed: unknown;
+    if (format === 'evidence-id' && result.finishReason === 'length') throw new WikiError('LLM_OUTPUT_TRUNCATED', '更新建议响应被截断，未创建草稿。', 502);
     try { parsed = JSON.parse(result.text); } catch { throw new WikiError('LLM_INVALID_JSON', 'Provider 返回的内容不是合法 JSON，未创建草稿。', 502); }
+    assertNoKnownSecret(parsed, provider.secrets);
     if (!object(parsed)) throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回结构无效，未创建草稿。', 502);
-    const allowedTopLevel = new Set(['title', 'category', 'suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement']);
+    const allowedTopLevel = new Set(format === 'evidence-id' ? ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] : ['title', 'category', 'suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement']);
     if (Object.keys(parsed).some(key => !allowedTopLevel.has(key))) throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回了未定义字段，未创建草稿。', 502);
     for (const key of ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement']) {
       const valid = Array.isArray(parsed[key]) && (parsed[key] as unknown[]).every(x => {
         if (['inferences', 'openQuestions'].includes(key)) return typeof x === 'string';
+        if (format === 'evidence-id') {
+          const fields = key === 'agreement' ? ['text','evidenceId','existingLocatorId'] : ['text','evidenceId'];
+          return object(x) && Object.keys(x).length === fields.length && Object.keys(x).every(field => fields.includes(field)) && typeof x.text === 'string' && !!x.text.trim() && x.text.length <= 4000 && fields.slice(1).every(field => typeof x[field] === 'string' && (x[field] as string).length > 0 && (x[field] as string).length <= 128);
+        }
         return object(x) && Object.keys(x).every(field => ['text', 'rawId', 'quote', 'start', 'end'].includes(field))
           && typeof x.text === 'string' && x.text.trim().length > 0 && typeof x.rawId === 'string'
           && typeof x.quote === 'string' && x.quote.length > 0 && Number.isInteger(x.start) && Number.isInteger(x.end);
@@ -104,6 +133,35 @@ export class KnowledgeWorkflowStore {
     if (parsed.title !== undefined && typeof parsed.title !== 'string') throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回 title 无效。', 502);
     if (parsed.category !== undefined && typeof parsed.category !== 'string') throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回 category 无效。', 502);
     return parsed;
+  }
+
+  private updateEvidenceDirectory(page: any, raw: { id: string; body: string }) {
+    if (!Array.isArray(page.source_evidence) || !Array.isArray(page.source_facts) || !page.source_facts.length) throw new WikiError('EVIDENCE_INVALID', '选中建议缺少已验证来源事实或证据。', 409);
+    const entries = page.source_evidence as Array<{ id: string; rawId: string; quote: string; start: number; end: number }>;
+    const ids = new Set<string>();
+    for (const entry of entries) {
+      if (!entry || typeof entry.id !== 'string' || !entry.id.trim() || entry.id.length > 128 || ids.has(entry.id) || entry.rawId !== raw.id || typeof entry.quote !== 'string' || !entry.quote.length || !Number.isSafeInteger(entry.start) || !Number.isSafeInteger(entry.end) || entry.start < 0 || entry.end <= entry.start || entry.end > raw.body.length || raw.body.slice(entry.start, entry.end) !== entry.quote) throw new WikiError('EVIDENCE_INVALID', '选中建议证据的ID、Raw或原文位置无效。', 409);
+      ids.add(entry.id);
+    }
+    const used = new Set<string>();
+    for (const fact of page.source_facts) {
+      if (!fact || typeof fact.text !== 'string' || !fact.text.trim() || !Array.isArray(fact.evidenceIds) || !fact.evidenceIds.length || new Set(fact.evidenceIds).size !== fact.evidenceIds.length || fact.evidenceIds.some((id: unknown) => typeof id !== 'string' || !ids.has(id))) throw new WikiError('EVIDENCE_INVALID', '选中建议事实引用未绑定其证据目录。', 409);
+      fact.evidenceIds.forEach((id: string) => used.add(id));
+    }
+    if (used.size !== ids.size) throw new WikiError('EVIDENCE_INVALID', '选中建议证据目录包含未绑定事实的条目。', 409);
+    return entries.map(({ id, rawId, quote, start, end }) => ({ id, rawId, quote, start, end }));
+  }
+
+  private async assertUpdateTarget(target: WikiRecord) {
+    const current = await this.wiki.get(target.id);
+    if (!current || current.revision !== target.revision || this.wiki.pageContent(current) !== this.wiki.pageContent(target)) throw new WikiError('WIKI_REVISION_CONFLICT', '更新目标版本已变化，请刷新后重新生成预览。', 409);
+  }
+
+  private updateExistingLocators(target: WikiRecord) {
+    if (!target.body.length) return [];
+    const binding = sha(JSON.stringify([target.id, target.revision, sha(target.body)]));
+    return buildEvidenceLocatorCatalog(target.body, { index: 0, start: 0, end: target.body.length, text: target.body }, { maxLocators: target.body.length })
+      .map(({ start, end, text }, index) => ({ id: `wiki-${binding}-${index + 1}`, start, end, text }));
   }
 
   private validateEvidence(output: any, raws: Array<{ id: string; body: string }>) {
@@ -147,9 +205,9 @@ export class KnowledgeWorkflowStore {
     const workflow = await this.get(id);
     if (!workflow) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404);
     const payloadDigest = sha(JSON.stringify({ kind: workflow.kind, title: workflow.title, sections: workflow.sections, evidence: workflow.evidence, targetWikiId: workflow.targetWikiId, baseRevision: workflow.baseRevision, sources: workflow.sources }));
-    const priorManifest = (await listJsonRecords<WorkflowManifest>(this.operationsDir())).map(item => item.value).find(item => item.workflowId === workflow.id);
+    const priorManifest = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root).then(x=>x.records)).map(item => item.value).find(item => item.workflowId === workflow.id);
     if (priorManifest) {
-      const old = await readJsonFile<WorkflowManifest>(this.operationFile(priorManifest.operationId));
+      const old = await this.getCommit(priorManifest.operationId);
       if (!old || old.payloadDigest !== payloadDigest) throw new WikiError('CONFIRM_PAYLOAD_CHANGED', '该草稿已有不同内容的确认提交；请查看原提交，不要重复确认。', 409, { operationId: priorManifest.operationId });
       if (old.status === 'conflict') throw new WikiError('WORKFLOW_COMMIT_CONFLICT', old.error ?? '提交因人工编辑冲突而停止。', 409, { operationId: old.operationId, writtenIds: old.writtenIds });
       if (old.status === 'completed') {
@@ -285,7 +343,7 @@ export class KnowledgeWorkflowStore {
   }
 
   async reconcile() {
-    const files = await listJsonRecords<WorkflowManifest>(this.operationsDir());
+    const files = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root)).records;
     for (const item of files.map(x => x.value).filter((value): value is WorkflowManifest => Boolean(value))) {
       let manifest = item;
       if (['prepared', 'committing'].includes(item.status)) manifest = await this.execute(item).catch(() => item);

@@ -1,0 +1,23 @@
+{
+  "scope": "independent Settings jsdom with deferred responses; no real HTTP/provider",
+  "checks": [
+    {
+      "id": "FCFG05-initial-read-versus-newer-reload",
+      "result": "PASS",
+      "details": {
+        "olderInitialResponseIgnored": true
+      }
+    },
+    {
+      "id": "FCFG05-reload-versus-user-edit",
+      "result": "PASS",
+      "details": {
+        "userEditPreserved": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 0
+  }
+}

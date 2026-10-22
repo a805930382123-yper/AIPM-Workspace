@@ -1,5 +1,9 @@
 # 项目交付说明
 
+当前记录（2026-10-14）：CFG01本机通用Provider配置入口PASS，同GPT-6 Luna Max施工、主Agent独立两轴验收。保存/保留/替换Key、明确测试/确认清除、env只读与请求快照隔离完成。HTTP27、edges9、R2三组、组件4、安全100、实际桌面/窄屏浏览器13全部通过；最终build及字节相同可写副本完整215/215。原workspace继承ACL导致rename EPERM未通过，未改ACL或断言，详见[报告/校准](reports/CFG01-20261014-acceptance.md)。正式数据/实际.env.local及1296历史文件未变，自有服务关闭。当前Windows/Node v24.20.0；未真实Provider/部署，36项仍BLOCKED。下面早期记录为历史。
+
+当前记录（2026-10-13）：S-03/S-04安全返修已由Luna施工、主Agent独立复验关闭，本批PASS。六条AI输出链统一检查已知长/短/多凭证、解析后JSON键/值及转义；错误脱敏和失败资产保护实测通过。build及204/204完整测试、有效HTTP98/98、Audit2组、多凭证服务113/113、知识回归11/11、两轴审查与历史/正式数据保护通过。[本批报告](reports/SEC-20261013-acceptance.md)、[当前109项矩阵](delivery-matrix.md)。M01–M05会议本机阶段PASS，备份现包含meetings；新会议来源仍local_only。全项目仍未签PASS，36项真实Provider成功/质量仍BLOCKED；未部署、未配置真实Provider、未新签浏览器。下文2026-10-10及B09描述均为历史交付范围。
+
 当前记录（2026-10-10）：全项目审查发现的 S-01/S-02 与 D-01/02 已返修并独立复验关闭。Audit 凭证回显在草稿保存前拒绝；Raw 正文摘要不符、缺失或非法时明确返回 `RAW_INTEGRITY_ERROR` / HTTP 409，不消费该正文、不自动修正。更新/综合/Audit 的来源冲突与恢复机制保持。build、155项测试和64项专项/关联场景通过，正式数据和历史证据未变。详情见 [本轮独立报告](reports/FULL-20261010-repair-acceptance.md) 与 [当前109项矩阵](delivery-matrix.md)。真实 Provider 仍未配置，36项真实成功/质量门禁保持 BLOCKED；本次没有新的实际浏览器验收。
 
 ## B09 交付记录（2026-10-08，历史）

@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "jobId": "23b96115-87e8-4860-9144-7746fe4dd75b",
+  "rawId": "89816f36-8ccb-4267-a2b4-d0e3ee564952",
+  "rawSha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+  "pipelineVersion": "kb02-2",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-6-0bbbb554767d",
+  "providerIdentity": "https://open.bigmodel.cn/api/coding/paas/v4|GLM-5.3-Flash",
+  "chunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 134
+    }
+  ],
+  "completedChunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 134,
+      "facts": [
+        {
+          "text": "虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0002",
+          "kind": "fact",
+          "id": "f-c1-1",
+          "chunkIndex": 0
+        },
+        {
+          "text": "铺货率定义为在售门店数除以目标门店数，即20÷100=20%。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0003",
+          "kind": "fact",
+          "id": "f-c1-2",
+          "chunkIndex": 0
+        },
+        {
+          "text": "这里的门店数不能解释为销量。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0004",
+          "kind": "fact",
+          "id": "f-c1-3",
+          "chunkIndex": 0
+        },
+        {
+          "text": "AI异常提示只是未来建议，没有上线或收益事实。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0007",
+          "kind": "fact",
+          "id": "f-c1-4",
+          "chunkIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "text": "异常审批负责人待访谈确认；",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0006",
+          "id": "q-c1-1",
+          "chunkIndex": 0
+        }
+      ],
+      "sourceNotes": [
+        {
+          "text": "【虚构验收资料，不是真实业务】\n",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0001",
+          "chunkIndex": 0
+        }
+      ],
+      "evidence": [
+        {
+          "id": "c1-l001",
+          "rawId": "89816f36-8ccb-4267-a2b4-d0e3ee564952",
+          "quote": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。",
+          "start": 0,
+          "end": 134,
+          "chunkIndex": 0
+        }
+      ]
+    }
+  ],
+  "attempts": 2,
+  "stage": "done",
+  "updatedAt": "2026-10-22T04:46:35.420Z",
+  "integrity": "347fe8909118d4b34abc270002ea4d563ea5fb67e2646157de7da8471c43afb4",
+  "plan": {
+    "document": {
+      "title": "虚构饮料甲桥区域铺货与AI异常提示知识页",
+      "main_topic": "虚构饮料在甲桥区域的铺货率及AI异常提示相关事实",
+      "summary": "来源事实：\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。\n铺货率定义为在售门店数除以目标门店数，即20÷100=20%。\n这里的门店数不能解释为销量。\nAI异常提示只是未来建议，没有上线或收益事实。"
+    },
+    "pages": [
+      {
+        "title": "甲桥区域铺货与铺货率",
+        "type": "metric",
+        "category": "metric",
+        "factIds": [
+          "f-c1-1",
+          "f-c1-2",
+          "f-c1-3"
+        ],
+        "questionIds": []
+      },
+      {
+        "title": "AI异常提示（未来建议）",
+        "type": "concept",
+        "category": "ai_application",
+        "factIds": [
+          "f-c1-4"
+        ],
+        "questionIds": [
+          "q-c1-1"
+        ]
+      }
+    ]
+  },
+  "draftId": "f089b1cb-b484-41b1-a894-f844d392d541"
+}

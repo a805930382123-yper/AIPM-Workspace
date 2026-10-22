@@ -1,0 +1,23 @@
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import { loadLlmConfig, llmConfigSummary } from '../../services/llm/config.ts';
+import { chunkText } from '../../services/llm/chunk.ts';
+import { FROZEN_BUDGETS } from '../../services/llm/rules.ts';
+const prior='docs/reports/KB02-R2-Q01-AUDIT-20261018-main-';
+const read=async p=>JSON.parse(await fs.readFile(p,'utf8'));
+const rows=async p=>(await fs.readFile(p,'utf8')).trim().split('\n').filter(Boolean).map(JSON.parse);
+const budget=await read(prior+'real-budget.json');
+const attempts=await rows(prior+'provider-attempts.jsonl');
+const traces=await rows(prior+'provider-trace.jsonl');
+assert.deepEqual(attempts.map(r=>r.sequence),Array.from({length:13},(_,i)=>50+i));
+assert.deepEqual(traces.map(r=>r.sequence).sort((a,b)=>a-b),attempts.map(r=>r.sequence));
+assert.equal(budget.cumulativeUsed,62);assert.equal(budget.cap,74);assert.equal(budget.remaining,12);
+let body='';for(let n=1;n<=14;n++){const region='虚构区域'+String(n).padStart(2,'0');let block=`【长文验收附录${n}，虚构】\n${region}2026年9月有100家目标门店，${n+10}家在售，门店数铺货率${n+10}%。此区域与其它附录区域独立，不能混用。异常审批负责人未知，AI仅未来分析建议。\n`;let line=0;while(block.length<7600)block+=`附录${n}排版说明${++line}：这里用于验证中文长文保存和完整处理，不补充任何新经营指标、客户身份、AI上线事实或收益。\n`;body+=block.slice(0,7600);}
+const sha=crypto.createHash('sha256').update(body).digest('hex');
+const provenance=await read('docs/reports/KB02-R2-Q02-20261018-builder-fixture-provenance.json');
+assert.equal(sha,provenance.seq62.originalRawSha256);assert.equal(body.length,106400);
+const chunks=chunkText(body,{maxChunkChars:FROZEN_BUDGETS.maxChunkChars,overlap:FROZEN_BUDGETS.chunkOverlap,maxRawChars:FROZEN_BUDGETS.maxRawChars});assert.equal(chunks.length,14);
+const summary=llmConfigSummary(await loadLlmConfig({filePath:'.env.local'}),'.env.local');
+const out={at:new Date().toISOString(),externalCalls:0,ledger:{used:62,cap:74,remaining:12,rows:attempts.length,traceRows:traces.length,prompt:{used:15,cap:24}},fixture:{chars:body.length,sha256:sha,matchesHistoricalRaw:true,chunks:chunks.length},provider:{configured:summary.configured,host:summary.baseUrlHost,model:summary.model},proposal:{authorized:false,additional:13,proposedCap:87,availableIfApproved:25,allocation:{longExtraction:14,longPlanning:1,shortExtractionAndPlanning:2,supplementExtractionPlanningAndUpdate:3,failureReserve:5},prerequisite:'Independent engineering gate PASS; explicit finite budget approval; no concurrent real caller',order:['full original long document from zero cached chunks','short document','supplement/update and actual browser confirmation'],stop:'Stop and diagnose repeated same-class failures; every attempt counts; never exceed authorized cumulative cap'},realQuality:'NOT_RUN',browser:'NOT_RUN'};
+await fs.writeFile('docs/reports/KB02-R2-Q02-AUDIT-20261019-main-preflight.json',JSON.stringify(out,null,2));console.log(JSON.stringify(out));

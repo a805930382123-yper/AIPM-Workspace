@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-15T07:52:26.633Z",
+  "rows": [
+    {
+      "id": "R01-isolated-single-file-deduplication",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"scanned\":true,\"overflow\":false,\"items\":[{\"id\":\"7338e5b5b5e710e4\",\"kind\":\"prompt-drafts\",\"reason\":\"parse\"},{\"id\":\"7abbe74bc7775f34\",\"kind\":\"storage-read\",\"reason\":\"parse\"}]}\n\n2 !== 1\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-storage-supplement.mjs:3:353\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-storage-supplement.mjs:2:83)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-storage-supplement.mjs:3:1"
+    },
+    {
+      "id": "R02-real-commit-reconcile-must-not-rewrite-invalid-shape",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"badManifestRewritten\":true,\"resultingStatus\":\"failed\",\"conflicts\":1,\"root\":\"C:\\\\Users\\\\DAVID~1.CHE\\\\AppData\\\\Local\\\\Temp\\\\fmcg-pa01-main-manifest-6ey2As\"}\n+ actual - expected\n\n+ '{\\n' +\n+   '  \"operationId\": \"bcb7822b-02a7-42cc-990a-d2089fa9cd21\",\\n' +\n+   '  \"rawId\": \"3bd03089-1914-487a-9dec-8845de7ebd79\",\\n' +\n+   '  \"status\": \"failed\",\\n' +\n+   '  \"updatedAt\": \"2026-10-15T07:52:26.627Z\",\\n' +\n+   '  \"error\": {\\n' +\n+   '    \"code\": \"COMMIT_FAILED\",\\n' +\n+   `    \"message\": \"Cannot read properties of undefined (reading 'find')\",\\n` +\n+   '    \"at\": \"2026-10-15T07:52:26.627Z\",\\n' +\n+   '    \"phase\": \"source\"\\n' +\n+   '  },\\n' +\n+   '  \"writtenWikiIds\": [],\\n' +\n+   '  \"recoveryHint\": \"已写入的正式文件保留；解除磁盘故障后重启工作台会自动继续这个 operationId，不需要重新确认。\"\\n' +\n+   '}\\n'\n- '{\"operationId\":\"bcb7822b-02a7-42cc-990a-d2089fa9cd21\",\"rawId\":\"3bd03089-1914-487a-9dec-8845de7ebd79\",\"status\":\"committing\"}'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-storage-supplement.mjs:4:828\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-storage-supplement.mjs:2:83)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-storage-supplement.mjs:4:1"
+    },
+    {
+      "id": "R03-registry-root-isolation",
+      "result": "PASS",
+      "evidence": {
+        "rootIsolation": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 1,
+    "fail": 2
+  },
+  "externalCalls": 0
+}

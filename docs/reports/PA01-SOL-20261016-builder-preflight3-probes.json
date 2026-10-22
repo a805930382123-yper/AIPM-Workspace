@@ -1,0 +1,455 @@
+{
+  "at": "2026-10-16T02:11:28.086Z",
+  "scope": "independent direct product services, isolated synthetic fixtures; no real Provider",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-pa01-main-probes-Pnhy5B",
+  "storage": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-pa01-main-storage-etSKLq",
+  "summary": {
+    "pass": 26,
+    "fail": 0
+  },
+  "rows": [
+    {
+      "id": "S01-seven-template-Brief",
+      "result": "PASS",
+      "evidence": {
+        "calls": 7,
+        "templates": 7
+      }
+    },
+    {
+      "id": "S02-provider-invalid-Brief-rejected",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_SCHEMA_MISMATCH",
+        "status": 502,
+        "details": {
+          "requestId": "afc5731e-bf79-46fb-a6be-ce879ac5eb2a",
+          "stage": "brief",
+          "category": "response_invalid",
+          "retryable": true,
+          "errors": [
+            {
+              "path": "$.context",
+              "expected": "string",
+              "actualType": "array"
+            }
+          ],
+          "totalErrors": 1,
+          "nextAction": "retry_stage",
+          "startedAt": "2026-10-16T02:11:27.612Z",
+          "finishedAt": "2026-10-16T02:11:27.612Z",
+          "durationMs": 0,
+          "status": "failed",
+          "finishReason": "stop",
+          "bytes": 100,
+          "preserved": false
+        },
+        "message": "Provider 返回的Brief 字段或结构不符合共同契约。"
+      }
+    },
+    {
+      "id": "F01-client-invalid-Brief-must-be-400",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_SCHEMA_MISMATCH",
+        "status": 400,
+        "details": {
+          "requestId": "30daea6a-158e-46be-a339-a835497b2b0b",
+          "stage": "generate",
+          "category": "user_input",
+          "retryable": false,
+          "errors": [
+            {
+              "path": "$.goal",
+              "expected": "nonblank string",
+              "actualType": "string"
+            },
+            {
+              "path": "$.goal",
+              "expected": "string minLength 1",
+              "actualType": "string"
+            }
+          ],
+          "totalErrors": 2,
+          "nextAction": "review_input"
+        },
+        "message": "Brief 字段或结构无效。"
+      }
+    },
+    {
+      "id": "F02-safe-schema-diagnostic-present",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_SCHEMA_MISMATCH",
+        "status": 502,
+        "details": {
+          "requestId": "a2d5eb54-1b3a-408b-ac36-6a4977133c52",
+          "stage": "brief",
+          "category": "response_invalid",
+          "retryable": true,
+          "errors": [
+            {
+              "path": "$.context",
+              "expected": "string",
+              "actualType": "array"
+            }
+          ],
+          "totalErrors": 1,
+          "nextAction": "retry_stage",
+          "startedAt": "2026-10-16T02:11:27.613Z",
+          "finishedAt": "2026-10-16T02:11:27.613Z",
+          "durationMs": 0,
+          "status": "failed",
+          "finishReason": "stop",
+          "bytes": 100,
+          "preserved": false
+        },
+        "message": "Provider 返回的Brief 字段或结构不符合共同契约。"
+      }
+    },
+    {
+      "id": "S03-content-render-variable-and-controlled-fields",
+      "result": "PASS",
+      "evidence": {
+        "rendered": true,
+        "variablesPreserved": true
+      }
+    },
+    {
+      "id": "S04-content-reject-model-system-fields",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_SCHEMA_MISMATCH",
+        "status": 502,
+        "details": {
+          "requestId": "348f240e-b615-4639-b36a-51c72fc8e96e",
+          "stage": "generate",
+          "category": "response_invalid",
+          "retryable": true,
+          "errors": [
+            {
+              "path": "$.favorite",
+              "expected": "no additional property",
+              "actualType": "boolean"
+            }
+          ],
+          "totalErrors": 1,
+          "nextAction": "retry_stage",
+          "startedAt": "2026-10-16T02:11:27.622Z",
+          "finishedAt": "2026-10-16T02:11:27.622Z",
+          "durationMs": 0,
+          "status": "failed",
+          "finishReason": "stop",
+          "bytes": 100,
+          "preserved": false
+        },
+        "message": "Provider 返回的Prompt 内容 字段或结构不符合共同契约。"
+      }
+    },
+    {
+      "id": "S05-check-write-read-zero-extra-call",
+      "result": "PASS",
+      "evidence": {
+        "checks": 9,
+        "readonlyCalls": 0
+      }
+    },
+    {
+      "id": "S06-failed-rewrite-preserves-check-and-retry-only-rewrite",
+      "result": "PASS",
+      "evidence": {
+        "preserved": 9,
+        "retryCalls": 1
+      }
+    },
+    {
+      "id": "S07-concurrent-and-success-replay",
+      "result": "PASS",
+      "evidence": {
+        "concurrent409": true,
+        "replayCalls": 0
+      }
+    },
+    {
+      "id": "S08-three-attempt-cap",
+      "result": "PASS",
+      "evidence": {
+        "code": "REWRITE_LIMIT",
+        "status": 409,
+        "details": {
+          "requestId": "4d6c41a5-22d5-41a6-891b-ed2a95a9127d",
+          "stage": "validation",
+          "category": "user_input",
+          "retryable": false,
+          "nextAction": "review_input"
+        },
+        "message": "重写次数已达上限，请重新运行检查。"
+      }
+    },
+    {
+      "id": "S09-startup-interruption-does-not-call",
+      "result": "PASS",
+      "evidence": {
+        "stage": "failed",
+        "calls": 0,
+        "fixture": "genuine persisted rewriting bytes restored after simulating interruption"
+      }
+    },
+    {
+      "id": "S10-input-binding-zero-call",
+      "result": "PASS",
+      "evidence": {
+        "code": "OPTIMIZER_SNAPSHOT_INVALID",
+        "status": 409,
+        "details": {
+          "category": "conflict",
+          "stage": "rewrite",
+          "retryable": false,
+          "nextAction": "rerun_check"
+        },
+        "message": "检查草稿的结构或绑定校验失败，未调用 Provider。"
+      }
+    },
+    {
+      "id": "S11-provider-binding-zero-call",
+      "result": "PASS",
+      "evidence": {
+        "code": "PROVIDER_CHANGED",
+        "status": 409,
+        "details": {
+          "requestId": "c295ae25-66ee-47ac-b4e7-a1e244685bec",
+          "stage": "validation",
+          "category": "user_input",
+          "retryable": false,
+          "nextAction": "review_input"
+        },
+        "message": "Provider 已变化，请重新检查原 Prompt。"
+      }
+    },
+    {
+      "id": "F03-rules-version-binding",
+      "result": "PASS",
+      "evidence": {
+        "code": "OPTIMIZER_SNAPSHOT_INVALID",
+        "status": 409,
+        "details": {
+          "category": "conflict",
+          "stage": "rewrite",
+          "retryable": false,
+          "nextAction": "rerun_check"
+        },
+        "message": "检查草稿的结构或绑定校验失败，未调用 Provider。"
+      }
+    },
+    {
+      "id": "F04-check-shape-binding",
+      "result": "PASS",
+      "evidence": {
+        "code": "OPTIMIZER_SNAPSHOT_INVALID",
+        "status": 409,
+        "details": {
+          "category": "conflict",
+          "stage": "rewrite",
+          "retryable": false,
+          "nextAction": "rerun_check"
+        },
+        "message": "检查草稿的结构或绑定校验失败，未调用 Provider。"
+      }
+    },
+    {
+      "id": "F05-check-content-integrity-binding",
+      "result": "PASS",
+      "evidence": {
+        "code": "OPTIMIZER_SNAPSHOT_INVALID",
+        "status": 409,
+        "details": {
+          "category": "conflict",
+          "stage": "rewrite",
+          "retryable": false,
+          "nextAction": "rerun_check"
+        },
+        "message": "检查草稿的结构或绑定校验失败，未调用 Provider。"
+      }
+    },
+    {
+      "id": "F06-known-secret-in-restored-check-must-not-be-sent",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true
+      }
+    },
+    {
+      "id": "S12-target-version-change-zero-call",
+      "result": "PASS",
+      "evidence": {
+        "code": "VERSION_CONFLICT",
+        "status": 409,
+        "details": {
+          "requestId": "77ad2aaf-f126-492d-8679-b08edf3639cc",
+          "stage": "validation",
+          "category": "user_input",
+          "retryable": false,
+          "nextAction": "review_input"
+        },
+        "message": "目标 Prompt 已变化，请重新检查。"
+      }
+    },
+    {
+      "id": "S13-legacy-optimize-two-calls",
+      "result": "PASS",
+      "evidence": {
+        "calls": 2
+      }
+    },
+    {
+      "id": "F07-storage-helper-without-issue-receiver-must-throw",
+      "result": "PASS",
+      "evidence": {
+        "code": "STORAGE_CORRUPT",
+        "status": 500,
+        "details": {
+          "category": "recovery",
+          "nextAction": "inspect_or_restore",
+          "issueCount": 1,
+          "partial": false
+        },
+        "message": "一个或多个本机记录损坏、不可读或超出扫描预算；原文件已保留。"
+      }
+    },
+    {
+      "id": "F08-healthy-real-job-must-not-be-reported-corrupt",
+      "result": "PASS",
+      "evidence": {
+        "scanned": true,
+        "partial": false,
+        "overflow": false,
+        "truncated": false,
+        "totalIssues": 0,
+        "hiddenIssues": 0,
+        "scannedFiles": 1,
+        "scannedBytes": 447,
+        "items": []
+      }
+    },
+    {
+      "id": "F09-actual-wiki-commit-path-must-be-scanned",
+      "result": "PASS",
+      "evidence": {
+        "scanned": true,
+        "partial": false,
+        "overflow": false,
+        "truncated": false,
+        "totalIssues": 1,
+        "hiddenIssues": 0,
+        "scannedFiles": 1,
+        "scannedBytes": 4,
+        "items": [
+          {
+            "id": "d4a8988e47cbcd78",
+            "kind": "commits",
+            "reason": "parse"
+          }
+        ]
+      }
+    },
+    {
+      "id": "F10-unfixed-commit-issue-must-not-disappear",
+      "result": "PASS",
+      "evidence": {
+        "first": {
+          "scanned": true,
+          "partial": false,
+          "overflow": false,
+          "truncated": false,
+          "totalIssues": 1,
+          "hiddenIssues": 0,
+          "scannedFiles": 1,
+          "scannedBytes": 4,
+          "items": [
+            {
+              "id": "d4a8988e47cbcd78",
+              "kind": "commits",
+              "reason": "parse"
+            }
+          ]
+        },
+        "second": {
+          "scanned": true,
+          "partial": false,
+          "overflow": false,
+          "truncated": false,
+          "totalIssues": 1,
+          "hiddenIssues": 0,
+          "scannedFiles": 1,
+          "scannedBytes": 4,
+          "items": [
+            {
+              "id": "d4a8988e47cbcd78",
+              "kind": "commits",
+              "reason": "parse"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "F11-wrong-shape-raw-state-must-not-be-empty",
+      "result": "PASS",
+      "evidence": {
+        "code": "STORAGE_CORRUPT",
+        "status": 500,
+        "details": {
+          "category": "recovery",
+          "nextAction": "inspect_or_restore"
+        },
+        "message": "本机记录结构无效，原文件已保留。"
+      }
+    },
+    {
+      "id": "F12-wrong-shape-manifest-must-not-enter-executor",
+      "result": "PASS",
+      "evidence": {
+        "resumed": [],
+        "conflicts": []
+      }
+    },
+    {
+      "id": "F13-same-file-recovery-issue-must-be-deduplicated",
+      "result": "PASS",
+      "evidence": {
+        "scanned": true,
+        "partial": false,
+        "overflow": false,
+        "truncated": false,
+        "totalIssues": 4,
+        "hiddenIssues": 0,
+        "scannedFiles": 4,
+        "scannedBytes": 158,
+        "items": [
+          {
+            "id": "d4a8988e47cbcd78",
+            "kind": "commits",
+            "reason": "parse"
+          },
+          {
+            "id": "f447e8f65ee648a7",
+            "kind": "commits",
+            "reason": "shape"
+          },
+          {
+            "id": "7abbe74bc7775f34",
+            "kind": "prompt-drafts",
+            "reason": "parse"
+          },
+          {
+            "id": "1a7c164e144a482c",
+            "kind": "raw-state",
+            "reason": "shape"
+          }
+        ]
+      }
+    }
+  ],
+  "localInProcessProviderCalls": 32,
+  "externalCalls": 0
+}

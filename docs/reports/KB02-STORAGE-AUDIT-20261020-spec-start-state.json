@@ -1,0 +1,342 @@
+{
+  "controlled": true,
+  "realProviderCalls": 0,
+  "node": "v25.2.1",
+  "previous": {
+    "job": {
+      "id": "565a9622-002c-4d8a-a247-3fce5c34b3a3",
+      "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+      "status": "failed",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 0,
+        "reason": "主题规划覆盖不完整或重复，未组装草稿。"
+      },
+      "startedAt": "2026-10-20T13:47:45.178Z",
+      "updatedAt": "2026-10-20T13:47:45.222Z",
+      "error": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-20T13:47:45.208Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      },
+      "finishedAt": "2026-10-20T13:47:45.222Z"
+    },
+    "raw": {
+      "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+      "status": "failed",
+      "updatedAt": "2026-10-20T13:47:45.218Z",
+      "history": [
+        {
+          "at": "2026-10-20T13:47:45.188Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3"
+        },
+        {
+          "at": "2026-10-20T13:47:45.218Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3"
+        }
+      ],
+      "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3",
+      "revertStatus": "unprocessed",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-20T13:47:45.208Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    }
+  },
+  "startError": {
+    "code": "STORAGE_WRITE_FAILED",
+    "jobId": "a2023880-267e-440b-aad8-966312d6cfec"
+  },
+  "before": {
+    "job": {
+      "id": "a2023880-267e-440b-aad8-966312d6cfec",
+      "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+      "status": "running",
+      "stage": "extracting",
+      "chunksTotal": 1,
+      "chunksDone": 0,
+      "pagesFound": 0,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 0,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "extracting",
+        "validatedChunks": 0,
+        "totalChunks": 1,
+        "resumable": false,
+        "attempts": 0,
+        "reusedChunks": 0
+      },
+      "startedAt": "2026-10-20T13:47:45.246Z",
+      "updatedAt": "2026-10-20T13:47:45.246Z"
+    },
+    "execution": "settled",
+    "recovery": {
+      "code": "STORAGE_WRITE_FAILED",
+      "message": "本机状态保存失败；请解除存储故障后重试保存状态。",
+      "phase": "start-state",
+      "persisted": false,
+      "action": "reconcile-storage",
+      "details": {
+        "operation": "rename",
+        "errno": "EPERM"
+      }
+    }
+  },
+  "stateBefore": {
+    "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+    "status": "failed",
+    "updatedAt": "2026-10-20T13:47:45.218Z",
+    "history": [
+      {
+        "at": "2026-10-20T13:47:45.188Z",
+        "from": "unprocessed",
+        "to": "processing",
+        "reason": "AI 整理已启动",
+        "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3"
+      },
+      {
+        "at": "2026-10-20T13:47:45.218Z",
+        "from": "processing",
+        "to": "failed",
+        "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+        "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3"
+      }
+    ],
+    "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3",
+    "revertStatus": "unprocessed",
+    "lastError": {
+      "code": "LLM_PLAN_COVERAGE_INVALID",
+      "message": "主题规划覆盖不完整或重复，未组装草稿。",
+      "at": "2026-10-20T13:47:45.208Z",
+      "retryable": true,
+      "details": {
+        "facts": {
+          "missing": [
+            "f-c1-2"
+          ],
+          "duplicate": [],
+          "unknown": []
+        },
+        "questions": {
+          "missing": [],
+          "duplicate": [],
+          "unknown": []
+        },
+        "duplicateTitles": []
+      }
+    }
+  },
+  "recoveryError": {
+    "code": "STORAGE_RECONCILE_CONFLICT",
+    "message": "任务、检查点、原文或草稿已变化，不能安全保存；原文件已保留。"
+  },
+  "after": {
+    "job": {
+      "id": "a2023880-267e-440b-aad8-966312d6cfec",
+      "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+      "status": "running",
+      "stage": "extracting",
+      "chunksTotal": 1,
+      "chunksDone": 0,
+      "pagesFound": 0,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 0,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "extracting",
+        "validatedChunks": 0,
+        "totalChunks": 1,
+        "resumable": false,
+        "attempts": 0,
+        "reusedChunks": 0
+      },
+      "startedAt": "2026-10-20T13:47:45.246Z",
+      "updatedAt": "2026-10-20T13:47:45.246Z"
+    },
+    "execution": "settled",
+    "recovery": {
+      "code": "STORAGE_WRITE_FAILED",
+      "message": "本机状态保存失败；请解除存储故障后重试保存状态。",
+      "phase": "start-state",
+      "persisted": false,
+      "action": "reconcile-storage",
+      "details": {
+        "operation": "rename",
+        "errno": "EPERM"
+      }
+    }
+  },
+  "providerDelta": 0,
+  "stateAfter": {
+    "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+    "status": "failed",
+    "updatedAt": "2026-10-20T13:47:45.218Z",
+    "history": [
+      {
+        "at": "2026-10-20T13:47:45.188Z",
+        "from": "unprocessed",
+        "to": "processing",
+        "reason": "AI 整理已启动",
+        "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3"
+      },
+      {
+        "at": "2026-10-20T13:47:45.218Z",
+        "from": "processing",
+        "to": "failed",
+        "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+        "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3"
+      }
+    ],
+    "jobId": "565a9622-002c-4d8a-a247-3fce5c34b3a3",
+    "revertStatus": "unprocessed",
+    "lastError": {
+      "code": "LLM_PLAN_COVERAGE_INVALID",
+      "message": "主题规划覆盖不完整或重复，未组装草稿。",
+      "at": "2026-10-20T13:47:45.208Z",
+      "retryable": true,
+      "details": {
+        "facts": {
+          "missing": [
+            "f-c1-2"
+          ],
+          "duplicate": [],
+          "unknown": []
+        },
+        "questions": {
+          "missing": [],
+          "duplicate": [],
+          "unknown": []
+        },
+        "duplicateTitles": []
+      }
+    }
+  },
+  "followupStarts": [
+    {
+      "options": {},
+      "code": "STORAGE_RECONCILE_REQUIRED"
+    },
+    {
+      "options": {
+        "restart": true
+      },
+      "code": "STORAGE_RECONCILE_REQUIRED"
+    },
+    {
+      "options": {
+        "planningRetry": true
+      },
+      "code": "STORAGE_RECONCILE_REQUIRED"
+    }
+  ],
+  "refusals": 6,
+  "expected": "After releasing the start-state fault, storage-only recovery settles the inserted job without Provider calls and permits a later start.",
+  "findingReproduced": true,
+  "restartReconcile": {
+    "interrupted": [],
+    "statesFixed": []
+  },
+  "afterRestart": {
+    "job": {
+      "id": "a2023880-267e-440b-aad8-966312d6cfec",
+      "rawId": "2df6ae6c-2134-497d-b3b7-46e96f3bd246",
+      "status": "running",
+      "stage": "extracting",
+      "chunksTotal": 1,
+      "chunksDone": 0,
+      "pagesFound": 0,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 0,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "extracting",
+        "validatedChunks": 0,
+        "totalChunks": 1,
+        "resumable": false,
+        "attempts": 0,
+        "reusedChunks": 0
+      },
+      "startedAt": "2026-10-20T13:47:45.246Z",
+      "updatedAt": "2026-10-20T13:47:45.246Z"
+    },
+    "execution": "settled",
+    "recovery": {
+      "code": "STORAGE_RECONCILE_REQUIRED",
+      "message": "发现已停止的任务；请重试保存状态以核验本机检查点和草稿。",
+      "persisted": false,
+      "phase": "restart-disk",
+      "action": "reconcile-storage"
+    }
+  },
+  "afterRestartError": {
+    "code": "STORAGE_RECONCILE_CONFLICT",
+    "message": "任务、检查点、原文或草稿已变化，不能安全保存；原文件已保留。"
+  }
+}

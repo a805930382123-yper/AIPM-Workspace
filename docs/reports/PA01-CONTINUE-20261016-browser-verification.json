@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-16T07:40:41.531Z",
+  "result": "PASS",
+  "browser": "Actual IAB via cua_repl",
+  "checks": [
+    "check persisted",
+    "reload then explicit checked recovery restores original and supplement",
+    "no provider calls during reload/recovery (14 total)",
+    "continue rewrite adds only one rewrite (15 total)",
+    "explicit save returns version 1",
+    "Library shows saved item",
+    "API readback source optimized, version 1",
+    "isolated Raw body unchanged"
+  ],
+  "savedPrompt": {
+    "id": "29c50b0d-0f09-4120-bc3e-ace8426e8c66",
+    "name": "PA01浏览器恢复验收-显式保存",
+    "category": "customer",
+    "scenario": "为虚构经销商的首次访谈撰写提纲。访谈属于PA01浏览器恢复验收范围：只核对缺货审批角色及回款对账频率两项议题，其余未知信息一律标记为待用户补充，不编造经营数据。",
+    "body": "## 角色\n\n你是渠道访谈执行者。具体角色（如渠道经理或咨询顾问）待用户补充；补充前以中性的\"访谈执行者\"身份编写提纲。\n\n## 任务目标\n\n为虚构经销商的首次访谈写一份结构化访谈提纲，仅覆盖两个验收议题：1) 缺货审批角色（谁审批、依据什么流程）；2) 回款对账频率（多久对账一次、由谁执行）。\n\n## 执行步骤\n\n1. 列出访谈开场事项（自我介绍、目的说明、保密约定）。2. 围绕缺货审批角色设计提问（角色、权限、流程、例外情况）。3. 围绕回款对账频率设计提问（频率、执行人、工具、异常处理）。4. 结尾设计确认与后续跟进事项。5. 对每个问题标注\"已核实事实/待验证推断/待用户补充\"。\n\n## 约束条件\n\n- 只覆盖缺货审批角色及回款对账频率两个议题，不扩展其他经营话题。- 不编造任何经营数据、金额、人名、系统名。- 访谈执行者角色未提供前标记为待用户补充。- 区分已核实事实与待验证推断，推断须显式标注依据。\n\n## 输出格式\n\n输出Markdown访谈提纲：# 访谈提纲（虚构经销商首次访谈）\n## 一、开场\n## 二、议题1：缺货审批角色\n（每问后标注：[已核实/待验证推断/待用户补充]）\n## 三、议题2：回款对账频率\n（标注规则同上）\n## 四、结尾确认\n## 五、待用户补充清单",
+    "variables": [],
+    "inputRequirements": "用户提供：1) 访谈执行者角色（如渠道经理/咨询顾问）；2) 访谈前提材料（经销商档案、访谈目的文档、既有沟通记录）——均未提供时标记待用户补充；3) 已知背景：对象为虚构经销商，范围为PA01浏览器恢复验收的两项议题。",
+    "outputRequirements": "Markdown格式的访谈提纲，仅含缺货审批角色与回款对账频率两个议题；每个提问标注[已核实事实/待验证推断/待用户补充]；末尾附待用户补充清单；不出现编造的经营数据。",
+    "relatedWikiIds": [],
+    "examples": "示例提问：\n- 缺货审批角色：\"贵司缺货审批由哪个角色执行？审批依据是什么流程？[待验证推断：存在专职审批岗，依据用户补充确认]\"\n- 回款对账频率：\"回款对账多久进行一次（每周/每月）？由谁执行？[待用户补充：对账执行人未提供]\"",
+    "tags": [
+      "经销商访谈",
+      "访谈提纲",
+      "PA01",
+      "防虚构",
+      "事实与推断"
+    ],
+    "favorite": false,
+    "createdAt": "2026-10-16T07:36:59.193Z",
+    "updatedAt": "2026-10-16T07:36:59.193Z",
+    "version": 1,
+    "source": "optimized"
+  },
+  "ledgerCount": 15,
+  "newStages": [
+    {
+      "at": "2026-10-16T07:34:10.938Z",
+      "sequence": 14,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stage": "check",
+      "requestCharacters": 2832,
+      "reasoningEffort": "low",
+      "responseFormat": {
+        "type": "json_object"
+      }
+    },
+    {
+      "at": "2026-10-16T07:36:02.208Z",
+      "sequence": 15,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stage": "rewrite",
+      "requestCharacters": 3502,
+      "reasoningEffort": "low",
+      "responseFormat": {
+        "type": "json_object"
+      }
+    }
+  ],
+  "trace": [
+    {
+      "sequence": 14,
+      "stage": "check",
+      "at": "2026-10-16T07:34:10.946Z",
+      "status": 200,
+      "elapsedMs": 12274
+    },
+    {
+      "sequence": 15,
+      "stage": "rewrite",
+      "at": "2026-10-16T07:36:02.218Z",
+      "status": 200,
+      "elapsedMs": 22238
+    }
+  ],
+  "scope": "Browser successful recovery; controlled failure/late-response tests are separate jsdom evidence."
+}

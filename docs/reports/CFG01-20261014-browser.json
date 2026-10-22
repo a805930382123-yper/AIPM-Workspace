@@ -1,0 +1,65 @@
+{
+  "scope": "actual IAB desktop1280x900/narrow390x844, own product/Vite/local fake",
+  "checks": [
+    {
+      "id": "B01-desktop-empty-manual",
+      "result": "PASS"
+    },
+    {
+      "id": "B02-explicit-save-password-cleared",
+      "result": "PASS"
+    },
+    {
+      "id": "B03-explicit-connection-success",
+      "result": "PASS"
+    },
+    {
+      "id": "B04-edit-preserves-key-dirty-no-test",
+      "result": "PASS"
+    },
+    {
+      "id": "B05-page-refresh-persisted-model",
+      "result": "PASS"
+    },
+    {
+      "id": "B07-narrow-home-settings-entry-layout",
+      "result": "PASS",
+      "details": "Before repair document scroll674/client375; final390x844 scroll375/client375, settings entry visible, backup command wraps; failure screenshot retained."
+    },
+    {
+      "id": "B06",
+      "result": "PASS",
+      "details": "Keyboard Enter opened real confirm; getJsDialog confirm dismissed; config retained and trace unchanged, no DELETE after latest PUT."
+    },
+    {
+      "id": "B08",
+      "result": "PASS",
+      "details": "Real confirm accepted, DELETE completed; no configured key, all input values empty, password type retained."
+    },
+    {
+      "id": "B09",
+      "result": "PASS",
+      "details": "5000ms delayed initial/read: inputs and actions disabled; navigated Home during pending reload, remounted Settings initial lock then loading ended; no late success."
+    },
+    {
+      "id": "B10",
+      "result": "PASS",
+      "details": "Injected HTTP500 save fails visibly, remains unconfigured, entered fields retained and save enabled for retry."
+    },
+    {
+      "id": "B11",
+      "result": "PASS",
+      "details": "Retried save succeeds, password blank; explicit fake401 test shows safe authentication error, controls re-enabled."
+    },
+    {
+      "id": "B12",
+      "result": "PASS",
+      "details": "Same data-root API restart with env model: environment source visible, three fields/save/clear disabled, explicit connection test allowed."
+    },
+    {
+      "id": "B13",
+      "result": "PASS",
+      "details": "Same-root restart returns browser-final-model; delayed test unmounted/remounted Settings, no stale success, password blank."
+    }
+  ]
+}

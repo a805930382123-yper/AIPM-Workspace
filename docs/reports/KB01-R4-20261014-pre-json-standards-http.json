@@ -1,0 +1,126 @@
+{
+  "at": "2026-10-14T14:51:52.107Z",
+  "kind": "Standards independent actual HTTP + localhost fake; not real Provider quality",
+  "node": "v25.2.1",
+  "durationMs": 4068,
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-IadT59",
+  "checks": [
+    {
+      "id": "S01-save-and-browse-zero-provider",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "cad64ad6-4852-4f07-a547-4f3ceab743c4",
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "S02-double-start-one-job-same-raw",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "f4c04f9a-55ab-4816-accf-19056b3c7cac",
+        "jobId": "69271388-1ff4-481e-822f-4c96fe3ca139",
+        "oneFakeCall": true
+      }
+    },
+    {
+      "id": "S03-failure-retains-raw-and-retry-same-id",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "77807c2d-86e0-4940-adb4-80117b060bd3",
+        "error": {
+          "code": "LLM_PROVIDER_ERROR",
+          "message": "Provider 服务错误（HTTP 500）。（Provider 说明：Explicit independent fake error）（第 1 段）",
+          "at": "2026-10-14T14:51:49.147Z",
+          "retryable": true,
+          "details": {
+            "chunkIndex": 0
+          }
+        },
+        "draftId": "464f45c6-0399-4135-a04d-e59b5c26129f"
+      }
+    },
+    {
+      "id": "S04-cancel-no-draft-no-formal-write",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "f59f4ad4-1e90-4987-a211-0f5988b70f30",
+        "status": "cancelled"
+      }
+    },
+    {
+      "id": "S05-draft-same-root-restart-reuse-no-provider",
+      "result": "PASS",
+      "evidence": {
+        "draftId": "f74c2ce9-7d32-402e-992f-6907f135b05d",
+        "sameRoot": true,
+        "noNewFakeCall": true
+      }
+    },
+    {
+      "id": "S06-candidate-reasons-target-explicit-and-defer",
+      "result": "PASS",
+      "evidence": {
+        "candidateCount": 1,
+        "deferBlocked": true
+      }
+    },
+    {
+      "id": "S07-update-preview-separated-and-stale-target",
+      "result": "PASS",
+      "evidence": {
+        "workflowId": "3fa4a7ea-66a0-482a-9352-95ef947f38fc",
+        "targetRevision": 2,
+        "error": {
+          "code": "REVISION_CONFLICT",
+          "message": "目标 Wiki 已被修改，旧预览不能覆盖新版本。",
+          "details": {
+            "currentRevision": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "S08-update-retains-notes-sources-conflicts-retry",
+      "result": "PASS",
+      "evidence": {
+        "wikiId": "b4916221-c605-45a0-80dd-e9acff1d3b16",
+        "revision": 2,
+        "sources": [
+          "09a46e01-7f34-46c8-91f0-72d2883be1c0",
+          "2f3f0d44-376a-415b-b590-bfeb689aaac3"
+        ]
+      }
+    },
+    {
+      "id": "S09-update-and-synthesis-restored-without-new-calls",
+      "result": "PASS",
+      "evidence": {
+        "updateId": "a3e18773-8f7d-479d-bce6-6c25c79c60f7",
+        "synthesisId": "cb27ec09-2fe2-4ce2-a523-537eb8d12075",
+        "noNewFakeCalls": true
+      }
+    },
+    {
+      "id": "S10-meeting-local-only-no-calls-no-source-cleaning",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "94933f7c-e518-481c-ba2b-3d154588167b",
+        "origin": {
+          "kind": "meeting",
+          "meeting_id": "cd2bcc55-a24e-4807-91e9-fb8c5ee83ff7",
+          "import_id": "d068233e-c99f-4457-b72a-8be36b3469a0",
+          "original_sha256": "fc46a21065df6f38d8ec81117fbf22963c3a2e56b8851cab2da8d110310e4901",
+          "registered_confidentiality": "Public",
+          "processing_policy": "meeting_local_only"
+        },
+        "zeroFakeCalls": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 10,
+    "fail": 0
+  },
+  "fakeCalls": 13,
+  "servicesClosed": true
+}

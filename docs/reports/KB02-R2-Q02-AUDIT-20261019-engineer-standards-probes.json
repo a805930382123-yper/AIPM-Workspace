@@ -1,0 +1,111 @@
+{
+  "at": "2026-10-19T02:50:07.823Z",
+  "scope": "actual localhost HTTP; synthetic fixture; zero external calls",
+  "rows": [
+    {
+      "id": "S01-budget-exhausted-planningRetry",
+      "result": "PASS",
+      "expected": "409 before side effects; preserve checkpoint/job/state bytes on every replay",
+      "actual": {
+        "jobId": "2a532d9e-eb86-4461-9969-4c260413f165",
+        "attempts": 6,
+        "validatedChunks": 1,
+        "beforeSha256": [
+          "fe02fa06c1bbe144a11bd530905cffedd2f9cfb24b4773ef0f4ea446cf8f4f78",
+          "62c96c91eb1027a6c1fa60b09ce354600e93f78971a9dec2adc5f512837af711",
+          "29441d769b264a740a646e13a8d9b8f3cbf56c444490db9b694a1a2b60bfaa59"
+        ],
+        "denials": [
+          {
+            "httpStatus": 409,
+            "error": {
+              "code": "LLM_ATTEMPT_LIMIT",
+              "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+            },
+            "sha256": [
+              "fe02fa06c1bbe144a11bd530905cffedd2f9cfb24b4773ef0f4ea446cf8f4f78",
+              "62c96c91eb1027a6c1fa60b09ce354600e93f78971a9dec2adc5f512837af711",
+              "29441d769b264a740a646e13a8d9b8f3cbf56c444490db9b694a1a2b60bfaa59"
+            ],
+            "additionalProviderCalls": 0
+          },
+          {
+            "httpStatus": 409,
+            "error": {
+              "code": "LLM_ATTEMPT_LIMIT",
+              "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+            },
+            "sha256": [
+              "fe02fa06c1bbe144a11bd530905cffedd2f9cfb24b4773ef0f4ea446cf8f4f78",
+              "62c96c91eb1027a6c1fa60b09ce354600e93f78971a9dec2adc5f512837af711",
+              "29441d769b264a740a646e13a8d9b8f3cbf56c444490db9b694a1a2b60bfaa59"
+            ],
+            "additionalProviderCalls": 0
+          },
+          {
+            "httpStatus": 409,
+            "error": {
+              "code": "LLM_ATTEMPT_LIMIT",
+              "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+            },
+            "sha256": [
+              "fe02fa06c1bbe144a11bd530905cffedd2f9cfb24b4773ef0f4ea446cf8f4f78",
+              "62c96c91eb1027a6c1fa60b09ce354600e93f78971a9dec2adc5f512837af711",
+              "29441d769b264a740a646e13a8d9b8f3cbf56c444490db9b694a1a2b60bfaa59"
+            ],
+            "additionalProviderCalls": 0
+          }
+        ],
+        "beforeDiagnostic": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        },
+        "afterLastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T02:50:05.954Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "id": "S02-cancel-explicit-planner-late-response",
+      "result": "PASS",
+      "actual": {
+        "status": "cancelled",
+        "stage": "planning",
+        "attempts": 3,
+        "planSaved": false,
+        "drafts": 0,
+        "rawStatus": "unprocessed",
+        "providerCalls": 1
+      }
+    }
+  ],
+  "closed": true
+}

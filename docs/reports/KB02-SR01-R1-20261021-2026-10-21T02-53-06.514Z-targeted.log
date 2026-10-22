@@ -1,0 +1,89 @@
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (1364.609ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (789.7405ms)
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (697.0209ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=true (991.6728ms)
+✔ F-SR01-01 refuses externally changed binding and preserves bytes (574.8056ms)
+✔ F-SR01-01 refuses externally changed history and preserves bytes (577.6828ms)
+✔ F-SR01-01 refuses externally changed body and preserves bytes (513.1204ms)
+✔ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (763.015ms)
+✔ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (128.8826ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (121.1668ms)
+✔ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (630.8052ms)
+✔ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (539.6309ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (1601.3816ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (538.5243ms)
+✔ SR01 real atomic failed-job transient retry (521.0192ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic failed-job persistent explicit recovery (1242.3044ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","rejectedRenames":12,"failedTargetBefore":"061eddc662548a3d1e0190a161ac31eefa3f48ac069c62bacc61a4f9c828d642","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["c573e687a3f24c14749d0ec86ec3b9609017c304471d6780634484884869f2a7","f11752b8e07a98769bc364e44530421f06731694953e4bf0ebccba55724b81c0","67a94ac274990b9bfcd95773b1fa1a66e35b6baa3f8f27545c26f90de7261c84"]}
+✔ SR01 real atomic done-checkpoint transient retry (291.7565ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":2}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (1098.9698ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"53f1a780d213532da700c1a848f319674d94ae0821c3d1e1dfb0defb832cb887","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":["5a029044-361c-46f7-814f-fdc49b9a2eb8"],"finalJob":"completed","idempotentHashes":["c52abfb7530739b97b6f390ef6463adb86cc5ad37262363ce4e187b8fa3661ac","378af95e14f29db043fcef1f59710a820a252156fb79f2001247f513aff76447","5129300ac50d8b8a0033acdf3ed9840954d6d3a1a09e9a42f04f7283b53fbc0c"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (177.2648ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (926.3381ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","rejectedRenames":12,"failedTargetBefore":"d8a0fb8b00c582a54d878efe052f90a3d787d7c871c96a592fe8e91b7b63daaf","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["dcd6c80b26dbd42241eb0f359817a7e3e468f2b28745e7d56402f2ed4e20525b","4b48e19b129457601a07be81c8d76160f93d0d685227be787012fac294e7f8aa","eb7ec1452d79efd63ae342faf6594ba5e50170a0e369780ae59a8e5976bfeecf"]}
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (546.8783ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (490.2823ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (485.6357ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (491.1002ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (87.361ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (472.1012ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3933.5703ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (1.3051ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (8304.955ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1534.8118ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (154.466ms)
+✖ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (773.9488ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (1731.1817ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3629.8977ms)
+✔ SR01 start failure reload is actionable and late storage response cannot change a different Raw selection (647.6767ms)
+✔ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3897.0455ms)
+✖ F-SR01-01 React refresh selects new recovery id over old failed job and saves without regenerating (3899.698ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 34
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42863.4804
+
+✖ failing tests:
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (697.0209ms)
+  Error: Budget fixture settlement failed: {"node":"v24.20.0","job":{"status":"running","stage":"planning","callCount":2},"checkpoint":{"stage":"planning","attempts":2,"validatedChunks":1,"diagnosticPresent":true,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"rawStatus":"failed","requests":2,"execution":"settled","recovery":{"code":"STORAGE_WRITE_FAILED","phase":"failed-job","persisted":false}}
+      at Object.wait (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-31bYeF\tests\support\kb02-storage-fixture.ts:53:80)
+      at async interruptedRestart (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-31bYeF\tests\kb02-sr01-r1.test.ts:13:38)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-31bYeF\tests\kb02-sr01-r1.test.ts:28:13)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests\kb02-storage-recovery.test.ts:1:14208
+✖ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (773.9488ms)
+  Error: Budget fixture settlement failed: {"node":"v24.20.0","job":{"status":"running","stage":"planning","callCount":1},"checkpoint":{"stage":"planning","attempts":2,"validatedChunks":1,"diagnosticPresent":false},"rawStatus":"processing","requests":1,"execution":"settled","recovery":{"code":"STORAGE_WRITE_FAILED","phase":"call-count-job","persisted":false}}
+      at Object.wait (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-31bYeF\tests\support\kb02-storage-fixture.ts:53:80)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-31bYeF\tests\kb02-storage-recovery.test.ts:223:34)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-storage-ui.test.tsx:1:10787
+✖ F-SR01-01 React refresh selects new recovery id over old failed job and saves without regenerating (3899.698ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'running'
+  - 'failed'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-31bYeF\tests\kb02-storage-ui.test.tsx:146:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'running',
+    expected: 'failed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

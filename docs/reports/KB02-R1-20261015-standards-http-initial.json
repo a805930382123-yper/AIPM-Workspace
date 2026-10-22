@@ -1,0 +1,515 @@
+{
+  "at": "2026-10-15T06:02:18.840Z",
+  "scope": "actual isolated product HTTP + localhost fake; no real Provider quality claim",
+  "node": "v24.20.0",
+  "durationMs": 27419,
+  "checks": [
+    {
+      "id": "H01-short-draft-repeat-readonly",
+      "result": "PASS",
+      "evidence": {
+        "draftId": "7cb164d7-3677-46fd-97ff-079ef48de938",
+        "calls": 2,
+        "pages": 1,
+        "defaultUnselected": true,
+        "noFormalWrites": true,
+        "pipelineVersion": "kb02-1",
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "id": "H02-long-all-facts-planner-and-evidence",
+      "result": "PASS",
+      "evidence": {
+        "characters": 106400,
+        "chunks": 14,
+        "facts": 28,
+        "questions": 1,
+        "calls": 15,
+        "oneTopicMock": true,
+        "evidenceRangesValid": true
+      }
+    },
+    {
+      "id": "H03-compact-schema-and-truncation-rejection",
+      "result": "PASS",
+      "evidence": {
+        "cases": 12,
+        "results": [
+          {
+            "label": "extra",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "missing",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "type",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "empty-evidence",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "unknown-locator",
+            "code": "LLM_EVIDENCE_UNKNOWN_LOCATOR"
+          },
+          {
+            "label": "cross-chunk",
+            "code": "LLM_EVIDENCE_UNKNOWN_LOCATOR"
+          },
+          {
+            "label": "blank-fact",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "long-fact",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "secret-value",
+            "code": "LLM_OUTPUT_CONTAINS_SECRET"
+          },
+          {
+            "label": "secret-key",
+            "code": "LLM_OUTPUT_CONTAINS_SECRET"
+          },
+          {
+            "label": "parseable-truncated",
+            "code": "LLM_OUTPUT_TRUNCATED"
+          },
+          {
+            "label": "invalid-json",
+            "code": "LLM_INVALID_JSON"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H04-plan-coverage-schema-rejection",
+      "result": "PASS",
+      "evidence": {
+        "cases": 9,
+        "results": [
+          {
+            "label": "missing-fact",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "unknown-fact",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "repeat-fact",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "missing-question",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "extra",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "wrong-type",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "empty-page",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "normalized-title-duplicate",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "truncated-plan",
+            "code": "LLM_OUTPUT_TRUNCATED"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H05-failed-chunk-explicit-resume-reuses-ledger",
+      "result": "PASS",
+      "evidence": {
+        "jobId": "404f6eb4-125a-4da4-8ca0-69353f69e20f",
+        "beforeAttempts": 2,
+        "afterAttempts": 5,
+        "reusedChunk": 1,
+        "newRequests": 3
+      }
+    },
+    {
+      "id": "H06-planning-failure-restart-no-automatic-calls",
+      "result": "PASS",
+      "evidence": {
+        "sameRaw": "379d1d50-d419-47bc-bf36-a46af27b385c",
+        "sameJob": "0a1a6454-036f-4dd8-853d-4a7ce745c89f",
+        "validatedChunks": 1,
+        "newCalls": 1,
+        "startupCalls": 0
+      }
+    },
+    {
+      "id": "H07-concurrent-resume-single-job",
+      "result": "PASS",
+      "evidence": {
+        "sameLogicalJob": true,
+        "onePlanningCall": true,
+        "oneDraft": true
+      }
+    },
+    {
+      "id": "H08-cancel-late-results-checkpoint-stable",
+      "result": "PASS",
+      "evidence": {
+        "lateResultNotCached": true,
+        "noDraftOnCancel": true,
+        "explicitResumeCompleted": true
+      }
+    },
+    {
+      "id": "H09-corrupt-checkpoint-failclosed-and-explicit-restart",
+      "result": "PASS",
+      "evidence": {
+        "corruptStatus": 409,
+        "noSilentSkip": true,
+        "oldRecordPreserved": true,
+        "newJobExplicit": true
+      }
+    },
+    {
+      "id": "H10-checkpoint-rehashed-invalid-structure",
+      "result": "PASS",
+      "evidence": {
+        "cases": 7,
+        "results": [
+          {
+            "label": "unknown-top-field",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_CORRUPT"
+          },
+          {
+            "label": "unknown-format",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_CORRUPT"
+          },
+          {
+            "label": "wrong-raw",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_CORRUPT"
+          },
+          {
+            "label": "rules-changed",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_INCOMPATIBLE"
+          },
+          {
+            "label": "bad-evidence",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_CORRUPT"
+          },
+          {
+            "label": "unknown-fact-reference",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_CORRUPT"
+          },
+          {
+            "label": "duplicate-chunk",
+            "status": 409,
+            "code": "LLM_CHECKPOINT_CORRUPT"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H11-provider-model-change-failclosed",
+      "result": "PASS",
+      "evidence": {
+        "modelChanged": true,
+        "noCall": true,
+        "status": 409
+      }
+    },
+    {
+      "id": "H12-attempt-budget-across-resumes",
+      "result": "PASS",
+      "evidence": {
+        "limit": 6,
+        "totalExternalFakeAttempts": 6,
+        "resumeDidNotReset": true
+      }
+    },
+    {
+      "id": "H13-draft-publish-crash-recover-no-duplicate",
+      "result": "PASS",
+      "evidence": {
+        "actualCrashExit": 86,
+        "draftId": "c129667e-6d08-4b32-8772-f02e773d69f3",
+        "noStartupCalls": true,
+        "noDuplicate": true,
+        "jobId": "341b5245-2fcd-4ca6-a4b3-73da5cd26c71"
+      }
+    },
+    {
+      "id": "H14-derived-quote-secret-before-checkpoint",
+      "result": "PASS",
+      "evidence": {
+        "derivedSecretRejected": true,
+        "noCheckpointSecret": true,
+        "calls": 1
+      }
+    },
+    {
+      "id": "H15-key-rotation-cache-rescan",
+      "result": "PASS",
+      "evidence": {
+        "sameEndpointModel": true,
+        "newKeyRescanBeforeAnyCall": true,
+        "status": 409
+      }
+    },
+    {
+      "id": "H16-raw-same-id-valid-replacement-failclosed",
+      "result": "PASS",
+      "evidence": {
+        "sameRawId": "fd202862-f09b-4e7f-b739-46e29d6cef20",
+        "validNewBodySha": true,
+        "checkpointRejected": true
+      }
+    },
+    {
+      "id": "H17-empty-business-chunk-is-reusable",
+      "result": "PASS",
+      "evidence": {
+        "emptyValidatedChunkReused": true,
+        "sameJobId": true,
+        "newCalls": 2
+      }
+    },
+    {
+      "id": "H18-per-chunk-fact-question-limits",
+      "result": "PASS",
+      "evidence": {
+        "results": [
+          {
+            "label": "facts",
+            "count": 33,
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "questions",
+            "count": 17,
+            "code": "LLM_SCHEMA_INVALID"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H19-whole-document-fact-question-limits",
+      "result": "PASS",
+      "evidence": {
+        "results": [
+          {
+            "label": "facts",
+            "facts": 256,
+            "questions": 0,
+            "calls": 9,
+            "savedChunks": 8
+          },
+          {
+            "label": "questions",
+            "facts": 8,
+            "questions": 128,
+            "calls": 9,
+            "savedChunks": 8
+          }
+        ]
+      }
+    },
+    {
+      "id": "H20-planner-input-byte-limit-before-call",
+      "result": "PASS",
+      "evidence": {
+        "chunks": 5,
+        "calls": 5,
+        "noPlanningCall": true,
+        "allValidatedChunksPreserved": true
+      }
+    },
+    {
+      "id": "H21-key-rotation-compatible-cache-reuse",
+      "result": "PASS",
+      "evidence": {
+        "keyChangedSameEndpointModel": true,
+        "sameJob": true,
+        "reusedChunk": 1,
+        "newCalls": 1
+      }
+    }
+  ],
+  "summary": {
+    "pass": 21,
+    "fail": 0
+  },
+  "services": [
+    {
+      "id": "H01-short-draft-repeat-readonly",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-rShwx6",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H02-long-all-facts-planner-and-evidence",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-V7WEoQ",
+      "providerCalls": 15,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H03-compact-schema-and-truncation-rejection",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-SkM7fs",
+      "providerCalls": 12,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H04-plan-coverage-schema-rejection",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-BUEbHD",
+      "providerCalls": 18,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H05-failed-chunk-explicit-resume-reuses-ledger",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-MO95vO",
+      "providerCalls": 5,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H06-planning-failure-restart-no-automatic-calls",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-sm9Cvz",
+      "providerCalls": 3,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H07-concurrent-resume-single-job",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-AoZBgY",
+      "providerCalls": 3,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H08-cancel-late-results-checkpoint-stable",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-CGnOuR",
+      "providerCalls": 5,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H09-corrupt-checkpoint-failclosed-and-explicit-restart",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-mgyeww",
+      "providerCalls": 4,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H10-checkpoint-rehashed-invalid-structure",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-aYjPDs",
+      "providerCalls": 14,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H11-provider-model-change-failclosed",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-5Uv0jg",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H12-attempt-budget-across-resumes",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-mrl5gj",
+      "providerCalls": 6,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H13-draft-publish-crash-recover-no-duplicate",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-hcR5AX",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H14-derived-quote-secret-before-checkpoint",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-kgjwF2",
+      "providerCalls": 1,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H15-key-rotation-cache-rescan",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-h0MO3l",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H16-raw-same-id-valid-replacement-failclosed",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-4oo8HA",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H17-empty-business-chunk-is-reusable",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-dbIIPn",
+      "providerCalls": 4,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H18-per-chunk-fact-question-limits",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-tenssi",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H19-whole-document-fact-question-limits",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-iC4EF3",
+      "providerCalls": 18,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H20-planner-input-byte-limit-before-call",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-Jcjmty",
+      "providerCalls": 5,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H21-key-rotation-compatible-cache-reuse",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-EzMTAy",
+      "providerCalls": 3,
+      "allLocalhost": true,
+      "closed": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-16T07:39:49.620Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\pa01-read-lock-jpuZh1",
+  "rows": [
+    {
+      "id": "OS-exclusive-lock-real-read-failure",
+      "result": "PASS",
+      "code": "STORAGE_READ_FAILED",
+      "healthyNeighbor": true,
+      "scanReadIssue": true
+    },
+    {
+      "id": "unlock-rescan-clears-only-after-readable",
+      "result": "PASS",
+      "bytesUnchanged": true
+    }
+  ],
+  "childClosed": true,
+  "aclChanged": false,
+  "note": "Actual Windows exclusive file lock; not an ACL deny fixture."
+}

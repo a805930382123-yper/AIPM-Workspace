@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-16T08:19:44.512Z",
+  "scope": "React + actual isolated HTTP in jsdom; not actual browser",
+  "durationMs": 3086,
+  "checks": [
+    {
+      "id": "C01-failed-progress-and-continue-body",
+      "result": "PASS",
+      "evidence": {
+        "sameJob": "72d6ef1f-756d-4158-be17-d70356444715",
+        "normalContinueBody": {},
+        "onePlanningCall": true,
+        "failedProgressVisible": true
+      }
+    },
+    {
+      "id": "C02-corrupt-continue-error-and-explicit-restart",
+      "result": "PASS",
+      "evidence": {
+        "corruptErrorVisible": true,
+        "normalContinueNoCalls": true,
+        "explicitRestartBody": {
+          "restart": true
+        }
+      }
+    },
+    {
+      "id": "C03-live-planning-stage-no-partial-review",
+      "result": "PASS",
+      "evidence": {
+        "planningVisible": true,
+        "validatedCountVisible": true,
+        "noPartialDraft": true
+      }
+    },
+    {
+      "id": "C04-reload-failed-checkpoint-readonly",
+      "result": "PASS",
+      "evidence": {
+        "restoredJob": "e380a000-46a4-4f9a-845d-e1bf1a82b609",
+        "controlsVisible": true,
+        "reloadCalls": 0
+      }
+    },
+    {
+      "id": "C05-explicit-feedback-replanning-button",
+      "result": "PASS",
+      "evidence": {
+        "body": {
+          "planningRetry": true
+        },
+        "sameJob": "cf552681-953a-45d4-b979-f822457fe932",
+        "onePlanner": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0
+  },
+  "requests": [
+    {
+      "path": "/api/extraction-jobs/72d6ef1f-756d-4158-be17-d70356444715",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/5b941927-e767-4cb2-8b00-e82cc71cf4de/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/extraction-jobs/e13fe22d-4ed9-428a-81ce-c7146232bba9",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/aba91d1b-2bfd-4763-a9ac-471352fd8f16/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/raw/aba91d1b-2bfd-4763-a9ac-471352fd8f16/extract",
+      "method": "POST",
+      "body": {
+        "restart": true
+      }
+    },
+    {
+      "path": "/api/extraction-jobs/f45c22b3-42ca-4c65-afd6-b9c3fe5a4598",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/e380a000-46a4-4f9a-845d-e1bf1a82b609",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/cf552681-953a-45d4-b979-f822457fe932",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/c97c4615-5e81-4777-912e-7ec9fcbfa415/extract",
+      "method": "POST",
+      "body": {
+        "planningRetry": true
+      }
+    }
+  ],
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-PRsG9i",
+  "fakeCalls": 14,
+  "closed": true
+}

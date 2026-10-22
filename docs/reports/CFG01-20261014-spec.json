@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-14T02:58:56.282Z",
+  "scope": "CFG01 C01-C07, local fake only",
+  "reviewer": "current main Agent",
+  "result": "PASS",
+  "checks": [
+    {
+      "id": "C01",
+      "result": "PASS",
+      "requirement": "保存闭环",
+      "finding": "空配置/首次/保留/替换/清除/同根重启；非LLM行保留、业务备份排除；读写不调用Provider。",
+      "evidence": "http.json"
+    },
+    {
+      "id": "C02",
+      "result": "PASS",
+      "requirement": "校验及持久化",
+      "finding": "旧revision409/外部编辑/并发/env锁/read与rename真实故障；新编码逐字符往返，旧单双引号保留内部反斜杠；非法surrogate拒绝无写。",
+      "evidence": "http.json / edges.json / repair2-probes.json"
+    },
+    {
+      "id": "C03",
+      "result": "PASS",
+      "requirement": "连接测试",
+      "finding": "实际adapter→本地fake；成功与401/429/超时/网络/非法/空/回显失败；固定非业务探针、无业务写入。",
+      "evidence": "http.json / browser-lab-final.json"
+    },
+    {
+      "id": "C04",
+      "result": "PASS",
+      "requirement": "接口与安全",
+      "finding": "原生HTTP确认Host送达，GET/PUT/DELETE/test门禁；编码/嵌套/混合/非法UTF8 URL拒绝；S03/S04六链100/100。",
+      "evidence": "host-calibration.json / http.json / security-final.json / repair2-probes.json"
+    },
+    {
+      "id": "C05",
+      "result": "PASS",
+      "requirement": "真实浏览器",
+      "finding": "桌面1280x900、窄屏390x844；保存后password清空、刷新保留、显式测试、清除真实confirm取消零请求/确认成功、env只读、加载锁定/卸载迟到隔离/失败重试。最终document375/375无横向溢出。",
+      "evidence": "browser.json / desktop.jpg / narrow.jpg / component.json / browser-trace.json"
+    },
+    {
+      "id": "C06",
+      "result": "PASS",
+      "requirement": "热配置与任务隔离",
+      "finding": "新Brief/提取使用新配置，进行中提取保留开始Provider；正常机械链可运行；不签真实Provider语义。",
+      "evidence": "http.json / security-final.json"
+    },
+    {
+      "id": "C07",
+      "result": "PASS",
+      "requirement": "冻结与交接",
+      "finding": "最终冻结后build PASS；完整原样测试字节一致副本215/215。原workspace继承ACL导致rename EPERM，不改ACL/断言、不伪报原地npm test成功。保护与关闭实测通过、文档同步。",
+      "evidence": "tests-writable-copy.json / build-final.log / integrity.json / cleanup.json"
+    }
+  ]
+}

@@ -1,0 +1,759 @@
+{
+  "controlled": true,
+  "node": "v24.19.0",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-io-probe-Uqshg7",
+  "realProviderCalls": 0,
+  "cases": [
+    {
+      "mode": "writer-only",
+      "nativeErrors": [],
+      "writes": 80,
+      "failedWrites": [],
+      "reads": 0,
+      "readErrors": [],
+      "postQuiesce": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "durationMs": 120.91119999999995
+    },
+    {
+      "mode": "serial-read-write",
+      "nativeErrors": [],
+      "writes": 80,
+      "failedWrites": [],
+      "reads": 80,
+      "readErrors": [],
+      "postQuiesce": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "durationMs": 718.2550000000001
+    },
+    {
+      "mode": "polling-read-write",
+      "nativeErrors": [
+        {
+          "at": 1382.9346,
+          "returned": 1383.279,
+          "concurrentReads": 0,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".polling-read-write.json.5f233791-d35b-4e09-b1bd-512b1b5fce96.tmp"
+        },
+        {
+          "at": 1416.1491,
+          "returned": 1416.5818,
+          "concurrentReads": 0,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".polling-read-write.json.5f233791-d35b-4e09-b1bd-512b1b5fce96.tmp"
+        },
+        {
+          "at": 1461.9237,
+          "returned": 1462.7088,
+          "concurrentReads": 0,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".polling-read-write.json.5f233791-d35b-4e09-b1bd-512b1b5fce96.tmp"
+        }
+      ],
+      "writes": 80,
+      "failedWrites": [],
+      "reads": 18,
+      "readErrors": [],
+      "postQuiesce": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "durationMs": 247.6576
+    },
+    {
+      "mode": "continuous-read-write",
+      "nativeErrors": [
+        {
+          "at": 1562.0779,
+          "returned": 1562.4378,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a3b17079-a9c3-450c-9012-da3492250ebc.tmp"
+        },
+        {
+          "at": 1581.9976,
+          "returned": 1582.2904,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a3b17079-a9c3-450c-9012-da3492250ebc.tmp"
+        },
+        {
+          "at": 1623.9196,
+          "returned": 1624.2353,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a6bf48a9-0ecb-42da-8c2f-b0f23e4a80c5.tmp"
+        },
+        {
+          "at": 1643.9639,
+          "returned": 1644.2574,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a6bf48a9-0ecb-42da-8c2f-b0f23e4a80c5.tmp"
+        },
+        {
+          "at": 1683.9783,
+          "returned": 1684.2914,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a6bf48a9-0ecb-42da-8c2f-b0f23e4a80c5.tmp"
+        },
+        {
+          "at": 1743.981,
+          "returned": 1744.3073,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a6bf48a9-0ecb-42da-8c2f-b0f23e4a80c5.tmp"
+        },
+        {
+          "at": 1825.0232,
+          "returned": 1825.3571,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.69cccc1c-0ea2-4a5b-9c27-b6e78cf9ad23.tmp"
+        },
+        {
+          "at": 1844.9882,
+          "returned": 1845.2824,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.69cccc1c-0ea2-4a5b-9c27-b6e78cf9ad23.tmp"
+        },
+        {
+          "at": 1886.1231,
+          "returned": 1886.4195,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.b51421ac-ed0c-4d2c-8ec2-0cba6d319cd2.tmp"
+        },
+        {
+          "at": 1905.9864,
+          "returned": 1906.2854,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.b51421ac-ed0c-4d2c-8ec2-0cba6d319cd2.tmp"
+        },
+        {
+          "at": 1946.0021,
+          "returned": 1946.3127,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.b51421ac-ed0c-4d2c-8ec2-0cba6d319cd2.tmp"
+        },
+        {
+          "at": 2005.9835,
+          "returned": 2006.2769,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.b51421ac-ed0c-4d2c-8ec2-0cba6d319cd2.tmp"
+        },
+        {
+          "at": 2086.9824,
+          "returned": 2087.2957,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.f4b4e1a4-0034-4b78-9416-dac67b901a87.tmp"
+        },
+        {
+          "at": 2106.9736,
+          "returned": 2107.2818,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.f4b4e1a4-0034-4b78-9416-dac67b901a87.tmp"
+        },
+        {
+          "at": 2151.0446,
+          "returned": 2151.34,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.8fee3ab5-4401-4ad8-9eb6-b457439e3290.tmp"
+        },
+        {
+          "at": 2170.9861,
+          "returned": 2171.3231,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.8fee3ab5-4401-4ad8-9eb6-b457439e3290.tmp"
+        },
+        {
+          "at": 2210.9922,
+          "returned": 2211.3437,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.8fee3ab5-4401-4ad8-9eb6-b457439e3290.tmp"
+        },
+        {
+          "at": 2270.9867,
+          "returned": 2271.3001,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.8fee3ab5-4401-4ad8-9eb6-b457439e3290.tmp"
+        },
+        {
+          "at": 2352.0883,
+          "returned": 2352.3915,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.57acee14-0fff-40dd-b0e3-1e55162d0c69.tmp"
+        },
+        {
+          "at": 2371.964,
+          "returned": 2372.2782,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.57acee14-0fff-40dd-b0e3-1e55162d0c69.tmp"
+        },
+        {
+          "at": 2412.0023,
+          "returned": 2412.3085,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.57acee14-0fff-40dd-b0e3-1e55162d0c69.tmp"
+        },
+        {
+          "at": 2474.1738,
+          "returned": 2474.4878,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.7d2efd11-9912-42ba-8140-1b48692fbd0f.tmp"
+        },
+        {
+          "at": 2494.0025,
+          "returned": 2494.3139,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.7d2efd11-9912-42ba-8140-1b48692fbd0f.tmp"
+        },
+        {
+          "at": 2533.9661,
+          "returned": 2534.2707,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.7d2efd11-9912-42ba-8140-1b48692fbd0f.tmp"
+        },
+        {
+          "at": 2594.0045,
+          "returned": 2594.3597,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.7d2efd11-9912-42ba-8140-1b48692fbd0f.tmp"
+        },
+        {
+          "at": 2675.9317,
+          "returned": 2676.2178,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.840b7ff7-da1b-48cc-96f3-30e96a678635.tmp"
+        },
+        {
+          "at": 2697.0291,
+          "returned": 2697.3756,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.db074454-64c6-4b34-a388-de9d37402aaa.tmp"
+        },
+        {
+          "at": 2717.9345,
+          "returned": 2718.2199,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.62ee97b2-8be3-408a-9f6f-376f82a22fc0.tmp"
+        },
+        {
+          "at": 2737.9583,
+          "returned": 2738.2659,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.62ee97b2-8be3-408a-9f6f-376f82a22fc0.tmp"
+        },
+        {
+          "at": 2777.9769,
+          "returned": 2778.2827,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.62ee97b2-8be3-408a-9f6f-376f82a22fc0.tmp"
+        },
+        {
+          "at": 2841.9129,
+          "returned": 2842.2064,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0385b97d-452b-4c9e-a61e-f89285c9aa4c.tmp"
+        },
+        {
+          "at": 2861.9683,
+          "returned": 2862.2705,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0385b97d-452b-4c9e-a61e-f89285c9aa4c.tmp"
+        },
+        {
+          "at": 2901.9759,
+          "returned": 2902.2762,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0385b97d-452b-4c9e-a61e-f89285c9aa4c.tmp"
+        },
+        {
+          "at": 2962.0007,
+          "returned": 2962.2882,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0385b97d-452b-4c9e-a61e-f89285c9aa4c.tmp"
+        },
+        {
+          "at": 3041.9686,
+          "returned": 3042.2793,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0385b97d-452b-4c9e-a61e-f89285c9aa4c.tmp"
+        },
+        {
+          "at": 3141.9638,
+          "returned": 3142.2817,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0385b97d-452b-4c9e-a61e-f89285c9aa4c.tmp"
+        },
+        {
+          "at": 3144.6878,
+          "returned": 3145.1793,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.cba0d877-e75a-4347-baf9-9a015d7d543d.tmp"
+        },
+        {
+          "at": 3166.9323,
+          "returned": 3167.2194,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.362d661f-8006-460b-bce4-ee3b1cecabea.tmp"
+        },
+        {
+          "at": 3188.0137,
+          "returned": 3188.3252,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.0d2d7791-2010-4a1b-8c32-315688172f08.tmp"
+        },
+        {
+          "at": 3208.9842,
+          "returned": 3209.2944,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.5f8e7be0-55eb-4a96-92aa-55dd532022bf.tmp"
+        },
+        {
+          "at": 3228.9801,
+          "returned": 3229.3678,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.5f8e7be0-55eb-4a96-92aa-55dd532022bf.tmp"
+        },
+        {
+          "at": 3270.0899,
+          "returned": 3270.4144,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.eb382214-eb6b-4580-b2a9-bddac4740340.tmp"
+        },
+        {
+          "at": 3291.0042,
+          "returned": 3291.3134,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c2cb87b7-85a7-4a9e-bb62-f22502d1f612.tmp"
+        },
+        {
+          "at": 3310.98,
+          "returned": 3311.2653,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c2cb87b7-85a7-4a9e-bb62-f22502d1f612.tmp"
+        },
+        {
+          "at": 3350.9695,
+          "returned": 3351.2617,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c2cb87b7-85a7-4a9e-bb62-f22502d1f612.tmp"
+        },
+        {
+          "at": 3410.9737,
+          "returned": 3411.2855,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c2cb87b7-85a7-4a9e-bb62-f22502d1f612.tmp"
+        },
+        {
+          "at": 3490.9857,
+          "returned": 3491.3039,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c2cb87b7-85a7-4a9e-bb62-f22502d1f612.tmp"
+        },
+        {
+          "at": 3590.9809,
+          "returned": 3591.2921,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c2cb87b7-85a7-4a9e-bb62-f22502d1f612.tmp"
+        },
+        {
+          "at": 3592.2651,
+          "returned": 3592.5276,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.7827394f-f6aa-4eed-864d-76cc90aab188.tmp"
+        },
+        {
+          "at": 3614.0191,
+          "returned": 3614.3221,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.f1570fd5-a24f-40a8-a261-f7465feca4cf.tmp"
+        },
+        {
+          "at": 3634.9447,
+          "returned": 3635.2725,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.6e193b11-637c-40c6-8d81-f2a736012673.tmp"
+        },
+        {
+          "at": 3654.9784,
+          "returned": 3655.2768,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.6e193b11-637c-40c6-8d81-f2a736012673.tmp"
+        },
+        {
+          "at": 3694.9798,
+          "returned": 3695.2794,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.6e193b11-637c-40c6-8d81-f2a736012673.tmp"
+        },
+        {
+          "at": 3755.0014,
+          "returned": 3755.2922,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.6e193b11-637c-40c6-8d81-f2a736012673.tmp"
+        },
+        {
+          "at": 3836.1147,
+          "returned": 3836.4262,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.5034ca81-6135-4d6d-b2b4-9bb8a792f777.tmp"
+        },
+        {
+          "at": 3856.0228,
+          "returned": 3856.3504,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.5034ca81-6135-4d6d-b2b4-9bb8a792f777.tmp"
+        },
+        {
+          "at": 3895.9799,
+          "returned": 3896.3758,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.5034ca81-6135-4d6d-b2b4-9bb8a792f777.tmp"
+        },
+        {
+          "at": 3958.0163,
+          "returned": 3958.3433,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.29fe5764-7a71-4fbc-a6aa-3f07fd916736.tmp"
+        },
+        {
+          "at": 3978.0341,
+          "returned": 3978.3874,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.29fe5764-7a71-4fbc-a6aa-3f07fd916736.tmp"
+        },
+        {
+          "at": 4017.9675,
+          "returned": 4018.2764,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.29fe5764-7a71-4fbc-a6aa-3f07fd916736.tmp"
+        },
+        {
+          "at": 4078.1325,
+          "returned": 4078.4437,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.29fe5764-7a71-4fbc-a6aa-3f07fd916736.tmp"
+        },
+        {
+          "at": 4157.9826,
+          "returned": 4158.2978,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.29fe5764-7a71-4fbc-a6aa-3f07fd916736.tmp"
+        },
+        {
+          "at": 4257.9808,
+          "returned": 4258.34,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.29fe5764-7a71-4fbc-a6aa-3f07fd916736.tmp"
+        },
+        {
+          "at": 4263.1162,
+          "returned": 4263.4753,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.27868e44-e198-4472-a726-cea3febd51e8.tmp"
+        },
+        {
+          "at": 4282.9706,
+          "returned": 4283.2484,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.27868e44-e198-4472-a726-cea3febd51e8.tmp"
+        },
+        {
+          "at": 4322.9692,
+          "returned": 4323.2975,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.27868e44-e198-4472-a726-cea3febd51e8.tmp"
+        },
+        {
+          "at": 4384.0299,
+          "returned": 4384.3409,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.a436b282-c8ef-4ca7-b93d-d74e5a42a35f.tmp"
+        },
+        {
+          "at": 4406.0639,
+          "returned": 4406.3702,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c41592d9-c655-48ae-9989-ce3675e404f9.tmp"
+        },
+        {
+          "at": 4425.9838,
+          "returned": 4426.3185,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c41592d9-c655-48ae-9989-ce3675e404f9.tmp"
+        },
+        {
+          "at": 4465.9573,
+          "returned": 4466.2655,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c41592d9-c655-48ae-9989-ce3675e404f9.tmp"
+        },
+        {
+          "at": 4525.9903,
+          "returned": 4526.291,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c41592d9-c655-48ae-9989-ce3675e404f9.tmp"
+        },
+        {
+          "at": 4605.9761,
+          "returned": 4606.2888,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c41592d9-c655-48ae-9989-ce3675e404f9.tmp"
+        },
+        {
+          "at": 4705.9702,
+          "returned": 4706.267,
+          "concurrentReads": 1,
+          "atReturnReads": 1,
+          "code": "EPERM",
+          "source": ".continuous-read-write.json.c41592d9-c655-48ae-9989-ce3675e404f9.tmp"
+        }
+      ],
+      "writes": 41,
+      "failedWrites": [
+        {
+          "iteration": 22,
+          "code": "EPERM"
+        },
+        {
+          "iteration": 30,
+          "code": "EPERM"
+        },
+        {
+          "iteration": 37,
+          "code": "EPERM"
+        },
+        {
+          "iteration": 45,
+          "code": "EPERM"
+        }
+      ],
+      "reads": 20799,
+      "readErrors": [],
+      "postQuiesce": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "durationMs": 3149.5033
+    },
+    {
+      "mode": "held-read-handle",
+      "nativeErrors": [
+        {
+          "at": 4710.9849,
+          "returned": 4711.2563,
+          "concurrentReads": 0,
+          "atReturnReads": 0,
+          "code": "EPERM",
+          "source": ".held-read-handle.json.062acf04-4fb7-40c2-ab9b-ade34174dfd6.tmp"
+        },
+        {
+          "at": 4734.0194,
+          "returned": 4734.4453,
+          "concurrentReads": 0,
+          "atReturnReads": 0,
+          "code": "EPERM",
+          "source": ".held-read-handle.json.062acf04-4fb7-40c2-ab9b-ade34174dfd6.tmp"
+        },
+        {
+          "at": 4780.4268,
+          "returned": 4780.9433,
+          "concurrentReads": 0,
+          "atReturnReads": 0,
+          "code": "EPERM",
+          "source": ".held-read-handle.json.062acf04-4fb7-40c2-ab9b-ade34174dfd6.tmp"
+        },
+        {
+          "at": 4842.9882,
+          "returned": 4843.5245,
+          "concurrentReads": 0,
+          "atReturnReads": 0,
+          "code": "EPERM",
+          "source": ".held-read-handle.json.062acf04-4fb7-40c2-ab9b-ade34174dfd6.tmp"
+        },
+        {
+          "at": 4934.7766,
+          "returned": 4935.2779,
+          "concurrentReads": 0,
+          "atReturnReads": 0,
+          "code": "EPERM",
+          "source": ".held-read-handle.json.062acf04-4fb7-40c2-ab9b-ade34174dfd6.tmp"
+        },
+        {
+          "at": 5042.3351,
+          "returned": 5042.7935,
+          "concurrentReads": 0,
+          "atReturnReads": 0,
+          "code": "EPERM",
+          "source": ".held-read-handle.json.062acf04-4fb7-40c2-ab9b-ade34174dfd6.tmp"
+        }
+      ],
+      "writes": 0,
+      "failedWrites": [
+        {
+          "iteration": 1,
+          "code": "EPERM"
+        }
+      ],
+      "reads": 0,
+      "readErrors": [],
+      "postQuiesce": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "durationMs": 337.65480000000025
+    }
+  ]
+}

@@ -1,0 +1,983 @@
+{
+  "at": "2026-10-19T15:55:12.099Z",
+  "scope": "original two default tests, explicit diagnostic preload; localhost fake only, no product/test changes",
+  "batch": "baseline",
+  "rows": [
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "baseline-system25-1",
+      "mode": "observe",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1210,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 1119.1327"
+      ]
+    },
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "baseline-system25-2",
+      "mode": "observe",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 858,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 773.6364"
+      ]
+    },
+    {
+      "nodeLabel": "system25",
+      "nodePath": "C:\\Program Files\\nodejs\\node.exe",
+      "tag": "baseline-system25-3",
+      "mode": "observe",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 832,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 741.8629"
+      ]
+    },
+    {
+      "nodeLabel": "bundle24",
+      "nodePath": "C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "tag": "baseline-bundle24-1",
+      "mode": "observe",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1012,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 901.6238"
+      ]
+    },
+    {
+      "nodeLabel": "bundle24",
+      "nodePath": "C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "tag": "baseline-bundle24-2",
+      "mode": "observe",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 874,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 778.4666"
+      ]
+    },
+    {
+      "nodeLabel": "bundle24",
+      "nodePath": "C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "tag": "baseline-bundle24-3",
+      "mode": "observe",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/acceptance/kb02-budget-diag-20261019-hook.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 858,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 759.2702"
+      ]
+    }
+  ],
+  "eventSummary": [
+    {
+      "file": "baseline-bundle24-1-5448.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 481.7336,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-Ykt67s",
+          "id": "a860e88b-64d1-4601-bbc1-d742dd82c2cf",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 491.4323,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-Ykt67s",
+          "id": "a860e88b-64d1-4601-bbc1-d742dd82c2cf",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 501.196,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-Ykt67s",
+          "id": "a860e88b-64d1-4601-bbc1-d742dd82c2cf",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 781.2698,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-aUnFky",
+          "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+          "ok": true,
+          "value": {
+            "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 785.7965,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-aUnFky",
+          "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+          "ok": true,
+          "value": {
+            "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 787.2582,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-aUnFky",
+          "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+          "ok": true,
+          "value": {
+            "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 796.1918,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-aUnFky",
+          "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+          "ok": true,
+          "value": {
+            "id": "78806cbe-fe31-4cd1-8f11-b56768cf2a2f",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "baseline-bundle24-2-2952.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 373.9397,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-eYtOit",
+          "id": "ed76fa5c-4662-4351-81c6-7ccfa0ee4a68",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 383.7374,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-eYtOit",
+          "id": "ed76fa5c-4662-4351-81c6-7ccfa0ee4a68",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 392.1121,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-eYtOit",
+          "id": "ed76fa5c-4662-4351-81c6-7ccfa0ee4a68",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 672.3182,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-QGio40",
+          "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+          "ok": true,
+          "value": {
+            "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 676.4815,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-QGio40",
+          "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+          "ok": true,
+          "value": {
+            "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 678.1393,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-QGio40",
+          "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+          "ok": true,
+          "value": {
+            "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 689.3022,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-QGio40",
+          "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+          "ok": true,
+          "value": {
+            "id": "1b945207-8c77-4243-a21e-0eefec01ce6d",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "baseline-bundle24-3-8216.json",
+      "node": "v24.19.0",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 357.5035,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-O51x0d",
+          "id": "2ceb4bf6-f384-481a-912b-19502285e35d",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 364.5396,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-O51x0d",
+          "id": "2ceb4bf6-f384-481a-912b-19502285e35d",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 373.9653,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-O51x0d",
+          "id": "2ceb4bf6-f384-481a-912b-19502285e35d",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 652.772,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-JYdoIR",
+          "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+          "ok": true,
+          "value": {
+            "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 656.6688,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-JYdoIR",
+          "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+          "ok": true,
+          "value": {
+            "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 658.2055,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-JYdoIR",
+          "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+          "ok": true,
+          "value": {
+            "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 671.8913,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-JYdoIR",
+          "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+          "ok": true,
+          "value": {
+            "id": "697345ad-5a6a-4149-8448-68ded1177d31",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "baseline-system25-1-21080.json",
+      "node": "v25.2.1",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 715.1969,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-HvD6Oh",
+          "id": "3568d0af-efd1-4c27-81d2-5213fc31fd55",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 723.5843,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-HvD6Oh",
+          "id": "3568d0af-efd1-4c27-81d2-5213fc31fd55",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 731.8329,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-HvD6Oh",
+          "id": "3568d0af-efd1-4c27-81d2-5213fc31fd55",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 1013.3888,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-zR8LUW",
+          "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+          "ok": true,
+          "value": {
+            "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 1017.2855,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-zR8LUW",
+          "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+          "ok": true,
+          "value": {
+            "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 1019.0377,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-zR8LUW",
+          "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+          "ok": true,
+          "value": {
+            "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 1031.5962,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-zR8LUW",
+          "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+          "ok": true,
+          "value": {
+            "id": "09f1928f-0b3d-455b-95a6-05d9c5c03c4d",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "baseline-system25-2-26564.json",
+      "node": "v25.2.1",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 371.9653,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3YBcf4",
+          "id": "174410aa-27c1-465c-b7a2-e9dc725cdacb",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 378.6962,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3YBcf4",
+          "id": "174410aa-27c1-465c-b7a2-e9dc725cdacb",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 385.1609,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-3YBcf4",
+          "id": "174410aa-27c1-465c-b7a2-e9dc725cdacb",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 673.3628,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-5uqy2U",
+          "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+          "ok": true,
+          "value": {
+            "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 677.3786,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-5uqy2U",
+          "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+          "ok": true,
+          "value": {
+            "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 678.7606,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-5uqy2U",
+          "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+          "ok": true,
+          "value": {
+            "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 691.3936,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-5uqy2U",
+          "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+          "ok": true,
+          "value": {
+            "id": "984679e4-3568-4611-bb68-27eac9d675f9",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "baseline-system25-3-11780.json",
+      "node": "v25.2.1",
+      "mode": "observe",
+      "events": 216,
+      "failures": [
+        {
+          "ms": 364.8935,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-SsxEaS",
+          "id": "f47dcf56-d671-40af-a6b7-117a3456041f",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 371.5639,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-SsxEaS",
+          "id": "f47dcf56-d671-40af-a6b7-117a3456041f",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        },
+        {
+          "ms": 378.7534,
+          "kind": "ExtractionRunner",
+          "method": "start",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-SsxEaS",
+          "id": "f47dcf56-d671-40af-a6b7-117a3456041f",
+          "ok": false,
+          "error": {
+            "name": "Error",
+            "code": "LLM_ATTEMPT_LIMIT",
+            "message": "已达到此任务累计 6 次调用上限，请检查资料后显式重新生成。"
+          }
+        }
+      ],
+      "lastJobs": [
+        {
+          "ms": 646.8395,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-9SSUNs",
+          "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+          "ok": true,
+          "value": {
+            "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 650.9941,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-9SSUNs",
+          "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+          "ok": true,
+          "value": {
+            "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+            "status": "running",
+            "stage": "assembling",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "assembling",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": true,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 652.5304,
+          "kind": "ExtractionJobStore",
+          "method": "update",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-9SSUNs",
+          "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+          "ok": true,
+          "value": {
+            "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        },
+        {
+          "ms": 663.7607,
+          "kind": "ExtractionJobStore",
+          "method": "get",
+          "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-9SSUNs",
+          "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+          "ok": true,
+          "value": {
+            "id": "5067dcc9-0c37-42d8-8072-9900e20a090d",
+            "status": "completed",
+            "stage": "done",
+            "callCount": 6,
+            "checkpoint": {
+              "stage": "done",
+              "validatedChunks": 1,
+              "totalChunks": 1,
+              "resumable": false,
+              "attempts": 6,
+              "reusedChunks": 1
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "sourceChanges": [],
+  "externalCalls": 0
+}

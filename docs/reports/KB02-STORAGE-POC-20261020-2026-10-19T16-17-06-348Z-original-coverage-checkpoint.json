@@ -1,0 +1,192 @@
+{
+  "runtime": "v25.2.1",
+  "variant": "original",
+  "mode": "coverage-checkpoint",
+  "fixtureRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q",
+  "synthetic": true,
+  "externalCalls": 0,
+  "beforeRecovery": {
+    "job": {
+      "id": "680b93a7-42ee-46c7-a9f9-bd7a47ff5509",
+      "rawId": "657c1694-aaea-4080-b8be-2a43e952511d",
+      "status": "failed",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "reason": "Synthetic isolated rename refusal",
+        "attempts": 2,
+        "reusedChunks": 0
+      },
+      "startedAt": "2026-10-19T16:17:10.438Z",
+      "updatedAt": "2026-10-19T16:17:10.828Z",
+      "finishedAt": "2026-10-19T16:17:10.828Z",
+      "error": {
+        "code": "LLM_INTERNAL_ERROR",
+        "message": "Synthetic isolated rename refusal",
+        "at": "2026-10-19T16:17:10.828Z",
+        "retryable": true
+      }
+    },
+    "checkpoint": {
+      "version": 1,
+      "jobId": "680b93a7-42ee-46c7-a9f9-bd7a47ff5509",
+      "rawId": "657c1694-aaea-4080-b8be-2a43e952511d",
+      "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+      "pipelineVersion": "kb02-2",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+      "providerIdentity": "fake|budget-model",
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26
+        }
+      ],
+      "completedChunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26,
+          "facts": [
+            {
+              "text": "目标100家，在售20家。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0001",
+              "kind": "fact",
+              "id": "f-c1-1",
+              "chunkIndex": 0
+            },
+            {
+              "text": "铺货率20%，负责人未知。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0002",
+              "kind": "fact",
+              "id": "f-c1-2",
+              "chunkIndex": 0
+            }
+          ],
+          "questions": [],
+          "sourceNotes": [],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "657c1694-aaea-4080-b8be-2a43e952511d",
+              "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+              "start": 0,
+              "end": 26,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "attempts": 2,
+      "stage": "planning",
+      "updatedAt": "2026-10-19T16:17:10.820Z",
+      "integrity": "4a845d6c0402b1db9dc5393e8332af18074c5fedcc06564dbcbe87db90c380b2",
+      "lastError": {
+        "code": "LLM_INTERNAL_ERROR",
+        "message": "Synthetic isolated rename refusal",
+        "at": "2026-10-19T16:17:10.820Z"
+      }
+    },
+    "rawState": {
+      "rawId": "657c1694-aaea-4080-b8be-2a43e952511d",
+      "status": "failed",
+      "updatedAt": "2026-10-19T16:17:10.825Z",
+      "history": [
+        {
+          "at": "2026-10-19T16:17:10.448Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "680b93a7-42ee-46c7-a9f9-bd7a47ff5509"
+        },
+        {
+          "at": "2026-10-19T16:17:10.825Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_INTERNAL_ERROR"
+        }
+      ],
+      "jobId": "680b93a7-42ee-46c7-a9f9-bd7a47ff5509",
+      "revertStatus": "unprocessed",
+      "lastError": {
+        "code": "LLM_INTERNAL_ERROR",
+        "message": "Synthetic isolated rename refusal",
+        "at": "2026-10-19T16:17:10.824Z",
+        "retryable": true
+      }
+    },
+    "draftIds": [],
+    "calls": 2
+  },
+  "atomicFailures": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "attempts": 6,
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "after": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "intact": true,
+      "error": {
+        "code": "EPERM",
+        "message": "Synthetic isolated rename refusal"
+      }
+    }
+  ],
+  "result": "KNOWN_BAD_BEHAVIOR_REPRODUCED",
+  "rejected": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\.680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json.57212492-488d-4651-b013-6ee0ed1b5140.tmp",
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "at": 143.7181
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\.680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json.57212492-488d-4651-b013-6ee0ed1b5140.tmp",
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "at": 165.4913
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\.680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json.57212492-488d-4651-b013-6ee0ed1b5140.tmp",
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "at": 212.3639
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\.680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json.57212492-488d-4651-b013-6ee0ed1b5140.tmp",
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "at": 288.9567
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\.680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json.57212492-488d-4651-b013-6ee0ed1b5140.tmp",
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "at": 382.1345
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-VD5n2q\\state\\extraction-checkpoints\\.680b93a7-42ee-46c7-a9f9-bd7a47ff5509.json.57212492-488d-4651-b013-6ee0ed1b5140.tmp",
+      "before": "8d629d307096a3be6136fda50e8cf9327c79e22394a4d72f5327bd60ad9135d5",
+      "at": 492.4963
+    }
+  ]
+}

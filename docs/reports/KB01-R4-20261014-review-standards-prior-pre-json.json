@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-14T14:51:24.936Z",
+  "axis": "Standards",
+  "status": "PASS",
+  "scope": "KB01 R4 baseline fingerprint comparison and final frozen source review; memory-only safety probes",
+  "comparison": {
+    "gitAvailable": false,
+    "method": "baseline/frozen path-set and SHA256 comparison; no fabricated git diff",
+    "baseline": "docs/reports/KB01-R4-20261014-baseline.json",
+    "initialFrozen": "docs/reports/KB01-R4-20261014-initial-frozen.json",
+    "finalFrozen": "docs/reports/KB01-R4-20261014-frozen.json",
+    "finalFrozenAt": "2026-10-14T14:50:21.409Z",
+    "finalFrozenSha256": "449ce67f69f7936fe54cfc1a2b7fd6a095a7e4d26dd9a82597b7dc2fa6ac67ee",
+    "matchedProductFiles": 85,
+    "matchedTestFiles": 53,
+    "mismatches": [],
+    "changedProductFiles": [
+      "app/pages/DraftReviewPage.tsx",
+      "services/llm/locators.ts",
+      "services/llm/rules.ts",
+      "services/llm/service.ts"
+    ],
+    "changedTestFiles": [
+      "tests/llm-flow.test.ts",
+      "tests/llm.test.ts",
+      "tests/support/fake-llm.ts",
+      "tests/ui-b04.test.tsx"
+    ]
+  },
+  "findings": [],
+  "historicalFindings": [
+    {
+      "id": "KB01-R4-ST01",
+      "priority": 2,
+      "title": "locator normalization introduced unscreened known credentials before aggregate",
+      "location": {
+        "file": "services/llm/service.ts",
+        "line": 255
+      },
+      "status": "CLOSED",
+      "standard": "docs/batches/SEC-20261013.md SEC03; KB01 K05 safety gates",
+      "reproduction": "Memory provider returns credential-free locator-v2 JSON, referencing Raw anchor containing synthetic known provider credential. Initial frozen service returned the credential in normalized quote; multi-chunk run issued 3 chunk calls and 1 merge with credential in merge input.",
+      "limitation": "jobs.ts final defense still rejected unsafe outcome before draft creation; this review does not claim formal disk disclosure.",
+      "repairLocation": {
+        "file": "services/llm/service.ts",
+        "line": 257
+      },
+      "preFixEvidence": "docs/reports/KB01-R4-20261014-review-standards-locator-secret-pre-fix.json",
+      "finalEvidence": "docs/reports/KB01-R4-20261014-review-standards-locator-secret-final.json"
+    }
+  ],
+  "runtime": {
+    "preFix": {
+      "cases": 2,
+      "pass": 0,
+      "fail": 2,
+      "serviceSha256": "2cf41c9d030527c627f084a157df747ab5218243d4a794d35ea9f99ebd23f8db"
+    },
+    "final": {
+      "cases": 2,
+      "pass": 2,
+      "fail": 0,
+      "serviceSha256": "23a44a9a4da715e84f3a0ad2ef71be9c1d7c45b9d883ccf9bddf7fe1daecd2fb",
+      "longCaseCalls": 2,
+      "longCaseMergeCalls": 0
+    },
+    "command": "node --import tsx tests/acceptance/kb01-r4-20261014-review-standards-locator-secret.mjs . final",
+    "calibration": [
+      "Sandboxed tsx initialization failed before probe execution with uv_os_get_passwd ENOMEM; authorized host execution used.",
+      "Evidence named locator-secret-initial.json captured already repaired service a72eaf14..., so it is provisional post-fix evidence and not initial-frozen FAIL. Original retained."
+    ]
+  },
+  "staticCoverage": [
+    "strict provider-only v2 schema then Raw-bound normalized schema",
+    "unknown/cross-chunk/mixed-format evidence fail closed; legacy schema/ambiguity kept",
+    "surrogate-safe bounded locator catalog and immutable Raw slices",
+    "unchanged resource budgets, concurrency, no partial all-chunk success",
+    "prompt version and exact safety-rule overrides; document-only merge input has no locator",
+    "credential recheck after locator normalization and before later calls",
+    "existing source/meeting gate and formal write responsibility",
+    "UI candidate error recovery, explicit decisions, edit invalidation and busy snapshot locking",
+    "overlap dedup preserves per-chunk snapshots and exact source identity"
+  ],
+  "coverageLimits": {
+    "fullTests": "NOT_RUN by Standards reviewer; root owns final copied full suite",
+    "http": "NOT_RUN by Standards reviewer; root owns actual HTTP",
+    "browser": "NOT_RUN by Standards reviewer; root owns UI/actual browser",
+    "realProvider": "NOT_RUN; reviewer never read config or called external provider",
+    "spec": "Independent Spec/root report; Standards PASS does not sign K05 semantic quality or whole project"
+  },
+  "writes": [
+    "tests/acceptance/kb01-r4-20261014-review-standards-locator-secret.mjs",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-initial.json",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-pre-fix.json",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-final.json",
+    "docs/reports/KB01-R4-20261014-review-standards.md",
+    "docs/reports/KB01-R4-20261014-review-standards.json"
+  ]
+}

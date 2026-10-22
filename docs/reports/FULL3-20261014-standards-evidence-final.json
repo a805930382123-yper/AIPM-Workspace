@@ -1,0 +1,109 @@
+{
+  "at": "2026-10-14T07:44:00.207Z",
+  "scope": "Independent static Standards and evidence applicability only",
+  "hostModel": "Unknown; repository declarations cannot switch or identify the host model",
+  "providerInvoked": false,
+  "actualConfigRead": false,
+  "workspaceReadOrModified": false,
+  "product": {
+    "count": 84,
+    "errors": [],
+    "allMatchCFG01": true
+  },
+  "tests": {
+    "count": 52,
+    "errors": []
+  },
+  "changesFromM05": [
+    "app/api.ts",
+    "app/b04.css",
+    "app/pages/SettingsPage.tsx",
+    "index.html",
+    "server/index.ts",
+    "server/llm-api.ts",
+    "services/llm/config.ts",
+    "services/llm/jobs.ts",
+    "services/llm/provider.ts",
+    "services/llm/service.ts",
+    "services/prompt-ai/service.ts",
+    "services/wiki/knowledge-workflows.ts",
+    "tsconfig.json"
+  ],
+  "changesFromSEC": [
+    "app/api.ts",
+    "app/b04.css",
+    "app/pages/SettingsPage.tsx",
+    "server/index.ts",
+    "server/llm-api.ts",
+    "services/llm/config.ts",
+    "services/llm/provider.ts"
+  ],
+  "matrix109": {
+    "count": 109,
+    "docPass": 109,
+    "runPass": 73,
+    "runBlocked": 36,
+    "blockedIds": [
+      "A06",
+      "A08",
+      "A09",
+      "A10",
+      "A18",
+      "A23",
+      "A24",
+      "A28",
+      "A44",
+      "A45",
+      "A46",
+      "A47",
+      "A48",
+      "A53",
+      "A54",
+      "A55",
+      "A63",
+      "R05",
+      "R07",
+      "R09",
+      "R11",
+      "R12",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20",
+      "R22",
+      "R23",
+      "R24",
+      "R26",
+      "R35",
+      "R36",
+      "R38",
+      "R42"
+    ],
+    "references": {
+      "uniqueReferenceCount": 27,
+      "missing": []
+    }
+  },
+  "meeting48": {
+    "count": 48,
+    "passWithinStatedLocalScope": 48,
+    "references": {
+      "uniqueReferenceCount": 6,
+      "missing": []
+    },
+    "externalRemotePermissionNotRun": [
+      "MH07"
+    ],
+    "trueProviderQualityPending": [
+      "MH36",
+      "MH37"
+    ]
+  },
+  "notes": [
+    "Historical PASS is inherited only within original scope and after frozen-file applicability review.",
+    "36 real AI IDs remain pending main Agent live execution and semantic review; static review cannot sign them.",
+    "No build, npm test, server, browser or Provider operations executed by this reviewer."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-21T02:53:06.515Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-sr01-r1-31bYeF",
+  "runtime": "v24.20.0",
+  "copyChanges": [],
+  "rows": [
+    {
+      "name": "targeted",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-ui.test.tsx"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 43036,
+      "summary": [
+        "ℹ tests 37",
+        "ℹ pass 34",
+        "ℹ fail 3",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 42863.4804"
+      ]
+    }
+  ],
+  "realProviderCalls": 0,
+  "pass": false
+}

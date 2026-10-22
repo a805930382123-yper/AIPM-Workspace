@@ -1,0 +1,49 @@
+{
+  "job": {
+    "jobId": "616c1edd-5c8c-46fe-aa1b-d4264f1e3c9a",
+    "rawId": "71bb46ae-9192-4558-9a15-cb6bf7c5002b",
+    "status": "failed",
+    "stage": "planning",
+    "progress": {
+      "chunksTotal": 14,
+      "chunksDone": 14,
+      "pagesFound": 46
+    },
+    "draftId": null,
+    "error": {
+      "code": "LLM_PLAN_COVERAGE_INVALID",
+      "message": "主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。",
+      "at": "2026-10-15T06:07:51.890Z",
+      "retryable": true
+    },
+    "provider": {
+      "name": "openai-compatible",
+      "model": "GLM-5.3-Flash"
+    },
+    "callCount": 15,
+    "startedAt": "2026-10-15T06:06:36.351Z",
+    "finishedAt": "2026-10-15T06:07:51.890Z",
+    "cancelRequested": false,
+    "pipelineVersion": "kb02-1",
+    "checkpoint": {
+      "stage": "planning",
+      "validatedChunks": 14,
+      "totalChunks": 14,
+      "resumable": true,
+      "reason": "主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。",
+      "attempts": 15,
+      "reusedChunks": 0
+    }
+  },
+  "raw": {
+    "reports\\71bb46ae-9192-4558-9a15-cb6bf7c5002b.md": "27d8f2cadc3d3eb3980ed509494937989b1e5f70ab10160167a2f970b3093e6e",
+    "reports\\9896ae56-1eba-46cb-9550-0ca710446beb.md": "b7033db2ba49ec65ef330f83b139db7d2f861929cebcab960a78e9c3924a718f",
+    "reports\\b05c302c-1f8b-4ddf-b8af-60cf7acecd2f.md": "99ce727be37607aa2c17fe99a4811d9feac7dd31d4f8486a1e43ed1c03226aa5"
+  },
+  "wiki": {
+    "297a671c-ca8e-4974-a6e3-a5a6220705db.md": "ecc24129a6c2cd6a3f85655d5f1562a7f2b931015d8000775bd71871708dc5a9",
+    "c5497496-e02e-4dd9-8ec8-bbb3044339db.md": "16f9b9adb988833319d09e359c3cbaf6a17d6e1107542ebdb7563a73c76a4f7e",
+    "index.md": "0aafaabba2c3f4c147d92899b42041d35966bcb837bda147a3de4f487dd900d9"
+  },
+  "calls": 20
+}

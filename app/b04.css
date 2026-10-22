@@ -17,6 +17,22 @@
 .settings-help h3 { margin: 0 0 6px; color: #3c4b60; font-size: 12px; }
 .settings-help pre { margin: 8px 0; padding: 10px 12px; border: 1px solid #e6ebf1; border-radius: 5px; background: #fafbfd; color: #4f5f73; font-family: Consolas, monospace; font-size: 11px; white-space: pre-wrap; }
 .settings-help code { font-family: Consolas, monospace; font-size: 10px; }
+.settings-config-form { margin-top: 18px; padding-top: 16px; border-top: 1px solid #edf0f4; display: grid; gap: 10px; }
+.settings-config-form label { display: grid; gap: 5px; color: #42536a; font-size: 12px; font-weight: 600; }
+.settings-config-form input { min-height: 36px; border: 1px solid #d9e1ea; border-radius: 5px; padding: 7px 10px; color: #29394d; background: #fff; font: inherit; }
+.settings-config-form input:focus { outline: 2px solid #b9d2ed; border-color: #7da5d1; }
+.settings-config-form input:disabled { background: #f4f6f8; color: #8793a2; }
+.field-help { margin: 0; color: #718096; font-size: 11px; line-height: 1.6; }
+.settings-config-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 600px) {
+  .settings-page .settings-body { min-width: 0; max-width: 100%; }
+  .settings-page .settings-body > pre { box-sizing: border-box; max-width: 100%; min-width: 0; overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+@media (max-width: 760px) {
+  .sidebar .sidebar-bottom { display: block; margin-top: 2px; }
+  .sidebar .sidebar-bottom .nav-caption, .sidebar .sidebar-bottom .local-state { display: none; }
+  .sidebar .sidebar-bottom .nav-item { min-width: max-content; }
+}
 
 .draft-page .heading-actions { flex-wrap: wrap; }
 .draft-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-bottom: 14px; }

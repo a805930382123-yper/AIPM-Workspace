@@ -1,0 +1,445 @@
+{
+  "at": "2026-10-14T14:54:16.602Z",
+  "scope": "actual HTTP+configured external Provider; fictional owned isolated Raw only",
+  "checks": [
+    {
+      "id": "R4-REAL-SHORT-v2-normalized-and-explicit-confirm",
+      "result": "PASS",
+      "details": {
+        "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+        "draftId": "ebcf9bdd-6c14-4114-a2d8-7e56be594cd9",
+        "pages": 3,
+        "selectedPages": 1,
+        "callCount": 1,
+        "quoteRangesExact": true,
+        "noAutoFormalWrite": true
+      },
+      "elapsedMs": 16715
+    },
+    {
+      "id": "R4-REAL-LONG-106400-all-chunks-and-regions",
+      "result": "FAIL",
+      "message": "{\"code\":\"LLM_INVALID_JSON\",\"message\":\"Provider 返回的内容不是合法 JSON（未做修补，避免把不完整结果当成成功）。\",\"at\":\"2026-10-14T14:53:42.160Z\",\"retryable\":true,\"details\":{\"length\":1890,\"startsWith\":\"{\\\"docume\",\"preview\":\"{\\\"document\\\":{\\\"title\\\":\\\"验收资料 R4十四区域中文长文虚构验收（第2段）\\\",\\\"main_topic\\\":\\\"虚构区域02与虚构区域03的门店数铺货率数据（虚构验收样本）\\\",\\\"summary\\\":\\\"本段为虚构验收样本资料，包含两\"}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "actual": "failed",
+      "elapsedMs": 42721
+    },
+    {
+      "id": "R4-REAL-SAFETY-cumulative-attempt-ledger",
+      "result": "FAIL",
+      "message": "Expected values to be strictly equal:\n\n3 !== 2\n",
+      "actual": 3,
+      "elapsedMs": 2
+    },
+    {
+      "id": "R4-REAL-UPDATE-new-source-candidates-conflict-explicit-confirm",
+      "result": "FAIL",
+      "message": "{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的 locator v2 返回未通过结构校验（1 处问题）：$.suggested_pages[4].type: 值 \\\"open_question\\\" 不在允许的枚举内（\\\"concept\\\"、\\\"entity\\\"、\\\"business_process\\\"、\\\"metric\\\"）\",\"at\":\"2026-10-14T14:54:16.362Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[4].type: 值 \\\"open_question\\\" 不在允许的枚举内（\\\"concept\\\"、\\\"entity\\\"、\\\"business_process\\\"、\\\"metric\\\"）\"]}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "actual": "failed",
+      "elapsedMs": 34255
+    },
+    {
+      "id": "R4-REAL-FINAL-cumulative-call-ledger",
+      "result": "PASS",
+      "details": {
+        "historical": 16,
+        "newAttempts": 4,
+        "cumulative": 20,
+        "cap": 40
+      },
+      "elapsedMs": 1
+    }
+  ],
+  "artifacts": {
+    "job-510d826d-0b3f-4fd8-9b14-e146d201e8c4": {
+      "jobId": "f688c01a-5d3b-4516-a7ba-45fdf6d4d093",
+      "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+      "status": "completed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 1,
+        "pagesFound": 3
+      },
+      "draftId": "ebcf9bdd-6c14-4114-a2d8-7e56be594cd9",
+      "error": null,
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 1,
+      "startedAt": "2026-10-14T14:52:42.901Z",
+      "finishedAt": "2026-10-14T14:52:59.463Z",
+      "cancelRequested": false
+    },
+    "shortRaw": {
+      "id": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+      "chars": 134,
+      "sha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515"
+    },
+    "shortDraft": {
+      "id": "ebcf9bdd-6c14-4114-a2d8-7e56be594cd9",
+      "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+      "rawSha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+      "rawTitle": "验收资料 R4虚构短文",
+      "rawMeta": {
+        "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+        "title": "验收资料 R4虚构短文",
+        "sourceType": "report",
+        "sourceName": "隔离样本 R4虚构短文",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture"
+      },
+      "status": "pending_confirmation",
+      "revision": 1,
+      "createdAt": "2026-10-14T14:52:59.457Z",
+      "updatedAt": "2026-10-14T14:52:59.457Z",
+      "rulesVersion": "b04-b04-1-locator-v2-60ebb37d8554",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "jobId": "f688c01a-5d3b-4516-a7ba-45fdf6d4d093",
+      "document": {
+        "title": "验收资料 R4虚构短文",
+        "main_topic": "虚构饮料甲在甲桥区域的铺货率计算示例",
+        "summary": "本资料为虚构验收样本，说明铺货率的定义与计算：2026年9月甲桥区域虚构饮料甲有100家目标门店、20家在售，铺货率为20÷100=20%。资料明确指出门店数不能解释为销量，并声明异常审批负责人待访谈确认，AI异常提示仅为未来建议，无上线或收益事实。"
+      },
+      "pages": [
+        {
+          "pageId": "223f38da-988a-4408-94bc-378657e15dd0",
+          "title": "铺货率定义与计算示例（虚构饮料甲·甲桥区域）",
+          "type": "metric",
+          "category": "metric",
+          "one_line_definition": "铺货率是在售门店数除以目标门店数，示例中为20÷100=20%。",
+          "source_facts": [
+            {
+              "text": "虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。",
+              "evidenceIds": [
+                "e1"
+              ]
+            },
+            {
+              "text": "铺货率定义为在售门店数除以目标门店数，即20÷100=20%。",
+              "evidenceIds": [
+                "e1"
+              ]
+            },
+            {
+              "text": "这里的门店数不能解释为销量。",
+              "evidenceIds": [
+                "e1"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "铺货率=在售门店数÷目标门店数。示例：2026年9月甲桥区域目标门店100家，在售20家，铺货率20%。",
+            "使用该指标时注意：门店数反映铺货覆盖情况，不代表销量。"
+          ],
+          "ai_inferences": [
+            "该指标属于渠道覆盖类指标，可与销量类指标结合使用以区分铺货与动销表现。"
+          ],
+          "related_pages": [
+            "目标门店数",
+            "在售门店数",
+            "铺货率与销量的关系"
+          ],
+          "open_questions": [
+            "铺货率的统计口径（如按SKU还是品牌）资料未说明。"
+          ],
+          "source_evidence": [
+            {
+              "id": "e1",
+              "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+              "quote": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。",
+              "start": 0,
+              "end": 134,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 134
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n铺货率是在售门店数除以目标门店数，示例中为20÷100=20%。\n\n## 来源事实\n\n- 虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。（证据 e1）\n- 铺货率定义为在售门店数除以目标门店数，即20÷100=20%。（证据 e1）\n- 这里的门店数不能解释为销量。（证据 e1）\n\n## AI 整理\n\n- 铺货率=在售门店数÷目标门店数。示例：2026年9月甲桥区域目标门店100家，在售20家，铺货率20%。\n- 使用该指标时注意：门店数反映铺货覆盖情况，不代表销量。\n\n## AI 推断\n\n- 该指标属于渠道覆盖类指标，可与销量类指标结合使用以区分铺货与动销表现。\n\n## 待确认问题\n\n- 铺货率的统计口径（如按SKU还是品牌）资料未说明。\n\n## 来源证据\n\n- e1｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- 目标门店数（本次未创建，待后续处理）\n- 在售门店数（本次未创建，待后续处理）\n- 铺货率与销量的关系（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 R4虚构短文]]（Raw 510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n"
+        },
+        {
+          "pageId": "d27ac3f1-905a-48fd-8f6c-889af5851540",
+          "title": "AI异常提示的现状与误区（未上线、无收益事实）",
+          "type": "concept",
+          "category": "ai_application",
+          "one_line_definition": "AI异常提示目前仅为未来建议，没有上线或收益事实。",
+          "source_facts": [
+            {
+              "text": "AI异常提示只是未来建议，没有上线或收益事实。",
+              "evidenceIds": [
+                "e1"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "在引用AI异常提示相关内容时，应注明其尚处于建议阶段，不存在已上线系统或已验证收益。"
+          ],
+          "ai_inferences": [
+            "资料提醒避免将未来设想误当作既有能力或成果进行汇报。"
+          ],
+          "related_pages": [
+            "AI异常检测",
+            "AI应用落地评估"
+          ],
+          "open_questions": [
+            "AI异常提示的具体功能设计尚无信息。"
+          ],
+          "source_evidence": [
+            {
+              "id": "e1",
+              "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+              "quote": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。",
+              "start": 0,
+              "end": 134,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 134
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\nAI异常提示目前仅为未来建议，没有上线或收益事实。\n\n## 来源事实\n\n- AI异常提示只是未来建议，没有上线或收益事实。（证据 e1）\n\n## AI 整理\n\n- 在引用AI异常提示相关内容时，应注明其尚处于建议阶段，不存在已上线系统或已验证收益。\n\n## AI 推断\n\n- 资料提醒避免将未来设想误当作既有能力或成果进行汇报。\n\n## 待确认问题\n\n- AI异常提示的具体功能设计尚无信息。\n\n## 来源证据\n\n- e1｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- AI异常检测（本次未创建，待后续处理）\n- AI应用落地评估（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 R4虚构短文]]（Raw 510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n"
+        },
+        {
+          "pageId": "adb9ade6-2533-41be-a943-a74604147355",
+          "title": "异常审批负责人待确认事项",
+          "type": "business_process",
+          "category": "other",
+          "one_line_definition": "资料中异常审批负责人尚未确认，需通过访谈明确。",
+          "source_facts": [
+            {
+              "text": "异常审批负责人待访谈确认；",
+              "evidenceIds": [
+                "e1"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "异常审批流程中负责人的归属尚不明确，后续需通过访谈确认。"
+          ],
+          "ai_inferences": [
+            "异常审批流程可能已有框架，但责任角色未落实到人。"
+          ],
+          "related_pages": [
+            "异常审批流程"
+          ],
+          "open_questions": [
+            "异常审批的具体流程步骤和负责人是谁，资料未提供。"
+          ],
+          "source_evidence": [
+            {
+              "id": "e1",
+              "rawId": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+              "quote": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。",
+              "start": 0,
+              "end": 134,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 134
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n资料中异常审批负责人尚未确认，需通过访谈明确。\n\n## 来源事实\n\n- 异常审批负责人待访谈确认；（证据 e1）\n\n## AI 整理\n\n- 异常审批流程中负责人的归属尚不明确，后续需通过访谈确认。\n\n## AI 推断\n\n- 异常审批流程可能已有框架，但责任角色未落实到人。\n\n## 待确认问题\n\n- 异常审批的具体流程步骤和负责人是谁，资料未提供。\n\n## 来源证据\n\n- e1｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- 异常审批流程（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 R4虚构短文]]（Raw 510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n"
+        }
+      ],
+      "source": {
+        "title": "验收资料 R4虚构短文",
+        "category": "other",
+        "summary": "本资料为虚构验收样本，说明铺货率的定义与计算：2026年9月甲桥区域虚构饮料甲有100家目标门店、20家在售，铺货率为20÷100=20%。资料明确指出门店数不能解释为销量，并声明异常审批负责人待访谈确认，AI异常提示仅为未来建议，无上线或收益事实。",
+        "key_takeaways": [],
+        "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 R4虚构短文\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 R4虚构短文（510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n本资料为虚构验收样本，说明铺货率的定义与计算：2026年9月甲桥区域虚构饮料甲有100家目标门店、20家在售，铺货率为20÷100=20%。资料明确指出门店数不能解释为销量，并声明异常审批负责人待访谈确认，AI异常提示仅为未来建议，无上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 铺货率定义与计算示例（虚构饮料甲·甲桥区域）（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- AI异常提示的现状与误区（未上线、无收益事实）（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 异常审批负责人待确认事项（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 R4虚构短文（Raw 510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C"
+      },
+      "warnings": [
+        "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+      ],
+      "extraction": {
+        "callCount": 1,
+        "chunkCount": 1,
+        "pagesFound": 3
+      },
+      "sourceRenderedBody": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 R4虚构短文\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 R4虚构短文（510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n本资料为虚构验收样本，说明铺货率的定义与计算：2026年9月甲桥区域虚构饮料甲有100家目标门店、20家在售，铺货率为20÷100=20%。资料明确指出门店数不能解释为销量，并声明异常审批负责人待访谈确认，AI异常提示仅为未来建议，无上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 铺货率定义与计算示例（虚构饮料甲·甲桥区域）（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- AI异常提示的现状与误区（未上线、无收益事实）（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 异常审批负责人待确认事项（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 R4虚构短文（Raw 510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "preview": {
+        "rawExists": true,
+        "rawSha256Matches": true,
+        "sourceReuse": null,
+        "sourceAmbiguous": null,
+        "titleConflicts": [],
+        "batchDuplicateTitles": []
+      },
+      "raw": {
+        "id": "510d826d-0b3f-4fd8-9b14-e146d201e8c4",
+        "title": "验收资料 R4虚构短文",
+        "sourceType": "report",
+        "sourceName": "隔离样本 R4虚构短文",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture",
+        "importedAt": "2026-10-14T14:52:42.888Z",
+        "bodySha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515"
+      }
+    },
+    "shortConfirm": {
+      "operationId": "1143f17c-15f0-4ae0-a49a-8aa7287efb14",
+      "status": "completed",
+      "reused": false,
+      "sourceReused": false,
+      "sourceId": "4e680029-1a08-4e09-97fc-906d7da6e54a",
+      "wikiIds": [
+        "a23669b0-f8e1-4e26-950c-2787cf537fdb"
+      ],
+      "sourceReuseId": null,
+      "writtenWikiIds": [
+        "4e680029-1a08-4e09-97fc-906d7da6e54a",
+        "a23669b0-f8e1-4e26-950c-2787cf537fdb"
+      ],
+      "phases": [
+        {
+          "name": "source",
+          "status": "done",
+          "at": "2026-10-14T14:52:59.539Z"
+        },
+        {
+          "name": "pages",
+          "status": "done",
+          "at": "2026-10-14T14:52:59.543Z"
+        },
+        {
+          "name": "index",
+          "status": "done",
+          "at": "2026-10-14T14:52:59.553Z"
+        },
+        {
+          "name": "log",
+          "status": "done",
+          "at": "2026-10-14T14:52:59.556Z"
+        },
+        {
+          "name": "state",
+          "status": "done",
+          "at": "2026-10-14T14:52:59.562Z"
+        }
+      ],
+      "warnings": []
+    },
+    "shortMetricWiki": {
+      "title": "铺货率定义与计算示例（虚构饮料甲·甲桥区域）",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "510d826d-0b3f-4fd8-9b14-e146d201e8c4"
+      ],
+      "tags": [
+        "KB01_R4虚构"
+      ],
+      "aliases": [],
+      "knowledge_status": "ai_organized",
+      "confidence": "medium",
+      "source_level": "C",
+      "review_status": "unreviewed",
+      "body": "## 一句话说明\n\n铺货率是在售门店数除以目标门店数，示例中为20÷100=20%。\n\n## 来源事实\n\n- 虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。（证据 e1）\n- 铺货率定义为在售门店数除以目标门店数，即20÷100=20%。（证据 e1）\n- 这里的门店数不能解释为销量。（证据 e1）\n\n## AI 整理\n\n- 铺货率=在售门店数÷目标门店数。示例：2026年9月甲桥区域目标门店100家，在售20家，铺货率20%。\n- 使用该指标时注意：门店数反映铺货覆盖情况，不代表销量。\n\n## AI 推断\n\n- 该指标属于渠道覆盖类指标，可与销量类指标结合使用以区分铺货与动销表现。\n\n## 待确认问题\n\n- 铺货率的统计口径（如按SKU还是品牌）资料未说明。\n\n## 来源证据\n\n- e1｜原文 [0, 134)：【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不…\n\n## 关联\n\n- 目标门店数（本次未创建，待后续处理）\n- 在售门店数（本次未创建，待后续处理）\n- 铺货率与销量的关系（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 R4虚构短文]]（Raw 510d826d-0b3f-4fd8-9b14-e146d201e8c4）\n\n\n## 人工备注\nR4_HUMAN 异常审批负责人需访谈确认，保留原口径。",
+      "id": "a23669b0-f8e1-4e26-950c-2787cf537fdb",
+      "domain": "fmcg",
+      "created": "2026-10-14T14:52:59.525Z",
+      "updated": "2026-10-14T14:52:59.572Z",
+      "revision": 2
+    },
+    "longRaw": {
+      "id": "46213aeb-d16d-4471-bfdf-db17ee7c581b",
+      "chars": 106400,
+      "sha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7"
+    },
+    "job-46213aeb-d16d-4471-bfdf-db17ee7c581b": {
+      "jobId": "2214da19-406a-4cff-9cc6-b65e58a25745",
+      "rawId": "46213aeb-d16d-4471-bfdf-db17ee7c581b",
+      "status": "failed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 14,
+        "chunksDone": 0,
+        "pagesFound": 0
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_INVALID_JSON",
+        "message": "Provider 返回的内容不是合法 JSON（未做修补，避免把不完整结果当成成功）。",
+        "at": "2026-10-14T14:53:42.160Z",
+        "retryable": true,
+        "details": {
+          "length": 1890,
+          "startsWith": "{\"docume",
+          "preview": "{\"document\":{\"title\":\"验收资料 R4十四区域中文长文虚构验收（第2段）\",\"main_topic\":\"虚构区域02与虚构区域03的门店数铺货率数据（虚构验收样本）\",\"summary\":\"本段为虚构验收样本资料，包含两"
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 0,
+      "startedAt": "2026-10-14T14:52:59.611Z",
+      "finishedAt": "2026-10-14T14:53:42.160Z",
+      "cancelRequested": false
+    },
+    "job-ceaddd55-3d1d-42f3-bad1-2fe87a10103c": {
+      "jobId": "bb593421-1031-4090-80b2-3e0c9d7bd3ec",
+      "rawId": "ceaddd55-3d1d-42f3-bad1-2fe87a10103c",
+      "status": "failed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 0,
+        "pagesFound": 0
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_SCHEMA_INVALID",
+        "message": "第 1 段的 locator v2 返回未通过结构校验（1 处问题）：$.suggested_pages[4].type: 值 \"open_question\" 不在允许的枚举内（\"concept\"、\"entity\"、\"business_process\"、\"metric\"）",
+        "at": "2026-10-14T14:54:16.362Z",
+        "retryable": true,
+        "details": {
+          "errors": [
+            "$.suggested_pages[4].type: 值 \"open_question\" 不在允许的枚举内（\"concept\"、\"entity\"、\"business_process\"、\"metric\"）"
+          ]
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 0,
+      "startedAt": "2026-10-14T14:53:42.343Z",
+      "finishedAt": "2026-10-14T14:54:16.362Z",
+      "cancelRequested": false
+    }
+  }
+}

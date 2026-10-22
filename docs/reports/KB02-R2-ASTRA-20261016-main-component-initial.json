@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-16T13:55:55.306Z",
+  "scope": "React + actual isolated HTTP in jsdom; not actual browser",
+  "durationMs": 1864,
+  "checks": [
+    {
+      "id": "C01-failed-progress-and-continue-body",
+      "result": "PASS",
+      "evidence": {
+        "sameJob": "1db1dc26-bed4-436e-8cdd-9d765606838a",
+        "normalContinueBody": {},
+        "onePlanningCall": true,
+        "failedProgressVisible": true
+      }
+    },
+    {
+      "id": "C02-corrupt-continue-error-and-explicit-restart",
+      "result": "PASS",
+      "evidence": {
+        "corruptErrorVisible": true,
+        "normalContinueNoCalls": true,
+        "explicitRestartBody": {
+          "restart": true
+        }
+      }
+    },
+    {
+      "id": "C03-live-planning-stage-no-partial-review",
+      "result": "PASS",
+      "evidence": {
+        "planningVisible": true,
+        "validatedCountVisible": true,
+        "noPartialDraft": true
+      }
+    },
+    {
+      "id": "C04-reload-failed-checkpoint-readonly",
+      "result": "PASS",
+      "evidence": {
+        "restoredJob": "45970c32-c5c1-4605-be31-886dcf84dd29",
+        "controlsVisible": true,
+        "reloadCalls": 0
+      }
+    },
+    {
+      "id": "C05-explicit-feedback-replanning-button",
+      "result": "PASS",
+      "evidence": {
+        "body": {
+          "planningRetry": true
+        },
+        "sameJob": "eca818cc-4adb-47e2-8a6c-53311365f12c",
+        "onePlanner": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0
+  },
+  "requests": [
+    {
+      "path": "/api/extraction-jobs/1db1dc26-bed4-436e-8cdd-9d765606838a",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/6f8fde46-7deb-41f3-b078-4cd7b5bc42ae/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/extraction-jobs/012caa5b-7aef-43a3-abb7-e910e352caf7",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/62f56eb6-d522-4cbb-a4a7-c2033b58a610/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/raw/62f56eb6-d522-4cbb-a4a7-c2033b58a610/extract",
+      "method": "POST",
+      "body": {
+        "restart": true
+      }
+    },
+    {
+      "path": "/api/extraction-jobs/1be2f4e0-fd5e-444f-8b20-f4ed48acd02f",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/45970c32-c5c1-4605-be31-886dcf84dd29",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/eca818cc-4adb-47e2-8a6c-53311365f12c",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/fcd0750a-b0f1-4463-95bd-61c84a719b3b/extract",
+      "method": "POST",
+      "body": {
+        "planningRetry": true
+      }
+    }
+  ],
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-standards-Lox3KP",
+  "fakeCalls": 14,
+  "closed": true
+}

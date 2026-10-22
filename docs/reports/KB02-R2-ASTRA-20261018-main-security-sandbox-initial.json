@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-18T02:38:53.785Z",
+  "scope": "affected extraction/planning/update HTTP output safety and Meeting gates; localhost fake only",
+  "externalCalls": 0,
+  "summary": {
+    "pass": 0,
+    "fail": 2
+  },
+  "rows": [
+    {
+      "id": "long-setup",
+      "result": "FAIL",
+      "error": "Error: node:internal/fs/promises:786\r\n  return await PromisePrototypeThen(\r\n         ^\r\n\r\nError: EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\AC\\Temp\\kb02-standards-Uc5jj1\\knowledge\\wiki\\.index.md.3b389029-b528-4e29-b692-e661eaa8edaf.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\AC\\Temp\\kb02-standards-Uc5jj1\\knowledge\\wiki\\index.md'\r\n    at async Object.rename (node:internal/fs/promises:786:10)\r\n    at async writeAtomic (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:66:5)\r\n    at async WikiStore.rebuildIndex (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:330:5)\r\n    at async WikiStore.recoverPending (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:380:5)\r\n    at async WikiStore.initialize (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:99:5)\r\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\server\\index.ts:104:1) {\r\n  errno: -4048,\r\n  code: 'EPERM',\r\n  syscall: 'rename',\r\n  path: 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Packages\\\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\\\AC\\\\Temp\\\\kb02-standards-Uc5jj1\\\\knowledge\\\\wiki\\\\.index.md.3b389029-b528-4e29-b692-e661eaa8edaf.tmp',\r\n  dest: 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Packages\\\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\\\AC\\\\Temp\\\\kb02-standards-Uc5jj1\\\\knowledge\\\\wiki\\\\index.md'\r\n}\r\n\r\nNode.js v25.2.1\r\n\n    at Object.start (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-harness.mjs:38:57)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-astra-20261018-main-security.mjs:17:5"
+    },
+    {
+      "id": "short-setup",
+      "result": "FAIL",
+      "error": "Error: node:internal/fs/promises:786\r\n  return await PromisePrototypeThen(\r\n         ^\r\n\r\nError: EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\AC\\Temp\\kb02-standards-hFy5E0\\knowledge\\wiki\\.index.md.025a078e-54d5-4f63-93dc-365800b6e70b.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\AC\\Temp\\kb02-standards-hFy5E0\\knowledge\\wiki\\index.md'\r\n    at async Object.rename (node:internal/fs/promises:786:10)\r\n    at async writeAtomic (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:66:5)\r\n    at async WikiStore.rebuildIndex (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:330:5)\r\n    at async WikiStore.recoverPending (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:380:5)\r\n    at async WikiStore.initialize (E:\\AI\\Work\\AIPM Workspace\\services\\wiki\\store.ts:99:5)\r\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\server\\index.ts:104:1) {\r\n  errno: -4048,\r\n  code: 'EPERM',\r\n  syscall: 'rename',\r\n  path: 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Packages\\\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\\\AC\\\\Temp\\\\kb02-standards-hFy5E0\\\\knowledge\\\\wiki\\\\.index.md.025a078e-54d5-4f63-93dc-365800b6e70b.tmp',\r\n  dest: 'C:\\\\Users\\\\80593\\\\AppData\\\\Local\\\\Packages\\\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\\\AC\\\\Temp\\\\kb02-standards-hFy5E0\\\\knowledge\\\\wiki\\\\index.md'\r\n}\r\n\r\nNode.js v25.2.1\r\n\n    at Object.start (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-harness.mjs:38:57)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-astra-20261018-main-security.mjs:17:5"
+    }
+  ],
+  "services": [
+    {
+      "root": "C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\AC\\Temp\\kb02-standards-Uc5jj1",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{d490ac52-0aa8-4b10-bf62-d9a49a6dca8b}\\AC\\Temp\\kb02-standards-hFy5E0",
+      "closed": true
+    }
+  ]
+}

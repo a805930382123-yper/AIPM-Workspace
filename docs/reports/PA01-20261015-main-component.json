@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-15T07:48:40.319Z",
+  "scope": "React + actual isolated HTTP in jsdom; not a real browser",
+  "rows": [
+    {
+      "id": "C01-check-edit-original-must-recheck-before-rewrite",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"outboundBody\":\"第一次检查原文\",\"visibleEditedInput\":\"第二次编辑原文\"}\n+ actual - expected\n\n+ {\n+   at: '2026-10-15T07:48:39.543Z',\n+   authCorrect: true,\n+   index: 2,\n+   input: {\n+     messages: [\n+       {\n+         content: '严格按协议生成完整优化后的 Prompt 内容，不输出检查。只输出 JSON，契约：{\"version\":1,\"additionalProperties\":false,\"required\":[\"version\",\"name\",\"category\",\"scenario\",\"sections\",\"inputRequirements\",\"outputRequirements\",\"examples\",\"tags\"],\"properties\":{\"version\":{\"const\":1},\"name\":{\"type\":\"string\"},\"category\":{\"type\":\"string\",\"enum\":\"provided categories\"},\"scenario\":{\"type\":\"string\"},\"sections\":{\"type\":\"array\",\"minItems\":1,\"maxItems\":16,\"items\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"heading\",\"content\"],\"properties\":{\"heading\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":200},\"content\":{\"type\":\"string\",\"minLength\":1}}}},\"inputRequirements\":{\"type\":\"string\"},\"outputRequirements\":{\"type\":\"string\"},\"examples\":{\"type\":\"string\"},\"tags\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"example\":{\"version\":1,\"name\":\"客户访谈分析\",\"category\":\"customer\",\"scenario\":\"访谈经销商\",\"sections\":[{\"heading\":\"任务目标\",\"content\":\"{{目标}}未知时标记待确认。\"}],\"inputRequirements\":\"访谈原文\",\"outputRequirements\":\"事实与待确认问题\",\"examples\":\"输入与输出示例可含 Markdown 和 JSON\",\"tags\":[\"访谈\"]}}。分类限给定值；未知内容标待用户补充。',\n+         role: 'system'\n+       },\n+       {\n+         content: '{\"body\":\"第一次检查原文\",\"supplement\":\"\",\"checks\":[{\"id\":\"goal\",\"label\":\"任务目标\",\"status\":\"present\",\"evidence\":\"已有目标\"},{\"id\":\"role\",\"label\":\"角色\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"context\",\"label\":\"业务背景\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"input\",\"label\":\"输入资料\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"tasks\",\"label\":\"执行步骤\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"constraints\",\"label\":\"约束条件\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"output\",\"label\":\"输出格式\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"fact_inference\",\"label\":\"事实与推断\",\"status\":\"missing\",\"evidence\":\"待用户补充\"},{\"id\":\"anti_fabrication\",\"label\":\"防止虚构\",\"status\":\"missing\",\"evidence\":\"待用户补充\"}],\"improvements\":[{\"dimensionId\":\"role\",\"issue\":\"缺少role\",\"action\":\"补充role\"},{\"dimensionId\":\"context\",\"issue\":\"缺少context\",\"action\":\"补充context\"},{\"dimensionId\":\"input\",\"issue\":\"缺少input\",\"action\":\"补充input\"},{\"dimensionId\":\"tasks\",\"issue\":\"缺少tasks\",\"action\":\"补充tasks\"},{\"dimensionId\":\"constraints\",\"issue\":\"缺少constraints\",\"action\":\"补充constraints\"},{\"dimensionId\":\"output\",\"issue\":\"缺少output\",\"action\":\"补充output\"},{\"dimensionId\":\"fact_inference\",\"issue\":\"缺少fact_inference\",\"action\":\"补充fact_inference\"},{\"dimensionId\":\"anti_fabrication\",\"issue\":\"缺少anti_fabrication\",\"action\":\"补充anti_fabrication\"}],\"target\":{},\"categories\":[\"industry_learning\",\"business_analysis\",\"customer\",\"product\",\"ai\",\"office\"]}',\n+         role: 'user'\n+       }\n+     ],\n+     model: 'kb02-independent-model',\n+     stream: false,\n+     temperature: 0\n+   }\n+ }\n- undefined\n\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:9:426)\n    at async test (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:6:69)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:9:1)"
+    },
+    {
+      "id": "C02-check-edit-supplement-must-recheck",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: 补充编辑后旧检查与继续按钮仍有效\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:10:253)\n    at async test (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:6:69)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:10:1)"
+    },
+    {
+      "id": "C03-restore-supplement-and-target-binding",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   supplement: '',\n+   target: ''\n-   supplement: '必须恢复的补充要求',\n-   target: '765aa9d9-43ee-443a-8be7-d92471034831'\n  }\n\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:11:300)\n    at async test (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:6:154)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:11:1)",
+      "calibration": "initial C03 INVALID due to mount readiness; waits for draft option in independent rerun; product still FAIL"
+    },
+    {
+      "id": "C04-late-restore-must-not-overwrite-user-edit",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ '待恢复的旧原文'\n- '用户刚输入的新任务'\n\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:12:451)\n    at async test (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:6:69)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:12:1)"
+    },
+    {
+      "id": "C05-rewrite-failure-keeps-checks-and-retry-success",
+      "result": "PASS",
+      "evidence": {
+        "checks": 9,
+        "retryOnlyRewrite": true
+      }
+    },
+    {
+      "id": "C06-manual-Brief-with-existing-Wiki-must-offer-selection",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: 已有Wiki却显示：相关 Wiki · 默认不选择 · 可选最多 6 页知识库目前没有 Wiki，可以继续生成。\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:14:423)\n    at async test (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:6:69)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\pa01-20261015-main-component.mjs:14:1)"
+    },
+    {
+      "id": "C07-global-corrupt-notice-safe-and-refresh-removes-fixed",
+      "result": "PASS",
+      "evidence": {
+        "safe": true,
+        "fixedAfterRefresh": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 5
+  },
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-uEvUjB",
+  "fakeCalls": 7,
+  "externalCalls": 0,
+  "closed": true,
+  "calibrationEvidence": "PA01-20261015-main-component-calibration.json",
+  "initialEvidence": "PA01-20261015-main-component-initial.json"
+}

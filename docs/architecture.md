@@ -59,6 +59,14 @@ M05由Meeting Raw登记成功回调刷新App共享Raw/统计/状态，进入Raw/
 
 规则层约束生成与检查；工具层确定性操作文件；LLM 层输出通过 schema 校验的结构化建议；UI 层负责预览和确认。所有持久化操作经服务端完成。
 
+KB02 R2（2026-10-16，施工中）将新执行链升级为 kb02-2：服务端生成原文 atom 目录，模型只选 ID/分类，事实与摘要确定性派生；来源声明保留检查点元数据。覆盖失败返回有界 ID 诊断，planningRetry:true 明确触发仅重新规划且沿用同 job/累计账本。更新仅选择已验证 evidenceId，服务端派生原工作流证据结构；旧合法 Draft/Workflow 保持兼容，旧规则未完成检查点明确不兼容并保留。具体以 [本轮接口](handoffs/KB02-R2-interface.md) 与最新 status 为准；受控自测不能替代新规则真实质量，KB02 40/40 已用尽。下段为 R1 历史实现及验收记录。
+
+KB02当前新Raw执行链已改为locator目录→精简事实/原文明示问题→整篇主题规划→确定性DraftRecord组装，半成品只进state/extraction-checkpoints。正式确认仍走原审核事务，Raw不改写。kb02-1按Raw实际SHA、规则、chunk参数与非敏感端点/model绑定，显式继续或restart:true，不自动外发。KB02 R1已修复有效恢复ID、严格有界checkpoint/409预检、旧fixture迁移，将提示修订纳入缓存身份。工程验收PASS，实际IAB同job复用14段通过；真实Spec仍FAIL：补充口径被擅补、更新旧quote/offset契约失败、长文规划漏事实，严格拒绝且不组装部分草稿。见[KB02 R1验收](reports/KB02-R1-20261015-acceptance.md)。
+
+历史KB01 R4提取使用provider-only locator-v2输入：每个chunk由服务端建立完整、连续、UTF-16安全的Raw切片目录，单条≤512字符、最多256项；模型选择当前chunk定位ID，服务端派生原始引文/位置，严格验证后仍按原草稿格式存储。未知、跨块、格式混用和页内引用错误失败关闭；解析前和Raw映射后都扫已知凭证。聚合保留全部来源/事实，相同重叠证据去重、后缀占用确定性避让；文档汇总只返回document。旧quote输出兼容，不按首匹配猜位置、不丢失败chunk、不加重试或提高预算。
+
+既有单Provider仅在knowledge purpose、精确官方host及glm-5.3-flash范围内请求low reasoning与JSON object模式，客户端领域schema/证据/语义验收继续独立；JSON模式不保证模型满足业务字段。KB01 R4当时真实长文未通过，详见[历史验收](reports/KB01-R4-20261014-acceptance.md)；KB02首轮长文技术全量完成为历史证据；R1提取14段完整，但两次规划漏事实、无草稿，真实质量仍未过，以最新status为准。审核中可变字段与选择在操作期间锁定，显式侧栏导航清草稿/工作流覆盖，继续保留Raw选择及后台任务世代。
+
 | 模块 | 对外接口 | 不变量 |
 |---|---|---|
 | RawStore | create/list/get/delete | AI 只读；UUID 路径；正文完整保存 |
@@ -87,7 +95,9 @@ Prompt 使用独立 JSON 记录与版本历史，Markdown 导出；`manual/ai_ge
 
 ## LLM、导入与搜索
 
-首版只接一个稳定 Provider，通过后端适配接口；具体 Provider 在 B04 落实时根据用户可用凭证确定，开发协作模型与产品 LLM 配置分开。Key 仅来自服务端环境/受保护本地配置，前端只见是否配置；日志、Raw、Wiki、Prompt 都不含 Key。
+产品采用单一OpenAI-compatible非流式Provider，开发协作模型与产品配置分开。CFG01由服务端config-manager集中校验、读写、HMAC revision与串行原子提交；设置页显式保存/清除/连接测试，旧Key只以固定掩码返回。Host/Origin/JSON/writeToken门禁限本机可信页面，配置不进业务数据或备份。环境三字段按字段优先本机文件，任一非空环境覆盖锁定编辑。默认项目根.env.local，服务端FMCG_LLM_CONFIG_FILE可用于隔离测试。三LLM值采用版本化UTF8 base64url无损编码、旧单双引号格式保留内部反斜杠；编码不是加密，0600不声称Windows完整ACL保护。
+
+server/index.ts为每个AI请求加载有效Provider并用AsyncLocalStorage绑定该请求，后台提取持有启动快照；不会全局交换Provider串线。配置读取/保存不调用Provider，测试仅发送固定非业务探针，15秒及响应体预算限制，无业务资产写入。地址/模型检查新、环境和可读本机已知Key及百分号编码，异常配置不成为公开摘要或发起请求。六链解析后秘密门禁与Raw/Meeting来源约束继续生效。详见[CFG01接口卡](batches/CFG01.md)与[验收](reports/CFG01-20261014-acceptance.md)。
 
 设置请求超时、可见错误、输入长度预算和结构校验；长文分块保留原文证据位置，再汇总候选页面。无 Key、超时、429、无效 JSON、schema 不匹配不能写入正式知识或空 Prompt。测试 fake 明确标示，只用于测试。
 
@@ -96,3 +106,4 @@ Markdown/TXT 先支持；DOCX/PDF 用真实样例验证文本提取，扫描 PDF
 ## 本地运行约束
 
 默认绑定 127.0.0.1；请求大小有清晰上限，错误提示与 UI 一致；不信任用户标题作为路径，Raw/Markdown 阅读时防止执行脚本。端口冲突报错，避免连到未知服务。演示数据显式导入并标记 `isDemo`；不在本轮塞入假数据充统计。备份/导出和恢复在 B09 实测。
+

@@ -1,0 +1,13 @@
+import fs from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
+const prefix = 'docs/reports/KB02-R2-Q02-AUDIT-20261019-engineer-targeted-';
+let attempt = 1;
+while (await fs.access(prefix + attempt + '.json').then(() => true, () => false)) attempt++;
+const args = ['--import', 'tsx', '--import', './tests/support/css-stub.mjs', '--test', 'tests/kb02-classification-priority.test.ts', 'tests/kb02-extraction-contract.test.ts', 'tests/kb02-r2.test.ts', 'tests/kb02-planning-budget.test.ts', 'tests/kb02-pipeline.test.ts'];
+const start = Date.now(), child = spawn(process.execPath, args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+let output = ''; child.stdout.on('data', b => output += b); child.stderr.on('data', b => output += b);
+const [exitCode, signal] = await once(child, 'exit');
+await fs.writeFile(prefix + attempt + '.log', output);
+const evidence = { at: new Date().toISOString(), attempt, args, exitCode, signal, durationMs: Date.now() - start, summary: output.split(/\r?\n/).filter(s => /^ℹ (tests|pass|fail|cancelled|skipped|todo|duration)/u.test(s)), externalCalls: 0 };
+await fs.writeFile(prefix + attempt + '.json', JSON.stringify(evidence, null, 2)); console.log(JSON.stringify(evidence)); process.exitCode = exitCode ?? 1;

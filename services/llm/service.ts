@@ -3,16 +3,17 @@
 // Raw, and merge all chunks into one reviewable result. Any chunk failure fails the whole
 // extraction: a partial set of chunks is never presented as a complete result.
 import { chunkText, type TextChunk } from './chunk.ts';
-import { loadExtractionRules, type ExtractionRulesBundle } from './rules.ts';
+import { buildDocumentMergeSystemPrompt, buildLocatorSystemPrompt, loadExtractionRules, type ExtractionRulesBundle } from './rules.ts';
 import { locateEvidence, validateEvidenceReferences, type LocatedEvidence } from './evidence.ts';
-import { LlmError, describeUnparsable, sanitizeProviderText, type LlmProvider } from './provider.ts';
+import { buildEvidenceLocatorCatalog, locatorProviderSchema, resolveLocatorEvidence, EVIDENCE_LOCATOR_FORMAT_VERSION } from './locators.ts';
+import { assertNoKnownSecret, LlmError, describeUnparsable, sanitizeDeep, sanitizeProviderText, type LlmProvider } from './provider.ts';
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 
 export type ExtractRawInput = {
   id: string; title: string; sourceType: string; sourceName: string;
   author?: string; publishedAt?: string; url?: string; tags: string[];
 };
-export type ExtractStage = 'chunking' | 'extracting' | 'merging' | 'validating';
+export type ExtractStage = 'chunking' | 'extracting' | 'merging' | 'validating' | 'planning' | 'assembling';
 export type ExtractProgress = { stage: ExtractStage; chunksTotal: number; chunksDone: number; pagesFound: number };
 export type ExtractedFact = { text: string; evidenceIds: string[] };
 export type ExtractedPage = {
@@ -89,13 +90,16 @@ function assertReferencesResolve(page: ExtractedPage): void {
 function parseProviderJson(text: string, secrets: readonly string[]): unknown {
   const trimmed = text.trim();
   if (!trimmed) throw new LlmError('LLM_EMPTY_RESULT', 'Provider 返回了空结果，未产生任何知识建议。', 502);
-  try { return JSON.parse(trimmed) as unknown; }
+  let parsed: unknown;
+  try { parsed = JSON.parse(trimmed) as unknown; }
   catch {
     // F04-10: never echo provider text verbatim — only a redacted shape description.
     throw new LlmError('LLM_INVALID_JSON', 'Provider 返回的内容不是合法 JSON（未做修补，避免把不完整结果当成成功）。', 502, {
       ...describeUnparsable(trimmed, secrets),
     });
   }
+  assertNoKnownSecret(parsed, secrets);
+  return parsed;
 }
 
 function assertSchema(value: unknown, schema: JsonSchemaNode, code: string, label: string, secrets: readonly string[]): void {
@@ -210,6 +214,8 @@ export class LLMService {
       raw.url ? `- 链接：${raw.url}` : null,
       raw.tags.length ? `- 标签：${raw.tags.join('、')}` : null,
     ].filter(Boolean).join('\n');
+    const catalog = buildEvidenceLocatorCatalog(body, chunk);
+    const v2Schema = locatorProviderSchema(bundle.schema);
     const user = [
       '请把下面这段资料整理为结构化知识建议（只输出 JSON 对象）。',
       '',
@@ -218,9 +224,13 @@ export class LLMService {
       '',
       `原文总长度：${body.length} 个 JavaScript 字符。`,
       `本次只提供第 ${chunk.index + 1} 段，覆盖原文全局区间 [${chunk.start}, ${chunk.end})。`,
-      `每条 source_evidence 必须：rawId 填 "${raw.id}"；quote 必须是下面资料块里原样出现的连续片段；` +
-      '若该片段在本段出现多次，请额外给出相对整篇原文的 start/end（UTF-16 字符索引，左闭右开）。',
+      `当前 Raw ID：${raw.id}（仅作上下文，locator v2证据不输出该字段）`,
+      `本次证据输入格式版本为 ${EVIDENCE_LOCATOR_FORMAT_VERSION}：顶层必须含 evidence_format_version: ${EVIDENCE_LOCATOR_FORMAT_VERSION}；每条 source_evidence 只输出 {"id":"本页唯一证据ID","locatorId":"下方目录中的ID"}。locatorId 必须来自当前分块目录；不要输出 rawId、quote、start 或 end。服务端会从不可变 Raw 按该 locator 精确生成这些字段。`,
+      'source_facts[].evidenceIds 只能引用本页 source_evidence[].id；输出前逐页核对每个事实引用都存在。不得引用其它建议页或分块的证据 ID。locator目录覆盖当前块全文，优先按句/段切分，定位ID各自代表精确连续原文片段；重复文本的位置拥有不同ID。只在原文支持且具有独立业务知识价值时生成建议页；不要为了排版、文档标记或免责声明单独创建填充页。',
       `最多给出 ${options.maxSuggestedPages} 条建议；每条只解决一个知识问题。`,
+      '',
+      '当前分块证据 locator 目录（只用于选择定位ID，不是事实来源）：',
+      JSON.stringify(catalog.map(({ id, text }) => ({ id, text }))),
       '',
       '资料正文：',
       '<<<',
@@ -229,16 +239,24 @@ export class LLMService {
     ].join('\n');
     let completion;
     try {
-      completion = await options.provider.complete({ system: bundle.systemPrompt, user, timeoutMs: options.timeoutMs, maxOutputBytes: options.maxOutputBytes, signal: options.signal });
+      completion = await options.provider.complete({ system: buildLocatorSystemPrompt(bundle.rules, v2Schema), user, timeoutMs: options.timeoutMs, maxOutputBytes: options.maxOutputBytes, signal: options.signal, purpose: 'knowledge' });
     } catch (error) {
       if (error instanceof LlmError) {
-        throw new LlmError(error.code, `${error.message}（第 ${chunk.index + 1} 段）`, error.status, { ...(typeof error.details === 'object' && error.details ? error.details as object : {}), chunkIndex: chunk.index });
+        const details = error.details === undefined ? {} : sanitizeDeep(error.details, options.provider.secrets);
+        throw new LlmError(sanitizeProviderText(error.code, options.provider.secrets) || 'LLM_PROVIDER_ERROR', `${sanitizeProviderText(error.message, options.provider.secrets)}（第 ${chunk.index + 1} 段）`, error.status, { ...(typeof details === 'object' && details ? details as object : {}), chunkIndex: chunk.index });
       }
       throw error;
     }
     const parsed = parseProviderJson(completion.text, options.provider.secrets ?? []);
-    assertSchema(parsed, bundle.schema, 'LLM_SCHEMA_INVALID', `第 ${chunk.index + 1} 段的返回`, options.provider.secrets ?? []);
-    const result = parsed as ProviderResult;
+    const hasVersion = !!parsed && typeof parsed === 'object' && !Array.isArray(parsed) && Object.hasOwn(parsed, 'evidence_format_version');
+    let normalized: unknown = parsed;
+    if (hasVersion) {
+      assertSchema(parsed, v2Schema, 'LLM_SCHEMA_INVALID', `第 ${chunk.index + 1} 段的 locator v2 返回`, options.provider.secrets ?? []);
+      normalized = resolveLocatorEvidence(parsed as Record<string, unknown>, catalog, raw.id, chunk.index);
+    }
+    assertNoKnownSecret(normalized, options.provider.secrets ?? []);
+    assertSchema(normalized, bundle.schema, 'LLM_SCHEMA_INVALID', `第 ${chunk.index + 1} 段的返回`, options.provider.secrets ?? []);
+    const result = normalized as ProviderResult;
     const pages = result.suggested_pages.map(page => this.buildPage(page, raw, body, chunk));
     return { result, pages, usage: completion.usage ?? {} };
   }
@@ -272,11 +290,21 @@ export class LLMService {
         const existing = merged.get(key);
         if (!existing) { merged.set(key, page); continue; }
         const renamed = new Map<string, string>();
+        // Reserve all current IDs before generating suffixes. A valid provider ID may
+        // already equal the suffix we'd otherwise assign to another evidence item.
+        const reservedIds = new Set([
+          ...existing.source_evidence.map(item => item.id),
+          ...page.source_evidence.map(item => item.id),
+        ]);
         for (const evidence of page.source_evidence) {
           const taken = existing.source_evidence.find(item => item.id === evidence.id);
           if (!taken) continue;
-          if (taken.quote === evidence.quote && taken.start === evidence.start) { renamed.set(evidence.id, evidence.id); continue; }
-          const candidate = `${evidence.id}-c${evidence.chunkIndex + 1}`;
+          if (sameEvidenceSource(taken, evidence)) { renamed.set(evidence.id, evidence.id); continue; }
+          const base = `${evidence.id}-c${evidence.chunkIndex + 1}`;
+          let candidate = base;
+          let disambiguator = 2;
+          while (reservedIds.has(candidate)) candidate = `${base}-${disambiguator++}`;
+          reservedIds.add(candidate);
           renamed.set(evidence.id, candidate);
           evidence.id = candidate;
           warnings.push(`证据 id ${taken.id} 在不同分块中含义不同，「${page.title}」将其重命名为 ${candidate}。`);
@@ -297,7 +325,9 @@ export class LLMService {
         appendUnique(existing.ai_inferences, page.ai_inferences);
         appendUnique(existing.related_pages, page.related_pages);
         appendUnique(existing.open_questions, page.open_questions);
-        appendUnique(existing.source_evidence, page.source_evidence);
+        for (const evidence of page.source_evidence) {
+          if (!existing.source_evidence.some(item => sameEvidenceSource(item, evidence))) existing.source_evidence.push(evidence);
+        }
         for (const item of page.provenance) {
           if (!existing.provenance.some(current => current.chunkIndex === item.chunkIndex && current.start === item.start)) existing.provenance.push(item);
         }
@@ -380,9 +410,9 @@ export class LLMService {
     ].join('\n');
     let completion;
     try {
-      completion = await options.provider.complete({ system: bundle.systemPrompt, user, timeoutMs: options.timeoutMs, maxOutputBytes: options.maxOutputBytes, signal: options.signal });
+      completion = await options.provider.complete({ system: buildDocumentMergeSystemPrompt(bundle.rules, DOCUMENT_ONLY_SCHEMA), user, timeoutMs: options.timeoutMs, maxOutputBytes: options.maxOutputBytes, signal: options.signal, purpose: 'knowledge' });
     } catch (error) {
-      if (error instanceof LlmError) throw new LlmError('LLM_MERGE_FAILED', `分块汇总失败：${error.message}`, error.status);
+      if (error instanceof LlmError) throw new LlmError('LLM_MERGE_FAILED', `分块汇总失败：${sanitizeProviderText(error.message, options.provider.secrets)}`, error.status);
       throw error;
     }
     const parsed = parseProviderJson(completion.text, options.provider.secrets ?? []);
@@ -390,4 +420,12 @@ export class LLMService {
     return { document: (parsed as { document: ExtractDocument }).document, usage: completion.usage ?? {} };
   }
 }
+
+// Neighboring chunks can independently report the same Raw-backed evidence. Chunk
+// provenance is intentionally excluded: the identity is the full source span and text.
+function sameEvidenceSource(left: LocatedEvidence, right: LocatedEvidence): boolean {
+  return left.id === right.id && left.rawId === right.rawId && left.start === right.start &&
+    left.end === right.end && left.quote === right.quote;
+}
+
 

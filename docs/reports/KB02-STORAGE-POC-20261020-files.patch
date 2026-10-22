@@ -1,0 +1,14 @@
+diff --git a/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/original/services/storage/files.ts b/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/patched/services/storage/files.ts
+index be37065..dd6ba10 100644
+--- a/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/original/services/storage/files.ts
++++ b/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/patched/services/storage/files.ts
+@@ -33,7 +33,8 @@ export async function writeFileAtomic(target: string, value: string): Promise<vo
+     await renameAtomic(temp, target);
+   } catch (error) {
+     await rm(temp, { force: true }).catch(() => undefined);
+-    throw error;
++    const errno = (error as NodeJS.ErrnoException).code;
++    throw new StorageError('STORAGE_WRITE_FAILED', '本机存储写入失败；旧文件已保留，请解除故障后显式对账。', 503, { operation: 'atomic-write', errno: ['EPERM', 'EACCES', 'EBUSY', 'ENOSPC', 'EIO'].includes(errno ?? '') ? errno : 'OTHER' });
+   }
+ }
+ 

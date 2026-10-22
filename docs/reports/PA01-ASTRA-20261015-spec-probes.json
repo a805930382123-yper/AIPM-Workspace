@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-15T14:24:51.370Z",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\pa01-astra-spec-7AvrnS",
+  "externalCalls": 0,
+  "fakeCalls": 6,
+  "rows": [
+    {
+      "id": "S01-legacy-confirm-read-replay",
+      "result": "FAIL",
+      "evidence": {
+        "beforeReadable": true,
+        "confirmed": true,
+        "after": {
+          "ok": false,
+          "code": "STORAGE_CORRUPT",
+          "status": 500,
+          "details": {
+            "category": "recovery",
+            "stage": "read",
+            "nextAction": "inspect_or_restore"
+          }
+        },
+        "replay": {
+          "ok": false,
+          "code": "STORAGE_CORRUPT",
+          "status": 500,
+          "details": {
+            "category": "recovery",
+            "stage": "read",
+            "nextAction": "inspect_or_restore"
+          }
+        },
+        "persistedSchemaVersion": 2,
+        "persistedStage": null,
+        "formalPromptId": "8bc45a36-15ae-461f-91b2-a4899cd815c6"
+      }
+    },
+    {
+      "id": "S02-malformed-request-id",
+      "result": "FAIL",
+      "evidence": {
+        "requestId": "------------------------------------",
+        "rewriteAccepted": true,
+        "read": {
+          "ok": false,
+          "code": "STORAGE_CORRUPT",
+          "status": 500,
+          "details": {
+            "category": "recovery",
+            "stage": "read",
+            "nextAction": "inspect_or_restore"
+          }
+        },
+        "extraFakeCalls": 1
+      }
+    },
+    {
+      "id": "S03-missing-target-diagnostic",
+      "result": "FAIL",
+      "evidence": {
+        "ok": false,
+        "code": "NOT_FOUND",
+        "status": 404,
+        "details": {
+          "requestId": "fe9ec8da-b2db-48e3-b53c-131de72fbdf7",
+          "stage": "validation",
+          "category": "user_input",
+          "retryable": false,
+          "nextAction": "review_input"
+        }
+      }
+    },
+    {
+      "id": "S04-valid-draft-control",
+      "result": "PASS"
+    }
+  ],
+  "summary": {
+    "pass": 1,
+    "fail": 3
+  }
+}

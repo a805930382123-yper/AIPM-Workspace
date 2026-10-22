@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-15T06:02:40.387Z",
+  "scope": "React + actual isolated HTTP in jsdom; not actual browser",
+  "durationMs": 2555,
+  "checks": [
+    {
+      "id": "C01-failed-progress-and-continue-body",
+      "result": "PASS",
+      "evidence": {
+        "sameJob": "3778d3cd-d729-4af4-9b38-e29c98eb8c70",
+        "normalContinueBody": {},
+        "onePlanningCall": true,
+        "failedProgressVisible": true
+      }
+    },
+    {
+      "id": "C02-corrupt-continue-error-and-explicit-restart",
+      "result": "PASS",
+      "evidence": {
+        "corruptErrorVisible": true,
+        "normalContinueNoCalls": true,
+        "explicitRestartBody": {
+          "restart": true
+        }
+      }
+    },
+    {
+      "id": "C03-live-planning-stage-no-partial-review",
+      "result": "PASS",
+      "evidence": {
+        "planningVisible": true,
+        "validatedCountVisible": true,
+        "noPartialDraft": true
+      }
+    },
+    {
+      "id": "C04-reload-failed-checkpoint-readonly",
+      "result": "PASS",
+      "evidence": {
+        "restoredJob": "bc8b1a27-e454-48a3-8a02-baf7b81bdfbe",
+        "controlsVisible": true,
+        "reloadCalls": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 4,
+    "fail": 0
+  },
+  "requests": [
+    {
+      "path": "/api/extraction-jobs/3778d3cd-d729-4af4-9b38-e29c98eb8c70",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/d42665a8-d289-4ce0-8a34-ca95a4c79e11/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/extraction-jobs/da21d7f8-eb53-4603-920f-df906c1ecdac",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/raw/32de4507-d53f-4a0e-8d65-155271bf44ae/extract",
+      "method": "POST",
+      "body": {}
+    },
+    {
+      "path": "/api/raw/32de4507-d53f-4a0e-8d65-155271bf44ae/extract",
+      "method": "POST",
+      "body": {
+        "restart": true
+      }
+    },
+    {
+      "path": "/api/extraction-jobs/4c62f892-1e05-4ed2-9be8-169185736b01",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    },
+    {
+      "path": "/api/extraction-jobs/bc8b1a27-e454-48a3-8a02-baf7b81bdfbe",
+      "method": "GET"
+    },
+    {
+      "path": "/api/knowledge/workflows",
+      "method": "GET"
+    }
+  ],
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-ZMfPoF",
+  "fakeCalls": 11,
+  "closed": true
+}

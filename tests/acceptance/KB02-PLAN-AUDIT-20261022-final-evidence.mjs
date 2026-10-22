@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';import assert from 'node:assert/strict';
+const prefix='docs/reports/KB02-PLAN-AUDIT-20261022-',read=async n=>JSON.parse(await fs.readFile(prefix+n+'.json','utf8'));
+const attempts=(await fs.readFile(prefix+'provider-attempts.jsonl','utf8')).trim().split('\n').map(s=>JSON.parse(s));
+const traces=(await fs.readFile(prefix+'provider-trace.jsonl','utf8')).trim().split('\n').map(s=>JSON.parse(s));
+assert.equal(attempts.length,traces.length);assert(attempts.length<=30);assert(attempts.every((r,i)=>r.sequence===105+i));assert.equal(new Set(traces.map(t=>t.sequence)).size,traces.length);
+const budget={at:new Date().toISOString(),previousUsed:104,cap:200,currentReviewUsed:attempts.length,cumulativeUsed:104+attempts.length,remaining:96-attempts.length,phaseCap:30,phaseRemaining:30-attempts.length,promptSeparate:{used:15,limit:24},ledgerRows:attempts.length,traceRows:traces.length};await fs.writeFile(prefix+'budget.json',JSON.stringify(budget,null,2));
+const q=await read('quality'),cp=await read('long-checkpoint'),trace=traces.find(t=>t.request.messages.some(m=>m.content.includes('sourceContexts'))&&t.sequence>106),input=JSON.parse(trace.request.messages.find(m=>m.role==='user').content.split('\n').at(-1));
+const split=input.sourceContexts.map(s=>({sourceId:s.id,start:s.start,end:s.end,factIds:s.factIds,questionIds:s.questionIds,pages:cp.plan.pages.filter(p=>[...p.factIds,...p.questionIds].some(id=>[...s.factIds,...s.questionIds].includes(id))).map(p=>p.title)})).filter(s=>s.pages.length>1);
+await fs.writeFile(prefix+'same-source-split.json',JSON.stringify({sequence:trace.sequence,split},null,2));
+const last=traces.at(-1),updateInput=JSON.parse(last.request.messages.find(m=>m.role==='user').content),output=JSON.parse(last.response.content);
+await fs.writeFile(prefix+'update-meaning-evidence.json',JSON.stringify({sequence:last.sequence,existing:updateInput.existing,newSource:updateInput.newSource,agreement:output.agreement,conflicts:output.conflicts},null,2));
+console.log(JSON.stringify({budget,longIssueCount:q.issues.length,split,agreement:output.agreement}));

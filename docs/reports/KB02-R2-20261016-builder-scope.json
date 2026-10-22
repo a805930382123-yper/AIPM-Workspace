@@ -1,0 +1,137 @@
+{
+  "at": "2026-10-16T09:34:10.658Z",
+  "baselineAt": "2026-10-16T07:49:17.066Z",
+  "frozenAt": "2026-10-16T09:32:44.450Z",
+  "changedProduct": [
+    {
+      "file": "app/api.ts",
+      "kind": "modified",
+      "beforeSha256": "51e832ee5969590b93554764876562ea165bc779e14ea91cb3f5289a46713d58",
+      "sha256": "37ee0fdbeb3ab1a57a8c2ce1228f0255aebfa88f6368d8d00060c0f22ea5ce48"
+    },
+    {
+      "file": "app/pages/RawPage.tsx",
+      "kind": "modified",
+      "beforeSha256": "0f64e581734e041ad96745f173b3ca520cedb0f09144d43864fbf44b74022a19",
+      "sha256": "2a65f7f161e622b62b44f6abc9d9a23890bc47f65b78df6cc4e9044a5ba85c7c"
+    },
+    {
+      "file": "server/llm-api.ts",
+      "kind": "modified",
+      "beforeSha256": "27b228253b4edb9d7c387b84c7ea09b5ab20a1e1481988c495fd5c1138571016",
+      "sha256": "af9c6653094a74485e228cb957487f79134751728aae6af259b3a72077d2db9b"
+    },
+    {
+      "file": "services/llm/checkpoints.ts",
+      "kind": "modified",
+      "beforeSha256": "41769c5563553d559e5c2e93ff2688e24ab058c87895220acc96dfa670f2213a",
+      "sha256": "2b0f3c73e5b30b42053e10e76578561f6b9a9477a8476fa4d1f04ab94677e882"
+    },
+    {
+      "file": "services/llm/jobs.ts",
+      "kind": "modified",
+      "beforeSha256": "ef164707f9f020a1c15897ab4a544a22d32f0d5bf3f5b2adf4fb23482b7e539f",
+      "sha256": "db51d675e6dde1e3cbb5495278ad8548043bdc52f90e683f52611bb2fa349b4b"
+    },
+    {
+      "file": "services/llm/knowledge-extraction.ts",
+      "kind": "modified",
+      "beforeSha256": "f9120095d7edc6d4b4c0c1b7b1bdf0d26da5b4b968f5f8ec6e6ff2a6ac8c8828",
+      "sha256": "1f61325b083eb59f84448ade4ab1a186fbe76193bb453f0147bcf151c923813e"
+    },
+    {
+      "file": "services/llm/rules.ts",
+      "kind": "modified",
+      "beforeSha256": "8fdeda8202ed5a2184a38543675a7aa5979dafdeff7526f086495ef679bbe876",
+      "sha256": "aef8c04fe8852a4142b0d11a31a8d561e810717d048e8cb61691b3654b9edd0b"
+    },
+    {
+      "file": "services/wiki/knowledge-workflows.ts",
+      "kind": "modified",
+      "beforeSha256": "9b99c98d43c319cc3bd449cc19cbdd732cfa43208ef745cd405afa82dd912da5",
+      "sha256": "31f1bd89a0a66cd8b7f871811968737bbdfb6ceef6b79f86c25b600df0fcb4d7"
+    },
+    {
+      "file": "rules/kb02-facts.schema.json",
+      "kind": "modified",
+      "beforeSha256": "baf2fe1c15a47c842c912068c260c3f2d988b4c5842c10c67c7876a4427a3bf2",
+      "sha256": "f480e308c3a97078d63e7c53f38fb37dd055e048666f291ecb8f35179a8a858c"
+    },
+    {
+      "file": "rules/kb02-planning.schema.json",
+      "kind": "modified",
+      "beforeSha256": "8178a398a722d7ba9752174aa0f7cfd69eaab448251ccae9a478b1139cceaf2e",
+      "sha256": "31b5e4ee8ce4d11b9def55830543582a9986c13edef8152bcf00f8462040f24f"
+    },
+    {
+      "file": "services/llm/knowledge-atoms.ts",
+      "kind": "added",
+      "beforeSha256": null,
+      "sha256": "59920e86f361bdbd1465f75cdd57619cfd181342b934949ac8b0a2abc70beb9a"
+    }
+  ],
+  "changedTests": [
+    {
+      "file": "tests/b05.test.ts",
+      "kind": "modified",
+      "beforeSha256": "6d99818bafb0b83a05003c6e7130ac0a49e4d5dfc61bc8af19fe92684a5c9d3e",
+      "sha256": "df63f2a0d1866e24bd18b8e181791f536631f5c1a44652237fb3e93e902a9b56"
+    },
+    {
+      "file": "tests/kb02-pipeline.test.ts",
+      "kind": "modified",
+      "beforeSha256": "e0d3ef1d0b1bbb7dd13ea8cab977ff9f69111796fabe7896c4e135a3ac8b1689",
+      "sha256": "d6bbd32c5ef5d574909cb7762d22343d8422cf98ad0044944cee5240911e3d5f"
+    },
+    {
+      "file": "tests/llm-flow.test.ts",
+      "kind": "modified",
+      "beforeSha256": "1d4df6023038417844e1f32c8a4a6061a2d20c85f7e4950e3b4a3c6423a9f95c",
+      "sha256": "db17a0f6d7ca8aceca76e92c1f14c4f9857131432ce097715025a12a73299077"
+    },
+    {
+      "file": "tests/llm-http.test.ts",
+      "kind": "modified",
+      "beforeSha256": "eebe0eb93ddd028118e94cf9520524e547e460345bcf27be6e94658abd7b97ee",
+      "sha256": "d58b1c095ea1a71227f7f21f856005a968cef1ef9ce4129cde944d1bca2c73b2"
+    },
+    {
+      "file": "tests/llm-repair.test.ts",
+      "kind": "modified",
+      "beforeSha256": "79cfa4d52d8d35e745f088b15966cd25ac63c2c3655bc056cb9358341d447fac",
+      "sha256": "571de26c336855763e77329cd2728af8e18bc8c732c9abc8f516b77dd39c9af4"
+    },
+    {
+      "file": "tests/llm-repair2.test.ts",
+      "kind": "modified",
+      "beforeSha256": "5baca99b4d02c61a60bdb32fce51664fe0393916cfb9b092483a694bbd9c6c03",
+      "sha256": "3c3b718504734a69452a4965717016cbb2c8bb7554dd8f6ff1e8cb576f53a68d"
+    },
+    {
+      "file": "tests/llm.test.ts",
+      "kind": "modified",
+      "beforeSha256": "6dd18992107805f611f6a49f7de113744745046c3d70d4c507840f83ec8a10ae",
+      "sha256": "137ae3a964988897a9871196bf51bda1d58795bac77dce6141e6314532970427"
+    },
+    {
+      "file": "tests/pa01-r01-r02.test.ts",
+      "kind": "modified",
+      "beforeSha256": "02a60d9b8a78926ac282a19e6d774f3986972aff081cf572459625ddaeee8107",
+      "sha256": "8408f36f4b81180273ce2e3e3257a621266956e85178cfad5f823e8f5f416237"
+    },
+    {
+      "file": "tests/support/fake-llm.ts",
+      "kind": "modified",
+      "beforeSha256": "e633b996184c141d3b8ad8f4ec56e830231c54ec8f6c8ee0adb6dfaf4b5e97a1",
+      "sha256": "11daed200d5aca1d77e729e2b64c5729c63af54f9db3013746be8e577a970b59"
+    },
+    {
+      "file": "tests/kb02-r2.test.ts",
+      "kind": "added",
+      "beforeSha256": null,
+      "sha256": "55a6f8073013308f3a4bb7736110ff0d70ee05ca740bcb8d86bc64b985aecb69"
+    }
+  ],
+  "productCount": 97,
+  "testCount": 59
+}

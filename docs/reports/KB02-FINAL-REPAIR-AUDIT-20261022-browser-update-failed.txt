@@ -1,0 +1,80 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / Raw 原始资料
+  - generic: 本地工作区
+  - paragraph: 原始资料 · 事实来源
+  - heading "Raw 原始资料" [level=1]
+  - paragraph: 保存文章、报告与业务记录的原文。保存后不会被 AI 改写。
+  - button "多来源综合"
+  - button "＋ 导入资料":
+    - generic: ＋
+    - text: 导入资料
+  - heading "所有资料" [level=2]
+  - generic: 3 条
+  - button "文 验收资料 KB02虚构铺货率复核 行业报告 · 隔离样本 KB02虚构铺货率复核 2026年10月22日 12:47 · 处理失败":
+    - generic: 文
+    - generic: 验收资料 KB02虚构铺货率复核
+    - generic: 行业报告 · 隔离样本 KB02虚构铺货率复核
+    - generic: 2026年10月22日 12:47 · 处理失败
+  - button "文 验收资料 KB02虚构短文 行业报告 · 隔离样本 KB02虚构短文 2026年10月22日 12:46 · 已生成知识":
+    - generic: 文
+    - generic: 验收资料 KB02虚构短文
+    - generic: 行业报告 · 隔离样本 KB02虚构短文
+    - generic: 2026年10月22日 12:46 · 已生成知识
+  - button "文 验收资料 KB02十四区域中文长文虚构验收 行业报告 · 隔离样本 KB02十四区域中文长文虚构验收 2026年10月22日 12:43 · 处理失败":
+    - generic: 文
+    - generic: 验收资料 KB02十四区域中文长文虚构验收
+    - generic: 行业报告 · 隔离样本 KB02十四区域中文长文虚构验收
+    - generic: 2026年10月22日 12:43 · 处理失败
+  - article:
+    - generic: 处理失败
+    - generic: 行业报告
+    - button "继续提取"
+    - button "重新导入"
+    - button "删除"
+    - paragraph: LLM_PLAN_COVERAGE_INVALID：主题规划覆盖不完整或重复，未组装草稿。（可以重试）
+    - button "仅重新规划（带覆盖诊断）"
+    - paragraph: 检查点已验证 1/1 段，累计 2 次调用。
+    - button "明确重新生成"
+    - heading "验收资料 KB02虚构铺货率复核" [level=2]
+    - generic: 隔离样本 KB02虚构铺货率复核 · 验收样本
+    - generic: 导入时间
+    - generic: 2026年10月22日 12:47
+    - generic: 原发布日期
+    - generic: 2026-10-01
+    - generic: 来源链接
+    - link "https://example.com/b05-fixture":
+      - /url: https://example.com/b05-fixture
+    - generic: 资料 ID
+    - generic: 0bf75e35-7f25-4f7c-bc3d-fb9e93e789b9
+    - generic: KB02虚构
+    - generic: 原始正文
+    - generic: SHA-256 已保存
+    - generic: 【虚构补充验收，非真实客户资料】 虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。 补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。
+    - text: 正文校验值
+    - code: c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197

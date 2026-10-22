@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-14",
+  "stage": "pre-handoff independent probes; not final frozen acceptance",
+  "scope": "synthetic in-memory only, no actual credentials or external requests",
+  "findings": [
+    {"id":"R2-03-UTF8","urlAccepted":true,"secretDetected":false,"result":"FAIL_BEFORE_FIX"},
+    {"id":"R2-03-depth","urlAccepted":true,"secretDetected":false,"result":"FAIL_BEFORE_FIX"},
+    {"id":"R2-01-surrogate","modelAccepted":true,"keyAccepted":true,"modelPreserved":false,"keyPreserved":false,"result":"FAIL_BEFORE_FIX"}
+  ],
+  "disposition": "Returned to same user-requested Luna Max builder before handoff, final acceptance will check actual HTTP and unchanged files on refusal."
+}

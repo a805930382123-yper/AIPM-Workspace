@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "id": "KB02-REAL-LONG-106400-all-chunks-and-regions",
+      "result": "FAIL",
+      "message": "{\"code\":\"LLM_PLAN_COVERAGE_INVALID\",\"message\":\"主题规划覆盖不完整或重复，未组装草稿。\",\"at\":\"2026-10-22T04:45:40.727Z\",\"retryable\":true,\"details\":{\"facts\":{\"missing\":[],\"duplicate\":[],\"unknown\":[]},\"questions\":{\"missing\":[\"q-c6-1\",\"q-c6-2\"],\"duplicate\":[],\"unknown\":[]},\"duplicateTitles\":[]}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "actual": "failed",
+      "elapsedMs": 107781
+    },
+    {
+      "id": "KB02-REAL-SAFETY-cumulative-attempt-ledger",
+      "result": "PASS",
+      "details": {
+        "historicalKB01": 27,
+        "priorKB02": 82,
+        "r1Attempts": 18,
+        "kb02Attempts": 100,
+        "allBatches": 127,
+        "kb02Cap": 200,
+        "allKnowledgeLow": true
+      },
+      "elapsedMs": 8
+    },
+    {
+      "id": "KB02-REAL-FINAL-cumulative-call-ledger",
+      "result": "PASS",
+      "details": {
+        "historicalKB01": 27,
+        "priorKB02": 82,
+        "r1Attempts": 18,
+        "kb02Attempts": 100,
+        "allBatches": 127,
+        "kb02Cap": 200
+      },
+      "elapsedMs": 0
+    }
+  ],
+  "artifacts": {
+    "longRaw": {
+      "id": "cb682823-26f1-4a8d-8e6e-4caadf8931ad",
+      "chars": 106400,
+      "sha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7"
+    },
+    "job-cb682823-26f1-4a8d-8e6e-4caadf8931ad": {
+      "jobId": "fced5619-1e36-4d9f-a4ed-af54e39276c8",
+      "rawId": "cb682823-26f1-4a8d-8e6e-4caadf8931ad",
+      "status": "failed",
+      "stage": "planning",
+      "progress": {
+        "chunksTotal": 14,
+        "chunksDone": 14,
+        "pagesFound": 81
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-22T04:45:40.727Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [
+              "q-c6-1",
+              "q-c6-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 15,
+      "startedAt": "2026-10-22T04:43:53.088Z",
+      "finishedAt": "2026-10-22T04:45:40.778Z",
+      "cancelRequested": false,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 14,
+        "totalChunks": 14,
+        "resumable": true,
+        "attempts": 15,
+        "reusedChunks": 0,
+        "reason": "主题规划覆盖不完整或重复，未组装草稿。"
+      },
+      "execution": "settled",
+      "recovery": null
+    }
+  }
+}

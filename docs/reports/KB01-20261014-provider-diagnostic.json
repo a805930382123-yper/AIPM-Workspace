@@ -1,0 +1,92 @@
+{
+  "scope": "same historical fictional extraction wire, 3 diagnostic calls; actual configured Provider; key never stored",
+  "results": [
+    {
+      "id": "original-current",
+      "changes": {},
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "timeoutMs": 60000,
+      "diagnosticOnly": true,
+      "productModified": false,
+      "transportError": "TimeoutError",
+      "elapsedMs": 60009
+    },
+    {
+      "id": "low-only",
+      "changes": {
+        "reasoning_effort": "low"
+      },
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "timeoutMs": 60000,
+      "diagnosticOnly": true,
+      "productModified": false,
+      "status": 200,
+      "finishReason": "stop",
+      "usage": {
+        "completion_tokens": 2948,
+        "completion_tokens_details": {
+          "reasoning_tokens": 52
+        },
+        "prompt_tokens": 1935,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 4883
+      },
+      "contentChars": 6180,
+      "reasoningChars": 100,
+      "schemaErrors": [],
+      "jsonValid": true,
+      "pageCount": 8,
+      "content": "{\"document\":{\"title\":\"验收资料 青禾渠道虚构长资料\",\"main_topic\":\"青禾饮料（虚构企业）东桥区域铺货率、订货流程与订单满足率等渠道知识\",\"summary\":\"本资料为虚构验收样本，介绍虚构企业青禾饮料及其经销商晨星商贸在东桥区域的渠道情况：2026年9月100家目标门店中20家在售青禾茶饮，铺货率20%；描述从门店提需求到财务核对回款的订货流程及缺货处理案例；解释订单满足率与铺货率的区别及业务角色；并声明数据边界与待确认问题。\"},\"suggested_pages\":[{\"title\":\"铺货率（青禾茶饮东桥区域定义与计算）\",\"type\":\"metric\",\"category\":\"metric\",\"one_line_definition\":\"在售门店数除以目标门店总数，用于衡量产品在目标门店的覆盖程度，不等同于销量。\",\"source_facts\":[{\"text\":\"2026年9月东桥区域共100家目标门店，其中20家在架上销售青禾茶饮。\",\"evidenceIds\":[\"e1\",\"e2\"]},{\"text\":\"铺货率定义为在售门店数除以目标门店总数，20÷100=20%。\",\"evidenceIds\":[\"e3\"]},{\"text\":\"门店数不等于销量，不得按销量解释铺货率。\",\"evidenceIds\":[\"e4\"]}],\"ai_organized\":[\"铺货率=在售门店数÷目标门店总数。\",\"东桥区域2026年9月示例：20÷100=20%。\"],\"ai_inferences\":[\"该定义可用于跨区域或跨月对比铺货覆盖变化。\"],\"related_pages\":[\"订单满足率\",\"目标门店\",\"分销覆盖\"],\"open_questions\":[\"其他区域或月份的铺货率数据本资料未提供。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"2026年9月，东桥区域共有100家目标门店\",\"start\":76,\"end\":94},{\"id\":\"e2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"其中20家在架上销售青禾茶饮\",\"start\":95,\"end\":107},{\"id\":\"e3\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"铺货率定义为在售门店数除以目标门店总数，20÷100=20%。\",\"start\":108,\"end\":131},{\"id\":\"e4\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"门店数不等于销量，不得按销量解释这项指标。\",\"start\":131,\"end\":149}]},{\"title\":\"青禾饮料（虚构企业）\",\"type\":\"entity\",\"category\":\"company_business\",\"one_line_definition\":\"一家虚构企业，销售产品为青禾茶饮，仅用于验收样本资料。\",\"source_facts\":[{\"text\":\"青禾饮料是一家虚构企业，销售青禾茶饮。\",\"evidenceIds\":[\"e1\"]},{\"text\":\"资料明确标注为虚构验收资料，不是真实公司数据。\",\"evidenceIds\":[\"e2\"]}],\"ai_organized\":[\"公司名：青禾饮料；性质：虚构企业；产品：青禾茶饮。\"],\"ai_inferences\":[\"该实体应仅作为知识库结构化整理的样本数据使用。\"],\"related_pages\":[\"青禾茶饮\",\"晨星商贸\"],\"open_questions\":[\"青禾饮料的其他产品线、规模与市场信息资料未提供。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"青禾饮料是一家虚构企业，销售青禾茶饮。\",\"start\":33,\"end\":49},{\"id\":\"e2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"【虚构验收资料，不是真实公司数据】\",\"start\":0,\"end\":17}]},{\"title\":\"晨星商贸（东桥区域经销商）\",\"type\":\"entity\",\"category\":\"distributor\",\"one_line_definition\":\"负责青禾茶饮东桥区域的虚构经销商，联系角色为订货主管而非实名。\",\"source_facts\":[{\"text\":\"经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。\",\"evidenceIds\":[\"e1\"]}],\"ai_organized\":[\"经销商：晨星商贸；负责区域：东桥区域；联系人：角色化的订货主管（非实名）。\"],\"ai_inferences\":[\"联系人以角色而非实名呈现，说明该资料不包含可识别个人身份的信息。\"],\"related_pages\":[\"青禾饮料\",\"订货主管\",\"东桥区域\"],\"open_questions\":[\"晨星商贸的合同条款、代理范围细节资料未提供。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。\",\"start\":49,\"end\":75}]},{\"title\":\"青禾渠道订货流程\",\"type\":\"business_process\",\"category\":\"sales\",\"one_line_definition\":\"从门店提交需求、汇总审批到仓库配货、司机配送、门店签收及财务核对回款的完整订货流程。\",\"source_facts\":[{\"text\":\"订货流程为：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\",\"evidenceIds\":[\"e1\"]},{\"text\":\"缺货和退货都须人工核对。\",\"evidenceIds\":[\"e2\"]}],\"ai_organized\":[\"流程步骤依次为：门店提交需求→订货主管汇总→仓库核对可用库存→人工审批并生成订单→仓库配货→司机配送→门店签收→财务核对回款。\",\"缺货与退货环节均要求人工核对。\"],\"ai_inferences\":[\"审批在生成订单之前进行，说明订单生成分支受人工控制。\"],\"related_pages\":[\"订单满足率\",\"缺货处理案例\",\"订货主管\",\"回款对账\"],\"open_questions\":[\"异常审批负责人、回款对账频率资料未明确。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\",\"start\":150,\"end\":207},{\"id\":\"e2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"缺货和退货都须人工核对。\",\"start\":295,\"end\":307}]},{\"title\":\"缺货处理案例（需求大于库存）\",\"type\":\"business_process\",\"category\":\"sales\",\"one_line_definition\":\"当门店需求超过可用库存时，须先联系门店确认延期或替代安排，未经同意不得修改订单。\",\"source_facts\":[{\"text\":\"案例：早上门店提出10箱需求，库存只有8箱。\",\"evidenceIds\":[\"e1\"]},{\"text\":\"订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。\",\"evidenceIds\":[\"e2\"]}],\"ai_organized\":[\"示例：需求10箱、库存8箱，缺口2箱；订货主管需先与门店协商缺口部分的延期或替代方案。\"],\"ai_inferences\":[\"该规则意在保护订单的门店确认权，防止单方面削减订单数量。\"],\"related_pages\":[\"青禾渠道订货流程\",\"订单满足率\",\"订货主管\"],\"open_questions\":[\"若门店既不同意延期也不同意替代时的处理方式资料未说明。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"案例：早上门店提出10箱需求，库存只有8箱。\",\"start\":208,\"end\":229},{\"id\":\"e2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。\",\"start\":229,\"end\":260}]},{\"title\":\"订单满足率\",\"type\":\"metric\",\"category\":\"metric\",\"one_line_definition\":\"反映已交付数量相对需求量的指标，与铺货率含义不同。\",\"source_facts\":[{\"text\":\"订单满足率反映已交付数量相对需求量，与铺货率不同。\",\"evidenceIds\":[\"e1\"]}],\"ai_organized\":[\"订单满足率衡量的是单笔订单中已交付数量与需求量的关系；铺货率衡量的是门店覆盖面，两者维度不同。\"],\"ai_inferences\":[\"订单满足率偏低可能与库存不足有关，如资料中10箱需求仅8箱库存的案例。\"],\"related_pages\":[\"铺货率（青禾茶饮东桥区域定义与计算）\",\"青禾渠道订货流程\"],\"open_questions\":[\"订单满足率的具体计算公式与目标值资料未给出。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"概念：订单满足率反映已交付数量相对需求量，与铺货率不同。\",\"start\":308,\"end\":336}]},{\"title\":\"青禾渠道业务角色\",\"type\":\"concept\",\"category\":\"sales\",\"one_line_definition\":\"订货流程涉及的业务角色：门店店长、订货主管、仓库、司机、财务。\",\"source_facts\":[{\"text\":\"业务角色包括门店店长、订货主管、仓库、司机、财务。\",\"evidenceIds\":[\"e1\"]},{\"text\":\"联系人是角色“订货主管”，不是实名。\",\"evidenceIds\":[\"e2\"]}],\"ai_organized\":[\"五个角色对应流程环节：门店店长（门店侧）、订货主管（汇总审批）、仓库（库存核对与配货）、司机（配送）、财务（回款核对）。\"],\"ai_inferences\":[\"角色均为职能化描述，不含个人身份信息。\"],\"related_pages\":[\"青禾渠道订货流程\",\"晨星商贸（东桥区域经销商）\"],\"open_questions\":[\"各角色的具体职责边界与汇报关系资料未详述。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"业务角色包括门店店长、订货主管、仓库、司机、财务。\",\"start\":337,\"end\":357},{\"id\":\"e2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"联系人是角色“订货主管”，不是实名。\",\"start\":62,\"end\":75}]},{\"title\":\"资料数据边界与待确认问题\",\"type\":\"concept\",\"category\":\"other\",\"one_line_definition\":\"声明资料未包含利润、年度销量、客户真实姓名和现有AI系统，并列出待确认问题。\",\"source_facts\":[{\"text\":\"材料没有提供利润、年度销量、客户真实姓名和现有AI系统。\",\"evidenceIds\":[\"e1\"]},{\"text\":\"AI用于订单异常提示只是未来分析建议，没有已验证收益。\",\"evidenceIds\":[\"e2\"]},{\"text\":\"待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。\",\"evidenceIds\":[\"e3\"]}],\"ai_organized\":[\"数据边界：无利润、年度销量、客户真实姓名、现有AI系统信息。\",\"AI应用仅是未来分析建议，无已验证收益。\",\"待确认问题：异常审批负责人、回款对账频率、缺货通知时限。\"],\"ai_inferences\":[\"使用本资料时应避免对缺失指标做任何推断或补齐。\"],\"related_pages\":[\"青禾渠道订货流程\",\"AI订单异常提示（建议）\"],\"open_questions\":[\"异常审批负责人是谁？回款对账频率是多少？缺货通知时限是多少？均待确认。\"],\"source_evidence\":[{\"id\":\"e1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"数据边界：材料没有提供利润、年度销量、客户真实姓名和现有AI系统。\",\"start\":358,\"end\":384},{\"id\":\"e2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"AI用于订单异常提示只是未来分析建议，没有已验证收益。\",\"start\":384,\"end\":407},{\"id\":\"e3\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。\",\"start\":407,\"end\":434}]}]}",
+      "elapsedMs": 40484
+    },
+    {
+      "id": "low-json-temperature",
+      "changes": {
+        "reasoning_effort": "low",
+        "temperature": 1,
+        "top_p": 0.95,
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "timeoutMs": 60000,
+      "diagnosticOnly": true,
+      "productModified": false,
+      "status": 200,
+      "finishReason": "stop",
+      "usage": {
+        "completion_tokens": 3883,
+        "completion_tokens_details": {
+          "reasoning_tokens": 38
+        },
+        "prompt_tokens": 1988,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 5871
+      },
+      "contentChars": 6377,
+      "reasoningChars": 81,
+      "schemaErrors": [
+        "$.document: 存在未允许的字段 type",
+        "$.document: 存在未允许的字段 source_name",
+        "$.document: 存在未允许的字段 author",
+        "$.document: 存在未允许的字段 publish_date",
+        "$.document: 存在未允许的字段 url",
+        "$.document: 存在未允许的字段 tags",
+        "$.document: 存在未允许的字段 language",
+        "$.document: 存在未允许的字段 is_synthetic"
+      ],
+      "jsonValid": true,
+      "pageCount": 7,
+      "content": "{\"document\":{\"title\":\"验收资料 青禾渠道虚构长资料\",\"main_topic\":\"青禾饮料东桥区域的铺货率、订货流程与相关概念（虚构验收样本）\",\"summary\":\"本资料为虚构验收样本，介绍虚构企业青禾饮料及其经销商晨星商贸在东桥区域的渠道情况：2026年9月东桥区域100家目标门店中20家在售青禾茶饮，铺货率20%；描述了从门店提需求到财务核对回款的完整订货流程，并以库存不足案例说明缺货处理规则；区分订单满足率与铺货率，列出业务角色，说明数据边界与待确认问题。资料明确声明不是真实公司数据。\",\"type\":\"report\",\"source_name\":\"隔离样本 青禾渠道虚构长资料\",\"author\":\"验收样本\",\"publish_date\":\"2026-10-01\",\"url\":\"https://example.com/b05-fixture\",\"tags\":[\"虚构验收\"],\"language\":\"zh\",\"is_synthetic\":true},\"suggested_pages\":[{\"title\":\"铺货率（Distribution Rate）\",\"type\":\"concept\",\"category\":\"metric\",\"one_line_definition\":\"在售门店数除以目标门店总数，衡量产品在目标渠道门店的覆盖广度。\",\"source_facts\":[{\"text\":\"铺货率定义为在售门店数除以目标门店总数。\",\"evidenceIds\":[\"ev1\"]},{\"text\":\"2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮，铺货率为20÷100=20%。\",\"evidenceIds\":[\"ev2\",\"ev3\"]},{\"text\":\"门店数不等于销量，铺货率不得按销量解释。\",\"evidenceIds\":[\"ev4\"]}],\"ai_organized\":[\"铺货率的计算公式：铺货率 = 在售门店数 ÷ 目标门店总数。\",\"东桥区域2026年9月示例：20家在售 ÷ 100家目标门店 = 20%。\",\"使用时的关键约束：该指标基于门店数而非销量，不能用于推断销量表现。\"],\"ai_inferences\":[\"铺货率提升通常意味着产品在渠道终端的可见度与可获得性提高，但资料未讨论其与销量的量化关系。\"],\"related_pages\":[\"订单满足率\",\"东桥区域渠道概览\",\"目标门店\"],\"open_questions\":[\"铺货率的目标值或行业基准是多少，资料未提供。\"],\"source_evidence\":[{\"id\":\"ev1\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"铺货率定义为在售门店数除以目标门店总数\",\"start\":132,\"end\":150},{\"id\":\"ev2\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮\",\"start\":100,\"end\":131},{\"id\":\"ev3\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"20÷100=20%\",\"start\":150,\"end\":158},{\"id\":\"ev4\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"门店数不等于销量，不得按销量解释这项指标\",\"start\":159,\"end\":175}]},{\"title\":\"订货流程（青禾东桥区域）\",\"type\":\"business_process\",\"category\":\"distributor\",\"one_line_definition\":\"从门店提交需求到财务核对回款的端到端订货流程，涉及订货主管、仓库、司机、财务等多个角色。\",\"source_facts\":[{\"text\":\"订货流程为：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\",\"evidenceIds\":[\"ev5\"]},{\"text\":\"缺货和退货都须人工核对。\",\"evidenceIds\":[\"ev8\"]}],\"ai_organized\":[\"流程步骤：1）门店提交需求；2）订货主管汇总；3）仓库核对可用库存；4）人工审批后生成订单；5）仓库配货；6）司机配送；7）门店签收；8）财务核对回款。\",\"关键控制点：审批为人工环节；缺货与退货均须人工核对。\"],\"ai_inferences\":[\"该流程的人工审批和人工核对环节可能是效率瓶颈或后续自动化/AI介入的候选点。\"],\"related_pages\":[\"缺货处理案例\",\"订单满足率\",\"业务角色（青禾渠道）\",\"回款核对\"],\"open_questions\":[\"异常审批负责人是谁，资料未说明。\",\"回款对账频率是多少，资料未说明。\"],\"source_evidence\":[{\"id\":\"ev5\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款\",\"start\":190,\"end\":245},{\"id\":\"ev8\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"缺货和退货都须人工核对\",\"start\":351,\"end\":362}]},{\"title\":\"库存不足时的订货处理案例\",\"type\":\"business_process\",\"category\":\"supply_chain\",\"one_line_definition\":\"当门店需求超过可用库存时，订货主管须先与门店确认延期或替代安排，未经同意不得修改订单。\",\"source_facts\":[{\"text\":\"案例：早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。\",\"evidenceIds\":[\"ev6\"]},{\"text\":\"缺货和退货都须人工核对。\",\"evidenceIds\":[\"ev8\"]}],\"ai_organized\":[\"缺货处理规则：需求大于库存时，缺口部分须经门店同意后做延期或替代安排；任何订单修改都必须先取得门店同意。\",\"示例数据：需求10箱，可用库存8箱，缺口2箱。\"],\"ai_inferences\":[\"该规则的核心是保护门店的订单确认权，防止经销商单方面削减供货数量。\"],\"related_pages\":[\"订货流程（青禾东桥区域）\",\"订单满足率\",\"缺货通知时限\"],\"open_questions\":[\"缺货通知时限是多少，资料未说明。\",\"门店同意延期或替代的形式（口头/系统/书面）资料未说明。\"],\"source_evidence\":[{\"id\":\"ev6\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单\",\"start\":246,\"end\":306},{\"id\":\"ev8\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"缺货和退货都须人工核对\",\"start\":351,\"end\":362}]},{\"title\":\"订单满足率\",\"type\":\"metric\",\"category\":\"metric\",\"one_line_definition\":\"反映已交付数量相对需求量的指标，与铺货率含义不同。\",\"source_facts\":[{\"text\":\"订单满足率反映已交付数量相对需求量，与铺货率不同。\",\"evidenceIds\":[\"ev7\"]}],\"ai_organized\":[\"订单满足率衡量的是单个订单层面的交付完整性（已交付数量/需求量）。\",\"与铺货率的区别：铺货率衡量门店覆盖广度（多少门店在售），订单满足率衡量订单交付深度（每单交付了多少）。\"],\"ai_inferences\":[\"结合案例（需求10箱、库存8箱），若只交付8箱，则该笔订单的满足率为80%；此计算为推断，原文未给出该数字。\"],\"related_pages\":[\"铺货率（Distribution Rate）\",\"订货流程（青禾东桥区域）\",\"库存不足时的订货处理案例\"],\"open_questions\":[\"资料未提供订单满足率的具体计算公式、统计周期或实际数值。\"],\"source_evidence\":[{\"id\":\"ev7\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"订单满足率反映已交付数量相对需求量，与铺货率不同\",\"start\":313,\"end\":338}]},{\"title\":\"青禾渠道业务角色\",\"type\":\"concept\",\"category\":\"distributor\",\"one_line_definition\":\"青禾茶饮渠道中的五类业务角色：门店店长、订货主管、仓库、司机、财务。\",\"source_facts\":[{\"text\":\"业务角色包括门店店长、订货主管、仓库、司机、财务。\",\"evidenceIds\":[\"ev9\"]},{\"text\":\"经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。\",\"evidenceIds\":[\"ev11\"]}],\"ai_organized\":[\"角色与职责对应（依据订货流程）：门店/店长提交需求并签收；订货主管汇总需求、审批沟通；仓库核对库存与配货；司机配送；财务核对回款。\"],\"ai_inferences\":[\"订货主管同时承担与门店沟通缺货安排和异常审批相关职责，是流程中的关键协调角色。\"],\"related_pages\":[\"订货流程（青禾东桥区域）\",\"晨星商贸\",\"异常审批负责人\"],\"open_questions\":[\"各角色的具体权限边界（如审批权限归属）资料未详细说明。\"],\"source_evidence\":[{\"id\":\"ev9\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"业务角色包括门店店长、订货主管、仓库、司机、财务\",\"start\":339,\"end\":364},{\"id\":\"ev11\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名\",\"start\":42,\"end\":81}]},{\"title\":\"青禾饮料与晨星商贸（虚构实体）\",\"type\":\"entity\",\"category\":\"company_business\",\"one_line_definition\":\"资料中出现的虚构企业青禾饮料及其经销商晨星商贸，负责东桥区域分销青禾茶饮。\",\"source_facts\":[{\"text\":\"青禾饮料是一家虚构企业，销售青禾茶饮。\",\"evidenceIds\":[\"ev10\"]},{\"text\":\"经销商晨星商贸负责东桥区域。\",\"evidenceIds\":[\"ev11\"]}],\"ai_organized\":[\"青禾饮料：虚构企业，产品为青禾茶饮。\",\"晨星商贸：青禾的经销商，负责东桥区域，联系角色为“订货主管”（非实名）。\"],\"ai_inferences\":[\"该资料为验收/测试样本，相关实体名称不应与真实公司混淆。\"],\"related_pages\":[\"青禾渠道业务角色\",\"东桥区域渠道概览\",\"订货流程（青禾东桥区域）\"],\"open_questions\":[],\"source_evidence\":[{\"id\":\"ev10\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"青禾饮料是一家虚构企业，销售青禾茶饮\",\"start\":25,\"end\":41},{\"id\":\"ev11\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"经销商晨星商贸负责东桥区域\",\"start\":42,\"end\":55}]},{\"title\":\"青禾渠道资料的数据边界与待确认问题\",\"type\":\"concept\",\"category\":\"other\",\"one_line_definition\":\"资料明确的数据边界（无利润、年度销量、真实姓名、AI系统）以及待确认问题清单。\",\"source_facts\":[{\"text\":\"材料没有提供利润、年度销量、客户真实姓名和现有AI系统。\",\"evidenceIds\":[\"ev12\"]},{\"text\":\"AI用于订单异常提示只是未来分析建议，没有已验证收益。\",\"evidenceIds\":[\"ev13\"]},{\"text\":\"待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。\",\"evidenceIds\":[\"ev14\"]}],\"ai_organized\":[\"数据缺口：利润、年度销量、客户真实姓名、现有AI系统信息。\",\"AI相关说明：“AI用于订单异常提示”仅为未来分析建议，尚无已验证收益。\",\"待确认问题清单：异常审批负责人、回款对账频率、缺货通知时限。\"],\"ai_inferences\":[\"在使用本知识库时，涉及上述数据缺口的问题应标记为信息不足，不应由模型补齐。\"],\"related_pages\":[\"订货流程（青禾东桥区域）\",\"AI订单异常提示（建议）\",\"回款核对\"],\"open_questions\":[\"异常审批负责人是谁？\",\"回款对账频率是多少？\",\"缺货通知时限是多少？\"],\"source_evidence\":[{\"id\":\"ev12\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"材料没有提供利润、年度销量、客户真实姓名和现有AI系统\",\"start\":365,\"end\":396},{\"id\":\"ev13\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"AI用于订单异常提示只是未来分析建议，没有已验证收益\",\"start\":397,\"end\":422},{\"id\":\"ev14\",\"rawId\":\"13f6dae7-bcf9-4ac3-9962-4aef6bd7cace\",\"quote\":\"待确认问题包括异常审批负责人、回款对账频率和缺货通知时限\",\"start\":423,\"end\":450}]}]}",
+      "elapsedMs": 51797
+    }
+  ]
+}

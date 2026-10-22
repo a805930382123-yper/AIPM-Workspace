@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-13",
+  "phase": "audit",
+  "scope": "actual product HTTP + real adapter + localhost fake, no external provider",
+  "durationMs": 1564,
+  "checks": [
+    {
+      "id": "long-audit-regression",
+      "result": "PASS",
+      "details": {
+        "cleanProposalCreated": true,
+        "rejectedCases": 4,
+        "existingPendingDraftUnchanged": true,
+        "noCredential": true
+      }
+    },
+    {
+      "id": "short-audit-regression",
+      "result": "PASS",
+      "details": {
+        "cleanProposalCreated": true,
+        "rejectedCases": 4,
+        "existingPendingDraftUnchanged": true,
+        "noCredential": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 0
+  },
+  "services": [
+    {
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-Epy7pY",
+      "ports": [
+        65424
+      ],
+      "servicesClosed": true,
+      "fakeClosed": true
+    },
+    {
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-rgRAMi",
+      "ports": [
+        65435
+      ],
+      "servicesClosed": true,
+      "fakeClosed": true
+    }
+  ]
+}

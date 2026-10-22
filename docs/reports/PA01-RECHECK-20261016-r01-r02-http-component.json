@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-16T04:45:46.497Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-C0Wa8H",
+  "rows": [
+    {
+      "id": "HTTP-R01-real-get-list-scan-patch-confirm-reject-deep-shapes",
+      "result": "PASS",
+      "evidence": {
+        "variants": 6,
+        "actualHttp": true,
+        "healthyNeighbor": true,
+        "corruptBytesUnchanged": true,
+        "repairedSameIdAcceptedAndIssueCleared": true,
+        "providerCallsDuringChecks": 0
+      }
+    },
+    {
+      "id": "HTTP+COMPONENT-R02-499",
+      "result": "PASS",
+      "evidence": {
+        "returned": 499,
+        "total": 499,
+        "hidden": 0,
+        "truncated": false,
+        "partial": false,
+        "componentText": "发现 499 个需要处理的本机记录JSON 损坏 · prompt-drafts · 00ec312cea5d9d0dJSON 损坏 · prompt-drafts · 0172e3c7078c24e6JSON 损坏 · prompt-drafts · 02328d989a3b8306JSON 损坏 · prompt-drafts · 024357d102a15ebcJSON 损坏 · prompt-drafts · 02b791cfd9006f50当前仅展示摘要中的前 5 项。原文件已保留，需要检查或从备份恢复。重新检查",
+        "responseBytes": 33085
+      }
+    },
+    {
+      "id": "HTTP+COMPONENT-R02-500",
+      "result": "PASS",
+      "evidence": {
+        "returned": 500,
+        "total": 500,
+        "hidden": 0,
+        "truncated": false,
+        "partial": false,
+        "componentText": "发现 500 个需要处理的本机记录JSON 损坏 · prompt-drafts · 00ec312cea5d9d0dJSON 损坏 · prompt-drafts · 0172e3c7078c24e6JSON 损坏 · prompt-drafts · 02328d989a3b8306JSON 损坏 · prompt-drafts · 024357d102a15ebcJSON 损坏 · prompt-drafts · 02b791cfd9006f50当前仅展示摘要中的前 5 项。原文件已保留，需要检查或从备份恢复。重新检查",
+        "responseBytes": 33151
+      }
+    },
+    {
+      "id": "HTTP+COMPONENT-R02-501",
+      "result": "PASS",
+      "evidence": {
+        "returned": 500,
+        "total": 501,
+        "hidden": 1,
+        "truncated": true,
+        "partial": false,
+        "componentText": "发现 501 个需要处理的本机记录问题摘要已截断，仅返回前 500 项；另有 1 项仍需处理。JSON 损坏 · prompt-drafts · 00ec312cea5d9d0dJSON 损坏 · prompt-drafts · 0172e3c7078c24e6JSON 损坏 · prompt-drafts · 02328d989a3b8306JSON 损坏 · prompt-drafts · 024357d102a15ebcJSON 损坏 · prompt-drafts · 02b791cfd9006f50当前仅展示摘要中的前 5 项。原文件已保留，需要检查或从备份恢复。重新检查",
+        "responseBytes": 33149
+      }
+    },
+    {
+      "id": "HTTP+COMPONENT-R02-1201",
+      "result": "PASS",
+      "evidence": {
+        "returned": 500,
+        "total": 1201,
+        "hidden": 701,
+        "truncated": true,
+        "partial": false,
+        "componentText": "发现 1201 个需要处理的本机记录问题摘要已截断，仅返回前 500 项；另有 701 项仍需处理。JSON 损坏 · prompt-drafts · 003af393e16b5752JSON 损坏 · prompt-drafts · 00860e1027565740JSON 损坏 · prompt-drafts · 00d095816271d26dJSON 损坏 · prompt-drafts · 00ec312cea5d9d0dJSON 损坏 · prompt-drafts · 014cdf837d8be852当前仅展示摘要中的前 5 项。原文件已保留，需要检查或从备份恢复。重新检查",
+        "responseBytes": 33153
+      }
+    },
+    {
+      "id": "HTTP+COMPONENT-R02-hidden-item-repair-removal-refresh",
+      "result": "PASS",
+      "evidence": {
+        "hiddenIssueTracked": true,
+        "afterHiddenRemoval": 1200,
+        "afterAllRemoved": 0,
+        "uiClearsOnRefresh": true
+      }
+    },
+    {
+      "id": "HTTP+COMPONENT-R02-partial-scan-is-distinct-from-truncation",
+      "result": "PASS",
+      "evidence": {
+        "partial": true,
+        "totalKnown": 2,
+        "truncated": false,
+        "uiLowerBound": true
+      }
+    }
+  ],
+  "externalCalls": 0,
+  "localFakeCalls": 1,
+  "durationMs": 12050,
+  "summary": {
+    "pass": 7,
+    "fail": 0
+  },
+  "closed": true
+}

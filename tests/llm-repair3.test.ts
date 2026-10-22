@@ -3,7 +3,7 @@
 // 可解析的 Raw 来源、原文 quote 与全局 UTF-16 start/end（有/无 Provider 位置 hint 两种输入）。
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -17,16 +17,17 @@ import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { OpenAiCompatibleProvider } from '../services/llm/provider.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
 import { validateRaw } from '../server/validation.ts';
-import { buildPayloadForChunk, chunkFromPrompt, contentOf, isMergePrompt, mergeEntriesFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeMergeEntry, type FakeProvider } from './support/fake-llm.ts';
+import { buildPayloadForChunk, chunkFromPrompt, contentOf, isPlanningPrompt, planningPayloadFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rulesDir = path.join(root, 'rules');
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const MARKERS = ['返修三-甲', '返修三-乙', '返修三-丙', '返修三-丁'];
-const MERGE_EVIDENCE = path.join(root, 'docs', 'reports', 'B04-repair3-merge-payload.json');
+const MERGE_EVIDENCE = path.join(root, 'docs', 'reports', 'KB02-R1-20261015-builder-merge.json');
 
 /** Records the real merge payload the product sent (test data only — never a key). */
 async function recordMergeEvidence(label: string, payload: unknown, summary: Record<string, unknown>) {
+  await mkdir(path.dirname(MERGE_EVIDENCE), { recursive: true });
   let existing: Record<string, unknown> = {};
   try { existing = JSON.parse(await readFile(MERGE_EVIDENCE, 'utf8')) as Record<string, unknown>; } catch { existing = {}; }
   existing[label] = { recordedAt: new Date().toISOString(), summary, payload };
@@ -113,33 +114,14 @@ const sameTitleSpec = (omitOffsets: boolean) => (chunk: { index: number }) => [{
   omitOffsets,
 }];
 
-function assertMergePayloadComplete(entries: FakeMergeEntry[], body: string, rawId: string) {
-  const serialized = JSON.stringify(entries);
-  assert.equal(serialized.includes('"resolved":false'), false, '汇总输入不得出现未解析引用');
-  let evidenceCount = 0;
-  for (const entry of entries) {
-    assert.equal(typeof entry.chunkRange.start, 'number');
-    for (const page of entry.pages) {
-      for (const field of ['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized', 'ai_inferences', 'open_questions', 'related_pages'] as const) {
-        assert.ok(field in page, `汇总输入缺少字段 ${field}（第 ${entry.chunk} 段）`);
-      }
-      for (const fact of page.source_facts) {
-        assert.ok(fact.evidence.length >= 1, '每条事实必须带证据');
-        for (const evidence of fact.evidence) {
-          evidenceCount += 1;
-          assert.equal(evidence.rawId, rawId, '证据必须指向本 Raw');
-          assert.equal(typeof evidence.quote, 'string');
-          assert.equal(typeof evidence.start, 'number', `缺全局 start：${JSON.stringify(evidence)}`);
-          assert.equal(typeof evidence.end, 'number', `缺全局 end：${JSON.stringify(evidence)}`);
-          assert.equal(body.slice(evidence.start as number, evidence.end as number), evidence.quote, '位置必须与完整原文字节一致');
-          assert.equal(typeof evidence.chunkIndex, 'number');
-        }
-      }
-    }
-  }
-  assert.ok(evidenceCount >= entries.length, '汇总输入必须覆盖每一块的证据');
+function assertPlanningPayloadComplete(payload: {facts:Array<{id:string;text:string}>;questions:Array<{id:string;text:string}>}, draft: {pages:Array<{source_facts:Array<{text:string;evidenceIds:string[]}>;source_evidence:Array<{id:string;rawId:string;quote:string;start:number;end:number}>;provenance:Array<{end:number}>}>}, body:string, rawId:string) {
+  assert.equal(new Set(payload.facts.map(fact=>fact.id)).size,payload.facts.length,'规划事实ID唯一');
+  assert.equal(new Set(payload.questions.map(question=>question.id)).size,payload.questions.length,'规划问题ID唯一');
+  assert.doesNotMatch(JSON.stringify(payload),/locatorId|source_evidence|quote/,'规划载荷只含事实/问题ID与文本');
+  assert.deepEqual(draft.pages.flatMap(page=>page.source_facts.map(fact=>fact.text)).sort(),payload.facts.map(fact=>fact.text).sort(),'最终页面必须将规划的全部事实恰好组装一次');
+  for(const page of draft.pages) for(const fact of page.source_facts){assert.ok(fact.evidenceIds.length>0);for(const id of fact.evidenceIds){const evidence=page.source_evidence.find(item=>item.id===id);assert.ok(evidence,'事实locator必须能解析到最终证据');assert.equal(evidence?.rawId,rawId);assert.equal(body.slice(evidence!.start,evidence!.end),evidence!.quote);}}
+  const lastCoverage=draft.pages.flatMap(page=>page.provenance).reduce((max,item)=>Math.max(max,item.end),0);assert.ok(lastCoverage>=body.length-1,'全篇分块覆盖不得丢尾');
 }
-
 for (const omitOffsets of [false, true]) {
   const label = omitOffsets ? '无位置hint' : '有位置hint';
   test(`F04-11 残留（${label}）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved`, async () => {
@@ -158,27 +140,13 @@ for (const omitOffsets of [false, true]) {
       assert.equal(draft?.extraction.chunkCount, 4, '长文必须切成四块');
       assert.equal(finished.callCount, 5, '四块各一次调用 + 一次额外汇总');
       // 真实汇总请求必须存在且输入完整。
-      const mergeRequests = context.fake.requests.filter(request => isMergePrompt(request.user));
-      assert.equal(mergeRequests.length, 1, '四块摘要不同必须真正发起一次汇总调用');
-      const entries = mergeEntriesFromPrompt(mergeRequests[0].user);
-      assert.equal(entries.length, 4, '汇总输入必须包含四块');
-      assertMergePayloadComplete(entries, body, raw.id);
-      assert.equal(new Set(entries.map(entry => entry.document.summary)).size, 4, '四块摘要必须各不相同（触发条件）');
-      await recordMergeEvidence(label, entries, {
-        chunkCount: draft?.extraction.chunkCount, callCount: finished.callCount, pageCount: draft?.pages.length,
-        evidenceCount: entries.flatMap(entry => entry.pages.flatMap(page => page.source_facts.flatMap(fact => fact.evidence))).length,
-        unresolvedReferences: 0, maxConcurrent: context.fake.maxConcurrent, rawSha256: raw.bodySha256, rawBodySha256Matches: (await context.rawStore.get(raw.id))?.body === body,
-      });
-      // 与草稿规范化后的证据逐字段一致。
-      const normalized = new Map(draft?.pages.flatMap(page => page.source_evidence).map(evidence => [evidence.quote, evidence]) ?? []);
-      const mergeEvidence = entries.flatMap(entry => entry.pages.flatMap(page => page.source_facts.flatMap(fact => fact.evidence)));
-      for (const evidence of mergeEvidence) {
-        const draftEvidence = normalized.get(String(evidence.quote));
-        assert.ok(draftEvidence, `汇总证据必须能在草稿中找到：${String(evidence.quote)}`);
-        assert.equal(evidence.start, draftEvidence?.start, '汇总位置必须等于草稿规范化位置');
-        assert.equal(evidence.end, draftEvidence?.end);
-        assert.equal(evidence.rawId, draftEvidence?.rawId);
-      }
+      const mergeRequests = context.fake.requests.filter(request => isPlanningPrompt(request.user));
+      assert.equal(mergeRequests.length, 1, '四块事实完成后必须进行一次整篇规划');
+      const payload = planningPayloadFromPrompt(mergeRequests[0].user);
+      assert.equal(payload.facts.length, 4, '规划输入必须覆盖全部四块事实');
+      assert.equal(payload.facts.length, draft.pages.reduce((sum,page)=>sum+page.source_facts.length,0));
+      assertPlanningPayloadComplete(payload, draft!, body, raw.id);
+      await recordMergeEvidence(label, payload, { chunkCount:draft?.extraction.chunkCount, callCount:finished.callCount, pageCount:draft?.pages.length, factCount:payload.facts.length, questionCount:payload.questions.length, plannerContainsEvidence:false, maxConcurrent:context.fake.maxConcurrent, rawSha256:raw.bodySha256, rawBodySha256Matches:(await context.rawStore.get(raw.id))?.body===body });
       // 聚合后的最终草稿：证据 ID 唯一、事实引用有效、尾部覆盖。
       assert.equal(draft?.pages.length, 1, '同标题四块聚合为一条建议');
       const page = draft?.pages[0];
@@ -186,7 +154,7 @@ for (const omitOffsets of [false, true]) {
       const ids = page?.source_evidence.map(evidence => evidence.id) ?? [];
       assert.equal(new Set(ids).size, ids.length, '证据 ID 必须唯一');
       assert.ok(ids.length >= 4, `四块证据都应保留，实际 ${JSON.stringify(ids)}`);
-      assert.ok(ids.some(id => id.startsWith('e1-c')), `冲突证据 id 必须重命名，实际 ${JSON.stringify(ids)}`);
+      for (let index = 1; index <= 4; index++) assert.ok(ids.some(id => id.startsWith(`c${index}-l`)), `第 ${index} 块 locator 必须保留且可解析，实际 ${JSON.stringify(ids)}`);
       for (const fact of page?.source_facts ?? []) {
         assert.ok(fact.evidenceIds.length >= 1);
         for (const id of fact.evidenceIds) {
@@ -224,16 +192,16 @@ test('F04-11 残留（对照）：无重复标题时汇总输入同样完整，�
     const { draft } = await context.extract(raw.id);
     assert.equal(draft?.extraction.chunkCount, 4);
     assert.equal(draft?.pages.length, 4, '四个不同标题必须保留四条建议');
-    const mergeRequests = context.fake.requests.filter(request => isMergePrompt(request.user));
+    const mergeRequests = context.fake.requests.filter(request => isPlanningPrompt(request.user));
     assert.equal(mergeRequests.length, 1);
-    assertMergePayloadComplete(mergeEntriesFromPrompt(mergeRequests[0].user), body, raw.id);
+    assertPlanningPayloadComplete(planningPayloadFromPrompt(mergeRequests[0].user), draft!, body, raw.id);
     // 单块（≤8000 字符）不触发额外汇总，草稿正常。
     const short = await context.createRaw('单块短文：渠道动销与库存周转。', '单块短文');
     const single = await context.extract(short.id);
     assert.equal(single.finished.status, 'completed');
     assert.equal(single.finished.chunksTotal, 1, '短文只有一块');
-    const shortMerge = context.fake.requests.filter(request => isMergePrompt(request.user));
-    assert.equal(shortMerge.length, 1, '单块不得新增汇总请求');
+    const shortMerge = context.fake.requests.filter(request => isPlanningPrompt(request.user));
+    assert.equal(shortMerge.length, 2, '单块也必须有一次提取与一次全篇规划');
     assert.equal(single.draft?.pages.length, 1);
     assert.equal(single.draft?.pages[0].source_evidence[0].quote, '单块短文：渠道动销与库存周转。'.slice(0, 16));
   } finally { await context.clean(); }

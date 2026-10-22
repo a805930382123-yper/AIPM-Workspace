@@ -1,0 +1,48 @@
+[]
+file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-harness.mjs:38
+  for(let n=0;n<150;n++){if(child.exitCode!==null)throw Error(s.logs);try{if((await fetch(s.base+'/api/health',{signal:AbortSignal.timeout(300)})).ok)return s;}catch{}await delay(100);}await stop(s);throw Error('Independent startup timeout '+s.logs);
+                                                        ^
+
+Error: node:internal/fs/promises:786
+
+  return await PromisePrototypeThen(
+
+         ^
+
+
+
+Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{16851fa5-f7e3-4158-aaa0-2f1c0cc4c2bf}\AC\Temp\kb02-standards-WZJxS4\knowledge\wiki\.index.md.7f733d98-9191-4bbe-b752-83011dc8e96f.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{16851fa5-f7e3-4158-aaa0-2f1c0cc4c2bf}\AC\Temp\kb02-standards-WZJxS4\knowledge\wiki\index.md'
+
+    at async Object.rename (node:internal/fs/promises:786:10)
+
+    at async writeAtomic (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:66:5)
+
+    at async WikiStore.rebuildIndex (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:330:5)
+
+    at async WikiStore.recoverPending (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:380:5)
+
+    at async WikiStore.initialize (E:\AI\Work\AIPM Workspace\services\wiki\store.ts:99:5)
+
+    at async <anonymous> (E:\AI\Work\AIPM Workspace\server\index.ts:104:1) {
+
+  errno: -4048,
+
+  code: 'EPERM',
+
+  syscall: 'rename',
+
+  path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{16851fa5-f7e3-4158-aaa0-2f1c0cc4c2bf}\\AC\\Temp\\kb02-standards-WZJxS4\\knowledge\\wiki\\.index.md.7f733d98-9191-4bbe-b752-83011dc8e96f.tmp',
+
+  dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{16851fa5-f7e3-4158-aaa0-2f1c0cc4c2bf}\\AC\\Temp\\kb02-standards-WZJxS4\\knowledge\\wiki\\index.md'
+
+}
+
+
+
+Node.js v25.2.1
+
+
+    at Object.start (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-harness.mjs:38:57)
+    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-s01-review-20261018-peer-standards-probes.mjs:16:7
+
+Node.js v25.2.1

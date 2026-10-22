@@ -30,7 +30,7 @@ const byText = (text: string, root: ParentNode = window.document) =>
 const required = <T,>(value: T | null | undefined, what: string): T => { assert.ok(value, `找不到${what}`); return value; };
 /** The per-page "写入" checkboxes, in card order. */
 const writeBoxes = (root: ParentNode) =>
-  [...root.querySelectorAll('input[type="checkbox"]')].filter(input => (input.closest('label')?.textContent ?? '').includes('写入'));
+  [...root.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].filter(input => (input.closest('label')?.textContent ?? '').includes('写入'));
 async function click(target: HTMLElement) {
   await act(async () => { target.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })); await tick(); });
 }
@@ -86,9 +86,10 @@ function makeDraft(overrides: Partial<DraftView> = {}): DraftView {
   };
 }
 
-type Stub = { calls: Array<{ url: string; method: string; body: string | null }>; setDraft: (draft: DraftView) => void; setConfig: (config: unknown) => void };
-function stubFetch(options: { draft?: DraftView; config?: unknown; confirmResponse?: () => Response } = {}): Stub {
+type Stub = { calls: Array<{ url: string; method: string; body: string | null }>; setDraft: (draft: DraftView) => void; setConfig: (config: unknown) => void; setDuplicateResponse: (handler: () => Response | Promise<Response>) => void };
+function stubFetch(options: { draft?: DraftView; config?: unknown; confirmResponse?: () => Response; duplicateResponse?: () => Response | Promise<Response> } = {}): Stub {
   let draft = options.draft ?? makeDraft();
+  let duplicateResponse: () => Response | Promise<Response> = options.duplicateResponse ?? (() => reply({ draftId: draft.id, pageId: 'page-1', draftRevision: draft.revision, decision: null, targetWikiId: null, candidates: [] }));
   let config = options.config ?? { provider: 'openai-compatible', baseUrlHost: 'llm.example.com', model: 'fake-model', keyConfigured: true, keyMask: '••••••••••••', configured: true, source: 'env', missing: [], configFile: 'E:/x/.env.local', envNames: { baseUrl: 'FMCG_LLM_BASE_URL', model: 'FMCG_LLM_MODEL', apiKey: 'FMCG_LLM_API_KEY' } };
   const calls: Stub['calls'] = [];
   (globalThis as { fetch?: unknown }).fetch = (async (input: unknown, init: RequestInit = {}) => {
@@ -112,6 +113,13 @@ function stubFetch(options: { draft?: DraftView; config?: unknown; confirmRespon
     if (url.startsWith('/api/extraction-jobs/')) return reply({ jobId: 'job-1', rawId: makeRaw().id, status: 'running', stage: 'extracting', progress: { chunksTotal: 2, chunksDone: 1, pagesFound: 1 }, draftId: null, error: null, provider: { name: 'openai-compatible', model: 'fake-model' }, callCount: 1, startedAt: '2026-10-05T00:00:00.000Z', finishedAt: null, cancelRequested: false });
     if (url.startsWith('/api/drafts/') && url.endsWith('/confirm') && method === 'POST') return (options.confirmResponse ? options.confirmResponse() : reply({ operationId: '33333333-3333-4333-8333-333333333333', status: 'completed', reused: false, sourceReused: false, sourceId: 'source-1', wikiIds: ['wiki-1'], writtenWikiIds: ['source-1', 'wiki-1'], warnings: [], phases: [] }, 201));
     if (url.startsWith('/api/drafts/') && url.endsWith('/discard') && method === 'POST') return reply({ id: draft.id, status: 'discarded', rawId: draft.rawId });
+    if (url.includes('/duplicates') && method === 'GET') return duplicateResponse();
+    if (url.includes('/decision') && method === 'PATCH') {
+      const pageId = url.split('/').at(-2) ?? '';
+      const body = JSON.parse(String(init.body)) as { decision: 'update' | 'create' | 'defer'; targetWikiId?: string };
+      draft = { ...draft, revision: draft.revision + 1, pages: draft.pages.map(page => page.pageId === pageId ? { ...page, reviewDecision: body.decision, updateTargetWikiId: body.targetWikiId } : page) };
+      return reply({ draftId: draft.id, revision: draft.revision, page: draft.pages.find(page => page.pageId === pageId) });
+    }
     if (url.startsWith('/api/drafts/') && method === 'PATCH') {
       const body = JSON.parse(String(init.body)) as { pages?: Array<{ pageId: string; title?: string; selected?: boolean }>; deletePageIds?: string[]; merge?: { pageIds: string[] } };
       if (body.deletePageIds?.length) draft = { ...draft, revision: draft.revision + 1, pages: draft.pages.filter(page => !body.deletePageIds?.includes(page.pageId)) };
@@ -124,7 +132,7 @@ function stubFetch(options: { draft?: DraftView; config?: unknown; confirmRespon
     if (url.startsWith('/api/wiki-commits/')) return reply({ operationId: '33333333-3333-4333-8333-333333333333', draftId: draft.id, rawId: draft.rawId, status: 'failed', createdAt: '', updatedAt: '', completedAt: null, phases: [{ name: 'source', status: 'done' }, { name: 'pages', status: 'done' }, { name: 'index', status: 'failed', error: 'EISDIR' }, { name: 'log', status: 'pending' }, { name: 'state', status: 'pending' }], writtenWikiIds: ['source-1'], sourceId: 'source-1', wikiIds: ['wiki-1'], selectedPageIds: [], error: { code: 'COMMIT_FAILED', message: 'index 写入失败' }, recoveryHint: '解除磁盘故障后重启工作台会自动继续这个 operationId。', warnings: [] });
     return reply({}, 404);
   }) as unknown as typeof fetch;
-  return { calls, setDraft: (next: DraftView) => { draft = next; }, setConfig: (next: unknown) => { config = next as typeof config; } };
+  return { calls, setDraft: (next: DraftView) => { draft = next; }, setConfig: (next: unknown) => { config = next as typeof config; }, setDuplicateResponse: (handler: () => Response | Promise<Response>) => { duplicateResponse = handler; } };
 }
 
 const rawPageProps = (overrides: Record<string, unknown> = {}) => ({
@@ -183,8 +191,8 @@ test('B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口', asy
   })} />);
   try {
     assert.match(stopped.container.innerHTML, /AI 处理中/);
-    assert.match(stopped.container.innerHTML, /调用 Provider 提取/);
-    assert.match(stopped.container.innerHTML, /第 2\/3 段/);
+    assert.match(stopped.container.innerHTML, /提取精简事实/);
+    assert.match(stopped.container.innerHTML, /已验证 1\/3 段/);
     assert.ok(byText('取消整理', stopped.container));
     await click(required(byText('取消整理', stopped.container), '取消按钮'));
     assert.ok(stub.calls.some(call => call.url.endsWith('/cancel')), '取消必须调用 cancel 接口');
@@ -367,5 +375,69 @@ test('B04 审核页：冲突提示与部分提交面板', async () => {
     assert.match(html, /请勿重复确认同一份草稿/);
     assert.ok(partial.calls.some(call => call.url.startsWith('/api/wiki-commits/')));
   } finally { await stubbed.unmount(); }
+});
+
+test('B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁', async () => {
+  const stub = stubFetch({ duplicateResponse: () => reply({ error: { code: 'CANDIDATE_DOWN', message: '候选服务不可用' } }, 503) });
+  const mounted = await mount(<DraftReviewPage draftId={makeDraft().id} onBack={() => undefined} onCommitted={async () => undefined} onOpenRaw={() => undefined} />);
+  try {
+    const confirmButton = required(byText('确认写入 Wiki', mounted.container), '确认按钮');
+    await click(confirmButton);
+    assert.match(mounted.container.textContent ?? '', /候选查询失败，已阻止确认写入/);
+    assert.equal(stub.calls.some(call => call.url.endsWith('/confirm')), false, '候选失败时不得请求正式确认');
+    assert.equal(stub.calls.some(call => call.method === 'PATCH'), false, '候选失败时不得把默认创建决定写入草稿');
+
+    stub.setDuplicateResponse(() => reply({
+      draftId: makeDraft().id, pageId: 'page-1', draftRevision: 3, decision: null, targetWikiId: null,
+      candidates: [{ wiki: { id: 'existing-1', title: '既有候选Wiki', sources: ['raw-old'] }, score: 0.8, matches: [{ dimension: 'title', score: 0.9, reason: '标题相似' }] }],
+    }));
+    const cards = [...mounted.container.querySelectorAll('.draft-card')];
+    for (const card of cards) await click(required(byText('刷新重复候选', card), '刷新候选按钮'));
+    assert.match(mounted.container.textContent ?? '', /既有候选Wiki/, '成功重试应显示服务端候选');
+    assert.equal(mounted.container.querySelectorAll('.duplicate-review [role="alert"]').length, 0, '成功查询应清除过期错误');
+
+    await click(confirmButton);
+    assert.match(mounted.container.textContent ?? '', /先对可能重复的建议明确选择/);
+    assert.equal(stub.calls.some(call => call.url.endsWith('/confirm')), false, '发现候选后仍需用户明确决定');
+
+    await click(required(byText('仍创建新页', cards[1] as ParentNode), '明确新建决定'));
+    await click(confirmButton);
+    const confirmCall = stub.calls.find(call => call.url.endsWith('/confirm'));
+    assert.ok(confirmCall, '明确选择新建后允许提交');
+    assert.deepEqual((JSON.parse(String(confirmCall.body)) as { selectedPageIds: string[] }).selectedPageIds, ['page-2']);
+    assert.ok(stub.calls.some(call => call.url.endsWith('/decision') && (JSON.parse(String(call.body)) as { decision?: string }).decision === 'create'));
+  } finally { await mounted.unmount(); }
+});
+
+test('B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍使用可见快照', async () => {
+  const stub = stubFetch();
+  const mounted = await mount(<DraftReviewPage draftId={makeDraft().id} onBack={() => undefined} onCommitted={async () => undefined} onOpenRaw={() => undefined} />);
+  try {
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 150)); });
+    const boxes = writeBoxes(mounted.container);
+    await setChecked(boxes[0], true);
+    await setChecked(boxes[1], false);
+    let release!: (response: Response) => void;
+    let pending = 0;
+    const waiting = new Promise<Response>(resolve => { release = resolve; });
+    stub.setDuplicateResponse(() => { pending += 1; return waiting; });
+    await click(required(byText('确认写入 Wiki', mounted.container), '确认按钮'));
+    await act(async () => { await tick(); });
+    assert.equal(pending, 2, '确认需等待每条建议的最新候选');
+    assert.ok(boxes.every(box => box.disabled), '确认请求期间锁定所有写入勾选框');
+    assert.ok([...mounted.container.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select')].filter(element => !element.closest('.draft-evidence')).every(element => element.disabled), '确认请求期间锁定全部可编辑字段');
+    assert.equal(boxes[0].checked, true);
+    assert.equal(boxes[1].checked, false);
+    const available = { draftId: makeDraft().id, pageId: 'page-1', draftRevision: 3, decision: null, targetWikiId: null, candidates: [] };
+    await act(async () => { release(reply(available)); await tick(); await tick(); });
+    const patch = stub.calls.find(call => call.method === 'PATCH' && call.url.endsWith('/drafts/' + makeDraft().id));
+    assert.ok(patch, '确认前必须持久化锁定时的审核快照');
+    const saved = JSON.parse(String(patch.body)) as { pages: Array<{ pageId: string; selected: boolean }> };
+    assert.equal(saved.pages.find(page => page.pageId === 'page-1')?.selected, true);
+    assert.equal(saved.pages.find(page => page.pageId === 'page-2')?.selected, false);
+    const confirmCall = stub.calls.find(call => call.url.endsWith('/confirm'));
+    assert.ok(confirmCall, '候选成功后应继续确认');
+    assert.deepEqual((JSON.parse(String(confirmCall.body)) as { selectedPageIds: string[] }).selectedPageIds, ['page-1']);
+  } finally { await mounted.unmount(); }
 });
 

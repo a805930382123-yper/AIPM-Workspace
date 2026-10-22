@@ -1,0 +1,2024 @@
+{
+  "node": "v24.19.0",
+  "mode": "observe",
+  "pid": 33432,
+  "roots": [
+    "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+    "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+    "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77"
+  ],
+  "events": [
+    {
+      "ms": 444.6906,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 447.9715,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 451.8336,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "58faf606-c042-4e34-9866-0bc573fd4abb",
+      "ok": true,
+      "value": {
+        "rawId": "58faf606-c042-4e34-9866-0bc573fd4abb",
+        "status": "processing",
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961"
+      }
+    },
+    {
+      "ms": 452.9302,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "58faf606-c042-4e34-9866-0bc573fd4abb",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 1,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 455.6146,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 458.4234,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 459.5864,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 460.7806,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 464.1418,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 497.4276,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 503.1741,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 512.8664,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "planning",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 515.4027,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 517.7444,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 520.6579,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 524.0232,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 524.7421,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 528.2406,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 542.6414,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "assembling",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 543.3354,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 545.8402,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "assembling",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 551.2618,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 555.113,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "stage": "done",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 559.9421,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "58faf606-c042-4e34-9866-0bc573fd4abb",
+      "ok": true,
+      "value": {
+        "rawId": "58faf606-c042-4e34-9866-0bc573fd4abb",
+        "status": "pending_confirmation",
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961"
+      }
+    },
+    {
+      "ms": 560.7443,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 564.1125,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 564.8609,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+      "ok": true,
+      "value": {
+        "id": "37e57fee-7ea3-4a60-94bd-242b746d3961",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 634.2492,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-ZxO6M7",
+      "id": "58faf606-c042-4e34-9866-0bc573fd4abb",
+      "ok": true,
+      "value": {
+        "rawId": "58faf606-c042-4e34-9866-0bc573fd4abb",
+        "status": "generated",
+        "jobId": "37e57fee-7ea3-4a60-94bd-242b746d3961"
+      }
+    },
+    {
+      "ms": 758.4949,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 762.1852,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 767.8464,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+      "ok": true,
+      "value": {
+        "rawId": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+        "status": "processing",
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a"
+      }
+    },
+    {
+      "ms": 768.3241,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 1,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 769.6922,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 777.7661,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 779.6513,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 780.2758,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 788.5639,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 799.5158,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 806.2403,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 815.9298,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "planning",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 818.5394,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 820.8009,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 822.3562,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 825.537,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 826.0584,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 829.2457,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 849.2109,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 851.9811,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "assembling",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 855.8513,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "assembling",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 863.4029,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 868.3778,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "stage": "done",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 872.5491,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 878.0248,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+      "ok": true,
+      "value": {
+        "rawId": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+        "status": "pending_confirmation",
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a"
+      }
+    },
+    {
+      "ms": 884.2275,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 908.309,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+      "ok": true,
+      "value": {
+        "id": "c39a3b8c-6645-4173-b56b-8314d069fe2a",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1052.154,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-5e4swY",
+      "id": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+      "ok": true,
+      "value": {
+        "rawId": "9c9884d4-2b23-4844-8f46-e0f59e35bbf5",
+        "status": "generated",
+        "jobId": "c39a3b8c-6645-4173-b56b-8314d069fe2a"
+      }
+    },
+    {
+      "ms": 1175.2738,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1179.9401,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 4,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1186.6754,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "c9fc8363-ec05-4309-8e41-01dd1566a30a",
+      "ok": true,
+      "value": {
+        "rawId": "c9fc8363-ec05-4309-8e41-01dd1566a30a",
+        "status": "processing",
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69"
+      }
+    },
+    {
+      "ms": 1187.2817,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "c9fc8363-ec05-4309-8e41-01dd1566a30a",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 4,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 1188.0459,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 4,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1199.8434,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1201.3616,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1202.5106,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1211.8408,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1225.7782,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1227.3292,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1230.0844,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1230.2473,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1231.188,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1234.7024,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1238.3334,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 1253.5941,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 1253.9828,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 2,
+        "chunksDone": 2,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1258.7762,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 3,
+        "chunksDone": 2,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1259.4979,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 2,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1259.9313,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 2,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1264.0335,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 2,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1270.3014,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 2,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 2
+        }
+      }
+    },
+    {
+      "ms": 1287.4369,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 2,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 2
+        }
+      }
+    },
+    {
+      "ms": 1291.2156,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 3,
+        "chunksDone": 3,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1297.9321,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 4,
+        "chunksDone": 3,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1298.6164,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 3,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1299.1377,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 3,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1302.364,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 3,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 3,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1308.895,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 3,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 3
+        }
+      }
+    },
+    {
+      "ms": 1316.5331,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 3,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 3
+        }
+      }
+    },
+    {
+      "ms": 1319.9857,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "extracting",
+        "attempts": 4,
+        "chunksDone": 4,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1328.2541,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1328.2752,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "planning",
+        "attempts": 4,
+        "chunksDone": 4,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1329.3358,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1331.5683,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "planning",
+        "attempts": 5,
+        "chunksDone": 4,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 1332.0943,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1332.8076,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 4,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 4,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1335.9227,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 4
+        }
+      }
+    },
+    {
+      "ms": 1337.2513,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 4
+        }
+      }
+    },
+    {
+      "ms": 1345.8459,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "assembling",
+        "attempts": 5,
+        "chunksDone": 4,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 1351.0892,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "assembling",
+        "attempts": 5,
+        "chunksDone": 4,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 1363.9681,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1367.8822,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "stage": "done",
+        "attempts": 5,
+        "chunksDone": 4,
+        "hasPlan": true
+      }
+    },
+    {
+      "ms": 1377.0102,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "c9fc8363-ec05-4309-8e41-01dd1566a30a",
+      "ok": true,
+      "value": {
+        "rawId": "c9fc8363-ec05-4309-8e41-01dd1566a30a",
+        "status": "pending_confirmation",
+        "jobId": "ce77d4c5-b483-4272-a29a-e2cd40f03c69"
+      }
+    },
+    {
+      "ms": 1377.981,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "running",
+        "stage": "assembling",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "assembling",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": true,
+          "attempts": 5,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1381.2581,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": false,
+          "attempts": 5,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 1387.3886,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-diag-full-PDMr3Y\\.test-b04-repair2-anew77",
+      "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+      "ok": true,
+      "value": {
+        "id": "ce77d4c5-b483-4272-a29a-e2cd40f03c69",
+        "status": "completed",
+        "stage": "done",
+        "callCount": 5,
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 4,
+          "totalChunks": 4,
+          "resumable": false,
+          "attempts": 5,
+          "reusedChunks": 0
+        }
+      }
+    }
+  ]
+}

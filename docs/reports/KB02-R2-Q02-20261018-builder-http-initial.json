@@ -1,0 +1,113 @@
+{
+  "at": "2026-10-18T13:46:37.990Z",
+  "scope": "localhost fake actual HTTP plus offline legacy trace replay; no real Provider quality claim",
+  "durationMs": 1909,
+  "checks": [
+    {
+      "id": "R01-native-HTTP-explicit-replanning-restart-double-resume",
+      "result": "PASS",
+      "evidence": {
+        "jobId": "907080aa-9c04-462c-970d-1e6e8d9c8d32",
+        "calls": 4,
+        "reusedChunks": 1,
+        "explicitFeedback": true,
+        "noFormalWrites": true
+      }
+    },
+    {
+      "id": "R02-diagnostic-current-secret-and-old-pipeline-rejected-with-zero-side-effects",
+      "result": "PASS",
+      "evidence": {
+        "secretRejected": true,
+        "oldBytesPreserved": true,
+        "restartExplicit": true
+      }
+    },
+    {
+      "id": "R03-offline-real-seq39-40-product-coverage-replay",
+      "result": "PASS",
+      "evidence": {
+        "noExternalRequests": true,
+        "legacyInputOnlyNoCheckpointReuse": true,
+        "replay": [
+          {
+            "sequence": 39,
+            "legacyInput": true,
+            "facts": 46,
+            "questions": 23,
+            "diagnostic": {
+              "facts": {
+                "missing": [
+                  "f-c2-3"
+                ],
+                "duplicate": [],
+                "unknown": []
+              },
+              "questions": {
+                "missing": [],
+                "duplicate": [],
+                "unknown": []
+              },
+              "duplicateTitles": []
+            }
+          },
+          {
+            "sequence": 40,
+            "legacyInput": true,
+            "facts": 46,
+            "questions": 23,
+            "diagnostic": {
+              "facts": {
+                "missing": [
+                  "f-c2-3"
+                ],
+                "duplicate": [],
+                "unknown": []
+              },
+              "questions": {
+                "missing": [],
+                "duplicate": [],
+                "unknown": []
+              },
+              "duplicateTitles": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "R04-actual-candidate-explicit-update-ID-preview-confirm",
+      "result": "PASS",
+      "evidence": {
+        "candidate": true,
+        "explicitDecision": true,
+        "workflow": "75ab3b91-76b6-4b7c-84ac-c381cf2322f7",
+        "confirmed": "confirmed",
+        "bothSources": true,
+        "humanNotePreserved": true
+      }
+    },
+    {
+      "id": "R05-revision4-original-six-polluted-chunks-409-zero-calls-three-files-then-explicit-restart",
+      "result": "PASS",
+      "evidence": {
+        "legacyValidatedChunks": 6,
+        "legacyNonbusinessFacts": 11,
+        "denials": 3,
+        "providerCallsOnDenials": 0,
+        "threeFilesUnchanged": true,
+        "restartNewJob": true,
+        "restartReusedChunks": 0,
+        "oldCheckpointBytesPreserved": true,
+        "scope": "Synthetic localhost replay; restart cancelled after first fresh call, no real classification claim"
+      }
+    }
+  ],
+  "summary": {
+    "pass": 5,
+    "fail": 0
+  },
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-standards-2StUA8",
+  "calls": 21,
+  "closed": true
+}

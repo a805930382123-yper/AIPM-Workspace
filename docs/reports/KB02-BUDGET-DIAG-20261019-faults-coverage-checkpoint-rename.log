@@ -1,0 +1,20 @@
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (443.793ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 622.8819
+
+✖ failing tests:
+
+test at tests\kb02-planning-budget.test.ts:1:3538
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (443.793ms)
+  Error: 仅重新规划需要兼容的完整提取检查点及覆盖失败诊断。
+      at ExtractionRunner.startOnce (E:\AI\Work\AIPM Workspace\services\llm\jobs.ts:152:233) {
+    code: 'LLM_PLANNING_RETRY_UNAVAILABLE',
+    status: 409,
+    details: undefined
+  }

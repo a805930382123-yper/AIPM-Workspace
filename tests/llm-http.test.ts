@@ -10,7 +10,7 @@ import net from 'node:net';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { buildPayloadForChunk, chunkFromPrompt, contentOf, isMergePrompt, mergeEntriesFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
+import { buildPayloadForChunk, chunkFromPrompt, contentOf, isPlanningPrompt, planningPayloadFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
@@ -347,7 +347,7 @@ test('E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审�
 
     // A pending draft blocks deleting the Raw until the user resolves it.
     harness.fake.setHandler(request => ({ kind: 'content', content: contentOf(buildPayloadForChunk(chunkFromPrompt(request.user), rawIdFromPrompt(request.user), [{ title: '待审核主题' }])) }));
-    const second = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
+    const second = await client.request(`/api/raw/${raw.id}/extract`, 'POST', { restart: true });
     await client.waitForJob(String((shape(second) as { jobId?: string }).jobId));
     const blocked = await client.request(`/api/raw/${raw.id}`, 'DELETE', {});
     assert.equal(blocked.status, 409, blocked.text);
@@ -455,7 +455,7 @@ test('F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标
     });
     assert.ok([200, 201].includes(renamed.status), renamed.text);
     // 第二次提取：只选一页确认 → 复用既有 Source，新页必须链接既有真实标题。
-    const second = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
+    const second = await client.request(`/api/raw/${raw.id}/extract`, 'POST', { restart: true });
     const secondJob = await client.waitForJob(String((shape(second) as { jobId?: string }).jobId));
     const secondDraftId = String((shape(secondJob) as { draftId?: string }).draftId);
     const secondDraft = shape(await client.request(`/api/drafts/${secondDraftId}`)) as unknown as { revision: number; pages: Array<{ pageId: string; renderedBody: string }>; preview: { sourceReuse: { id: string; title: string } | null } };
@@ -482,14 +482,14 @@ test('F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按�
     fake.setHandler(request => {
       const chunk = chunkFromPrompt(request.user);
       return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [
-        { title: 'HTTP 被确认的页', one_line_definition: 'HTTP 被确认页的定义' },
+        { title: 'HTTP 被确认的页', one_line_definition: 'HTTP 被确认的页' },
         { title: 'HTTP 未确认的页', type: 'metric', category: 'metric', one_line_definition: 'HTTP 未确认页的定义' },
       ])) };
     });
   });
   try {
     const { client } = harness;
-    const rawReply = await client.request('/api/raw', 'POST', { title: 'HTTP 残留样本', sourceType: 'article', sourceName: '自检来源', tags: ['渠道'], body: '渠道动销资料正文。' });
+    const rawReply = await client.request('/api/raw', 'POST', { title: 'HTTP 残留样本', sourceType: 'article', sourceName: '自检来源', tags: ['渠道'], body: '渠道动销资料正文。库存周转资料正文。' });
     assert.equal(rawReply.status, 201, rawReply.text);
     const raw = shape(rawReply) as unknown as { id: string };
     const started = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
@@ -513,7 +513,7 @@ test('F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按�
     assert.equal(skippedSection.includes('HTTP 人工改名但未勾选'), false, '被确认的页不得出现在未创建列表');
     assert.ok(skippedSection.includes('HTTP 未确认的页'));
     const takeaways = source.body.split('## Key Takeaways')[1]?.split('## 涉及概念')[0] ?? '';
-    assert.ok(takeaways.includes('HTTP 被确认页的定义'), takeaways);
+    assert.ok(takeaways.includes('HTTP 被确认的页'), takeaways);
     assert.equal(/暂无/u.test(takeaways), false, 'Key Takeaways 不得为暂无');
     assert.equal(p2.title, 'HTTP 未确认的页');
     // F04-04 残留：同 key 重试里带一个不存在的 UUID 必须明确 400，而不是 201 reused。
@@ -583,27 +583,17 @@ test('F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求
       }
     }
     // 真实汇总请求（产品通过真实适配器发给 fake）必须零 unresolved 且带全局位置。
-    const mergeRequests = harness.fake.requests.filter(request => isMergePrompt(request.user));
+    const mergeRequests = harness.fake.requests.filter(request => isPlanningPrompt(request.user));
     assert.equal(mergeRequests.length, 1, '四块摘要不同必须真正发起一次汇总');
-    const entries = mergeEntriesFromPrompt(mergeRequests[0].user);
-    assert.equal(JSON.stringify(entries).includes('"resolved":false'), false);
-    assert.equal(entries.length, 4);
-    let seen = 0;
-    for (const entry of entries) {
-      for (const entryPage of entry.pages) {
-        for (const fact of entryPage.source_facts) {
-          for (const evidence of fact.evidence) {
-            seen += 1;
-            assert.equal(evidence.rawId, raw.id);
-            assert.equal(typeof evidence.start, 'number', `缺全局 start：${JSON.stringify(evidence)}`);
-            assert.equal(typeof evidence.end, 'number');
-            assert.equal(body.slice(evidence.start as number, evidence.end as number), evidence.quote);
-          }
-        }
-      }
-    }
-    assert.equal(seen, 4, '四块的证据都必须进入汇总输入');
-    assert.equal(harness.fake.maxConcurrent <= 2, true, `并发不得超过 2，实际 ${harness.fake.maxConcurrent}`);
+    const plannerInput = planningPayloadFromPrompt(mergeRequests[0].user);
+    assert.equal(plannerInput.facts.length, 4, '全篇规划输入必须覆盖四块提取出的全部事实');
+    assert.equal(new Set(plannerInput.facts.map(item => item.id)).size, 4, '规划事实 ID 必须唯一');
+    assert.equal(plannerInput.questions.length, 0);
+    assert.doesNotMatch(mergeRequests[0].user, /source_evidence|locatorId|quote/);
+    const plannedTexts = plannerInput.facts.map(item => item.text).sort();
+    const assembledTexts = draft.pages.flatMap(page => page.source_facts.map(fact => fact.text)).sort();
+    assert.deepEqual(assembledTexts, plannedTexts, '最终主题页必须保留全部规划事实恰一次');
+    for (const page of draft.pages) for (const fact of page.source_facts) for (const id of fact.evidenceIds) assert.ok(page.source_evidence.some(evidence => evidence.id === id), '每条最终事实必须可追溯到其Raw locator');    assert.equal(harness.fake.maxConcurrent <= 2, true, `并发不得超过 2，实际 ${harness.fake.maxConcurrent}`);
     assert.equal(sha(await readFile(rawFile)), rawHash, 'Raw 文件必须逐字节不变');
     assert.equal((shape(job) as { draftId?: string }).draftId, draftId);
   } finally { await harness.clean(); }

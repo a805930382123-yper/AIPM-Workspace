@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-19T17:00:44.993Z",
+  "scope": "coordinator handoff integrity check; not independent acceptance",
+  "counts": {
+    "product": 98,
+    "tests": 68,
+    "protected": 2507
+  },
+  "frozenProductChanges": [],
+  "frozenTestChanges": [],
+  "frozenScriptChanges": [],
+  "frozenFixtureChanges": [],
+  "protectedChanges": [],
+  "unexpectedProduct": [],
+  "unexpectedTests": [],
+  "workspaceAdded": [],
+  "configAdded": [],
+  "changedProduct": [
+    {
+      "file": "app/api.ts",
+      "expected": "37ee0fdbeb3ab1a57a8c2ce1228f0255aebfa88f6368d8d00060c0f22ea5ce48",
+      "actual": "14aaab9b387e3cc7f3223f4cffa8dfa628d49b67763d064e4ea99a90798b0b0c"
+    },
+    {
+      "file": "app/App.tsx",
+      "expected": "5efee7d6bb0591a59f700da3682113139f4bb4e5e79690438e3c7baa7c3a15e7",
+      "actual": "b36ea2412a4c597cc8ca1262824e5c0c5ee8f9d781afbfcfae733355a01958f2"
+    },
+    {
+      "file": "app/pages/RawPage.tsx",
+      "expected": "2a65f7f161e622b62b44f6abc9d9a23890bc47f65b78df6cc4e9044a5ba85c7c",
+      "actual": "ff9055b77a27e3619eb3457e526e90d527d5fc3ae9dea268e6552203edf273d5"
+    },
+    {
+      "file": "server/llm-api.ts",
+      "expected": "af9c6653094a74485e228cb957487f79134751728aae6af259b3a72077d2db9b",
+      "actual": "bfd1d05412a0fdde412daa4212ae31d3c6de1230877f3efc63ace17e00c53ada"
+    },
+    {
+      "file": "services/llm/checkpoints.ts",
+      "expected": "f8fe2bd91451b1cbc5cb6fb7e762e6113617e3b41072fcbdbb1f0e9db1ff6c4a",
+      "actual": "99fee2ccd597e0f1dbdd999644fdb4ca5222fb106bf27504a9f0a2ac054bad03"
+    },
+    {
+      "file": "services/llm/jobs.ts",
+      "expected": "9a300aacd3fcef918974b6a4ada11c16409ca44542fabf6245e2884443dcf281",
+      "actual": "90b0bd2d568b3a5d2c466eee346b36792d6eade7f70a33d56aa71a35b456c041"
+    },
+    {
+      "file": "tsconfig.json",
+      "expected": "52bf23d293ef9c1232e460d2ccd081d5cde4d64d217769cb7ed6a159fd720700",
+      "actual": "61e6715ae0b8e22190967ccef8154fb2c8a2d3db146b1bf5256f6bd9713d5e31"
+    }
+  ],
+  "changedTests": [
+    {
+      "file": "tests/kb02-planning-budget.test.ts",
+      "expected": "08efa3e7e3f777a2c9a58ea448936288507f19e973651a95110f89d7ee19bd29",
+      "actual": "860adb4a683a99a23fdf5cea8c74808c414e0bc3730ba2e652e044aedd830e5d"
+    }
+  ],
+  "addedProduct": [
+    "services/llm/storage-recovery.ts"
+  ],
+  "addedTests": [
+    "tests/kb02-storage-http.test.ts",
+    "tests/kb02-storage-recovery.test.ts",
+    "tests/kb02-storage-ui.test.tsx",
+    "tests/support/kb02-storage-fault.ts",
+    "tests/support/kb02-storage-fixture.ts",
+    "tests/support/kb02-storage-http.ts"
+  ],
+  "historicalLimit": "Prior PA01 evidence drift remains unresolved; this checks current round only",
+  "pass": true
+}

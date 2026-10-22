@@ -1,0 +1,64 @@
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (878.7292ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (414.8141ms)
+✔ SR01 real atomic failed-job transient retry (147.5378ms)
+✔ SR01 real atomic failed-job persistent explicit recovery (803.2525ms)
+✔ SR01 real atomic done-checkpoint transient retry (158.8157ms)
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (799.0549ms)
+✔ SR01 real atomic coverage-checkpoint transient retry (138.6358ms)
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (803.1062ms)
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (448.5048ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (444.7676ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (450.1685ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (424.9284ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (85.4475ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (393.5712ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3426.7453ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (0.4033ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (6928.3523ms)
+✖ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1345.6679ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (994.8829ms)
+✖ SR01 App polls execution running despite disk failed until recovery button becomes actionable (6479.4968ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 18
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17084.1039
+
+✖ failing tests:
+
+test at tests\kb02-storage-recovery.test.ts:1:10950
+✖ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1345.6679ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - false
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-storage-recovery.test.ts:188:14)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-storage-ui.test.tsx:1:4677
+✖ SR01 App polls execution running despite disk failed until recovery button becomes actionable (6479.4968ms)
+  AssertionError [ERR_ASSERTION]: UI deadline: settled after further polls
+      at tick (E:\AI\Work\AIPM Workspace\tests\kb02-storage-ui.test.tsx:21:10)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-storage-ui.test.tsx:70:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'fail',
+    diff: 'simple'
+  }

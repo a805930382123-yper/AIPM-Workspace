@@ -1,6 +1,8 @@
 # 快消 AI 产品经理工作台
 
-B01 提供本机工作台骨架、Raw 原始资料粘贴导入与首页统计；B02 增加手动 Wiki、规则模板、来源回跳、关联与 Markdown 搜索/导出；B03 增加 Markdown/TXT/DOCX/PDF 导入和原件保留；B04–06 增加知识草稿、更新/综合、Audit 与 Lint；B07 提供手动 Prompt Library；B08 增加 Generator 与 Optimizer 工作流；B09 增加首页快捷闭环、显式教学数据和离线备份恢复。B04–06/B08 的真实 Provider 成功与质量仍待配置后验收。
+项目仓库：[GitHub · AIPM-Workspace](https://github.com/a805930382123-yper/AIPM-Workspace)。每次任务修改完成后提交并同步；本机已启用提交后自动推送，其他电脑按 [GitHub 同步说明](docs/github-sync.md) 配置。
+
+B01 提供本机工作台骨架、Raw 原始资料粘贴导入与首页统计；B02 增加手动 Wiki、规则模板、来源回跳、关联与 Markdown 搜索/导出；B03 增加 Markdown/TXT/DOCX/PDF 导入和原件保留；B04–06 增加知识草稿、更新/综合、Audit 与 Lint；B07 提供手动 Prompt Library；B08 增加 Generator 与 Optimizer 工作流；B09 增加首页快捷闭环、显式教学数据和离线备份恢复。真实Provider已配置；2026-10-14 FULL3审查整体FAIL，连接和单例Audit成功，但Brief格式契约失败、提取/综合/生成/优化超时。109项78PASS/3FAIL/28BLOCKED，详见[当前验收](docs/reports/FULL3-20261014-acceptance.md)。本机配置/会议/安全阶段PASS保留。
 
 Meeting Hub M01–M05本机建设已完成并通过独立阶段验收。「会议档案」支持会议管理、目录/标签、搜索筛选、HTTPS来源、独立策略、UTF-8 `.md`/粘贴纪要、不可改写原件/工作副本/历史，以及Public/Internal明确授权的本机Raw登记。默认Sensitive云索引，Restricted只登记最少信息；Internal/Sensitive本地归档还需单独授权。原件最大2MiB/500000字符，工作副本500000字符，会议JSON32MiB。新Meeting来源始终禁止AI/Wiki/Prompt背景使用，解除或删除档案不解除Raw限制；普通无新origin的旧meeting资料兼容。M05补齐无需reload的Raw/首页同步和真实ID阅读；缺失目标、重连、迟到请求及后台任务刷新保持当前选择。跨文件部分成功按真实Raw计数，可同请求恢复。见[M05报告](docs/reports/M05-20261012-acceptance.md)、[48项映射](docs/reports/M05-20261012-spec-matrix.md)、[接口](docs/meeting-hub/M05-interface.md)、[使用说明](docs/meeting-hub/M05-usage.md)。会议AI仍禁用，原S-03/S-04及真实Provider阻塞以[工程状态](docs/status.md)为准；历史FAIL证据保留，本机阶段PASS不等于全产品PASS。
 
@@ -120,7 +122,7 @@ node tests/acceptance/b03-http.mjs
 
 结果与证据路径见 `docs/reports/B03-fix-build.md`（返修交接）、`docs/reports/B03-build.md`（首次施工）与 `docs/reports/B03-api-evidence.json`；B04 见 `docs/reports/B04-build.md`。
 
-## AI 整理与 LLM 配置（B04）
+## AI 整理与 LLM 配置（B04 / CFG01）
 
 产品只调用**你自己配置的**服务端 Provider：单一 OpenAI-compatible Chat Completions 适配器（非流式），没有多 Provider 管理器，也不把开发工具的内部凭证当作产品配置。
 
@@ -130,7 +132,11 @@ node tests/acceptance/b03-http.mjs
 | 模型 | `FMCG_LLM_MODEL` | 按 Provider 文档填写 |
 | 密钥 | `FMCG_LLM_API_KEY` | **仅服务端读取** |
 
-优先级：进程环境变量 → 项目根目录的 `.env.local`（已加入 `.gitignore`，Node 不会自动加载，工作台显式读取）。仓库只提交不含密钥的 [.env.example](.env.example)。配置改动无需重启页面；「设置」页可重新读取并显示 Provider、模型、Base URL 主机、`keyConfigured` 与统一掩码。Key 不会出现在前端、草稿、Wiki、Prompt、导出、普通日志或报告里；接口只返回是否已配置。
+优先级：进程环境变量 → 项目根 `.env.local`（受 `.gitignore` 忽略，服务端显式读取）。进入「设置」填写 API Base URL、模型 ID、password API Key 并点击「保存配置」；已有 Key 时留空可保留，保存后输入框清空，回读仅固定掩码。修改地址/模型或替换 Key 后，新 AI 请求使用新配置，已开始任务继续用启动快照。页面加载/重新读取/保存均不会自动调用 Provider。
+
+点击「测试连接」才发送固定非业务消息，可能产生少量 API 费用；成功仅证明连接可用，不证明业务质量。未保存修改须先保存再测试。「清除本机配置」须确认，仅移除三项 LLM 配置；环境变量任一非空覆盖会锁定编辑，须在启动终端移除后重启。HTTPS 地址不允许凭证/query/hash，HTTP 仅本机回环；Base URL 不要填写完整 chat/completions 路径。
+
+配置不会进入 workspace 或业务备份/导出；Key 不回传、不进草稿/Wiki/Prompt或普通日志。保存的三字段使用版本化 UTF-8 base64url 编码保证引号/反斜杠等无损，编码并非加密；旧单双引号格式仍可读取，内部反斜杠保持原值。保留其它配置行/注释。高级本机隔离运行可设置服务端 `FMCG_LLM_CONFIG_FILE`，HTTP 不能指定文件；仓库仅提交无密钥 [.env.example](.env.example)。[CFG01验收与环境限制](docs/reports/CFG01-20261014-acceptance.md)。
 
 未配置时：导入、手动 Wiki、搜索、导出、删除等手动链路完全可用；点击「AI 整理知识」会返回明确的 `LLM_NOT_CONFIGURED` 错误，不会伪造结果。
 
@@ -232,7 +238,10 @@ Wiki 页面以 `knowledge/wiki/` 中的 Markdown 文件为事实源，规则与�
 
 | 方法/路径 | 说明 |
 |---|---|
-| `GET /api/llm/config` | 非敏感配置摘要：Provider、模型、Base URL 主机、`keyConfigured`、统一掩码、缺失项 |
+| `GET /api/llm/config` | 本机可信读取安全地址/模型/固定Key掩码、environmentLocked、opaque revision与writeToken |
+| `PUT /api/llm/config` | 显式保存；省略apiKey保留，旧revision返回409 |
+| `DELETE /api/llm/config` | confirm:true清除三项本机配置，保留其它行 |
+| `POST /api/llm/config/test` | confirm:true测试已保存配置，固定非业务探针、最多15秒、响应预算；无业务写入 |
 | `POST /api/raw/:id/extract` | 启动或复用提取任务；新任务 202，复用现有任务/草稿 200 |
 | `GET /api/extraction-jobs/:jobId` | 任务状态、阶段、分块进度、错误与 `draftId` |
 | `POST /api/extraction-jobs/:jobId/cancel` | 显式取消；晚到的 Provider 结果不会落草稿 |

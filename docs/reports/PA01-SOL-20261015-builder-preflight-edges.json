@@ -1,0 +1,335 @@
+{
+  "at": "2026-10-15T14:02:28.779Z",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\pa01-r1-main-edges-Op9rk4",
+  "rows": [
+    {
+      "id": "E01-restored-long-checked-value",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-long-checked-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-long-checked-escaped",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-long-ready-value",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-long-ready-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-long-ready-escaped",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-short-checked-value",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-short-checked-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-short-checked-escaped",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-short-ready-value",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-short-ready-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E01-restored-short-ready-escaped",
+      "result": "PASS",
+      "evidence": {
+        "readRejected": true,
+        "replayRejected": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E02-ready-replay-reloads-current-record",
+      "result": "PASS",
+      "evidence": {
+        "cacheCannotBypassDiskValidation": true
+      }
+    },
+    {
+      "id": "E03-confirm-client-secret-no-formal-write",
+      "result": "PASS",
+      "evidence": {
+        "rejected": true,
+        "noFormalWrite": true
+      }
+    },
+    {
+      "id": "E04-confirmed-read-replay-revalidates",
+      "result": "PASS",
+      "evidence": {
+        "confirmedBoundary": true
+      }
+    },
+    {
+      "id": "E05-success-replay-survives-service-restart-zero-calls",
+      "result": "PASS",
+      "evidence": {
+        "persistedReplay": true,
+        "calls": 0
+      }
+    },
+    {
+      "id": "E06-input-diagnostics-vs-provider-diagnostics",
+      "result": "PASS",
+      "evidence": {
+        "response502": true,
+        "input400": true
+      }
+    },
+    {
+      "id": "E07-directory-error-persists-and-safe",
+      "result": "PASS",
+      "evidence": {
+        "first": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "E08-workflow-manifest-bad-shape-get-and-reconcile",
+      "result": "PASS",
+      "evidence": {
+        "bytesUnchanged": true,
+        "getRejected": true
+      }
+    },
+    {
+      "id": "E09-no-receiver-throws-explicit-scan-has-neighbor",
+      "result": "PASS",
+      "evidence": {
+        "noReceiverError": "STORAGE_CORRUPT",
+        "neighbor": 1
+      }
+    },
+    {
+      "id": "E10-recovery-oversize-record-honest-status",
+      "result": "PASS",
+      "evidence": {
+        "scanned": false,
+        "partial": true,
+        "overflow": true,
+        "items": [
+          {
+            "id": "510f0f04c92f8320",
+            "kind": "prompt-drafts",
+            "reason": "read"
+          },
+          {
+            "id": "51e2d52cb9902462",
+            "kind": "scan",
+            "reason": "directory"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E11-nested-invalid-commit-never-enters-executor",
+      "result": "PASS",
+      "evidence": {
+        "nestedRejectedBeforeExecute": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E12-nested-invalid-workflow-record-never-executes",
+      "result": "PASS",
+      "evidence": {
+        "nestedRejectedBeforeExecute": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E13-file-count-limit-is-honest-partial",
+      "result": "PASS",
+      "evidence": {
+        "created": 10001,
+        "read": 10000,
+        "partial": true
+      }
+    },
+    {
+      "id": "E14-Brief-all-nine-field-boundaries-and-total",
+      "result": "PASS",
+      "evidence": {
+        "fields": 9,
+        "negativeCases": 18,
+        "total30000Accepted": true,
+        "total30001Rejected": true
+      }
+    },
+    {
+      "id": "E15-content-field-and-rendered-body-boundaries",
+      "result": "PASS",
+      "evidence": {
+        "fieldPairs": 5,
+        "rendered100000Accepted": true,
+        "rendered100001Rejected": true,
+        "controlledAndDynamicEnumRejected": true
+      }
+    },
+    {
+      "id": "E16-check-shape-and-missing-only-improvements",
+      "result": "PASS",
+      "evidence": {
+        "invalidCases": 6
+      }
+    },
+    {
+      "id": "E17-explicit-legacy-completed-compatibility-and-invalid-versions",
+      "result": "PASS",
+      "evidence": {
+        "legacyReadConfirm": true,
+        "invalidLegacyAndVersionRejected": 3,
+        "zeroCalls": true
+      }
+    },
+    {
+      "id": "E18-confirm-receipt-assembled-result-current-secret-boundary",
+      "result": "PASS",
+      "evidence": {
+        "receiptResultChecked": true,
+        "zeroCalls": true,
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "E19-real-DraftStore-corrupt-get-list-and-neighbor",
+      "result": "PASS",
+      "evidence": {
+        "shapeRejected": true,
+        "bytesUnchanged": true,
+        "persistentIssue": true,
+        "missingIsUndefined": true
+      }
+    },
+    {
+      "id": "E20-prompt-deep-shape-rescan-cannot-clear-issue",
+      "result": "PASS",
+      "evidence": {
+        "deepShapePersistsUntilValidatedRepair": true,
+        "repairClearedExactlyOne": true
+      }
+    },
+    {
+      "id": "E21-success-diagnostics-stored-for-brief-generate-check",
+      "result": "PASS",
+      "evidence": {
+        "allThreeStagesRecorded": true,
+        "noBusinessPayload": true
+      }
+    },
+    {
+      "id": "E22-schema-failure-keeps-call-metadata-and-types",
+      "result": "PASS",
+      "evidence": {
+        "requestMetadataPreserved": true,
+        "typePathSafe": true
+      }
+    },
+    {
+      "id": "E23-contract-blank-singleline-trimmed-duplicates-rejected",
+      "result": "PASS",
+      "evidence": {
+        "strictBusinessCases": 5
+      }
+    },
+    {
+      "id": "E24-every-wire-field-type-count-and-text-boundaries",
+      "result": "PASS",
+      "evidence": {
+        "everyTopLevelFieldMissingAndNullRejected": true,
+        "negativeCases": 42,
+        "positiveBoundariesAndExamples": 10
+      }
+    }
+  ],
+  "summary": {
+    "pass": 35,
+    "fail": 0
+  },
+  "fakeCalls": 145,
+  "externalCalls": 0
+}

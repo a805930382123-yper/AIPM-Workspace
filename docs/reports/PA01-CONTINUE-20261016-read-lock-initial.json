@@ -1,0 +1,5 @@
+{
+  "result": "HARNESS_ERROR",
+  "error": "Healthy neighbor assertion failed because isRawState optional id parameter received full path from scan callback.",
+  "fix": "Use v=>isRawState(v); preserve original script. Lock disposed in finally; no product change."
+}

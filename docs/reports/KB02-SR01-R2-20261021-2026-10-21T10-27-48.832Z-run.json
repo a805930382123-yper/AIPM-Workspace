@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-21T10:27:48.833Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-sr01-r1-15GmZ3",
+  "runtime": "v24.20.0",
+  "copyChanges": [],
+  "rows": [
+    {
+      "name": "red",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--import",
+        "./tests/acceptance/kb02-sr01-r2-20261021-observe.mjs",
+        "--test",
+        "tests/kb02-job-file-access.test.ts"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 5751,
+      "summary": [
+        "ℹ tests 7",
+        "ℹ pass 3",
+        "ℹ fail 4",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 5315.5202"
+      ]
+    }
+  ],
+  "realProviderCalls": 0,
+  "pass": false
+}

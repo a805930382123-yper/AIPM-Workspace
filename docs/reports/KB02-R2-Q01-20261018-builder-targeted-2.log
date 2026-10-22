@@ -1,0 +1,48 @@
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (41.1681ms)
+✔ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (35.3852ms)
+✔ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (12.5752ms)
+✔ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (11.9821ms)
+✔ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (11.6267ms)
+✔ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (12.0251ms)
+✔ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (77.681ms)
+✔ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (11.8047ms)
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (47.4537ms)
+✔ KB02 resume reuses validated chunks and counts failed outbound attempts (43.6125ms)
+✔ KB02 corrupted checkpoint integrity fails closed (21.5288ms)
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (336.4931ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (249.4535ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (39.8769ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (23.2915ms)
+✔ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (34.4825ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (23.5462ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (21.8241ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.1772ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (7.8685ms)
+✔ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (75.5701ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 20
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 899.4572
+
+✖ failing tests:
+
+test at tests\kb02-extraction-contract.test.ts:1:3550
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (41.1681ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(!JSON.stringify(result.outcome).includes('免责声明'))
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-extraction-contract.test.ts:61:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

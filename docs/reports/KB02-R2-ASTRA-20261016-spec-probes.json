@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-16T13:56:46.644Z",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-r2-astra-spec-u6yfp4",
+  "scope": "controlled Spec only; synthetic in-memory provider; no browser; no external calls",
+  "externalCalls": 0,
+  "workflowFakeCalls": 5,
+  "rows": [
+    {
+      "id": "KSP01-negation-condition-cross-subject-exact-atoms",
+      "result": "PASS",
+      "evidence": {
+        "atomTexts": [
+          "如果预算未获批，甲区域不得新增20家；",
+          "乙区域的30家是历史覆盖，不是甲区域目标。",
+          "AI目前未上线，仅在未来作为建议。"
+        ],
+        "factsPreserveNegations": true
+      }
+    },
+    {
+      "id": "KSP02-fragment-forced-ambiguous",
+      "result": "PASS",
+      "evidence": {
+        "forcedAmbiguous": 2
+      }
+    },
+    {
+      "id": "KSP03-source-notes-and-summary-restore",
+      "result": "PASS",
+      "evidence": {
+        "sourceNoteExcludedFromPlanningAndSummary": true,
+        "tamperRejected": 2,
+        "cleanRestore": true
+      }
+    },
+    {
+      "id": "KSP04-natural-newline-semantic-limit",
+      "result": "PASS",
+      "evidence": {
+        "classification": "OBSERVED_MODEL_DEPENDENCY_NOT_REAL_QUALITY_FAILURE",
+        "atoms": [
+          {
+            "id": "c1-a0001",
+            "text": "仅在预算获批时：\n",
+            "start": 0,
+            "end": 9,
+            "locatorIds": [
+              "c1-l001"
+            ],
+            "fragment": false
+          },
+          {
+            "id": "c1-a0002",
+            "text": "甲区域新增20家。",
+            "start": 9,
+            "end": 18,
+            "locatorIds": [
+              "c1-l001"
+            ],
+            "fragment": false
+          }
+        ],
+        "summary": "来源事实：\n甲区域新增20家。",
+        "openQuestions": []
+      }
+    },
+    {
+      "id": "KSP05-update-invalid-directory-zero-provider",
+      "result": "PASS",
+      "evidence": {
+        "rejected": 9,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "KSP06-update-provider-id-types-and-unknown",
+      "result": "PASS",
+      "evidence": {
+        "rejected": 4
+      }
+    },
+    {
+      "id": "KSP07-legacy-storage-read-edit-confirm-replay",
+      "result": "PASS",
+      "evidence": {
+        "position": 10,
+        "readOldShape": true,
+        "edited": true,
+        "confirmed": true,
+        "replayed": true,
+        "revision": 2
+      }
+    }
+  ],
+  "summary": {
+    "pass": 7,
+    "fail": 0
+  }
+}

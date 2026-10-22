@@ -1,0 +1,95 @@
+{
+  "at": "2026-10-15T06:11:51.221Z",
+  "rawId": "71bb46ae-9192-4558-9a15-cb6bf7c5002b",
+  "jobId": "616c1edd-5c8c-46fe-aa1b-d4264f1e3c9a",
+  "beforeJob": {
+    "jobId": "616c1edd-5c8c-46fe-aa1b-d4264f1e3c9a",
+    "rawId": "71bb46ae-9192-4558-9a15-cb6bf7c5002b",
+    "status": "failed",
+    "stage": "planning",
+    "progress": {
+      "chunksTotal": 14,
+      "chunksDone": 14,
+      "pagesFound": 46
+    },
+    "draftId": null,
+    "error": {
+      "code": "LLM_PLAN_COVERAGE_INVALID",
+      "message": "主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。",
+      "at": "2026-10-15T06:07:51.890Z",
+      "retryable": true
+    },
+    "provider": {
+      "name": "openai-compatible",
+      "model": "GLM-5.3-Flash"
+    },
+    "callCount": 15,
+    "startedAt": "2026-10-15T06:06:36.351Z",
+    "finishedAt": "2026-10-15T06:07:51.890Z",
+    "cancelRequested": false,
+    "pipelineVersion": "kb02-1",
+    "checkpoint": {
+      "stage": "planning",
+      "validatedChunks": 14,
+      "totalChunks": 14,
+      "resumable": true,
+      "reason": "主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。",
+      "attempts": 15,
+      "reusedChunks": 0
+    }
+  },
+  "job": {
+    "jobId": "616c1edd-5c8c-46fe-aa1b-d4264f1e3c9a",
+    "rawId": "71bb46ae-9192-4558-9a15-cb6bf7c5002b",
+    "status": "failed",
+    "stage": "planning",
+    "progress": {
+      "chunksTotal": 14,
+      "chunksDone": 14,
+      "pagesFound": 46
+    },
+    "draftId": null,
+    "error": {
+      "code": "LLM_PLAN_COVERAGE_INVALID",
+      "message": "主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。",
+      "at": "2026-10-15T06:11:51.078Z",
+      "retryable": true
+    },
+    "provider": {
+      "name": "openai-compatible",
+      "model": "GLM-5.3-Flash"
+    },
+    "callCount": 16,
+    "startedAt": "2026-10-15T06:06:36.351Z",
+    "finishedAt": "2026-10-15T06:11:51.078Z",
+    "cancelRequested": false,
+    "pipelineVersion": "kb02-1",
+    "checkpoint": {
+      "stage": "planning",
+      "validatedChunks": 14,
+      "totalChunks": 14,
+      "resumable": true,
+      "reason": "主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。",
+      "attempts": 16,
+      "reusedChunks": 14
+    }
+  },
+  "newCalls": 1,
+  "kb02Attempts": 40,
+  "checks": [
+    {
+      "id": "same-job-one-planning-call",
+      "result": "PASS"
+    },
+    {
+      "id": "raw-and-formal-unchanged",
+      "result": "PASS"
+    },
+    {
+      "id": "real-planning-completed",
+      "result": "FAIL",
+      "message": "{\"code\":\"LLM_PLAN_COVERAGE_INVALID\",\"message\":\"主题规划存在重复/未知标题、事实或问题未完整且唯一归属，未组装草稿。\",\"at\":\"2026-10-15T06:11:51.078Z\",\"retryable\":true}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n"
+    }
+  ],
+  "draft": null
+}

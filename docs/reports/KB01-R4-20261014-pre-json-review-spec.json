@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-14",
+  "axis": "Spec",
+  "status": "FAIL",
+  "freeze": "docs/reports/KB01-R4-20261014-frozen.json",
+  "comparison": "baseline/final frozen SHA-256 inventory; no Git diff",
+  "findings": [
+    {"id":"SP-F01","priority":2,"status":"CLOSED","file":"services/llm/service.ts","lines":[296,319],"evidence":"docs/reports/KB01-R4-20261014-review-spec-probes-final.json"},
+    {"id":"SP-F02","priority":2,"status":"CLOSED","file":"app/pages/DraftReviewPage.tsx","lines":[240,256,263],"evidence":"docs/reports/KB01-R4-20261014-review-spec-ui-race-final2.json"},
+    {"id":"SP-F03","priority":2,"status":"OPEN","file":"services/llm/service.ts","lines":[297],"title":"Generated evidence suffix collides with earlier valid provider ID","evidence":"docs/reports/KB01-R4-20261014-review-spec-id-collision.json","observed":"Chunk 1 valid IDs e1/e1-c2; chunk 2 valid ID e1, distinct locator span; server renames to occupied e1-c2 and fails LLM_EVIDENCE_DUPLICATE_ID"}
+  ],
+  "checks": {"pass":4,"fail":1,"actualLongProvider": "NOT_RUN_BY_THIS_REVIEWER","actualHTTP":"NOT_RUN_BY_THIS_REVIEWER","realBrowser":"NOT_RUN_BY_THIS_REVIEWER"},
+  "productHashes": {
+    "services/llm/service.ts":"23a44a9a4da715e84f3a0ad2ef71be9c1d7c45b9d883ccf9bddf7fe1daecd2fb",
+    "services/llm/locators.ts":"5dcd3b37371ffab33ab628c63110ec4ffaaa281fc77add3c2a8f69fb6767ea38",
+    "services/llm/rules.ts":"b1179773389a06a29b4825c00519a0e484b31d7d9ea8ca1849a30de4c60488e9",
+    "services/llm/evidence.ts":"1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "app/pages/DraftReviewPage.tsx":"1e0aab783858d768b9fc24c60dc5f99f543bede2fee06c22584252b59e63c899"
+  },
+  "scopeHashesMatchFinalFreezeBeforeAndAfter": true,
+  "productModifications":0,
+  "externalProviderCalls":0,
+  "formalWorkspaceAccess":false,
+  "envLocalAccess":false,
+  "limits":["Standards assessed independently elsewhere","No fullsuite/HTTP/real Provider/browser duplicate execution","Catalog coverage is not real model quality","Legacy persistence unchanged was static review only","Final K05 belongs to root's actual quality acceptance"],
+  "tokenUsage":"unavailable"
+}

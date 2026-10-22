@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-13T15:11:24.814Z",
+  "elapsedMs": 1317589,
+  "commands": {
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "log": "SEC-20261013-build.log"
+    },
+    "tests": {
+      "command": "npm test",
+      "exitCode": 0,
+      "tests": 204,
+      "pass": 204,
+      "fail": 0,
+      "log": "SEC-20261013-tests.log",
+      "shimUsed": false
+    },
+    "http": {
+      "command": "node tests/acceptance/sec-20261013-http.mjs final",
+      "summary": {
+        "pass": 98,
+        "fail": 0
+      },
+      "evidence": "SEC-20261013-http-final.json"
+    },
+    "httpAudit": {
+      "summary": {
+        "pass": 2,
+        "fail": 0
+      },
+      "subcasesPerGroup": {
+        "clean": 1,
+        "rejected": 4
+      },
+      "evidence": "SEC-20261013-http-audit.json"
+    },
+    "services": {
+      "summary": {
+        "pass": 113,
+        "fail": 0
+      },
+      "evidence": "SEC-20261013-services.json"
+    },
+    "b05": {
+      "summary": {
+        "pass": 11,
+        "fail": 0
+      },
+      "evidence": "SEC-20261013-b05-regression.json"
+    }
+  },
+  "integrity": {
+    "pass": true,
+    "protectedCount": 1226,
+    "changedProduct": [
+      "services/llm/jobs.ts",
+      "services/llm/provider.ts",
+      "services/llm/service.ts",
+      "services/prompt-ai/service.ts",
+      "services/wiki/knowledge-workflows.ts"
+    ],
+    "frozenChanges": []
+  },
+  "selfServicesClosed": true,
+  "realProvider": "NOT_RUN; existing 36 BLOCKED retained",
+  "browser": "NOT_RUN; no UI changes",
+  "subagentTokenUsage": "Unavailable",
+  "reviews": {
+    "standards": {
+      "result": "PASS",
+      "actionableFindings": 0,
+      "evidence": "SEC-20261013-standards.md"
+    },
+    "spec": {
+      "result": "PASS",
+      "actionableFindings": 0,
+      "independentMemoryProbes": 43,
+      "evidence": "SEC-20261013-spec.md"
+    }
+  }
+}

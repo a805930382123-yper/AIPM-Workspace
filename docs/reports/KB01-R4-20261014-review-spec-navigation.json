@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-14T15:28:28.479Z",
+  "freezeAt": "2026-10-14T15:25:33.946Z",
+  "axis": "Spec",
+  "scope": "Only App explicit navigation repair and affected selection-generation regression",
+  "status": "PASS",
+  "rootFinding": {
+    "id": "SP-F04-K03-navigation-overlay",
+    "priority": 2,
+    "status": "CLOSED",
+    "origin": "Root IAB discovery",
+    "file": "app/App.tsx",
+    "lines": [
+      89,
+      90,
+      91,
+      92,
+      93
+    ]
+  },
+  "actualTests": [
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/app-navigation.test.tsx",
+      "pass": 1,
+      "fail": 0,
+      "durationMs": 2200.778,
+      "scenarios": [
+        "Draft overlay -> sidebar Raw restores Raw selection",
+        "Workflow overlay -> sidebar Home exits workflow",
+        "Workflow overlay -> sidebar Raw restores Raw selection"
+      ]
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/app-m05-raw-navigation.test.tsx",
+      "pass": 6,
+      "fail": 0,
+      "durationMs": 3081.9626,
+      "scenarios": [
+        "Missing explicit Raw stays selected",
+        "Missing target reconnect then ordinary nav clears target",
+        "User choice beats stale pending refresh target",
+        "Home click preserves older Raw",
+        "Deletion chooses remaining Raw",
+        "Settled background job follows current Raw choice"
+      ]
+    }
+  ],
+  "sourceReasoning": "Explicit nav increments pageGeneration and rawSelectionGeneration, clears both reviewDraftId/workflowId, retains explicitRawTarget and current selection; completion intent still requires matching navigation/selection generation and correct Raw.",
+  "hashes": {
+    "app/App.tsx": "0f0b6a614b603558a088d3268b9c628a3deacd00d653ce17ca006f20fb7e8aa0",
+    "tests/app-navigation.test.tsx": "6e5874a335cdb9c9997796fa9830422ea8724db6f6ac18dab3047b558c6a2a34",
+    "tests/app-m05-raw-navigation.test.tsx": "7fc223b963bc30e91d21d27f9084c5aa2190f41cff0f34bb928a43fba98fd8ae",
+    "services/llm/service.ts": "d5126be2a583749d316d45882325772d54a4ed25ab545e704598fe382c2c77e0",
+    "services/llm/locators.ts": "5dcd3b37371ffab33ab628c63110ec4ffaaa281fc77add3c2a8f69fb6767ea38",
+    "services/llm/rules.ts": "b1179773389a06a29b4825c00519a0e484b31d7d9ea8ca1849a30de4c60488e9",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/provider.ts": "e8077c2b83297eba04a416c06262beef967f8704fcfede82351eb598b5a82912",
+    "app/pages/DraftReviewPage.tsx": "1e0aab783858d768b9fc24c60dc5f99f543bede2fee06c22584252b59e63c899",
+    "tests/provider-knowledge-reasoning.test.ts": "fe763de9119bedaee0c28425eda3508bef39f0f14dc8d796476c6b9f808aac91"
+  },
+  "previousBackendAndReviewEvidenceUnchanged": true,
+  "limits": [
+    "jsdom fixture fetch, not a real browser",
+    "Root IAB result is root evidence, not independently rerun here",
+    "No actual Provider",
+    "Real long document remains FAIL; real update PASS per root current result",
+    "Full final build/suite belong to root"
+  ]
+}

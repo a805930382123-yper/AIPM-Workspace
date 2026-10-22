@@ -1,0 +1,264 @@
+{
+  "at": "2026-10-14T15:07:19.548Z",
+  "kind": "All fetch intercepted; exact wire boundary mechanics; no external or real Provider",
+  "durationMs": 21,
+  "checks": [
+    {
+      "id": "official-cn-knowledge",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ],
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "lowReasoning": true
+    },
+    {
+      "id": "official-za-knowledge",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ],
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "lowReasoning": true
+    },
+    {
+      "id": "official-cn-no-purpose",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "official-cn-other-purpose",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "official-cn-unknown-case-purpose",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "same-model-other-host",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "same-model-loopback",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "official-cn-other-model",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.1-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "official-cn-extended-model",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash-preview",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "host-suffix-spoof",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "host-prefix-spoof",
+      "result": "PASS",
+      "wire": {
+        "model": "glm-5.3-flash",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ]
+      },
+      "lowReasoning": false
+    },
+    {
+      "id": "cn-case-normalized",
+      "result": "PASS",
+      "wire": {
+        "model": "GLM-5.3-FLASH",
+        "stream": false,
+        "temperature": 0,
+        "messages": [
+          {
+            "role": "system",
+            "content": "独立系统原样"
+          },
+          {
+            "role": "user",
+            "content": "虚构用户资料原样"
+          }
+        ],
+        "reasoning_effort": "low",
+        "response_format": {
+          "type": "json_object"
+        }
+      },
+      "lowReasoning": true
+    }
+  ],
+  "summary": {
+    "pass": 12,
+    "fail": 0
+  },
+  "networkCalls": 0
+}

@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-14T14:39:05.822Z",
+  "kind": "Standards independent actual HTTP + localhost fake; not real Provider quality",
+  "node": "v25.2.1",
+  "durationMs": 2751,
+  "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-mX7u1c",
+  "checks": [
+    {
+      "id": "S01-save-and-browse-zero-provider",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "d5f6f634-f7a9-42c5-9adb-37cf43b00554",
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "S02-double-start-one-job-same-raw",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:21:606\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:21:2"
+    },
+    {
+      "id": "S03-failure-retains-raw-and-retry-same-id",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"931c0558-9f11-49b8-8945-5d5a33f74311\",\"rawId\":\"4edc47d7-087e-4e4d-8ca2-cf68cc799f2d\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\",\"at\":\"2026-10-14T14:39:05.177Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\"]}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"},\"callCount\":0,\"startedAt\":\"2026-10-14T14:39:05.162Z\",\"finishedAt\":\"2026-10-14T14:39:05.177Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at extract (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:13:139)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:22:473\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:22:2"
+    },
+    {
+      "id": "S04-cancel-no-draft-no-formal-write",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "537c5244-843f-4a1f-a927-790bd3695d76",
+        "status": "cancelled"
+      }
+    },
+    {
+      "id": "S05-draft-same-root-restart-reuse-no-provider",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"2f061007-00aa-4d16-a0f3-747d9d28f82a\",\"rawId\":\"dd73a45a-ccd3-4c35-9890-c1e4f03bb540\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\",\"at\":\"2026-10-14T14:39:05.336Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\"]}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"},\"callCount\":0,\"startedAt\":\"2026-10-14T14:39:05.319Z\",\"finishedAt\":\"2026-10-14T14:39:05.336Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at extract (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:13:139)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:24:105\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:24:2"
+    },
+    {
+      "id": "S06-candidate-reasons-target-explicit-and-defer",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"11110d05-f57f-49c2-8ffc-4b7e1615ccbd\",\"rawId\":\"bc93312a-406a-4948-a3e1-c100d028b881\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\",\"at\":\"2026-10-14T14:39:05.415Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\"]}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"},\"callCount\":0,\"startedAt\":\"2026-10-14T14:39:05.398Z\",\"finishedAt\":\"2026-10-14T14:39:05.415Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at extract (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:13:139)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:25:144\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:25:2"
+    },
+    {
+      "id": "S07-update-preview-separated-and-stale-target",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"b1114a31-fd8c-4460-98cf-340602c9e2e5\",\"rawId\":\"62c2096b-982d-4838-9238-ee1772dbf4a2\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\",\"at\":\"2026-10-14T14:39:05.496Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\"]}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"},\"callCount\":0,\"startedAt\":\"2026-10-14T14:39:05.482Z\",\"finishedAt\":\"2026-10-14T14:39:05.496Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at extract (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:13:139)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async updateFixture (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:17:204)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:26:85\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:26:2"
+    },
+    {
+      "id": "S08-update-retains-notes-sources-conflicts-retry",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"5f43e256-04d0-4b68-9388-87c88ac4ba88\",\"rawId\":\"ff380e81-d652-4876-9db4-018be94d38bd\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\",\"at\":\"2026-10-14T14:39:05.580Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\"]}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"},\"callCount\":0,\"startedAt\":\"2026-10-14T14:39:05.560Z\",\"finishedAt\":\"2026-10-14T14:39:05.580Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at extract (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:13:139)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async updateFixture (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:17:204)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:27:92\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:27:2"
+    },
+    {
+      "id": "S09-update-and-synthesis-restored-without-new-calls",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"ab5e079d-6574-4acc-88ed-283981e98b92\",\"rawId\":\"1a05f4d6-ebf0-4b7f-ac68-9f725cb044fc\",\"status\":\"failed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":0,\"pagesFound\":0},\"draftId\":null,\"error\":{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"第 1 段的返回未通过结构校验（1 处问题）：$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\",\"at\":\"2026-10-14T14:39:05.672Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.suggested_pages[0].source_evidence[0]: 缺少必需字段 rawId\"]}},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"independent-b08-fake\"},\"callCount\":0,\"startedAt\":\"2026-10-14T14:39:05.656Z\",\"finishedAt\":\"2026-10-14T14:39:05.672Z\",\"cancelRequested\":false}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at extract (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:13:139)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async updateFixture (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:17:204)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:28:91\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-r4-20261014-standards-http.mjs:28:2"
+    },
+    {
+      "id": "S10-meeting-local-only-no-calls-no-source-cleaning",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "2aa468a2-1f8c-44d7-a89e-f2d12cae8a81",
+        "origin": {
+          "kind": "meeting",
+          "meeting_id": "49d703c7-0914-481f-ad3d-c2281e9b0689",
+          "import_id": "42267c00-353b-4b18-a882-3e78d8b0eb2e",
+          "original_sha256": "fc46a21065df6f38d8ec81117fbf22963c3a2e56b8851cab2da8d110310e4901",
+          "registered_confidentiality": "Public",
+          "processing_policy": "meeting_local_only"
+        },
+        "zeroFakeCalls": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 7
+  },
+  "fakeCalls": 9,
+  "servicesClosed": true
+}

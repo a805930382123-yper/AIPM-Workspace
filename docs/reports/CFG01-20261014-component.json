@@ -1,0 +1,40 @@
+{
+  "scope": "independent Settings jsdom with deferred responses; no real HTTP/provider",
+  "checks": [
+    {
+      "id": "FCFG05-initial-read-versus-newer-reload",
+      "result": "PASS",
+      "details": {
+        "initialConcurrentReloadBlocked": true,
+        "subsequentReloadWorks": true
+      }
+    },
+    {
+      "id": "FCFG05-reload-versus-user-edit",
+      "result": "PASS",
+      "details": {
+        "editingBlockedDuringReload": true
+      }
+    },
+    {
+      "id": "R2-02-edit-before-first-response-completes-loading",
+      "result": "PASS",
+      "details": {
+        "initialEditBlocked": true,
+        "loadingCompleted": true,
+        "saveEnabled": true
+      }
+    },
+    {
+      "id": "R2-02-unmount-read-ignored",
+      "result": "PASS",
+      "details": {
+        "lateResponseIgnored": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 4,
+    "fail": 0
+  }
+}

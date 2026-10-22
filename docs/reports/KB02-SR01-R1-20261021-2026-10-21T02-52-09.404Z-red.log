@@ -1,0 +1,168 @@
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (926.2096ms)
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=true (975.84ms)
+✖ F-SR01-01 refuses externally changed binding and preserves bytes (518.1006ms)
+✖ F-SR01-01 refuses externally changed history and preserves bytes (484.3262ms)
+✖ F-SR01-01 refuses externally changed body and preserves bytes (464.7901ms)
+✖ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (484.994ms)
+✖ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (495.9309ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (92.4818ms)
+✖ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (616.0441ms)
+✖ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (573.8359ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 1
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6480.8278
+
+✖ failing tests:
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (926.2096ms)
+  Error: 任务、检查点、原文或草稿已变化，不能安全保存；原文件已保留。
+      at ExtractionRunner.conflict (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\services\llm\jobs.ts:109:37)
+      at ExtractionRunner.validateSettlement (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\services\llm\jobs.ts:128:91)
+      at async ExtractionRunner.persistSettlement (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\services\llm\jobs.ts:154:19)
+      at async <anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\services\llm\jobs.ts:196:7) {
+    code: 'STORAGE_RECONCILE_CONFLICT',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=true (975.84ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'STORAGE_WRITE_FAILED'
+  -   code: 'STORAGE_RECONCILE_REQUIRED'
+    }
+  
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:32:7)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 本机状态保存失败；请解除存储故障后重试保存状态。
+        at ExtractionRunner.startOnce (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\services\llm\jobs.ts:286:23)
+        at async <anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\services\llm\jobs.ts:212:59),
+    expected: { code: 'STORAGE_RECONCILE_REQUIRED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:2947
+✖ F-SR01-01 refuses externally changed binding and preserves bytes (518.1006ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(restarted.recoveryJobs().some(item => item.jobId === setup!.id))
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:65:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:2947
+✖ F-SR01-01 refuses externally changed history and preserves bytes (484.3262ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(restarted.recoveryJobs().some(item => item.jobId === setup!.id))
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:65:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:2947
+✖ F-SR01-01 refuses externally changed body and preserves bytes (464.7901ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(restarted.recoveryJobs().some(item => item.jobId === setup!.id))
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:65:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:4316
+✖ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (484.994ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'failed'
+  - 'running'
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:82:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'running',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:6234
+✖ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (495.9309ms)
+  Error: Budget fixture settlement failed: {"node":"v24.20.0","job":{"status":"running","stage":"planning","callCount":1},"checkpoint":{"stage":"planning","attempts":2,"validatedChunks":1,"diagnosticPresent":false},"rawStatus":"processing","requests":1,"execution":"settled","recovery":{"code":"STORAGE_WRITE_FAILED","phase":"call-count-job","persisted":false}}
+      at Object.wait (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\support\kb02-storage-fixture.ts:53:80)
+      at async TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:101:40)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-sr01-r1.test.ts:1:8028
+✖ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (616.0441ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  409 !== 200
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:134:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:8941
+✖ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (573.8359ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(result.interrupted.includes(setup.id))
+  
+      at TestContext.<anonymous> (C:\Users\DAVID~1.CHE\AppData\Local\Temp\kb02-sr01-r1-c6CMez\tests\kb02-sr01-r1.test.ts:144:53)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,27 @@
+S01-seven-template-Brief: PASS
+S02-provider-invalid-Brief-rejected: PASS
+F01-client-invalid-Brief-must-be-400: PASS
+F02-safe-schema-diagnostic-present: PASS
+S03-content-render-variable-and-controlled-fields: PASS
+S04-content-reject-model-system-fields: PASS
+S05-check-write-read-zero-extra-call: PASS
+S06-failed-rewrite-preserves-check-and-retry-only-rewrite: PASS
+S07-concurrent-and-success-replay: PASS
+S08-three-attempt-cap: PASS
+S09-startup-interruption-does-not-call: PASS
+S10-input-binding-zero-call: PASS
+S11-provider-binding-zero-call: PASS
+F03-rules-version-binding: PASS
+F04-check-shape-binding: PASS
+F05-check-content-integrity-binding: PASS
+F06-known-secret-in-restored-check-must-not-be-sent: PASS
+S12-target-version-change-zero-call: PASS
+S13-legacy-optimize-two-calls: PASS
+F07-storage-helper-without-issue-receiver-must-throw: PASS
+F08-healthy-real-job-must-not-be-reported-corrupt: PASS
+F09-actual-wiki-commit-path-must-be-scanned: PASS
+F10-unfixed-commit-issue-must-not-disappear: PASS
+F11-wrong-shape-raw-state-must-not-be-empty: PASS
+F12-wrong-shape-manifest-must-not-enter-executor: PASS
+F13-same-file-recovery-issue-must-be-deduplicated: PASS
+{ pass: 26, fail: 0 }

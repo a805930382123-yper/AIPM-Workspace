@@ -1,0 +1,330 @@
+{
+  "at": "2026-10-14T07:49:03.089Z",
+  "provider": "actual configured external Provider",
+  "providerHost": "open.bigmodel.cn",
+  "model": "GLM-5.3-Flash",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-full3-real-pwd5oM",
+  "checks": [
+    {
+      "id": "REAL01-connectivity-fixed-no-business-write",
+      "result": "PASS",
+      "elapsedMs": 1826,
+      "details": {
+        "response": {
+          "ok": true,
+          "message": "Provider 已返回有效响应。",
+          "elapsedMs": 1757
+        },
+        "businessUnchanged": true
+      }
+    },
+    {
+      "id": "REAL02-seed-manual-assets",
+      "result": "FAIL",
+      "elapsedMs": 73,
+      "error": "HTTP 400 INVALID_CATEGORY Wiki 分类无效。",
+      "actual": {
+        "error": {
+          "code": "INVALID_CATEGORY",
+          "message": "Wiki 分类无效。"
+        }
+      }
+    },
+    {
+      "id": "REAL03-extract-schema-provenance-no-formal-write",
+      "result": "FAIL",
+      "elapsedMs": 60098,
+      "error": "{\"code\":\"LLM_TIMEOUT\",\"message\":\"调用 Provider 超过 60000 ms 超时上限，未产生草稿。（第 1 段）\",\"at\":\"2026-10-14T07:45:20.969Z\",\"retryable\":true,\"details\":{\"chunkIndex\":0}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "actual": "failed"
+    },
+    {
+      "id": "REAL04-review-create-confirm-source-search",
+      "result": "FAIL",
+      "elapsedMs": 1,
+      "error": "undefined == true"
+    },
+    {
+      "id": "REAL05-update-preview-conflict-safe-confirm",
+      "result": "FAIL",
+      "elapsedMs": 0,
+      "error": "undefined == true"
+    },
+    {
+      "id": "REAL06-synthesis-two-sources-conflict",
+      "result": "FAIL",
+      "elapsedMs": 90046,
+      "error": "HTTP 504 LLM_TIMEOUT 调用 Provider 超过 90000 ms 超时上限，未产生草稿。",
+      "actual": {
+        "error": {
+          "code": "LLM_TIMEOUT",
+          "message": "调用 Provider 超过 90000 ms 超时上限，未产生草稿。"
+        }
+      }
+    },
+    {
+      "id": "REAL07-audit-correct-then-explicit-accept",
+      "result": "PASS",
+      "elapsedMs": 12386,
+      "details": {
+        "auditId": "ac850d33-887b-4400-bd68-c700b9652cab",
+        "wikiId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+        "replacement": "## 来源事实\n虚构青禾饮料东桥铺货率为20%，按门店数计算。\n## 人工备注\n待确认异常审批负责人。",
+        "rationale": "原文记载铺货率为50%，与来源资料矛盾。来源明确：2026年9月东桥区域100家目标门店中20家在售青禾茶饮，铺货率定义为在售门店数除以目标门店总数，即20÷100=20%。同时来源强调门店数不等于销量，不得按销量口径解释该指标，故不采用销售额口径。人工备注“待确认异常审批负责人”与来源中待确认问题一致，无纠错依据，予以保留。",
+        "resolved": {
+          "audit": {
+            "id": "ac850d33-887b-4400-bd68-c700b9652cab",
+            "wikiId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+            "scope": "page",
+            "severity": "error",
+            "comment": "请根据来源纠正门店数铺货率50%的错误，正确为20%，保留人工备注，不采用销售额口径。",
+            "anchor": {
+              "before": "",
+              "text": "## 来源事实\n虚构青禾饮料东桥铺货率为50%，按门店数计算。\n## 人工备注\n待确认异常审批负责人。",
+              "after": ""
+            },
+            "pageBodySha256": "082ab55588a4eef23a88ed648b2ff04978b7aedee116633e778127591e63881e",
+            "createdRevision": 1,
+            "revision": 3,
+            "createdAt": "2026-10-14T07:46:51.069Z",
+            "updatedAt": "2026-10-14T07:47:03.386Z",
+            "status": "resolved",
+            "location": {
+              "status": "located",
+              "start": 0,
+              "end": 51,
+              "method": "page-snapshot"
+            },
+            "relocationHistory": [],
+            "decisionHistory": [
+              {
+                "decision": "accepted",
+                "at": "2026-10-14T07:47:03.386Z",
+                "operationId": "ce947e5e-fce9-41f6-92b1-9af9d64821a1",
+                "wikiRevision": 2,
+                "draftId": "92673d87-e6cc-4c81-b9f8-2d1ab5ca3b37",
+                "requestHash": "1d152417f9901cbb84cab2f90d09042c0b6ec9885916ad5225c039b5d22c8245"
+              }
+            ]
+          },
+          "decision": "accepted",
+          "operationId": "ce947e5e-fce9-41f6-92b1-9af9d64821a1",
+          "wikiRevision": 2,
+          "reused": false
+        }
+      }
+    },
+    {
+      "id": "REAL08-brief-real-quality",
+      "result": "FAIL",
+      "elapsedMs": 59553,
+      "error": "HTTP 502 LLM_SCHEMA_MISMATCH Provider 返回的 Brief 字段 context 无效。",
+      "actual": {
+        "error": {
+          "code": "LLM_SCHEMA_MISMATCH",
+          "message": "Provider 返回的 Brief 字段 context 无效。"
+        }
+      }
+    },
+    {
+      "id": "REAL09-edited-brief-selected-background-preview-save",
+      "result": "FAIL",
+      "elapsedMs": 0,
+      "error": "undefined == true"
+    },
+    {
+      "id": "REAL10-optimize-weak-prompt-nine-dimensions-version",
+      "result": "FAIL",
+      "elapsedMs": 0,
+      "error": "Cannot read properties of undefined (reading 'body')"
+    },
+    {
+      "id": "REAL11-complete-prompt-check-no-invented-gaps",
+      "result": "FAIL",
+      "elapsedMs": 60037,
+      "error": "HTTP 504 LLM_TIMEOUT 调用 Provider 超过 60000 ms 超时上限，未产生草稿。",
+      "actual": {
+        "error": {
+          "code": "LLM_TIMEOUT",
+          "message": "调用 Provider 超过 60000 ms 超时上限，未产生草稿。"
+        }
+      }
+    },
+    {
+      "id": "REAL12-lint-readonly-raw-integrity",
+      "result": "PASS",
+      "elapsedMs": 46,
+      "details": {
+        "lintIssues": null,
+        "rawUnchanged": true
+      }
+    }
+  ],
+  "artifacts": {
+    "extractionJob": {
+      "jobId": "b36a712c-c257-4543-9fe9-8256341b0335",
+      "rawId": "13f6dae7-bcf9-4ac3-9962-4aef6bd7cace",
+      "status": "failed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 0,
+        "pagesFound": 0
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_TIMEOUT",
+        "message": "调用 Provider 超过 60000 ms 超时上限，未产生草稿。（第 1 段）",
+        "at": "2026-10-14T07:45:20.969Z",
+        "retryable": true,
+        "details": {
+          "chunkIndex": 0
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 0,
+      "startedAt": "2026-10-14T07:44:20.899Z",
+      "finishedAt": "2026-10-14T07:45:20.969Z",
+      "cancelRequested": false
+    },
+    "audit": {
+      "audit": {
+        "id": "ac850d33-887b-4400-bd68-c700b9652cab",
+        "wikiId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+        "scope": "page",
+        "severity": "error",
+        "comment": "请根据来源纠正门店数铺货率50%的错误，正确为20%，保留人工备注，不采用销售额口径。",
+        "anchor": {
+          "before": "",
+          "text": "## 来源事实\n虚构青禾饮料东桥铺货率为50%，按门店数计算。\n## 人工备注\n待确认异常审批负责人。",
+          "after": ""
+        },
+        "pageBodySha256": "082ab55588a4eef23a88ed648b2ff04978b7aedee116633e778127591e63881e",
+        "createdRevision": 1,
+        "revision": 2,
+        "createdAt": "2026-10-14T07:46:51.069Z",
+        "updatedAt": "2026-10-14T07:47:03.369Z",
+        "status": "open",
+        "location": {
+          "status": "located",
+          "start": 0,
+          "end": 51,
+          "method": "page-snapshot"
+        },
+        "relocationHistory": [],
+        "decisionHistory": [],
+        "pendingDraftId": "92673d87-e6cc-4c81-b9f8-2d1ab5ca3b37"
+      },
+      "draft": {
+        "id": "92673d87-e6cc-4c81-b9f8-2d1ab5ca3b37",
+        "auditId": "ac850d33-887b-4400-bd68-c700b9652cab",
+        "revision": 1,
+        "status": "pending",
+        "baseWikiRevision": 1,
+        "baseAuditRevision": 1,
+        "rawSnapshots": [
+          {
+            "rawId": "13f6dae7-bcf9-4ac3-9962-4aef6bd7cace",
+            "sha256": "e811fd5d5b0bde64f4fb74c869fe25ee412e7f0a7edb264ba17656322b1c0120"
+          }
+        ],
+        "replacement": "## 来源事实\n虚构青禾饮料东桥铺货率为20%，按门店数计算。\n## 人工备注\n待确认异常审批负责人。",
+        "rationale": "原文记载铺货率为50%，与来源资料矛盾。来源明确：2026年9月东桥区域100家目标门店中20家在售青禾茶饮，铺货率定义为在售门店数除以目标门店总数，即20÷100=20%。同时来源强调门店数不等于销量，不得按销量口径解释该指标，故不采用销售额口径。人工备注“待确认异常审批负责人”与来源中待确认问题一致，无纠错依据，予以保留。",
+        "evidence": [
+          {
+            "rawId": "13f6dae7-bcf9-4ac3-9962-4aef6bd7cace",
+            "quote": "2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮。铺货率定义为在售门店数除以目标门店总数，20÷100=20%。门店数不等于销量，不得按销量解释这项指标。"
+          }
+        ],
+        "createdAt": "2026-10-14T07:47:03.369Z",
+        "updatedAt": "2026-10-14T07:47:03.369Z",
+        "provider": {
+          "name": "openai-compatible",
+          "model": "GLM-5.3-Flash"
+        }
+      }
+    },
+    "auditResolved": {
+      "audit": {
+        "id": "ac850d33-887b-4400-bd68-c700b9652cab",
+        "wikiId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+        "scope": "page",
+        "severity": "error",
+        "comment": "请根据来源纠正门店数铺货率50%的错误，正确为20%，保留人工备注，不采用销售额口径。",
+        "anchor": {
+          "before": "",
+          "text": "## 来源事实\n虚构青禾饮料东桥铺货率为50%，按门店数计算。\n## 人工备注\n待确认异常审批负责人。",
+          "after": ""
+        },
+        "pageBodySha256": "082ab55588a4eef23a88ed648b2ff04978b7aedee116633e778127591e63881e",
+        "createdRevision": 1,
+        "revision": 3,
+        "createdAt": "2026-10-14T07:46:51.069Z",
+        "updatedAt": "2026-10-14T07:47:03.386Z",
+        "status": "resolved",
+        "location": {
+          "status": "located",
+          "start": 0,
+          "end": 51,
+          "method": "page-snapshot"
+        },
+        "relocationHistory": [],
+        "decisionHistory": [
+          {
+            "decision": "accepted",
+            "at": "2026-10-14T07:47:03.386Z",
+            "operationId": "ce947e5e-fce9-41f6-92b1-9af9d64821a1",
+            "wikiRevision": 2,
+            "draftId": "92673d87-e6cc-4c81-b9f8-2d1ab5ca3b37",
+            "requestHash": "1d152417f9901cbb84cab2f90d09042c0b6ec9885916ad5225c039b5d22c8245"
+          }
+        ]
+      },
+      "decision": "accepted",
+      "operationId": "ce947e5e-fce9-41f6-92b1-9af9d64821a1",
+      "wikiRevision": 2,
+      "reused": false
+    },
+    "lint": {
+      "generatedAt": "2026-10-14T07:49:03.063Z",
+      "wikiFilesSha256": "69aae13e3bcd0f2b6ce9300ed1cb28c8ef4d281ac375dbfb715a58323001c7fa",
+      "findings": [
+        {
+          "code": "UNSOURCED_FACT",
+          "objectId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+          "file": "knowledge/wiki/f221fbee-9d36-4d5b-9892-2de1aa7f4ce8.md",
+          "message": "“来源事实”中的该条陈述没有可在有效 Raw 中定位的证据引用。",
+          "location": {
+            "line": 22,
+            "text": "虚构青禾饮料东桥铺货率为20%，按门店数计算。"
+          }
+        },
+        {
+          "code": "ORPHAN_WIKI",
+          "objectId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+          "file": "knowledge/wiki/f221fbee-9d36-4d5b-9892-2de1aa7f4ce8.md",
+          "message": "非 Source 页面没有有效入链或出链。",
+          "location": {
+            "line": 1,
+            "text": "---"
+          }
+        }
+      ],
+      "summary": {
+        "BROKEN_WIKI_LINK": 0,
+        "ORPHAN_WIKI": 1,
+        "INDEX_MISSING": 0,
+        "FRONTMATTER_MISSING": 0,
+        "SOURCE_MISSING": 0,
+        "KNOWLEDGE_STATUS_MISSING": 0,
+        "CONFIDENCE_MISSING": 0,
+        "SOURCE_LEVEL_MISSING": 0,
+        "UNSOURCED_FACT": 1,
+        "OPEN_AUDIT": 0,
+        "DUPLICATE_TITLE": 0
+      }
+    }
+  }
+}

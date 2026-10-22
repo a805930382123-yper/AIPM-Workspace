@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-22T04:35:25.864Z",
+  "productChanges": [],
+  "testChanges": [],
+  "fixtureChanges": [],
+  "scriptChanges": [],
+  "protectedChanges": [],
+  "workspaceAdded": [],
+  "configAdded": [],
+  "configUnchanged": true,
+  "baselineProductDiff": [
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/rules.ts",
+    "services/wiki/knowledge-workflows.ts"
+  ],
+  "baselineTestDiff": [
+    "tests/kb02-classification-priority.test.ts",
+    "tests/kb02-extraction-contract.test.ts",
+    "tests/kb02-r2.test.ts",
+    "tests/llm.test.ts"
+  ],
+  "testsAdded": [
+    "tests/kb02-final-agreement.test.ts",
+    "tests/kb02-final-classification.test.ts"
+  ],
+  "pass": true
+}

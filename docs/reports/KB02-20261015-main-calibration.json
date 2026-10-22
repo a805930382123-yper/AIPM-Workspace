@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-15T03:42:39.350Z",
+  "executor": "main Agent",
+  "scope": "actual isolated HTTP + localhost fake; frozen product unchanged",
+  "checks": [
+    {
+      "id": "E01-derived-secret-correct-locator",
+      "result": "PASS",
+      "code": "LLM_OUTPUT_CONTAINS_SECRET",
+      "selectedActuallyContainsSecret": true,
+      "calibration": "Original prepared H14 cited the first locator, which excluded the secret; its failure is fixture error, not product secret leak."
+    },
+    {
+      "id": "E02-unknown-checkpoint-field-with-valid-hash-and-empty-cached-chunk",
+      "result": "FAIL",
+      "expected": {
+        "status": 409,
+        "calls": 0
+      },
+      "actual": {
+        "status": 202,
+        "jobStatus": "completed",
+        "calls": 2,
+        "unknownFieldSurvived": true
+      },
+      "reason": "No valid fact IDs in cached empty chunk, so this isolates strict checkpoint-schema failure from the separate ID-regex defect."
+    },
+    {
+      "id": "E03-invalid-json-checkpoint-visible-domain-error",
+      "result": "FAIL",
+      "expected": {
+        "status": 409,
+        "code": "LLM_CHECKPOINT_CORRUPT"
+      },
+      "actual": {
+        "status": 500,
+        "error": {
+          "code": "INTERNAL_ERROR",
+          "message": "保存或读取失败，请重试。"
+        },
+        "calls": 0,
+        "bytesPreserved": true
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "E01-derived-secret-correct-locator",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-98F8a2",
+      "calls": 1,
+      "closed": true
+    },
+    {
+      "id": "E02-unknown-checkpoint-field-with-valid-hash-and-empty-cached-chunk",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-q2UAEa",
+      "calls": 4,
+      "closed": true
+    },
+    {
+      "id": "E03-invalid-json-checkpoint-visible-domain-error",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-wKZ3yW",
+      "calls": 2,
+      "closed": true
+    }
+  ]
+}

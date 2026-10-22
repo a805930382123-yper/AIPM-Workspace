@@ -1,0 +1,35 @@
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (45.5079ms)
+✔ KB02 resume reuses validated chunks and counts failed outbound attempts (44.0506ms)
+✔ KB02 corrupted checkpoint integrity fails closed (20.1285ms)
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (385.2021ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (276.4638ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (38.8107ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (24.4367ms)
+✔ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (35.687ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (21.1231ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (25.4112ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.2029ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (8.5854ms)
+✔ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (83.0955ms)
+✔ SR01 real atomic failed-job transient retry (155.4009ms)
+✔ SR01 real atomic failed-job persistent explicit recovery (813.9618ms)
+✔ SR01 real atomic done-checkpoint transient retry (151.1298ms)
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (814.1823ms)
+✔ SR01 real atomic coverage-checkpoint transient retry (139.8079ms)
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (794.7109ms)
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (455.9497ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (428.8582ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (430.8707ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (436.4688ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (84.3634ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (400.8665ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3389.4586ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (0.6612ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8784.0549

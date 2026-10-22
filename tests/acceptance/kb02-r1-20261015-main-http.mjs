@@ -1,0 +1,107 @@
+// Independent actual product HTTP + localhost fake. No real Provider quality claim.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {createHash,randomUUID} from 'node:crypto';
+import {createHarness,expect,request,terminal,eventually,rawInput,fileSnapshot,delay} from './kb02-20261015-standards-harness.mjs';
+import {shortBody,longBody,metricFacts,extraFact,question} from './kb02-20261015-standards-fixtures.mjs';
+import {goodReply,oneFactReply,payload} from './kb02-20261015-standards-wire.mjs';
+const checks=[],services=[],started=Date.now();const only=process.env.KB02_STANDARDS_ONLY?.split(',');
+const suffix=process.env.KB02_STANDARDS_RUN??'initial';
+async function test(id,fn){if(only&&!only.includes(id))return;let h;
+ try{h=await createHarness(goodReply);const result=await fn(h);checks.push({id,result:'PASS',evidence:result});}
+ catch(e){checks.push({id,result:'FAIL',error:e.stack});}
+ finally{if(h){await h.close();services.push({id,root:h.dataRoot,providerCalls:h.requests.length,allLocalhost:true,closed:h.services.every(s=>s.child.exitCode!==null||s.child.signalCode!==null)});}}console.log(id+': '+checks.at(-1).result);
+}
+const raw=(s,title,body=shortBody)=>expect(s,'/api/raw','POST',rawInput('KB02 '+title,body),201);
+const begin=(s,r,body={})=>request(s,'/api/raw/'+r.id+'/extract','POST',body);
+const cpPath=(h,id)=>path.join(h.dataRoot,'state','extraction-checkpoints',id+'.json');
+const cp=(h,id)=>fs.readFile(cpPath(h,id),'utf8').then(JSON.parse);
+const editCp=async(h,id,fn,rehash=true)=>{const v=await cp(h,id);fn(v);if(rehash){const {integrity,...rest}=v;v.integrity=createHash('sha256').update(JSON.stringify(rest)).digest('hex');}await fs.writeFile(cpPath(h,id),JSON.stringify(v));return v;};
+async function finish(s,r,body={}){const b=await begin(s,r,body);assert([200,202].includes(b.status),b.text);return terminal(s,b.json.jobId);}
+async function failedPlanning(h,s,title='planning failure'){
+ h.setReply(w=>payload(w).kind==='planning'?{httpStatus:500}:goodReply(w));const r=await raw(s,title),j=await finish(s,r);assert.equal(j.status,'failed',JSON.stringify(j));assert.equal((await cp(h,j.jobId)).completedChunks.length,1);return {r,j};
+}
+function complete(j){assert.equal(j.status,'completed',JSON.stringify(j));assert(j.draftId);}
+await test('H01-short-draft-repeat-readonly',async h=>{
+ const s=await h.start(),r=await raw(s,'short'),before=await fileSnapshot(path.join(h.dataRoot,'knowledge')),j=await finish(s,r);complete(j);
+ assert.equal(h.requests.length,2);const d=await expect(s,'/api/drafts/'+j.draftId);assert.equal(d.rawId,r.id);assert.equal(d.pages.length,1);assert(d.pages.every(p=>!p.selected));
+ const text=JSON.stringify(d);for(const f of [metricFacts[0],extraFact,question])assert(text.includes(f),f);assert.deepEqual(await fileSnapshot(path.join(h.dataRoot,'knowledge')),before);
+ const n=h.requests.length,b=await begin(s,r);assert.equal(b.status,200);assert.equal(b.json.draftId,d.id);await expect(s,'/api/raw/'+r.id);await expect(s,'/api/raw-processing');assert.equal(h.requests.length,n);return {draftId:d.id,calls:n,pages:1,defaultUnselected:true,noFormalWrites:true,pipelineVersion:j.pipelineVersion,checkpoint:j.checkpoint};
+});
+await test('H02-long-all-facts-planner-and-evidence',async h=>{
+ const s=await h.start(),r=await raw(s,'long',longBody),before=await fileSnapshot(path.join(h.dataRoot,'knowledge')),j=await finish(s,r);complete(j);
+ const plans=h.requests.map(x=>payload(x.input)).filter(x=>x.kind==='planning');assert.equal(plans.length,1);const texts=plans[0].facts.map(x=>x.text);for(const f of [...metricFacts,extraFact])assert(texts.includes(f),f);assert(plans[0].questions.some(x=>x.text===question));
+ const c=await cp(h,j.jobId);assert.equal(c.completedChunks.length,c.chunks.length);assert(c.chunks.length>13);assert.equal(c.attempts,h.requests.length);
+ const d=await expect(s,'/api/drafts/'+j.draftId);assert.equal(d.pages.length,1);const wireText=JSON.stringify(h.requests.map(x=>x.input));assert(!wireText.includes('suggested_pages'));const t=JSON.stringify(d);for(const f of [...metricFacts,extraFact,question])assert(t.includes(f));
+ for(const e of c.completedChunks.flatMap(x=>x.evidence)){assert.equal(longBody.slice(e.start,e.end),e.quote);assert.equal(e.rawId,r.id);}assert.deepEqual(await fileSnapshot(path.join(h.dataRoot,'knowledge')),before);return {characters:longBody.length,chunks:c.chunks.length,facts:plans[0].facts.length,questions:plans[0].questions.length,calls:h.requests.length,oneTopicMock:true,evidenceRangesValid:true};
+});
+await test('H03-compact-schema-and-truncation-rejection',async h=>{
+ const s=await h.start(),results=[];
+ const variants=[['extra',v=>({...v,document:{}})],['missing',v=>({version:1,facts:v.facts})],['type',v=>({...v,facts:'wrong'})],['empty-evidence',v=>({...v,facts:[{...v.facts[0],locatorIds:[]}]})],['unknown-locator',v=>({...v,facts:[{...v.facts[0],locatorIds:['c1-l999']}]})],['cross-chunk',v=>({...v,facts:[{...v.facts[0],locatorIds:['c9-l001']}]})],['blank-fact',v=>({...v,facts:[{...v.facts[0],text:'  '}]})],['long-fact',v=>({...v,facts:[{...v.facts[0],text:'中'.repeat(2001)}]})],['secret-value',v=>({...v,facts:[{...v.facts[0],text:h.fakeKey}]})],['secret-key',v=>({...v,[h.fakeKey]:'value'})],['parseable-truncated',v=>({content:v,finishReason:'length'})],['invalid-json',()=>'{"version":1']];
+ for(const [label,mutate] of variants){h.setReply(w=>mutate(goodReply(w)));const r=await raw(s,label),n=h.requests.length,j=await finish(s,r);assert.equal(j.status,'failed',label+' '+JSON.stringify(j));assert.equal(j.draftId,null);assert.equal(h.requests.length,n+1);assert.equal((await cp(h,j.jobId)).completedChunks.length,0);assert(!JSON.stringify(j).includes(h.fakeKey));assert.equal((await expect(s,'/api/drafts?rawId='+r.id)).items.length,0);results.push({label,code:j.error?.code});}
+ return {cases:results.length,results};
+});
+await test('H04-plan-coverage-schema-rejection',async h=>{
+ const s=await h.start(),results=[];
+ const variants=[['missing-fact',v=>{v.pages[0].factIds.pop();return v;}],['unknown-fact',v=>{v.pages[0].factIds.push('f-other-raw');return v;}],['repeat-fact',v=>{v.pages[0].factIds.push(v.pages[0].factIds[0]);return v;}],['missing-question',v=>{v.pages[0].questionIds=[];return v;}],['extra',v=>({...v,unknown:true})],['wrong-type',v=>{v.pages[0].type='not-valid';return v;}],['empty-page',v=>{v.pages.push({...v.pages[0],title:'空灌水页',factIds:[],questionIds:[]});return v;}],['normalized-title-duplicate',v=>{v.pages.push({...v.pages[0],title:'  便利店铺货率  ',questionIds:[]});return v;}],['truncated-plan',v=>({content:v,finishReason:'length'})]];
+ for(const [label,mutate] of variants){h.setReply(w=>payload(w).kind==='planning'?mutate(goodReply(w)):goodReply(w));const r=await raw(s,label),j=await finish(s,r);assert.equal(j.status,'failed',label+' '+JSON.stringify(j));assert.equal(j.draftId,null);const c=await cp(h,j.jobId);assert.equal(c.completedChunks.length,1);assert(!c.plan);assert.equal((await expect(s,'/api/drafts?rawId='+r.id)).items.length,0);results.push({label,code:j.error?.code});}return {cases:results.length,results};
+});
+await test('H05-failed-chunk-explicit-resume-reuses-ledger',async h=>{
+ const s=await h.start(),r=await raw(s,'chunk-resume',longBody.slice(0,19000));let calls=0;h.setReply(w=>{const p=payload(w);if(p.kind==='extracting'&&++calls===2)return {httpStatus:500};return oneFactReply(w);});const j=await finish(s,r);assert.equal(j.status,'failed');const c=await cp(h,j.jobId);assert.equal(c.completedChunks.length,1);assert.equal(c.attempts,2);const n=h.requests.length;h.setReply(oneFactReply);
+ const resumed=await begin(s,r);assert([200,202].includes(resumed.status),resumed.text);assert.equal(resumed.json.jobId,j.jobId);const done=await terminal(s,j.jobId);complete(done);const after=await cp(h,j.jobId);assert.equal(after.attempts,h.requests.length);assert.equal(after.attempts,after.chunks.length+2);const extractIds=h.requests.slice(n).map(x=>payload(x.input)).filter(x=>x.kind==='extracting').map(x=>x.catalog[0].id);assert(!extractIds.some(x=>x.startsWith('c1-')));return {jobId:j.jobId,beforeAttempts:2,afterAttempts:after.attempts,reusedChunk:1,newRequests:h.requests.length-n};
+});
+await test('H06-planning-failure-restart-no-automatic-calls',async h=>{
+ let s=await h.start();const {r,j}=await failedPlanning(h,s);const n=h.requests.length,c=await cp(h,j.jobId);await h.stop(s);s=await h.start();await expect(s,'/api/raw-processing');await expect(s,'/api/extraction-jobs/'+j.jobId);await expect(s,'/api/drafts');await delay(100);assert.equal(h.requests.length,n);h.setReply(goodReply);const done=await finish(s,r);complete(done);assert.equal(done.jobId,j.jobId);assert.equal(h.requests.length,n+1);assert.equal(payload(h.requests.at(-1).input).kind,'planning');return {sameRaw:r.id,sameJob:j.jobId,validatedChunks:c.completedChunks.length,newCalls:1,startupCalls:0};
+});
+await test('H07-concurrent-resume-single-job',async h=>{
+ const s=await h.start(),{r,j}=await failedPlanning(h,s);let release;const hold=new Promise(r=>release=r);h.setReply(async w=>{await hold;return goodReply(w);});try{const n=h.requests.length,out=await Promise.all([begin(s,r),begin(s,r)]);assert(out.every(x=>[200,202].includes(x.status)),JSON.stringify(out));assert(out.every(x=>x.json.jobId===j.jobId));release();complete(await terminal(s,j.jobId));assert.equal(h.requests.length,n+1);assert.equal((await expect(s,'/api/drafts?rawId='+r.id)).items.length,1);return {sameLogicalJob:true,onePlanningCall:true,oneDraft:true};}finally{release();}
+});
+await test('H08-cancel-late-results-checkpoint-stable',async h=>{
+ const s=await h.start(),r=await raw(s,'cancel',longBody.slice(0,19000));let seen=0,release;const hold=new Promise(r=>release=r);h.setReply(async w=>{if(payload(w).kind==='extracting'&&++seen===2)await hold;return oneFactReply(w);});try{const b=await begin(s,r);assert.equal(b.status,202);await eventually(()=>seen===2,'second wire');const before=await cp(h,b.json.jobId);assert.equal(before.completedChunks.length,1);await expect(s,'/api/extraction-jobs/'+b.json.jobId+'/cancel','POST',{});const j=await terminal(s,b.json.jobId);assert.equal(j.status,'cancelled');release();await delay(120);const after=await cp(h,j.jobId);assert.equal(after.completedChunks.length,1);assert.equal(after.attempts,2);assert.equal((await expect(s,'/api/drafts?rawId='+r.id)).items.length,0);assert.equal(h.requests.length,2);h.setReply(oneFactReply);const done=await finish(s,r);complete(done);assert.equal(done.jobId,j.jobId);return {lateResultNotCached:true,noDraftOnCancel:true,explicitResumeCompleted:true};}finally{release();}
+});
+await test('H09-corrupt-checkpoint-failclosed-and-explicit-restart',async h=>{
+ const s=await h.start(),{r,j}=await failedPlanning(h,s),file=cpPath(h,j.jobId);await fs.writeFile(file,'{bad JSON');h.setReply(goodReply);const n=h.requests.length,b=await begin(s,r);assert.equal(b.status,409,b.text);assert.equal(h.requests.length,n);assert.equal(await fs.readFile(file,'utf8'),'{bad JSON');const done=await finish(s,r,{restart:true});complete(done);assert.notEqual(done.jobId,j.jobId);assert.equal(await fs.readFile(file,'utf8'),'{bad JSON');return {corruptStatus:409,noSilentSkip:true,oldRecordPreserved:true,newJobExplicit:true};
+});
+await test('H10-checkpoint-rehashed-invalid-structure',async h=>{
+ const s=await h.start(),results=[];for(const [label,mutate]of [['unknown-top-field',c=>{c.extra='forbidden';}],['unknown-format',c=>{c.version=999;}],['wrong-raw',c=>{c.rawId=randomUUID();}],['rules-changed',c=>{c.rulesVersion='changed-rules';}],['bad-evidence',c=>{c.completedChunks[0].evidence[0].start+=1;}],['unknown-fact-reference',c=>{c.completedChunks[0].facts[0].locatorIds=['c9-l001'];}],['duplicate-chunk',c=>{c.completedChunks.push(c.completedChunks[0]);}]]){const {r,j}=await failedPlanning(h,s,label);await editCp(h,j.jobId,mutate);h.setReply(goodReply);const n=h.requests.length,b=await begin(s,r);assert.equal(b.status,409,label+' '+b.text);assert.equal(h.requests.length,n);results.push({label,status:b.status,code:b.json?.error?.code});}return {cases:results.length,results};
+});
+await test('H11-provider-model-change-failclosed',async h=>{
+ let s=await h.start();const {r,j}=await failedPlanning(h,s);await h.stop(s);s=await h.start({env:{FMCG_LLM_MODEL:'kb02-independent-different-model'}});h.setReply(goodReply);const n=h.requests.length,b=await begin(s,r);assert.equal(b.status,409,b.text);assert.equal(h.requests.length,n);assert.equal((await cp(h,j.jobId)).completedChunks.length,1);return {modelChanged:true,noCall:true,status:409};
+});
+await test('H12-attempt-budget-across-resumes',async h=>{
+ const s=await h.start(),{r,j}=await failedPlanning(h,s);for(let i=0;i<6;i++){const out=await begin(s,r);if([409,429].includes(out.status))break;assert([200,202].includes(out.status),out.text);assert.equal(out.json.jobId,j.jobId);const failed=await terminal(s,j.jobId);assert.equal(failed.status,'failed');}const c=await cp(h,j.jobId);assert.equal(c.attempts,6);assert.equal(h.requests.length,6);const n=h.requests.length,b=await begin(s,r);if([200,202].includes(b.status))await terminal(s,b.json.jobId);assert.equal(h.requests.length,n);assert.equal((await cp(h,j.jobId)).attempts,6);return {limit:6,totalExternalFakeAttempts:6,resumeDidNotReset:true};
+});
+await test('H13-draft-publish-crash-recover-no-duplicate',async h=>{
+ let s=await h.start();const r=await raw(s,'crash');await fs.writeFile(path.join(h.dataRoot,'.kb02-standards-fault.json'),JSON.stringify({kind:'crash-after-draft'}));const b=await begin(s,r);assert.equal(b.status,202);await eventually(()=>s.child.exitCode===86,'actual crash after draft rename');const observed=JSON.parse(await fs.readFile(path.join(h.dataRoot,'.kb02-standards-fault-observed.json'),'utf8'));assert(observed.afterRename);await fs.rm(path.join(h.dataRoot,'.kb02-standards-fault.json'));const n=h.requests.length;s=await h.start();assert.equal(h.requests.length,n);const drafts=(await expect(s,'/api/drafts?rawId='+r.id)).items;assert.equal(drafts.length,1);const out=await begin(s,r);assert.equal(out.status,200,out.text);assert.equal(out.json.draftId,drafts[0].id);assert.equal(h.requests.length,n);assert.equal((await expect(s,'/api/drafts?rawId='+r.id)).items.length,1);return {actualCrashExit:86,draftId:drafts[0].id,noStartupCalls:true,noDuplicate:true,jobId:b.json.jobId};
+});
+await test('H14-derived-quote-secret-before-checkpoint',async h=>{
+ const s=await h.start(),r=await raw(s,'derived-secret','2026年10月，虚构样本有效。 '+h.fakeKey);h.setReply(w=>{const p=payload(w),v=oneFactReply(w);v.facts[0].locatorIds=[p.catalog.find(l=>l.text.includes(h.fakeKey)).id];return v;});const j=await finish(s,r);assert.equal(j.status,'failed',JSON.stringify(j));assert.equal(j.error?.code,'LLM_OUTPUT_CONTAINS_SECRET');assert.equal((await cp(h,j.jobId)).completedChunks.length,0);assert.equal(h.requests.length,1);const names=await fs.readdir(path.join(h.dataRoot,'state','extraction-checkpoints'));for(const name of names)assert(!(await fs.readFile(path.join(h.dataRoot,'state','extraction-checkpoints',name),'utf8')).includes(h.fakeKey));assert.equal((await expect(s,'/api/drafts?rawId='+r.id)).items.length,0);return {derivedSecretRejected:true,noCheckpointSecret:true,calls:1};
+});
+await test('H15-key-rotation-cache-rescan',async h=>{
+ const newKey='KB02-newly-known-synthetic-secret';let s=await h.start();const r=await raw(s,'rotation','2026年10月，虚构记录包含标记 '+newKey);h.setReply(w=>{const p=payload(w);if(p.kind==='planning')return {httpStatus:500};const v=oneFactReply(w);v.facts[0].text='虚构记录标记 '+newKey;return v;});const j=await finish(s,r);assert.equal(j.status,'failed');assert((await cp(h,j.jobId)).completedChunks[0].facts[0].text.includes(newKey));await h.stop(s);s=await h.start({env:{FMCG_LLM_API_KEY:newKey}});const n=h.requests.length;h.setReply(goodReply);const b=await begin(s,r);assert.equal(b.status,409,b.text);assert(!b.text.includes(newKey));assert.equal(h.requests.length,n);return {sameEndpointModel:true,newKeyRescanBeforeAnyCall:true,status:409};
+});
+await test('H16-raw-same-id-valid-replacement-failclosed',async h=>{
+ const s=await h.start(),{r,j}=await failedPlanning(h,s);const all=await fileSnapshot(path.join(h.dataRoot,'knowledge','raw'));const relative=Object.keys(all).find(x=>x.endsWith(r.id+'.md'));assert(relative);const file=path.join(h.dataRoot,'knowledge','raw',relative);const old=await fs.readFile(file,'utf8');const replacement=shortBody.replace('120家','121家');const newSha=createHash('sha256').update(replacement).digest('hex');const changed=old.replace(shortBody,replacement).replace(r.bodySha256,newSha);assert.notEqual(changed,old);await fs.writeFile(file,changed);h.setReply(goodReply);const read=await expect(s,'/api/raw/'+r.id);assert.equal(read.body,replacement);const n=h.requests.length,b=await begin(s,r);assert.equal(b.status,409,b.text);assert.equal(h.requests.length,n);assert.equal((await cp(h,j.jobId)).rawSha256,r.bodySha256);return {sameRawId:r.id,validNewBodySha:true,checkpointRejected:true};
+});
+await test('H17-empty-business-chunk-is-reusable',async h=>{
+ const s=await h.start(),r=await raw(s,'empty-business-chunk','版式'.repeat(4000)+shortBody);let n=0;h.setReply(w=>{if(payload(w).kind==='extracting'&&++n===2)return {httpStatus:500};return goodReply(w);});const j=await finish(s,r);assert.equal(j.status,'failed');const c=await cp(h,j.jobId);assert.equal(c.completedChunks.length,1);assert.equal(c.completedChunks[0].facts.length,0);h.setReply(goodReply);const before=h.requests.length,done=await finish(s,r);complete(done);const resumed=h.requests.slice(before).map(x=>payload(x.input));assert(!resumed.some(p=>p.kind==='extracting'&&p.catalog[0].id.startsWith('c1-')));return {emptyValidatedChunkReused:true,sameJobId:done.jobId===j.jobId,newCalls:resumed.length};
+});
+await test('H18-per-chunk-fact-question-limits',async h=>{
+ const s=await h.start(),results=[];for(const [label,count]of [['facts',33],['questions',17]]){const r=await raw(s,'limit-'+label);h.setReply(w=>{const v=oneFactReply(w);if(label==='facts')v.facts=Array.from({length:count},(_,i)=>({...v.facts[0],text:'虚构事实 '+i}));else v.questions=Array.from({length:count},(_,i)=>({...v.facts[0],text:'待确认问题 '+i}));return v;});const j=await finish(s,r);assert.equal(j.status,'failed');assert.equal((await cp(h,j.jobId)).completedChunks.length,0);results.push({label,count,code:j.error?.code});}return {results};
+});
+await test('H19-whole-document-fact-question-limits',async h=>{
+ const s=await h.start(),results=[];for(const label of ['facts','questions']){const r=await raw(s,'whole-limit-'+label,'虚构边界'.repeat(20000));h.setReply(w=>{const p=payload(w);assert.equal(p.kind,'extracting','No planner call after over-limit');const base={text:'虚构来源陈述',locatorIds:[p.catalog[0].id]};return {version:1,facts:Array.from({length:label==='facts'?32:1},(_,i)=>({...base,text:'事实'+p.catalog[0].id+'-'+i})),questions:Array.from({length:label==='questions'?16:0},(_,i)=>({...base,text:'问题'+p.catalog[0].id+'-'+i}))};});const n=h.requests.length,j=await finish(s,r);assert.equal(j.status,'failed');assert.equal(j.error?.code,'LLM_TOO_MANY_FACTS');const c=await cp(h,j.jobId);const facts=c.completedChunks.flatMap(x=>x.facts).length,questions=c.completedChunks.flatMap(x=>x.questions).length;assert(facts<=256&&questions<=128);assert.equal(c.completedChunks.length,8);assert.equal(h.requests.length-n,9);results.push({label,facts,questions,calls:9,savedChunks:8});}return {results};
+});
+await test('H20-planner-input-byte-limit-before-call',async h=>{
+ const s=await h.start(),r=await raw(s,'planner-byte-limit','虚构边界'.repeat(8000));h.setReply(w=>{const p=payload(w);assert.equal(p.kind,'extracting','Planner input limit must stop before outbound planner call');return {version:1,facts:Array.from({length:32},(_,i)=>({text:('中'.repeat(1800))+p.catalog[0].id+'-'+i,locatorIds:[p.catalog[0].id]})),questions:[]};});const j=await finish(s,r);assert.equal(j.status,'failed');assert.equal(j.error?.code,'LLM_PLANNING_TOO_LARGE');const c=await cp(h,j.jobId);assert.equal(c.completedChunks.length,c.chunks.length);assert.equal(h.requests.length,c.chunks.length);assert(!c.plan);return {chunks:c.chunks.length,calls:h.requests.length,noPlanningCall:true,allValidatedChunksPreserved:true};
+});
+await test('H21-key-rotation-compatible-cache-reuse',async h=>{
+ let s=await h.start();const {r,j}=await failedPlanning(h,s);await h.stop(s);s=await h.start({env:{FMCG_LLM_API_KEY:'KB02-benign-new-synthetic-key'}});const n=h.requests.length;h.setReply(goodReply);const done=await finish(s,r);complete(done);assert.equal(done.jobId,j.jobId);assert.equal(h.requests.length,n+1);assert.equal(payload(h.requests.at(-1).input).kind,'planning');return {keyChangedSameEndpointModel:true,sameJob:true,reusedChunk:1,newCalls:1};
+});
+const summary={pass:checks.filter(x=>x.result==='PASS').length,fail:checks.filter(x=>x.result==='FAIL').length};
+await fs.writeFile(`docs/reports/KB02-R1-20261015-standards-http-${suffix}.json`,JSON.stringify({at:new Date().toISOString(),scope:'actual isolated product HTTP + localhost fake; no real Provider quality claim',node:process.version,durationMs:Date.now()-started,checks,summary,services},null,2));console.log(summary);if(summary.fail)process.exitCode=1;
+
+
+
+

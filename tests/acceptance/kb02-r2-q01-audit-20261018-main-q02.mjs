@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+const p='docs/reports/KB02-R2-Q01-AUDIT-20261018-main-';
+const q=JSON.parse(await fs.readFile(p+'quality.json','utf8'));
+const traces=(await fs.readFile(p+'provider-trace.jsonl','utf8')).trim().split('\n').map(JSON.parse);
+const trace=traces.find(t=>t.sequence===62), response=JSON.parse(trace.response.content);
+const prompt=trace.request.messages.find(x=>x.role==='user').content;
+const atoms=JSON.parse(prompt.slice(prompt.lastIndexOf('\n')+1));
+const accepted=q.checkpoint.completedChunks.flatMap(c=>c.facts.filter(f=>/排版说明|长文验收附录/.test(f.text)).map(f=>({chunkIndex:c.index,...f})));
+const overlaps=response.sourceNotes.filter(n=>response.facts.some(f=>f.atomId===n.atomId)||response.questions.some(f=>f.atomId===n.atomId)).map(n=>atoms.find(a=>a.id===n.atomId));
+const out={at:new Date().toISOString(),finding:'Q02/P1',acceptedNonbusinessFacts:accepted,acceptedNonbusinessFactCount:accepted.length,rejectedSequence:62,overlapAtoms:overlaps,response,job:q.job,rawSha256:q.checkpoint.rawSha256,limits:'No long draft or formal Wiki was produced; planner downstream exposure is a static code-path finding, not an observed completed call.'};
+await fs.writeFile(p+'q02-evidence.json',JSON.stringify(out,null,2));
+console.log(JSON.stringify({accepted:accepted.length,overlaps}));

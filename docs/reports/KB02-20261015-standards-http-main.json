@@ -1,0 +1,434 @@
+{
+  "at": "2026-10-15T03:37:23.563Z",
+  "scope": "actual isolated product HTTP + localhost fake; no real Provider quality claim",
+  "node": "v24.20.0",
+  "durationMs": 44404,
+  "checks": [
+    {
+      "id": "H01-short-draft-repeat-readonly",
+      "result": "PASS",
+      "evidence": {
+        "draftId": "b9c5834f-c18c-400c-8292-949b6e5b33ba",
+        "calls": 2,
+        "pages": 1,
+        "defaultUnselected": true,
+        "noFormalWrites": true,
+        "pipelineVersion": "kb02-1",
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 2,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "id": "H02-long-all-facts-planner-and-evidence",
+      "result": "PASS",
+      "evidence": {
+        "characters": 106400,
+        "chunks": 14,
+        "facts": 28,
+        "questions": 1,
+        "calls": 15,
+        "oneTopicMock": true,
+        "evidenceRangesValid": true
+      }
+    },
+    {
+      "id": "H03-compact-schema-and-truncation-rejection",
+      "result": "PASS",
+      "evidence": {
+        "cases": 12,
+        "results": [
+          {
+            "label": "extra",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "missing",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "type",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "empty-evidence",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "unknown-locator",
+            "code": "LLM_EVIDENCE_UNKNOWN_LOCATOR"
+          },
+          {
+            "label": "cross-chunk",
+            "code": "LLM_EVIDENCE_UNKNOWN_LOCATOR"
+          },
+          {
+            "label": "blank-fact",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "long-fact",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "secret-value",
+            "code": "LLM_OUTPUT_CONTAINS_SECRET"
+          },
+          {
+            "label": "secret-key",
+            "code": "LLM_OUTPUT_CONTAINS_SECRET"
+          },
+          {
+            "label": "parseable-truncated",
+            "code": "LLM_OUTPUT_TRUNCATED"
+          },
+          {
+            "label": "invalid-json",
+            "code": "LLM_INVALID_JSON"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H04-plan-coverage-schema-rejection",
+      "result": "PASS",
+      "evidence": {
+        "cases": 9,
+        "results": [
+          {
+            "label": "missing-fact",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "unknown-fact",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "repeat-fact",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "missing-question",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "extra",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "wrong-type",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "empty-page",
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "normalized-title-duplicate",
+            "code": "LLM_PLAN_COVERAGE_INVALID"
+          },
+          {
+            "label": "truncated-plan",
+            "code": "LLM_OUTPUT_TRUNCATED"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H05-failed-chunk-explicit-resume-reuses-ledger",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"7bd120a0-00f0-4a07-8dc0-3e445ad53106\",\"rawId\":\"d255ef4b-fdbc-4c20-a770-8b235e41dbea\",\"status\":\"failed\",\"stage\":\"extracting\",\"progress\":{\"chunksTotal\":3,\"chunksDone\":1,\"pagesFound\":1},\"draftId\":null,\"error\":{\"code\":\"LLM_CHECKPOINT_CORRUPT\",\"message\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"at\":\"2026-10-15T03:36:55.591Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:36:55.001Z\",\"finishedAt\":\"2026-10-15T03:36:55.591Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"extracting\",\"validatedChunks\":1,\"totalChunks\":3,\"resumable\":true,\"reason\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"attempts\":2,\"reusedChunks\":1}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at complete (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:25:29)\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:52:167\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:50:1"
+    },
+    {
+      "id": "H06-planning-failure-restart-no-automatic-calls",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"5c920add-dcda-4bea-8634-456a0b74edab\",\"rawId\":\"e6b1858f-cb72-46c2-b290-9c8c528d3517\",\"status\":\"failed\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":2},\"draftId\":null,\"error\":{\"code\":\"LLM_CHECKPOINT_CORRUPT\",\"message\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"at\":\"2026-10-15T03:37:00.345Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:36:58.089Z\",\"finishedAt\":\"2026-10-15T03:37:00.345Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":true,\"reason\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"attempts\":2,\"reusedChunks\":1}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at complete (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:25:29)\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:55:362\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:54:1"
+    },
+    {
+      "id": "H07-concurrent-resume-single-job",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"7515dfb6-70c2-4cbd-b797-4c2d48f5a01b\",\"rawId\":\"c1aea77d-6b26-4b61-8a0e-2a03c2c72f97\",\"status\":\"failed\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":2},\"draftId\":null,\"error\":{\"code\":\"LLM_CHECKPOINT_CORRUPT\",\"message\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"at\":\"2026-10-15T03:37:02.778Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:37:02.081Z\",\"finishedAt\":\"2026-10-15T03:37:02.778Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":true,\"reason\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"attempts\":2,\"reusedChunks\":1}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at complete (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:25:29)\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:58:365\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:57:1"
+    },
+    {
+      "id": "H08-cancel-late-results-checkpoint-stable",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"11cd79fb-814f-42b7-8200-accef48a424c\",\"rawId\":\"b6d4b5a1-18b6-4dc4-a6d0-d62dfe785b38\",\"status\":\"failed\",\"stage\":\"extracting\",\"progress\":{\"chunksTotal\":3,\"chunksDone\":1,\"pagesFound\":1},\"draftId\":null,\"error\":{\"code\":\"LLM_CHECKPOINT_CORRUPT\",\"message\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"at\":\"2026-10-15T03:37:04.656Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:37:04.235Z\",\"finishedAt\":\"2026-10-15T03:37:04.655Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"extracting\",\"validatedChunks\":1,\"totalChunks\":3,\"resumable\":true,\"reason\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"attempts\":2,\"reusedChunks\":1}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at complete (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:25:29)\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:61:862\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:60:1"
+    },
+    {
+      "id": "H09-corrupt-checkpoint-failclosed-and-explicit-restart",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"保存或读取失败，请重试。\"}}\n\n500 !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:64:192\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:63:1"
+    },
+    {
+      "id": "H10-checkpoint-rehashed-invalid-structure",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: unknown-top-field {\"jobId\":\"bf85b130-f71f-4352-bd75-9ceeace4932a\",\"rawId\":\"06f44cf9-ea89-4154-aed5-503f76c8ae02\",\"status\":\"running\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":2},\"draftId\":null,\"error\":null,\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:37:07.902Z\",\"finishedAt\":null,\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":true,\"reason\":\"Provider 服务错误（HTTP 500）。（Provider 说明：Independent localhost failure）\",\"attempts\":2,\"reusedChunks\":1},\"reused\":false}\n\n202 !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:67:621\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:66:1"
+    },
+    {
+      "id": "H11-provider-model-change-failclosed",
+      "result": "PASS",
+      "evidence": {
+        "modelChanged": true,
+        "noCall": true,
+        "status": 409
+      }
+    },
+    {
+      "id": "H12-attempt-budget-across-resumes",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n2 !== 6\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:73:329\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:72:1"
+    },
+    {
+      "id": "H13-draft-publish-crash-recover-no-duplicate",
+      "result": "PASS",
+      "evidence": {
+        "actualCrashExit": 86,
+        "draftId": "a7438e9e-5f38-400c-9cca-231e001a372b",
+        "noStartupCalls": true,
+        "noDuplicate": true,
+        "jobId": "e2c86b11-8d5a-4350-b290-3b6ff1f6765a"
+      }
+    },
+    {
+      "id": "H14-derived-quote-secret-before-checkpoint",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"53f2fb00-be9d-4b31-9414-fd99def7472a\",\"rawId\":\"9a4562d1-d2fe-47fb-bbd5-dbed1015f633\",\"status\":\"completed\",\"stage\":\"done\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":1},\"draftId\":\"e475358b-94ba-479b-89f6-33522bab76d6\",\"error\":null,\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:37:14.890Z\",\"finishedAt\":\"2026-10-15T03:37:14.981Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"done\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":false,\"attempts\":2,\"reusedChunks\":0}}\n+ actual - expected\n\n+ 'completed'\n- 'failed'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:79:146\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:78:1"
+    },
+    {
+      "id": "H15-key-rotation-cache-rescan",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"53a50af8-9a1a-4ecf-bbce-c1644c598f4a\",\"rawId\":\"2a3e3222-a495-4302-a41d-2419d56dc2c7\",\"status\":\"running\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":1},\"draftId\":null,\"error\":null,\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:37:15.719Z\",\"finishedAt\":null,\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":true,\"reason\":\"Provider 服务错误（HTTP 500）。（Provider 说明：Independent localhost failure）\",\"attempts\":2,\"reusedChunks\":1},\"reused\":false}\n\n202 !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:82:566\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:81:1"
+    },
+    {
+      "id": "H16-raw-same-id-valid-replacement-failclosed",
+      "result": "PASS",
+      "evidence": {
+        "sameRawId": "d3f7ea40-2bf5-44fb-856f-bf70a6ac272d",
+        "validNewBodySha": true,
+        "checkpointRejected": true
+      }
+    },
+    {
+      "id": "H17-empty-business-chunk-is-reusable",
+      "result": "PASS",
+      "evidence": {
+        "emptyValidatedChunkReused": true,
+        "sameJobId": true,
+        "newCalls": 2
+      }
+    },
+    {
+      "id": "H18-per-chunk-fact-question-limits",
+      "result": "PASS",
+      "evidence": {
+        "results": [
+          {
+            "label": "facts",
+            "count": 33,
+            "code": "LLM_SCHEMA_INVALID"
+          },
+          {
+            "label": "questions",
+            "count": 17,
+            "code": "LLM_SCHEMA_INVALID"
+          }
+        ]
+      }
+    },
+    {
+      "id": "H19-whole-document-fact-question-limits",
+      "result": "PASS",
+      "evidence": {
+        "results": [
+          {
+            "label": "facts",
+            "facts": 256,
+            "questions": 0,
+            "calls": 9,
+            "savedChunks": 8
+          },
+          {
+            "label": "questions",
+            "facts": 8,
+            "questions": 128,
+            "calls": 9,
+            "savedChunks": 8
+          }
+        ]
+      }
+    },
+    {
+      "id": "H20-planner-input-byte-limit-before-call",
+      "result": "PASS",
+      "evidence": {
+        "chunks": 5,
+        "calls": 5,
+        "noPlanningCall": true,
+        "allValidatedChunksPreserved": true
+      }
+    },
+    {
+      "id": "H21-key-rotation-compatible-cache-reuse",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"049a1050-94d1-48e4-8cc3-2d17fde3ecb3\",\"rawId\":\"ad488f4f-ab00-4621-8344-6de1a9a568ad\",\"status\":\"failed\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":2},\"draftId\":null,\"error\":{\"code\":\"LLM_CHECKPOINT_CORRUPT\",\"message\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"at\":\"2026-10-15T03:37:23.489Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"kb02-independent-model\"},\"callCount\":2,\"startedAt\":\"2026-10-15T03:37:22.611Z\",\"finishedAt\":\"2026-10-15T03:37:23.489Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-1\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":true,\"reason\":\"检查点中的事实/问题locator无效，已拒绝恢复。\",\"attempts\":2,\"reusedChunks\":1}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n\n    at complete (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:25:29)\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:100:229\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:12:52)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-http.mjs:99:1"
+    }
+  ],
+  "summary": {
+    "pass": 11,
+    "fail": 10
+  },
+  "services": [
+    {
+      "id": "H01-short-draft-repeat-readonly",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-TbpBfn",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H02-long-all-facts-planner-and-evidence",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-ac2WU2",
+      "providerCalls": 15,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H03-compact-schema-and-truncation-rejection",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-h8BOuo",
+      "providerCalls": 12,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H04-plan-coverage-schema-rejection",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-7skWrI",
+      "providerCalls": 18,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H05-failed-chunk-explicit-resume-reuses-ledger",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-qsebCD",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H06-planning-failure-restart-no-automatic-calls",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-W4aiBx",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H07-concurrent-resume-single-job",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-ANe4pQ",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H08-cancel-late-results-checkpoint-stable",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-owZ7Yu",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H09-corrupt-checkpoint-failclosed-and-explicit-restart",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-T9VoPL",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H10-checkpoint-rehashed-invalid-structure",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-DbAHk1",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H11-provider-model-change-failclosed",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-AvkhHo",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H12-attempt-budget-across-resumes",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-wOPEqa",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H13-draft-publish-crash-recover-no-duplicate",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-G7hfOF",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H14-derived-quote-secret-before-checkpoint",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-GgQwhO",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H15-key-rotation-cache-rescan",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-bVkcST",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H16-raw-same-id-valid-replacement-failclosed",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-4JGIbm",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H17-empty-business-chunk-is-reusable",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-naGahu",
+      "providerCalls": 4,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H18-per-chunk-fact-question-limits",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-wF62BL",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H19-whole-document-fact-question-limits",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-ZvCl5E",
+      "providerCalls": 18,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H20-planner-input-byte-limit-before-call",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-YaZMd6",
+      "providerCalls": 5,
+      "allLocalhost": true,
+      "closed": true
+    },
+    {
+      "id": "H21-key-rotation-compatible-cache-reuse",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-3rxPOJ",
+      "providerCalls": 2,
+      "allLocalhost": true,
+      "closed": true
+    }
+  ]
+}

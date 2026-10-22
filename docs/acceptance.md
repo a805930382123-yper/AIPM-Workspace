@@ -1,8 +1,26 @@
 # 快消 AI 产品经理工作台：分批验收与监控规约
 
-需求基线：`C:\Users\80593\.codex\attachments\99326028-d1ee-4dc3-acf9-12843abe93cf\已粘贴的文本.txt`，已完整读取。本文是验收方案，结论以冻结版本的独立报告为准；建表时初始状态全部 `NOT_RUN`。施工 Agent 负责实现，验收 Agent 负责独立检查与证据判定，不改产品代码。当前授权以用户最新消息和 `docs/status.md` 为准；2026-10-10 授权修复全项目审查中的 S-01/S-02 与文档问题，任务卡为 `docs/batches/FULL-20261010-repair.md`。真实 Provider 成功和质量门禁仍待配置，不得由 fake 代签。验收 Agent 可写独立 fixtures 与本轮报告；实际浏览器和 HTTP/文件证据分别记录，未运行不标 PASS。
+最新独立裁决（2026-10-22 KB02真实复验）：**KB02整体FAIL**。用户授权累计上限200次；本轮长文15＋短文2＋补充提取规划2＋浏览器更新1=20次，累计82/200、剩118，Prompt15/24。K2-01 FAIL：非业务片段误入facts及更新的一致观点超出新来源；K2-02 FAIL：14段完成但规划遗漏f-c13-4，无长文草稿；K2-03既有同冻结PASS保持，本轮检查点/诊断/计数一致，无自动外发；K2-04 FAIL：长文闭环未完成。短文HTTP与实际浏览器候选/更新预览/明确确认/刷新回读已完成，双口径/来源/人工备注保留；流程通过不等于语义质量通过。SR01 R2工程与受控Spec PASS及S01关闭保持。见[本轮报告](reports/KB02-FINAL-AUDIT-20261022-acceptance.md)。无产品修改、无正式数据污染、无自动施工。
 
-当前结果见 `docs/status.md` 与 `docs/delivery-matrix.md`。2026-10-09 全项目审查为 FAIL；2026-10-10 返修独立复验已关闭 S-01/S-02 与 D-01/02，报告为 `docs/reports/FULL-20261010-repair-acceptance.md`。真实 Provider 成功和质量仍 BLOCKED。原 FAIL 和旧批次报告保留，不能用历史 PASS 冒称本轮重测。
+最新独立裁决（2026-10-22 SR01 R2）：**SR01工程与受控Spec PASS，G-SR01-R1-01关闭**；原F-SR01-01/02关闭保持。独立同冻结系统Node24.20完整307/307、0skip与tsc/Vite通过，Node24.19受影响51/51通过；新增独立路径别名/失败队列释放2/2及仅存储恢复语义通过。见[独立报告](reports/KB02-SR01-R2-AUDIT-20261022-acceptance.md)。冻结及2693保护文件不变，真实0；Q02/KB02真实质量FAIL未关闭，实际浏览器/真实模型NOT_RUN，预算仍62/74、Prompt15/24。不自动推进后续批次，以下交接与旧裁决均为历史。
+
+2026-10-22 SR01 R2施工交接（非独立裁决）：用户授权同job读写协调最小返修已冻结停写，99产品/70测试支持资产同字节副本系统Node24.20默认完整307/307、0skip及tsc/Vite通过，Node24.19受影响51/51、0skip，仅保存call-count-job语义通过。旧默认测试不改、新增7项实际并发回归，原预算两项本轮通过。见[交接](reports/KB02-SR01-R2-20261021-handoff.md)、[独立复验入口](handoffs/KB02-SR01-R2-review-20261022.md)。**待独立复验，不由施工自测关闭SR01整体FAIL**；原F-SR01-01/02受控关闭、Q02/KB02真实FAIL、S01关闭及PA01既有PASS保留。真实0，预算不变。
+
+最新独立裁决（2026-10-21 SR01 R1）：**F-SR01-01/02受控复验关闭，完整工程门禁FAIL，SR01不签收**。系统Node24.20同冻结默认298/300、2fail、0skip，两个预算测试在call-count-job写盘阶段失败；tsc/Vite及Node24.19定向37/37通过不能抵消完整门禁。原失败与一次有界诊断保留，不猜测原生rename EPERM根因。见[验收](reports/KB02-SR01-R1-AUDIT-20261021-acceptance.md)、[诊断与复验卡](reports/KB02-SR01-R1-AUDIT-20261021-repair.md)。冻结/2597旧保护文件不变；真实0、实际浏览器NOT_RUN，Q02/KB02真实FAIL、S01关闭与PA01既有PASS保留。以下交接和旧独立裁决均为历史。
+
+2026-10-21 SR01 R1施工交接（非独立裁决）：用户指定当前Agent直接返修，最小jobs.ts变更新回归11/11；系统Node24.20同冻结完整299/300、1fail、0skip及tsc/Vite通过，本机Node24.19定向36/37、1fail、0skip。两份未注入的实际存储写失败保留，**工程门禁未全过，不签SR01 PASS**；原独立FAIL待新审查，不以施工自测关闭。见[交接](reports/KB02-SR01-R1-20261021-handoff.md)、[审查入口](handoffs/KB02-SR01-R1-review-20261021.md)。真实0，预算不变，Q02/KB02真实FAIL、S01关闭及PA01既有PASS保留。
+
+最新独立裁决（2026-10-20 SR01）：**Standards/Spec FAIL，SR01不签收**。289/289、构建及Node24.19定向26/26通过，但F-SR01-01/P1已有旧job的启动部分写入无法对账，F-SR01-02/P2缺失cp重启未失败关闭，均有独立反例。见[报告](reports/KB02-STORAGE-AUDIT-20261020-acceptance.md)、[返修卡](reports/KB02-STORAGE-AUDIT-20261020-repair.md)。本轮真实0，KB02仍62/74、Prompt15/24；Q02/KB02真实质量FAIL、S01关闭和PA01既有PASS保留。以下旧“最新”为历史。
+
+最新独立裁决（2026-10-18 Q01返修后）：**工程PASS，真实短文/补充更新PASS，真实长文及KB02整体FAIL**。259/259及构建通过；Q01旧格式错误未复现，但6段检查点存在11条非业务声明误入facts，第7段分类冲突，新增Q02/P1。长文6/14、无草稿，不代签完整覆盖。累计62/74、剩12，Prompt独立15/24；S01关闭及PA01已有PASS保留。见[验收](reports/KB02-R2-Q01-AUDIT-20261018-acceptance.md)、[返修卡](reports/KB02-R2-Q01-AUDIT-20261018-repair.md)。以下旧“最新”均为历史。
+
+最新独立裁决（2026-10-18 S01返修后）：**S01 PASS关闭，KB02整体FAIL**。Standards/受控Spec通过，251/251及构建通过；实际浏览器补充更新恢复、确认和刷新通过。真实长文两次在第1段因sourceNotes类型错误失败，新增Q01/P1，真实质量FAIL。累计真实49/64（追加24已用9、剩15），Prompt独立15/24。见 [最终验收](reports/KB02-R2-S01-REVIEW-20261018-acceptance.md)、[返修卡](reports/KB02-R2-S01-REVIEW-20261018-repair.md)。以下“最新”条目是历史，不覆盖本节结论。
+
+最新独立裁决（2026-10-18）：KB02-R2 **整体FAIL**，Standards/受控Spec均因S01/P2未通过；预算耗尽的显式重规划应409且保留原字节，实际202后失败并丢失覆盖诊断。真实质量BLOCKED、实际浏览器NOT_RUN。完整默认249/249、0skip及tsc/Vite通过不能抵消边界缺陷。详见 [最终验收](reports/KB02-R2-ASTRA-20261018-acceptance.md) 与 [返修卡](reports/KB02-R2-ASTRA-20261018-repair.md)。追加24次为工程全过后才可使用的条件授权，新增真实0；PA01已有独立PASS保留。下方旧状态段落是历史记录。
+
+需求基线：`C:\Users\80593\.codex\attachments\99326028-d1ee-4dc3-acf9-12843abe93cf\已粘贴的文本.txt`，已完整读取。本文是验收方案，结论以冻结版本的独立报告为准；建表时初始状态全部 `NOT_RUN`。施工 Agent 负责实现，验收 Agent 负责独立检查与证据判定，不改产品代码。当前授权以用户最新消息和 `docs/status.md` 为准；2026-10-13 用户授权由Luna返修S-03/S-04、主Agent独立检查，任务卡为 `docs/batches/SEC-20261013.md`，本批已PASS。真实 Provider 成功和质量门禁以当前FULL3结果为准，不得由 fake 代签。验收 Agent 可写独立 fixtures 与本轮报告；实际浏览器和 HTTP/文件证据分别记录，未运行不标 PASS。
+
+当前授权及结果：2026-10-14 FULL3整体审查已完成FAIL；Provider已配置，连接/有指导Audit通过，Brief两次契约失败及多链超时，109项RUN78PASS/3FAIL/28BLOCKED。Standards另有ST-F01/P2恢复错误不可见。见 `docs/status.md`、`docs/delivery-matrix.md`、`docs/reports/FULL3-20261014-acceptance.md`。CFG01配置入口、SEC S03/S04与M01–M05本机PASS保留；真实未完成项不能签PASS。旧FAIL和历史报告不覆盖；本轮只审查，返修卡不代表施工授权。
 
 历史结果（2026-10-04，非当前授权）：B01-01–08与B02-01–13全部PASS。B01的A01/A02/A03/A07，以及B02的A14/A15/A16/A17/A19/A20/A21/A35/A36/A58为DOC/RUN PASS；跨批AI/Prompt等整项当时按后续批次验收。B02独立结论见 `docs/reports/B02-acceptance.md`，含4项UI缺陷的修复复验历史。用户当时要求通过后停止，尚未推进B03。B01首次Vite优化Hook瞬态保留原报告记录，不声称代码根治。
 
@@ -229,3 +247,41 @@ B01 结果只允许：A01/A02/A03/A07 完整 PASS 候选；A06/A61/A63/R01/R04/R
 B09 不是给未运行项目补签。交付报告引用本次冻结版本的 A01–A63 与 R01–R46 状态摘要、四条主线证据、实际支持的文件/LLM范围，以及 FAIL/BLOCKED/NOT_RUN。只有承诺范围真实运行 PASS 才能称相应能力完成。开源/运行/风险说明以文档 PASS 判定，但不能替代运行项。
 
 节省成本的执行原则：复用 fixture、复用同场景证据；按变更和根因选测；单批固定范围；失败后先给一个最短可复现案例；只有新变化/失败/疑点才重复测试。验收文档完整，单轮汇报精简。
+
+## KB02 R2 Q02：2026-10-18 分类优先级返修交接
+
+Sol High按 [最小返修卡](reports/KB02-R2-Q01-AUDIT-20261018-repair.md) 完成最小施工并冻结停写：[交接](reports/KB02-R2-Q02-20261018-builder-handoff.md)、[新窗口审查入口](handoffs/KB02-R2-Q02-astra-review-20261018.md)。先业务/非业务再业务fragment/歧义，规则revision5、严格schema/互斥不变；seq62及Q01四坏响应仍拒，旧revision4六块409零外发/零写盘保字节，显式restart不复用旧块。最终同字节副本97产品/62测试完整265/265、0skip及tsc/Vite通过，定向27/27、HTTP5/5、S01/取消2/2、安全28/28。fake只证明受控分类和机制，不签新规则真实质量或浏览器，Q02/KB02整体FAIL待独立裁决。保护检查pass=false：1份旧PA01基线摘要漂移，未恢复归因；其余冻结产品/tests/夹具/脚本与正式数据/config无漂移。施工真实0，62/74剩12，基本完整回归20至少缺8；追加13含5次余量仅建议，未获授权。新窗口应分别裁决工程、历史证据完整性、真实质量与实际浏览器。
+
+## KB02 R2 Q01：2026-10-18 提取契约返修交接（历史，工程已独立通过）
+
+Sol High已按 [最小返修卡](reports/KB02-R2-S01-REVIEW-20261018-repair.md) 完成请求完整schema/非空合法示例、声明范围/条数及revision4指纹的最小施工并停写：[交接](reports/KB02-R2-Q01-20261018-builder-handoff.md)、[新窗口入口](handoffs/KB02-R2-Q01-astra-review-20261018.md)。实际schema严格性不变，seq41/44/45/49离线仍拒绝；新规则使旧未完成检查点明确409保字节，已完成草稿兼容。最终同字节副本97产品/61默认测试完整259/259、0skip及tsc/Vite通过，定向21/21、HTTP2/2+4/4、安全28/28；施工自测不代签独立审查、真实质量或实际浏览器。S01独立PASS保留，Q01/KB02整体真实FAIL待独立裁决。施工真实0，累计49/64剩15；新规则各必测真实场景基本20缺5，追加10含5余量仅建议，未获新增授权。
+
+## KB02 R2 S01：2026-10-18 最小返修交接（历史，已独立PASS）
+
+独立审查原S01/P2见 [返修卡](reports/KB02-R2-ASTRA-20261018-repair.md)。Sol High已最小修复前置预算拒绝与共享公式，冻结停写：[交接](reports/KB02-R2-S01-20261018-builder-handoff.md)、[独立审查入口](handoffs/KB02-R2-S01-astra-review-20261018.md)。施工原例正常HTTP自然耗尽6次后重复3次409、Provider增量0、三状态文件原字节及覆盖诊断保留；定向13/13、原例/取消2/2、HTTP4/4、安全/Meeting28/28，最终同字节副本251/251、0skip及tsc/Vite通过。首轮E04-05失败和同冻结复跑通过保留，未唯一归因。不代签Standards/Spec/真实质量或实际浏览器，原KB02-R2/FULL3 FAIL待独立裁决；本轮真实0，历史40、条件追加24未用，Prompt15/24独立保留。旧PA01历史异常按最新status保留。
+
+## KB02 R2：2026-10-16 剩余三项返修施工（历史）
+
+用户已授权 Sol High 施工 F-K202-R1-01–03，范围与接口见 [KB02-R2任务卡](batches/KB02-R2.md)、[冻结接口](handoffs/KB02-R2-interface.md)。本聊天只做施工协调、自测交接和保护核对，不代签批次 PASS；用户新窗口 Astra 中独立审查，见 [入口](handoffs/KB02-R2-astra-review-20261016.md)。原 K2-01–04、安全/Meeting/恢复门禁保持，新增原文 atom、规划覆盖诊断/显式仅重规划、更新 evidenceId 边界；以最终冻结和交接所指证据为准。真实 KB02 40/40 已用尽，Prompt 15/24 独立核算；本轮不外发，真实语义/长文/更新质量需新预算和独立证据，不能以 fake/离线回放签 PASS。下段 R1 结论保留。
+
+## KB02：2026-10-15 R1 当前验收
+
+最小分阶段提取与检查点恢复：K2-01–04按 docs/batches/KB02.md、docs/handoffs/KB02-interface.md 执行。精简契约/全量事实主题归属/同Raw重启恢复/调用记账/六链安全/真实长文与更新分开判定。2026-10-15主Agent对Luna High返修版本亲自复验：R1整体FAIL，Standards PASS / Spec FAIL。build及完整默认231/231、HTTP21/21、组件4/4、安全62/62、边界9/9、校准3/3均通过；实际恢复同job复用14段。真实补充事实口径被改错、更新预览502、长文两次规划45/46漏事实，业务闭环未过。累计40/40调用已停止。详见reports/KB02-R1-20261015-acceptance.md及repair.md；首轮FAIL证据保留。旧KB01 R4及FULL3 FAIL保留；假响应不能签真实质量PASS。用户最新要求以后Luna High施工、主Agent亲自审查验收，优先于本文历史固定Sol/升级安排。
+
+
+
+## PA01：2026-10-15 当前授权
+
+2026-10-16 PA01 独立续验 **PASS**：Standards、受控Spec、真实质量（本批样本）、实际浏览器恢复均PASS。[最终验收](reports/PA01-CONTINUE-20261016-acceptance.md)。96产品/58默认测试与施工及RECHECK冻结一致；复用同冻结独立241/241、0skip和tsc/Vite有效证据，R-01/R-02及关键回归通过。本轮校准原真实脚本两处响应包装取值错误，原失败记录保留；补实际浏览器检查→刷新恢复→只续重写→显式保存及真实Windows文件锁读取失败。真实Prompt累计**15/24**（此前RECHECK已13、本轮+2），KB02仍**40/40**。1915保护文件、正式数据和实际配置不变，自有服务已关闭。PA01范围缺陷关闭；KB02/FULL3其余FAIL保留，不推进下一批。
+
+以下保留本批历史交接与旧结论。
+2026-10-16 最新施工交接：R-01/R-02 已由指定 Sol High 返修并停写，待新窗口 Astra 中独立复验，不代签批次PASS。[交接](reports/PA01-SOL-20261016-builder-handoff.md)、[入口](handoffs/PA01-astra-review-20261016.md)。96产品/58默认测试最终同字节副本完整241/241、0skip及tsc/Vite通过，新增HTTP+组件7/7；旧关键回归全过。1836保护文件、正式数据和实际配置不变。首轮兼容/fixture类型失败保留并已修正，最终证据只认交接所指冻结。Prompt仍0/24、KB02 40/40；真实质量/实际浏览器留待独立工程门禁通过后取证。下方2026-10-16独立FAIL是本轮施工前结论，复验前仍保留。
+
+2026-10-16 最新独立复验：**整批 FAIL，Standards/受控 Spec FAIL，真实质量 BLOCKED，实际浏览器 NOT_RUN**。[验收](reports/PA01-REVIEW-20261016-acceptance.md)、[最小返修](reports/PA01-REVIEW-20261016-repair.md)。96产品/57测试同施工冻结；独立完整237/237、0skip与build PASS，原复验集全过，但新增3反例/2根因经实际HTTP证实：Workflow深层结构漏校验并可改写坏文件、501恢复问题摘要静默截断。F-01/03/06受控关闭，F-02/04 OPEN，F-05部分通过；PA01-07及08实际caller子项FAIL，PA01-10前置阻塞。Prompt 0/24、KB02 40/40不变。下文为历史交接与验收记录。
+
+最新协作分工以 [coordination](coordination.md) 为准：GPT-6.1 Sol High 接手当前六项返工；用户将在新窗口指定 Astra 中独立审查。旧结论及下文计数是此前验收证据，保持历史原文。当前施工入口见 [Sol 接手任务](handoffs/PA01-sol-rework.md)，施工自测完成不等于本批验收 PASS。
+
+Sol返工已交接并停写：[交接](reports/PA01-SOL-20261015-builder-handoff.md)、[新窗口审查入口](handoffs/PA01-astra-review.md)。最终冻结96产品/57测试，施工完整默认237/237、0skip及tsc/Vite通过；服务26/26、HTTP8/8、组件15/15+扩展5/5、边界35/35、存储3/3、安全62/62。以上均为施工受控自测，不关闭原六项独立FAIL；真实质量与实际浏览器待独立审查，Prompt累计仍0/24。
+
+Prompt链路及错误恢复第一版，按batches/PA01.md及handoffs/PA01-interface.md的PA01-01–10验收：同源契约、调用guard、服务端组装、两阶段持久化/恢复、迟到/版本绑定、分类错误、损坏列表可见、秘密/来源/提交回归、同冻结完整测试构建、真实Prompt闭环。Luna High施工，主Agent亲自验收，当前独立验收FAIL：01/02/05/06/07/08 FAIL，03/04受控工程PASS，09同冻结233/233及build PASS，10工程前置未过BLOCKED（真实0/24，实际浏览器NOT_RUN）。[报告](reports/PA01-20261015-acceptance.md)、[返修要求](reports/PA01-20261015-repair.md)。SP-F01、Prompt部分BL-F01、ST-F01保持OPEN；KB02和FULL3其它未过项不在本批。真实预算最多24调用，仅主Agent虚构隔离使用。
+

@@ -1,0 +1,111 @@
+✔ B05 五维候选显示标题、别名、分类、标签和内容理由，分类单独命中权重低 (115.1737ms)
+✔ B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认幂等 (181.8929ms)
+✔ B05 非法综合分类在保存草稿前拒绝 (47.1552ms)
+✔ B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认 (70.6081ms)
+✔ B05 重启恢复完成提交后收敛workflow，completed manifest不覆盖后续人工编辑 (215.8858ms)
+✔ B05 更新预览保留两套公式，Raw证据可定位，旧revision会拒绝覆盖 (215.0848ms)
+✔ KB02 Q02 request puts business relevance before fragment ambiguity and supplies schema-valid counterexamples (143.8951ms)
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (73.3467ms)
+✔ KB02 Q02 controlled omitted nonbusiness fragments are not promoted to facts or questions (31.1337ms)
+✔ KB02 Q02 all nonbusiness title/layout variants still reject sourceNotes overlap without cleaning or retry (95.5788ms)
+✔ KB02 Q02 full seq62 original response and exact original atom catalog still reject offline (84.1942ms)
+✔ KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes (35.1193ms)
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (106.9085ms)
+✔ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (88.7847ms)
+✔ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (22.6902ms)
+✔ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (17.001ms)
+✔ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (12.2169ms)
+✔ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (15.6892ms)
+✔ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (93.6674ms)
+✔ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (12.8634ms)
+✔ FINAL-02 request requires minimal common propositions per assertion and version-bound two-sided IDs (191.3946ms)
+✔ FINAL-02 missing-old rejects without workflow or Wiki writes (56.0056ms)
+✔ FINAL-02 missing-new rejects without workflow or Wiki writes (54.8472ms)
+✔ FINAL-02 wrong-side-old rejects without workflow or Wiki writes (64.0095ms)
+✔ FINAL-02 wrong-side-new rejects without workflow or Wiki writes (73.2427ms)
+✔ FINAL-02 unknown-old rejects without workflow or Wiki writes (61.6615ms)
+✔ FINAL-02 unknown-new rejects without workflow or Wiki writes (65.5305ms)
+✔ FINAL-02 extra-field rejects without workflow or Wiki writes (93.0695ms)
+✔ FINAL-02 wrong-version rejects without workflow or Wiki writes (79.3962ms)
+✔ FINAL-02 cross-target rejects without workflow or Wiki writes (122.5658ms)
+✔ FINAL-02 original seq82 unilateral compound agreement lacks old-side binding and is rejected, no auto-fill (76.0838ms)
+✔ FINAL-02 controlled synonym/one-sided/partial compound/conflict/unknown/future samples preserve exact support boundaries (132.2788ms)
+✔ FINAL-02 only-old statements may produce empty agreement without inventing a shared claim (66.3239ms)
+✔ FINAL-02 target edited during provider call rejects bound old version with no saved preview (170.3719ms)
+✔ FINAL-02 legacy synthesis evidence contract remains unchanged (63.8962ms)
+✔ FINAL-01 request defines mechanical concatenations and schema-valid content-neutral paired examples (100.7473ms)
+✔ FINAL-01 controlled labels retain real business fragments/negative/unknown/future and exclude concatenated notes (49.9898ms)
+✔ FINAL-01 original seq75 full directory and response preserve semantic failure and strict seq77 coverage rejection (112.9756ms)
+✔ FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero calls/three-file writes; restart uses zero old chunks (397.3293ms)
+✔ FINAL-01 old completed revision5 draft remains HTTP-readable and start reuses it without outbound call (261.544ms)
+✔ FINAL-01 revision5 preflight rejects without invoking any pipeline callbacks (36.4511ms)
+✔ PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts (70.567ms)
+✔ PLAN-03 original seq100 response remains strict rejection with every original record retained (55.132ms)
+✔ PLAN-03 original seq104 response remains strict rejection with every original record retained (13.6382ms)
+✔ PLAN-03 supplement keeps fact and question at the same source, including ambiguous business boundary (7.7324ms)
+✔ PLAN-04 fresh extraction through planning uses context only for attribution, without promoting unselected nearby source notes (7.506ms)
+✔ PLAN-04 exact context windows remain UTF16-safe on both boundaries (5.9976ms)
+✔ PLAN-04 selected record with unresolved atom position fails before planning callbacks (10.0313ms)
+✔ PLAN-04 unselected Raw context known secret rejects before any planning call, ledger or checkpoint write (5.2541ms)
+✔ PLAN-04 complete context payload exceeding 192KiB stops before Provider and preserves extracted chunks (28.3896ms)
+✔ PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit (348.3589ms)
+✔ PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts (5.7933ms)
+✔ PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks (260.6301ms)
+✔ PLAN completed revision6 draft remains HTTP-readable and reused with zero Provider increment (103.8639ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (69.9855ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (49.2136ms)
+✔ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (42.4462ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (102.5415ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (78.4517ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.2236ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (9.092ms)
+✔ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (102.3982ms)
+ℹ tests 62
+ℹ suites 0
+ℹ pass 60
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2599.4059
+
+✖ failing tests:
+
+test at tests\kb02-classification-priority.test.ts:1:5953
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (73.3467ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(!business.includes(JSON.stringify(note).slice(1,-1)))
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:76:38)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:3550
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (106.9085ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      'facts',
+      'questions',
+  +   'sourceContexts'
+    ]
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-extraction-contract.test.ts:58:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'facts', 'questions', 'sourceContexts' ],
+    expected: [ 'facts', 'questions' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

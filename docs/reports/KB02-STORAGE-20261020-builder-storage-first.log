@@ -1,0 +1,22 @@
+✔ SR01 real atomic failed-job transient retry (158.9069ms)
+✔ SR01 real atomic failed-job persistent explicit recovery (804.6729ms)
+✔ SR01 real atomic done-checkpoint transient retry (140.1553ms)
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (799.6111ms)
+✔ SR01 real atomic coverage-checkpoint transient retry (137.9939ms)
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (763.3576ms)
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (480.0457ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (431.9118ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (449.8914ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (422.0438ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (116.0672ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (386.9095ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3435.456ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (0.4181ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8758.8635

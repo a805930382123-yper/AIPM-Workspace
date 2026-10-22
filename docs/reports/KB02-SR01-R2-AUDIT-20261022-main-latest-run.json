@@ -1,0 +1,145 @@
+{
+  "at": "2026-10-22T02:03:22.866Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-storage-audit-6zN7OW",
+  "runtime": "v24.20.0",
+  "copyMismatch": [],
+  "rows": [
+    {
+      "name": "fullsuite",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 45233,
+      "summary": [
+        "ℹ tests 307",
+        "ℹ pass 307",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 45111.4044"
+      ],
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--import",
+        "./tests/acceptance/kb02-sr01-r2-20261021-observe.mjs",
+        "--test",
+        "tests/app-m05-raw-navigation.test.tsx",
+        "tests/app-navigation.test.tsx",
+        "tests/audit-secret-integrity.test.ts",
+        "tests/audit.test.ts",
+        "tests/b05.test.ts",
+        "tests/import.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-job-file-access.test.ts",
+        "tests/kb02-pipeline.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-ui.test.tsx",
+        "tests/llm-flow.test.ts",
+        "tests/llm-http.test.ts",
+        "tests/llm-repair.test.ts",
+        "tests/llm-repair2.test.ts",
+        "tests/llm-repair3.test.ts",
+        "tests/llm.test.ts",
+        "tests/meeting-integration-m05.test.tsx",
+        "tests/meeting-minutes-backup.test.ts",
+        "tests/meeting-minutes.test.ts",
+        "tests/meeting-raw-m04.test.ts",
+        "tests/meeting-raw-ui-m04.test.tsx",
+        "tests/meeting-ui.test.tsx",
+        "tests/meeting.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-recovery.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/prompt-ai.test.ts",
+        "tests/prompt-ui.test.tsx",
+        "tests/prompt.test.ts",
+        "tests/provider-config-ui.test.tsx",
+        "tests/provider-config.test.ts",
+        "tests/provider-knowledge-reasoning.test.ts",
+        "tests/raw-integrity.test.ts",
+        "tests/raw.test.ts",
+        "tests/security-output-sec.test.ts",
+        "tests/ui-b04.test.tsx",
+        "tests/ui-interaction.test.tsx",
+        "tests/ui.test.tsx",
+        "tests/wiki.test.ts"
+      ]
+    },
+    {
+      "name": "tsc",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 8307,
+      "summary": [],
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "-b"
+      ]
+    },
+    {
+      "name": "vite",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 4846,
+      "summary": [],
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "build"
+      ]
+    },
+    {
+      "name": "node24-version",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 262,
+      "summary": [],
+      "command": [
+        "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--version"
+      ]
+    },
+    {
+      "name": "node24-targeted",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 32923,
+      "summary": [
+        "ℹ tests 51",
+        "ℹ pass 51",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 32577.5901"
+      ],
+      "command": [
+        "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-job-file-access.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-ui.test.tsx"
+      ]
+    }
+  ],
+  "realCalls": 0,
+  "afterCopyChanges": [],
+  "pass": true
+}

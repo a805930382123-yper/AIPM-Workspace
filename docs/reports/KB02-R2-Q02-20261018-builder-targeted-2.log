@@ -1,0 +1,77 @@
+✖ KB02 Q02 request puts business relevance before fragment ambiguity and supplies schema-valid counterexamples (47.2902ms)
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (18.8954ms)
+✔ KB02 Q02 controlled omitted nonbusiness fragments are not promoted to facts or questions (29.9436ms)
+✔ KB02 Q02 all nonbusiness title/layout variants still reject sourceNotes overlap without cleaning or retry (88.8602ms)
+✔ KB02 Q02 full seq62 original response and exact original atom catalog still reject offline (46.6714ms)
+✔ KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes (22.3297ms)
+✔ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planner and draft (55.1269ms)
+✔ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (46.8985ms)
+✔ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (14.9553ms)
+✔ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (15.2859ms)
+✔ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (15.286ms)
+✔ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (17.4354ms)
+✔ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (109.6901ms)
+✔ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (17.2405ms)
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (55.778ms)
+✔ KB02 resume reuses validated chunks and counts failed outbound attempts (54.492ms)
+✔ KB02 corrupted checkpoint integrity fails closed (23.1188ms)
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (381.8156ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (257.9882ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (57.0992ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (34.7951ms)
+✔ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (43.1384ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (33.7249ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (33.4047ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.2075ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (13.2177ms)
+✔ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (118.776ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 25
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1261.3752
+
+✖ failing tests:
+
+test at tests\kb02-classification-priority.test.ts:1:4281
+✖ KB02 Q02 request puts business relevance before fragment ambiguity and supplies schema-valid counterexamples (47.2902ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at respond (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:34:35)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:41:249)
+      at runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:112:47)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:49:5)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-classification-priority.test.ts:1:5979
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (18.8954ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at respond (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:34:35)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:41:249)
+      at runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:112:47)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:68:21)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

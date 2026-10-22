@@ -1,0 +1,137 @@
+{
+  "at": "2026-10-20T13:44:32.900Z",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-storage-audit-Inj9LH",
+  "runtime": "v25.2.1",
+  "copyMismatch": [],
+  "rows": [
+    {
+      "name": "fullsuite",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 996,
+      "summary": [
+        "ℹ tests 43",
+        "ℹ pass 0",
+        "ℹ fail 43",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 880.7532"
+      ],
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/app-m05-raw-navigation.test.tsx",
+        "tests/app-navigation.test.tsx",
+        "tests/audit-secret-integrity.test.ts",
+        "tests/audit.test.ts",
+        "tests/b05.test.ts",
+        "tests/import.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-pipeline.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-ui.test.tsx",
+        "tests/llm-flow.test.ts",
+        "tests/llm-http.test.ts",
+        "tests/llm-repair.test.ts",
+        "tests/llm-repair2.test.ts",
+        "tests/llm-repair3.test.ts",
+        "tests/llm.test.ts",
+        "tests/meeting-integration-m05.test.tsx",
+        "tests/meeting-minutes-backup.test.ts",
+        "tests/meeting-minutes.test.ts",
+        "tests/meeting-raw-m04.test.ts",
+        "tests/meeting-raw-ui-m04.test.tsx",
+        "tests/meeting-ui.test.tsx",
+        "tests/meeting.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-recovery.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/prompt-ai.test.ts",
+        "tests/prompt-ui.test.tsx",
+        "tests/prompt.test.ts",
+        "tests/provider-config-ui.test.tsx",
+        "tests/provider-config.test.ts",
+        "tests/provider-knowledge-reasoning.test.ts",
+        "tests/raw-integrity.test.ts",
+        "tests/raw.test.ts",
+        "tests/security-output-sec.test.ts",
+        "tests/ui-b04.test.tsx",
+        "tests/ui-interaction.test.tsx",
+        "tests/ui.test.tsx",
+        "tests/wiki.test.ts"
+      ]
+    },
+    {
+      "name": "tsc",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 3623,
+      "summary": [],
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "-b"
+      ]
+    },
+    {
+      "name": "vite",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 1050,
+      "summary": [],
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "build"
+      ]
+    },
+    {
+      "name": "node24-version",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 846,
+      "summary": [],
+      "command": [
+        "C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "--version"
+      ]
+    },
+    {
+      "name": "node24-targeted",
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 254,
+      "summary": [
+        "ℹ tests 4",
+        "ℹ pass 0",
+        "ℹ fail 4",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 147.299"
+      ],
+      "command": [
+        "C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-ui.test.tsx"
+      ]
+    }
+  ],
+  "realCalls": 0,
+  "afterCopyChanges": [],
+  "pass": false
+}

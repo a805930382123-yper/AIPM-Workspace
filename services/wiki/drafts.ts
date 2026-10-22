@@ -1,4 +1,4 @@
-﻿// B04: recoverable, versioned extraction drafts. A draft is the only place AI output lives
+// B04: recoverable, versioned extraction drafts. A draft is the only place AI output lives
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
 import { randomUUID } from 'node:crypto';
@@ -7,7 +7,8 @@ import type { LlmError } from '../llm/provider.ts';
 import { locateEvidenceInBody } from '../llm/evidence.ts';
 import type { ExtractOutcome, ExtractedPage } from '../llm/service.ts';
 import { mkdir } from 'node:fs/promises';
-import { SerialQueue, listJsonRecords, readJsonFile, writeJsonAtomic } from '../storage/files.ts';
+import { SerialQueue, scanJsonRecords, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
+import { isExtractionDraft } from '../storage/record-validators.ts';
 import { renderPageBody, renderSourceBody } from './render.ts';
 
 export const DRAFT_STATUSES = ['pending_confirmation', 'committing', 'confirmed', 'discarded'] as const;
@@ -104,13 +105,12 @@ export class DraftStore {
 
   async get(id: string): Promise<DraftRecord | undefined> {
     if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined;
-    return readJsonFile<DraftRecord>(this.fileFor(id));
+    return readJsonRecord<DraftRecord>(this.root,this.fileFor(id),(value):value is DraftRecord=>isExtractionDraft(value,id));
   }
 
   async list(): Promise<DraftRecord[]> {
-    const records = await listJsonRecords<DraftRecord>(this.directory());
-    return records.map(record => record.value)
-      .filter(value => value && typeof value.id === 'string' && DRAFT_STATUSES.includes(value.status))
+    const scan = await scanJsonRecords<DraftRecord>(this.directory(),(value,file):value is DraftRecord=>isExtractionDraft(value,path.basename(file,'.json')),this.root);
+    return scan.records.map(record => record.value)
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
@@ -281,7 +281,12 @@ export class DraftStore {
 
   private applyPagePatch(page: DraftPage, item: DraftPagePatch, context: { body: string; rules: DraftRules }, rawId: string): void {
     const edited = new Set(page.editedFields ?? []);
-    const setField = (key: keyof DraftPage, value: unknown) => { edited.add(key as string); (page as Record<string, unknown>)[key as string] = value; };
+    const candidateBasis = new Set(['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized']);
+    const setField = (key: keyof DraftPage, value: unknown) => {
+      const name = key as string;
+      if (candidateBasis.has(name) && JSON.stringify((page as Record<string, unknown>)[name]) !== JSON.stringify(value)) { page.reviewDecision = undefined; page.updateTargetWikiId = undefined; }
+      edited.add(name); (page as Record<string, unknown>)[name] = value;
+    };
     if (item.selected !== undefined) page.selected = Boolean(item.selected);
     if (item.reviewDecision !== undefined) {
       if (!['update', 'create', 'defer'].includes(item.reviewDecision)) throw new DraftError('INVALID_DECISION', '知识建议处理决策无效。', 400);

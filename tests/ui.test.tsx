@@ -1,4 +1,4 @@
-﻿// B03: UI contract check without a browser. Renders the real components and asserts the
+// B03: UI contract check without a browser. Renders the real components and asserts the
 // controls, limits and states the browser self-check would look for. It cannot replace real
 // browser interaction (recorded as NOT_RUN in the build report), but it does prove that the
 // upload form, the retained-original wording, the paste fallback and the delete confirmation
@@ -28,20 +28,20 @@ function page(items: Raw[], props: { openImport?: boolean } = {}) {
 }
 
 test('粘贴导入对话框保留原有文本流程与字符上限', () => {
-  const html = renderToStaticMarkup(<ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} />);
+  const html = renderToStaticMarkup(<ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} onGenerate={settled} />);
   assert.match(html, /导入原始资料/);
   assert.match(html, /粘贴文本/);
   assert.match(html, /上传文件/);
   assert.match(html, /<textarea/);
   assert.match(html, new RegExp(MAX_BODY_CHARS.toLocaleString('en-US')));
   assert.match(html, /正文写入后不可由 AI 改写/);
-  assert.match(html, /保存原始资料/);
+  assert.match(html, /仅保存 Raw/);
   assert.equal(html.includes('type="file"'), false, '粘贴模式不显示文件选择器');
   assert.match(html, /分隔符：中文\/英文逗号、顿号、分号 · 当前 0 项/);
 });
 
 test('文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界', () => {
-  const html = renderToStaticMarkup(<ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} prefill={fileRaw} />);
+  const html = renderToStaticMarkup(<ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} onGenerate={settled} prefill={fileRaw} />);
   assert.match(html, /重新导入/);
   assert.match(html, /重新导入会创建新的 Raw ID/);
   assert.match(html, /不会自动复制上一条的原文件或转移 Wiki 来源/);
@@ -51,7 +51,7 @@ test('文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界'
   assert.match(html, new RegExp(`${MAX_UPLOAD_BYTES / 1024 / 1024} MiB`));
   assert.match(html, /严格 UTF-8/);
   assert.match(html, /扫描版 PDF 与加密 PDF 本批不支持/);
-  assert.match(html, /上传并入库/);
+  assert.match(html, /保存并生成 Wiki 草稿/);
   const titleInput = /<input[^>]*placeholder="例如：经销商订货流程访谈纪要"[^>]*>/.exec(html)?.[0] ?? '';
   assert.match(titleInput, /value="文件导入资料"/, '重新导入必须预填标题');
   const sourceInput = /<input[^>]*placeholder="例如：客户访谈 \/ 公众号名称"[^>]*>/.exec(html)?.[0] ?? '';

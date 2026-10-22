@@ -1,0 +1,551 @@
+{
+  "runtime": "v25.2.1",
+  "variant": "patched",
+  "mode": "failed-job",
+  "fixtureRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh",
+  "synthetic": true,
+  "externalCalls": 0,
+  "beforeRecovery": {
+    "job": {
+      "id": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "status": "running",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:07.561Z",
+      "updatedAt": "2026-10-19T16:17:07.596Z"
+    },
+    "checkpoint": {
+      "version": 1,
+      "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+      "pipelineVersion": "kb02-2",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+      "providerIdentity": "fake|budget-model",
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26
+        }
+      ],
+      "completedChunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26,
+          "facts": [
+            {
+              "text": "目标100家，在售20家。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0001",
+              "kind": "fact",
+              "id": "f-c1-1",
+              "chunkIndex": 0
+            },
+            {
+              "text": "铺货率20%，负责人未知。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0002",
+              "kind": "fact",
+              "id": "f-c1-2",
+              "chunkIndex": 0
+            }
+          ],
+          "questions": [],
+          "sourceNotes": [],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+              "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+              "start": 0,
+              "end": 26,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "attempts": 2,
+      "stage": "planning",
+      "updatedAt": "2026-10-19T16:17:07.601Z",
+      "integrity": "6dc52e590e69bc6b734f0c8d6de9f2a203c720beb89018deebd41f10a94ac398",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:07.601Z",
+        "diagnostic": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "rawState": {
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "status": "failed",
+      "updatedAt": "2026-10-19T16:17:07.603Z",
+      "history": [
+        {
+          "at": "2026-10-19T16:17:07.576Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6"
+        },
+        {
+          "at": "2026-10-19T16:17:07.603Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6"
+        }
+      ],
+      "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "revertStatus": "unprocessed",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:07.601Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "draftIds": [],
+    "calls": 2
+  },
+  "atomicFailures": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "attempts": 6,
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "after": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "intact": true,
+      "error": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      }
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "attempts": 6,
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "after": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "intact": true,
+      "error": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      }
+    }
+  ],
+  "runtimeView": {
+    "job": {
+      "id": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "status": "running",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:07.561Z",
+      "updatedAt": "2026-10-19T16:17:07.596Z"
+    },
+    "recovery": {
+      "code": "STORAGE_WRITE_FAILED",
+      "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+      "persisted": false,
+      "phase": "failed-job",
+      "details": {
+        "operation": "atomic-write",
+        "errno": "EPERM"
+      }
+    },
+    "settled": true
+  },
+  "afterRecovery": {
+    "job": {
+      "id": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "status": "failed",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:07.561Z",
+      "updatedAt": "2026-10-19T16:17:08.318Z",
+      "finishedAt": "2026-10-19T16:17:08.316Z",
+      "error": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:07.601Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "settled": true
+  },
+  "afterSnapshot": {
+    "job": {
+      "id": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "status": "failed",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:07.561Z",
+      "updatedAt": "2026-10-19T16:17:08.318Z",
+      "finishedAt": "2026-10-19T16:17:08.316Z",
+      "error": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:07.601Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "checkpoint": {
+      "version": 1,
+      "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+      "pipelineVersion": "kb02-2",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+      "providerIdentity": "fake|budget-model",
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26
+        }
+      ],
+      "completedChunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26,
+          "facts": [
+            {
+              "text": "目标100家，在售20家。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0001",
+              "kind": "fact",
+              "id": "f-c1-1",
+              "chunkIndex": 0
+            },
+            {
+              "text": "铺货率20%，负责人未知。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0002",
+              "kind": "fact",
+              "id": "f-c1-2",
+              "chunkIndex": 0
+            }
+          ],
+          "questions": [],
+          "sourceNotes": [],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+              "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+              "start": 0,
+              "end": 26,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "attempts": 2,
+      "stage": "planning",
+      "updatedAt": "2026-10-19T16:17:08.314Z",
+      "integrity": "bc5a85ca461542a317c3b5fe5885ba0c7f77f350bbbe8f91d7ffcc17317b6d87",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:07.601Z",
+        "diagnostic": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "rawState": {
+      "rawId": "03a3a219-6271-4a1d-9e39-d7c040c5a821",
+      "status": "failed",
+      "updatedAt": "2026-10-19T16:17:08.316Z",
+      "history": [
+        {
+          "at": "2026-10-19T16:17:07.576Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6"
+        },
+        {
+          "at": "2026-10-19T16:17:07.603Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6"
+        },
+        {
+          "at": "2026-10-19T16:17:07.966Z",
+          "from": "failed",
+          "to": "failed",
+          "reason": "存储恢复后保留原失败",
+          "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6"
+        },
+        {
+          "at": "2026-10-19T16:17:08.316Z",
+          "from": "failed",
+          "to": "failed",
+          "reason": "存储恢复后保留原失败",
+          "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6"
+        }
+      ],
+      "jobId": "eacea109-fb74-43a5-93a4-ffcbba62d5e6",
+      "revertStatus": "unprocessed",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:07.601Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "draftIds": [],
+    "calls": 2
+  },
+  "result": "PROOF_OF_FIX_CHECKS_PASSED",
+  "rejected": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.ae7fcf45-9a93-45cd-945b-15a8070b8415.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 275.9445
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.ae7fcf45-9a93-45cd-945b-15a8070b8415.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 307.7537
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.ae7fcf45-9a93-45cd-945b-15a8070b8415.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 355.3347
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.ae7fcf45-9a93-45cd-945b-15a8070b8415.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 418.5246
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.ae7fcf45-9a93-45cd-945b-15a8070b8415.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 515.0837
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.ae7fcf45-9a93-45cd-945b-15a8070b8415.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 624.3242
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.5783b4bc-e349-4255-9361-492e0dc6bb00.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 638.1325
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.5783b4bc-e349-4255-9361-492e0dc6bb00.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 670.8571
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.5783b4bc-e349-4255-9361-492e0dc6bb00.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 717.7635
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.5783b4bc-e349-4255-9361-492e0dc6bb00.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 779.623
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.5783b4bc-e349-4255-9361-492e0dc6bb00.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 873.4486
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\eacea109-fb74-43a5-93a4-ffcbba62d5e6.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-dN9VPh\\state\\extraction-jobs\\.eacea109-fb74-43a5-93a4-ffcbba62d5e6.json.5783b4bc-e349-4255-9361-492e0dc6bb00.tmp",
+      "before": "c956d9a791686a177837715d91eee28017a42bc6c15bf9fe6dfaf247f4c5a692",
+      "at": 980.4551
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-18T13:47:32.092Z",
+  "baselineAt": "2026-10-18T13:41:21.726Z",
+  "frozenAt": "2026-10-18T13:47:31.965Z",
+  "changedProduct": [
+    {
+      "file": "services/llm/knowledge-extraction.ts",
+      "kind": "modified",
+      "beforeSha256": "3142509f7c4512dfae65527206138f057eb1e733ac317baa31256d5e22db460b",
+      "sha256": "98e4e2c639d4628b27e8bb318fb853b3580998b98828e27c5767af9f16c7cb96"
+    },
+    {
+      "file": "services/llm/rules.ts",
+      "kind": "modified",
+      "beforeSha256": "b91eb409b7d4ed6b3080f9a8e516ff650fcfa437f30fa74579245409a0420a57",
+      "sha256": "70d6df539a3f2e4579478db3ec2250f45f8d400d29ae4b7495692e57aa787a1e"
+    }
+  ],
+  "changedTests": [
+    {
+      "file": "tests/kb02-extraction-contract.test.ts",
+      "kind": "modified",
+      "beforeSha256": "4a2afb88e32760eaa26041885c08cb2e0e7a866bfd3f652cbf2379ad4ab5e4ca",
+      "sha256": "74654bea91dc615a1f97c161dd99e9aa2e3cd37c073c02aa4fe386656bba2f62"
+    },
+    {
+      "file": "tests/llm.test.ts",
+      "kind": "modified",
+      "beforeSha256": "04e63a8b28a12c59267cfae188f43190c84395c341c1ef930ca01f9fe56e08d5",
+      "sha256": "eb6ead97f6ad398dac3352aa8089933ed94e46b4859da245a613b448534a7808"
+    },
+    {
+      "file": "tests/kb02-classification-priority.test.ts",
+      "kind": "added",
+      "beforeSha256": null,
+      "sha256": "31f675d9575fdde248a79739e8084ba236f3c8ea1236c3a3888f7eea6c3be23e"
+    }
+  ],
+  "productCount": 97,
+  "testCount": 62,
+  "fixtureFiles": {
+    "tests/acceptance/kb02-r2-q02-20261018-builder-seq62.json": "70858a614b12bd9f56375b0e0c2e7dd87a79cfcb3d6534b3ac6aecc683d49def",
+    "tests/acceptance/kb02-r2-q01-20261018-builder-responses.json": "99ddb62bc17a9b23748ea30ed567c307375c80a1526e618e7c21f5db4c3dbe60"
+  }
+}

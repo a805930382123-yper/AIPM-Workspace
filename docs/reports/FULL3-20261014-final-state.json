@@ -1,0 +1,126 @@
+{
+  "at": "2026-10-14T08:05:06.515Z",
+  "result": "PASS",
+  "audit": {
+    "wikiId": "f221fbee-9d36-4d5b-9892-2de1aa7f4ce8",
+    "revision": 2,
+    "correct20Percent": true,
+    "preservedHumanNote": true,
+    "diskMatchesHttp": true
+  },
+  "raws": {
+    "count": 4,
+    "allExactOriginal": true
+  },
+  "selectedBackground": {
+    "sequence": 8,
+    "editedBriefIncluded": true,
+    "selectedIncluded": true,
+    "unselectedExcluded": true,
+    "requestOnlyNotGeneratedOutput": true
+  },
+  "formalCounts": {
+    "wiki": 3,
+    "prompts": 1,
+    "noUnconfirmedAiFormalAssets": true
+  },
+  "secrets": {
+    "checkedAssets": 16,
+    "checkedReports": 18,
+    "noActualKey": true
+  },
+  "actualRequests": {
+    "child": 9,
+    "diagnostic": 1,
+    "total": 10,
+    "cap": 24
+  },
+  "providerTrace": [
+    {
+      "at": "2026-10-14T07:44:19.021Z",
+      "sequence": 1,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "status": 200,
+      "elapsedMs": 1723
+    },
+    {
+      "at": "2026-10-14T07:44:20.913Z",
+      "sequence": 2,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "networkError": true,
+      "elapsedMs": 60024
+    },
+    {
+      "at": "2026-10-14T07:45:21.010Z",
+      "sequence": 3,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "networkError": true,
+      "elapsedMs": 90006
+    },
+    {
+      "at": "2026-10-14T07:46:51.104Z",
+      "sequence": 4,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "status": 200,
+      "elapsedMs": 12234
+    },
+    {
+      "at": "2026-10-14T07:47:03.448Z",
+      "sequence": 5,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "status": 200,
+      "elapsedMs": 59527
+    },
+    {
+      "at": "2026-10-14T07:48:03.014Z",
+      "sequence": 6,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "networkError": true,
+      "elapsedMs": 60002
+    },
+    {
+      "at": "2026-10-14T07:49:55.673Z",
+      "sequence": 7,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "status": 200,
+      "elapsedMs": 46715
+    },
+    {
+      "at": "2026-10-14T07:50:34.704Z",
+      "sequence": 8,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "networkError": true,
+      "elapsedMs": 60018
+    },
+    {
+      "at": "2026-10-14T07:51:34.756Z",
+      "sequence": 9,
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash",
+      "stream": false,
+      "networkError": true,
+      "elapsedMs": 60012
+    }
+  ],
+  "environment": {
+    "node": "v24.20.0",
+    "platform": "win32"
+  },
+  "servicesClosed": false
+}

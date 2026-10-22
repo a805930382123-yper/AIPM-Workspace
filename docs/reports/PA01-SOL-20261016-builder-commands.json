@@ -1,0 +1,124 @@
+{
+  "at": "2026-10-16T02:19:39.403Z",
+  "externalCalls": 0,
+  "tokenUsage": "not exposed by host",
+  "records": [
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/pa01-r01-r02.test.ts",
+      "result": "4/4, 0 skip",
+      "durationMs": 9260.6112,
+      "notes": "Initial 27-corruption version; tool transcript summary retained in default-initial-transcript.log"
+    },
+    {
+      "command": "same targeted command",
+      "result": "4/4, 0 skip",
+      "durationMs": 8184.7677,
+      "notes": "31-corruption refinement: strict enums and confirmed receipt"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-r01-r02-http-component.mjs",
+      "result": "7/7",
+      "durationMs": 11583,
+      "notes": "Actual HTTP + jsdom; same-id corrupt-to-healthy repair; initial version retained; removed invalid row timing metadata only"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-probes.mjs",
+      "result": "26/26",
+      "durationMs": 2512.0086,
+      "notes": "Tool wall time"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-http.mjs",
+      "result": "8/8",
+      "durationMs": 4283.4942,
+      "notes": "Tool wall time"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-component.mjs",
+      "result": "15/15",
+      "durationMs": 8079.2004,
+      "notes": "Tool wall time"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-component-extended.mjs",
+      "result": "5/5",
+      "durationMs": 8010.4185,
+      "notes": "Tool wall time"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-edges.mjs",
+      "result": "35/35",
+      "durationMs": null,
+      "notes": "Yielded after 10013ms; exact final elapsed not recorded, no invented timing"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-storage.mjs",
+      "result": "3/3",
+      "durationMs": 2011.5696,
+      "notes": "Tool wall time"
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs tests/acceptance/pa01-sol-20261016-builder-security.mjs",
+      "result": "62/62",
+      "durationMs": 15100,
+      "notes": "Script duration; localhost fake, own services closed"
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-fullsuite.mjs",
+      "result": "INITIAL 240/241, 0 skip; exit 1",
+      "durationMs": 30088,
+      "notes": "Product compatibility failure: unused legacy inputDraft IDs draft/page rejected by UUID restriction. Initial frozen/log/json retained."
+    },
+    {
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/pa01-r01-r02.test.ts",
+      "result": "4/4, 0 skip",
+      "durationMs": 8839.5202,
+      "notes": "33 corruption variants incl blank inputDraft ID/revision; legacy IDs readable/editable/confirmable. Raw log default-final-targeted.log."
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-b05-targeted.mjs",
+      "result": "6/6, 0 skip",
+      "durationMs": 874,
+      "notes": "Writable temporary copy; old B05 original assertions unchanged"
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-fullsuite.mjs",
+      "result": "PRETYPE 241/241, 0 skip",
+      "durationMs": 29364,
+      "notes": "Preserved as pretype evidence; followed by compile failure in new test fixture types"
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-build.mjs",
+      "result": "PRETYPE tsc exit 1; Vite not run",
+      "durationMs": 7259,
+      "notes": "New fixture sourceType widened string and fake missing finishReason/bytes. Corrected literal and explicit metadata; no assertions changed. Original pretype-build.json / pretype-tsc.log preserved."
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-integrity.mjs freeze",
+      "result": "FINAL 96 products / 58 default test files",
+      "notes": "Latest main-frozen.json is sole final review snapshot"
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-fullsuite.mjs",
+      "result": "FINAL 241/241, 0 fail, 0 skip; exit 0",
+      "durationMs": 28059,
+      "notes": "Final 9X25hM writable copy, SHA copyMismatches=[]"
+    },
+    {
+      "command": "node tests/acceptance/pa01-sol-20261016-builder-build.mjs",
+      "result": "FINAL tsc exit 0 + Vite exit 0",
+      "durationMs": 11412,
+      "notes": "Same final copy; tsc7025ms/Vite4387ms, copyMismatches=[]"
+    }
+  ],
+  "environmentEvents": [
+    {
+      "event": "apply_patch could not read reparse-point path",
+      "effect": "No write; normal tool escalation used, no ACL change"
+    },
+    {
+      "event": "python.exe resolved to Windows Store stub and exited 1 without output",
+      "effect": "No write; Node and PowerShell used via require_escalated"
+    }
+  ]
+}

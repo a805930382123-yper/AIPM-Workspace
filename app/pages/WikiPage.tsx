@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import type { Audit, AuditConflict, AuditDraft, RawSummary, Wiki, WikiInput, WikiLintResult, WikiSchema, WikiType } from '../api';
-import { api, dateText, sourceLabels } from '../api';
+import type { Audit, AuditConflict, AuditDraft, ExtractionJob, KnowledgeWorkflowSummary, RawProcessingState, RawSummary, Wiki, WikiInput, WikiLintResult, WikiSchema, WikiType } from '../api';
+import { api, dateText, drafts, knowledgeWorkflows, sourceLabels, startExtract } from '../api';
 import '../wiki.css';
 
 const statusLabels: Record<string, string> = { verified: '已核实', source_supported: '有来源支持', ai_organized: 'AI整理', inferred: '推断', needs_verification: '待验证', reviewed: '已人工审核', unreviewed: '未审核' };
@@ -17,7 +17,7 @@ function hasSectionContent(body: string) {
   return body.split(/\r?\n/).some(line => line.trim() && !/^#{1,6}\s/.test(line.trim()) && !/^<!--.*-->$/.test(line.trim()));
 }
 
-export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHandled }: { onOpenRaw: (id: string) => void; onChanged: () => void; initialOpenId?: string | null; onInitialOpenHandled?: () => void }) {
+export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHandled, processing = {}, onJobStarted, navigationGeneration = 0, onOpenDraft, onOpenWorkflow, onImport }: { onOpenRaw: (id: string) => void; onChanged: () => void; initialOpenId?: string | null; onInitialOpenHandled?: () => void; processing?: Record<string, RawProcessingState>; onJobStarted?: (job: ExtractionJob, pageGeneration?: number) => void; navigationGeneration?: number; onOpenDraft?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onImport?: () => void }) {
   const [schema, setSchema] = useState<WikiSchema | null>(null);
   const [raws, setRaws] = useState<RawSummary[]>([]);
   const [items, setItems] = useState<Wiki[]>([]);
@@ -36,6 +36,11 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHan
   const [loading, setLoading] = useState(true);
   const [lintResult, setLintResult] = useState<WikiLintResult | null>(null);
   const [lintBusy, setLintBusy] = useState(false);
+  const [rawChooserOpen, setRawChooserOpen] = useState(false);
+  const [extractingRawId, setExtractingRawId] = useState<string | null>(null);
+  const [extractError, setExtractError] = useState('');
+  const [pendingDrafts, setPendingDrafts] = useState<Array<{id:string;rawId:string;rawTitle:string;title:string;updatedAt:string}>>([]);
+  const [pendingWorkflows, setPendingWorkflows] = useState<KnowledgeWorkflowSummary[]>([]);
   const pendingCreate = useRef(false);
   const selectionVersion = useRef(0);
   const selectedIdRef = useRef<string | null>(null);
@@ -99,6 +104,8 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHan
     return () => window.removeEventListener('wiki:new', begin);
   }, [schema]);
 
+  useEffect(() => { const openGenerator = () => setRawChooserOpen(true); window.addEventListener('wiki:generate', openGenerator); return () => window.removeEventListener('wiki:generate', openGenerator); }, []);
+
   useEffect(() => {
     const lint = () => { setLintBusy(true); setError(''); api<WikiLintResult>('/api/wiki-lint').then(setLintResult).catch(e => setError(e instanceof Error ? e.message : 'Lint 运行失败。')).finally(() => setLintBusy(false)); };
     window.addEventListener('wiki:lint', lint);
@@ -117,6 +124,22 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHan
     return () => { active = false; };
   }, [initialOpenId, onInitialOpenHandled]);
 
+  useEffect(() => {
+    let active = true;
+    drafts({ status: 'pending_confirmation' }).then(value => { if (active) setPendingDrafts(value); }).catch(() => { if (active) setExtractError('无法读取待审核草稿，请重试或刷新。'); });
+    return () => { active = false; };
+  }, []);  const generateFromRaw = async (raw: RawSummary) => {
+    if (raw.origin) { setExtractError('Meeting 来源仅限本机，不可发送给 AI。'); return; }
+    const requestedPageGeneration = navigationGeneration;
+    setExtractError(''); setExtractingRawId(raw.id);
+    try {
+      const state = processing[raw.id];
+      if (state?.status === 'pending_confirmation' && state.draftId) { setRawChooserOpen(false); onOpenDraft?.(state.draftId); return; }
+      const job = await startExtract(raw.id);
+      setRawChooserOpen(false); onJobStarted?.(job, requestedPageGeneration);
+    } catch (problem) { setExtractError(problem instanceof Error ? problem.message : '无法启动知识提取。'); }
+    finally { setExtractingRawId(null); }
+  };  useEffect(() => { let active = true; knowledgeWorkflows().then(items => { if (active) setPendingWorkflows(items.filter(item => item.status === 'pending_confirmation' || item.status === 'conflict')); }).catch(() => undefined); return () => { active = false; }; }, []);
   const activeTemplate = useMemo(() => form ? schema?.pageTemplates[form.type] : undefined, [form, schema]);
   const createBase = (type: WikiType = 'concept'): WikiForm => ({
     title: '', type, category: 'industry_basics', sources: [], tags: [], aliases: [],
@@ -180,7 +203,7 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHan
     finally { setBusy(false); }
   };
   return <div className="page wiki-page">
-    <div className="page-heading wiki-heading"><div><p className="eyebrow">个人业务知识 · Markdown</p><h1>知识库</h1><p className="subheading">按类型整理知识，保留来源、关联和可独立读取的 Markdown 文件。</p></div><div className="heading-actions"><button className="secondary-button" disabled={lintBusy} onClick={async () => { setLintBusy(true); try { setLintResult(await api<WikiLintResult>('/api/wiki-lint')); } catch (e) { setError(e instanceof Error ? e.message : 'Lint 运行失败。'); } finally { setLintBusy(false); } }}>{lintBusy ? '正在检查…' : '检查知识库'}</button><button className="primary-button" onClick={startCreate} disabled={!schema}><span>＋</span> 新建 Wiki</button></div></div>
+    <div className="page-heading wiki-heading"><div><p className="eyebrow">个人业务知识 · Markdown</p><h1>知识库</h1><p className="subheading">按类型整理知识，保留来源、关联和可独立读取的 Markdown 文件。</p></div><div className="heading-actions"><button className="primary-button" onClick={() => { setRawChooserOpen(true); }}>从 Raw 生成 Wiki 草稿</button><button className="secondary-button" disabled={lintBusy} onClick={async () => { setLintBusy(true); try { setLintResult(await api<WikiLintResult>('/api/wiki-lint')); } catch (e) { setError(e instanceof Error ? e.message : 'Lint 运行失败。'); } finally { setLintBusy(false); } }}>{lintBusy ? '正在检查…' : '检查知识库'}</button><button className="secondary-button" onClick={startCreate} disabled={!schema}><span>＋</span> 手动创建 Wiki</button></div></div>
     {lintResult && <section className="wiki-message lint-panel" role="status"><div><b>Lint 检查完成 · {lintResult.findings.length} 个问题</b><div className="lint-findings">{lintResult.findings.length ? lintResult.findings.map((finding, index) => <button className="text-button" key={`${finding.code}-${finding.file}-${index}`} onClick={() => { if (finding.objectId) chooseItem(finding.objectId); }}>{finding.code} · {finding.file}:{finding.location.line} · {finding.message}</button>) : <span>没有发现问题。</span>}</div></div><button onClick={() => setLintResult(null)}>关闭</button></section>}
     {error && <div className="wiki-message error-message" role="alert">{error}<button onClick={() => setError('')}>关闭</button></div>}{notice && <div className="wiki-message success-message" role="status">{notice}<button onClick={() => setNotice('')}>关闭</button></div>}
     <div className="wiki-map panel"><div className="map-title"><div><h2>学习地图</h2><span>按业务主题浏览</span></div><span className="map-total">{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)} 页</span></div><div className="category-grid"><button className={`category-chip ${category === '' ? 'chosen' : ''}`} onClick={() => updateCategory('')}>全部<span>{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}</span></button>{schema?.categories.map(item => <button className={`category-chip ${category === item.id ? 'chosen' : ''}`} key={item.id} onClick={() => updateCategory(category === item.id ? '' : item.id)}>{item.label}<span>{categoryCounts[item.id] ?? 0}</span></button>)}</div></div>
@@ -188,9 +211,11 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHan
       <section className="panel wiki-list-panel"><div className="wiki-search"><label className="search-box"><span>⌕</span><input aria-label="搜索 Wiki" value={query} onChange={event => updateQuery(event.target.value)} placeholder="搜索标题、别名、标签、正文或分类" />{query && <button aria-label="清空搜索" onClick={() => updateQuery('')}>×</button>}</label><span className="wiki-count">{items.length} 页</span></div>
         <div className="wiki-list-content">{loading ? <div className="list-empty">正在读取知识库…</div> : items.length ? items.map(item => <button key={item.id} className={`wiki-list-item ${selectedId === item.id ? 'selected' : ''}`} onClick={() => chooseItem(item.id)}><span className="wiki-type-mark">{typeLabel(schema, item.type).slice(0, 1)}</span><span className="wiki-list-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{typeLabel(schema, item.type)} · {schema?.categories.find(value => value.id === item.category)?.label ?? item.category}</small><small>{item.aliases.length ? `别名：${item.aliases.join('、')}` : statusLabels[item.knowledge_status] ?? item.knowledge_status}</small></span></button>) : <div className="list-empty"><span className="empty-symbol">▤</span><b>没有匹配的知识页</b><span>换个关键词，或为当前主题创建一页。</span><button className="secondary-button" onClick={startCreate}>新建 Wiki</button></div>}</div>
       </section>
-      <section className="panel wiki-detail-panel">{form ? <WikiEditor schema={schema} raws={raws} form={form} busy={busy} baseRevision={baseRevision} template={activeTemplate} onField={setField} onCancel={() => { setForm(null); setError(''); }} onSave={save} onOpenRaw={onOpenRaw} /> : selected ? <WikiDetail key={selected.id} item={selected} schema={schema} raws={raws} busy={busy} onEdit={() => startEdit(selected)} onDelete={() => void requestDelete(selected)} onOpenRaw={onOpenRaw} onOpenWiki={chooseItem} onChanged={onChanged} /> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>从学习地图开始整理知识</b><span>创建六类 Wiki 页面，并关联保存过的 Raw 来源。</span><button className="secondary-button" onClick={startCreate}>创建第一条 Wiki</button></div>}</section>
+      <section className="panel wiki-detail-panel">{form ? <WikiEditor schema={schema} raws={raws} form={form} busy={busy} baseRevision={baseRevision} template={activeTemplate} onField={setField} onCancel={() => { setForm(null); setError(''); }} onSave={save} onOpenRaw={onOpenRaw} /> : selected ? <WikiDetail key={selected.id} item={selected} schema={schema} raws={raws} busy={busy} onEdit={() => startEdit(selected)} onDelete={() => void requestDelete(selected)} onOpenRaw={onOpenRaw} onOpenWiki={chooseItem} onChanged={onChanged} /> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>从学习地图开始整理知识</b><span>创建六类 Wiki 页面，并关联保存过的 Raw 来源。</span><button className="primary-button" onClick={() => setRawChooserOpen(true)}>从 Raw 生成 Wiki 草稿</button><button className="secondary-button" onClick={startCreate}>手动创建 Wiki</button></div>}</section>
     </div>
-    {deleteTarget && <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !busy) setDeleteTarget(null); }}><section className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title"><div className="dialog-header"><div><p className="eyebrow">移到回收区</p><h2 id="delete-title">删除“{deleteTarget.title}”</h2><p>被关联的页面会保留原文；删除后这些链接可能变为未找到。</p></div><button className="icon-button" aria-label="关闭" onClick={() => setDeleteTarget(null)}>×</button></div><div className="delete-reference-list"><b>入链影响 · {deleteReferences.length} 页</b>{deleteReferences.length ? deleteReferences.map(reference => <div className="delete-reference" key={reference.id}><span>[[{deleteTarget.title}]]</span><button className="text-button" onClick={() => { setDeleteTarget(null); chooseItem(reference.id); }}>{reference.title}</button></div>) : <p>没有其他 Wiki 页面链接到此页。</p>}</div><div className="dialog-footer"><span>Raw 与其他知识资产不会删除</span><div><button className="secondary-button" onClick={() => setDeleteTarget(null)} disabled={busy}>取消</button><button className="danger-button" onClick={() => void confirmDelete()} disabled={busy}>{busy ? '正在删除…' : '确认删除'}</button></div></div></section></div>}
+    {pendingWorkflows.length > 0 && <section className="panel pending-knowledge-workflows"><div className="panel-heading"><div><h2>待审核更新与综合 · {pendingWorkflows.length}</h2><p>包括旧 Wiki 更新与多来源综合草稿。</p></div></div><div className="raw-list">{pendingWorkflows.map(item => <button className="raw-list-item" key={item.id} onClick={() => onOpenWorkflow?.(item.id)}><span className="file-icon">{item.kind === 'update' ? '更' : '综'}</span><span className="recent-copy"><b>{item.title}</b><small>{item.kind === 'update' ? '旧 Wiki 更新' : '多来源综合'} · {item.status === 'conflict' ? '提交冲突' : '待确认'} · v{item.revision}</small></span></button>)}</div></section>}
+    {pendingDrafts.length > 0 && <section className="panel pending-wiki-drafts"><div className="panel-heading"><div><h2>待审核草稿 · {pendingDrafts.length}</h2><p>刷新或重启后仍可继续审核；确认前不会写入 Wiki。</p></div></div><div className="raw-list">{pendingDrafts.map(item => <button className="raw-list-item" key={item.id} onClick={() => onOpenDraft?.(item.id)}><span className="file-icon">审</span><span className="recent-copy"><b>{item.title}</b><small>{item.rawTitle} · 草稿待审核</small></span></button>)}</div></section>}
+    {rawChooserOpen && <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setRawChooserOpen(false); }}><section className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="raw-generate-title"><div className="dialog-header"><div><p className="eyebrow">明确生成动作</p><h2 id="raw-generate-title">选择一条 Raw</h2><p>所选正文会发送给已配置的 Provider，生成可审核的 Wiki 草稿。</p></div><button className="icon-button" aria-label="关闭" onClick={() => setRawChooserOpen(false)}>×</button></div>{extractError && <div className="form-error" role="alert">{extractError}</div>}<div className="raw-list">{raws.map(raw => { const state = processing[raw.id]; const disabled = !!raw.origin || extractingRawId !== null; return <button className="raw-list-item" key={raw.id} disabled={disabled} onClick={() => void generateFromRaw(raw)}><span className="file-icon">{raw.origin ? '锁' : state?.status === 'processing' ? '…' : '文'}</span><span className="recent-copy"><b>{raw.title}{raw.origin ? ' · 本机专用' : ''}</b><small>{sourceLabels[raw.sourceType]} · {state?.status === 'pending_confirmation' ? '打开已有待审核草稿' : state?.status === 'processing' ? '复用正在运行的提取任务' : state?.status === 'failed' ? '重试同一 Raw' : '生成 Wiki 草稿'} · {raw.id}</small></span></button>; })}{raws.length === 0 && <div className="list-empty"><b>还没有可处理的 Raw</b><span>先导入并保存一条原始资料。</span><button className="secondary-button" onClick={onImport}>导入 Raw</button></div>}</div><div className="dialog-footer"><span>Meeting 来源保持本机专用</span><button className="secondary-button" onClick={() => setRawChooserOpen(false)}>取消</button></div></section></div>}    {deleteTarget && <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !busy) setDeleteTarget(null); }}><section className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title"><div className="dialog-header"><div><p className="eyebrow">移到回收区</p><h2 id="delete-title">删除“{deleteTarget.title}”</h2><p>被关联的页面会保留原文；删除后这些链接可能变为未找到。</p></div><button className="icon-button" aria-label="关闭" onClick={() => setDeleteTarget(null)}>×</button></div><div className="delete-reference-list"><b>入链影响 · {deleteReferences.length} 页</b>{deleteReferences.length ? deleteReferences.map(reference => <div className="delete-reference" key={reference.id}><span>[[{deleteTarget.title}]]</span><button className="text-button" onClick={() => { setDeleteTarget(null); chooseItem(reference.id); }}>{reference.title}</button></div>) : <p>没有其他 Wiki 页面链接到此页。</p>}</div><div className="dialog-footer"><span>Raw 与其他知识资产不会删除</span><div><button className="secondary-button" onClick={() => setDeleteTarget(null)} disabled={busy}>取消</button><button className="danger-button" onClick={() => void confirmDelete()} disabled={busy}>{busy ? '正在删除…' : '确认删除'}</button></div></div></section></div>}
   </div>;
 }
 

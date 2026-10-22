@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "jobId": "d16974db-8f0c-4589-b1f9-d7e407790d2d",
+  "rawId": "8bf24828-13d0-41cd-90cd-9d83e07c308d",
+  "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+  "pipelineVersion": "kb02-2",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+  "providerIdentity": "fake|budget-model",
+  "chunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 26
+    }
+  ],
+  "completedChunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 26,
+      "facts": [
+        {
+          "text": "目标100家，在售20家。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0001",
+          "kind": "fact",
+          "id": "f-c1-1",
+          "chunkIndex": 0
+        },
+        {
+          "text": "铺货率20%，负责人未知。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0002",
+          "kind": "fact",
+          "id": "f-c1-2",
+          "chunkIndex": 0
+        }
+      ],
+      "questions": [],
+      "sourceNotes": [],
+      "evidence": [
+        {
+          "id": "c1-l001",
+          "rawId": "8bf24828-13d0-41cd-90cd-9d83e07c308d",
+          "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+          "start": 0,
+          "end": 26,
+          "chunkIndex": 0
+        }
+      ]
+    }
+  ],
+  "attempts": 3,
+  "stage": "planning",
+  "updatedAt": "2026-10-21T10:03:49.535Z",
+  "integrity": "d2daffcb551739f564f3e4f1ca4afe9ab2209548c735c8c377c28952a7fb45f5"
+}

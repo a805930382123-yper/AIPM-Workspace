@@ -35,6 +35,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const [result, setResult] = useState<{ operationId: string; sourceId: string | null; wikiIds: string[]; sourceReused: boolean; warnings: string[] } | null>(null);
   const [idempotencyKey] = useState(() => globalThis.crypto?.randomUUID?.() ?? `key-${Date.now()}`);
   const [duplicateViews, setDuplicateViews] = useState<Record<string, DuplicateResult>>({});
+  const [duplicateErrors, setDuplicateErrors] = useState<Record<string, string>>({});
 
   const load = async () => {
     setError('');
@@ -58,7 +59,32 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const conflicts = view ? conflictText(view) : [];
   const readOnly = view ? view.status !== 'pending_confirmation' : true;
 
-  const updatePage = (pageId: string, patch: Partial<PageDraft>) => setPages(current => current.map(page => page.pageId === pageId ? { ...page, ...patch } : page));
+  useEffect(() => {
+    if (!view || readOnly || pages.length === 0) return;
+    let active = true;
+    const timer = window.setTimeout(async () => {
+      const results = await Promise.all(pages.map(async page => {
+        try { return [page.pageId, await duplicateCandidates(draftId, page.pageId, duplicateInput(page)), null] as const; }
+        catch (problem) { return [page.pageId, null, problem instanceof Error ? problem.message : '候选查询失败。'] as const; }
+      }));
+      if (!active) return;
+      setDuplicateViews(current => ({ ...current, ...Object.fromEntries(results.filter((item): item is readonly [string, DuplicateResult, null] => item[1] !== null).map(([id, value]) => [id, value])) }));
+      setDuplicateErrors(current => {
+        const next = { ...current };
+        for (const [id, value] of results) if (value !== null) delete next[id];
+        for (const [id, _value, error] of results) if (error !== null) next[id] = error;
+        return next;
+      });
+    }, 100);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [draftId, view?.revision, readOnly, pages]);
+  const updatePage = (pageId: string, patch: Partial<PageDraft>) => {
+    setDuplicateViews(current => { const next = { ...current }; delete next[pageId]; return next; });
+    setDuplicateErrors(current => { const next = { ...current }; delete next[pageId]; return next; });
+    const basis = ['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized'] as const;
+    const invalidatesDecision = basis.some(key => key in patch);
+    setPages(current => current.map(page => page.pageId === pageId ? { ...page, ...patch, ...(invalidatesDecision ? { reviewDecision: undefined, updateTargetWikiId: undefined } : {}) } : page));
+  };
   const run = async (label: string, work: () => Promise<void>) => {
     setBusy(label); setError('');
     try { await work(); }
@@ -100,6 +126,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     if (!page) throw new ApiError('没有找到这条建议。', 'PAGE_NOT_FOUND', 404);
     const result = await duplicateCandidates(draftId, pageId, duplicateInput(page));
     setDuplicateViews(current => ({ ...current, [pageId]: result }));
+    setDuplicateErrors(current => { const next = { ...current }; delete next[pageId]; return next; });
   });
   const decide = (pageId: string, decision: 'update' | 'create' | 'defer', targetWikiId?: string) => run(`decision:${pageId}`, async () => {
     const saved = await patchDraft(draftId, snapshot()); applyView(saved);
@@ -135,7 +162,12 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   // revision — the formal pages can never differ from what the user sees on screen.
   const confirm = () => run('confirm', async () => {
     const refreshedDuplicates = await Promise.all(pages.map(async page => [page.pageId, await duplicateCandidates(draftId, page.pageId, duplicateInput(page)).catch(() => null)] as const));
+    if (refreshedDuplicates.some(([, result]) => result === null)) {
+      setDuplicateErrors(Object.fromEntries(refreshedDuplicates.filter(item => item[1] === null).map(([id]) => [id, '候选查询失败，请重试。'])));
+      throw new ApiError('候选查询失败，已阻止确认写入；请重试后再决定新增、更新或暂不处理。', 'DUPLICATE_QUERY_FAILED', 503);
+    }
     setDuplicateViews(Object.fromEntries(refreshedDuplicates.filter((item): item is readonly [string, DuplicateResult] => Boolean(item[1]))));
+    setDuplicateErrors({});
     const chosen = pages.filter(page => page.selected).map(page => page.pageId);
     if (!chosen.length) throw new ApiError('至少勾选一条知识建议，再确认写入。', 'NO_SELECTION', 400, { selectedPageIds: [] });
     const unresolved = pages.filter(page => page.selected && (refreshedDuplicates.find(([id]) => id === page.pageId)?.[1]?.candidates.some(candidate => candidate.score >= 0.35)) && page.reviewDecision !== 'create');
@@ -205,12 +237,12 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
       <section className="panel draft-source-summary">
         <div className="panel-heading"><div><h2>Source 预览（本次提交组成）</h2><p>{view.preview?.sourceReuse ? `将复用既有 Source：${view.preview.sourceReuse.title}` : '将新建 1 个 Source 页面'}</p></div></div>
         <div className="draft-card-body">
-          <label className="field">Source 标题<input value={view.source.title} disabled={readOnly} onChange={event => setView({ ...view, source: { ...view.source, title: event.target.value } })} maxLength={300} /></label>
-          <label className="field">Source 摘要<textarea value={view.source.body} disabled={readOnly} onChange={event => setView({ ...view, source: { ...view.source, body: event.target.value } })} rows={8} /></label>
+          <label className="field">Source 标题<input value={view.source.title} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, title: event.target.value } })} maxLength={300} /></label>
+          <label className="field">Source 摘要<textarea value={view.source.body} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, body: event.target.value } })} rows={8} /></label>
           <div className="draft-enum-row">
-            <label className="field">来源等级<select value={view.source.source_level} disabled={readOnly} onChange={event => setView({ ...view, source: { ...view.source, source_level: event.target.value } })}>{(schema?.sourcePolicy.levels ?? []).map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>
-            <label className="field">知识状态<select value={view.source.knowledge_status} disabled={readOnly} onChange={event => setView({ ...view, source: { ...view.source, knowledge_status: event.target.value } })}>{(schema?.enums.knowledge_status ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-            <label className="field">可信度<select value={view.source.confidence} disabled={readOnly} onChange={event => setView({ ...view, source: { ...view.source, confidence: event.target.value } })}>{(schema?.enums.confidence ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+            <label className="field">来源等级<select value={view.source.source_level} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, source_level: event.target.value } })}>{(schema?.sourcePolicy.levels ?? []).map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>
+            <label className="field">知识状态<select value={view.source.knowledge_status} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, knowledge_status: event.target.value } })}>{(schema?.enums.knowledge_status ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+            <label className="field">可信度<select value={view.source.confidence} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, confidence: event.target.value } })}>{(schema?.enums.confidence ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
           </div>
           <p className="extract-note">保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。</p>
         </div>
@@ -221,32 +253,33 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
       <div className="panel-heading">
         <div><h2>知识建议（{pages.length} 条，已选 {selectedIds.length} 条）</h2><p>默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。</p></div>
         <div className="action-group">
-          <button className="secondary-button" disabled={readOnly} onClick={() => setPages(current => current.map(page => ({ ...page, selected: true })))}>全选</button>
-          <button className="secondary-button" disabled={readOnly} onClick={() => setPages(current => current.map(page => ({ ...page, selected: false })))}>全不选</button>
+          <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => setPages(current => current.map(page => ({ ...page, selected: true })))}>全选</button>
+          <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => setPages(current => current.map(page => ({ ...page, selected: false })))}>全不选</button>
           <button className="secondary-button" disabled={readOnly || mergePick.length < 2 || busy !== ''} onClick={() => void mergePages()}>{busy === 'merge' ? '正在合并…' : `合并所选（${mergePick.length}）`}</button>
         </div>
       </div>
       {pages.map((page, index) => <article className={`draft-card ${page.selected ? 'selected' : ''}`} key={page.pageId}>
         <div className="draft-card-head">
-          <label className="draft-select"><input type="checkbox" checked={page.selected} disabled={readOnly} onChange={event => updatePage(page.pageId, { selected: event.target.checked })} /><span>写入</span></label>
-          <label className="draft-select"><input type="checkbox" checked={mergePick.includes(page.pageId)} disabled={readOnly} onChange={event => setMergePick(current => event.target.checked ? [...current, page.pageId] : current.filter(id => id !== page.pageId))} /><span>合并</span></label>
+          <label className="draft-select"><input type="checkbox" checked={page.selected} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { selected: event.target.checked })} /><span>写入</span></label>
+          <label className="draft-select"><input type="checkbox" checked={mergePick.includes(page.pageId)} disabled={readOnly || busy !== ''} onChange={event => setMergePick(current => event.target.checked ? [...current, page.pageId] : current.filter(id => id !== page.pageId))} /><span>合并</span></label>
           <span className="draft-index">#{index + 1}</span>
-          <input className="draft-title" value={page.title} disabled={readOnly} onChange={event => updatePage(page.pageId, { title: event.target.value })} maxLength={300} aria-label="建议标题" />
+          <input className="draft-title" value={page.title} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { title: event.target.value })} maxLength={300} aria-label="建议标题" />
           <button className="text-button danger" disabled={readOnly || busy !== '' || pages.length <= 1} onClick={() => void removePage(page.pageId)}>删除</button>
         </div>
         <div className="draft-enum-row">
-          <label className="field">类型<select value={page.type} disabled={readOnly} onChange={event => updatePage(page.pageId, { type: event.target.value })}>{typeOptions.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}</select></label>
-          <label className="field">分类<select value={page.category} disabled={readOnly} onChange={event => updatePage(page.pageId, { category: event.target.value })}>{(schema?.categories ?? []).map(category => <option key={category.id} value={category.id}>{category.label}</option>)}</select></label>
-          <label className="field">来源等级<select value={page.source_level} disabled={readOnly} onChange={event => updatePage(page.pageId, { source_level: event.target.value })}>{(schema?.sourcePolicy.levels ?? []).map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>
-          <label className="field">知识状态<select value={page.knowledge_status} disabled={readOnly} onChange={event => updatePage(page.pageId, { knowledge_status: event.target.value })}>{(schema?.enums.knowledge_status ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-          <label className="field">可信度<select value={page.confidence} disabled={readOnly} onChange={event => updatePage(page.pageId, { confidence: event.target.value })}>{(schema?.enums.confidence ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+          <label className="field">类型<select value={page.type} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { type: event.target.value })}>{typeOptions.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}</select></label>
+          <label className="field">分类<select value={page.category} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { category: event.target.value })}>{(schema?.categories ?? []).map(category => <option key={category.id} value={category.id}>{category.label}</option>)}</select></label>
+          <label className="field">来源等级<select value={page.source_level} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { source_level: event.target.value })}>{(schema?.sourcePolicy.levels ?? []).map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>
+          <label className="field">知识状态<select value={page.knowledge_status} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { knowledge_status: event.target.value })}>{(schema?.enums.knowledge_status ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+          <label className="field">可信度<select value={page.confidence} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { confidence: event.target.value })}>{(schema?.enums.confidence ?? []).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
         </div>
         <div className="duplicate-review">
-          <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => void checkDuplicates(page.pageId)}>检查可能重复</button>
+          <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => void checkDuplicates(page.pageId)}>刷新重复候选</button>
+          {duplicateErrors[page.pageId] && <div className="form-error" role="alert">候选查询失败：{duplicateErrors[page.pageId]}。为避免漏掉已有知识，确认写入会被阻止。</div>}
           {duplicateViews[page.pageId] && <div className="duplicate-results">
             <p>以下是启发式候选，供人工选择，不代表事实判定。</p>
             {duplicateViews[page.pageId].candidates.length === 0 ? <span>未发现候选。</span> : duplicateViews[page.pageId].candidates.map(candidate => <div className="duplicate-candidate" key={candidate.wiki.id}>
-              <strong>{candidate.wiki.title}</strong><span>建议相似度 {(candidate.score * 100).toFixed(0)}%</span>
+              <strong>{candidate.wiki.title}</strong><small>Wiki {candidate.wiki.id} · 来源 Raw：{candidate.wiki.sources.join('、') || '无'}</small><span>建议相似度 {(candidate.score * 100).toFixed(0)}%</span>
               <p>{candidate.matches.map(match => `${duplicateDimension[match.dimension] ?? match.dimension}：${match.reason}`).join('；')}</p>
               <button className="text-button" disabled={readOnly || busy !== ''} onClick={() => void decide(page.pageId, 'update', candidate.wiki.id)}>选择更新</button>
               <button className="text-button" disabled={readOnly || busy !== ''} onClick={() => void decide(page.pageId, 'create')}>仍创建新页</button>
@@ -255,11 +288,11 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
             {page.reviewDecision === 'update' && page.updateTargetWikiId && <button className="text-button" disabled={busy !== ''} onClick={() => void makeUpdate(page.pageId, page.updateTargetWikiId!)}>生成旧 Wiki 更新预览</button>}
           </div>}
         </div>
-        <label className="field">一句话说明<input value={page.one_line_definition} disabled={readOnly} onChange={event => updatePage(page.pageId, { one_line_definition: event.target.value })} maxLength={300} /></label>
+        <label className="field">一句话说明<input value={page.one_line_definition} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { one_line_definition: event.target.value })} maxLength={300} /></label>
         <div className="draft-split">
           <div className="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4>
             {page.source_facts.map((fact, factIndex) => <div className="draft-line" key={`${page.pageId}-fact-${factIndex}`}>
-              <textarea value={fact.text} disabled={readOnly} rows={2} onChange={event => {
+              <textarea value={fact.text} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
                 const source_facts = page.source_facts.map((item, itemIndex) => itemIndex === factIndex ? { ...item, text: event.target.value } : item);
                 updatePage(page.pageId, { source_facts });
               }} />
@@ -268,21 +301,21 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
             {!page.source_facts.length && <p className="extract-note">没有原文支持的事实。</p>}
           </div>
           <div className="draft-block"><h4>AI 整理</h4>
-            {page.ai_organized.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-org-${itemIndex}`}><textarea value={item} disabled={readOnly} rows={2} onChange={event => {
+            {page.ai_organized.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-org-${itemIndex}`}><textarea value={item} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
               const ai_organized = page.ai_organized.map((value, valueIndex) => valueIndex === itemIndex ? event.target.value : value);
               updatePage(page.pageId, { ai_organized });
             }} /></div>)}
             {!page.ai_organized.length && <p className="extract-note">暂无</p>}
           </div>
           <div className="draft-block"><h4>AI 推断</h4>
-            {page.ai_inferences.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-inf-${itemIndex}`}><textarea value={item} disabled={readOnly} rows={2} onChange={event => {
+            {page.ai_inferences.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-inf-${itemIndex}`}><textarea value={item} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
               const ai_inferences = page.ai_inferences.map((value, valueIndex) => valueIndex === itemIndex ? event.target.value : value);
               updatePage(page.pageId, { ai_inferences });
             }} /></div>)}
             {!page.ai_inferences.length && <p className="extract-note">暂无</p>}
           </div>
           <div className="draft-block"><h4>待确认问题</h4>
-            {page.open_questions.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-q-${itemIndex}`}><textarea value={item} disabled={readOnly} rows={2} onChange={event => {
+            {page.open_questions.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-q-${itemIndex}`}><textarea value={item} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
               const open_questions = page.open_questions.map((value, valueIndex) => valueIndex === itemIndex ? event.target.value : value);
               updatePage(page.pageId, { open_questions });
             }} /></div>)}

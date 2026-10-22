@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-16T13:55:48.429Z",
+  "scope": "localhost fake actual HTTP plus offline legacy trace replay; no real Provider quality claim",
+  "durationMs": 1777,
+  "checks": [
+    {
+      "id": "R01-native-HTTP-explicit-replanning-restart-double-resume",
+      "result": "PASS",
+      "evidence": {
+        "jobId": "ce0f0822-4e71-4677-bead-85f2611f2974",
+        "calls": 4,
+        "reusedChunks": 1,
+        "explicitFeedback": true,
+        "noFormalWrites": true
+      }
+    },
+    {
+      "id": "R02-diagnostic-current-secret-and-old-pipeline-rejected-with-zero-side-effects",
+      "result": "PASS",
+      "evidence": {
+        "secretRejected": true,
+        "oldBytesPreserved": true,
+        "restartExplicit": true
+      }
+    },
+    {
+      "id": "R03-offline-real-seq39-40-product-coverage-replay",
+      "result": "PASS",
+      "evidence": {
+        "noExternalRequests": true,
+        "legacyInputOnlyNoCheckpointReuse": true,
+        "replay": [
+          {
+            "sequence": 39,
+            "legacyInput": true,
+            "facts": 46,
+            "questions": 23,
+            "diagnostic": {
+              "facts": {
+                "missing": [
+                  "f-c2-3"
+                ],
+                "duplicate": [],
+                "unknown": []
+              },
+              "questions": {
+                "missing": [],
+                "duplicate": [],
+                "unknown": []
+              },
+              "duplicateTitles": []
+            }
+          },
+          {
+            "sequence": 40,
+            "legacyInput": true,
+            "facts": 46,
+            "questions": 23,
+            "diagnostic": {
+              "facts": {
+                "missing": [
+                  "f-c2-3"
+                ],
+                "duplicate": [],
+                "unknown": []
+              },
+              "questions": {
+                "missing": [],
+                "duplicate": [],
+                "unknown": []
+              },
+              "duplicateTitles": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "R04-actual-candidate-explicit-update-ID-preview-confirm",
+      "result": "PASS",
+      "evidence": {
+        "candidate": true,
+        "explicitDecision": true,
+        "workflow": "e61f6ed7-e2fb-4cbc-8dbf-1e67d4a870cd",
+        "confirmed": "confirmed",
+        "bothSources": true,
+        "humanNotePreserved": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 4,
+    "fail": 0
+  },
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-standards-GxhrZx",
+  "calls": 13,
+  "closed": true
+}

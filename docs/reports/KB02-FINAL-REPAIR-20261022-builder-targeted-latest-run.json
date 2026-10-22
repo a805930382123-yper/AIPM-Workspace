@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-22T04:27:49.762Z",
+  "mode": "targeted",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-final-repair-dRG0le",
+  "runtime": "v24.20.0",
+  "copyMismatch": [],
+  "rows": [
+    {
+      "name": "targeted",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-final-classification.test.ts",
+        "tests/kb02-final-agreement.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/b05.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 2581,
+      "summary": [
+        "ℹ tests 49",
+        "ℹ pass 49",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 2495.9596"
+      ]
+    }
+  ],
+  "realCalls": 0,
+  "afterCopyChanges": [],
+  "pass": true
+}

@@ -1,4 +1,4 @@
-﻿export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
+export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string; title: string; sourceType: SourceType; sourceName: string; author?: string; publishedAt?: string; url?: string;
   tags: string[]; body: string; importedAt: string; status: 'unprocessed'; bodySha256: string;
@@ -61,8 +61,11 @@ async function readResponse<T>(response: Response): Promise<T> {
   if (text) { try { data = JSON.parse(text); } catch { data = undefined; } }
   if (!response.ok) {
     const error = (data as { error?: { code?: string; message?: string; details?: unknown } } | undefined)?.error;
+    const details=error?.details as {category?:unknown}|undefined;
+    if(details?.category==='recovery'||['STORAGE_CORRUPT','STORAGE_READ_FAILED','RECOVERY_SECRET_BLOCKED'].includes(error?.code??''))if(typeof window!=='undefined')window.dispatchEvent(new Event('storage-recovery-discovered'));
     throw new ApiError(error?.message || '请求失败，请稍后重试。', error?.code || 'REQUEST_FAILED', response.status, error?.details);
   }
+  if(data&&typeof data==='object'&&(data as {needsRecovery?:unknown}).needsRecovery===true)if(typeof window!=='undefined')window.dispatchEvent(new Event('storage-recovery-discovered'));
   return data as T;
 }
 export async function api<T>(url: string, init?: RequestInit): Promise<T> {
@@ -87,23 +90,26 @@ export const formatLabels: Record<string, string> = { markdown: 'Markdown', txt:
 // --- B04：AI 提取 → 人工审核 → 确认写入 -------------------------------------------------------
 
 export type LlmConfigSummary = {
-  provider: string; baseUrlHost: string | null; model: string | null; keyConfigured: boolean;
+  provider: string; baseUrlHost: string | null; baseUrl: string; model: string | null; keyConfigured: boolean;
   keyMask: string; configured: boolean; source: 'env' | 'local-file' | 'none'; missing: string[];
-  configFile: string; envNames: Record<string, string>;
+  configFile: string; envNames: Record<string, string>; revision: string; writeToken: string; environmentLocked: boolean;
 };
 export type RawStatus = 'unprocessed' | 'processing' | 'pending_confirmation' | 'generated' | 'failed';
 export type RawProcessingState = {
+  recoveryJobId?: string;
   rawId: string; status: RawStatus; updatedAt: string; jobId?: string; draftId?: string;
   lastError?: { code: string; message: string; at: string; retryable: boolean };
   generatedWikiIds?: string[]; confirmedOperationId?: string;
 };
 export type ExtractionJob = {
+  execution?: 'running' | 'settled';
+  recovery?: { code: string; message: string; persisted: false; phase: string; action: 'reconcile-storage'; details?: unknown } | null;
   jobId: string; rawId: string; status: 'running' | 'completed' | 'failed' | 'cancelled';
-  stage: 'chunking' | 'extracting' | 'merging' | 'validating' | 'done';
+  stage: 'chunking' | 'extracting' | 'merging' | 'validating' | 'planning' | 'assembling' | 'done';
   progress: { chunksTotal: number; chunksDone: number; pagesFound: number };
   draftId: string | null; error: { code: string; message: string; retryable?: boolean } | null;
   provider: { name: string; model: string }; callCount: number; startedAt: string; finishedAt: string | null;
-  cancelRequested: boolean; reused?: boolean;
+  cancelRequested: boolean; reused?: boolean; pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number };
 };
 export type DraftEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type DraftFact = { text: string; evidenceIds: string[] };
@@ -163,10 +169,18 @@ export type DraftPatch = {
 };
 
 export const llmConfig = () => api<LlmConfigSummary>('/api/llm/config');
+const configRequest = <T,>(url: string, config: LlmConfigSummary, method: string, body: unknown) => api<T>(url, {
+  method, body: JSON.stringify(body), headers: { 'X-FMCG-Config-Token': config.writeToken },
+});
+export const saveLlmConfig = (config: LlmConfigSummary, input: { baseUrl: string; model: string; apiKey?: string }) =>
+  configRequest<LlmConfigSummary>('/api/llm/config', config, 'PUT', { revision: config.revision, ...input });
+export const clearLlmConfig = (config: LlmConfigSummary) => configRequest<LlmConfigSummary>('/api/llm/config', config, 'DELETE', { revision: config.revision, confirm: true });
+export const testLlmConfig = (config: LlmConfigSummary) => configRequest<{ ok: boolean; message: string; elapsedMs: number }>('/api/llm/config/test', config, 'POST', { revision: config.revision, confirm: true });
 export const rawProcessing = () => api<{ items: RawProcessingState[] }>('/api/raw-processing').then(value => value.items);
 export const extractionJob = (jobId: string) => api<ExtractionJob>(`/api/extraction-jobs/${encodeURIComponent(jobId)}`);
-export const startExtract = (rawId: string) => api<ExtractionJob>(`/api/raw/${encodeURIComponent(rawId)}/extract`, { method: 'POST', body: JSON.stringify({}) });
+export const startExtract = (rawId: string, options: { restart?: boolean; planningRetry?: boolean } = {}) => api<ExtractionJob>(`/api/raw/${encodeURIComponent(rawId)}/extract`, { method: 'POST', body: JSON.stringify(options) });
 export const cancelExtract = (jobId: string) => api<ExtractionJob & { cancelled: boolean }>(`/api/extraction-jobs/${encodeURIComponent(jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) });
+export const reconcileExtractionStorage = (jobId: string) => api<ExtractionJob>(`/api/extraction-jobs/${encodeURIComponent(jobId)}/reconcile-storage`, { method: 'POST', body: JSON.stringify({}) });
 export const drafts = (query: { rawId?: string; status?: string } = {}) => {
   const params = new URLSearchParams();
   if (query.rawId) params.set('rawId', query.rawId);
@@ -258,5 +272,10 @@ export const rawStatusLabels: Record<RawStatus, string> = {
   unprocessed: '未处理', processing: 'AI 处理中', pending_confirmation: '待人工确认', generated: '已生成知识', failed: '处理失败',
 };
 export const jobStageLabels: Record<ExtractionJob['stage'], string> = {
-  chunking: '准备分块', extracting: '调用 Provider 提取', merging: '汇总分块结果', validating: '校验与证据定位', done: '完成',
+  chunking: '准备分块', extracting: '提取精简事实', merging: '汇总分块结果', validating: '校验与证据定位', planning: '规划整篇主题', assembling: '按模板组装草稿', done: '完成',
 };
+
+
+
+/** totalIssues counts known issues; partial scans only establish a lower bound. */
+export type RecoveryScan = { scanned:boolean;partial?:boolean;overflow:boolean;truncated?:boolean;totalIssues?:number;hiddenIssues?:number;scannedFiles?:number;scannedBytes?:number;items:Array<{id:string;kind:string;reason:string}> };

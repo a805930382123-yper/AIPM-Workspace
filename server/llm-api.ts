@@ -11,15 +11,12 @@ import type { WikiCommitService } from '../services/wiki/commits.ts';
 import type { RawStateStore } from '../services/raw/state.ts';
 import type { RawStore } from '../services/raw/store.ts';
 import type { WikiStore } from '../services/wiki/store.ts';
-import { llmConfigSummary, type LlmConfig } from '../services/llm/config.ts';
 import { InputError } from './validation.ts';
 import { validateConfirm, validateDiscard, validateDraftPatch } from './llm-validation.ts';
 
 export type B04Deps = {
   root: string;
   rulesDir: string;
-  configFile: string;
-  loadConfig: () => Promise<LlmConfig>;
   provider: () => LlmProvider | undefined;
   llm: LLMService;
   runner: ExtractionRunner;
@@ -31,11 +28,11 @@ export type B04Deps = {
   wikiStore: WikiStore;
 };
 
-const jobView = (job: { id: string; rawId: string; status: string; stage: string; chunksTotal: number; chunksDone: number; pagesFound: number; draftId?: string; error?: unknown; provider: { name: string; model: string }; callCount: number; startedAt: string; finishedAt?: string; cancelRequested: boolean }) => ({
+const jobView = (job: { id: string; rawId: string; status: string; stage: string; chunksTotal: number; chunksDone: number; pagesFound: number; draftId?: string; error?: unknown; provider: { name: string; model: string }; callCount: number; startedAt: string; finishedAt?: string; cancelRequested: boolean; pipelineVersion?: string; checkpoint?: unknown }) => ({
   jobId: job.id, rawId: job.rawId, status: job.status, stage: job.stage,
   progress: { chunksTotal: job.chunksTotal, chunksDone: job.chunksDone, pagesFound: job.pagesFound },
   draftId: job.draftId ?? null, error: job.error ?? null, provider: job.provider,
-  callCount: job.callCount, startedAt: job.startedAt, finishedAt: job.finishedAt ?? null, cancelRequested: job.cancelRequested,
+  callCount: job.callCount, startedAt: job.startedAt, finishedAt: job.finishedAt ?? null, cancelRequested: job.cancelRequested, pipelineVersion: job.pipelineVersion, checkpoint: job.checkpoint,
 });
 
 export function registerB04Routes(app: express.Express, deps: B04Deps): void {
@@ -51,31 +48,40 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     };
   };
 
-  app.get('/api/llm/config', async (_req, res, next) => {
-    try {
-      const config = await deps.loadConfig();
-      res.json(llmConfigSummary(config, deps.configFile));
-    } catch (error) { next(error); }
-  });
-
   app.get('/api/raw-processing', async (_req, res, next) => {
-    try { res.json({ items: await deps.rawStates.list() }); } catch (error) { next(error); }
+    try {
+      const items = await deps.rawStates.list();
+      const recoveries = deps.runner.recoveryJobs();
+      for (const recovery of recoveries) if (!items.some(item => item.rawId === recovery.rawId)) items.push(await deps.rawStates.get(recovery.rawId));
+      res.json({ items: items.map(item => ({ ...item, recoveryJobId: recoveries.find(value => value.rawId === item.rawId)?.jobId })) });
+    } catch (error) { next(error); }
   });
 
   app.post('/api/raw/:id/extract', async (req, res, next) => {
     try {
+      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) || Object.keys(req.body).some(key => !['restart','planningRetry'].includes(key)) || (['restart','planningRetry'].some(key => key in req.body && typeof req.body[key] !== 'boolean')) || (req.body.restart === true && req.body.planningRetry === true)) throw new InputError('EXTRACT_REQUEST_INVALID', '提取请求只接受可选boolean restart/planningRetry，且不能同时启用。', 400);
       // F04-08: starting an extraction takes the same resource lock as deleting the Raw, so the
       // two can never interleave into a draft for a deleted Raw.
-      const result = await deps.wikiStore.withLock(() => deps.runner.start(req.params.id, { newJobId: randomUUID(), now: new Date().toISOString() }));
-      res.status(result.reused ? 200 : 202).json({ ...jobView(result.job), reused: result.reused });
+      const result = await deps.wikiStore.withLock(() => deps.runner.start(req.params.id, { newJobId: randomUUID(), now: new Date().toISOString(), restart: req.body?.restart === true, planningRetry: req.body?.planningRetry === true }));
+      const runtime = await deps.runner.readJob(result.job.id);
+      res.status(result.reused ? 200 : 202).json({ ...jobView(result.job), execution: runtime.execution, recovery: runtime.recovery ?? null, reused: result.reused });
     } catch (error) { next(error); }
   });
 
   app.get('/api/extraction-jobs/:jobId', async (req, res, next) => {
     try {
-      const job = await deps.jobs.get(req.params.jobId);
+      const { job, execution, recovery } = await deps.runner.readJob(req.params.jobId);
       if (!job) throw new InputError('JOB_NOT_FOUND', '没有找到这个提取任务。', 404);
-      res.json(jobView(job));
+      res.json({ ...jobView(job), execution, recovery: recovery ?? null });
+    } catch (error) { next(error); }
+  });
+
+  app.post('/api/extraction-jobs/:jobId/reconcile-storage', async (req, res, next) => {
+    try {
+      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) || Object.keys(req.body).length) throw new InputError('STORAGE_RECONCILE_REQUEST_INVALID', '保存状态请求只接受空对象。', 400);
+      const result = await deps.wikiStore.withLock(() => deps.runner.reconcileStorage(req.params.jobId));
+      if (!result.job) throw new InputError('JOB_NOT_FOUND', '没有找到这个提取任务。', 404);
+      res.json({ ...jobView(result.job), execution: result.execution, recovery: result.recovery ?? null });
     } catch (error) { next(error); }
   });
 
@@ -217,3 +223,5 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     } catch (error) { next(error); }
   });
 }
+
+

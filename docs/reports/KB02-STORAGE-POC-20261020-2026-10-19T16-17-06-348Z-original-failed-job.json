@@ -1,0 +1,199 @@
+{
+  "runtime": "v25.2.1",
+  "variant": "original",
+  "mode": "failed-job",
+  "fixtureRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA",
+  "synthetic": true,
+  "externalCalls": 0,
+  "beforeRecovery": {
+    "job": {
+      "id": "76adbed7-1549-4c13-bf96-ebb77c31f770",
+      "rawId": "3e4f9394-b444-4829-8667-e3603ae07072",
+      "status": "running",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:06.848Z",
+      "updatedAt": "2026-10-19T16:17:06.879Z"
+    },
+    "checkpoint": {
+      "version": 1,
+      "jobId": "76adbed7-1549-4c13-bf96-ebb77c31f770",
+      "rawId": "3e4f9394-b444-4829-8667-e3603ae07072",
+      "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+      "pipelineVersion": "kb02-2",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+      "providerIdentity": "fake|budget-model",
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26
+        }
+      ],
+      "completedChunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26,
+          "facts": [
+            {
+              "text": "目标100家，在售20家。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0001",
+              "kind": "fact",
+              "id": "f-c1-1",
+              "chunkIndex": 0
+            },
+            {
+              "text": "铺货率20%，负责人未知。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0002",
+              "kind": "fact",
+              "id": "f-c1-2",
+              "chunkIndex": 0
+            }
+          ],
+          "questions": [],
+          "sourceNotes": [],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "3e4f9394-b444-4829-8667-e3603ae07072",
+              "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+              "start": 0,
+              "end": 26,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "attempts": 2,
+      "stage": "planning",
+      "updatedAt": "2026-10-19T16:17:06.883Z",
+      "integrity": "5254aed10bb549186fff9cc5bb75fb1c713574e0113652c6bec2e05f3e567632",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:06.883Z",
+        "diagnostic": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      }
+    },
+    "rawState": {
+      "rawId": "3e4f9394-b444-4829-8667-e3603ae07072",
+      "status": "failed",
+      "updatedAt": "2026-10-19T16:17:06.885Z",
+      "history": [
+        {
+          "at": "2026-10-19T16:17:06.859Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "76adbed7-1549-4c13-bf96-ebb77c31f770"
+        },
+        {
+          "at": "2026-10-19T16:17:06.885Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID"
+        }
+      ],
+      "jobId": "76adbed7-1549-4c13-bf96-ebb77c31f770",
+      "revertStatus": "unprocessed",
+      "lastError": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-19T16:17:06.884Z",
+        "retryable": true
+      }
+    },
+    "draftIds": [],
+    "calls": 2
+  },
+  "atomicFailures": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "attempts": 6,
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "after": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "intact": true,
+      "error": {
+        "code": "EPERM",
+        "message": "Synthetic isolated rename refusal"
+      }
+    }
+  ],
+  "result": "KNOWN_BAD_BEHAVIOR_REPRODUCED",
+  "rejected": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\.76adbed7-1549-4c13-bf96-ebb77c31f770.json.0ccde6e2-ad67-4472-b17d-e9cdba7ae44d.tmp",
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "at": 272.864
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\.76adbed7-1549-4c13-bf96-ebb77c31f770.json.0ccde6e2-ad67-4472-b17d-e9cdba7ae44d.tmp",
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "at": 303.6695
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\.76adbed7-1549-4c13-bf96-ebb77c31f770.json.0ccde6e2-ad67-4472-b17d-e9cdba7ae44d.tmp",
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "at": 351.7243
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\.76adbed7-1549-4c13-bf96-ebb77c31f770.json.0ccde6e2-ad67-4472-b17d-e9cdba7ae44d.tmp",
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "at": 415.6501
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\.76adbed7-1549-4c13-bf96-ebb77c31f770.json.0ccde6e2-ad67-4472-b17d-e9cdba7ae44d.tmp",
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "at": 509.2185
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\76adbed7-1549-4c13-bf96-ebb77c31f770.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-kSotIA\\state\\extraction-jobs\\.76adbed7-1549-4c13-bf96-ebb77c31f770.json.0ccde6e2-ad67-4472-b17d-e9cdba7ae44d.tmp",
+      "before": "cb0c1f9a6b7ae72582189f656bc11cdd976566d1b9bfe900867116879770f71e",
+      "at": 618.4592
+    }
+  ]
+}

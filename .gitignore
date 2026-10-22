@@ -7,3 +7,11 @@ workspace/
 .env.*.local
 .test-*/
 .rn-*/
+.scratch-*/
+# Local credentials and configuration; keep the shareable example.
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx

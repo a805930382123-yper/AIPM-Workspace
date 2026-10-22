@@ -1,0 +1,19 @@
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (15602.341ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15784.2016
+
+✖ failing tests:
+
+test at tests\kb02-planning-budget.test.ts:1:3538
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (15602.341ms)
+  Error: Budget fixture job did not finish
+      at Object.wait (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:44:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-budget.test.ts:56:15)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)

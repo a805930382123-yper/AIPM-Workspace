@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-19T02:36:25.338Z",
+  "externalCalls": 0,
+  "ledger": {
+    "used": 62,
+    "cap": 74,
+    "remaining": 12,
+    "rows": 13,
+    "traceRows": 13,
+    "prompt": {
+      "used": 15,
+      "cap": 24
+    }
+  },
+  "fixture": {
+    "chars": 106400,
+    "sha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7",
+    "matchesHistoricalRaw": true,
+    "chunks": 14
+  },
+  "provider": {
+    "configured": true,
+    "host": "open.bigmodel.cn",
+    "model": "GLM-5.3-Flash"
+  },
+  "proposal": {
+    "authorized": false,
+    "additional": 13,
+    "proposedCap": 87,
+    "availableIfApproved": 25,
+    "allocation": {
+      "longExtraction": 14,
+      "longPlanning": 1,
+      "shortExtractionAndPlanning": 2,
+      "supplementExtractionPlanningAndUpdate": 3,
+      "failureReserve": 5
+    },
+    "prerequisite": "Independent engineering gate PASS; explicit finite budget approval; no concurrent real caller",
+    "order": [
+      "full original long document from zero cached chunks",
+      "short document",
+      "supplement/update and actual browser confirmation"
+    ],
+    "stop": "Stop and diagnose repeated same-class failures; every attempt counts; never exceed authorized cumulative cap"
+  },
+  "realQuality": "NOT_RUN",
+  "browser": "NOT_RUN"
+}

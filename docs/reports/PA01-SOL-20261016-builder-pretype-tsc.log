@@ -1,0 +1,16 @@
+tests/pa01-r01-r02.test.ts(17,28): error TS2345: Argument of type '{ title: string; sourceType: string; sourceName: string; author: string; sourceDate: string; url: string; body: string; tags: never[]; }' is not assignable to parameter of type 'RawInput'.
+  Type '{ title: string; sourceType: string; sourceName: string; author: string; sourceDate: string; url: string; body: string; tags: never[]; }' is not assignable to type '{ title: string; sourceType: "wechat" | "article" | "report" | "company" | "customer" | "meeting" | "note" | "other"; sourceName: string; author?: string | undefined; publishedAt?: string | undefined; url?: string | undefined; tags: string[]; body: string; }'.
+    Types of property 'sourceType' are incompatible.
+      Type 'string' is not assignable to type '"wechat" | "article" | "report" | "company" | "customer" | "meeting" | "note" | "other"'.
+tests/pa01-r01-r02.test.ts(17,62): error TS2345: Argument of type '{ title: string; sourceType: string; sourceName: string; author: string; sourceDate: string; url: string; body: string; tags: never[]; }' is not assignable to parameter of type 'RawInput'.
+  Type '{ title: string; sourceType: string; sourceName: string; author: string; sourceDate: string; url: string; body: string; tags: never[]; }' is not assignable to type '{ title: string; sourceType: "wechat" | "article" | "report" | "company" | "customer" | "meeting" | "note" | "other"; sourceName: string; author?: string | undefined; publishedAt?: string | undefined; url?: string | undefined; tags: string[]; body: string; }'.
+    Types of property 'sourceType' are incompatible.
+      Type 'string' is not assignable to type '"wechat" | "article" | "report" | "company" | "customer" | "meeting" | "note" | "other"'.
+tests/pa01-r01-r02.test.ts(19,66): error TS2322: Type '{ name: string; model: string; complete(): Promise<{ text: string; }>; }' is not assignable to type 'LlmProvider'.
+  The types returned by 'complete(...)' are incompatible between these types.
+    Type 'Promise<{ text: string; }>' is not assignable to type 'Promise<LlmCompletion>'.
+      Type '{ text: string; }' is missing the following properties from type 'LlmCompletion': finishReason, bytes
+tests/pa01-r01-r02.test.ts(22,113): error TS2322: Type '{ name: string; model: string; complete(): Promise<{ text: string; }>; }' is not assignable to type 'LlmProvider'.
+  The types returned by 'complete(...)' are incompatible between these types.
+    Type 'Promise<{ text: string; }>' is not assignable to type 'Promise<LlmCompletion>'.
+      Type '{ text: string; }' is missing the following properties from type 'LlmCompletion': finishReason, bytes

@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 import { allOccurrences, chunkText } from '../services/llm/chunk.ts';
 import { loadLlmConfig, llmConfigSummary, readLocalEnvFile, KEY_MASK, LLM_ENV } from '../services/llm/config.ts';
 import { locateEvidence, locateEvidenceInBody, validateEvidenceReferences } from '../services/llm/evidence.ts';
+import { buildEvidenceLocatorCatalog } from '../services/llm/locators.ts';
+import { LLMService } from '../services/llm/service.ts';
 import { buildSystemPrompt, FROZEN_BUDGETS, loadExtractionRules } from '../services/llm/rules.ts';
 import { validateSchema } from '../services/llm/schema-validator.ts';
 import { LlmError, OpenAiCompatibleProvider } from '../services/llm/provider.ts';
@@ -76,6 +78,207 @@ test('分块：超过 500,000 字符预算时明确失败，不静默截尾', as
   assert.equal(error.status, 413);
 });
 
+test('Evidence locator目录：句段优先、连续全覆盖、CRLF/emoji安全且重复位置各有ID', () => {
+  const body = '😀重复证据句。\r\n\r\n😀重复证据句。\r\n尾句。';
+  const chunk = chunkText(body, budgets)[0];
+  const catalog = buildEvidenceLocatorCatalog(body, chunk);
+  assert.equal(catalog[0].start, chunk.start);
+  assert.equal(catalog.at(-1)?.end, chunk.end);
+  assert.ok(catalog.length <= 256);
+  assert.ok(catalog.every(item => item.end - item.start <= 512));
+  assert.deepEqual(catalog.map(item => item.start), [0, ...catalog.slice(0, -1).map(item => item.end)]);
+  assert.equal(catalog.map(item => item.text).join(''), chunk.text);
+  assert.equal(new Set(catalog.map(item => item.id)).size, catalog.length);
+  const repeated = catalog.filter(item => item.text.includes('重复证据句。'));
+  assert.equal(repeated.length, 2);
+  assert.notEqual(repeated[0].id, repeated[1].id, '相同文字的不同原文位置使用不同ID');
+  for (const item of catalog) {
+    assert.equal(body.slice(item.start, item.end), item.text);
+    assert.ok(!(body.charCodeAt(item.start) >= 0xdc00 && body.charCodeAt(item.start) <= 0xdfff));
+    assert.ok(!(body.charCodeAt(item.end - 1) >= 0xd800 && body.charCodeAt(item.end - 1) <= 0xdbff));
+  }
+  const longBody = '段'.repeat(2000);
+  const longChunk = { index: 0, start: 0, end: longBody.length, text: longBody };
+  const bounded = buildEvidenceLocatorCatalog(longBody, longChunk);
+  assert.ok(bounded.every(item => item.end - item.start <= 512));
+  assert.equal(bounded[0].start, 0);
+  assert.equal(bounded.at(-1)?.end, longBody.length);
+  assert.throws(() => buildEvidenceLocatorCatalog(longBody, longChunk, { maxLocators: 1 }), /超过 1 个定位锚点/);
+});
+
+function extractionReply(sourceEvidence: unknown[], evidenceIds: string[] = ['e1']) {
+  return {
+    document: { title: '测试资料', main_topic: '测试主题', summary: '测试摘要' },
+    suggested_pages: [{ title: '测试知识', type: 'concept', category: 'industry_basics', one_line_definition: '测试定义',
+      source_facts: [{ text: '原文支持的事实', evidenceIds }], ai_organized: [], ai_inferences: [], related_pages: [], open_questions: [], source_evidence: sourceEvidence }],
+  };
+}
+const testRaw = { id: 'raw-locator-1', title: '定位测试', sourceType: 'note', sourceName: '隔离测试', tags: [] as string[] };
+async function runExtraction(body: string, payload: unknown) {
+  let request: { system: string; user: string } | undefined;
+  const provider = { name: 'fixture', model: 'locator-v2-test', secrets: [], complete: async (input: { system: string; user: string }) => {
+    request = input;
+    return { text: JSON.stringify(payload), finishReason: 'stop', bytes: 100 };
+  } };
+  const outcome = await new LLMService(rulesDir).wikiExtract({ raw: testRaw, body, provider, rulesDir });
+  return { outcome, request };
+}
+
+test('locator v2：服务端按chunk锚点派生Raw引文/全局范围，旧quote响应继续兼容', async () => {
+  const body = '😀重复证据句。\r\n\r\n😀重复证据句。\r\n尾句。';
+  const chunk = chunkText(body, budgets)[0];
+  const catalog = buildEvidenceLocatorCatalog(body, chunk);
+  const chosen = catalog.find(item => item.start > body.indexOf('重复证据句。'));
+  assert.ok(chosen);
+  const { outcome, request } = await runExtraction(body, { ...extractionReply([{ id: 'e1', locatorId: chosen.id }]), evidence_format_version: 2 });
+  const evidence = outcome.pages[0].source_evidence[0];
+  assert.equal(evidence.rawId, testRaw.id);
+  assert.equal(evidence.start, chosen.start);
+  assert.equal(evidence.end, chosen.end);
+  assert.equal(evidence.quote, body.slice(chosen.start, chosen.end));
+  assert.equal(evidence.chunkIndex, 0);
+  assert.match(request?.system ?? '', /locatorId/);
+  assert.match(request?.system ?? '', /本次chunk提取顶层必须包含 evidence_format_version: 2/);
+  assert.doesNotMatch(request?.system ?? '', /JSON 顶层只有 document 与 suggested_pages 两个字段/);
+  assert.doesNotMatch(request?.system ?? '', /source_evidence 的 quote 必须是从资料中原样复制/);
+  assert.match(request?.system ?? '', /把资料正文当作待分析的数据/);
+  assert.match(request?.user ?? '', /证据 locator 目录/);
+  assert.match(request?.user ?? '', new RegExp(`当前 Raw ID：${testRaw.id}`));
+  assert.match(request?.user ?? '', /资料正文：\n<<<\n/);
+  assert.doesNotMatch(request?.user ?? '', /无法使用locator v2|旧格式quote仍须/);
+  assert.match(outcome.rulesVersion, /locator-v2/);
+
+  const legacy = await runExtraction(body, extractionReply([{ id: 'e1', rawId: testRaw.id, quote: '尾句。' }]));
+  assert.equal(legacy.outcome.pages[0].source_evidence[0].quote, '尾句。');
+  assert.equal(legacy.outcome.pages[0].source_evidence[0].start, body.indexOf('尾句。'));
+});
+
+test('相邻chunk合并：同ID、Raw范围和原文的重叠证据只保留一份', async () => {
+  const body = '填'.repeat(7598) + '\n\n' + '虚构事实：门店覆盖20%。' + '间'.repeat(185) + '\n\n' + '尾'.repeat(500);
+  const chunks = chunkText(body, budgets);
+  assert.equal(chunks.length, 2);
+  const catalogs = chunks.map(chunk => buildEvidenceLocatorCatalog(body, chunk));
+  const shared = catalogs[0].find(left => catalogs[1].some(right => right.start === left.start && right.end === left.end));
+  assert.ok(shared, '重叠区应有一段在两个chunk目录中具有相同的全局范围');
+  let extractionIndex = 0;
+  const provider = {
+    name: 'fixture', model: 'overlap-dedupe-test', secrets: [],
+    complete: async (input: { system: string; user: string }) => {
+      if (input.user.includes('完整结构化结果')) {
+        return { text: JSON.stringify({ document: { title: '测试资料', main_topic: '主题', summary: '合并摘要' } }), finishReason: 'stop', bytes: 20 };
+      }
+      const chunkIndex = Number(input.user.match(/本次只提供第 (\d+) 段/)?.[1]) - 1;
+      assert.ok(chunkIndex === 0 || chunkIndex === 1);
+      const locator = catalogs[chunkIndex].find(item => item.start === shared.start && item.end === shared.end);
+      assert.ok(locator);
+      const payload = {
+        ...extractionReply([{ id: 'e1', locatorId: locator.id }]),
+        evidence_format_version: 2,
+      };
+      // Distinct summaries make the deterministic document merge consume both chunk results.
+      payload.document.summary = `摘要 ${extractionIndex++}`;
+      return { text: JSON.stringify(payload), finishReason: 'stop', bytes: 100 };
+    },
+  };
+  const outcome = await new LLMService(rulesDir).wikiExtract({ raw: testRaw, body, provider, rulesDir });
+  assert.equal(outcome.chunkCount, 2);
+  assert.equal(outcome.pages.length, 1);
+  assert.equal(outcome.pages[0].source_evidence.length, 1);
+  assert.deepEqual(outcome.pages[0].source_evidence.map(item => ({ id: item.id, rawId: item.rawId, start: item.start, end: item.end, quote: item.quote })), [
+    { id: 'e1', rawId: testRaw.id, start: shared.start, end: shared.end, quote: shared.text },
+  ]);
+  assert.deepEqual(outcome.pages[0].source_facts[0].evidenceIds, ['e1']);
+});
+
+test('多chunk合并：provider合法ID占用生成后缀时循环选空位并保留全部引用', async () => {
+  const body = '渠道证据句。'.repeat(4200);
+  const chunks = chunkText(body, budgets);
+  assert.equal(chunks.length, 4);
+  const catalogs = chunks.map(chunk => buildEvidenceLocatorCatalog(body, chunk));
+  const idsByChunk = [
+    ['e1', 'e1-c2', 'e1-c2-2', 'e1-c3', 'e1-c4', 'e1-c4-2'],
+    ['e1', 'e1-c2', 'e1-c2-2', 'e1-c2-c2'],
+    ['e1', 'e1-c3-2'],
+    ['e1', 'e1-c4'],
+  ];
+  let extractionCalls = 0;
+  const provider = {
+    name: 'fixture', model: 'merge-id-collision-test', secrets: [],
+    complete: async (input: { system: string; user: string }) => {
+      if (input.user.includes('完整结构化结果')) {
+        return { text: JSON.stringify({ document: { title: '测试资料', main_topic: '渠道', summary: '汇总' } }), finishReason: 'stop', bytes: 20 };
+      }
+      const chunkIndex = Number(input.user.match(/本次只提供第 (\d+) 段/)?.[1]) - 1;
+      const evidenceIds = idsByChunk[chunkIndex];
+      assert.ok(evidenceIds);
+      assert.ok(evidenceIds.length <= catalogs[chunkIndex].length);
+      const sourceEvidence = evidenceIds.map((id, index) => ({ id, locatorId: catalogs[chunkIndex][index].id }));
+      const payload = {
+        evidence_format_version: 2,
+        document: { title: '测试资料', main_topic: '渠道', summary: `分块摘要${chunkIndex}` },
+        suggested_pages: [{ title: '相同主题', type: 'concept', category: 'industry_basics', one_line_definition: '渠道证据',
+          source_facts: evidenceIds.map(id => ({ text: `块${chunkIndex}事实${id}`, evidenceIds: [id] })),
+          ai_organized: [], ai_inferences: [], related_pages: [], open_questions: [], source_evidence: sourceEvidence }],
+      };
+      extractionCalls += 1;
+      return { text: JSON.stringify(payload), finishReason: 'stop', bytes: 100 };
+    },
+  };
+  const outcome = await new LLMService(rulesDir).wikiExtract({ raw: testRaw, body, provider, rulesDir });
+  const page = outcome.pages[0];
+  const evidenceIds = page.source_evidence.map(item => item.id);
+  assert.equal(extractionCalls, 4);
+  assert.equal(outcome.chunkCount, 4);
+  assert.equal(new Set(evidenceIds).size, evidenceIds.length, '聚合后的证据ID必须全局唯一');
+  for (const generated of ['e1-c2-3', 'e1-c2-c2-2', 'e1-c3-3', 'e1-c4-3']) {
+    assert.ok(evidenceIds.includes(generated), `碰撞后应稳定选择未占用ID ${generated}`);
+  }
+  const allIds = new Set(evidenceIds);
+  assert.equal(page.source_facts.length, idsByChunk.reduce((sum, ids) => sum + ids.length, 0), '每块的事实均保留');
+  for (const fact of page.source_facts) {
+    assert.equal(fact.evidenceIds.length, 1);
+    assert.ok(allIds.has(fact.evidenceIds[0]), `事实 ${fact.text} 的证据引用必须保留并解析`);
+  }
+  assert.ok(page.source_evidence.every(item => body.slice(item.start, item.end) === item.quote), '重命名不改变来源区间或原文引文');
+});
+
+test('locator v2和legacy：未知/跨chunk/混合定位与页间证据引用均fail closed', async () => {
+  const body = '第一句证据。第二句证据。';
+  const catalog = buildEvidenceLocatorCatalog(body, chunkText(body, budgets)[0]);
+  const invalid = async (payload: unknown, sourceBody = body) => rejection(new LLMService(rulesDir).wikiExtract({
+    raw: testRaw, body: sourceBody, rulesDir,
+    provider: { name: 'fixture', model: 'invalid', secrets: [], complete: async () => ({ text: JSON.stringify(payload), finishReason: 'stop', bytes: 10 }) },
+  }));
+  const unknown = await invalid({ ...extractionReply([{ id: 'e1', locatorId: 'c1-l999' }]), evidence_format_version: 2 });
+  assert.equal(unknown.code, 'LLM_EVIDENCE_UNKNOWN_LOCATOR');
+  const mixed = await invalid({ ...extractionReply([{ id: 'e1', locatorId: catalog[0].id, quote: '第一句证据。' }]), evidence_format_version: 2 });
+  assert.equal(mixed.code, 'LLM_SCHEMA_INVALID');
+  const extraRawId = await invalid({ ...extractionReply([{ id: 'e1', locatorId: catalog[0].id, rawId: testRaw.id }]), evidence_format_version: 2 });
+  assert.equal(extraRawId.code, 'LLM_SCHEMA_INVALID', 'v2 rawId由当前Raw绑定，不接受模型额外指定');
+  const missingLocator = await invalid({ ...extractionReply([{ id: 'e1' }]), evidence_format_version: 2 });
+  assert.equal(missingLocator.code, 'LLM_SCHEMA_INVALID');
+  const missingRef = await invalid({ ...extractionReply([{ id: 'e1', locatorId: catalog[0].id }]), evidence_format_version: 2, suggested_pages: [{ ...extractionReply([{ id: 'e1', locatorId: catalog[0].id }]).suggested_pages[0], source_facts: [{ text: '事实', evidenceIds: ['missing'] }] }] });
+  assert.equal(missingRef.code, 'LLM_EVIDENCE_UNKNOWN_ID');
+
+  const crossChunkBody = '甲'.repeat(8000) + '😀末块句。';
+  const otherChunkId = 'c2-l001';
+  const crossChunk = await invalid({ ...extractionReply([{ id: 'e1', locatorId: otherChunkId }]), evidence_format_version: 2 }, crossChunkBody);
+  assert.equal(crossChunk.code, 'LLM_EVIDENCE_UNKNOWN_LOCATOR');
+
+  const crossPagePayload = {
+    document: { title: '测试资料', main_topic: '测试主题', summary: '测试摘要' },
+    suggested_pages: [
+      { ...extractionReply([{ id: 'e1', locatorId: catalog[0].id }]).suggested_pages[0], title: '页一' },
+      { ...extractionReply([{ id: 'e2', locatorId: catalog[1]?.id ?? catalog[0].id }]).suggested_pages[0], title: '页二', source_facts: [{ text: '错误跨页引用', evidenceIds: ['e1'] }] },
+    ], evidence_format_version: 2,
+  };
+  const crossPage = await invalid(crossPagePayload);
+  assert.equal(crossPage.code, 'LLM_EVIDENCE_UNKNOWN_ID');
+  const repeatedLegacy = await invalid(extractionReply([{ id: 'e1', rawId: testRaw.id, quote: '句证据。' }]), '第一句证据。第二句证据。');
+  assert.equal(repeatedLegacy.code, 'LLM_EVIDENCE_AMBIGUOUS', '旧quote格式遇到歧义仍严格失败');
+  assert.ok(crossChunkBody.length > 8000);
+});
+
 test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致、system prompt 含规则与结构', async () => {
   const bundle = await loadExtractionRules(rulesDir);
   assert.deepEqual(bundle.schema.properties?.suggested_pages?.items?.properties?.type?.enum, ['concept', 'entity', 'business_process', 'metric']);
@@ -83,7 +286,7 @@ test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致
   assert.equal(bundle.schema.additionalProperties, false);
   assert.equal(bundle.schema.properties?.suggested_pages?.items?.additionalProperties, false);
   assert.deepEqual(bundle.rules.budgets, FROZEN_BUDGETS);
-  assert.match(bundle.rulesVersion, /^b04-b04-1-[0-9a-f]{12}$/);
+  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-7-[0-9a-f]{12}$/);
   const prompt = buildSystemPrompt(bundle.rules, bundle.schema);
   assert.match(prompt, /只输出一个 JSON 对象/);
   assert.match(prompt, /一个条目只解决一个明确的知识问题/);
@@ -97,6 +300,8 @@ test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败'
     await writeFile(path.join(temporary, 'fmcg-schema.yaml'), 'domain: fmcg\ntypes: []\ncategories: []\nenums: {}\n', 'utf8');
     await writeFile(path.join(temporary, 'wiki-extract.schema.json'), JSON.stringify({ type: 'object', properties: { suggested_pages: { items: { properties: { type: { enum: ['concept'] }, category: { enum: ['x'] } } } } } }), 'utf8');
     await writeFile(path.join(temporary, 'extraction-rules.yaml'), await readFile(path.join(rulesDir, 'extraction-rules.yaml'), 'utf8'), 'utf8');
+    await writeFile(path.join(temporary, 'kb02-facts.schema.json'), await readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'), 'utf8');
+    await writeFile(path.join(temporary, 'kb02-planning.schema.json'), await readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'), 'utf8');
     const mismatch = await rejection(loadExtractionRules(temporary));
     assert.equal(mismatch.code, 'LLM_RULES_INVALID');
   } finally { await rm(temporary, { recursive: true, force: true }); }
@@ -106,6 +311,8 @@ test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败'
     await writeFile(path.join(drifted, 'fmcg-schema.yaml'), await readFile(path.join(rulesDir, 'fmcg-schema.yaml'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'wiki-extract.schema.json'), await readFile(path.join(rulesDir, 'wiki-extract.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'extraction-rules.yaml'), 'version: x\nrole: r\ninstructions: [a]\nbudgets: {maxChunkChars: 1}\n', 'utf8');
+    await writeFile(path.join(drifted, 'kb02-facts.schema.json'), await readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'), 'utf8');
+    await writeFile(path.join(drifted, 'kb02-planning.schema.json'), await readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'), 'utf8');
     const driftedError = await rejection(loadExtractionRules(drifted));
     assert.equal(driftedError.code, 'LLM_RULES_INVALID');
   } finally { await rm(drifted, { recursive: true, force: true }); }
@@ -314,4 +521,5 @@ test('渲染：事实/整理/推断/问题/证据分节，Source 是摘要而非
   assert.match(source, /原始标题（Raw r1）/);
   assert.equal(source.includes('原文完整内容'), false);
 });
+
 

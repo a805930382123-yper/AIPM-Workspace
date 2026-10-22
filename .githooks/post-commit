@@ -1,0 +1,20 @@
+#!/bin/sh
+# Git runs this hook at the repository root. pwd -W handles Git for Windows.
+project_root=$(pwd -W 2>/dev/null || pwd)
+project_git() {
+  git -c safe.directory="$project_root" "$@"
+}
+expected_remote='https://github.com/a805930382123-yper/AIPM-Workspace.git'
+actual_remote=$(project_git remote get-url --push origin) || exit 1
+if [ "$actual_remote" != "$expected_remote" ]; then
+  echo 'GitHub sync failed: origin does not match the authorized repository.' >&2
+  exit 1
+fi
+branch=$(project_git symbolic-ref --quiet --short HEAD) || {
+  echo 'GitHub sync failed: checkout has no current branch.' >&2
+  exit 1
+}
+if ! project_git push --set-upstream origin "HEAD:refs/heads/$branch"; then
+  echo 'GitHub sync failed. The local commit is saved; retry git push after resolving the reported error.' >&2
+  exit 1
+fi

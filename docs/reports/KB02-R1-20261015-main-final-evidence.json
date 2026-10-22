@@ -1,0 +1,198 @@
+{
+  "at": "2026-10-15T06:22:21.340Z",
+  "executor": "main Agent",
+  "standards": "PASS",
+  "spec": "FAIL",
+  "overall": "FAIL",
+  "realProvider": {
+    "host": "open.bigmodel.cn",
+    "model": "GLM-5.3-Flash",
+    "priorKB02": 19,
+    "r1Calls": 21,
+    "totalKB02": 40,
+    "cap": 40,
+    "historicalKB01": 27,
+    "combined": 67,
+    "allKnowledgeLow": true,
+    "traceCount": 21
+  },
+  "longExtractedCoverage": [
+    {
+      "sequence": 25,
+      "start": 0,
+      "end": 8000,
+      "facts": 4,
+      "questions": 2
+    },
+    {
+      "sequence": 26,
+      "start": 7600,
+      "end": 15600,
+      "facts": 3,
+      "questions": 2
+    },
+    {
+      "sequence": 27,
+      "start": 15200,
+      "end": 23200,
+      "facts": 2,
+      "questions": 2
+    },
+    {
+      "sequence": 28,
+      "start": 22800,
+      "end": 30800,
+      "facts": 2,
+      "questions": 2
+    },
+    {
+      "sequence": 29,
+      "start": 30400,
+      "end": 38400,
+      "facts": 2,
+      "questions": 2
+    },
+    {
+      "sequence": 30,
+      "start": 38000,
+      "end": 46000,
+      "facts": 4,
+      "questions": 2
+    },
+    {
+      "sequence": 31,
+      "start": 45600,
+      "end": 53600,
+      "facts": 4,
+      "questions": 2
+    },
+    {
+      "sequence": 32,
+      "start": 53200,
+      "end": 61200,
+      "facts": 4,
+      "questions": 2
+    },
+    {
+      "sequence": 33,
+      "start": 60800,
+      "end": 68800,
+      "facts": 2,
+      "questions": 2
+    },
+    {
+      "sequence": 34,
+      "start": 68400,
+      "end": 76400,
+      "facts": 2,
+      "questions": 0
+    },
+    {
+      "sequence": 35,
+      "start": 76000,
+      "end": 84000,
+      "facts": 2,
+      "questions": 2
+    },
+    {
+      "sequence": 36,
+      "start": 83600,
+      "end": 91600,
+      "facts": 10,
+      "questions": 0
+    },
+    {
+      "sequence": 37,
+      "start": 91200,
+      "end": 99200,
+      "facts": 2,
+      "questions": 2
+    },
+    {
+      "sequence": 38,
+      "start": 98800,
+      "end": 106400,
+      "facts": 3,
+      "questions": 1
+    }
+  ],
+  "longPlanning": [
+    {
+      "sequence": 39,
+      "elapsedMs": 20140,
+      "pages": 14,
+      "facts": {
+        "input": 46,
+        "output": 45,
+        "missing": [
+          {
+            "id": "f-c2-3",
+            "text": "两个虚构区域的异常审批负责人未知，原文明确AI仅用于未来分析建议。"
+          }
+        ],
+        "unknown": [],
+        "duplicate": []
+      },
+      "questions": {
+        "input": 23,
+        "output": 23,
+        "missing": [],
+        "unknown": [],
+        "duplicate": []
+      }
+    },
+    {
+      "sequence": 40,
+      "elapsedMs": 17766,
+      "pages": 14,
+      "facts": {
+        "input": 46,
+        "output": 45,
+        "missing": [
+          {
+            "id": "f-c2-3",
+            "text": "两个虚构区域的异常审批负责人未知，原文明确AI仅用于未来分析建议。"
+          }
+        ],
+        "unknown": [],
+        "duplicate": []
+      },
+      "questions": {
+        "input": 23,
+        "output": 23,
+        "missing": [],
+        "unknown": [],
+        "duplicate": []
+      }
+    }
+  ],
+  "secretScan": {
+    "files": "R1 report/script text artifacts",
+    "matches": []
+  },
+  "ownedEndpointsClosed": [
+    {
+      "url": "http://127.0.0.1:64565/api/health",
+      "reachable": false
+    },
+    {
+      "url": "http://127.0.0.1:64566",
+      "reachable": false
+    }
+  ],
+  "browser": {
+    "realProgressObserved": true,
+    "explicitContinueSameJob": true,
+    "defaultNoneSelected": true,
+    "reviewSectionsVisible": true,
+    "longCompletedReview": "BLOCKED: planning failed",
+    "newUpdateConfirm": "BLOCKED: invalid Provider evidence",
+    "ownedTabClosed": true
+  },
+  "limits": [
+    "Full suite executed in byte-identical writable temporary copy; original inherited ACL unchanged.",
+    "Actual supplemental preview failed, so update confirmation and final two-source preservation not signed PASS.",
+    "Long extraction complete; both actual planning attempts failed; no final long draft or page-quality PASS.",
+    "No other batch, production deployment, or real-data edit."
+  ]
+}

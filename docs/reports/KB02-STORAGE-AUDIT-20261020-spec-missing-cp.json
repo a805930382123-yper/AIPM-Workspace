@@ -1,0 +1,226 @@
+{
+  "controlled": true,
+  "realProviderCalls": 0,
+  "node": "v25.2.1",
+  "before": {
+    "job": {
+      "id": "e6b02c60-7b1b-484a-bd5d-aafd822e7010",
+      "rawId": "434e34fa-273a-43dc-8c48-d13315209e67",
+      "status": "running",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 0
+      },
+      "startedAt": "2026-10-20T13:47:48.949Z",
+      "updatedAt": "2026-10-20T13:47:48.977Z"
+    },
+    "execution": "settled",
+    "recovery": {
+      "code": "STORAGE_WRITE_FAILED",
+      "message": "本机状态保存失败；请解除存储故障后重试保存状态。",
+      "phase": "failed-job",
+      "persisted": false,
+      "action": "reconcile-storage",
+      "details": {
+        "operation": "rename",
+        "errno": "EPERM"
+      }
+    }
+  },
+  "originalCheckpoint": {
+    "version": 1,
+    "jobId": "e6b02c60-7b1b-484a-bd5d-aafd822e7010",
+    "rawId": "434e34fa-273a-43dc-8c48-d13315209e67",
+    "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+    "pipelineVersion": "kb02-2",
+    "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+    "providerIdentity": "fake|budget-model",
+    "chunks": [
+      {
+        "index": 0,
+        "start": 0,
+        "end": 26
+      }
+    ],
+    "completedChunks": [
+      {
+        "index": 0,
+        "start": 0,
+        "end": 26,
+        "facts": [
+          {
+            "text": "目标100家，在售20家。",
+            "locatorIds": [
+              "c1-l001"
+            ],
+            "atomId": "c1-a0001",
+            "kind": "fact",
+            "id": "f-c1-1",
+            "chunkIndex": 0
+          },
+          {
+            "text": "铺货率20%，负责人未知。",
+            "locatorIds": [
+              "c1-l001"
+            ],
+            "atomId": "c1-a0002",
+            "kind": "fact",
+            "id": "f-c1-2",
+            "chunkIndex": 0
+          }
+        ],
+        "questions": [],
+        "sourceNotes": [],
+        "evidence": [
+          {
+            "id": "c1-l001",
+            "rawId": "434e34fa-273a-43dc-8c48-d13315209e67",
+            "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+            "start": 0,
+            "end": 26,
+            "chunkIndex": 0
+          }
+        ]
+      }
+    ],
+    "attempts": 2,
+    "stage": "planning",
+    "updatedAt": "2026-10-20T13:47:48.982Z",
+    "integrity": "6c9165c0eeb01d59e7b0776edd6cd9d83de38f2debaf0a389072b0df56e2eb3f",
+    "lastError": {
+      "code": "LLM_PLAN_COVERAGE_INVALID",
+      "message": "主题规划覆盖不完整或重复，未组装草稿。",
+      "at": "2026-10-20T13:47:48.981Z",
+      "diagnostic": {
+        "facts": {
+          "missing": [
+            "f-c1-2"
+          ],
+          "duplicate": [],
+          "unknown": []
+        },
+        "questions": {
+          "missing": [],
+          "duplicate": [],
+          "unknown": []
+        },
+        "duplicateTitles": []
+      }
+    }
+  },
+  "reconcile": {
+    "interrupted": [
+      "e6b02c60-7b1b-484a-bd5d-aafd822e7010"
+    ],
+    "statesFixed": [
+      "434e34fa-273a-43dc-8c48-d13315209e67:failed"
+    ]
+  },
+  "after": {
+    "job": {
+      "id": "e6b02c60-7b1b-484a-bd5d-aafd822e7010",
+      "rawId": "434e34fa-273a-43dc-8c48-d13315209e67",
+      "status": "failed",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 0
+      },
+      "startedAt": "2026-10-20T13:47:48.949Z",
+      "updatedAt": "2026-10-20T13:47:49.365Z",
+      "error": {
+        "code": "LLM_INTERRUPTED",
+        "message": "上一轮任务中断，未发现完整草稿；未保存的诊断无法恢复。继续操作前请检查状态。",
+        "at": "2026-10-20T13:47:49.361Z",
+        "retryable": true
+      },
+      "finishedAt": "2026-10-20T13:47:49.364Z"
+    },
+    "execution": "settled"
+  },
+  "reconcileProviderDelta": 0,
+  "nextJob": {
+    "job": {
+      "id": "4ad027ae-4ffc-4a39-9d4c-7e1d8622daa4",
+      "rawId": "434e34fa-273a-43dc-8c48-d13315209e67",
+      "status": "failed",
+      "stage": "planning",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 2,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 0,
+        "reason": "主题规划覆盖不完整或重复，未组装草稿。"
+      },
+      "startedAt": "2026-10-20T13:47:49.366Z",
+      "updatedAt": "2026-10-20T13:47:49.399Z",
+      "error": {
+        "code": "LLM_PLAN_COVERAGE_INVALID",
+        "message": "主题规划覆盖不完整或重复，未组装草稿。",
+        "at": "2026-10-20T13:47:49.389Z",
+        "retryable": true,
+        "details": {
+          "facts": {
+            "missing": [
+              "f-c1-2"
+            ],
+            "duplicate": [],
+            "unknown": []
+          },
+          "questions": {
+            "missing": [],
+            "duplicate": [],
+            "unknown": []
+          },
+          "duplicateTitles": []
+        }
+      },
+      "finishedAt": "2026-10-20T13:47:49.399Z"
+    },
+    "execution": "settled"
+  },
+  "afterOrdinaryStartProviderDelta": 2,
+  "originalJobId": "e6b02c60-7b1b-484a-bd5d-aafd822e7010",
+  "freshJobIdWithoutRestart": true
+}

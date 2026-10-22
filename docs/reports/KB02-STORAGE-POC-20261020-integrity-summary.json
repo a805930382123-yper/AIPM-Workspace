@@ -1,0 +1,218 @@
+{
+  "checkedAt": "2026-10-19T16:18:03.7222131Z",
+  "productCount": 97,
+  "defaultTestCount": 62,
+  "formalSourceChanges": [],
+  "copiedProtectedFilesVerified": 54,
+  "copiedProtectedFilePaths": [
+    "services/audit/lint.ts",
+    "services/audit/service.ts",
+    "services/demo/service.ts",
+    "services/llm/checkpoints.ts",
+    "services/llm/chunk.ts",
+    "services/llm/config-manager.ts",
+    "services/llm/config.ts",
+    "services/llm/evidence.ts",
+    "services/llm/jobs.ts",
+    "services/llm/knowledge-atoms.ts",
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/locators.ts",
+    "services/llm/provider.ts",
+    "services/llm/rules.ts",
+    "services/llm/schema-validator.ts",
+    "services/llm/service.ts",
+    "services/meeting/errors.ts",
+    "services/meeting/policy.ts",
+    "services/meeting/raw-bridge.ts",
+    "services/meeting/source-policy.ts",
+    "services/meeting/store.ts",
+    "services/meeting/types.ts",
+    "services/prompt/errors.ts",
+    "services/prompt/limits.ts",
+    "services/prompt/store.ts",
+    "services/prompt/validate.ts",
+    "services/prompt/variables.ts",
+    "services/prompt-ai/contract.ts",
+    "services/prompt-ai/service.ts",
+    "services/raw/assets.ts",
+    "services/raw/limits.ts",
+    "services/raw/parse.ts",
+    "services/raw/state.ts",
+    "services/raw/store.ts",
+    "services/search/duplicates.ts",
+    "services/stats/index.ts",
+    "services/storage/files.ts",
+    "services/storage/record-validators.ts",
+    "services/storage/recovery.ts",
+    "services/wiki/commits.ts",
+    "services/wiki/drafts.ts",
+    "services/wiki/knowledge-workflows.ts",
+    "services/wiki/render.ts",
+    "services/wiki/store.ts",
+    "rules/extraction-rules.yaml",
+    "rules/fmcg-schema.yaml",
+    "rules/kb02-facts.schema.json",
+    "rules/kb02-planning.schema.json",
+    "rules/page-templates.yaml",
+    "rules/prompt-rules.yaml",
+    "rules/source-policy.yaml",
+    "rules/wiki-extract.schema.json",
+    "package.json",
+    "tests/kb02-planning-budget.test.ts"
+  ],
+  "results": [
+    {
+      "variant": "original",
+      "mode": "failed-job",
+      "result": "KNOWN_BAD_BEHAVIOR_REPRODUCED",
+      "runtime": "v25.2.1",
+      "beforeStatus": "running",
+      "beforeError": null,
+      "callsBefore": 2,
+      "callsAfter": null,
+      "attemptsBefore": 2,
+      "attemptsAfter": null,
+      "afterStatus": null,
+      "recovery": null,
+      "atomicAttempts": [
+        6
+      ],
+      "atomicIntact": [
+        true
+      ]
+    },
+    {
+      "variant": "original",
+      "mode": "done-checkpoint",
+      "result": "KNOWN_BAD_BEHAVIOR_REPRODUCED",
+      "runtime": "v25.2.1",
+      "beforeStatus": "failed",
+      "beforeError": "LLM_INTERNAL_ERROR",
+      "callsBefore": 6,
+      "callsAfter": null,
+      "attemptsBefore": 6,
+      "attemptsAfter": null,
+      "afterStatus": null,
+      "recovery": null,
+      "atomicAttempts": [
+        6
+      ],
+      "atomicIntact": [
+        true
+      ]
+    },
+    {
+      "variant": "original",
+      "mode": "coverage-checkpoint",
+      "result": "KNOWN_BAD_BEHAVIOR_REPRODUCED",
+      "runtime": "v25.2.1",
+      "beforeStatus": "failed",
+      "beforeError": "LLM_INTERNAL_ERROR",
+      "callsBefore": 2,
+      "callsAfter": null,
+      "attemptsBefore": 2,
+      "attemptsAfter": null,
+      "afterStatus": null,
+      "recovery": null,
+      "atomicAttempts": [
+        6
+      ],
+      "atomicIntact": [
+        true
+      ]
+    },
+    {
+      "variant": "patched",
+      "mode": "failed-job",
+      "result": "PROOF_OF_FIX_CHECKS_PASSED",
+      "runtime": "v25.2.1",
+      "beforeStatus": "running",
+      "beforeError": null,
+      "callsBefore": 2,
+      "callsAfter": 2,
+      "attemptsBefore": 2,
+      "attemptsAfter": 2,
+      "afterStatus": "failed",
+      "recovery": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "persisted": false,
+        "phase": "failed-job",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      },
+      "atomicAttempts": [
+        6,
+        6
+      ],
+      "atomicIntact": [
+        true,
+        true
+      ]
+    },
+    {
+      "variant": "patched",
+      "mode": "done-checkpoint",
+      "result": "PROOF_OF_FIX_CHECKS_PASSED",
+      "runtime": "v25.2.1",
+      "beforeStatus": "running",
+      "beforeError": null,
+      "callsBefore": 6,
+      "callsAfter": 6,
+      "attemptsBefore": 6,
+      "attemptsAfter": 6,
+      "afterStatus": "completed",
+      "recovery": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "persisted": false,
+        "phase": "done-checkpoint",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      },
+      "atomicAttempts": [
+        6,
+        6
+      ],
+      "atomicIntact": [
+        true,
+        true
+      ]
+    },
+    {
+      "variant": "patched",
+      "mode": "coverage-checkpoint",
+      "result": "PROOF_OF_FIX_CHECKS_PASSED",
+      "runtime": "v25.2.1",
+      "beforeStatus": "running",
+      "beforeError": null,
+      "callsBefore": 2,
+      "callsAfter": 2,
+      "attemptsBefore": 2,
+      "attemptsAfter": 2,
+      "afterStatus": "failed",
+      "recovery": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "persisted": false,
+        "phase": "coverage-checkpoint",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      },
+      "atomicAttempts": [
+        6,
+        6
+      ],
+      "atomicIntact": [
+        true,
+        true
+      ]
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "at": "2026-10-15T07:46:27.540Z",
+  "scope": "independent direct product services, isolated synthetic fixtures; no real Provider",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-pa01-main-probes-tzc1ic",
+  "storage": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-pa01-main-storage-wYWBJr",
+  "summary": {
+    "pass": 13,
+    "fail": 13
+  },
+  "rows": [
+    {
+      "id": "S01-seven-template-Brief",
+      "result": "PASS",
+      "evidence": {
+        "calls": 7,
+        "templates": 7
+      }
+    },
+    {
+      "id": "S02-provider-invalid-Brief-rejected",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_SCHEMA_MISMATCH",
+        "status": 502,
+        "message": "Provider 返回的 Brief 字段 context 无效。"
+      }
+    },
+    {
+      "id": "F01-client-invalid-Brief-must-be-400",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"code\":\"LLM_SCHEMA_MISMATCH\",\"status\":502,\"message\":\"Provider 返回的 Brief 字段 goal 无效。\"}\n\n502 !== 400\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:13:172\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:13:1"
+    },
+    {
+      "id": "F02-safe-schema-diagnostic-present",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"code\":\"LLM_SCHEMA_MISMATCH\",\"status\":502,\"message\":\"Provider 返回的 Brief 字段 context 无效。\"}\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:14:139\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:14:1"
+    },
+    {
+      "id": "S03-content-render-variable-and-controlled-fields",
+      "result": "PASS",
+      "evidence": {
+        "rendered": true,
+        "variablesPreserved": true
+      }
+    },
+    {
+      "id": "S04-content-reject-model-system-fields",
+      "result": "PASS",
+      "evidence": {
+        "code": "LLM_SCHEMA_MISMATCH",
+        "status": 502,
+        "message": "Provider 返回的Prompt 内容包含未定义字段。"
+      }
+    },
+    {
+      "id": "S05-check-write-read-zero-extra-call",
+      "result": "PASS",
+      "evidence": {
+        "checks": 9,
+        "readonlyCalls": 0
+      }
+    },
+    {
+      "id": "S06-failed-rewrite-preserves-check-and-retry-only-rewrite",
+      "result": "PASS",
+      "evidence": {
+        "preserved": 9,
+        "retryCalls": 1
+      }
+    },
+    {
+      "id": "S07-concurrent-and-success-replay",
+      "result": "PASS",
+      "evidence": {
+        "concurrent409": true,
+        "replayCalls": 0
+      }
+    },
+    {
+      "id": "S08-three-attempt-cap",
+      "result": "PASS",
+      "evidence": {
+        "code": "REWRITE_LIMIT",
+        "status": 409,
+        "message": "重写次数已达上限，请重新运行检查。"
+      }
+    },
+    {
+      "id": "S09-startup-interruption-does-not-call",
+      "result": "PASS",
+      "evidence": {
+        "stage": "failed",
+        "calls": 0
+      }
+    },
+    {
+      "id": "S10-input-binding-zero-call",
+      "result": "PASS",
+      "evidence": {
+        "code": "INPUT_CHANGED",
+        "status": 409,
+        "message": "检查输入已变化，请重新运行检查。"
+      }
+    },
+    {
+      "id": "S11-provider-binding-zero-call",
+      "result": "PASS",
+      "evidence": {
+        "code": "PROVIDER_CHANGED",
+        "status": 409,
+        "message": "Provider 已变化，请重新检查原 Prompt。"
+      }
+    },
+    {
+      "id": "F03-rules-version-binding",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"actual\":200,\"extraCalls\":1}\n\nundefined !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:24:393\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:24:215"
+    },
+    {
+      "id": "F04-check-shape-binding",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"actual\":200,\"extraCalls\":1}\n\nundefined !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:24:393\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:24:215"
+    },
+    {
+      "id": "F05-check-content-integrity-binding",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"actual\":200,\"extraCalls\":1}\n\nundefined !== 409\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:24:393\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:24:215"
+    },
+    {
+      "id": "F06-known-secret-in-restored-check-must-not-be-sent",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"sentSyntheticKnownCredential\":true,\"extraCalls\":1,\"actualStatus\":200}\n\ntrue !== false\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:25:319\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:25:1"
+    },
+    {
+      "id": "S12-target-version-change-zero-call",
+      "result": "PASS",
+      "evidence": {
+        "code": "VERSION_CONFLICT",
+        "status": 409,
+        "message": "目标 Prompt 已变化，请重新检查。"
+      }
+    },
+    {
+      "id": "S13-legacy-optimize-two-calls",
+      "result": "PASS",
+      "evidence": {
+        "calls": 2
+      }
+    },
+    {
+      "id": "F07-storage-helper-without-issue-receiver-must-throw",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"value\":[]}\n+ actual - expected\n\n+ undefined\n- 'STORAGE_CORRUPT'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:28:238\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:28:1"
+    },
+    {
+      "id": "F08-healthy-real-job-must-not-be-reported-corrupt",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"scanned\":true,\"overflow\":false,\"items\":[{\"id\":\"00f0a31f8834f999\",\"kind\":\"jobs\",\"reason\":\"shape\"}]}\n\n1 !== 0\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:30:437\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:30:1"
+    },
+    {
+      "id": "F09-actual-wiki-commit-path-must-be-scanned",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"scanned\":true,\"overflow\":false,\"items\":[]}\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:32:243\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:32:1"
+    },
+    {
+      "id": "F10-unfixed-commit-issue-must-not-disappear",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"first\":{\"scanned\":true,\"overflow\":false,\"items\":[{\"id\":\"d4a8988e47cbcd78\",\"kind\":\"storage-read\",\"reason\":\"parse\"}]},\"second\":{\"scanned\":true,\"overflow\":false,\"items\":[]},\"fileStillCorrupt\":\"{bad\"}\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:33:281\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:33:1"
+    },
+    {
+      "id": "F11-wrong-shape-raw-state-must-not-be-empty",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"actualState\":{\"rawId\":\"b2c2c86e-0d5d-47ab-851a-4c16be489a81\",\"status\":\"unprocessed\",\"updatedAt\":\"1970-01-01T00:00:00.000Z\",\"history\":[]},\"scan\":{\"scanned\":true,\"overflow\":false,\"items\":[]}}\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:34:355\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:34:1"
+    },
+    {
+      "id": "F12-wrong-shape-manifest-must-not-enter-executor",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"enteredExecutor\":1,\"conflicts\":1}\n\n1 !== 0\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:35:429\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:35:1"
+    },
+    {
+      "id": "F13-same-file-recovery-issue-must-be-deduplicated",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: [{\"id\":\"7338e5b5b5e710e4\",\"kind\":\"prompt-drafts\",\"reason\":\"parse\"},{\"id\":\"d4a8988e47cbcd78\",\"kind\":\"storage-read\",\"reason\":\"parse\"},{\"id\":\"7abbe74bc7775f34\",\"kind\":\"storage-read\",\"reason\":\"parse\"}]\n\n3 !== 1\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:36:362\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:9:69)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-probes.mjs:36:1"
+    }
+  ],
+  "localInProcessProviderCalls": 35,
+  "externalCalls": 0
+}

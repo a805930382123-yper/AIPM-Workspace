@@ -68,12 +68,12 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
       await delay(20);
     }
   };
-  const extract = async (rawId: string) => {
-    const started = await runner.start(rawId, { newJobId: crypto.randomUUID(), now: new Date().toISOString() });
+  const extract = async (rawId: string, restart = false) => {
+    const started = await runner.start(rawId, { newJobId: crypto.randomUUID(), now: new Date().toISOString(), ...(restart ? { restart: true } : {}) });
     return { ...started, finished: await waitForJob(started.job.id) };
   };
-  const draftFor = async (rawId: string) => {
-    const { finished } = await extract(rawId);
+  const draftFor = async (rawId: string, restart = false) => {
+    const { finished } = await extract(rawId, restart);
     assert.equal(finished.status, 'completed', finished.error?.message ?? '');
     const draft = await drafts.get(finished.draftId as string);
     assert.ok(draft, '草稿必须存在');
@@ -130,11 +130,10 @@ test('F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都�
 
 test('F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它', async () => {
   const context = await setup(fake => {
-    // schema 合法但把 Key 塞进了知识建议的字段里。
+    // schema 合法但把 Key 塞进了事实载荷。
     fake.setHandler(request => {
       const chunk = chunkFromPrompt(request.user);
-      const payload = buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '正常标题' }]) as { suggested_pages: Array<Record<string, unknown>> };
-      payload.suggested_pages[0].one_line_definition = `这里是密钥 ${request.authorization?.replace(/^Bearer\s+/u, '') ?? ''}`;
+      const payload = buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '正常标题', factText: '业务事实里泄漏密钥 ' + (request.authorization?.replace(/^Bearer\s+/u, '') ?? '') }]);
       return { kind: 'content', content: contentOf(payload) };
     });
   }, LEAK_KEY);
@@ -160,8 +159,8 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
       const chunk = chunkFromPrompt(request.user);
       const rawId = rawIdFromPrompt(request.user);
       const page = chunk.index === 0
-        ? { title: '合并候选A', facts: [{ text: '事实A：动销率需要与库存一起看', evidenceIds: ['e1'] }] }
-        : { title: '合并候选B', facts: [{ text: '事实B：库存周转天数反映资金占用', evidenceIds: ['e1'] }, { text: '事实A：动销率需要与库存一起看', evidenceIds: ['e1'] }] };
+        ? { title: '合并候选A', facts: [{ text: '事实A：动销率需要与库存一起看。', evidenceIds: ['e1'] }] }
+        : { title: '合并候选B', facts: [{ text: '事实B：库存周转天数反映资金占用。', evidenceIds: ['e1'] }, { text: '事实A：动销率需要与库存一起看。', evidenceIds: ['e1'] }] };
       const quote = chunk.text.trim().slice(0, 16);
       const at = chunk.text.indexOf(quote);
       return { kind: 'content', content: contentOf({
@@ -170,7 +169,7 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
           title: page.title, type: 'concept', category: 'industry_basics', one_line_definition: `${page.title}的说明`,
           source_facts: page.facts,
           ai_organized: [`${page.title}的整理`], ai_inferences: [`${page.title}的推断`],
-          related_pages: [], open_questions: [`${page.title}的待确认问题`],
+          related_pages: [], open_questions: [chunk.index === 0 ? '各渠道是否使用相同的动销统计口径？' : '安全库存是否按地区区分？'],
           source_evidence: [{ id: 'e1', rawId, quote, start: chunk.start + Math.max(0, at), end: chunk.start + Math.max(0, at) + quote.length }],
         }],
       }) };
@@ -179,19 +178,24 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
   try {
     // 两段不同事实分属两个 chunk（同一 Raw 的两个建议），人工合并。
     const filler = '渠道库存周转与动销分析：门店补货节奏、经销商库存水位。\r\n';
-    let body = '渠道动销：动销率需要与库存一起看。\r\n';
+    let body = '事实A：动销率需要与库存一起看。尚未确认：各渠道是否使用相同的动销统计口径？\r\n';
     while (body.length < 8200) body += filler;
-    body += '\n门店补货：安全库存与补货周期决定缺货风险。\r\n';
+    body += '\n事实B：库存周转天数反映资金占用。事实A：动销率需要与库存一起看。门店补货：安全库存与补货周期决定缺货风险。尚未确认：安全库存是否按地区区分？\r\n';
     const raw = await context.createRaw(body, '合并事实资料');
     const draft = await context.draftFor(raw.id);
     assert.equal(draft.pages.length, 2);
+    assert.ok(draft.pages.every(page => page.ai_organized.length === 0 && page.ai_inferences.length === 0), 'KB02 新草稿不自动生成整理/推断');
     const [a, b] = draft.pages;
-    const merged = await context.drafts.patch(draft.id, { baseRevision: draft.revision, merge: { pageIds: [a.pageId, b.pageId] } }, { body: raw.body, rules: await context.draftRules() });
+    const reviewed = await context.drafts.patch(draft.id, { baseRevision: draft.revision, pages: [
+      { pageId: a.pageId, ai_organized: ['人工整理A'], ai_inferences: ['人工推断A'] },
+      { pageId: b.pageId, ai_organized: ['人工整理B'], ai_inferences: ['人工推断B'] },
+    ] }, { body: raw.body, rules: await context.draftRules() });
+    const merged = await context.drafts.patch(reviewed.id, { baseRevision: reviewed.revision, merge: { pageIds: [a.pageId, b.pageId] } }, { body: raw.body, rules: await context.draftRules() });
     const page = merged.pages[0];
     assert.equal(merged.pages.length, 1, '两个建议合并为一条');
     const texts = page.source_facts.map(fact => fact.text);
-    assert.ok(texts.includes('事实A：动销率需要与库存一起看'), `合并后必须保留事实A，实际 ${JSON.stringify(texts)}`);
-    assert.ok(texts.includes('事实B：库存周转天数反映资金占用'), `合并后必须保留事实B，实际 ${JSON.stringify(texts)}`);
+    assert.ok(texts.includes('事实A：动销率需要与库存一起看。'), `合并后必须保留事实A，实际 ${JSON.stringify(texts)}`);
+    assert.ok(texts.includes('事实B：库存周转天数反映资金占用。'), `合并后必须保留事实B，实际 ${JSON.stringify(texts)}`);
     assert.equal(texts.filter(text => text.startsWith('事实A')).length, 1, '相同事实必须去重，不得重复');
     // 每条事实的证据都必须仍然有效，且重复事实的证据被合并。
     for (const fact of page.source_facts) {
@@ -203,8 +207,8 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
       }
     }
     // 其余四类内容不得丢失或错位。
-    assert.ok(page.ai_organized.some(item => item.includes('合并候选A')) && page.ai_organized.some(item => item.includes('合并候选B')), 'AI 整理必须保留两侧内容');
-    assert.ok(page.ai_inferences.some(item => item.includes('合并候选A')) && page.ai_inferences.some(item => item.includes('合并候选B')), 'AI 推断必须保留两侧内容');
+    assert.deepEqual(page.ai_organized, ['人工整理A', '人工整理B'], '合并须保留两侧经用户编辑的整理内容');
+    assert.deepEqual(page.ai_inferences, ['人工推断A', '人工推断B'], '合并须保留两侧经用户编辑的推断内容');
     assert.ok(page.open_questions.length >= 2, '待确认问题必须保留两侧内容');
     assert.equal(page.source_facts.some(fact => fact.text.includes('推断')), false, '事实不能被替换成推断');
     // 合并后的草稿仍可编辑并确认，证据在提交前再次校验通过。
@@ -212,9 +216,10 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
     assert.equal(outcome.manifest.status, 'completed');
     const written = await context.wikiStore.get(outcome.manifest.snapshot.pageRecords[0].id);
     assert.ok(written);
+    assert.ok(written?.body.includes('人工推断A') && written.body.includes('人工推断B'), '正式Wiki必须持久化合并前两侧人工推断');
     for (const text of texts) assert.ok(written?.body.includes(text), `正式页必须包含事实「${text}」`);
     assert.match(written?.body ?? '', /## 来源事实[\s\S]*事实A[\s\S]*事实B/);
-    assert.equal((written?.body ?? '').includes('## AI 推断'), true);
+    assert.deepEqual(page.ai_inferences, ['人工推断A', '人工推断B'], '正式页必须保留经用户审核的两侧推断');
   } finally { await context.clean(); }
 });
 
@@ -430,7 +435,7 @@ test('F04-05 新 Source 只链接本次创建的选中页，未选建议按文�
     });
   });
   try {
-    const raw = await context.createRaw('渠道动销资料正文。', '选中链接集合');
+    const raw = await context.createRaw('渠道动销资料正文。库存周转资料正文。', '选中链接集合');
     const draft = await context.draftFor(raw.id);
     assert.equal(draft.pages.length, 2);
     const chosen = draft.pages.find(page => page.title === '本次创建的指标') as typeof draft.pages[number];

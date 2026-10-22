@@ -1,14 +1,14 @@
 // B04: one backend Provider adapter (OpenAI-compatible Chat Completions, non-streaming).
 // Nothing here is provider-specific beyond the documented wire format, and no key or full
 // provider response is ever put into an error message, cause or log line.
-import type { LlmConfig } from './config.ts';
+import { containsKnownSecret, safeBaseUrl, validateApiKey, validateModel, type LlmConfig } from './config.ts';
 
 export class LlmError extends Error {
   constructor(public code: string, message: string, public status = 502, public details?: unknown) { super(message); }
 }
 
 export type LlmCompletionRequest = {
-  system: string; user: string; timeoutMs: number; maxOutputBytes: number; signal?: AbortSignal;
+  system: string; user: string; timeoutMs: number; maxOutputBytes: number; signal?: AbortSignal; purpose?: 'knowledge' | 'prompt';
 };
 export type LlmCompletion = {
   text: string; finishReason: string | null; bytes: number;
@@ -17,12 +17,32 @@ export type LlmCompletion = {
 export interface LlmProvider {
   readonly name: string;
   readonly model: string;
+  /** Non-secret endpoint identity used only to bind validated extraction checkpoints. */
+  readonly cacheIdentity?: string;
   /** Credentials this provider holds; used to guarantee they never reach an error surface. */
   readonly secrets?: readonly string[];
   complete(request: LlmCompletionRequest): Promise<LlmCompletion>;
 }
 
 export const REDACTED = '[redacted]';
+
+/** Reject any provider result that contains a credential in a parsed JSON key or value. */
+export function assertNoKnownSecret(value: unknown, secrets: readonly string[] = []): void {
+  const known = secrets.filter(secret => typeof secret === 'string' && secret.length > 0);
+  if (!known.length) return;
+  const contains = (text: string) => known.some(secret => text.includes(secret));
+  const visit = (item: unknown): boolean => {
+    if (typeof item === 'string') return contains(item);
+    if (Array.isArray(item)) return item.some(visit);
+    if (item && typeof item === 'object') {
+      return Object.entries(item as Record<string, unknown>).some(([key, child]) => contains(key) || visit(child));
+    }
+    return false;
+  };
+  if (visit(value)) {
+    throw new LlmError('LLM_OUTPUT_CONTAINS_SECRET', 'Provider 输出包含服务端凭证，已拒绝该结果。', 502);
+  }
+}
 
 /**
  * F04-10: removes anything key-shaped, header-shaped or equal to a known secret before it reaches
@@ -32,8 +52,9 @@ export const REDACTED = '[redacted]';
 export function sanitizeProviderText(value: unknown, secrets: readonly string[] = []): string {
   let text = typeof value === 'string' ? value : String(value ?? '');
   for (const secret of secrets) {
-    if (typeof secret !== 'string' || secret.length < 6) continue;
+    if (typeof secret !== 'string' || secret.length === 0) continue;
     text = text.split(secret).join(REDACTED);
+    if (secret.length < 6) continue;
     for (const size of [Math.min(32, secret.length), 16, 10]) {
       if (secret.length < size) continue;
       text = text.split(secret.slice(0, size)).join(REDACTED);
@@ -56,7 +77,9 @@ export function sanitizeDeep<T>(value: T, secrets: readonly string[] = []): T {
   if (value && typeof value === 'object') {
     const result: Record<string, unknown> = {};
     for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
-      result[key] = /authorization|api[-_]?key/i.test(key) ? REDACTED : sanitizeDeep(item, secrets);
+      const safeKey = /authorization|api[-_]?key/i.test(key) || secrets.some(secret => typeof secret === 'string' && secret.length > 0 && key.includes(secret))
+        ? REDACTED : sanitizeProviderText(key, secrets);
+      result[safeKey] = /authorization|api[-_]?key/i.test(key) ? REDACTED : sanitizeDeep(item, secrets);
     }
     return result as unknown as T;
   }
@@ -66,10 +89,11 @@ export function sanitizeDeep<T>(value: T, secrets: readonly string[] = []): T {
 /** Shape description of provider text that failed to parse — never the raw text (F04-10). */
 export function describeUnparsable(text: string, secrets: readonly string[] = []): { length: number; startsWith: string; preview: string } {
   const trimmed = text.trim();
+  const sanitized = sanitizeProviderText(trimmed, secrets);
   return {
     length: text.length,
-    startsWith: trimmed.slice(0, 8).replace(/[^\x20-\x7e]/gu, '?'),
-    preview: sanitizeProviderText(trimmed.slice(0, 120), secrets) || '(空白)',
+    startsWith: sanitized.slice(0, 8).replace(/[^\x20-\x7e]/gu, '?'),
+    preview: sanitized.slice(0, 120) || '(空白)',
   };
 }
 
@@ -77,13 +101,12 @@ export function describeUnparsable(text: string, secrets: readonly string[] = []
 async function readCapped(response: Response, maxBytes: number): Promise<string> {
   const declared = Number(response.headers.get('content-length') ?? '');
   if (Number.isFinite(declared) && declared > maxBytes) {
+    await response.body?.cancel().catch(() => undefined);
     throw new LlmError('LLM_RESPONSE_TOO_LARGE', `Provider 响应 ${declared} 字节，超过单次输出上限 ${maxBytes} 字节。`, 502);
   }
-  if (!response.body) {
-    const text = await response.text();
-    if (Buffer.byteLength(text, 'utf8') > maxBytes) throw new LlmError('LLM_RESPONSE_TOO_LARGE', `Provider 响应超过单次输出上限 ${maxBytes} 字节。`, 502);
-    return text;
-  }
+  // A body-less Fetch response has no bytes to consume. Avoid response.text(), which offers
+  // no incremental byte control if a nonstandard adapter supplies it without a stream.
+  if (!response.body) return '';
   const reader = response.body.getReader();
   const parts: Buffer[] = [];
   let total = 0;
@@ -105,10 +128,11 @@ export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name = 'openai-compatible';
   constructor(private readonly config: LlmConfig) {}
   get model() { return this.config.model; }
-  get secrets(): readonly string[] { return this.config.apiKey ? [this.config.apiKey] : []; }
+  get cacheIdentity() { try { const url = new URL(this.config.baseUrl); return `${url.protocol}//${url.host}${url.pathname.replace(/\/+$/u, '')}`; } catch { return this.name; } }
+  get secrets(): readonly string[] { return [...new Set([this.config.apiKey, ...(this.config.knownSecrets ?? [])].filter(Boolean))]; }
 
-  private async httpError(response: Response): Promise<LlmError> {
-    const body = await response.text().catch(() => '');
+  private async httpError(response: Response, maxBytes: number): Promise<LlmError> {
+    const body = await readCapped(response, maxBytes);
     let detail = sanitizeProviderText(body, this.secrets);
     try {
       const parsed = JSON.parse(body) as { error?: { message?: unknown; code?: unknown } };
@@ -132,7 +156,23 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     if (!this.config.baseUrl || !this.config.model || !this.config.apiKey) {
       throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider（FMCG_LLM_BASE_URL / FMCG_LLM_MODEL / FMCG_LLM_API_KEY）。', 400);
     }
-    const url = `${this.config.baseUrl.replace(/\/+$/u, '')}/chat/completions`;
+    let baseUrl: string;
+    let model: string;
+    try {
+      baseUrl = safeBaseUrl(this.config.baseUrl);
+      model = validateModel(this.config.model);
+      validateApiKey(this.config.apiKey);
+    } catch {
+      throw new LlmError('LLM_CONFIGURATION_INVALID', 'Provider 配置无效，已拒绝请求。', 400);
+    }
+    const secrets = this.secrets;
+    if ([this.config.baseUrl, baseUrl, this.config.model, model].some(value => containsKnownSecret(value, secrets))) {
+      throw new LlmError('LLM_CONFIGURATION_INVALID', 'Provider 地址或模型包含 API Key，已拒绝请求。', 400);
+    }
+    const host = new URL(baseUrl).hostname.toLowerCase();
+    const constrainedFlash = (request.purpose === 'knowledge' || request.purpose === 'prompt')
+      && ['open.bigmodel.cn', 'api.z.ai'].includes(host)
+      && model.trim().toLowerCase() === 'glm-5.3-flash';    const url = baseUrl + "/chat/completions";
     const controller = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => { timedOut = true; controller.abort(); }, request.timeoutMs);
@@ -143,12 +183,13 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${this.config.apiKey}` },
         body: JSON.stringify({
-          model: this.config.model, stream: false, temperature: 0,
+          model, stream: false, temperature: 0,
           messages: [{ role: 'system', content: request.system }, { role: 'user', content: request.user }],
+          ...(constrainedFlash ? { reasoning_effort: 'low', response_format: { type: 'json_object' } } : {}),
         }),
         signal: controller.signal,
       });
-      if (!response.ok) throw await this.httpError(response);
+      if (!response.ok) throw await this.httpError(response, request.maxOutputBytes);
       const text = await readCapped(response, request.maxOutputBytes);
       let payload: {
         choices?: Array<{ message?: { content?: unknown }; finish_reason?: unknown }>;
@@ -156,21 +197,22 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         error?: { message?: unknown };
       };
       try { payload = JSON.parse(text) as typeof payload; }
-      catch { throw new LlmError('LLM_PROVIDER_ERROR', 'Provider 返回的不是合法 JSON 响应。', 502); }
+      catch { throw new LlmError('LLM_PROVIDER_ERROR', 'Provider 返回的不是合法 JSON 响应。', 502, { category:'response_invalid', bytes:Buffer.byteLength(text,'utf8'), finishReason:null }); }
       if (payload.error) throw new LlmError('LLM_PROVIDER_ERROR', `Provider 返回错误：${sanitizeProviderText(payload.error.message, this.secrets)}`, 502);
       const choice = payload.choices?.[0];
-      const finishReason = typeof choice?.finish_reason === 'string' ? choice.finish_reason : null;
+      const finishReason = typeof choice?.finish_reason === 'string' && ['stop','length','content_filter','tool_calls'].includes(choice.finish_reason) ? choice.finish_reason : null;
       const content = choice?.message?.content;
+      const usage: LlmCompletion['usage'] = {
+        promptTokens: typeof payload.usage?.prompt_tokens === 'number' && Number.isFinite(payload.usage.prompt_tokens) && payload.usage.prompt_tokens >= 0 ? payload.usage.prompt_tokens : undefined,
+        completionTokens: typeof payload.usage?.completion_tokens === 'number' && Number.isFinite(payload.usage.completion_tokens) && payload.usage.completion_tokens >= 0 ? payload.usage.completion_tokens : undefined,
+      };
+      const responseDetails={category:'response_invalid',finishReason,bytes:typeof content==='string'?Buffer.byteLength(content,'utf8'):0,usage};
       if (finishReason === 'length') {
-        throw new LlmError('LLM_OUTPUT_TRUNCATED', 'Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。', 502);
+        throw new LlmError('LLM_OUTPUT_TRUNCATED', 'Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。', 502,responseDetails);
       }
       if (typeof content !== 'string' || !content.trim()) {
-        throw new LlmError('LLM_EMPTY_RESULT', 'Provider 返回了空结果，未产生任何知识建议。', 502);
+        throw new LlmError('LLM_EMPTY_RESULT', 'Provider 返回了空结果，未产生任何知识建议。', 502,responseDetails);
       }
-      const usage: LlmCompletion['usage'] = {
-        promptTokens: typeof payload.usage?.prompt_tokens === 'number' ? payload.usage.prompt_tokens : undefined,
-        completionTokens: typeof payload.usage?.completion_tokens === 'number' ? payload.usage.completion_tokens : undefined,
-      };
       return { text: content, finishReason, bytes: Buffer.byteLength(content, 'utf8'), usage };
     } catch (error) {
       if (error instanceof LlmError) throw error;
@@ -185,3 +227,5 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     }
   }
 }
+
+

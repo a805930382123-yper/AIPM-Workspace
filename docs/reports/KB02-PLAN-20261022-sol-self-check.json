@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-22T08:10:18.124Z",
+  "checks": [
+    {
+      "id": "exact-baseline-backup",
+      "path": "services/llm/knowledge-extraction.ts",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-services_llm_knowledge-extraction.ts",
+      "exact": true
+    },
+    {
+      "id": "exact-baseline-backup",
+      "path": "services/llm/rules.ts",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-services_llm_rules.ts",
+      "exact": true
+    },
+    {
+      "id": "exact-baseline-backup",
+      "path": "tests/kb02-classification-priority.test.ts",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-tests_kb02-classification-priority.test.ts",
+      "exact": true
+    },
+    {
+      "id": "exact-baseline-backup",
+      "path": "tests/kb02-extraction-contract.test.ts",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-tests_kb02-extraction-contract.test.ts",
+      "exact": true
+    },
+    {
+      "id": "exact-baseline-backup",
+      "path": "tests/kb02-final-classification.test.ts",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-tests_kb02-final-classification.test.ts",
+      "exact": true
+    },
+    {
+      "id": "exact-baseline-backup",
+      "path": "tests/llm.test.ts",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-tests_llm.test.ts",
+      "exact": true
+    },
+    {
+      "id": "exact-baseline-backup",
+      "path": "tsconfig.json",
+      "backup": "docs/reports/KB02-PLAN-20261022-sol-before-tsconfig.json",
+      "exact": true
+    },
+    {
+      "id": "original-failure-provenance",
+      "sequence": 100,
+      "exact": true
+    },
+    {
+      "id": "original-failure-provenance",
+      "sequence": 104,
+      "exact": true
+    },
+    {
+      "id": "same-freeze-full-engineering",
+      "ok": true
+    }
+  ],
+  "realProviderCalls": 0,
+  "KB02Budget": "104/200",
+  "promptBudget": "15/24",
+  "conclusion": "施工自查通过，等待Astra独立验收；不签批次PASS"
+}

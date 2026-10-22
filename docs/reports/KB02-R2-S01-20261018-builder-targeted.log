@@ -1,0 +1,22 @@
+✔ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (40.7469ms)
+✔ KB02 resume reuses validated chunks and counts failed outbound attempts (42.8877ms)
+✔ KB02 corrupted checkpoint integrity fails closed (23.311ms)
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (346.7312ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (244.9847ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (35.9035ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (25.5882ms)
+✔ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (35.6095ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (25.128ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (26.4613ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.2119ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (8.5326ms)
+✔ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (76.8626ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 852.924
+

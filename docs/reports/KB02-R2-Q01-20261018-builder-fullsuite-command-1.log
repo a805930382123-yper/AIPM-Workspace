@@ -1,0 +1,15 @@
+node:internal/fs/promises:1009
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, symlink 'E:\AI\Work\AIPM Workspace\node_modules' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{33307bf1-6a9e-4203-9346-1bfd6dacf979}\AC\Temp\fmcg-kb02-r2-astra-fullsuite-m7toJN\node_modules'
+    at async Object.symlink (node:internal/fs/promises:1009:10)
+    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-q01-20261018-builder-fullsuite.mjs:23:1 {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'symlink',
+  path: 'E:\\AI\\Work\\AIPM Workspace\\node_modules',
+  dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{33307bf1-6a9e-4203-9346-1bfd6dacf979}\\AC\\Temp\\fmcg-kb02-r2-astra-fullsuite-m7toJN\\node_modules'
+}
+
+Node.js v25.2.1

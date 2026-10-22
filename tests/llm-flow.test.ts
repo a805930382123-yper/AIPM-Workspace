@@ -18,7 +18,7 @@ import { OpenAiCompatibleProvider } from '../services/llm/provider.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
 import { getStats } from '../services/stats/index.ts';
 import { validateRaw } from '../server/validation.ts';
-import { buildPayloadForChunk, chunkFromPrompt, contentOf, isMergePrompt, mergeEntriesFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
+import { buildPayloadForChunk, chunkFromPrompt, contentOf, planningPayloadFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rulesDir = path.join(root, 'rules');
@@ -112,7 +112,11 @@ test('E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项�
       }
     }
     assert.equal((await context.rawStates.get(raw.id)).status, 'pending_confirmation');
-    assert.equal((await context.fake.requests[0].system).includes('一个条目只解决一个明确的知识问题'), true, '规则必须参与实际请求');
+    const plannerRequest = context.fake.requests.find(request => request.user.includes('请对下列全部已验证事实规划知识页'));
+    assert.ok(plannerRequest, '整篇规划必须实际调用Provider');
+    assert.match(plannerRequest.system, /factIds/);
+    assert.match(plannerRequest.system, /不得遗漏、重复、添加未知ID/);
+    assert.match(plannerRequest.system, /industry_basics/);
     assert.equal(context.fake.requests.every(request => request.authorization === 'Bearer test-key'), true);
 
     // Nothing formal may exist before the user confirms.
@@ -171,7 +175,7 @@ test('E04-04 复用既有 Source：只新增选中页，既有 Source 文件不�
     const existingHash = sha(await readFile(existingFile));
     const started = await context.extract(raw.id);
     const draft = await context.drafts.get(started.finished.draftId as string);
-    assert.ok(draft);
+    assert.ok(draft, started.finished.error?.message ?? '新知识草稿必须存在');
     const result = await context.wikiStore.withLock(() => context.commits.confirm({
       draftId: draft.id, baseRevision: draft.revision, selectedPageIds: draft.pages.map(page => page.pageId),
       idempotencyKey: 'reuse-key', operationId: crypto.randomUUID(), now: new Date().toISOString(),
@@ -349,7 +353,7 @@ test('E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值'
     });
     const second = await context.extract(raw.id);
     const draft = await context.drafts.get(second.finished.draftId as string);
-    assert.ok(draft);
+    assert.ok(draft, second.finished.error?.message ?? '取消后重试必须生成草稿');
     const discarded = await context.drafts.discard(draft.id, draft.revision);
     assert.equal(discarded.status, 'discarded');
     await context.rawStates.set(raw.id, { status: 'unprocessed', reason: '用户放弃了待审核草稿', draftId: draft.id });
@@ -371,7 +375,7 @@ test('E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证�
       { name: '空结果', code: 'LLM_EMPTY_RESULT', retryable: true, expect: fake => fake.setHandler(() => ({ kind: 'content', content: '   ' })) },
       { name: '截断', code: 'LLM_OUTPUT_TRUNCATED', retryable: true, expect: fake => fake.setHandler(request => ({ kind: 'content', content: contentOf(buildPayloadForChunk(chunkFromPrompt(request.user), rawIdFromPrompt(request.user), [{ title: 'x' }])), finishReason: 'length' })) },
       { name: 'schema错误', code: 'LLM_SCHEMA_INVALID', retryable: true, expect: fake => fake.setHandler(request => ({ kind: 'content', content: contentOf({ ...(buildPayloadForChunk(chunkFromPrompt(request.user), rawIdFromPrompt(request.user), [{ title: 'x' }]) as object), extra: 1 }) })) },
-      { name: '证据越界', code: 'LLM_EVIDENCE_QUOTE_NOT_FOUND', retryable: true, expect: fake => fake.setHandler(request => {
+      { name: '证据越界', code: 'LLM_EVIDENCE_UNKNOWN_LOCATOR', retryable: true, expect: fake => fake.setHandler(request => {
         const chunk = chunkFromPrompt(request.user);
         return { kind: 'content', content: contentOf({ document: { title: 't', main_topic: 'm', summary: 's' }, suggested_pages: [{ title: '证据越界页', type: 'concept', category: 'industry_basics', one_line_definition: 'd', source_facts: [{ text: 'f', evidenceIds: ['e1'] }], ai_organized: [], ai_inferences: [], related_pages: [], open_questions: [], source_evidence: [{ id: 'e1', rawId: rawIdFromPrompt(request.user), quote: `不存在的片段${chunk.index}` }] }] }) };
       }) },
@@ -404,6 +408,27 @@ test('E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证�
     assert.equal(finished.error?.code, 'LLM_NETWORK_ERROR');
     assert.deepEqual(await context.wikiFiles(), [], '任何失败路径都不得写正式知识');
     assert.deepEqual(await context.logLines(), []);
+  } finally { await context.clean(); }
+});
+
+test('locator v2 映射后再次扫凭证：Raw锚点包含已知Key时失败且不生成草稿或正式Wiki', async () => {
+  const body = '【虚构安全测试】证据原文中出现测试凭证 test-key，不能进入任何AI输出或草稿。';
+  const context = await setup(fake => {
+    fake.setHandler(request => {
+      const chunk = chunkFromPrompt(request.user);
+      assert.ok(chunk.text.includes('test-key'), '秘密 fixture 必须落在当前提取分块');
+      return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '凭证引用测试', quoteText: 'test-key', factText: '原文明确记载测试凭证文字' }])) };
+    });
+  });
+  try {
+    const raw = await context.createRaw(body, '虚构凭证扫描');
+    const finished = await context.extract(raw.id);
+    assert.equal(finished.finished.status, 'failed');
+    assert.equal(finished.finished.error?.code, 'LLM_OUTPUT_CONTAINS_SECRET');
+    assert.equal((await context.rawStates.get(raw.id)).status, 'failed');
+    assert.deepEqual((await context.drafts.list()).filter(draft => draft.rawId === raw.id), [], '规范化证据包含Key时不得持久化草稿');
+    assert.deepEqual(await context.wikiFiles(), [], '不得写入正式Wiki');
+    assert.deepEqual(await context.logLines(), [], '不得写入正式知识日志');
   } finally { await context.clean(); }
 });
 
@@ -455,29 +480,23 @@ test('E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块�
     assert.equal(started.finished.status, 'completed', started.finished.error?.message ?? '');
     assert.ok((started.finished.chunksTotal ?? 0) > 10, '十万字必须切成多块');
     assert.equal(started.finished.callCount, started.finished.chunksTotal + 1, '每块一次调用 + 一次结构化汇总');
-    // F04-11: the real merge request must carry every chunk's complete structured result.
-    const mergeRequests = context.fake.requests.filter(request => isMergePrompt(request.user));
-    assert.equal(mergeRequests.length, 1, '分块摘要不同时必须真正发起一次汇总调用');
-    const mergeEntries = mergeEntriesFromPrompt(mergeRequests[0].user);
-    assert.equal(mergeEntries.length, started.finished.chunksTotal, '汇总输入必须包含每一块的结果');
-    for (const entry of mergeEntries) {
-      assert.equal(typeof entry.document.summary, 'string');
-      assert.ok(entry.pages.length >= 1, `第 ${entry.chunk} 段必须带上建议`);
-      for (const page of entry.pages) {
-        for (const field of ['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized', 'ai_inferences', 'open_questions', 'related_pages'] as const) {
-          assert.ok(field in page, `汇总输入缺少字段 ${field}（第 ${entry.chunk} 段）`);
-        }
-        for (const fact of page.source_facts) {
-          assert.equal(typeof fact.text, 'string');
-          assert.ok(fact.evidence.some(item => typeof item.quote === 'string' && typeof item.start === 'number'), '汇总输入的事实必须带证据引文与全局位置');
-        }
-      }
-    }
+    // KB02 planning sees all extracted fact/question IDs and text, without evidence or raw chunk payloads.
+    const planningRequests = context.fake.requests.filter(request => request.user.includes('请对下列全部已验证事实规划知识页'));
+    assert.equal(planningRequests.length, 1, '全部分块完成后必须恰好进行一次整篇规划');
+    assert.match(planningRequests[0].system, /factIds/);
+    assert.match(planningRequests[0].system, /全部事实和问题必须分别且恰好归属一个页面/);
+    assert.doesNotMatch(planningRequests[0].user, /source_evidence|locatorId|quote/);
+    const planningInput = planningPayloadFromPrompt(planningRequests[0].user);
+    assert.equal(planningInput.facts.length, started.finished.chunksTotal, '整篇规划输入必须覆盖每块的业务事实');
+    assert.equal(planningInput.questions.length, 0);
+    assert.equal(new Set(planningInput.facts.map(item => item.id)).size, planningInput.facts.length, '事实 ID 必须唯一');
     const draft = await context.drafts.get(started.finished.draftId as string);
     assert.ok(draft);
-    for (let index = 1; index <= started.finished.chunksTotal; index++) {
-      assert.ok(draft.document.summary.includes(`第 ${index} 段的摘要`), `汇总不得丢块：缺少第 ${index} 段`);
-    }
+    assert.ok(draft.document.summary.trim().length > 0, '整篇规划必须返回非空文档主题概述');
+    const plannedFactTexts = planningInput.facts.map(item => item.text).sort();
+    const assembledFactTexts = draft.pages.flatMap(page => page.source_facts.map(fact => fact.text)).sort();
+    assert.deepEqual(assembledFactTexts, plannedFactTexts, '规划必须将全部事实恰好一次组装到草稿主题页');
+    for (const page of draft.pages) for (const fact of page.source_facts) for (const id of fact.evidenceIds) assert.ok(page.source_evidence.some(item => item.id === id), '每条组装事实必须保留其 locator 证据');
     const tailMarker = '动销率 62% 是末段结论';
     const expectedAt = body.indexOf(tailMarker);
     const tailEvidence = draft.pages.flatMap(page => page.source_evidence).find(evidence => evidence.quote.includes('动销率 62%'));
@@ -492,9 +511,7 @@ test('E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块�
     // Over-budget material fails explicitly instead of being truncated.
     const tooLarge = '快'.repeat(500_001);
     const largeRaw = await context.createRawUnchecked(tooLarge, '超预算长文');
-    const failed = await context.extract(largeRaw.id);
-    assert.equal(failed.finished.status, 'failed');
-    assert.equal(failed.finished.error?.code, 'LLM_RAW_TOO_LARGE');
+    await assert.rejects(context.extract(largeRaw.id), (error: { code?: string }) => error.code === 'LLM_RAW_TOO_LARGE');
     assert.equal((await context.rawStore.get(largeRaw.id))?.body.length, 500_001, '原文必须完整保留');
   } finally { await context.clean(); }
 });
@@ -514,7 +531,7 @@ test('E04-09 超过 50 条建议：明确预算失败，不静默丢弃', async 
     const raw = await context.createRaw(body, '建议过多资料');
     const failed = await context.extract(raw.id);
     assert.equal(failed.finished.status, 'failed');
-    assert.equal(failed.finished.error?.code, 'LLM_TOO_MANY_PAGES');
+    assert.equal(failed.finished.error?.code, 'LLM_SCHEMA_INVALID', '规划超过50页的schema上限必须明确失败');
     assert.deepEqual(await context.drafts.list(), []);
     assert.deepEqual(await context.wikiFiles(), []);
   } finally { await context.clean(); }
@@ -523,7 +540,7 @@ test('E04-09 超过 50 条建议：明确预算失败，不静默丢弃', async 
 test('E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核', async () => {
   const context = await setup();
   try {
-    const raw = await context.createRaw(TOPICS[0], '中断样本');
+    const raw = await context.createRaw(TOPICS.slice(0,2).join('\n'), '中断样本');
     const jobId = crypto.randomUUID();
     await context.jobs.insert({
       id: jobId, rawId: raw.id, status: 'running', stage: 'extracting', chunksTotal: 3, chunksDone: 1, pagesFound: 1,

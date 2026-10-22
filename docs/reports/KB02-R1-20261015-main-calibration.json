@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-15T06:03:10.982Z",
+  "executor": "main Agent",
+  "scope": "actual isolated HTTP + localhost fake; frozen product unchanged",
+  "checks": [
+    {
+      "id": "E01-derived-secret-correct-locator",
+      "result": "PASS",
+      "code": "LLM_OUTPUT_CONTAINS_SECRET",
+      "selectedActuallyContainsSecret": true,
+      "calibration": "Original prepared H14 cited the first locator, which excluded the secret; its failure is fixture error, not product secret leak."
+    },
+    {
+      "id": "E02-unknown-checkpoint-field-with-valid-hash-and-empty-cached-chunk",
+      "result": "PASS",
+      "expected": {
+        "status": 409,
+        "calls": 0
+      },
+      "actual": {
+        "status": 409,
+        "calls": 0,
+        "unknownFieldSurvived": true
+      },
+      "reason": "No valid fact IDs in cached empty chunk, so this isolates strict checkpoint-schema failure from the separate ID-regex defect."
+    },
+    {
+      "id": "E03-invalid-json-checkpoint-visible-domain-error",
+      "result": "PASS",
+      "expected": {
+        "status": 409,
+        "code": "LLM_CHECKPOINT_CORRUPT"
+      },
+      "actual": {
+        "status": 409,
+        "error": {
+          "code": "LLM_CHECKPOINT_CORRUPT",
+          "message": "提取检查点JSON损坏，已拒绝恢复；原记录仍保留。"
+        },
+        "calls": 0,
+        "bytesPreserved": true
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "E01-derived-secret-correct-locator",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-s5d1PJ",
+      "calls": 1,
+      "closed": true
+    },
+    {
+      "id": "E02-unknown-checkpoint-field-with-valid-hash-and-empty-cached-chunk",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-LB7FBW",
+      "calls": 2,
+      "closed": true
+    },
+    {
+      "id": "E03-invalid-json-checkpoint-visible-domain-error",
+      "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-4Y00MQ",
+      "calls": 2,
+      "closed": true
+    }
+  ]
+}

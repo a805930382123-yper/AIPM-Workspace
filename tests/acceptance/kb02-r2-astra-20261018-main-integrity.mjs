@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
+const base = JSON.parse(await fs.readFile('docs/reports/KB02-R2-ASTRA-20261016-main-baseline.json', 'utf8'));
+const hash = async p => { try { return crypto.createHash('sha256').update(await fs.readFile(p)).digest('hex'); } catch(e) { if(e.code === 'ENOENT') return null; throw e; } };
+const compare = async map => { const drift=[]; for(const [path,before] of Object.entries(map)) { const after=await hash(path); if(before!==after) drift.push({path,before,after}); } return drift; };
+const walk = async dir => { const out=[]; for(const e of await fs.readdir(dir,{withFileTypes:true})) { const p=dir+'/'+e.name; if(e.isDirectory()) out.push(...await walk(p)); else out.push(p); } return out; };
+const productDrift=await compare(base.product), testDrift=await compare(base.tests), protectedDrift=await compare(base.protected);
+const workspacePaths=await walk('workspace');
+const configSha=await hash('.env.local');
+const result={at:new Date().toISOString(),baseline:'KB02-R2-ASTRA-20261016-main-baseline.json',productCount:Object.keys(base.product).length,testCount:Object.keys(base.tests).length,protectedCount:Object.keys(base.protected).length,productDrift,testDrift,protectedDrift,workspaceDrift:protectedDrift.filter(x=>x.path.startsWith('workspace/')),workspaceAdded:workspacePaths.filter(p=>!(p in base.protected)),configUnchanged:configSha===base.config.sha256,historicalDriftNote:'Four PA01 historical artifacts already observed changed before continuation safety checks; cause unknown, not restored or attributed to KB02. No blanket protected-files PASS.',externalProviderCallsThisReview:0};
+await fs.writeFile('docs/reports/KB02-R2-ASTRA-20261018-main-integrity.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));

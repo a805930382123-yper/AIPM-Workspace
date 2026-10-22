@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-14T02:58:56.282Z",
+  "scope": "CFG01 only",
+  "reviewer": "current main Agent, independent of Luna Max builder",
+  "result": "PASS",
+  "checks": [
+    {
+      "id": "ST01",
+      "result": "PASS",
+      "requirement": "职责与授权",
+      "finding": "用户指定 Luna Max 施工；主 Agent 仅改独立验收与交接文档；施工后冻结、窄屏缺陷回同一施工 agent修复。",
+      "evidence": "builder.md / repair2.md / frozen.json"
+    },
+    {
+      "id": "ST02",
+      "result": "PASS",
+      "requirement": "工程边界",
+      "finding": "无新依赖/协议；产品独立运行。配置不进正式workspace、业务备份或版本库；本轮原样冻结84产品/52测试。",
+      "evidence": "integrity.json / http.json"
+    },
+    {
+      "id": "ST03",
+      "result": "PASS",
+      "requirement": "安全与事实",
+      "finding": "管理接口本机Host/Origin/token/JSON门禁；秘密摘要固定掩码，编码凭证检查共享；六链长短Key/JSON键值/Raw与Meeting保护。",
+      "evidence": "http.json / security-final.json / repair2-probes.json"
+    },
+    {
+      "id": "ST04",
+      "result": "PASS",
+      "requirement": "真实失败处理",
+      "finding": "read/write/rename/concurrency/revision故障无假成功；15秒超时、响应体预算、401/429/网络/空响应明确失败。",
+      "evidence": "http.json / edges.json"
+    },
+    {
+      "id": "ST05",
+      "result": "PASS",
+      "requirement": "独立验证",
+      "finding": "主Agent实测HTTP27、edges9、R2三组、组件4、安全100、实际IAB13；最终build与原样可写副本215/215。原工作区EPERM、夹具误判保留。",
+      "evidence": "tests-writable-copy.json / build-final.log / browser.json"
+    },
+    {
+      "id": "ST06",
+      "result": "PASS",
+      "requirement": "保护与收尾",
+      "finding": "1296历史保护文件、正式workspace及实际.env.local未变；旧B04输出恢复，自有进程/端口/标签关闭。",
+      "evidence": "integrity.json / cleanup.json / browser-lab-final.json"
+    }
+  ]
+}

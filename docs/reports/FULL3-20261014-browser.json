@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-14T08:05:26.566Z",
+  "browser": "Codex IAB",
+  "api": "actual external GLM-5.3-Flash via isolated product",
+  "viewport": {
+    "width": 409,
+    "documentScrollWidth": 409,
+    "narrowDefault": true,
+    "desktopNotNewlyTested": true
+  },
+  "checks": [
+    {
+      "id": "UI01",
+      "result": "PASS",
+      "observation": "Raw shows failed extraction LLM_TIMEOUT at 60 seconds, retry enabled, original body visible; success path not completed"
+    },
+    {
+      "id": "UI02",
+      "result": "FAIL",
+      "observation": "Natural language task submitted through Generator; actual Provider response not valid JSON, no draft; button reenabled"
+    },
+    {
+      "id": "UI03",
+      "result": "PASS",
+      "observation": "Accepted Audit Wiki reads revision2, correct20% and human pending note preserved; accepted through isolated HTTP, not UI"
+    },
+    {
+      "id": "UI04",
+      "result": "PASS",
+      "observation": "Meeting navigation renders isolated empty library; no new meeting persistence/AI test"
+    },
+    {
+      "id": "UI05",
+      "result": "PASS",
+      "observation": "Provider host/model and fixed key mask visible; isolated environment readonly, no save/clear"
+    }
+  ],
+  "screenshots": [
+    "FULL3-extract-failure.jpg",
+    "FULL3-brief-result.jpg",
+    "FULL3-audit-success.jpg",
+    "FULL3-settings.jpg"
+  ],
+  "allFourCoreUiSuccess": false,
+  "originalUserBrowserUntouched": true
+}

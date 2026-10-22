@@ -1,0 +1,117 @@
+diff --git a/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/original/services/llm/jobs.ts b/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/patched/services/llm/jobs.ts
+index eb56cba..73d3e8d 100644
+--- a/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/original/services/llm/jobs.ts
++++ b/C:/Users/80593/AppData/Local/Temp/kb02-storage-poc-hf0jWJ/patched/services/llm/jobs.ts
+@@ -86,6 +86,35 @@ export class ExtractionJobStore {
+ 
+ export class ExtractionRunner {
+   private readonly controllers = new Map<string, AbortController>();
++  private readonly tasks = new Map<string, Promise<void>>();
++  private readonly recovery = new Map<string, { issue: {code: string; message: string; persisted: false; phase: string; details?: unknown}; checkpoint: Omit<ExtractionCheckpoint, 'integrity'>; failure?: ExtractionJob['error'] }>();
++
++  async readJob(id: string) {
++    return { job: await this.deps.jobs.get(id), recovery: this.recovery.get(id)?.issue, settled: !this.tasks.has(id) };
++  }
++  async waitForSettlement(id: string) { await this.tasks.get(id); return this.readJob(id); }
++
++  /** Explicit, storage-only recovery. The disk getter remains the source of persisted status. */
++  async reconcileStorage(id: string) {
++    return this.startQueue.run(async () => {
++      if (this.tasks.has(id)) throw new JobError('LLM_JOB_ALREADY_RUNNING', '任务仍在收尾。', 409);
++      const pending = this.recovery.get(id);
++      if (!pending) return this.readJob(id);
++      const job = await this.deps.jobs.get(id);
++      if (!job) throw new JobError('JOB_NOT_FOUND', '没有找到任务。', 404);
++      const draft = pending.checkpoint.draftId ? await this.deps.drafts.get(pending.checkpoint.draftId) : undefined;
++      if (pending.checkpoint.draftId && (!draft || draft.jobId !== id || draft.rawId !== job.rawId || draft.status === 'discarded')) throw new JobError('STORAGE_RECONCILE_CONFLICT', '已有草稿不能安全对账。', 409);
++      const cp = await new ExtractionCheckpointStore(this.deps.root).save(pending.checkpoint);
++      const at = new Date().toISOString();
++      const failure = pending.failure ?? { code: 'STORAGE_WRITE_FAILED', message: pending.issue.message, at, retryable: true };
++      await this.deps.rawStates.set(job.rawId, draft
++        ? { status: 'pending_confirmation', reason: '存储恢复后对账已有草稿', jobId: id, draftId: draft.id }
++        : { status: 'failed', reason: '存储恢复后保留原失败', jobId: id, lastError: failure });
++      await this.deps.jobs.update(id, { status: draft ? 'completed' : 'failed', stage: cp.stage, draftId: draft?.id, callCount: Math.max(job.callCount, cp.attempts), chunksDone: cp.completedChunks.length, finishedAt: at, error: draft ? undefined : failure });
++      this.recovery.delete(id);
++      return this.readJob(id);
++    });
++  }
+   /** F04-08: starts are serialized here too, so the service alone never creates two jobs. */
+   private readonly startQueue = new SerialQueue();
+ 
+@@ -106,6 +135,8 @@ export class ExtractionRunner {
+     assertRawNotMeeting(raw);
+     if (!raw) throw new JobError('NOT_FOUND', '没有找到这条原始资料。', 404);
+     const state = await this.deps.rawStates.get(rawId);
++    if (state.jobId && this.recovery.has(state.jobId)) throw new JobError('STORAGE_RECONCILE_REQUIRED', '上次任务存储未完成，请显式对账后继续。', 409);
++    if (this.recovery.size >= 100) throw new JobError('STORAGE_RECOVERY_CAPACITY', '待对账任务已达本进程上限，请先处理。', 503);
+     const checkpoints = new ExtractionCheckpointStore(this.deps.root);
+     const existingDraft = await this.deps.drafts.findActiveForRaw(rawId);
+     if (state.status === 'processing' && state.jobId) {
+@@ -160,14 +191,23 @@ export class ExtractionRunner {
+     if (resume) await this.deps.jobs.update(jobId, { status: 'running', stage: checkpoint.stage, chunksTotal: chunks.length, chunksDone: checkpoint.completedChunks.length, callCount: checkpoint.attempts, error: undefined, finishedAt: undefined, cancelRequested: false });
+     else await this.deps.jobs.insert(job);
+     await this.deps.rawStates.set(rawId, { status: 'processing', reason: resume ? '已验证检查点恢复提取' : 'AI 整理已启动', jobId, revertStatus });
+-    void this.runKnowledge(job, raw, provider, checkpoint, options.planningRetry === true).catch(() => undefined);
++    const task = this.runKnowledge(job, raw, provider, checkpoint, options.planningRetry === true).finally(() => { this.tasks.delete(job.id); });
++    this.tasks.set(job.id, task);
++    // The explicit task is observable through waitForSettlement; no rejected task is left unhandled.
++    void task.catch(error => { console.error('Extraction settlement failed', { code: error instanceof StorageError ? error.code : 'SETTLEMENT_FAILED' }); });
+     return { job, reused: false };
+   }
+ 
+   private async runKnowledge(job: ExtractionJob, raw: { id: string; title: string; bodySha256: string; body: string; sourceType: string; sourceName: string; author?: string; publishedAt?: string; url?: string; tags: string[] }, provider: LlmProvider, initial: ExtractionCheckpoint, planningRetry = false): Promise<void> {
+     const controller = new AbortController(); const secrets = provider.secrets ?? []; const checkpoints = new ExtractionCheckpointStore(this.deps.root); let checkpoint = initial; const reusedChunks = initial.completedChunks.length;
+     this.controllers.set(job.id, controller);
+-    const saveCheckpoint = async (value: Omit<ExtractionCheckpoint, 'integrity'>) => { checkpoint = await checkpoints.save(value); return checkpoint; };
++    let checkpointIntent: Omit<ExtractionCheckpoint, 'integrity'> = initial;
++    let phase = 'pipeline';
++    const progressWrites: Promise<unknown>[] = [];
++    const saveCheckpoint = async (value: Omit<ExtractionCheckpoint, 'integrity'>) => { checkpointIntent = value; phase = value.stage === 'done' ? 'done-checkpoint' : value.lastError?.diagnostic ? 'coverage-checkpoint' : 'checkpoint'; checkpoint = await checkpoints.save(value); return checkpoint; };
++    const retain = (error: StorageError, failure?: ExtractionJob['error']) => {
++      this.recovery.set(job.id, { issue: {code: error.code, message: error.message, persisted: false, phase, details: error.details}, checkpoint: checkpointIntent, failure });
++    };
+     try {
+       const { outcome } = await runKnowledgePipeline({
+         raw: { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, tags: raw.tags ?? [] },
+@@ -181,24 +221,37 @@ export class ExtractionRunner {
+           await this.deps.jobs.update(job.id, { callCount: checkpoint.attempts, stage, chunksDone: checkpoint.completedChunks.length, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, attempts: checkpoint.attempts, reusedChunks: checkpoint.completedChunks.length } });
+           return checkpoint;
+         },
+-        onProgress: progress => { void this.deps.jobs.update(job.id, { stage: progress.stage, chunksTotal: progress.chunksTotal, chunksDone: progress.chunksDone, pagesFound: progress.pagesFound, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, reason: checkpoint.lastError?.message, attempts: checkpoint.attempts, reusedChunks } }).catch(() => undefined); },
++        onProgress: progress => { const progressWrite = this.deps.jobs.update(job.id, { stage: progress.stage, chunksTotal: progress.chunksTotal, chunksDone: progress.chunksDone, pagesFound: progress.pagesFound, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, reason: checkpoint.lastError?.message, attempts: checkpoint.attempts, reusedChunks } }); progressWrites.push(progressWrite); void progressWrite.catch(() => undefined); },
+       });
++      await Promise.all(progressWrites);
+       if (controller.signal.aborted) { await this.finishCancelled(job); return; }
+       assertNoKnownSecret(outcome, secrets);
+       const draft = await this.deps.drafts.create({ raw: { id: raw.id, title: raw.title, bodySha256: raw.bodySha256, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url }, outcome, jobId: job.id, body: raw.body, rules: await this.deps.draftRules() });
+       checkpoint = await saveCheckpoint({ ...checkpoint, draftId: draft.id, stage: 'done', lastError: undefined });
+       if (controller.signal.aborted) { await this.deps.drafts.discard(draft.id, undefined).catch(() => undefined); await this.finishCancelled(job); return; }
++      phase = 'completed-raw-state';
+       await this.deps.rawStates.set(raw.id, { status: 'pending_confirmation', reason: '提取完成，等待人工审核', jobId: job.id, draftId: draft.id });
++      phase = 'completed-job';
+       await this.deps.jobs.update(job.id, { status: 'completed', stage: 'done', draftId: draft.id, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: 'done', validatedChunks: checkpoint.chunks.length, totalChunks: checkpoint.chunks.length, resumable: false, attempts: checkpoint.attempts, reusedChunks }, callCount: checkpoint.attempts, chunksTotal: checkpoint.chunks.length, chunksDone: checkpoint.chunks.length, pagesFound: draft.pages.length, finishedAt: new Date().toISOString() });
+     } catch (error) {
++      await Promise.allSettled(progressWrites);
++      if (error instanceof StorageError && error.code === 'STORAGE_WRITE_FAILED') { retain(error, checkpointIntent.lastError ? { ...checkpointIntent.lastError, retryable: true, details: checkpointIntent.lastError.diagnostic } : undefined); return; }
+       if (controller.signal.aborted) { await this.finishCancelled(job); return; }
+       const rawCode = error instanceof LlmError || error instanceof JobError ? (error as { code: string }).code : 'LLM_INTERNAL_ERROR';
+       const rawMessage = error instanceof Error ? error.message : '未知错误';
+       const code = sanitizeProviderText(rawCode, secrets) || 'LLM_PROVIDER_ERROR'; const message = sanitizeProviderText(rawMessage, secrets);
+-      await saveCheckpoint({ ...checkpoint, lastError: { code, message, at: new Date().toISOString(), ...(code === 'LLM_PLAN_COVERAGE_INVALID' && checkpoint.lastError?.diagnostic ? { diagnostic: checkpoint.lastError.diagnostic } : {}) } }).catch(() => undefined);
+       const retryable = !NON_RETRYABLE.has(code);
+-      await this.deps.rawStates.set(raw.id, { status: 'failed', reason: `提取失败：${code}`, lastError: { code, message, at: new Date().toISOString(), retryable } }).catch(() => undefined);
+-      await this.deps.jobs.update(job.id, { status: 'failed', stage: checkpoint.stage, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, reason: message, attempts: checkpoint.attempts, reusedChunks }, finishedAt: new Date().toISOString(), callCount: checkpoint.attempts, error: { code, message, at: new Date().toISOString(), retryable, ...(error instanceof LlmError && error.details !== undefined ? { details: sanitizeDeep(error.details, secrets) } : {}) } }).catch(() => undefined);
++      const failure = { code, message, at: new Date().toISOString(), retryable, ...(error instanceof LlmError && error.details !== undefined ? {details: sanitizeDeep(error.details, secrets)} : {}) };
++      try {
++        await saveCheckpoint({ ...checkpoint, lastError: { code, message, at: failure.at, ...(code === 'LLM_PLAN_COVERAGE_INVALID' && checkpoint.lastError?.diagnostic ? { diagnostic: checkpoint.lastError.diagnostic } : {}) } });
++        phase = 'failed-raw-state';
++        await this.deps.rawStates.set(raw.id, { status: 'failed', reason: '提取失败：' + code, lastError: failure, jobId: job.id });
++        phase = 'failed-job';
++        await this.deps.jobs.update(job.id, { status: 'failed', stage: checkpoint.stage, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, reason: message, attempts: checkpoint.attempts, reusedChunks }, finishedAt: new Date().toISOString(), callCount: checkpoint.attempts, error: failure });
++      } catch (storageError) {
++        if (!(storageError instanceof StorageError)) throw storageError;
++        retain(storageError, failure);
++      }
+     } finally { this.controllers.delete(job.id); }
+   }
+ 

@@ -1,0 +1,40 @@
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (426.2845ms)
+✔ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (293.6401ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (978.3795ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (402.7755ms)
+✔ SR01 real atomic failed-job transient retry (167.9354ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic failed-job persistent explicit recovery (832.5451ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","rejectedRenames":12,"failedTargetBefore":"73269bf8690d714ce9e1b9cb920f93440c3a8f994748609926eb2ebed87593e8","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["c174e08ccd7877a391314dba88c982352ea54d6d94805521d81161ee6301a3bf","20bf51690a39658065a407b79db21ea8992e7d682f1d691941374ba92b22f32d","94d93673a8d4f9f8500b1efd0cc000fe907ddf5dea410eab9716e85254baa6c4"]}
+✔ SR01 real atomic done-checkpoint transient retry (150.5434ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":2}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (783.4424ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"ec8fffcb9afd6ab2d9f3f7c3d0a21900eb6af9ba5174b4517ac88425fae2170d","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":["691c759f-ed48-4ec6-8ac3-e8c0850ca39b"],"finalJob":"completed","idempotentHashes":["ceca225ddfc839c59340ca75da2c832ab24294e959db34aac125a4e4f1a3369a","3eb1d732d568c4dc2dc493b2333424b0e4a31b14f9b3a9bb0b24af27670fb4cb","937c09d318f3b6d61274c7035759ebaf3bf07a6b1f3378107c61cea4ad247a27"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (136.717ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (784.9548ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","rejectedRenames":12,"failedTargetBefore":"3258bde191bd076ec2bbbd809e17e5cdffef98c8bc422562f96566f451be1fba","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["4d0ae5662f9a591fa93c86ac1cd4ae66117a3e6df17ba87781142e0ee9b348d1","49b7991c884a42016c73bc37b4e9185f71628e1d0ffade35fcf50f9e22c06f61","2061063825ed11fce662d44ceb5790b354e8c82949ab344b590ae21bcf4e23fb"]}
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (426.9781ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (411.699ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (418.4814ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (414.6066ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (68.2432ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (384.5892ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3260.6631ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (0.5959ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (6678.7378ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1261.1037ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (126.5019ms)
+✔ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (424.3776ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (1034.5833ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3498.6395ms)
+✔ SR01 start failure reload is actionable and late storage response cannot change a different Raw selection (544.5786ms)
+✔ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3732.9745ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17122.2552

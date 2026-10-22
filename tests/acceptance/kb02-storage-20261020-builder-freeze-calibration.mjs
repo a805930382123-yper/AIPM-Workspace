@@ -1,0 +1,1 @@
+import fs from 'node:fs/promises';const f='tests/acceptance/kb02-storage-20261020-builder-verify.mjs';let s=await fs.readFile(f,'utf8');s=s.replace("filter(f=>!f.startsWith('tests/acceptance/')&&/\\.(ts|tsx|mjs)$/.test(f))", "filter(f=>!f.startsWith('tests/acceptance/'))");await fs.writeFile(f,s);

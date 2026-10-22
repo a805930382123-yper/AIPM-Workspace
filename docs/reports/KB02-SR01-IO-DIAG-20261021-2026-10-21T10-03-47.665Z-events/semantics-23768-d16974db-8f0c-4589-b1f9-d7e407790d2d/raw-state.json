@@ -1,0 +1,30 @@
+{
+  "rawId": "8bf24828-13d0-41cd-90cd-9d83e07c308d",
+  "status": "processing",
+  "updatedAt": "2026-10-21T10:03:49.528Z",
+  "history": [
+    {
+      "at": "2026-10-21T10:03:48.994Z",
+      "from": "unprocessed",
+      "to": "processing",
+      "reason": "AI 整理已启动",
+      "jobId": "d16974db-8f0c-4589-b1f9-d7e407790d2d"
+    },
+    {
+      "at": "2026-10-21T10:03:49.046Z",
+      "from": "processing",
+      "to": "failed",
+      "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+      "jobId": "d16974db-8f0c-4589-b1f9-d7e407790d2d"
+    },
+    {
+      "at": "2026-10-21T10:03:49.528Z",
+      "from": "failed",
+      "to": "processing",
+      "reason": "已验证检查点恢复提取",
+      "jobId": "d16974db-8f0c-4589-b1f9-d7e407790d2d"
+    }
+  ],
+  "jobId": "d16974db-8f0c-4589-b1f9-d7e407790d2d",
+  "revertStatus": "unprocessed"
+}

@@ -1,0 +1,542 @@
+{
+  "at": "2026-10-21T10:16:32.628Z",
+  "traces": [
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-03-10.848Z-events/budget-observe-6708.json",
+      "node": "v24.20.0",
+      "events": 1534,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 10,
+      "errorsWithSameProcessReaderAtEntry": 4,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-03-47.665Z-events/semantics-23768.json",
+      "node": "v24.20.0",
+      "events": 465,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 0,
+      "errorsWithSameProcessReaderAtEntry": 0,
+      "exhausted": [],
+      "retainedPhases": [
+        {
+          "jobId": "d16974db-8f0c-4589-b1f9-d7e407790d2d",
+          "phase": "call-count-job"
+        }
+      ]
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-bundle-1-31284.json",
+      "node": "v24.19.0",
+      "events": 2006,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 3,
+      "errorsWithSameProcessReaderAtEntry": 2,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-bundle-2-22084.json",
+      "node": "v24.19.0",
+      "events": 1998,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 6,
+      "errorsWithSameProcessReaderAtEntry": 4,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-bundle-3-30172.json",
+      "node": "v24.19.0",
+      "events": 1964,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 8,
+      "errorsWithSameProcessReaderAtEntry": 7,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-bundle-4-4796.json",
+      "node": "v24.19.0",
+      "events": 1760,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 11,
+      "errorsWithSameProcessReaderAtEntry": 7,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-system-1-28352.json",
+      "node": "v24.20.0",
+      "events": 1311,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 12,
+      "errorsWithSameProcessReaderAtEntry": 9,
+      "exhausted": [
+        {
+          "source": "state/extraction-jobs/.fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json.e9829a55-93c7-485f-a134-83685bb1951b.tmp",
+          "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json",
+          "count": 6,
+          "elapsedMs": 631.6463000000003,
+          "attempted": {
+            "status": "failed",
+            "stage": "planning",
+            "callCount": 3
+          },
+          "readerOverlap": [
+            {
+              "atMs": 13896.3756,
+              "atEntry": 1,
+              "atExit": 0
+            },
+            {
+              "atMs": 13924.883,
+              "atEntry": 1,
+              "atExit": 0
+            },
+            {
+              "atMs": 14075.4244,
+              "atEntry": 1,
+              "atExit": 0
+            },
+            {
+              "atMs": 14236.6858,
+              "atEntry": 1,
+              "atExit": 1
+            },
+            {
+              "atMs": 14327.2426,
+              "atEntry": 0,
+              "atExit": 0
+            },
+            {
+              "atMs": 14528.0219,
+              "atEntry": 1,
+              "atExit": 0
+            }
+          ],
+          "lastReaderEvents": [
+            {
+              "atMs": 14268.6415,
+              "op": "readFile:start",
+              "id": 629,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14269.8485,
+              "op": "readFile:end",
+              "id": 629,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14290.3817,
+              "op": "readFile:start",
+              "id": 630,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14291.2189,
+              "op": "readFile:end",
+              "id": 630,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14306.028,
+              "op": "readFile:start",
+              "id": 631,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14306.8567,
+              "op": "readFile:end",
+              "id": 631,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14321.4609,
+              "op": "readFile:start",
+              "id": 633,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14327.0856,
+              "op": "readFile:end",
+              "id": 633,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14351.5853,
+              "op": "readFile:start",
+              "id": 634,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14353.3412,
+              "op": "readFile:end",
+              "id": 634,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14366.909,
+              "op": "readFile:start",
+              "id": 635,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            },
+            {
+              "atMs": 14527.6522,
+              "op": "readFile:end",
+              "id": 635,
+              "target": "state/extraction-jobs/fa2c7f20-d3ae-43ef-95b6-b86885c5e377.json"
+            }
+          ]
+        }
+      ],
+      "retainedPhases": [
+        {
+          "jobId": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377",
+          "phase": "failed-job"
+        }
+      ]
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-system-2-37748.json",
+      "node": "v24.20.0",
+      "events": 1716,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 6,
+      "errorsWithSameProcessReaderAtEntry": 2,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-system-3-24064.json",
+      "node": "v24.20.0",
+      "events": 1660,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 7,
+      "errorsWithSameProcessReaderAtEntry": 1,
+      "exhausted": [],
+      "retainedPhases": []
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-system-4-35444.json",
+      "node": "v24.20.0",
+      "events": 1690,
+      "dropped": 0,
+      "activeReads": 0,
+      "activeHandles": 0,
+      "nativeRenameErrors": 8,
+      "errorsWithSameProcessReaderAtEntry": 6,
+      "exhausted": [],
+      "retainedPhases": []
+    }
+  ],
+  "probes": [
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-11-26.651Z-events/probe-bundle.json",
+      "node": "v24.19.0",
+      "cases": [
+        {
+          "mode": "writer-only",
+          "writes": 80,
+          "nativeErrors": 0,
+          "failedWrites": [],
+          "reads": 0,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 120.91119999999995
+        },
+        {
+          "mode": "serial-read-write",
+          "writes": 80,
+          "nativeErrors": 0,
+          "failedWrites": [],
+          "reads": 80,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 718.2550000000001
+        },
+        {
+          "mode": "polling-read-write",
+          "writes": 80,
+          "nativeErrors": 3,
+          "failedWrites": [],
+          "reads": 18,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 247.6576
+        },
+        {
+          "mode": "continuous-read-write",
+          "writes": 41,
+          "nativeErrors": 73,
+          "failedWrites": [
+            {
+              "iteration": 22,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 30,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 37,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 45,
+              "code": "EPERM"
+            }
+          ],
+          "reads": 20799,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 3149.5033
+        },
+        {
+          "mode": "held-read-handle",
+          "writes": 0,
+          "nativeErrors": 6,
+          "failedWrites": [
+            {
+              "iteration": 1,
+              "code": "EPERM"
+            }
+          ],
+          "reads": 0,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 337.65480000000025
+        }
+      ]
+    },
+    {
+      "file": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-11-26.651Z-events/probe-system.json",
+      "node": "v24.20.0",
+      "cases": [
+        {
+          "mode": "writer-only",
+          "writes": 80,
+          "nativeErrors": 0,
+          "failedWrites": [],
+          "reads": 0,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 556.6942000000001
+        },
+        {
+          "mode": "serial-read-write",
+          "writes": 80,
+          "nativeErrors": 0,
+          "failedWrites": [],
+          "reads": 80,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 344.2774999999999
+        },
+        {
+          "mode": "polling-read-write",
+          "writes": 77,
+          "nativeErrors": 30,
+          "failedWrites": [
+            {
+              "iteration": 46,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 48,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 53,
+              "code": "EPERM"
+            }
+          ],
+          "reads": 125,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 3710.8849
+        },
+        {
+          "mode": "continuous-read-write",
+          "writes": 8,
+          "nativeErrors": 39,
+          "failedWrites": [
+            {
+              "iteration": 6,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 8,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 10,
+              "code": "EPERM"
+            },
+            {
+              "iteration": 12,
+              "code": "EPERM"
+            }
+          ],
+          "reads": 3518,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 1846.8423000000003
+        },
+        {
+          "mode": "held-read-handle",
+          "writes": 0,
+          "nativeErrors": 6,
+          "failedWrites": [
+            {
+              "iteration": 1,
+              "code": "EPERM"
+            }
+          ],
+          "reads": 0,
+          "postQuiesce": [
+            "OK",
+            "OK",
+            "OK"
+          ],
+          "durationMs": 339.09860000000026
+        }
+      ]
+    }
+  ],
+  "retained": [
+    {
+      "directory": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-03-47.665Z-events/semantics-23768-d16974db-8f0c-4589-b1f9-d7e407790d2d",
+      "phase": "call-count-job",
+      "error": {
+        "operation": "rename",
+        "errno": "EPERM"
+      },
+      "job": {
+        "id": "d16974db-8f0c-4589-b1f9-d7e407790d2d",
+        "status": "running",
+        "callCount": 2
+      },
+      "checkpoint": {
+        "attempts": 3,
+        "stage": "planning",
+        "chunks": 1,
+        "diagnostic": false
+      },
+      "rawStatus": "processing",
+      "savedFiles": [
+        {
+          "name": "job.json",
+          "size": 761,
+          "sha256": "c3f564cac8760ba9180ac89e88200772655006bf2e856c417c9cb81b46c31bc0"
+        },
+        {
+          "name": "checkpoint.json",
+          "size": 1548,
+          "sha256": "fbec4e16e12540ea04574c3f2040cb0e851335d789311994c2bedfb491427990"
+        },
+        {
+          "name": "raw-state.json",
+          "size": 850,
+          "sha256": "02329cd283975ac0f128bb7890ce9524a2fd6f7492ccb18248b923a539638d02"
+        },
+        {
+          "name": "raw.md",
+          "size": 326,
+          "sha256": "0495e9adea479c8a33c5308c6f957f6be6542a260b534ed30834c74f951f9cc5"
+        }
+      ]
+    },
+    {
+      "directory": "docs/reports/KB02-SR01-IO-DIAG-20261021-2026-10-21T10-13-32.026Z-events/budget-system-1-28352-fa2c7f20-d3ae-43ef-95b6-b86885c5e377",
+      "phase": "failed-job",
+      "error": {
+        "operation": "rename",
+        "errno": "EPERM"
+      },
+      "job": {
+        "id": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377",
+        "status": "running",
+        "callCount": 3
+      },
+      "checkpoint": {
+        "attempts": 3,
+        "stage": "planning",
+        "chunks": 1,
+        "error": "LLM_PLAN_COVERAGE_INVALID",
+        "diagnostic": true
+      },
+      "rawStatus": "failed",
+      "savedFiles": [
+        {
+          "name": "job.json",
+          "size": 686,
+          "sha256": "da56a4a506c34f3b649fca96921c50eab0a664bfc15986dacf9a19c5425fd42c"
+        },
+        {
+          "name": "checkpoint.json",
+          "size": 2003,
+          "sha256": "bfb270522cb143a6050057bff201b0931435591935cb299cf42f0761232f50e7"
+        },
+        {
+          "name": "raw-state.json",
+          "size": 1538,
+          "sha256": "397cc527213401bf025e72c33973015b52d97cf38fe7f10fb7e49bf2c9867f34"
+        },
+        {
+          "name": "raw.md",
+          "size": 326,
+          "sha256": "4fedcb8c4aeb777e511a4ecf817dca0c71e251833b0949f5b903900472de7744"
+        }
+      ]
+    }
+  ],
+  "realProviderCalls": 0
+}

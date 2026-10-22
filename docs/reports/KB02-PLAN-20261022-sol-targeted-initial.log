@@ -1,0 +1,51 @@
+✔ PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts (89.1101ms)
+✔ PLAN-03 original seq100 response remains strict rejection with every original record retained (47.9497ms)
+✔ PLAN-03 original seq104 response remains strict rejection with every original record retained (7.7309ms)
+✔ PLAN-03 supplement keeps fact and question at the same source, including ambiguous business boundary (5.5658ms)
+✔ PLAN-04 fresh extraction through planning uses context only for attribution, without promoting unselected nearby source notes (7.3872ms)
+✔ PLAN-04 exact context windows remain UTF16-safe on both boundaries (7.1646ms)
+✔ PLAN-04 selected record with unresolved atom position fails before planning callbacks (4.2417ms)
+✖ PLAN-04 unselected Raw context known secret rejects before any planning call, ledger or checkpoint write (9.621ms)
+✔ PLAN-04 complete context payload exceeding 192KiB stops before Provider and preserves extracted chunks (30.4588ms)
+✔ PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit (349.362ms)
+✔ PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts (6.5859ms)
+✔ PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks (302.8616ms)
+✔ PLAN completed revision6 draft remains HTTP-readable and reused with zero Provider increment (113.5841ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 12
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2132.9416
+
+✖ failing tests:
+
+test at tests\kb02-planning-context.test.ts:1:9672
+✖ PLAN-04 unselected Raw context known secret rejects before any planning call, ledger or checkpoint write (9.621ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'LLM_OUTPUT_CONTAINS_SECRET'
+  -   code: 'LLM_SECRET_DETECTED'
+    }
+  
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-context.test.ts:100:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: Provider 输出包含服务端凭证，已拒绝该结果。
+        at assertNoKnownSecret (E:\AI\Work\AIPM Workspace\services\llm\provider.ts:43:11)
+        at runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:154:5)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-context.test.ts:100:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    expected: { code: 'LLM_SECRET_DETECTED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }

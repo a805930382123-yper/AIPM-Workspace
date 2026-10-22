@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-15T07:50:54.867Z",
+  "scope": "actual product HTTP + authenticated localhost fake only",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-jLoWHL",
+  "rows": [
+    {
+      "id": "H01-client-invalid-Brief-HTTP400",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"LLM_SCHEMA_MISMATCH\",\"message\":\"Provider 返回的 Brief 字段 context 无效。\"}}\n\n502 !== 400\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:4:224\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:4:1"
+    },
+    {
+      "id": "H02-Brief-invalid-JSON-safe-stage-diagnostic",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"LLM_INVALID_JSON\",\"message\":\"Provider 返回的内容不是合法 JSON，未生成草稿。\"}}\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:5:253\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:5:1"
+    },
+    {
+      "id": "H03-check-auth-classified",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"LLM_AUTH_FAILED\",\"message\":\"Provider 拒绝鉴权（HTTP 401）。请检查服务端 API Key 配置。（Provider 说明：Synthetic auth failure）\"}}\n+ actual - expected\n\n+ undefined\n- 'auth'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:6:253\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:6:1"
+    },
+    {
+      "id": "H04-truncated-rewrite-must-be-response-invalid",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"LLM_OUTPUT_TRUNCATED\",\"message\":\"Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。\",\"details\":{\"category\":\"configuration\",\"stage\":\"rewrite\",\"retryable\":false,\"preserved\":[\"originalBody\",\"checks\",\"improvements\"],\"draftId\":\"67e77984-b30c-459a-ac53-4fdd59188d38\",\"nextAction\":\"check_configuration\"}}}\n+ actual - expected\n\n+ 'configuration'\n- 'response_invalid'\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:7:316\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:7:1"
+    },
+    {
+      "id": "H05-known-secret-restored-check-outbound-blocked",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"syntheticCredentialInMessages\":true,\"status\":200,\"extraLocalhostCalls\":1}\n\ntrue !== false\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:8:467\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:8:1"
+    },
+    {
+      "id": "H06-restored-draft-read-must-not-expose-known-secret",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"responseContainsSyntheticCredential\":true,\"status\":200}\n\ntrue !== false\n\n    at file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:9:297\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:2:130)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/pa01-20261015-main-http.mjs:9:1"
+    },
+    {
+      "id": "H07-client-disconnect-cancels-rewrite-and-preserves-check",
+      "result": "PASS",
+      "evidence": {
+        "stage": "failed",
+        "checks": 9,
+        "attempts": 1,
+        "lastError": {
+          "category": "configuration",
+          "retryable": false
+        },
+        "localCalls": 1
+      }
+    },
+    {
+      "id": "H08-corrupt-Prompt-draft-not-404-health-neighbor-unchanged",
+      "result": "PASS",
+      "evidence": {
+        "corrupt500": true,
+        "neighborPresent": true,
+        "bytesUnchanged": true,
+        "calls": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 6
+  },
+  "fakeCalls": 10,
+  "externalCalls": 0,
+  "closed": true
+}

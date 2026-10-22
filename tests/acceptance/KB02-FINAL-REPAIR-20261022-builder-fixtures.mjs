@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const prefix='KB02-FINAL-REPAIR-20261022-builder',sha=b=>createHash('sha256').update(b).digest('hex');
+const tracePath='docs/reports/KB02-FINAL-AUDIT-20261022-main-provider-trace.jsonl',traceBytes=await fs.readFile(tracePath),rows=traceBytes.toString().trim().split('\n').map(JSON.parse);
+const cpPath='docs/reports/KB02-FINAL-AUDIT-20261022-main-long-checkpoint-failed.json',cpBytes=await fs.readFile(cpPath),oldCheckpoint=JSON.parse(cpBytes);
+const bodyFixture='tests/acceptance/kb02-r2-q02-20261018-builder-seq62.json',bodyBytes=await fs.readFile(bodyFixture),{body}=JSON.parse(bodyBytes);
+if(sha(body)!==oldCheckpoint.rawSha256)throw Error('Historical body mismatch');
+const extraction=rows.find(r=>r.sequence===75),planning=rows.find(r=>r.sequence===77),update=rows.find(r=>r.sequence===82);
+const user=r=>r.request.messages.find(m=>m.role==='user').content;
+const fixture={provenance:{tracePath,traceSha256:sha(traceBytes),cpPath,cpSha256:sha(cpBytes),bodyFixture,bodyFixtureSha256:sha(bodyBytes)},body,bodySha256:sha(body),oldCheckpoint,extraction:{sequence:extraction.sequence,request:extraction.request,response:JSON.parse(extraction.response.content),atoms:JSON.parse(user(extraction).split('\n').at(-1))},planning:{sequence:planning.sequence,request:planning.request,response:JSON.parse(planning.response.content)},update:{sequence:update.sequence,request:update.request,response:JSON.parse(update.response.content)}};
+await fs.writeFile(`tests/acceptance/${prefix}-failure-fixture.json`,JSON.stringify(fixture,null,2));
+console.log(JSON.stringify({bodySha256:fixture.bodySha256,chunks:oldCheckpoint.completedChunks.length,sequences:[75,77,82],traceSha256:sha(traceBytes)}));

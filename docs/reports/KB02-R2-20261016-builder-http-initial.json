@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-16T08:17:25.519Z",
+  "scope": "localhost fake actual HTTP plus offline legacy trace replay; no real Provider quality claim",
+  "durationMs": 4905,
+  "checks": [
+    {
+      "id": "R01-native-HTTP-explicit-replanning-restart-double-resume",
+      "result": "PASS",
+      "evidence": {
+        "jobId": "0f6ef773-ca1d-40f0-bd6c-2a739888d490",
+        "calls": 4,
+        "reusedChunks": 1,
+        "explicitFeedback": true,
+        "noFormalWrites": true
+      }
+    },
+    {
+      "id": "R02-diagnostic-current-secret-and-old-pipeline-rejected-with-zero-side-effects",
+      "result": "PASS",
+      "evidence": {
+        "secretRejected": true,
+        "oldBytesPreserved": true,
+        "restartExplicit": true
+      }
+    },
+    {
+      "id": "R03-offline-real-seq39-40-product-coverage-replay",
+      "result": "PASS",
+      "evidence": {
+        "noExternalRequests": true,
+        "legacyInputOnlyNoCheckpointReuse": true,
+        "replay": [
+          {
+            "sequence": 39,
+            "legacyInput": true,
+            "facts": 46,
+            "questions": 23,
+            "diagnostic": {
+              "facts": {
+                "missing": [
+                  "f-c2-3"
+                ],
+                "duplicate": [],
+                "unknown": []
+              },
+              "questions": {
+                "missing": [],
+                "duplicate": [],
+                "unknown": []
+              },
+              "duplicateTitles": []
+            }
+          },
+          {
+            "sequence": 40,
+            "legacyInput": true,
+            "facts": 46,
+            "questions": 23,
+            "diagnostic": {
+              "facts": {
+                "missing": [
+                  "f-c2-3"
+                ],
+                "duplicate": [],
+                "unknown": []
+              },
+              "questions": {
+                "missing": [],
+                "duplicate": [],
+                "unknown": []
+              },
+              "duplicateTitles": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "R04-actual-candidate-explicit-update-ID-preview-confirm",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"INVALID_FIELD\",\"message\":\"正文不能为空或格式不正确。\"}}\n\n400 !== 201\n\n    at expect (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-20261015-standards-harness.mjs:16:108)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-20261016-builder-http.mjs:37:101\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-20261016-builder-http.mjs:17:72)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-r2-20261016-builder-http.mjs:36:1"
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 1
+  },
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-standards-T02SSh",
+  "calls": 10,
+  "closed": true
+}

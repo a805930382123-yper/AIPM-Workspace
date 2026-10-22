@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-14",
+  "environment": "v24.20.0",
+  "scope": "independent product HTTP/native transport; fictional credentials only",
+  "durationMs": 9111,
+  "checks": [
+    {
+      "id": "R2-01-new-key-model-roundtrip",
+      "result": "PASS",
+      "details": {
+        "acceptedUnchanged": 5,
+        "rejectedWithoutWrite": 2
+      }
+    },
+    {
+      "id": "R2-01-legacy-quoted-backslashes-preserved",
+      "result": "PASS",
+      "details": {
+        "legacyAuthUnchanged": true,
+        "retainedKeyUnchanged": true,
+        "sameRootRestartUnchanged": true,
+        "nonLlmBytesPreserved": true
+      }
+    },
+    {
+      "id": "R2-03-invalid-percent-and-secret-encoding-rejected",
+      "result": "PASS",
+      "details": {
+        "refused": 10,
+        "oldKeyReplacementBlocked": true,
+        "environmentAndLocalKeysChecked": true,
+        "noProviderCalls": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 0
+  },
+  "servicesClosed": true
+}

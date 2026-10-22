@@ -2,7 +2,8 @@
 // only state/raw-processing/<rawId>.json changes. Raws without a state file are `unprocessed`.
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { SerialQueue, listJsonRecords, readJsonFile, writeJsonAtomic } from '../storage/files.ts';
+import {isRawState} from '../storage/record-validators.ts';
+import { SerialQueue, StorageError, scanJsonRecords, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
 
 export const RAW_STATUSES = ['unprocessed', 'processing', 'pending_confirmation', 'generated', 'failed'] as const;
 export type RawStatus = typeof RAW_STATUSES[number];
@@ -30,16 +31,16 @@ export class RawStateStore {
   async initialize() { await mkdir(this.directory(), { recursive: true }); }
 
   async get(rawId: string): Promise<RawState> {
-    const stored = await readJsonFile<RawState>(this.fileFor(rawId));
-    if (stored && RAW_STATUSES.includes(stored.status)) return stored;
-    return { rawId, status: 'unprocessed', updatedAt: new Date(0).toISOString(), history: [] };
+    const stored = await readJsonRecord<RawState>(this.root,this.fileFor(rawId),(v):v is RawState=>isRawState(v,rawId));
+    if(stored===undefined)return {rawId,status:'unprocessed',updatedAt:new Date(0).toISOString(),history:[]};
+    if(isRawState(stored,rawId))return stored;
+    throw new StorageError('STORAGE_CORRUPT','Raw 状态记录结构无效，原文件已保留。',500,{category:'recovery',nextAction:'inspect_or_restore'});
   }
 
   async list(): Promise<RawState[]> {
-    const records = await listJsonRecords<RawState>(this.directory());
-    return records.map(record => record.value).filter(value => value && RAW_STATUSES.includes(value.status));
+    const records=await scanJsonRecords<RawState>(this.directory(),(v,file):v is RawState=>isRawState(v,path.basename(file,'.json')),this.root);
+    return records.records.map(x=>x.value);
   }
-
   /** Applies a state transition and appends history; all mutations are serialized. */
   async set(rawId: string, next: { status: RawStatus; reason: string; jobId?: string; draftId?: string; lastError?: RawStateFailure; generatedWikiIds?: string[]; confirmedOperationId?: string; revertStatus?: RawStatus }): Promise<RawState> {
     return this.queue.run(async () => {

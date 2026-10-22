@@ -1,0 +1,15 @@
+import fs from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
+const name = process.argv[2];
+if (!['fullsuite', 'build', 'http', 'standards-probes', 'security', 'provenance'].includes(name)) throw Error('Unknown command');
+const prefix = 'docs/reports/KB02-R2-Q02-20261018-builder-' + name + '-command-';
+let attempt = 1;
+while (await fs.access(prefix + attempt + '.json').then(() => true, () => false)) attempt++;
+const args = [...(['fullsuite','build'].includes(name)?[]:['--import','tsx']), 'tests/acceptance/kb02-r2-q02-20261018-builder-' + name + '.mjs'];
+const start = Date.now(), child = spawn(process.execPath, args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+let output = ''; child.stdout.on('data', b => output += b); child.stderr.on('data', b => output += b);
+const [exitCode, signal] = await once(child, 'exit');
+await fs.writeFile(prefix + attempt + '.log', output);
+const evidence = { at: new Date().toISOString(), attempt, args, exitCode, signal, durationMs: Date.now() - start, externalCalls: 0 };
+await fs.writeFile(prefix + attempt + '.json', JSON.stringify(evidence, null, 2)); console.log(JSON.stringify(evidence)); process.exitCode = exitCode ?? 1;

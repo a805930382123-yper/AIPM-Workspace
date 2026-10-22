@@ -1,0 +1,1220 @@
+{
+  "at": "2026-10-14T08:58:14.887Z",
+  "scope": "actual product HTTP+external configured GLM, fictional isolated data only",
+  "checks": [
+    {
+      "id": "K05-R01-short-real-extraction",
+      "result": "PASS",
+      "details": {
+        "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+        "draftId": "5946d964-34ee-4d61-b728-37f5194796f7",
+        "pages": 8,
+        "types": [
+          "entity",
+          "entity",
+          "metric",
+          "metric",
+          "business_process",
+          "concept",
+          "concept",
+          "concept"
+        ],
+        "noFormalWrite": true,
+        "rawExact": true
+      },
+      "elapsedMs": 40986
+    },
+    {
+      "id": "K05-R02-select-confirm-wiki-source-log",
+      "result": "PASS",
+      "details": {
+        "confirmed": {
+          "operationId": "e8b98011-fea1-4a7a-a9d0-8fcd788bd7a7",
+          "status": "completed",
+          "reused": false,
+          "sourceReused": false,
+          "sourceId": "d98c4149-7c38-4171-91fc-9e0666fa0b3b",
+          "wikiIds": [
+            "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+            "de1b9532-00db-48bf-b9a5-31cb529f233f"
+          ],
+          "sourceReuseId": null,
+          "writtenWikiIds": [
+            "d98c4149-7c38-4171-91fc-9e0666fa0b3b",
+            "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+            "de1b9532-00db-48bf-b9a5-31cb529f233f"
+          ],
+          "phases": [
+            {
+              "name": "source",
+              "status": "done",
+              "at": "2026-10-14T08:57:09.632Z"
+            },
+            {
+              "name": "pages",
+              "status": "done",
+              "at": "2026-10-14T08:57:09.641Z"
+            },
+            {
+              "name": "index",
+              "status": "done",
+              "at": "2026-10-14T08:57:09.673Z"
+            },
+            {
+              "name": "log",
+              "status": "done",
+              "at": "2026-10-14T08:57:09.675Z"
+            },
+            {
+              "name": "state",
+              "status": "done",
+              "at": "2026-10-14T08:57:09.683Z"
+            }
+          ],
+          "warnings": []
+        },
+        "metricWikiId": "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+        "revision": 2,
+        "onlySelected": true,
+        "rawExact": true
+      },
+      "elapsedMs": 257
+    },
+    {
+      "id": "K05-R03-new-source-and-automatic-duplicate-candidates",
+      "result": "PASS",
+      "details": {
+        "draftId": "de8b15ee-3507-4b00-96f7-9b075ba04cab",
+        "pageId": "8e14eecc-91d3-4e42-af2c-851ffe15a3e1",
+        "candidateIds": [
+          "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+          "de1b9532-00db-48bf-b9a5-31cb529f233f",
+          "d98c4149-7c38-4171-91fc-9e0666fa0b3b"
+        ],
+        "candidateOnlyNotModelJudgment": true
+      },
+      "elapsedMs": 20454
+    },
+    {
+      "id": "K05-R04-real-update-conflict-preview-explicit-confirm",
+      "result": "FAIL",
+      "message": "HTTP 502 LLM_INVALID_JSON Provider 返回的内容不是合法 JSON，未创建草稿。",
+      "actual": {
+        "error": {
+          "code": "LLM_INVALID_JSON",
+          "message": "Provider 返回的内容不是合法 JSON，未创建草稿。"
+        }
+      },
+      "elapsedMs": 20242
+    },
+    {
+      "id": "K05-R05-real-100000-chinese-chars-strategy",
+      "result": "FAIL",
+      "message": "{\"code\":\"LLM_EVIDENCE_AMBIGUOUS\",\"message\":\"证据 e3 的 quote 在本段出现 2 次，无法确定唯一位置；请在证据中给出准确的 start/end。\",\"at\":\"2026-10-14T08:58:14.764Z\",\"retryable\":true,\"details\":{\"occurrences\":2,\"chunkIndex\":0}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "actual": "failed",
+      "elapsedMs": 24353
+    },
+    {
+      "id": "K05-R06-final-knowledge-safety",
+      "result": "PASS",
+      "details": {
+        "actualKnowledgeRequests": 4,
+        "diagnosticRequests": 3,
+        "totalRequests": 7,
+        "cap": 24,
+        "rawExact": true,
+        "allKnowledgeLow": true
+      },
+      "elapsedMs": 17
+    }
+  ],
+  "artifacts": {
+    "job-f2345a4b-d8c0-403a-9a0b-e357557e0d62": {
+      "jobId": "28bee73c-2f1a-4f76-83c5-a706cbcaa7d9",
+      "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+      "status": "completed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 1,
+        "pagesFound": 8
+      },
+      "draftId": "5946d964-34ee-4d61-b728-37f5194796f7",
+      "error": null,
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 1,
+      "startedAt": "2026-10-14T08:56:28.632Z",
+      "finishedAt": "2026-10-14T08:57:09.352Z",
+      "cancelRequested": false
+    },
+    "raw1": {
+      "title": "验收资料 青禾渠道真实AI虚构验收",
+      "sourceType": "report",
+      "sourceName": "隔离样本 青禾渠道真实AI虚构验收",
+      "author": "验收样本",
+      "publishedAt": "2026-10-01",
+      "url": "https://example.com/b05-fixture",
+      "tags": [
+        "KB01虚构",
+        "青禾铺货率"
+      ],
+      "body": "【虚构验收资料，不是真实公司数据】\n青禾饮料是一家虚构企业，销售青禾茶饮。经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。\n2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮。铺货率定义为在售门店数除以目标门店总数，20÷100=20%。门店数不等于销量，不得按销量解释这项指标。\n订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\n案例：早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。缺货和退货都须人工核对。\n概念：订单满足率反映已交付数量相对需求量，与铺货率不同。业务角色包括门店店长、订货主管、仓库、司机、财务。\n数据边界：材料没有提供利润、年度销量、客户真实姓名和现有AI系统。AI用于订单异常提示只是未来分析建议，没有已验证收益。待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。",
+      "id": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+      "importedAt": "2026-10-14T08:56:28.612Z",
+      "status": "unprocessed",
+      "bodySha256": "e811fd5d5b0bde64f4fb74c869fe25ee412e7f0a7edb264ba17656322b1c0120"
+    },
+    "draft1": {
+      "id": "5946d964-34ee-4d61-b728-37f5194796f7",
+      "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+      "rawSha256": "e811fd5d5b0bde64f4fb74c869fe25ee412e7f0a7edb264ba17656322b1c0120",
+      "rawTitle": "验收资料 青禾渠道真实AI虚构验收",
+      "rawMeta": {
+        "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+        "title": "验收资料 青禾渠道真实AI虚构验收",
+        "sourceType": "report",
+        "sourceName": "隔离样本 青禾渠道真实AI虚构验收",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture"
+      },
+      "status": "pending_confirmation",
+      "revision": 1,
+      "createdAt": "2026-10-14T08:57:09.321Z",
+      "updatedAt": "2026-10-14T08:57:09.321Z",
+      "rulesVersion": "b04-b04-1-bacd7b0d3162",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "jobId": "28bee73c-2f1a-4f76-83c5-a706cbcaa7d9",
+      "document": {
+        "title": "验收资料 青禾渠道真实AI虚构验收",
+        "main_topic": "虚构企业青禾饮料在东桥区域的铺货率、订货流程及数据边界说明",
+        "summary": "本文为明确标注的虚构验收资料。虚构企业青禾饮料销售青禾茶饮，经销商晨星商贸负责东桥区域。2026年9月东桥区域100家目标门店中20家在售，铺货率为20%；铺货率定义为在售门店数除以目标门店总数，且门店数不等于销量。资料还描述了从门店提需求到财务核对回款的订货流程、一个库存不足的缺货处理案例、订单满足率概念、业务角色清单，以及数据边界（无利润、年度销量、真实客户姓名和现有AI系统）和待确认问题。"
+      },
+      "pages": [
+        {
+          "pageId": "53fbbb88-00f1-4976-8cd4-a641e6c0d516",
+          "title": "青禾饮料（虚构企业）",
+          "type": "entity",
+          "category": "company_business",
+          "one_line_definition": "资料中虚构的饮料企业，销售青禾茶饮，仅用于验收样本。",
+          "source_facts": [
+            {
+              "text": "青禾饮料是一家虚构企业，销售青禾茶饮。",
+              "evidenceIds": [
+                "ev1"
+              ]
+            },
+            {
+              "text": "资料明确标注为虚构验收资料，不是真实公司数据。",
+              "evidenceIds": [
+                "ev0"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "青禾饮料及旗下产品青禾茶饮均为虚构，文中所有数据不可用于真实业务分析。"
+          ],
+          "ai_inferences": [
+            "该样本可能用于测试知识系统对虚构与真实数据的区分能力。"
+          ],
+          "related_pages": [
+            "晨星商贸",
+            "青禾茶饮",
+            "铺货率"
+          ],
+          "open_questions": [
+            "青禾茶饮的具体产品规格和价格未在资料中给出。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev0",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "【虚构验收资料，不是真实公司数据】",
+              "start": 0,
+              "end": 17,
+              "chunkIndex": 0
+            },
+            {
+              "id": "ev1",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "青禾饮料是一家虚构企业，销售青禾茶饮。",
+              "start": 18,
+              "end": 37,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n资料中虚构的饮料企业，销售青禾茶饮，仅用于验收样本。\n\n## 来源事实\n\n- 青禾饮料是一家虚构企业，销售青禾茶饮。（证据 ev1）\n- 资料明确标注为虚构验收资料，不是真实公司数据。（证据 ev0）\n\n## AI 整理\n\n- 青禾饮料及旗下产品青禾茶饮均为虚构，文中所有数据不可用于真实业务分析。\n\n## AI 推断\n\n- 该样本可能用于测试知识系统对虚构与真实数据的区分能力。\n\n## 待确认问题\n\n- 青禾茶饮的具体产品规格和价格未在资料中给出。\n\n## 来源证据\n\n- ev0｜原文 [0, 17)：【虚构验收资料，不是真实公司数据】\n- ev1｜原文 [18, 37)：青禾饮料是一家虚构企业，销售青禾茶饮。\n\n## 关联\n\n- 晨星商贸（本次未创建，待后续处理）\n- 青禾茶饮（本次未创建，待后续处理）\n- 铺货率（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "2b67d190-646d-4527-9425-34e3750c9fb0",
+          "title": "晨星商贸（虚构经销商）",
+          "type": "entity",
+          "category": "distributor",
+          "one_line_definition": "负责东桥区域经销业务的虚构经销商，联系人为角色化的订货主管而非实名。",
+          "source_facts": [
+            {
+              "text": "经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。",
+              "evidenceIds": [
+                "ev2"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "晨星商贸是虚构经销商，覆盖范围为东桥区域；其对外联系人是角色名“订货主管”，不代表真实个人。"
+          ],
+          "ai_inferences": [
+            "使用角色名而非实名可能是为了在样本中保护隐私。"
+          ],
+          "related_pages": [
+            "青禾饮料",
+            "订货主管",
+            "东桥区域"
+          ],
+          "open_questions": [
+            "晨星商贸的规模、代理品类等未在资料中说明。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev2",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。",
+              "start": 37,
+              "end": 69,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n负责东桥区域经销业务的虚构经销商，联系人为角色化的订货主管而非实名。\n\n## 来源事实\n\n- 经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。（证据 ev2）\n\n## AI 整理\n\n- 晨星商贸是虚构经销商，覆盖范围为东桥区域；其对外联系人是角色名“订货主管”，不代表真实个人。\n\n## AI 推断\n\n- 使用角色名而非实名可能是为了在样本中保护隐私。\n\n## 待确认问题\n\n- 晨星商贸的规模、代理品类等未在资料中说明。\n\n## 来源证据\n\n- ev2｜原文 [37, 69)：经销商晨星商贸负责东桥区域，联系人是角色“订货主管”，不是实名。\n\n## 关联\n\n- 青禾饮料（本次未创建，待后续处理）\n- 订货主管（本次未创建，待后续处理）\n- 东桥区域（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "e45802e8-37e1-46ab-b7be-f3736a08deb6",
+          "title": "铺货率",
+          "type": "metric",
+          "category": "metric",
+          "one_line_definition": "在售门店数除以目标门店总数的渠道覆盖指标，门店数不等于销量。",
+          "source_facts": [
+            {
+              "text": "铺货率定义为在售门店数除以目标门店总数。",
+              "evidenceIds": [
+                "ev3"
+              ]
+            },
+            {
+              "text": "2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮，铺货率为20÷100=20%。",
+              "evidenceIds": [
+                "ev3"
+              ]
+            },
+            {
+              "text": "门店数不等于销量，不得按销量解释这项指标。",
+              "evidenceIds": [
+                "ev4"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "计算公式：铺货率 = 在售门店数 ÷ 目标门店总数。2026年9月东桥区域示例：20 ÷ 100 = 20%。",
+            "该指标衡量渠道覆盖广度，与订单满足率含义不同。"
+          ],
+          "ai_inferences": [
+            "铺货率提升通常被视为渠道拓展方向，但资料未涉及提升手段。"
+          ],
+          "related_pages": [
+            "订单满足率",
+            "青禾饮料",
+            "东桥区域"
+          ],
+          "open_questions": [
+            "铺货率的统计口径（如是否要求持续在架）资料未细化。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev3",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮。铺货率定义为在售门店数除以目标门店总数，20÷100=20%。",
+              "start": 70,
+              "end": 139,
+              "chunkIndex": 0
+            },
+            {
+              "id": "ev4",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "门店数不等于销量，不得按销量解释这项指标。",
+              "start": 139,
+              "end": 160,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n在售门店数除以目标门店总数的渠道覆盖指标，门店数不等于销量。\n\n## 来源事实\n\n- 铺货率定义为在售门店数除以目标门店总数。（证据 ev3）\n- 2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮，铺货率为20÷100=20%。（证据 ev3）\n- 门店数不等于销量，不得按销量解释这项指标。（证据 ev4）\n\n## AI 整理\n\n- 计算公式：铺货率 = 在售门店数 ÷ 目标门店总数。2026年9月东桥区域示例：20 ÷ 100 = 20%。\n- 该指标衡量渠道覆盖广度，与订单满足率含义不同。\n\n## AI 推断\n\n- 铺货率提升通常被视为渠道拓展方向，但资料未涉及提升手段。\n\n## 待确认问题\n\n- 铺货率的统计口径（如是否要求持续在架）资料未细化。\n\n## 来源证据\n\n- ev3｜原文 [70, 139)：2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮。铺货率定义为在售门店数除以目标门店总数，20÷100=20%。\n- ev4｜原文 [139, 160)：门店数不等于销量，不得按销量解释这项指标。\n\n## 关联\n\n- 订单满足率（本次未创建，待后续处理）\n- 青禾饮料（本次未创建，待后续处理）\n- 东桥区域（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "6403e89f-0b7a-4a83-8adc-8ceb050b7562",
+          "title": "订单满足率",
+          "type": "metric",
+          "category": "metric",
+          "one_line_definition": "反映已交付数量相对需求量的指标，与铺货率不同。",
+          "source_facts": [
+            {
+              "text": "订单满足率反映已交付数量相对需求量，与铺货率不同。",
+              "evidenceIds": [
+                "ev5"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "订单满足率关注单次或一定期内订单的交付达成程度，属于履约维度；铺货率属于渠道覆盖维度，二者不可混用。"
+          ],
+          "ai_inferences": [
+            "订单满足率可能等于已交付数量除以需求量，但资料未给出具体公式。"
+          ],
+          "related_pages": [
+            "铺货率",
+            "订货流程"
+          ],
+          "open_questions": [
+            "订单满足率的精确计算公式和统计周期资料未给出。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev5",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "订单满足率反映已交付数量相对需求量，与铺货率不同。",
+              "start": 296,
+              "end": 321,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n反映已交付数量相对需求量的指标，与铺货率不同。\n\n## 来源事实\n\n- 订单满足率反映已交付数量相对需求量，与铺货率不同。（证据 ev5）\n\n## AI 整理\n\n- 订单满足率关注单次或一定期内订单的交付达成程度，属于履约维度；铺货率属于渠道覆盖维度，二者不可混用。\n\n## AI 推断\n\n- 订单满足率可能等于已交付数量除以需求量，但资料未给出具体公式。\n\n## 待确认问题\n\n- 订单满足率的精确计算公式和统计周期资料未给出。\n\n## 来源证据\n\n- ev5｜原文 [296, 321)：订单满足率反映已交付数量相对需求量，与铺货率不同。\n\n## 关联\n\n- 铺货率（本次未创建，待后续处理）\n- 订货流程（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "5516ce60-2f80-407b-babf-b42dc74142e7",
+          "title": "订货流程（东桥区域）",
+          "type": "business_process",
+          "category": "sales",
+          "one_line_definition": "从门店提交需求到财务核对回款的八步人工订货流程。",
+          "source_facts": [
+            {
+              "text": "订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。",
+              "evidenceIds": [
+                "ev6"
+              ]
+            },
+            {
+              "text": "缺货和退货都须人工核对。",
+              "evidenceIds": [
+                "ev7"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "流程步骤：1) 门店提交需求；2) 订货主管汇总；3) 仓库核对可用库存；4) 人工审批后生成订单；5) 仓库配货；6) 司机配送；7) 门店签收；8) 财务核对回款。",
+            "缺货与退货均须人工核对。"
+          ],
+          "ai_inferences": [
+            "该流程以人工审批为控制点，可能存在时效瓶颈。"
+          ],
+          "related_pages": [
+            "晨星商贸",
+            "订货主管",
+            "订单满足率"
+          ],
+          "open_questions": [
+            "审批人是谁、各环节时限资料未说明。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev6",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。",
+              "start": 161,
+              "end": 221,
+              "chunkIndex": 0
+            },
+            {
+              "id": "ev7",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "缺货和退货都须人工核对。",
+              "start": 280,
+              "end": 292,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n从门店提交需求到财务核对回款的八步人工订货流程。\n\n## 来源事实\n\n- 订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。（证据 ev6）\n- 缺货和退货都须人工核对。（证据 ev7）\n\n## AI 整理\n\n- 流程步骤：1) 门店提交需求；2) 订货主管汇总；3) 仓库核对可用库存；4) 人工审批后生成订单；5) 仓库配货；6) 司机配送；7) 门店签收；8) 财务核对回款。\n- 缺货与退货均须人工核对。\n\n## AI 推断\n\n- 该流程以人工审批为控制点，可能存在时效瓶颈。\n\n## 待确认问题\n\n- 审批人是谁、各环节时限资料未说明。\n\n## 来源证据\n\n- ev6｜原文 [161, 221)：订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\n- ev7｜原文 [280, 292)：缺货和退货都须人工核对。\n\n## 关联\n\n- 晨星商贸（本次未创建，待后续处理）\n- 订货主管（本次未创建，待后续处理）\n- 订单满足率（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "6ca52d30-67ed-4314-a566-de67e68d008c",
+          "title": "缺货处理案例（需求大于库存）",
+          "type": "concept",
+          "category": "sales",
+          "one_line_definition": "库存不足时先与门店协商延期或替代方案，未经同意不得修改订单。",
+          "source_facts": [
+            {
+              "text": "早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。",
+              "evidenceIds": [
+                "ev8"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "处理顺序：发现需求（10箱）超过库存（8箱）→ 订货主管联系门店确认缺口的延期或替代安排 → 只有在获得门店同意后才可修改订单。"
+          ],
+          "ai_inferences": [
+            "该规则表明订单修改需以客户同意为前提，属于客户确认型变更控制。"
+          ],
+          "related_pages": [
+            "订货流程（东桥区域）",
+            "订货主管"
+          ],
+          "open_questions": [
+            "剩余2箱的延期或替代安排具体形式、缺货通知时限均未确定。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev8",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "案例：早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。",
+              "start": 222,
+              "end": 280,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n库存不足时先与门店协商延期或替代方案，未经同意不得修改订单。\n\n## 来源事实\n\n- 早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。（证据 ev8）\n\n## AI 整理\n\n- 处理顺序：发现需求（10箱）超过库存（8箱）→ 订货主管联系门店确认缺口的延期或替代安排 → 只有在获得门店同意后才可修改订单。\n\n## AI 推断\n\n- 该规则表明订单修改需以客户同意为前提，属于客户确认型变更控制。\n\n## 待确认问题\n\n- 剩余2箱的延期或替代安排具体形式、缺货通知时限均未确定。\n\n## 来源证据\n\n- ev8｜原文 [222, 280)：案例：早上门店提出10箱需求，库存只有8箱。订货主管先联系门店确认剩余2箱的延期或替代安排，未获得同意不得修改订单。\n\n## 关联\n\n- 订货流程（东桥区域）（本次未创建，待后续处理）\n- 订货主管（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "86286982-b794-477c-901a-92528099174a",
+          "title": "订货业务角色清单",
+          "type": "concept",
+          "category": "sales",
+          "one_line_definition": "订货流程涉及门店店长、订货主管、仓库、司机、财务五类角色。",
+          "source_facts": [
+            {
+              "text": "业务角色包括门店店长、订货主管、仓库、司机、财务。",
+              "evidenceIds": [
+                "ev9"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "五类角色对应职责：门店店长（门店端）、订货主管（需求汇总与协调）、仓库（库存核对与配货）、司机（配送）、财务（回款核对）。"
+          ],
+          "ai_inferences": [
+            "角色均以职能命名，进一步说明这是虚构/脱敏样本。"
+          ],
+          "related_pages": [
+            "订货流程（东桥区域）",
+            "晨星商贸"
+          ],
+          "open_questions": [
+            "门店店长在订货流程中的具体职责未明确。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev9",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "业务角色包括门店店长、订货主管、仓库、司机、财务。",
+              "start": 321,
+              "end": 346,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n订货流程涉及门店店长、订货主管、仓库、司机、财务五类角色。\n\n## 来源事实\n\n- 业务角色包括门店店长、订货主管、仓库、司机、财务。（证据 ev9）\n\n## AI 整理\n\n- 五类角色对应职责：门店店长（门店端）、订货主管（需求汇总与协调）、仓库（库存核对与配货）、司机（配送）、财务（回款核对）。\n\n## AI 推断\n\n- 角色均以职能命名，进一步说明这是虚构/脱敏样本。\n\n## 待确认问题\n\n- 门店店长在订货流程中的具体职责未明确。\n\n## 来源证据\n\n- ev9｜原文 [321, 346)：业务角色包括门店店长、订货主管、仓库、司机、财务。\n\n## 关联\n\n- 订货流程（东桥区域）（本次未创建，待后续处理）\n- 晨星商贸（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        },
+        {
+          "pageId": "3e1fddfa-8c28-43fc-8cf0-f93f24e85f53",
+          "title": "青禾样本数据边界与待确认问题",
+          "type": "concept",
+          "category": "other",
+          "one_line_definition": "资料未包含利润、年度销量、客户真实姓名和现有AI系统，并列出三项待确认问题。",
+          "source_facts": [
+            {
+              "text": "材料没有提供利润、年度销量、客户真实姓名和现有AI系统。",
+              "evidenceIds": [
+                "ev10"
+              ]
+            },
+            {
+              "text": "AI用于订单异常提示只是未来分析建议，没有已验证收益。",
+              "evidenceIds": [
+                "ev10"
+              ]
+            },
+            {
+              "text": "待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。",
+              "evidenceIds": [
+                "ev10"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "数据边界：无利润、年度销量、客户真实姓名、现有AI系统信息。",
+            "AI订单异常提示仅为未来分析建议，尚无已验证收益。",
+            "待确认问题：异常审批负责人、回款对账频率、缺货通知时限。"
+          ],
+          "ai_inferences": [
+            "使用该资料时应避免对财务表现和AI收益做任何量化结论。"
+          ],
+          "related_pages": [
+            "青禾饮料",
+            "订货流程（东桥区域）"
+          ],
+          "open_questions": [
+            "上述三项待确认问题本身即未解决，需后续资料补充。"
+          ],
+          "source_evidence": [
+            {
+              "id": "ev10",
+              "rawId": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+              "quote": "材料没有提供利润、年度销量、客户真实姓名和现有AI系统。AI用于订单异常提示只是未来分析建议，没有已验证收益。待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。",
+              "start": 352,
+              "end": 436,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 436
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n资料未包含利润、年度销量、客户真实姓名和现有AI系统，并列出三项待确认问题。\n\n## 来源事实\n\n- 材料没有提供利润、年度销量、客户真实姓名和现有AI系统。（证据 ev10）\n- AI用于订单异常提示只是未来分析建议，没有已验证收益。（证据 ev10）\n- 待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。（证据 ev10）\n\n## AI 整理\n\n- 数据边界：无利润、年度销量、客户真实姓名、现有AI系统信息。\n- AI订单异常提示仅为未来分析建议，尚无已验证收益。\n- 待确认问题：异常审批负责人、回款对账频率、缺货通知时限。\n\n## AI 推断\n\n- 使用该资料时应避免对财务表现和AI收益做任何量化结论。\n\n## 待确认问题\n\n- 上述三项待确认问题本身即未解决，需后续资料补充。\n\n## 来源证据\n\n- ev10｜原文 [352, 436)：材料没有提供利润、年度销量、客户真实姓名和现有AI系统。AI用于订单异常提示只是未来分析建议，没有已验证收益。待确认问题包括异常审批负责人、回款对账频率和缺货通知时限。\n\n## 关联\n\n- 青禾饮料（本次未创建，待后续处理）\n- 订货流程（东桥区域）（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+        }
+      ],
+      "source": {
+        "title": "验收资料 青禾渠道真实AI虚构验收",
+        "category": "other",
+        "summary": "本文为明确标注的虚构验收资料。虚构企业青禾饮料销售青禾茶饮，经销商晨星商贸负责东桥区域。2026年9月东桥区域100家目标门店中20家在售，铺货率为20%；铺货率定义为在售门店数除以目标门店总数，且门店数不等于销量。资料还描述了从门店提需求到财务核对回款的订货流程、一个库存不足的缺货处理案例、订单满足率概念、业务角色清单，以及数据边界（无利润、年度销量、真实客户姓名和现有AI系统）和待确认问题。",
+        "key_takeaways": [],
+        "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 青禾渠道真实AI虚构验收\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 青禾渠道真实AI虚构验收（f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n本文为明确标注的虚构验收资料。虚构企业青禾饮料销售青禾茶饮，经销商晨星商贸负责东桥区域。2026年9月东桥区域100家目标门店中20家在售，铺货率为20%；铺货率定义为在售门店数除以目标门店总数，且门店数不等于销量。资料还描述了从门店提需求到财务核对回款的订货流程、一个库存不足的缺货处理案例、订单满足率概念、业务角色清单，以及数据边界（无利润、年度销量、真实客户姓名和现有AI系统）和待确认问题。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 青禾饮料（虚构企业）（entity，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 晨星商贸（虚构经销商）（entity，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 铺货率（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订单满足率（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订货流程（东桥区域）（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 缺货处理案例（需求大于库存）（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订货业务角色清单（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾样本数据边界与待确认问题（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 青禾渠道真实AI虚构验收（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C"
+      },
+      "warnings": [
+        "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+      ],
+      "extraction": {
+        "callCount": 1,
+        "chunkCount": 1,
+        "pagesFound": 8
+      },
+      "sourceRenderedBody": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 青禾渠道真实AI虚构验收\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 青禾渠道真实AI虚构验收（f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n本文为明确标注的虚构验收资料。虚构企业青禾饮料销售青禾茶饮，经销商晨星商贸负责东桥区域。2026年9月东桥区域100家目标门店中20家在售，铺货率为20%；铺货率定义为在售门店数除以目标门店总数，且门店数不等于销量。资料还描述了从门店提需求到财务核对回款的订货流程、一个库存不足的缺货处理案例、订单满足率概念、业务角色清单，以及数据边界（无利润、年度销量、真实客户姓名和现有AI系统）和待确认问题。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 青禾饮料（虚构企业）（entity，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 晨星商贸（虚构经销商）（entity，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 铺货率（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订单满足率（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订货流程（东桥区域）（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 缺货处理案例（需求大于库存）（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订货业务角色清单（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾样本数据边界与待确认问题（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 青禾渠道真实AI虚构验收（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "preview": {
+        "rawExists": true,
+        "rawSha256Matches": true,
+        "sourceReuse": null,
+        "sourceAmbiguous": null,
+        "titleConflicts": [],
+        "batchDuplicateTitles": []
+      },
+      "raw": {
+        "id": "f2345a4b-d8c0-403a-9a0b-e357557e0d62",
+        "title": "验收资料 青禾渠道真实AI虚构验收",
+        "sourceType": "report",
+        "sourceName": "隔离样本 青禾渠道真实AI虚构验收",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture",
+        "importedAt": "2026-10-14T08:56:28.612Z",
+        "bodySha256": "e811fd5d5b0bde64f4fb74c869fe25ee412e7f0a7edb264ba17656322b1c0120"
+      }
+    },
+    "confirmed1": {
+      "operationId": "e8b98011-fea1-4a7a-a9d0-8fcd788bd7a7",
+      "status": "completed",
+      "reused": false,
+      "sourceReused": false,
+      "sourceId": "d98c4149-7c38-4171-91fc-9e0666fa0b3b",
+      "wikiIds": [
+        "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+        "de1b9532-00db-48bf-b9a5-31cb529f233f"
+      ],
+      "sourceReuseId": null,
+      "writtenWikiIds": [
+        "d98c4149-7c38-4171-91fc-9e0666fa0b3b",
+        "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+        "de1b9532-00db-48bf-b9a5-31cb529f233f"
+      ],
+      "phases": [
+        {
+          "name": "source",
+          "status": "done",
+          "at": "2026-10-14T08:57:09.632Z"
+        },
+        {
+          "name": "pages",
+          "status": "done",
+          "at": "2026-10-14T08:57:09.641Z"
+        },
+        {
+          "name": "index",
+          "status": "done",
+          "at": "2026-10-14T08:57:09.673Z"
+        },
+        {
+          "name": "log",
+          "status": "done",
+          "at": "2026-10-14T08:57:09.675Z"
+        },
+        {
+          "name": "state",
+          "status": "done",
+          "at": "2026-10-14T08:57:09.683Z"
+        }
+      ],
+      "warnings": []
+    },
+    "metricWiki": {
+      "title": "铺货率",
+      "type": "metric",
+      "category": "metric",
+      "sources": [
+        "f2345a4b-d8c0-403a-9a0b-e357557e0d62"
+      ],
+      "tags": [
+        "KB01虚构",
+        "青禾铺货率"
+      ],
+      "aliases": [],
+      "knowledge_status": "ai_organized",
+      "confidence": "medium",
+      "source_level": "C",
+      "review_status": "unreviewed",
+      "body": "## 一句话说明\n\n在售门店数除以目标门店总数的渠道覆盖指标，门店数不等于销量。\n\n## 来源事实\n\n- 铺货率定义为在售门店数除以目标门店总数。（证据 ev3）\n- 2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮，铺货率为20÷100=20%。（证据 ev3）\n- 门店数不等于销量，不得按销量解释这项指标。（证据 ev4）\n\n## AI 整理\n\n- 计算公式：铺货率 = 在售门店数 ÷ 目标门店总数。2026年9月东桥区域示例：20 ÷ 100 = 20%。\n- 该指标衡量渠道覆盖广度，与订单满足率含义不同。\n\n## AI 推断\n\n- 铺货率提升通常被视为渠道拓展方向，但资料未涉及提升手段。\n\n## 待确认问题\n\n- 铺货率的统计口径（如是否要求持续在架）资料未细化。\n\n## 来源证据\n\n- ev3｜原文 [70, 139)：2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮。铺货率定义为在售门店数除以目标门店总数，20÷100=20%。\n- ev4｜原文 [139, 160)：门店数不等于销量，不得按销量解释这项指标。\n\n## 关联\n\n- 订单满足率（本次未创建，待后续处理）\n- 青禾饮料（本次未创建，待后续处理）\n- 东桥区域（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n\n\n## 人工备注\nKB01_HUMAN 保留人工待确认的异常审批边界。",
+      "id": "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+      "domain": "fmcg",
+      "created": "2026-10-14T08:57:09.562Z",
+      "updated": "2026-10-14T08:57:09.738Z",
+      "revision": 2
+    },
+    "job-2bc8959b-7391-4aae-a21f-5b1a2f7283be": {
+      "jobId": "abbabde9-80e9-4566-a698-f6949058776c",
+      "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+      "status": "completed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 1,
+        "pagesFound": 3
+      },
+      "draftId": "de8b15ee-3507-4b00-96f7-9b075ba04cab",
+      "error": null,
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 1,
+      "startedAt": "2026-10-14T08:57:09.792Z",
+      "finishedAt": "2026-10-14T08:57:30.068Z",
+      "cancelRequested": false
+    },
+    "raw2": {
+      "title": "验收资料 青禾铺货率补充来源",
+      "sourceType": "report",
+      "sourceName": "隔离样本 青禾铺货率补充来源",
+      "author": "验收样本",
+      "publishedAt": "2026-10-01",
+      "url": "https://example.com/b05-fixture",
+      "tags": [
+        "KB01虚构",
+        "青禾铺货率"
+      ],
+      "body": "【虚构补充验收，非真实客户资料】\n青禾饮料东桥区域2026年9月复核报告：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料记为20家和20%，两份来源口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充订货规则：回款由财务每周核对一次；异常审批负责人仍需访谈确认。AI异常提示为未来建议，尚无上线或收益事实。",
+      "id": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+      "importedAt": "2026-10-14T08:57:09.784Z",
+      "status": "unprocessed",
+      "bodySha256": "7934e980ea0efa9cd63c20af8d1cb50a5da7fb23f2fef8d64aa739ef83d9056f"
+    },
+    "draft2": {
+      "id": "de8b15ee-3507-4b00-96f7-9b075ba04cab",
+      "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+      "rawSha256": "7934e980ea0efa9cd63c20af8d1cb50a5da7fb23f2fef8d64aa739ef83d9056f",
+      "rawTitle": "验收资料 青禾铺货率补充来源",
+      "rawMeta": {
+        "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+        "title": "验收资料 青禾铺货率补充来源",
+        "sourceType": "report",
+        "sourceName": "隔离样本 青禾铺货率补充来源",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture"
+      },
+      "status": "pending_confirmation",
+      "revision": 1,
+      "createdAt": "2026-10-14T08:57:30.058Z",
+      "updatedAt": "2026-10-14T08:57:30.058Z",
+      "rulesVersion": "b04-b04-1-bacd7b0d3162",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "jobId": "abbabde9-80e9-4566-a698-f6949058776c",
+      "document": {
+        "title": "验收资料 青禾铺货率补充来源",
+        "main_topic": "青禾饮料东桥区域铺货率复核数据及订货规则补充说明",
+        "summary": "该资料为虚构的验收样本，标注为非真实客户资料。内容包含青禾饮料东桥区域2026年9月铺货率复核数据（目标门店100家、在售门店30家、按门店数计算铺货率30%），并指出旧资料记录为20家和20%，两份来源存在口径或采样时间差异，待确认且不能静默覆盖任何一方。另补充订货规则：回款由财务每周核对一次，异常审批负责人待访谈确认，AI异常提示仅为未来建议，尚无上线或收益事实。"
+      },
+      "pages": [
+        {
+          "pageId": "8e14eecc-91d3-4e42-af2c-851ffe15a3e1",
+          "title": "青禾饮料东桥区域2026年9月铺货率复核结果",
+          "type": "metric",
+          "category": "metric",
+          "one_line_definition": "青禾饮料东桥区域2026年9月按门店数计算的铺货率复核结果为30%。",
+          "source_facts": [
+            {
+              "text": "青禾饮料东桥区域2026年9月复核中，目标门店100家，在售门店30家，按门店数计算铺货率为30%。",
+              "evidenceIds": [
+                "e1",
+                "e2"
+              ]
+            },
+            {
+              "text": "旧资料记录该区域铺货相关数据为20家门店和20%铺货率，与复核数据存在差异。",
+              "evidenceIds": [
+                "e3"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "复核口径为按门店数计算铺货率：在售门店30家 ÷ 目标门店100家 = 30%。",
+            "复核数据（30家、30%）与旧资料（20家、20%）并存，差异可能来自口径或采样时间不同，资料要求两份数据都不能静默覆盖另一方。"
+          ],
+          "ai_inferences": [
+            "两份数据的差异可能源于统计口径不同（如目标门店定义、在售判定标准）或采样时间不同，需向数据提供方确认。"
+          ],
+          "related_pages": [
+            "铺货率",
+            "门店数铺货率与销售额铺货率",
+            "青禾饮料东桥区域"
+          ],
+          "open_questions": [
+            "两份来源的具体口径差异是什么？",
+            "旧资料的采样时间是什么时候？",
+            "差异最终以哪份来源为准、如何确认？"
+          ],
+          "source_evidence": [
+            {
+              "id": "e1",
+              "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+              "quote": "青禾饮料东桥区域2026年9月复核报告：目标门店100家，在售门店30家，按门店数计算铺货率30%。",
+              "start": 17,
+              "end": 67,
+              "chunkIndex": 0
+            },
+            {
+              "id": "e2",
+              "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+              "quote": "按门店数计算铺货率30%",
+              "start": 54,
+              "end": 66,
+              "chunkIndex": 0
+            },
+            {
+              "id": "e3",
+              "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+              "quote": "旧资料记为20家和20%，两份来源口径或采样时间差异待确认，不能静默覆盖任何一方。",
+              "start": 67,
+              "end": 108,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 164
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n青禾饮料东桥区域2026年9月按门店数计算的铺货率复核结果为30%。\n\n## 来源事实\n\n- 青禾饮料东桥区域2026年9月复核中，目标门店100家，在售门店30家，按门店数计算铺货率为30%。（证据 e1、e2）\n- 旧资料记录该区域铺货相关数据为20家门店和20%铺货率，与复核数据存在差异。（证据 e3）\n\n## AI 整理\n\n- 复核口径为按门店数计算铺货率：在售门店30家 ÷ 目标门店100家 = 30%。\n- 复核数据（30家、30%）与旧资料（20家、20%）并存，差异可能来自口径或采样时间不同，资料要求两份数据都不能静默覆盖另一方。\n\n## AI 推断\n\n- 两份数据的差异可能源于统计口径不同（如目标门店定义、在售判定标准）或采样时间不同，需向数据提供方确认。\n\n## 待确认问题\n\n- 两份来源的具体口径差异是什么？\n- 旧资料的采样时间是什么时候？\n- 差异最终以哪份来源为准、如何确认？\n\n## 来源证据\n\n- e1｜原文 [17, 67)：青禾饮料东桥区域2026年9月复核报告：目标门店100家，在售门店30家，按门店数计算铺货率30%。\n- e2｜原文 [54, 66)：按门店数计算铺货率30%\n- e3｜原文 [67, 108)：旧资料记为20家和20%，两份来源口径或采样时间差异待确认，不能静默覆盖任何一方。\n\n## 关联\n\n- 铺货率（本次未创建，待后续处理）\n- 门店数铺货率与销售额铺货率（本次未创建，待后续处理）\n- 青禾饮料东桥区域（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾铺货率补充来源]]（Raw 2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n"
+        },
+        {
+          "pageId": "a121dc11-1e0b-4112-9154-1878be81f32a",
+          "title": "青禾订货规则：回款核对与异常审批",
+          "type": "business_process",
+          "category": "distributor",
+          "one_line_definition": "青禾补充订货规则中，回款由财务每周核对一次，异常审批负责人尚待访谈确认。",
+          "source_facts": [
+            {
+              "text": "补充订货规则规定回款由财务每周核对一次。",
+              "evidenceIds": [
+                "e4"
+              ]
+            },
+            {
+              "text": "异常审批负责人仍需访谈确认。",
+              "evidenceIds": [
+                "e4"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "订货规则包含两个待落实环节：回款核对（财务每周一次，已明确）与异常审批责任人（尚未确认，需访谈）。"
+          ],
+          "ai_inferences": [
+            "异常审批负责人未确认，可能影响异常订单处理流程的落地执行。"
+          ],
+          "related_pages": [
+            "订货流程",
+            "回款管理",
+            "异常订单审批"
+          ],
+          "open_questions": [
+            "异常审批负责人是谁？",
+            "异常审批的具体流程和触发条件是什么？"
+          ],
+          "source_evidence": [
+            {
+              "id": "e4",
+              "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+              "quote": "补充订货规则：回款由财务每周核对一次；异常审批负责人仍需访谈确认。",
+              "start": 109,
+              "end": 142,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 164
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n青禾补充订货规则中，回款由财务每周核对一次，异常审批负责人尚待访谈确认。\n\n## 来源事实\n\n- 补充订货规则规定回款由财务每周核对一次。（证据 e4）\n- 异常审批负责人仍需访谈确认。（证据 e4）\n\n## AI 整理\n\n- 订货规则包含两个待落实环节：回款核对（财务每周一次，已明确）与异常审批责任人（尚未确认，需访谈）。\n\n## AI 推断\n\n- 异常审批负责人未确认，可能影响异常订单处理流程的落地执行。\n\n## 待确认问题\n\n- 异常审批负责人是谁？\n- 异常审批的具体流程和触发条件是什么？\n\n## 来源证据\n\n- e4｜原文 [109, 142)：补充订货规则：回款由财务每周核对一次；异常审批负责人仍需访谈确认。\n\n## 关联\n\n- 订货流程（本次未创建，待后续处理）\n- 回款管理（本次未创建，待后续处理）\n- 异常订单审批（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾铺货率补充来源]]（Raw 2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n"
+        },
+        {
+          "pageId": "c0ff49c9-8489-44be-b765-abd024b783ec",
+          "title": "青禾AI异常提示的现状说明",
+          "type": "concept",
+          "category": "ai_application",
+          "one_line_definition": "青禾相关资料中的AI异常提示仅为未来建议，尚无上线或收益事实。",
+          "source_facts": [
+            {
+              "text": "AI异常提示为未来建议，尚无上线或收益事实。",
+              "evidenceIds": [
+                "e5"
+              ]
+            }
+          ],
+          "ai_organized": [
+            "在引用或汇报青禾AI异常提示相关内容时，应明确其处于建议阶段，不得作为已上线能力或已验证收益来陈述。"
+          ],
+          "ai_inferences": [
+            "该说明可能是为了防止在知识库或对外材料中夸大AI应用的实际效果。"
+          ],
+          "related_pages": [
+            "AI异常提示",
+            "AI应用收益评估"
+          ],
+          "open_questions": [
+            "AI异常提示的具体功能设想和应用场景是什么？",
+            "未来是否有上线计划与时间表？"
+          ],
+          "source_evidence": [
+            {
+              "id": "e5",
+              "rawId": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+              "quote": "AI异常提示为未来建议，尚无上线或收益事实。",
+              "start": 142,
+              "end": 164,
+              "chunkIndex": 0
+            }
+          ],
+          "knowledge_status": "ai_organized",
+          "confidence": "medium",
+          "source_level": "C",
+          "selected": false,
+          "provenance": [
+            {
+              "chunkIndex": 0,
+              "start": 0,
+              "end": 164
+            }
+          ],
+          "renderedBody": "## 一句话说明\n\n青禾相关资料中的AI异常提示仅为未来建议，尚无上线或收益事实。\n\n## 来源事实\n\n- AI异常提示为未来建议，尚无上线或收益事实。（证据 e5）\n\n## AI 整理\n\n- 在引用或汇报青禾AI异常提示相关内容时，应明确其处于建议阶段，不得作为已上线能力或已验证收益来陈述。\n\n## AI 推断\n\n- 该说明可能是为了防止在知识库或对外材料中夸大AI应用的实际效果。\n\n## 待确认问题\n\n- AI异常提示的具体功能设想和应用场景是什么？\n- 未来是否有上线计划与时间表？\n\n## 来源证据\n\n- e5｜原文 [142, 164)：AI异常提示为未来建议，尚无上线或收益事实。\n\n## 关联\n\n- AI异常提示（本次未创建，待后续处理）\n- AI应用收益评估（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾铺货率补充来源]]（Raw 2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n"
+        }
+      ],
+      "source": {
+        "title": "验收资料 青禾铺货率补充来源",
+        "category": "other",
+        "summary": "该资料为虚构的验收样本，标注为非真实客户资料。内容包含青禾饮料东桥区域2026年9月铺货率复核数据（目标门店100家、在售门店30家、按门店数计算铺货率30%），并指出旧资料记录为20家和20%，两份来源存在口径或采样时间差异，待确认且不能静默覆盖任何一方。另补充订货规则：回款由财务每周核对一次，异常审批负责人待访谈确认，AI异常提示仅为未来建议，尚无上线或收益事实。",
+        "key_takeaways": [],
+        "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 青禾铺货率补充来源\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 青禾铺货率补充来源（2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n该资料为虚构的验收样本，标注为非真实客户资料。内容包含青禾饮料东桥区域2026年9月铺货率复核数据（目标门店100家、在售门店30家、按门店数计算铺货率30%），并指出旧资料记录为20家和20%，两份来源存在口径或采样时间差异，待确认且不能静默覆盖任何一方。另补充订货规则：回款由财务每周核对一次，异常审批负责人待访谈确认，AI异常提示仅为未来建议，尚无上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 青禾饮料东桥区域2026年9月铺货率复核结果（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾订货规则：回款核对与异常审批（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾AI异常提示的现状说明（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 青禾铺货率补充来源（Raw 2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C"
+      },
+      "warnings": [
+        "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+      ],
+      "extraction": {
+        "callCount": 1,
+        "chunkCount": 1,
+        "pagesFound": 3
+      },
+      "sourceRenderedBody": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 青禾铺货率补充来源\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 青禾铺货率补充来源（2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n该资料为虚构的验收样本，标注为非真实客户资料。内容包含青禾饮料东桥区域2026年9月铺货率复核数据（目标门店100家、在售门店30家、按门店数计算铺货率30%），并指出旧资料记录为20家和20%，两份来源存在口径或采样时间差异，待确认且不能静默覆盖任何一方。另补充订货规则：回款由财务每周核对一次，异常审批负责人待访谈确认，AI异常提示仅为未来建议，尚无上线或收益事实。\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- 青禾饮料东桥区域2026年9月铺货率复核结果（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾订货规则：回款核对与异常审批（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾AI异常提示的现状说明（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 青禾铺货率补充来源（Raw 2bc8959b-7391-4aae-a21f-5b1a2f7283be）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "preview": {
+        "rawExists": true,
+        "rawSha256Matches": true,
+        "sourceReuse": null,
+        "sourceAmbiguous": null,
+        "titleConflicts": [],
+        "batchDuplicateTitles": []
+      },
+      "raw": {
+        "id": "2bc8959b-7391-4aae-a21f-5b1a2f7283be",
+        "title": "验收资料 青禾铺货率补充来源",
+        "sourceType": "report",
+        "sourceName": "隔离样本 青禾铺货率补充来源",
+        "author": "验收样本",
+        "publishedAt": "2026-10-01",
+        "url": "https://example.com/b05-fixture",
+        "importedAt": "2026-10-14T08:57:09.784Z",
+        "bodySha256": "7934e980ea0efa9cd63c20af8d1cb50a5da7fb23f2fef8d64aa739ef83d9056f"
+      }
+    },
+    "candidates": {
+      "draftId": "de8b15ee-3507-4b00-96f7-9b075ba04cab",
+      "pageId": "8e14eecc-91d3-4e42-af2c-851ffe15a3e1",
+      "draftRevision": 1,
+      "decision": null,
+      "targetWikiId": null,
+      "candidates": [
+        {
+          "wiki": {
+            "title": "铺货率",
+            "type": "metric",
+            "category": "metric",
+            "sources": [
+              "f2345a4b-d8c0-403a-9a0b-e357557e0d62"
+            ],
+            "tags": [
+              "KB01虚构",
+              "青禾铺货率"
+            ],
+            "aliases": [],
+            "knowledge_status": "ai_organized",
+            "confidence": "medium",
+            "source_level": "C",
+            "review_status": "unreviewed",
+            "id": "4cdbdd11-381a-4d84-b3af-d53faef7a0b0",
+            "domain": "fmcg",
+            "created": "2026-10-14T08:57:09.562Z",
+            "updated": "2026-10-14T08:57:09.738Z",
+            "revision": 2,
+            "body": "## 一句话说明\n\n在售门店数除以目标门店总数的渠道覆盖指标，门店数不等于销量。\n\n## 来源事实\n\n- 铺货率定义为在售门店数除以目标门店总数。（证据 ev3）\n- 2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮，铺货率为20÷100=20%。（证据 ev3）\n- 门店数不等于销量，不得按销量解释这项指标。（证据 ev4）\n\n## AI 整理\n\n- 计算公式：铺货率 = 在售门店数 ÷ 目标门店总数。2026年9月东桥区域示例：20 ÷ 100 = 20%。\n- 该指标衡量渠道覆盖广度，与订单满足率含义不同。\n\n## AI 推断\n\n- 铺货率提升通常被视为渠道拓展方向，但资料未涉及提升手段。\n\n## 待确认问题\n\n- 铺货率的统计口径（如是否要求持续在架）资料未细化。\n\n## 来源证据\n\n- ev3｜原文 [70, 139)：2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮。铺货率定义为在售门店数除以目标门店总数，20÷100=20%。\n- ev4｜原文 [139, 160)：门店数不等于销量，不得按销量解释这项指标。\n\n## 关联\n\n- 订单满足率（本次未创建，待后续处理）\n- 青禾饮料（本次未创建，待后续处理）\n- 东桥区域（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n\n\n## 人工备注\nKB01_HUMAN 保留人工待确认的异常审批边界。"
+          },
+          "score": 0.2,
+          "matches": [
+            {
+              "dimension": "category",
+              "score": 0.08,
+              "reason": "分类相同（单独命中权重很低）"
+            },
+            {
+              "dimension": "tags",
+              "score": 0.2,
+              "reason": "共享标签：kb01虚构、青禾铺货率"
+            }
+          ]
+        },
+        {
+          "wiki": {
+            "domain": "fmcg",
+            "created": "2026-10-14T08:57:09.562Z",
+            "updated": "2026-10-14T08:57:09.562Z",
+            "revision": 1,
+            "aliases": [],
+            "tags": [
+              "KB01虚构",
+              "青禾铺货率"
+            ],
+            "id": "de1b9532-00db-48bf-b9a5-31cb529f233f",
+            "title": "订货流程（东桥区域）",
+            "type": "business_process",
+            "category": "sales",
+            "sources": [
+              "f2345a4b-d8c0-403a-9a0b-e357557e0d62"
+            ],
+            "knowledge_status": "ai_organized",
+            "confidence": "medium",
+            "source_level": "C",
+            "review_status": "unreviewed",
+            "body": "## 一句话说明\n\n从门店提交需求到财务核对回款的八步人工订货流程。\n\n## 来源事实\n\n- 订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。（证据 ev6）\n- 缺货和退货都须人工核对。（证据 ev7）\n\n## AI 整理\n\n- 流程步骤：1) 门店提交需求；2) 订货主管汇总；3) 仓库核对可用库存；4) 人工审批后生成订单；5) 仓库配货；6) 司机配送；7) 门店签收；8) 财务核对回款。\n- 缺货与退货均须人工核对。\n\n## AI 推断\n\n- 该流程以人工审批为控制点，可能存在时效瓶颈。\n\n## 待确认问题\n\n- 审批人是谁、各环节时限资料未说明。\n\n## 来源证据\n\n- ev6｜原文 [161, 221)：订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\n- ev7｜原文 [280, 292)：缺货和退货都须人工核对。\n\n## 关联\n\n- 晨星商贸（本次未创建，待后续处理）\n- 订货主管（本次未创建，待后续处理）\n- 订单满足率（本次未创建，待后续处理）\n\n## 来源\n\n- [[验收资料 青禾渠道真实AI虚构验收]]（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n"
+          },
+          "score": 0.16,
+          "matches": [
+            {
+              "dimension": "tags",
+              "score": 0.2,
+              "reason": "共享标签：kb01虚构、青禾铺货率"
+            }
+          ]
+        },
+        {
+          "wiki": {
+            "domain": "fmcg",
+            "created": "2026-10-14T08:57:09.562Z",
+            "updated": "2026-10-14T08:57:09.562Z",
+            "revision": 1,
+            "aliases": [],
+            "tags": [
+              "KB01虚构",
+              "青禾铺货率"
+            ],
+            "id": "d98c4149-7c38-4171-91fc-9e0666fa0b3b",
+            "title": "验收资料 青禾渠道真实AI虚构验收",
+            "type": "source",
+            "category": "other",
+            "sources": [
+              "f2345a4b-d8c0-403a-9a0b-e357557e0d62"
+            ],
+            "knowledge_status": "source_supported",
+            "confidence": "medium",
+            "source_level": "C",
+            "review_status": "unreviewed",
+            "body": "## 来源信息\n\n- 来源类型：行业报告（report）\n- 来源名称：隔离样本 青禾渠道真实AI虚构验收\n- 作者：验收样本\n- 原发布日期：2026-10-01\n- 原始链接：https://example.com/b05-fixture\n- Raw：验收资料 青禾渠道真实AI虚构验收（f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n- 来源等级（人工判断）：C\n\n## 摘要\n\n本文为明确标注的虚构验收资料。虚构企业青禾饮料销售青禾茶饮，经销商晨星商贸负责东桥区域。2026年9月东桥区域100家目标门店中20家在售，铺货率为20%；铺货率定义为在售门店数除以目标门店总数，且门店数不等于销量。资料还描述了从门店提需求到财务核对回款的订货流程、一个库存不足的缺货处理案例、订单满足率概念、业务角色清单，以及数据边界（无利润、年度销量、真实客户姓名和现有AI系统）和待确认问题。\n\n## Key Takeaways\n\n- 在售门店数除以目标门店总数的渠道覆盖指标，门店数不等于销量。\n- 从门店提交需求到财务核对回款的八步人工订货流程。\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- [[订货流程（东桥区域）]]\n\n## 涉及指标\n\n- [[铺货率]]\n\n## 重要观点\n\n- 铺货率定义为在售门店数除以目标门店总数。\n- 2026年9月，东桥区域共有100家目标门店，其中20家在架上销售青禾茶饮，铺货率为20÷100=20%。\n- 门店数不等于销量，不得按销量解释这项指标。\n- 订货流程：门店提交需求，订货主管汇总，仓库核对可用库存，人工审批后生成订单，仓库配货，司机配送，门店签收，财务核对回款。\n- 缺货和退货都须人工核对。\n\n## 待验证内容\n\n- 铺货率的统计口径（如是否要求持续在架）资料未细化。\n- 审批人是谁、各环节时限资料未说明。\n\n## 本次未创建的建议（未选中，待处理）\n\n- 青禾饮料（虚构企业）（entity，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 晨星商贸（虚构经销商）（entity，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订单满足率（metric，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 缺货处理案例（需求大于库存）（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 订货业务角色清单（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n- 青禾样本数据边界与待确认问题（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- 验收资料 青禾渠道真实AI虚构验收（Raw f2345a4b-d8c0-403a-9a0b-e357557e0d62）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n"
+          },
+          "score": 0.16,
+          "matches": [
+            {
+              "dimension": "tags",
+              "score": 0.2,
+              "reason": "共享标签：kb01虚构、青禾铺货率"
+            }
+          ]
+        }
+      ]
+    },
+    "updatePageId": "8e14eecc-91d3-4e42-af2c-851ffe15a3e1",
+    "longRaw": {
+      "id": "6ad11ef9-0853-4f40-9918-776663b2ad43",
+      "chars": 106400,
+      "sha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7"
+    },
+    "job-6ad11ef9-0853-4f40-9918-776663b2ad43": {
+      "jobId": "82feec17-a972-40f5-a84a-78bae8face2b",
+      "rawId": "6ad11ef9-0853-4f40-9918-776663b2ad43",
+      "status": "failed",
+      "stage": "done",
+      "progress": {
+        "chunksTotal": 14,
+        "chunksDone": 0,
+        "pagesFound": 0
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_EVIDENCE_AMBIGUOUS",
+        "message": "证据 e3 的 quote 在本段出现 2 次，无法确定唯一位置；请在证据中给出准确的 start/end。",
+        "at": "2026-10-14T08:58:14.764Z",
+        "retryable": true,
+        "details": {
+          "occurrences": 2,
+          "chunkIndex": 0
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 0,
+      "startedAt": "2026-10-14T08:57:50.563Z",
+      "finishedAt": "2026-10-14T08:58:14.764Z",
+      "cancelRequested": false
+    }
+  }
+}

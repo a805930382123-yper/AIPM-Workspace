@@ -1,0 +1,565 @@
+{
+  "runtime": "v25.2.1",
+  "variant": "patched",
+  "mode": "done-checkpoint",
+  "fixtureRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R",
+  "synthetic": true,
+  "externalCalls": 0,
+  "beforeRecovery": {
+    "job": {
+      "id": "6f629520-b657-4077-84e1-339a93084489",
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "status": "running",
+      "stage": "assembling",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 6,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "assembling",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 6,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:09.301Z",
+      "updatedAt": "2026-10-19T16:17:09.521Z"
+    },
+    "checkpoint": {
+      "version": 1,
+      "jobId": "6f629520-b657-4077-84e1-339a93084489",
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+      "pipelineVersion": "kb02-2",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+      "providerIdentity": "fake|budget-model",
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26
+        }
+      ],
+      "completedChunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26,
+          "facts": [
+            {
+              "text": "目标100家，在售20家。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0001",
+              "kind": "fact",
+              "id": "f-c1-1",
+              "chunkIndex": 0
+            },
+            {
+              "text": "铺货率20%，负责人未知。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0002",
+              "kind": "fact",
+              "id": "f-c1-2",
+              "chunkIndex": 0
+            }
+          ],
+          "questions": [],
+          "sourceNotes": [],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+              "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+              "start": 0,
+              "end": 26,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "attempts": 6,
+      "stage": "assembling",
+      "updatedAt": "2026-10-19T16:17:09.519Z",
+      "integrity": "5b785f65bef340bb008c737997e7e975739383dff76b220f6cd499cf7f606078",
+      "plan": {
+        "document": {
+          "title": "虚构指标",
+          "main_topic": "指标",
+          "summary": "来源事实：\n目标100家，在售20家。\n铺货率20%，负责人未知。"
+        },
+        "pages": [
+          {
+            "title": "虚构指标",
+            "type": "metric",
+            "category": "metric",
+            "factIds": [
+              "f-c1-1",
+              "f-c1-2"
+            ],
+            "questionIds": []
+          }
+        ]
+      }
+    },
+    "rawState": {
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "status": "processing",
+      "updatedAt": "2026-10-19T16:17:09.508Z",
+      "history": [
+        {
+          "at": "2026-10-19T16:17:09.312Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.335Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.370Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.383Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.413Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.426Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.459Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.472Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.508Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        }
+      ],
+      "jobId": "6f629520-b657-4077-84e1-339a93084489",
+      "revertStatus": "unprocessed"
+    },
+    "draftIds": [
+      "0e24d098-01c6-4305-b708-a468f9dfc8ac"
+    ],
+    "calls": 6
+  },
+  "atomicFailures": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "attempts": 6,
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "after": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "intact": true,
+      "error": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      }
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "attempts": 6,
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "after": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "intact": true,
+      "error": {
+        "code": "STORAGE_WRITE_FAILED",
+        "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+        "details": {
+          "operation": "atomic-write",
+          "errno": "EPERM"
+        }
+      }
+    }
+  ],
+  "runtimeView": {
+    "job": {
+      "id": "6f629520-b657-4077-84e1-339a93084489",
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "status": "running",
+      "stage": "assembling",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 6,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "assembling",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 6,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:09.301Z",
+      "updatedAt": "2026-10-19T16:17:09.521Z"
+    },
+    "recovery": {
+      "code": "STORAGE_WRITE_FAILED",
+      "message": "本机存储写入失败；旧文件已保留，请解除故障后显式对账。",
+      "persisted": false,
+      "phase": "done-checkpoint",
+      "details": {
+        "operation": "atomic-write",
+        "errno": "EPERM"
+      }
+    },
+    "settled": true
+  },
+  "afterRecovery": {
+    "job": {
+      "id": "6f629520-b657-4077-84e1-339a93084489",
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "status": "completed",
+      "stage": "done",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 6,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "assembling",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 6,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:09.301Z",
+      "updatedAt": "2026-10-19T16:17:10.229Z",
+      "draftId": "0e24d098-01c6-4305-b708-a468f9dfc8ac",
+      "finishedAt": "2026-10-19T16:17:10.227Z"
+    },
+    "settled": true
+  },
+  "afterSnapshot": {
+    "job": {
+      "id": "6f629520-b657-4077-84e1-339a93084489",
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "status": "completed",
+      "stage": "done",
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 2,
+      "provider": {
+        "name": "fake",
+        "model": "budget-model"
+      },
+      "cancelRequested": false,
+      "callCount": 6,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "assembling",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 6,
+        "reusedChunks": 1
+      },
+      "startedAt": "2026-10-19T16:17:09.301Z",
+      "updatedAt": "2026-10-19T16:17:10.229Z",
+      "draftId": "0e24d098-01c6-4305-b708-a468f9dfc8ac",
+      "finishedAt": "2026-10-19T16:17:10.227Z"
+    },
+    "checkpoint": {
+      "version": 1,
+      "jobId": "6f629520-b657-4077-84e1-339a93084489",
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "rawSha256": "f81db0d5f2ffe79e36973db53483de8c9a5c059f7713b26dee35904393fc8bb7",
+      "pipelineVersion": "kb02-2",
+      "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-5-5f295d663f5a",
+      "providerIdentity": "fake|budget-model",
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26
+        }
+      ],
+      "completedChunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 26,
+          "facts": [
+            {
+              "text": "目标100家，在售20家。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0001",
+              "kind": "fact",
+              "id": "f-c1-1",
+              "chunkIndex": 0
+            },
+            {
+              "text": "铺货率20%，负责人未知。",
+              "locatorIds": [
+                "c1-l001"
+              ],
+              "atomId": "c1-a0002",
+              "kind": "fact",
+              "id": "f-c1-2",
+              "chunkIndex": 0
+            }
+          ],
+          "questions": [],
+          "sourceNotes": [],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+              "quote": "目标100家，在售20家。铺货率20%，负责人未知。",
+              "start": 0,
+              "end": 26,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "attempts": 6,
+      "stage": "done",
+      "updatedAt": "2026-10-19T16:17:10.225Z",
+      "integrity": "638608b0dc84e5af5898af86794329c7d96f441fa8e4b5a838f72ca67366be3a",
+      "plan": {
+        "document": {
+          "title": "虚构指标",
+          "main_topic": "指标",
+          "summary": "来源事实：\n目标100家，在售20家。\n铺货率20%，负责人未知。"
+        },
+        "pages": [
+          {
+            "title": "虚构指标",
+            "type": "metric",
+            "category": "metric",
+            "factIds": [
+              "f-c1-1",
+              "f-c1-2"
+            ],
+            "questionIds": []
+          }
+        ]
+      },
+      "draftId": "0e24d098-01c6-4305-b708-a468f9dfc8ac"
+    },
+    "rawState": {
+      "rawId": "ae7de2dd-9b03-4747-9dc5-fc51fd4819da",
+      "status": "pending_confirmation",
+      "updatedAt": "2026-10-19T16:17:10.227Z",
+      "history": [
+        {
+          "at": "2026-10-19T16:17:09.312Z",
+          "from": "unprocessed",
+          "to": "processing",
+          "reason": "AI 整理已启动",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.335Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.370Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.383Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.413Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.426Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.459Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.472Z",
+          "from": "processing",
+          "to": "failed",
+          "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:09.508Z",
+          "from": "failed",
+          "to": "processing",
+          "reason": "已验证检查点恢复提取",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489"
+        },
+        {
+          "at": "2026-10-19T16:17:10.227Z",
+          "from": "processing",
+          "to": "pending_confirmation",
+          "reason": "存储恢复后对账已有草稿",
+          "jobId": "6f629520-b657-4077-84e1-339a93084489",
+          "draftId": "0e24d098-01c6-4305-b708-a468f9dfc8ac"
+        }
+      ],
+      "jobId": "6f629520-b657-4077-84e1-339a93084489",
+      "revertStatus": "unprocessed",
+      "draftId": "0e24d098-01c6-4305-b708-a468f9dfc8ac"
+    },
+    "draftIds": [
+      "0e24d098-01c6-4305-b708-a468f9dfc8ac"
+    ],
+    "calls": 6
+  },
+  "result": "PROOF_OF_FIX_CHECKS_PASSED",
+  "rejected": [
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.f1b23edd-df9f-43d9-aff2-15ed87fb7df8.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 340.3553
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.f1b23edd-df9f-43d9-aff2-15ed87fb7df8.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 369.4167
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.f1b23edd-df9f-43d9-aff2-15ed87fb7df8.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 415.9153
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.f1b23edd-df9f-43d9-aff2-15ed87fb7df8.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 477.7806
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.f1b23edd-df9f-43d9-aff2-15ed87fb7df8.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 570.1766
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.f1b23edd-df9f-43d9-aff2-15ed87fb7df8.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 677.5419
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.4339baae-7cf2-4d45-a7c5-e274839ebbba.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 689.3753
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.4339baae-7cf2-4d45-a7c5-e274839ebbba.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 723.0213
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.4339baae-7cf2-4d45-a7c5-e274839ebbba.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 770.1555
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.4339baae-7cf2-4d45-a7c5-e274839ebbba.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 832.3917
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.4339baae-7cf2-4d45-a7c5-e274839ebbba.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 924.1941
+    },
+    {
+      "target": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\6f629520-b657-4077-84e1-339a93084489.json",
+      "temp": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-n7Jy9R\\state\\extraction-checkpoints\\.6f629520-b657-4077-84e1-339a93084489.json.4339baae-7cf2-4d45-a7c5-e274839ebbba.tmp",
+      "before": "5c1dbadc18760d7617acad7889b21be9e7663041695ad101207ec7b6fb846fef",
+      "at": 1033.7486
+    }
+  ]
+}

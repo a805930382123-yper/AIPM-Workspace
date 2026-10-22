@@ -1,0 +1,13 @@
+{
+  "command": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/kb02-final-classification.test.ts tests/kb02-final-agreement.test.ts tests/kb02-classification-priority.test.ts tests/kb02-extraction-contract.test.ts",
+  "runtime": "v24.20.0",
+  "tests": 35,
+  "pass": 33,
+  "fail": 2,
+  "skipped": 0,
+  "failures": [
+    {"test": "FINAL-02 wrong-version rejects without workflow or Wiki writes", "actual": "REVISION_CONFLICT from fixture calling wiki.update with two arguments instead of (id, baseRevision, input)"},
+    {"test": "FINAL-02 target edited during provider call rejects bound old version with no saved preview", "actual": "Expected WIKI_REVISION_CONFLICT, got fixture REVISION_CONFLICT from same malformed wiki.update call"}
+  ],
+  "scope": "Initial actual command result retained. Two fixture setup signatures corrected; no product change made in response. Fake only, real outbound 0."
+}

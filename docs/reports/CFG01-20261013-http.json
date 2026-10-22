@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-14",
+  "batchStarted": "2026-10-13",
+  "scope": "real product HTTP/config/adapter -> local fake; no real credentials/provider",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-cfg01-OjjRni",
+  "configFile": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-cfg01-OjjRni\\provider.env",
+  "durationMs": 653,
+  "checks": [
+    {
+      "id": "C04-direct-validation-and-origin-guards",
+      "result": "FAIL",
+      "reason": "Header case 18 unexpectedly accepted status 200"
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 1
+  },
+  "servicesClosed": true,
+  "logsNoCredentials": true,
+  "fakeClosed": true,
+  "providerRequests": []
+}

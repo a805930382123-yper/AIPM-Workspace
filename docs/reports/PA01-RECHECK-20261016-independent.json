@@ -1,0 +1,79 @@
+{
+  "at": "2026-10-16T04:45:18.237Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\pa01-independent-review-xCsPas",
+  "scope": "New independent counterexamples; real stores, synthetic fixtures, in-process fake only",
+  "fakeCalls": 1,
+  "externalCalls": 0,
+  "rows": [
+    {
+      "id": "N01-invalid-workflow-evidence-get-list-scan",
+      "result": "PASS",
+      "evidence": {
+        "getError": "STORAGE_CORRUPT",
+        "getAccepted": false,
+        "badListed": false,
+        "healthyListed": true,
+        "issues": [
+          {
+            "id": "41478e0a5a98ae96",
+            "kind": "workflows",
+            "reason": "shape"
+          }
+        ],
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "N02-invalid-workflow-must-not-be-rewritten-by-patch",
+      "result": "PASS",
+      "evidence": {
+        "patchError": {
+          "code": "STORAGE_CORRUPT",
+          "message": "本机记录结构无效，原文件已保留。"
+        },
+        "bytesUnchanged": true,
+        "confirmError": {
+          "name": "Error",
+          "code": "STORAGE_CORRUPT",
+          "message": "本机记录结构无效，原文件已保留。"
+        },
+        "formalWikiCount": 0,
+        "fakeCalls": 1
+      }
+    },
+    {
+      "id": "N03-recovery-501-issues-must-report-truncation",
+      "result": "PASS",
+      "evidence": {
+        "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\pa01-independent-many-issues-szVWHn",
+        "actualCorruptFiles": 501,
+        "first": {
+          "scanned": true,
+          "partial": false,
+          "overflow": true,
+          "truncated": true,
+          "totalIssues": 501,
+          "hiddenIssues": 1,
+          "scannedFiles": 501,
+          "scannedBytes": 4008,
+          "itemCount": 500
+        },
+        "second": {
+          "scanned": true,
+          "partial": false,
+          "overflow": true,
+          "truncated": true,
+          "totalIssues": 501,
+          "hiddenIssues": 1,
+          "scannedFiles": 501,
+          "scannedBytes": 4008,
+          "itemCount": 500
+        }
+      }
+    }
+  ],
+  "summary": {
+    "pass": 3,
+    "fail": 0
+  }
+}

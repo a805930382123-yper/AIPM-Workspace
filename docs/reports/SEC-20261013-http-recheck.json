@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-13",
+  "phase": "recheck",
+  "scope": "actual product HTTP + real adapter + localhost fake, no external provider",
+  "durationMs": 1713,
+  "checks": [
+    {
+      "id": "long-merge-output-and-retry",
+      "result": "PASS",
+      "details": {
+        "failedMergeRejected": true,
+        "safeMergeInputs": true,
+        "cleanRetryCompleted": true,
+        "chunkCalls": 3,
+        "mergeCalls": 1
+      }
+    },
+    {
+      "id": "long-prompt-explicit-confirmation",
+      "result": "PASS",
+      "details": {
+        "explicitCreate": true,
+        "explicitNewVersion": true,
+        "persistedBodyMatches": true
+      }
+    },
+    {
+      "id": "short-merge-output-and-retry",
+      "result": "PASS",
+      "details": {
+        "failedMergeRejected": true,
+        "safeMergeInputs": true,
+        "cleanRetryCompleted": true,
+        "chunkCalls": 3,
+        "mergeCalls": 1
+      }
+    },
+    {
+      "id": "short-prompt-explicit-confirmation",
+      "result": "PASS",
+      "details": {
+        "explicitCreate": true,
+        "explicitNewVersion": true,
+        "persistedBodyMatches": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 4,
+    "fail": 0
+  },
+  "services": [
+    {
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-GBQumB",
+      "ports": [
+        50409
+      ],
+      "servicesClosed": true,
+      "fakeClosed": true
+    },
+    {
+      "dataRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-b08-independent-z8YGqH",
+      "ports": [
+        50421
+      ],
+      "servicesClosed": true,
+      "fakeClosed": true
+    }
+  ]
+}

@@ -1,0 +1,295 @@
+{
+  "at": "2026-10-18T02:40:47.799Z",
+  "scope": "affected extraction/planning/update HTTP output safety and Meeting gates; localhost fake only",
+  "externalCalls": 0,
+  "summary": {
+    "pass": 28,
+    "fail": 0
+  },
+  "rows": [
+    {
+      "id": "long-extracting-value",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-extracting-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-extracting-escaped",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-extracting-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-planning-value",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "long-planning-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "long-planning-escaped",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "long-planning-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "long-update-value",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-update-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-update-escaped",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-update-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "long-clean-update-control",
+      "result": "PASS",
+      "evidence": {
+        "preview": true,
+        "noFormalWrites": true
+      }
+    },
+    {
+      "id": "long-meeting-zero-provider",
+      "result": "PASS",
+      "evidence": {
+        "extract403": true,
+        "synthesis403": true,
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "short-extracting-value",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-extracting-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-extracting-escaped",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-extracting-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-planning-value",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "short-planning-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "short-planning-escaped",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "short-planning-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 2
+      }
+    },
+    {
+      "id": "short-update-value",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-update-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-update-escaped",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-update-nested-key",
+      "result": "PASS",
+      "evidence": {
+        "blocked": true,
+        "assetsUnchanged": true,
+        "noSecret": true,
+        "localhostCalls": 1
+      }
+    },
+    {
+      "id": "short-clean-update-control",
+      "result": "PASS",
+      "evidence": {
+        "preview": true,
+        "noFormalWrites": true
+      }
+    },
+    {
+      "id": "short-meeting-zero-provider",
+      "result": "PASS",
+      "evidence": {
+        "extract403": true,
+        "synthesis403": true,
+        "providerCalls": 0
+      }
+    }
+  ],
+  "services": [
+    {
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-standards-EO1ulg",
+      "closed": true
+    },
+    {
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-standards-J1OI39",
+      "closed": true
+    }
+  ]
+}

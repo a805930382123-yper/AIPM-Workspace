@@ -1,0 +1,56 @@
+{
+  "controlled": true,
+  "node": "v24.20.0",
+  "realProviderCalls": 0,
+  "rows": [
+    {
+      "status": "PASS",
+      "before": {
+        "job": 2,
+        "attempts": 3,
+        "requests": 2,
+        "completedChunks": 1,
+        "diagnostic": false
+      },
+      "recovery": {
+        "jobCount": 3,
+        "attempts": 3,
+        "providerDelta": 0,
+        "inventedDiagnostic": false,
+        "idempotent": true
+      },
+      "explicitContinue": {
+        "sameJob": true,
+        "attempts": 4,
+        "actualRequests": 3,
+        "addedCalls": 1
+      },
+      "injectedRefusals": [
+        {
+          "at": 1008.2115,
+          "callCount": 3
+        },
+        {
+          "at": 1042.3433,
+          "callCount": 3
+        },
+        {
+          "at": 1111.2287,
+          "callCount": 3
+        },
+        {
+          "at": 1183.0715,
+          "callCount": 3
+        },
+        {
+          "at": 1275.7723,
+          "callCount": 3
+        },
+        {
+          "at": 1387.1294,
+          "callCount": 3
+        }
+      ]
+    }
+  ]
+}

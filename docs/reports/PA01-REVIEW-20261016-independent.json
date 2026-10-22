@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-16T01:51:31.535Z",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\pa01-independent-review-17F8le",
+  "scope": "New independent counterexamples; real stores, synthetic fixtures, in-process fake only",
+  "fakeCalls": 1,
+  "externalCalls": 0,
+  "rows": [
+    {
+      "id": "N01-invalid-workflow-evidence-get-list-scan",
+      "result": "FAIL",
+      "error": "Malformed evidence object accepted by real store and invisible to recovery scan",
+      "evidence": {
+        "getError": null,
+        "getAccepted": true,
+        "badListed": true,
+        "healthyListed": true,
+        "issues": [],
+        "bytesUnchanged": true
+      }
+    },
+    {
+      "id": "N02-invalid-workflow-must-not-be-rewritten-by-patch",
+      "result": "FAIL",
+      "error": "Invalid workflow entered patch and original corrupt bytes were rewritten",
+      "evidence": {
+        "patchError": null,
+        "bytesUnchanged": false,
+        "confirmError": {
+          "name": "TypeError",
+          "code": null,
+          "message": "object is not iterable (cannot read property Symbol(Symbol.iterator))"
+        },
+        "formalWikiCount": 0,
+        "fakeCalls": 1
+      }
+    },
+    {
+      "id": "N03-recovery-501-issues-must-report-truncation",
+      "result": "FAIL",
+      "error": "Recovery silently hides issue 501 with scanned=true, partial=false, overflow=false",
+      "evidence": {
+        "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\pa01-independent-many-issues-xDRRAM",
+        "actualCorruptFiles": 501,
+        "first": {
+          "scanned": true,
+          "partial": false,
+          "overflow": false,
+          "scannedFiles": 501,
+          "scannedBytes": 4008,
+          "itemCount": 500
+        },
+        "second": {
+          "scanned": true,
+          "partial": false,
+          "overflow": false,
+          "scannedFiles": 501,
+          "scannedBytes": 4008,
+          "itemCount": 500
+        }
+      }
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 3
+  }
+}

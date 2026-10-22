@@ -1,0 +1,28 @@
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (896.8304ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (412.5912ms)
+✔ SR01 real atomic failed-job transient retry (163.9072ms)
+✔ SR01 real atomic failed-job persistent explicit recovery (820.4171ms)
+✔ SR01 real atomic done-checkpoint transient retry (149.2575ms)
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (806.8244ms)
+✔ SR01 real atomic coverage-checkpoint transient retry (140.1119ms)
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (807.1572ms)
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (485.3429ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (428.5277ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (442.7416ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (428.3231ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (81.1058ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (402.3826ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3434.6876ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (0.5925ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (6956.0046ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1330.0187ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (993.5954ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3526.8918ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17156.1754

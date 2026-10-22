@@ -1,0 +1,58 @@
+{
+  "rawId": "5f4ea856-4e61-4d00-abbd-6a618954ee46",
+  "status": "failed",
+  "updatedAt": "2026-10-21T10:13:49.463Z",
+  "history": [
+    {
+      "at": "2026-10-21T10:13:49.137Z",
+      "from": "unprocessed",
+      "to": "processing",
+      "reason": "AI 整理已启动",
+      "jobId": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377"
+    },
+    {
+      "at": "2026-10-21T10:13:49.212Z",
+      "from": "processing",
+      "to": "failed",
+      "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+      "jobId": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377"
+    },
+    {
+      "at": "2026-10-21T10:13:49.360Z",
+      "from": "failed",
+      "to": "processing",
+      "reason": "已验证检查点恢复提取",
+      "jobId": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377"
+    },
+    {
+      "at": "2026-10-21T10:13:49.463Z",
+      "from": "processing",
+      "to": "failed",
+      "reason": "提取失败：LLM_PLAN_COVERAGE_INVALID",
+      "jobId": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377"
+    }
+  ],
+  "jobId": "fa2c7f20-d3ae-43ef-95b6-b86885c5e377",
+  "revertStatus": "unprocessed",
+  "lastError": {
+    "code": "LLM_PLAN_COVERAGE_INVALID",
+    "message": "主题规划覆盖不完整或重复，未组装草稿。",
+    "at": "2026-10-21T10:13:49.427Z",
+    "retryable": true,
+    "details": {
+      "facts": {
+        "missing": [
+          "f-c1-2"
+        ],
+        "duplicate": [],
+        "unknown": []
+      },
+      "questions": {
+        "missing": [],
+        "duplicate": [],
+        "unknown": []
+      },
+      "duplicateTitles": []
+    }
+  }
+}

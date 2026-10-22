@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ExtractionJob, Raw, RawImportResult, RawProcessingState, RawReference, SourceType, Wiki, KnowledgeWorkflowSummary } from '../api';
-import { ApiError, api, apiForm, bytesText, dateText, deleteRaw, formatLabels, jobStageLabels, knowledgeWorkflows, rawReferences, rawStatusLabels, sourceLabels, startExtract, startSynthesisWorkflow } from '../api';
+import { ApiError, api, apiForm, bytesText, dateText, deleteRaw, formatLabels, jobStageLabels, knowledgeWorkflows, rawReferences, rawStatusLabels, sourceLabels, extractionJob, startExtract, reconcileExtractionStorage, startSynthesisWorkflow } from '../api';
 import { MAX_BODY_CHARS, MAX_UPLOAD_BYTES } from '../../services/raw/limits.ts';
 
 const ACCEPTED_FILES = '.md,.markdown,.txt,.docx,.pdf';
@@ -16,11 +16,11 @@ type ImportFailure = {
 };
 type Mode = 'paste' | 'file';
 
-export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitted, openImport, onCloseImport, onDeleted, processing, job, onJobStarted, onOpenDraft, onOpenWorkflow, onRefresh }: {
+export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitted, openImport, onCloseImport, onDeleted, processing, job, onJobStarted, navigationGeneration = 0, selectionGeneration = 0, onOpenDraft, onOpenWorkflow, onRefresh }: {
   items: Raw[]; selectedId: string | null; onSelected: (id: string) => void; onOpenImport: () => void;
   onCommitted: (raw: Raw) => Promise<void>; openImport: boolean; onCloseImport: () => void; onDeleted: (id: string) => Promise<void>;
   processing: Record<string, RawProcessingState>; job: ExtractionJob | null;
-  onJobStarted: (job: ExtractionJob) => void; onOpenDraft: (draftId: string) => void; onOpenWorkflow?: (id: string) => void; onRefresh: () => Promise<void>;
+  onJobStarted: (job: ExtractionJob, pageGeneration?: number, selectionGeneration?: number) => void; navigationGeneration?: number; selectionGeneration?: number; onOpenDraft: (draftId: string) => void; onOpenWorkflow?: (id: string) => void; onRefresh: () => Promise<void>;
 }) {
   const selected = items.find(item => item.id === selectedId) ?? (selectedId ? null : items[0] ?? null);
   const [reimport, setReimport] = useState<Raw | null>(null);
@@ -44,16 +44,29 @@ export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitt
   // the server confirms it, so every exit path (关闭 / 右上角关闭 / 继续导入) stays in sync.
   const openCommitted = (raw: Raw) => { onSelected(raw.id); closeDialogs(); };
   const handleDeleted = async (id: string) => { setDeletingItem(null); await onDeleted(id); };
-  const startAi = async (rawId: string) => {
+  const startAi = async (rawId: string, restart = false, planningRetry = false) => {
+    const requestedPageGeneration = navigationGeneration; const requestedSelectionGeneration = selectionGeneration;
     setAiError(''); setAiBusy(true);
     try {
-      const started = await startExtract(rawId);
-      onJobStarted(started);
+      const started = await startExtract(rawId, restart ? { restart: true } : planningRetry ? { planningRetry: true } : {});
+      onJobStarted(started, requestedPageGeneration, requestedSelectionGeneration);
       await onRefresh();
-    } catch (error) { setAiError(error instanceof Error ? error.message : '无法启动 AI 整理。'); }
+    } catch (error) {
+      setAiError(error instanceof Error ? error.message : '无法启动 AI 整理。');
+      const jobId = error instanceof ApiError ? (error.details as { jobId?: string } | undefined)?.jobId : undefined;
+      if (jobId) {
+        try { onJobStarted(await extractionJob(jobId), requestedPageGeneration, requestedSelectionGeneration); await onRefresh(); } catch { /* The original safe error remains visible. */ }
+      }
+    }
     finally { setAiBusy(false); }
   };
   const selectedState = selected ? processing[selected.id] : undefined;
+  const generateImported = async (raw: Raw) => {
+    const requestedPageGeneration = navigationGeneration; const requestedSelectionGeneration = selectionGeneration;
+    const started = await startExtract(raw.id);
+    onJobStarted(started, requestedPageGeneration, requestedSelectionGeneration);
+    await onRefresh();
+  };
   return <div className="page raw-page">
     <div className="page-heading raw-heading"><div><p className="eyebrow">原始资料 · 事实来源</p><h1>Raw 原始资料</h1><p className="subheading">保存文章、报告与业务记录的原文。保存后不会被 AI 改写。</p></div><div className="action-group"><button className="secondary-button" disabled={items.length < 2} onClick={async () => { setSynthesisIds([]); setSynthesisSourceIds([]); setSynthesisError(''); const result = await api<{items:Wiki[]}>('/api/wiki'); setSourcePages(result.items.filter(item => item.type === 'source')); setSynthesisOpen(true); }}>多来源综合</button><button className="primary-button" onClick={onOpenImport}><span>＋</span> 导入资料</button></div></div>
     {pendingWorkflows.length > 0 && <section className="panel pending-knowledge-workflows"><div className="panel-heading"><div><h2>待审核知识草稿</h2><p>保存后可以刷新或重启，再从这里继续审核。</p></div></div><div className="raw-list">{pendingWorkflows.map(item => <button className="raw-list-item" key={item.id} onClick={() => onOpenWorkflow?.(item.id)}><span className="file-icon">{item.kind === 'update' ? '更' : '综'}</span><span className="recent-copy"><b>{item.title}</b><small>{item.kind === 'update' ? '旧 Wiki 更新' : '多来源综合'} · v{item.revision} · {item.status === 'conflict' ? '提交冲突' : '待确认'}</small>{item.lastCommitError && <small className="form-error">{item.lastCommitError}</small>}</span></button>)}</div></section>}
@@ -62,39 +75,62 @@ export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitt
         const state = processing[item.id];
         return <button key={item.id} className={`raw-list-item ${selected?.id === item.id ? 'selected' : ''}`} onClick={() => onSelected(item.id)}><span className="file-icon">文</span><span className="recent-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{sourceLabels[item.sourceType]} · {item.sourceName}{item.origin ? ' · 本机专用' : ''}</small><small>{dateText(item.importedAt)}{state && state.status !== 'unprocessed' ? ` · ${rawStatusLabels[state.status]}` : ''}</small></span></button>;
       })}</div> : <div className="list-empty"><div className="empty-symbol">▧</div><b>还没有原始资料</b><span>导入第一份文章或业务记录。</span><button className="secondary-button" onClick={onOpenImport}>导入资料</button></div>}</section>
-      <section className="panel raw-detail-panel">{selected ? <RawDetail item={selected} state={selectedState} job={job} busy={aiBusy} error={aiError} onStartAi={() => void startAi(selected.id)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
+      <section className="panel raw-detail-panel">{selected ? <RawDetail item={selected} state={selectedState} job={job} onStorageReconciled={value => { onJobStarted(value, navigationGeneration, selectionGeneration); void onRefresh(); }} busy={aiBusy} error={aiError} onStartAi={(restart, planningRetry) => void startAi(selected.id, restart, planningRetry)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
     </div>
-    {dialogOpen && <ImportDialog prefill={reimport} onClose={closeDialogs} onCommitted={onCommitted} onOpen={openCommitted} />}
+    {dialogOpen && <ImportDialog prefill={reimport} onClose={closeDialogs} onCommitted={onCommitted} onOpen={openCommitted} onGenerate={generateImported} />}
     {deletingItem && <DeleteDialog item={deletingItem} onClose={() => setDeletingItem(null)} onDeleted={handleDeleted} />}
     {synthesisOpen && <div className="modal-backdrop"><section className="panel confirm-dialog"><div className="panel-heading"><div><h2>选择综合来源</h2><p>Raw 与 Source 可混合选择，最终按其真实 Raw ID 去重，至少两条。</p></div><button className="icon-button" onClick={() => setSynthesisOpen(false)}>×</button></div>{synthesisError && <p className="form-error" role="alert">{synthesisError}</p>}<div className="raw-list">{items.map(item => <label className="raw-list-item" key={item.id}><input type="checkbox" checked={synthesisIds.includes(item.id)} onChange={event => setSynthesisIds(current => event.target.checked ? [...current, item.id] : current.filter(id => id !== item.id))} /><span className="recent-copy"><b>Raw · {item.title}</b><small>{item.sourceName} · {item.id}</small></span></label>)}{sourcePages.map(item => <label className="raw-list-item" key={item.id}><input type="checkbox" checked={synthesisSourceIds.includes(item.id)} onChange={event => setSynthesisSourceIds(current => event.target.checked ? [...current, item.id] : current.filter(id => id !== item.id))} /><span className="recent-copy"><b>Source · {item.title}</b><small>{item.sources[0]} · {item.id}</small></span></label>)}</div><div className="dialog-actions"><button className="secondary-button" onClick={() => setSynthesisOpen(false)}>取消</button><button className="primary-button" disabled={new Set([...synthesisIds, ...synthesisSourceIds.map(id => sourcePages.find(source => source.id === id)?.sources[0]).filter(Boolean)]).size < 2} onClick={async () => { try { const workflow = await startSynthesisWorkflow({ rawIds: synthesisIds, sourceIds: synthesisSourceIds }); setSynthesisOpen(false); onOpenWorkflow?.(workflow.id); } catch (error) { setSynthesisError(error instanceof Error ? error.message : '综合草稿生成失败。'); } }}>生成 Synthesis 草稿</button></div></section></div>}
   </div>;
 }
 
-function RawDetail({ item, state, job, busy, error, onStartAi, onReimport, onDelete, onOpenDraft }: {
-  item: Raw; state?: RawProcessingState; job: ExtractionJob | null; busy: boolean; error: string;
-  onStartAi: () => void; onReimport: () => void; onDelete: () => void; onOpenDraft: (draftId: string) => void;
+function RawDetail({ item, state, job, busy, error, onStartAi, onReimport, onDelete, onOpenDraft, onStorageReconciled }: {
+  item: Raw; state?: RawProcessingState; job: ExtractionJob | null; busy: boolean; error: string; onStorageReconciled: (job: ExtractionJob) => void;
+  onStartAi: (restart?: boolean, planningRetry?: boolean) => void; onReimport: () => void; onDelete: () => void; onOpenDraft: (draftId: string) => void;
 }) {
   const status = state?.status ?? 'unprocessed';
+  const [savingState, setSavingState] = useState(false);
+  const [savingError, setSavingError] = useState('');
+  const recoveryGeneration = useRef(0);
+  useEffect(() => { recoveryGeneration.current++; setSavingState(false); setSavingError(''); return () => { recoveryGeneration.current++; }; }, [item.id]);
+  const [storedJob, setStoredJob] = useState<ExtractionJob | null>(null);
+  const storedJobId = state?.recoveryJobId ?? state?.jobId;
+  useEffect(() => { if (!storedJobId) { setStoredJob(null); return; } let active = true; extractionJob(storedJobId).then(value => { if (active) setStoredJob(value); }).catch(() => undefined); return () => { active = false; }; }, [storedJobId]);
   const meetingOnly = item.origin !== undefined;
-  const activeJob = job && job.rawId === item.id ? job : null;
+  const activeJob = job && job.rawId === item.id ? job : storedJob && storedJob.rawId === item.id ? storedJob : null;
+  const storageBlocked = !!activeJob?.recovery;
+  const retryStorage = async () => {
+    if (!activeJob) return;
+    const generation = recoveryGeneration.current;
+    setSavingState(true); setSavingError('');
+    try {
+      const saved = await reconcileExtractionStorage(activeJob.jobId);
+      if (generation !== recoveryGeneration.current) return;
+      setStoredJob(saved); onStorageReconciled(saved);
+    } catch (error) { if (generation === recoveryGeneration.current) setSavingError(error instanceof Error ? error.message : '保存状态失败。'); }
+    finally { if (generation === recoveryGeneration.current) setSavingState(false); }
+  };
   const progressText = status === 'processing' && activeJob
-    ? `${jobStageLabels[activeJob.stage]} · 第 ${Math.min(activeJob.progress.chunksDone + 1, Math.max(activeJob.progress.chunksTotal, 1))}/${activeJob.progress.chunksTotal || '?'} 段 · 已发现 ${activeJob.progress.pagesFound} 条建议`
+    ? `${jobStageLabels[activeJob.stage]} · 已验证 ${activeJob.checkpoint?.validatedChunks ?? activeJob.progress.chunksDone}/${activeJob.checkpoint?.totalChunks ?? (activeJob.progress.chunksTotal || '?')} 段 · ${activeJob.checkpoint ? `累计 ${activeJob.checkpoint.attempts} 次调用，复用 ${activeJob.checkpoint.reusedChunks} 段` : `已有 ${activeJob.progress.pagesFound} 条建议`}`
     : '';
   return <article className="raw-detail">
     <div className="detail-actions">
       <span className={`status ai-status ${status}`}><i />{rawStatusLabels[status]}</span>
       <span className="detail-type">{sourceLabels[item.sourceType]}</span>{meetingOnly && <span className="detail-type meeting-local-badge">本机专用</span>}
       <div className="action-group">
-        {!meetingOnly && (status === 'unprocessed' || status === 'failed' || status === 'generated') && <button className="text-button ai-action" disabled={busy} onClick={onStartAi}>{busy ? '正在启动…' : status === 'failed' ? '重试 AI 整理' : 'AI 整理知识'}</button>}
-        {!meetingOnly && status === 'processing' && activeJob && <button className="text-button" onClick={async () => { await api(`/api/extraction-jobs/${encodeURIComponent(activeJob.jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) }); }}>取消整理</button>}
-        {!meetingOnly && status === 'pending_confirmation' && state?.draftId && <button className="text-button ai-action" onClick={() => onOpenDraft(state.draftId as string)}>继续审核</button>}
+        {!meetingOnly && (status === 'unprocessed' || status === 'failed' || status === 'generated') && <button className="text-button ai-action" disabled={busy || storageBlocked} onClick={() => onStartAi()}>{busy ? '正在启动…' : status === 'failed' && activeJob?.pipelineVersion?.startsWith('kb02-') ? '继续提取' : status === 'failed' ? '重试 AI 整理' : 'AI 整理知识'}</button>}
+        {!meetingOnly && status === 'processing' && activeJob && activeJob.execution !== 'settled' && !storageBlocked && <button className="text-button" onClick={async () => { await api(`/api/extraction-jobs/${encodeURIComponent(activeJob.jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) }); }}>取消整理</button>}
+        {!meetingOnly && status === 'pending_confirmation' && state?.draftId && !storageBlocked && <button className="text-button ai-action" onClick={() => onOpenDraft(state.draftId as string)}>继续审核</button>}
         {!meetingOnly && <button className="text-button" onClick={onReimport}>重新导入</button>}
         <button className="text-button danger" onClick={onDelete}>删除</button>
       </div>
     </div>
+    {storageBlocked && <section className="notice-warn" role="alert"><b>{activeJob?.execution === 'running' ? '任务正在停止，状态保存失败' : '任务已停止，状态保存失败'}</b><p>{activeJob?.recovery?.message}（{activeJob?.recovery?.phase}）</p><p>重试保存只对账本机状态，不会重新调用模型。</p><button className="secondary-button" disabled={savingState || activeJob?.execution !== 'settled'} onClick={() => void retryStorage()}>{savingState ? '正在保存状态…' : '重试保存状态'}</button>{savingError && <p className="form-error">{savingError}</p>}</section>}
     {progressText && <p className="ai-progress">{progressText}</p>}
     {meetingOnly && <p className="notice-warn">Meeting来源仅限本机保存：禁止外部 AI、Wiki沉淀与Prompt背景使用。</p>}
     {status === 'failed' && state?.lastError && <p className="notice-warn">{state.lastError.code}：{state.lastError.message}{state.lastError.retryable ? '（可以重试）' : '（需要先处理配置或资料问题）'}</p>}
+    {status === 'failed' && activeJob?.error?.code === 'LLM_PLAN_COVERAGE_INVALID' && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(false, true)}>仅重新规划（带覆盖诊断）</button>}
+    {status === 'failed' && activeJob?.checkpoint && <p className="extract-note">检查点已验证 {activeJob.checkpoint.validatedChunks}/{activeJob.checkpoint.totalChunks} 段，累计 {activeJob.checkpoint.attempts} 次调用。</p>}
+    {status === 'failed' && activeJob?.pipelineVersion?.startsWith('kb02-') && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(true)}>明确重新生成</button>}
     {status === 'generated' && (state?.generatedWikiIds?.length ?? 0) > 0 && <p className="extract-note">已生成知识页：<code className="mono">{state?.generatedWikiIds?.join('、')}</code></p>}
     {error && <p className="form-error" role="alert">{error}</p>}
     <h2>{item.title}</h2>
@@ -121,8 +157,8 @@ function RawDetail({ item, state, job, busy, error, onStartAi, onReimport, onDel
 }
 function Meta({ label, value, link, mono }: {label: string; value: string; link?: boolean; mono?: boolean}) { return <div className="meta"><span>{label}</span>{link ? <a href={value} target="_blank" rel="noreferrer">{value}</a> : <b className={mono ? 'mono' : ''}>{value}</b>}</div>; }
 
-export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
-  onClose: () => void; onCommitted: (raw: Raw) => Promise<void>; onOpen: (raw: Raw) => void; prefill?: Raw | null;
+export function ImportDialog({ onClose, onCommitted, onOpen, onGenerate, prefill }: {
+  onClose: () => void; onCommitted: (raw: Raw) => Promise<void>; onOpen: (raw: Raw) => void; onGenerate: (raw: Raw) => Promise<void>; prefill?: Raw | null;
 }) {
   // The original tag array is kept verbatim; the text field is only a view of it until edited.
   const initialTags = prefill?.tags ?? [];
@@ -137,6 +173,9 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
   const [failure, setFailure] = useState<ImportFailure | null>(null);
   const [result, setResult] = useState<RawImportResult | null>(null);
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const [generationFailure, setGenerationFailure] = useState('');
+  const [generationRaw, setGenerationRaw] = useState<Raw | null>(null);
   const update = (key: keyof typeof form, value: string) => {
     if (key === 'tags') setTagsTouched(true);
     setForm(previous => ({ ...previous, [key]: value }));
@@ -159,8 +198,10 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
     if (next.size > MAX_UPLOAD_BYTES) setFailure({ code: 'FILE_TOO_LARGE', retained: false, fileName: next.name, byteSize: next.size, message: `文件为 ${bytesText(next.size)}，超过 ${MAX_UPLOAD_MIB} MiB 上限；工作台不会上传它，服务端也会在接收阶段拒绝。请改用粘贴文本。` });
   };
   const switchToPaste = () => { setMode('paste'); setFile(null); setFailure(null); };
-  const submit = async (event: FormEvent) => {
-    event.preventDefault(); setFailure(null); setSaving(true);
+  const submit = async (generateAfterSave = false) => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setFailure(null); setGenerationFailure(''); setSaving(true);
     try {
       if (mode === 'file') {
         if (!file) { setFailure({ code: 'MISSING_FILE', retained: false, message: '请先选择要导入的文件。' }); return; }
@@ -173,10 +214,11 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
         // F03-04: sync the committed Raw with the parent right away, so closing the result
         // panel (or continuing with another one) cannot leave the list and counters stale.
         await onCommitted(outcome.raw);
+        if (generateAfterSave) { setGenerationRaw(outcome.raw); try { await onGenerate(outcome.raw); setGenerationRaw(null); } catch (problem) { setGenerationFailure(problem instanceof Error ? problem.message : 'Wiki 草稿未生成，可用同一 Raw 重试。'); } }
       } else {
         const raw = await api<Raw>('/api/raw', { method: 'POST', body: JSON.stringify({ ...metadata(), body: form.body }) });
         await onCommitted(raw);
-        onOpen(raw);
+        if (generateAfterSave) { setGenerationRaw(raw); try { await onGenerate(raw); setGenerationRaw(null); } catch (problem) { setGenerationFailure(problem instanceof Error ? problem.message : 'Wiki 草稿未生成，可用同一 Raw 重试。'); } } else onOpen(raw);
       }
     } catch (error) {
       const problem = toFailure(error);
@@ -185,7 +227,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
       // of waiting for the user to reopen or reload the page.
       if (problem.committed && problem.raw) { try { await onCommitted(problem.raw); } catch { /* 待恢复信息优先显示 */ } }
     }
-    finally { setSaving(false); }
+    finally { savingRef.current = false; setSaving(false); }
   };
   return <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
     <section className="import-dialog" role="dialog" aria-modal="true" aria-labelledby="import-title">
@@ -198,7 +240,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
         <button className="icon-button" aria-label="关闭" onClick={onClose}>×</button>
       </div>
       {prefill && <p className="reimport-hint">重新导入会创建新的 Raw ID，旧记录及其原件保持不变；工作台不会自动复制上一条的原文件或转移 Wiki 来源。{prefill.assetId ? ' 这条资料来自文件导入，请重新选择原文件。' : ''}</p>}
-      {result
+      {result && generationFailure && generationRaw && <div className="form-error" role="alert"><b>Raw 已保存，Wiki 草稿未生成</b><p>{generationFailure}</p><button type="button" className="secondary-button" disabled={saving} onClick={async () => { setSaving(true); setGenerationFailure(''); try { await onGenerate(generationRaw); setGenerationRaw(null); } catch (problem) { setGenerationFailure(problem instanceof Error ? problem.message : 'Wiki 草稿未生成，可重试。'); } finally { setSaving(false); } }}>用同一 Raw 重试</button><small>Raw ID：<code>{generationRaw.id}</code></small></div>}      {result
         ? <ResultPanel result={result} prefill={!!prefill} onClose={onClose} onOpen={() => onOpen(result.raw)} onAgain={resetForNext} />
         : failure?.committed && failure.raw
           ? <PartialPanel failure={failure} raw={failure.raw} onClose={onClose} onOpen={() => onOpen(failure.raw as Raw)} onAgain={resetForNext} />
@@ -207,7 +249,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
           <button type="button" role="tab" aria-selected={mode === 'paste'} className={`dialog-tab ${mode === 'paste' ? 'active' : ''}`} onClick={() => setMode('paste')}>粘贴文本<small>从文章或笔记复制全文</small></button>
           <button type="button" role="tab" aria-selected={mode === 'file'} className={`dialog-tab ${mode === 'file' ? 'active' : ''}`} onClick={() => setMode('file')}>上传文件<small>Markdown / TXT / DOCX / PDF</small></button>
         </div>}
-        <form onSubmit={submit}>
+        <form onSubmit={event => { event.preventDefault(); void submit(false); }}>
           <div className="form-grid">
             <label className="field span-two">标题 <em>*</em><input value={form.title} onChange={event => update('title', event.target.value)} required maxLength={300} placeholder="例如：经销商订货流程访谈纪要" autoFocus /></label>
             <label className="field">来源类型 <em>*</em><select value={form.sourceType} onChange={event => update('sourceType', event.target.value as SourceType)}>{Object.entries(sourceLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
@@ -225,6 +267,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
                 {file && <div className="file-picked">已选择：<b>{file.name}</b><span>{bytesText(file.size)}</span></div>}
               </div>}
           </div>
+          {generationFailure && generationRaw && <div className="form-error" role="alert"><b>Raw 已保存，Wiki 草稿未生成</b><p>{generationFailure}</p><button type="button" className="secondary-button" disabled={saving} onClick={async () => { setSaving(true); setGenerationFailure(''); try { await onGenerate(generationRaw); setGenerationRaw(null); } catch (problem) { setGenerationFailure(problem instanceof Error ? problem.message : 'Wiki 草稿未生成，可重试。'); } finally { setSaving(false); } }}>用同一 Raw 重试</button><small>Raw ID：<code>{generationRaw.id}</code></small></div>}
           {failure && !failure.committed && <div className="form-error" role="alert">
             <b className="error-code">{failure.code}</b>
             <p>{failure.message}</p>
@@ -235,7 +278,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, prefill }: {
             <span>{mode === 'file' ? '原件、正文与来源关联都写入后才显示导入成功' : '正文写入后不可由 AI 改写'}</span>
             <div>
               <button type="button" className="secondary-button" onClick={onClose} disabled={saving}>取消</button>
-              <button type="submit" className="primary-button" disabled={saving}>{saving ? (mode === 'file' ? '正在解析…' : '正在保存…') : (mode === 'file' ? '上传并入库' : '保存原始资料')}</button>
+              <button type="button" className="secondary-button" disabled={saving} onClick={event => { const form = event.currentTarget.form; if (form?.reportValidity()) void submit(false); }}>{saving ? '正在保存…' : '仅保存 Raw'}</button><button type="button" className="primary-button" disabled={saving} onClick={event => { const form = event.currentTarget.form; if (form?.reportValidity()) void submit(true); }}>{saving ? '正在处理…' : '保存并生成 Wiki 草稿'}</button>
             </div>
           </div>
         </form>
@@ -373,3 +416,6 @@ function toFailure(error: unknown): ImportFailure {
   }
   return { code: 'REQUEST_FAILED', message: error instanceof Error ? error.message : '导入失败，请重试。' };
 }
+
+
+

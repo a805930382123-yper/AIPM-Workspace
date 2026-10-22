@@ -1,0 +1,162 @@
+{
+  "at": "2026-10-14T15:28:34.4017427+00:00",
+  "axis": "Standards",
+  "status": "PASS",
+  "scope": "KB01 R4 baseline fingerprint comparison and final frozen source review; memory-only safety probes",
+  "comparison": {
+    "gitAvailable": false,
+    "method": "baseline/frozen path-set and SHA256 comparison; no fabricated git diff",
+    "baseline": "docs/reports/KB01-R4-20261014-baseline.json",
+    "initialFrozen": "docs/reports/KB01-R4-20261014-initial-frozen.json",
+    "finalFrozen": "docs/reports/KB01-R4-20261014-frozen.json",
+    "finalFrozenAt": "2026-10-14T15:25:33.946Z",
+    "finalFrozenSha256": "eadc7a3c958232ae5c8c3c04148a8c54fc0b856b0cd89650e447069664fb231b",
+    "matchedProductFiles": 85,
+    "matchedTestFiles": 54,
+    "mismatches": [],
+    "changedProductFiles": [
+      "app/pages/DraftReviewPage.tsx",
+      "services/llm/locators.ts",
+      "services/llm/rules.ts",
+      "services/llm/service.ts",
+      "services/llm/provider.ts",
+      "app/App.tsx"
+    ],
+    "changedTestFiles": [
+      "tests/llm-flow.test.ts",
+      "tests/llm.test.ts",
+      "tests/support/fake-llm.ts",
+      "tests/ui-b04.test.tsx",
+      "tests/provider-knowledge-reasoning.test.ts",
+      "tests/app-navigation.test.tsx"
+    ]
+  },
+  "findings": [],
+  "historicalFindings": [
+    {
+      "id": "KB01-R4-ST01",
+      "priority": 2,
+      "title": "locator normalization introduced unscreened known credentials before aggregate",
+      "location": {
+        "file": "services/llm/service.ts",
+        "line": 255
+      },
+      "status": "CLOSED",
+      "standard": "docs/batches/SEC-20261013.md SEC03; KB01 K05 safety gates",
+      "reproduction": "Memory provider returns credential-free locator-v2 JSON, referencing Raw anchor containing synthetic known provider credential. Initial frozen service returned the credential in normalized quote; multi-chunk run issued 3 chunk calls and 1 merge with credential in merge input.",
+      "limitation": "jobs.ts final defense still rejected unsafe outcome before draft creation; this review does not claim formal disk disclosure.",
+      "repairLocation": {
+        "file": "services/llm/service.ts",
+        "line": 257
+      },
+      "preFixEvidence": "docs/reports/KB01-R4-20261014-review-standards-locator-secret-pre-fix.json",
+      "finalEvidence": "docs/reports/KB01-R4-20261014-review-standards-locator-secret-post-json.json"
+    }
+  ],
+  "runtime": {
+    "preFix": {
+      "cases": 2,
+      "pass": 0,
+      "fail": 2,
+      "serviceSha256": "2cf41c9d030527c627f084a157df747ab5218243d4a794d35ea9f99ebd23f8db"
+    },
+    "final": {
+      "cases": 2,
+      "pass": 2,
+      "fail": 0,
+      "serviceSha256": "d5126be2a583749d316d45882325772d54a4ed25ab545e704598fe382c2c77e0",
+      "longCaseCalls": 2,
+      "longCaseMergeCalls": 0
+    },
+    "command": "node --import tsx tests/acceptance/kb01-r4-20261014-review-standards-locator-secret.mjs . post-json",
+    "calibration": [
+      "Sandboxed tsx initialization failed before probe execution with uv_os_get_passwd ENOMEM; authorized host execution used.",
+      "Evidence named locator-secret-initial.json captured already repaired service a72eaf14..., so it is provisional post-fix evidence and not initial-frozen FAIL. Original retained."
+    ]
+  },
+  "staticCoverage": [
+    "strict provider-only v2 schema then Raw-bound normalized schema",
+    "unknown/cross-chunk/mixed-format evidence fail closed; legacy schema/ambiguity kept",
+    "surrogate-safe bounded locator catalog and immutable Raw slices",
+    "unchanged resource budgets, concurrency, no partial all-chunk success",
+    "prompt version and exact safety-rule overrides; document-only merge input has no locator",
+    "credential recheck after locator normalization and before later calls",
+    "existing source/meeting gate and formal write responsibility",
+    "UI candidate error recovery, explicit decisions, edit invalidation and busy snapshot locking",
+    "overlap dedup preserves per-chunk snapshots and exact source identity",
+    "reserved aggregate/current-page IDs avoid suffix collisions; independent memory probe verifies exact sources, preserved facts and unchanged per-chunk merge snapshots",
+    "JSON mode only on knowledge/exact official host/exact GLM-5.3-Flash branch; official documents independently verified; root owns actual wire matrix",
+    "App explicit navigation clears review/workflow overlays while existing page/selection/refresh generations and background intent checks remain; actual App component test independently run 1/1 PASS"
+  ],
+  "coverageLimits": {
+    "fullTests": "NOT_RUN by Standards reviewer; root owns final copied full suite",
+    "http": "NOT_RUN by Standards reviewer; root owns actual HTTP",
+    "browser": "NOT_RUN by Standards reviewer; root owns UI/actual browser",
+    "realProvider": "NOT_RUN; reviewer never read config or called external provider",
+    "spec": "Independent Spec/root report; Standards PASS does not sign K05 semantic quality or whole project"
+  },
+  "writes": [
+    "tests/acceptance/kb01-r4-20261014-review-standards-locator-secret.mjs",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-initial.json",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-pre-fix.json",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-final.json",
+    "docs/reports/KB01-R4-20261014-review-standards.md",
+    "docs/reports/KB01-R4-20261014-review-standards.json",
+    "docs/reports/KB01-R4-20261014-review-standards-prior-pre-json.md",
+    "docs/reports/KB01-R4-20261014-review-standards-prior-pre-json.json",
+    "docs/reports/KB01-R4-20261014-review-standards-locator-secret-post-json.json",
+    "tests/acceptance/kb01-r4-20261014-review-standards-id-collision.mjs",
+    "docs/reports/KB01-R4-20261014-review-standards-id-collision.json",
+    "docs/reports/KB01-R4-20261014-review-standards-prior-pre-nav.md",
+    "docs/reports/KB01-R4-20261014-review-standards-prior-pre-nav.json",
+    "docs/reports/KB01-R4-20261014-review-standards-navigation.json"
+  ],
+  "additionalRuntime": {
+    "idCollision": {
+      "chunkCount": 2,
+      "facts": 5,
+      "status": "PASS",
+      "callCount": 3,
+      "evidence": "docs/reports/KB01-R4-20261014-review-standards-id-collision.json",
+      "uniqueEvidenceIds": 5,
+      "unchangedMergeSnapshot": true,
+      "cases": 1
+    },
+    "jsonMode": {
+      "actualWire": "NOT_RUN by this reviewer; root owns",
+      "providerSha256": "e8077c2b83297eba04a416c06262beef967f8704fcfede82351eb598b5a82912",
+      "status": "STATIC_PASS",
+      "sources": [
+        "https://docs.z.ai/guides/capabilities/struct-output",
+        "https://docs.z.ai/guides/vlm/glm-5.3-flash"
+      ]
+    },
+    "navigation": {
+      "status": "PASS",
+      "cases": 1,
+      "fixture": "Actual React App with memory APIs; not browser/real HTTP",
+      "testSha256": "6e5874a335cdb9c9997796fa9830422ea8724db6f6ac18dab3047b558c6a2a34",
+      "appSha256": "0f0b6a614b603558a088d3268b9c628a3deacd00d653ce17ca006f20fb7e8aa0",
+      "evidence": "docs/reports/KB01-R4-20261014-review-standards-navigation.json",
+      "command": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/app-navigation.test.tsx",
+      "scenarios": [
+        "draft to Raw",
+        "workflow to home",
+        "workflow to Raw",
+        "Raw selection preserved"
+      ]
+    }
+  },
+  "backendEvidenceReuse": {
+    "reason": "All backend/provider/locator/rules and prior related tests byte-identical to 15:05 freeze",
+    "retested": false,
+    "keyGate": "prior 2/2 PASS",
+    "idCollision": "prior 1/1 PASS"
+  },
+  "rootReportedRealQuality": {
+    "long": "FAIL: chunk 4 malformed evidence key",
+    "authority": "Root agent report; this Standards reviewer did not perform real provider calls or independently sign quality",
+    "update": "PASS",
+    "calls": "27/40"
+  }
+}

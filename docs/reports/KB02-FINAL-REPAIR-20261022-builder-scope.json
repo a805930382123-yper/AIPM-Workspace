@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-22T04:34:08.275Z",
+  "product": [
+    {
+      "file": "services/llm/knowledge-extraction.ts",
+      "before": "98e4e2c639d4628b27e8bb318fb853b3580998b98828e27c5767af9f16c7cb96",
+      "after": "8d8d3709c6ec1d1a02400effc48311c5bf4594b6836358b89db1c393255c580a"
+    },
+    {
+      "file": "services/llm/rules.ts",
+      "before": "70d6df539a3f2e4579478db3ec2250f45f8d400d29ae4b7495692e57aa787a1e",
+      "after": "01ffc9c0adf7c39f6c3223e35cadd17c450538239a8f69909f73037261b87dca"
+    },
+    {
+      "file": "services/wiki/knowledge-workflows.ts",
+      "before": "31f1bd89a0a66cd8b7f871811968737bbdfb6ceef6b79f86c25b600df0fcb4d7",
+      "after": "26f86f3c8a4b28fece594173ee001985aebb87e7ab7bbad6ab6265bfeae38304"
+    }
+  ],
+  "tests": [
+    {
+      "file": "tests/kb02-classification-priority.test.ts",
+      "before": "442ea95a7eb64e0fc1129d3656a52787a79391f9b543a332ecdfca2008255d79",
+      "after": "334ba4e6aec65b0ac6a8fdc1950f740a3b71c1d8b6831837216afa86777cac43"
+    },
+    {
+      "file": "tests/kb02-extraction-contract.test.ts",
+      "before": "74654bea91dc615a1f97c161dd99e9aa2e3cd37c073c02aa4fe386656bba2f62",
+      "after": "34609800b1286ccc3001d662f33cfb0492324dab511afa355d9f46336e19e3ec"
+    },
+    {
+      "file": "tests/kb02-r2.test.ts",
+      "before": "55a6f8073013308f3a4bb7736110ff0d70ee05ca740bcb8d86bc64b985aecb69",
+      "after": "ad78390390a13fc51404af53869d90c5fab3584a04616aef2cb37b41b9a58e6b"
+    },
+    {
+      "file": "tests/llm.test.ts",
+      "before": "eb6ead97f6ad398dac3352aa8089933ed94e46b4859da245a613b448534a7808",
+      "after": "255eecba4402b84467149f599eeae5b8f9ef98123842d3fb177020349fe33847"
+    },
+    {
+      "file": "tests/kb02-final-agreement.test.ts",
+      "before": null,
+      "after": "05a3815fb71e458f7e1d8c052c99f8b1d44ea10f547feb7ca89b1daf03c39af2"
+    },
+    {
+      "file": "tests/kb02-final-classification.test.ts",
+      "before": null,
+      "after": "b3dda5f6469120023cad8e08859cf5e9f30a2e07de35a312295be7c52e28ab94"
+    }
+  ],
+  "frozenAt": "2026-10-22T04:31:54.325Z",
+  "realCalls": 0,
+  "budget": {
+    "kb02": "82/200",
+    "prompt": "15/24"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "at": "2026-10-14T15:42:31.436Z",
+  "verdict": "FAIL",
+  "reason": "K05 real 106400-char long Raw schema rejected at chunk 4; default parallel full suite also records one atomic rename EPERM",
+  "frozen": {
+    "productFiles": 85,
+    "testFiles": 54
+  },
+  "backendEvidenceReuse": {
+    "files": 60,
+    "changed": []
+  },
+  "finalBuild": {
+    "exitCode": 0,
+    "checkedBy": "root unified exec session 42852",
+    "node": "v25.2.1",
+    "warning": "existing bundle >500kB"
+  },
+  "fullSuite": {
+    "parallel": {
+      "date": "2026-10-14",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-kb01-r4-fullsuite-PQbAri",
+      "node": "v25.2.1",
+      "scope": "exact byte-identical frozen product + complete unchanged test suite on writable temporary filesystem; no assertions/shims modified",
+      "frozenProductFiles": 85,
+      "frozenTestFiles": 54,
+      "copyMismatches": [],
+      "exitCode": 1,
+      "signal": null,
+      "durationMs": 21147,
+      "testSummary": [
+        "ℹ tests 228",
+        "ℹ pass 227",
+        "ℹ fail 1",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 21034.4597"
+      ],
+      "processClosed": true,
+      "originalWorkspaceAclUnchanged": true,
+      "copyRetained": true
+    },
+    "serial": {
+      "date": "2026-10-14",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-kb01-r4-fullsuite-5ZQS71",
+      "node": "v25.2.1",
+      "testConcurrency": 1,
+      "scope": "complete serial run of exact byte-identical frozen product + complete unchanged test suite on writable temporary filesystem; no assertions/shims modified",
+      "frozenProductFiles": 85,
+      "frozenTestFiles": 54,
+      "copyMismatches": [],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 67896,
+      "testSummary": [
+        "ℹ tests 228",
+        "ℹ pass 228",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 67793.6938"
+      ],
+      "processClosed": true,
+      "originalWorkspaceAclUnchanged": true,
+      "copyRetained": true
+    }
+  },
+  "http": {
+    "pass": 10,
+    "fail": 0
+  },
+  "locatorHttp": {
+    "pass": 9,
+    "fail": 0
+  },
+  "httpComponent": {
+    "pass": 11,
+    "fail": 0
+  },
+  "security": {
+    "pass": 100,
+    "fail": 0
+  },
+  "wire": {
+    "pass": 12,
+    "fail": 0
+  },
+  "configurationIsolation": {
+    "pass": 1,
+    "fail": 0
+  },
+  "ledger": {
+    "pass": 6,
+    "fail": 0,
+    "calibrations": 1
+  },
+  "integrity": {
+    "at": "2026-10-14T15:41:08.099Z",
+    "product": {
+      "files": 85,
+      "changed": [],
+      "added": [],
+      "unchanged": true
+    },
+    "tests": {
+      "files": 54,
+      "changed": [],
+      "added": [],
+      "unchanged": true
+    },
+    "workspace": {
+      "files": 7,
+      "changed": [],
+      "added": [],
+      "unchanged": true
+    },
+    "config": {
+      "files": 1,
+      "changed": [],
+      "added": [],
+      "unchanged": true
+    },
+    "protected": {
+      "files": 1458,
+      "changed": [],
+      "added": [],
+      "unchanged": true
+    }
+  },
+  "ownedServices": {
+    "at": "2026-10-14T15:25:34.358Z",
+    "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\fmcg-kb01-r4-real-zq5ToK",
+    "servicesClosed": true,
+    "logsNoSecret": true
+  },
+  "ownedBrowserTabsClosed": true,
+  "realVerdicts": {
+    "short": "PASS in R4 pre-JSON wire, same locator interface",
+    "update": "PASS final backend, both sources/ratios/human notes preserved",
+    "long": "FAIL no partial draft"
+  },
+  "limitations": [
+    "No other OS/minimum Node/new narrow browser check",
+    "Parallel rename EPERM and prior nonreproducing flow failure preserved; root cause not established",
+    "JSON mode does not guarantee domain schema or knowledge granularity"
+  ]
+}

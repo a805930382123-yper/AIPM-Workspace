@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-22T02:05:34.845Z",
+  "runtime": "v24.20.0",
+  "controlled": true,
+  "externalCalls": 0,
+  "checks": [
+    {
+      "id": "canonical-case-dot-path-shares-real-read-lifetime",
+      "result": "PASS",
+      "details": {
+        "caseAlias": true,
+        "renameBeforeClose": 0,
+        "renameAfterClose": 1,
+        "differentJobCompletedWhileHeld": true
+      }
+    },
+    {
+      "id": "failed-compound-mutation-releases-both-queues",
+      "result": "PASS",
+      "details": {
+        "mutationRejected": true,
+        "queuesUsableAfterFailure": true,
+        "crossStoreFieldsPreserved": true
+      }
+    }
+  ],
+  "closed": true,
+  "pass": true
+}

@@ -1,0 +1,235 @@
+{
+  "at": "2026-10-14T15:28:28.488Z",
+  "axis": "Spec",
+  "status": "PASS_FOR_REVIEWED_SCOPE",
+  "freeze": "docs/reports/KB01-R4-20261014-frozen.json",
+  "freezeAt": "2026-10-14T15:25:33.946Z",
+  "comparison": "Baseline/frozen SHA-256 inventory; no Git diff",
+  "findings": [
+    {
+      "id": "SP-F01",
+      "priority": 2,
+      "status": "CLOSED",
+      "file": "services/llm/service.ts",
+      "lines": [
+        302,
+        329
+      ],
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-probes-final3.json"
+    },
+    {
+      "id": "SP-F02",
+      "priority": 2,
+      "status": "CLOSED",
+      "file": "app/pages/DraftReviewPage.tsx",
+      "lines": [
+        240,
+        256,
+        263
+      ],
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-ui-race-final2.json"
+    },
+    {
+      "id": "SP-F03",
+      "priority": 2,
+      "status": "CLOSED",
+      "file": "services/llm/service.ts",
+      "lines": [
+        295,
+        303,
+        306
+      ],
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-id-collision.json"
+    },
+    {
+      "id": "SP-F04-K03-navigation-overlay",
+      "priority": 2,
+      "status": "CLOSED",
+      "origin": "Root IAB discovery",
+      "file": "app/App.tsx",
+      "lines": [
+        89,
+        90,
+        91,
+        92,
+        93
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "SP01-overlap-same-page-same-id-same-slice",
+      "expectation": "Valid chunk-local evidence can be aggregated without duplicate evidence IDs.",
+      "result": "PASS",
+      "calls": 2,
+      "chunkCount": 2,
+      "evidenceCount": 1,
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-probes-final3.json"
+    },
+    {
+      "id": "SP02-overlap-distinct-id-control",
+      "expectation": "The identical valid locator choices should succeed with unrelated provider evidence IDs.",
+      "result": "PASS",
+      "calls": 2,
+      "chunkCount": 2,
+      "evidenceCount": 2,
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-probes-final3.json"
+    },
+    {
+      "id": "SP03-106400-catalog-actual-cover",
+      "result": "PASS",
+      "length": 106400,
+      "chunkCount": 14,
+      "tail": 106400,
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-probes-final3.json"
+    },
+    {
+      "at": "2026-10-14T15:07:19.929Z",
+      "scope": "Actual LLMService; in-memory provider; no HTTP/config/user data",
+      "id": "SP05-generated-id-reserved-by-earlier-valid-provider-id",
+      "result": "PASS",
+      "calls": 2,
+      "evidenceIds": [
+        "e1",
+        "e1-c2",
+        "e1-c2-2"
+      ],
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-id-collision.json"
+    },
+    {
+      "at": "2026-10-14T14:52:27.548Z",
+      "scope": "Actual DraftReviewPage in jsdom + memory fetch; no real browser/HTTP/Provider",
+      "id": "SP04-selection-changed-during-confirm-candidate-await",
+      "result": "PASS",
+      "expected": "No formal confirm for a visibly deselected page, or controls locked before the user can change selection.",
+      "checkboxEnabledDuringConfirm": false,
+      "allMutableLocked": true,
+      "mutableControlCount": 15,
+      "selectionButtonsLocked": true,
+      "visibleSelectionAfterChange": true,
+      "submittedPageIds": [
+        "page-1"
+      ],
+      "calls": [
+        {
+          "path": "/api/drafts/draft-race",
+          "method": "PATCH",
+          "body": {
+            "baseRevision": 1,
+            "document": {
+              "title": "虚构资料",
+              "main_topic": "主题",
+              "summary": "摘要"
+            },
+            "source": {
+              "title": "虚构资料",
+              "summary": "摘要",
+              "body": "摘要",
+              "category": "other",
+              "knowledge_status": "source_supported",
+              "confidence": "low",
+              "source_level": "C",
+              "key_takeaways": []
+            },
+            "pages": [
+              {
+                "pageId": "page-1",
+                "selected": true,
+                "title": "原始标题",
+                "type": "concept",
+                "category": "other",
+                "one_line_definition": "定义",
+                "source_facts": [
+                  {
+                    "text": "虚构事实",
+                    "evidenceIds": [
+                      "e1"
+                    ]
+                  }
+                ],
+                "ai_organized": [],
+                "ai_inferences": [],
+                "related_pages": [],
+                "open_questions": [],
+                "source_evidence": [
+                  {
+                    "id": "e1",
+                    "rawId": "raw-race",
+                    "quote": "虚构事实。",
+                    "start": 0,
+                    "end": 5
+                  }
+                ],
+                "knowledge_status": "source_supported",
+                "confidence": "low",
+                "source_level": "C"
+              }
+            ]
+          }
+        },
+        {
+          "path": "/api/drafts/draft-race/confirm",
+          "method": "POST",
+          "body": {
+            "baseRevision": 1,
+            "selectedPageIds": [
+              "page-1"
+            ],
+            "idempotencyKey": "ae2eb9c5-ee2e-4d94-896b-79c1de173b9e"
+          }
+        }
+      ],
+      "reused": "Actual UI probe from final2; DraftReviewPage SHA-256 unchanged",
+      "evidence": "docs/reports/KB01-R4-20261014-review-spec-ui-race-final2.json"
+    }
+  ],
+  "summary": {
+    "priorDeterministicChecksReused": {
+      "pass": 5,
+      "fail": 0
+    },
+    "latestNavigationTests": {
+      "pass": 7,
+      "fail": 0
+    }
+  },
+  "productHashes": {
+    "app/App.tsx": "0f0b6a614b603558a088d3268b9c628a3deacd00d653ce17ca006f20fb7e8aa0",
+    "tests/app-navigation.test.tsx": "6e5874a335cdb9c9997796fa9830422ea8724db6f6ac18dab3047b558c6a2a34",
+    "tests/app-m05-raw-navigation.test.tsx": "7fc223b963bc30e91d21d27f9084c5aa2190f41cff0f34bb928a43fba98fd8ae",
+    "services/llm/service.ts": "d5126be2a583749d316d45882325772d54a4ed25ab545e704598fe382c2c77e0",
+    "services/llm/locators.ts": "5dcd3b37371ffab33ab628c63110ec4ffaaa281fc77add3c2a8f69fb6767ea38",
+    "services/llm/rules.ts": "b1179773389a06a29b4825c00519a0e484b31d7d9ea8ca1849a30de4c60488e9",
+    "services/llm/evidence.ts": "1d9c68c98c250c550b5dd9dcc6fd09428ac0bd626dca376814b16576d78b0882",
+    "services/llm/provider.ts": "e8077c2b83297eba04a416c06262beef967f8704fcfede82351eb598b5a82912",
+    "app/pages/DraftReviewPage.tsx": "1e0aab783858d768b9fc24c60dc5f99f543bede2fee06c22584252b59e63c899",
+    "tests/provider-knowledge-reasoning.test.ts": "fe763de9119bedaee0c28425eda3508bef39f0f14dc8d796476c6b9f808aac91"
+  },
+  "scopeHashesMatchFinalFreeze": true,
+  "productModifications": 0,
+  "externalProviderCalls": 0,
+  "formalWorkspaceAccess": false,
+  "envLocalAccess": false,
+  "archivedPreviousFail": [
+    "docs/reports/KB01-R4-20261014-review-spec-frozen2-fail.md",
+    "docs/reports/KB01-R4-20261014-review-spec-frozen2-fail.json",
+    "docs/reports/KB01-R4-20261014-review-spec-id-collision-frozen2-fail.json"
+  ],
+  "limits": [
+    "Standards assessed independently elsewhere",
+    "Fullsuite/actual HTTP/real Provider/browser belong to root",
+    "Locator catalog coverage is not real model quality",
+    "No independent real quality K05 signature",
+    "No legacy draft restart test; unchanged storage contract reviewed statically",
+    "Latest scope is App nav only; seven fixture tests new, prior five deterministic checks reused by same SHA",
+    "Real long document failure prevents KB01 batch PASS; no new Provider call"
+  ],
+  "tokenUsage": "unavailable",
+  "reusedPriorScope": "docs/reports/KB01-R4-20261014-review-spec-frozen3-pass.json",
+  "navigationEvidence": "docs/reports/KB01-R4-20261014-review-spec-navigation.json",
+  "batchQuality": {
+    "realLongDocument": "FAIL (root current result)",
+    "realUpdate": "PASS (root current result)",
+    "KB01BatchPass": false
+  }
+}

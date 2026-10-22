@@ -1,0 +1,119 @@
+{
+  "at": "2026-10-14T09:10:50.144Z",
+  "kind": "Standards independent actual HTTP + localhost fake; not real Provider quality",
+  "node": "v24.20.0",
+  "durationMs": 9890,
+  "dataRoot": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\fmcg-b08-independent-1uz2Sg",
+  "checks": [
+    {
+      "id": "S01-save-and-browse-zero-provider",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "24ef06ec-9cad-42bf-ae0b-8a0f619f781f",
+        "providerCalls": 0
+      }
+    },
+    {
+      "id": "S02-double-start-one-job-same-raw",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "c49563fa-c1de-40b7-a5fd-ac0699268835",
+        "jobId": "35ad926d-9c10-4f0e-be5a-617f3379b0c4",
+        "oneFakeCall": true
+      }
+    },
+    {
+      "id": "S03-failure-retains-raw-and-retry-same-id",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "b3f8ce22-2ce3-4f9e-990b-852d2346d48e",
+        "error": {
+          "code": "LLM_PROVIDER_ERROR",
+          "message": "Provider 服务错误（HTTP 500）。（Provider 说明：Explicit independent fake error）（第 1 段）",
+          "at": "2026-10-14T09:10:42.636Z",
+          "retryable": true,
+          "details": {
+            "chunkIndex": 0
+          }
+        },
+        "draftId": "8a138111-b5c4-4a4a-ba9b-8239b5dd5466"
+      }
+    },
+    {
+      "id": "S04-cancel-no-draft-no-formal-write",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "27e63164-32b3-49b0-8450-82fdc90889cd",
+        "status": "cancelled"
+      }
+    },
+    {
+      "id": "S05-draft-same-root-restart-reuse-no-provider",
+      "result": "PASS",
+      "evidence": {
+        "draftId": "63938c25-4788-422a-bc12-0d5ca4a95ec1",
+        "sameRoot": true,
+        "noNewFakeCall": true
+      }
+    },
+    {
+      "id": "S06-candidate-reasons-target-explicit-and-defer",
+      "result": "PASS",
+      "evidence": {
+        "candidateCount": 1,
+        "deferBlocked": true
+      }
+    },
+    {
+      "id": "S07-update-preview-separated-and-stale-target",
+      "result": "PASS",
+      "evidence": {
+        "workflowId": "edccd95d-b39d-4c4f-923a-9915d0282c77",
+        "targetRevision": 2,
+        "error": {
+          "code": "REVISION_CONFLICT",
+          "message": "目标 Wiki 已被修改，旧预览不能覆盖新版本。",
+          "details": {
+            "currentRevision": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "S08-update-retains-notes-sources-conflicts-retry",
+      "result": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"WIKI_TITLE_CONFLICT\",\"message\":\"标题「铺货率」已被「铺货率」占用。\",\"details\":{\"existingId\":\"30f7585f-738e-4ae9-99ab-6bc4f5048e16\"}}}\n\n409 !== 201\n\n    at expect (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/cfg01-20261014-security-harness.mjs:16:108)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-20261014-standards-http.mjs:26:190\n    at async test (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-20261014-standards-http.mjs:15:71)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb01-20261014-standards-http.mjs:26:2"
+    },
+    {
+      "id": "S09-update-and-synthesis-restored-without-new-calls",
+      "result": "PASS",
+      "evidence": {
+        "updateId": "ef4da496-7b14-44b6-8617-467e4e852b1e",
+        "synthesisId": "16d33e4d-de5f-4888-9ed6-8ccf50ddc0f1",
+        "noNewFakeCalls": true
+      }
+    },
+    {
+      "id": "S10-meeting-local-only-no-calls-no-source-cleaning",
+      "result": "PASS",
+      "evidence": {
+        "rawId": "e12c4ed2-8505-4aa4-893b-dddd25f442fe",
+        "origin": {
+          "kind": "meeting",
+          "meeting_id": "a8b336ec-9af3-45c9-b2a6-4871cbf7f41a",
+          "import_id": "7c8e6e1c-6e74-44e0-95df-226458edcb21",
+          "original_sha256": "fc46a21065df6f38d8ec81117fbf22963c3a2e56b8851cab2da8d110310e4901",
+          "registered_confidentiality": "Public",
+          "processing_policy": "meeting_local_only"
+        },
+        "zeroFakeCalls": true
+      }
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 1
+  },
+  "fakeCalls": 13,
+  "servicesClosed": true
+}

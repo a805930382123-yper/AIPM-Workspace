@@ -1,4 +1,5 @@
 import express from 'express';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import multer from 'multer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,12 +15,15 @@ import { WikiError, WikiStore } from '../services/wiki/store.ts';
 import { DraftStore } from '../services/wiki/drafts.ts';
 import { WikiCommitService } from '../services/wiki/commits.ts';
 import { validateBaseRevision, validateWikiInput } from './wiki-validation.ts';
-import { loadLlmConfig } from '../services/llm/config.ts';
+import { LLM_ENV, containsKnownSecret, loadLlmConfig, readLocalEnvFile, safeBaseUrl, validateApiKey, validateModel } from '../services/llm/config.ts';
+import { LlmConfigManager } from '../services/llm/config-manager.ts';
+import { ConfigError } from '../services/llm/config.ts';
 import { OpenAiCompatibleProvider, type LlmProvider } from '../services/llm/provider.ts';
 import { LLMService } from '../services/llm/service.ts';
 import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
 import { registerB04Routes } from './llm-api.ts';
+import { registerLlmConfigRoutes } from './llm-config-api.ts';
 import { registerKnowledgeRoutes } from './knowledge-api.ts';
 import { AuditService } from '../services/audit/service.ts';
 import { registerAuditRoutes } from './audit-api.ts';
@@ -31,11 +35,14 @@ import { DemoService } from '../services/demo/service.ts';
 import { MeetingStore } from '../services/meeting/store.ts';
 import { registerMeetingRoutes, registerMeetingMinutesRoutes, meetingErrorMiddleware } from './meeting-api.ts';
 import { MeetingRawBridge } from '../services/meeting/raw-bridge.ts';
+import { RecoveryRegistry } from '../services/storage/recovery.ts';
+import { registerRecoveryRoutes } from './recovery-api.ts';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(process.env.FMCG_DATA_DIR || path.join(moduleDir, '..', 'workspace'));
 const rulesDir = path.resolve(moduleDir, '..', 'rules');
-const configFile = path.resolve(moduleDir, '..', '.env.local');
+const configFile = path.resolve(moduleDir, '..', process.env.FMCG_LLM_CONFIG_FILE || '.env.local');
+
 const host = '127.0.0.1';
 const port = Number(process.env.FMCG_PORT || 4317);
 const store = new RawStore(root);
@@ -50,20 +57,36 @@ const audits = new AuditService(root, wikiStore, store);
 // B07: the Prompt Library reads Wiki titles for its "related Wiki" column and never writes
 // to knowledge/, so it cannot affect the knowledge assets or the knowledge log.
 const prompts = new PromptStore(root, wikiStore, rulesDir);
-const promptAi = new PromptAiService(root, wikiStore, prompts, () => currentProvider);
+const providerContext = new AsyncLocalStorage<{ provider: LlmProvider | undefined }>();
+const activeProvider = () => providerContext.getStore()?.provider;
+const promptAi = new PromptAiService(root, wikiStore, prompts, activeProvider);
 const demo = new DemoService(root, store, wikiStore, prompts);
 const meetings = new MeetingStore(root);
 const meetingRawBridge = new MeetingRawBridge(meetings, store);
+const recovery = new RecoveryRegistry(root);
 // B04: the product provider is built from server-side configuration only. No key, no provider
 // and no fallback exists in the browser bundle; an unconfigured server stays unconfigured.
 const loadConfig = () => loadLlmConfig({ filePath: configFile });
+const configManager = new LlmConfigManager(configFile);
 const providerFactory = async (): Promise<LlmProvider | undefined> => {
   const config = await loadConfig();
   if (!config.baseUrl || !config.model || !config.apiKey) return undefined;
-  return new OpenAiCompatibleProvider(config);
+  try {
+    // With a complete environment config the local file must remain optional; when readable,
+    // still include its historical Key in the secret-scrubbing set for this operation.
+    if (config.source === 'env' && Object.values(LLM_ENV).every(name => Boolean(process.env[name]?.trim()))) {
+      const local = await readLocalEnvFile(configFile).catch((): Record<string, string> => ({}));
+      config.knownSecrets = [...new Set([...(config.knownSecrets ?? []), local[LLM_ENV.apiKey] ?? ''].filter(Boolean))];
+    }
+    config.baseUrl = safeBaseUrl(config.baseUrl); config.model = validateModel(config.model); config.apiKey = validateApiKey(config.apiKey);
+    const secrets = [...new Set([config.apiKey, ...(config.knownSecrets ?? [])])];
+    const containsSecret = (value: string) => containsKnownSecret(value, secrets);
+    if (containsSecret(config.baseUrl) || containsSecret(config.model)) return undefined;
+    return new OpenAiCompatibleProvider(config);
+  } catch { return undefined; }
 };
 const runner = new ExtractionRunner({
-  root, llm, jobs, drafts, rawStates, rawStore: store, rulesDir, provider: () => currentProvider,
+  root, llm, jobs, drafts, rawStates, rawStore: store, rulesDir, provider: activeProvider,
   draftRules: async () => {
     const bundle = await loadExtractionRules(rulesDir);
     return {
@@ -76,10 +99,6 @@ const runner = new ExtractionRunner({
     };
   },
 });
-// The provider is resolved per request so a configuration change needs no restart.
-let currentProvider: LlmProvider | undefined;
-const refreshProvider = async () => { currentProvider = await providerFactory(); };
-
 await store.initialize();
 await assetStore.initialize();
 await wikiStore.initialize();
@@ -91,6 +110,7 @@ await audits.initialize();
 await prompts.initialize();
 await promptAi.initialize();
 await meetings.initialize();
+const startupRecovery=await recovery.scan(); if(startupRecovery.items.length||startupRecovery.overflow) console.warn(`本机恢复检查发现 ${startupRecovery.items.length} 个问题；原文件保留。`);
 try {
   const rawRecovery = await meetingRawBridge.reconcile();
   if (rawRecovery.resumed.length || rawRecovery.deleted.length || rawRecovery.failed.length) {
@@ -99,8 +119,6 @@ try {
 } catch (error) {
   console.error('Meeting Raw reconciliation failed:', error instanceof Error ? error.message : error);
 }
-await refreshProvider();
-
 // F03-01: repair the Raw ↔ retained-original linkage left behind by an interrupted or
 // partially committed import. Runs on every start of this data directory and never throws.
 try {
@@ -135,10 +153,19 @@ const upload = multer({
 }).single('file');
 
 const app = express();
+registerRecoveryRoutes(app,recovery);
 app.disable('x-powered-by');
 // Minute imports authorize before either JSON parsing or multipart buffering reads the body.
 registerMeetingMinutesRoutes(app, meetings);
 app.use(express.json({ limit: '3mb', strict: true }));
+// Resolve a provider only for routes that actually start AI work. A broken optional config file
+// must not prevent the manual workspace or unrelated read APIs from starting/responding.
+app.use((...args) => {
+  const req = args[0] as express.Request; const next = args[2]!;
+  const ai = (req.method === 'POST' && (/^\/api\/raw\/[^/]+\/extract$/u.test(req.path) || /^\/api\/knowledge\/(?:updates|syntheses)$/u.test(req.path) || /^\/api\/audits\/[^/]+\/propose$/u.test(req.path) || /^\/api\/prompt-ai\/(?:brief|generate|optimize|optimize\/check|drafts\/[^/]+\/rewrite)$/u.test(req.path) || /^\/api\/prompt-ai\/drafts\/[^/]+\/confirm$/u.test(req.path))) || (req.method === 'GET' && /^\/api\/prompt-ai\/drafts(?:\/[^/]+)?$/u.test(req.path));
+  if (!ai) { next(); return; }
+  void providerFactory().then(snapshot => providerContext.run({ provider: snapshot }, next)).catch(next);
+});
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/stats', async (_req, res, next) => {
   try { res.json(await getStats(root, store, new Date(), prompts)); } catch (error) { next(error); }
@@ -282,16 +309,18 @@ app.delete('/api/wiki/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 registerB04Routes(app, {
-  root, rulesDir, configFile, loadConfig, provider: () => currentProvider, llm, runner, jobs, drafts, commits, rawStates, rawStore: store, wikiStore,
+  root, rulesDir, provider: activeProvider, llm, runner, jobs, drafts, commits, rawStates, rawStore: store, wikiStore,
 });
-registerKnowledgeRoutes(app, { root, raws: store, drafts, wiki: wikiStore, provider: () => currentProvider });
-registerAuditRoutes(app, { root, audits, wiki: wikiStore, raws: store, provider: () => currentProvider });
+registerLlmConfigRoutes(app, configManager, providerFactory);
+registerKnowledgeRoutes(app, { root, raws: store, drafts, wiki: wikiStore, provider: activeProvider });
+registerAuditRoutes(app, { root, audits, wiki: wikiStore, raws: store, provider: activeProvider });
 registerPromptRoutes(app, { store: prompts });
 registerPromptAiRoutes(app, promptAi);
 registerMeetingRoutes(app, meetings, meetingRawBridge);
 
 app.use(meetingErrorMiddleware);
 app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (error instanceof ConfigError) { res.status(error.status).json({ error: { code: error.code, message: error.message } }); return; }
   if (error instanceof InputError) { res.status(error.status).json({ error: { code: error.code, message: error.message, details: error.details } }); return; }
   if (error instanceof ParseError) { res.status(error.status).json({ error: { code: error.code, message: error.message, details: error.details } }); return; }
   if (error instanceof WikiError) { res.status(error.status).json({ error: { code: error.code, message: error.message, details: error.details } }); return; }

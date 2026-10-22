@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-21T09:46:35.587Z",
+  "runtime": "v24.20.0",
+  "controlled": true,
+  "externalCalls": 0,
+  "checks": [
+    {
+      "id": "old-bound-restart-independent-http-recovery",
+      "result": "PASS",
+      "details": {
+        "oldJob": "94f59a7d-c609-480a-adc6-0e2dd553f65f",
+        "newJob": "641fe627-4f11-47f2-bede-a362c4b514e0",
+        "refusals": 6,
+        "providerDelta": 0,
+        "legacyProofMissing": false
+      }
+    },
+    {
+      "id": "missing-start-proof-refuses",
+      "result": "FAIL",
+      "error": "Error: Budget fixture settlement failed: {\"node\":\"v24.20.0\",\"job\":{\"status\":\"running\",\"stage\":\"planning\",\"callCount\":1},\"checkpoint\":{\"stage\":\"planning\",\"attempts\":2,\"validatedChunks\":1,\"diagnosticPresent\":false},\"rawStatus\":\"processing\",\"requests\":1,\"execution\":\"settled\",\"recovery\":{\"code\":\"STORAGE_WRITE_FAILED\",\"phase\":\"call-count-job\",\"persisted\":false}}\n    at Object.wait (E:\\AI\\Work\\AIPM Workspace\\tests\\support\\kb02-storage-fixture.ts:53:80)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-sr01-r1-audit-20261021-spec.mjs:14:35\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-sr01-r1-audit-20261021-spec.mjs:9:78)\n    at async file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/kb02-sr01-r1-audit-20261021-spec.mjs:11:35"
+    },
+    {
+      "id": "missing-modern-cp-restoration-keeps-ledger",
+      "result": "PASS",
+      "details": {
+        "sameJob": true,
+        "attemptsBefore": 2,
+        "attemptsAfter": 3,
+        "whileMissingProviderDelta": 0
+      }
+    }
+  ],
+  "pass": false,
+  "closed": true
+}

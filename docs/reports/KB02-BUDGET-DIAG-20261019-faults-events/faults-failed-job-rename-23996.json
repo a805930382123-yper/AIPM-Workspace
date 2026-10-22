@@ -1,0 +1,575 @@
+{
+  "node": "v25.2.1",
+  "mode": "failed-job-rename",
+  "pid": 23996,
+  "roots": [
+    "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG"
+  ],
+  "events": [
+    {
+      "ms": 126.4465,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "extracting",
+        "attempts": 0,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 128.4949,
+      "kind": "ExtractionJobStore",
+      "method": "insert",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 130.4873,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "badbfed5-5219-4ced-ad9f-32f7f02881ef",
+      "ok": true,
+      "value": {
+        "rawId": "badbfed5-5219-4ced-ad9f-32f7f02881ef",
+        "status": "processing",
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c"
+      }
+    },
+    {
+      "ms": 131.4247,
+      "kind": "ExtractionRunner",
+      "method": "start",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "badbfed5-5219-4ced-ad9f-32f7f02881ef",
+      "ok": true,
+      "value": {
+        "job": {
+          "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+          "status": "running",
+          "stage": "extracting",
+          "callCount": 0,
+          "checkpoint": {
+            "stage": "extracting",
+            "validatedChunks": 0,
+            "totalChunks": 1,
+            "resumable": false,
+            "attempts": 0,
+            "reusedChunks": 0
+          }
+        },
+        "reused": false
+      }
+    },
+    {
+      "ms": 133.2946,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 135.0363,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 0,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 135.5352,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 135.7471,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 0,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 0,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 137.4751,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 140.1598,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "extracting",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 140.5436,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 0,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 142.1422,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "planning",
+        "attempts": 1,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 142.3241,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 142.6922,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "extracting",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "extracting",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 144.007,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false
+      }
+    },
+    {
+      "ms": 144.4895,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 144.6874,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 1,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 1,
+          "reusedChunks": 0
+        }
+      }
+    },
+    {
+      "ms": 146.2485,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 149.7871,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复；可显式仅重新规划。",
+          "at": "2026-10-19T15:56:32.482Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 152.2128,
+      "kind": "ExtractionCheckpointStore",
+      "method": "save",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "stage": "planning",
+        "attempts": 2,
+        "chunksDone": 1,
+        "hasPlan": false,
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:56:32.485Z",
+          "diagnostic": {
+            "facts": {
+              "missing": [
+                "f-c1-2"
+              ],
+              "duplicate": [],
+              "unknown": []
+            },
+            "questions": {
+              "missing": [],
+              "duplicate": [],
+              "unknown": []
+            },
+            "duplicateTitles": []
+          }
+        }
+      }
+    },
+    {
+      "ms": 153.0988,
+      "kind": "ExtractionJobStore",
+      "method": "get",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": true,
+      "value": {
+        "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "status": "running",
+        "stage": "planning",
+        "callCount": 2,
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 2,
+          "reusedChunks": 1
+        }
+      }
+    },
+    {
+      "ms": 154.5171,
+      "kind": "RawStateStore",
+      "method": "set",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "badbfed5-5219-4ced-ad9f-32f7f02881ef",
+      "ok": true,
+      "value": {
+        "rawId": "badbfed5-5219-4ced-ad9f-32f7f02881ef",
+        "status": "failed",
+        "jobId": "be302ee5-46c6-4c9e-a587-62cda563596c",
+        "lastError": {
+          "code": "LLM_PLAN_COVERAGE_INVALID",
+          "message": "主题规划覆盖不完整或重复，未组装草稿。",
+          "at": "2026-10-19T15:56:32.487Z",
+          "retryable": true
+        }
+      }
+    },
+    {
+      "ms": 156.3142,
+      "kind": "rename",
+      "synthetic": true,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    },
+    {
+      "ms": 185.942,
+      "kind": "rename",
+      "synthetic": true,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    },
+    {
+      "ms": 232.7388,
+      "kind": "rename",
+      "synthetic": true,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    },
+    {
+      "ms": 295.9828,
+      "kind": "rename",
+      "synthetic": true,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    },
+    {
+      "ms": 388.8595,
+      "kind": "rename",
+      "synthetic": true,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    },
+    {
+      "ms": 495.6751,
+      "kind": "rename",
+      "synthetic": true,
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    },
+    {
+      "ms": 497.3043,
+      "kind": "ExtractionJobStore",
+      "method": "update",
+      "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG",
+      "id": "be302ee5-46c6-4c9e-a587-62cda563596c",
+      "ok": false,
+      "error": {
+        "name": "Error",
+        "code": "EPERM",
+        "message": "Synthetic diagnostic EPERM at C:/Users/80593/AppData/Local/Temp/kb02-budget-wwpGiG/state/extraction-jobs/be302ee5-46c6-4c9e-a587-62cda563596c.json",
+        "syscall": "rename",
+        "path": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\.be302ee5-46c6-4c9e-a587-62cda563596c.json.e54e9b2c-0dac-44c0-9d5b-909c4da54b85.tmp",
+        "dest": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-budget-wwpGiG\\state\\extraction-jobs\\be302ee5-46c6-4c9e-a587-62cda563596c.json"
+      }
+    }
+  ]
+}

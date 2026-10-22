@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-21T10:03:50.226Z",
+  "controlled": true,
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-budget-K4rOuh",
+  "job": {
+    "id": "d16974db-8f0c-4589-b1f9-d7e407790d2d",
+    "status": "running",
+    "stage": "planning",
+    "callCount": 2
+  },
+  "execution": "settled",
+  "recovery": {
+    "code": "STORAGE_WRITE_FAILED",
+    "message": "本机状态保存失败；请解除存储故障后重试保存状态。",
+    "phase": "call-count-job",
+    "persisted": false,
+    "action": "reconcile-storage",
+    "details": {
+      "operation": "rename",
+      "errno": "EPERM"
+    }
+  },
+  "files": [
+    {
+      "name": "job.json",
+      "size": 761,
+      "sha256": "c3f564cac8760ba9180ac89e88200772655006bf2e856c417c9cb81b46c31bc0"
+    },
+    {
+      "name": "checkpoint.json",
+      "size": 1548,
+      "sha256": "fbec4e16e12540ea04574c3f2040cb0e851335d789311994c2bedfb491427990"
+    },
+    {
+      "name": "raw-state.json",
+      "size": 850,
+      "sha256": "02329cd283975ac0f128bb7890ce9524a2fd6f7492ccb18248b923a539638d02"
+    },
+    {
+      "name": "raw.md",
+      "size": 326,
+      "sha256": "0495e9adea479c8a33c5308c6f957f6be6542a260b534ed30834c74f951f9cc5"
+    }
+  ]
+}

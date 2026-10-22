@@ -1,0 +1,22 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
+const source = process.cwd();
+const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fmcg-kb02-builder-'));
+for (const dir of ['app','server','services','rules','scripts','tests']) await fs.cp(path.join(source,dir), path.join(root,dir), { recursive: true });
+for (const file of ['package.json','package-lock.json','.env.example','.gitignore','vite.config.ts','tsconfig.json','tsconfig.app.json','tsconfig.node.json','index.html']) { try { await fs.copyFile(path.join(source,file),path.join(root,file)); } catch (error) { if (error.code !== 'ENOENT') throw error; } }
+await fs.symlink(path.join(source,'node_modules'),path.join(root,'node_modules'),'junction');
+const run = async (args) => { const child=spawn(process.execPath,args,{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']}); let output=''; child.stdout.on('data',data=>output+=data); child.stderr.on('data',data=>output+=data); const [code,signal]=await once(child,'exit'); return {code,signal,output}; };
+const buildTypecheck = await run([path.join(root,'node_modules/typescript/bin/tsc'),'-b']);
+const buildBundle = buildTypecheck.code === 0 ? await run([path.join(root,'node_modules/vite/bin/vite.js'),'build']) : {code:1,signal:null,output:'Skipped because TypeScript build failed.'};
+const build = {code:buildTypecheck.code===0?buildBundle.code:buildTypecheck.code,signal:buildTypecheck.signal??buildBundle.signal,output:`[tsc -b]\n${buildTypecheck.output}\n[vite build]\n${buildBundle.output}`};
+const testFiles=(await fs.readdir(path.join(root,'tests'))).filter(file=>file.endsWith('.test.ts')||file.endsWith('.test.tsx')).map(file=>'tests/'+file);
+const tests = await run(['--import','tsx','--import','./tests/support/css-stub.mjs','--test',...testFiles]);
+await fs.writeFile(path.join(source,'docs/reports/KB02-20261015-builder-build.log'),build.output);
+await fs.writeFile(path.join(source,'docs/reports/KB02-20261015-builder-tests.log'),tests.output);
+const evidence={temporaryRoot:root,buildExitCode:build.code,buildSignal:build.signal,testExitCode:tests.code,testSignal:tests.signal,testFiles:testFiles.length,buildSummary:build.output.split(/\r?\n/u).filter(line=>/vite v|built in|error TS|error:/u.test(line)),testSummary:tests.output.split(/\r?\n/u).filter(line=>/^ℹ (tests|pass|fail|cancelled|skipped|todo|duration)/u.test(line)),logs:['docs/reports/KB02-20261015-builder-build.log','docs/reports/KB02-20261015-builder-tests.log'],cleanup:'temporary copy retained for review; no original workspace data copied'};
+await fs.writeFile(path.join(source,'docs/reports/KB02-20261015-builder-verification.json'),JSON.stringify(evidence,null,2));
+console.log(JSON.stringify(evidence));
+process.exitCode=build.code===0&&tests.code===0?0:1;
