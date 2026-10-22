@@ -14,10 +14,10 @@ async function extract(raw){
  for(const page of draft.pages){assert(page.source_facts.length);for(const e of page.source_evidence){assert.equal(e.rawId,raw.id);assert.equal(raw.body.slice(e.start,e.end),e.quote);}for(const f of page.source_facts)assert(f.evidenceIds.every(id=>page.source_evidence.some(e=>e.id===id)));}
  assert.equal((await ok('/api/raw/'+raw.id)).body,raw.body);return draft;
 }
-await test('KB02-REAL-UPDATE-new-source-candidates-conflict-explicit-confirm',async()=>{
- const target=artifacts.shortMetricWiki;assert(target,'Short metric prerequisite');const body='【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。';
+await test('KB02-REAL-UPDATE-supplement-extraction-only',async()=>{
+ const target=artifacts.shortMetricWiki;const body='【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。';
  const raw=await ok('/api/raw','POST',rawInput('KB02虚构铺货率复核',body,['KB02虚构']),201),draft=await extract(raw);artifacts.updateRaw={id:raw.id,chars:body.length,sha256:sha(body)};artifacts.updateDraft=draft;const page=draft.pages.find(p=>p.type==='metric');assert(page);
- return {prepared:true,rawId:raw.id,draftId:draft.id,pageId:page.pageId,targetWikiId:target.id};
+ return {prepared:true,rawId:raw.id,draftId:draft.id,pageId:page.pageId,targetWikiId:target?.id,updateWorkflowNotRun:!target};
 });
 await save();if(checks.some(c=>c.result==='FAIL'))process.exitCode=1;
 

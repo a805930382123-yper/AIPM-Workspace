@@ -1,0 +1,6 @@
+import fs from 'node:fs/promises';
+const p='docs/reports/KB02-SOURCE-AUDIT-20261022-',s=JSON.parse(await fs.readFile(p+'local-safety.json','utf8')),lab=JSON.parse(await fs.readFile(p+'main-lab-final.json','utf8'));
+await fs.writeFile(p+'budget.json',JSON.stringify({at:new Date().toISOString(),previousUsed:126,cap:200,currentReviewUsed:s.budget.current,cumulativeUsed:s.budget.cumulative,remaining:200-s.budget.cumulative,phaseCap:24,phaseRemaining:24-s.budget.current,promptSeparate:{used:15,limit:24},sequences:{networkFailure:127,originalDiagnostic:128,long:[129,143],shortFailure:144,supplement:[145,146]},noMoreCalls:true},null,2));
+await fs.writeFile(p+'browser-status.json',JSON.stringify({at:new Date().toISOString(),result:'NOT_RUN',inventory:{apps:[],browsers:[]},iab:'Browser is not available: iab',chrome:'Browser is not available: chrome',tabsCreated:0,fallback:'User permission for other UI automation not received; no bypass',updateChain:'NOT_RUN: short extraction failed before existing target creation'},null,2));
+if(!lab.servicesClosed||!lab.logsNoSecret)throw Error('Service cleanup check failed');
+console.log(JSON.stringify({servicesClosed:lab.servicesClosed,logsNoSecret:lab.logsNoSecret}));

@@ -1,0 +1,132 @@
+{
+  "at": "2026-10-22T13:21:23.966Z",
+  "sequence": 144,
+  "raw": {
+    "title": "验收资料 KB02虚构短文",
+    "sourceType": "report",
+    "sourceName": "隔离样本 KB02虚构短文",
+    "author": "验收样本",
+    "publishedAt": "2026-10-01",
+    "url": "https://example.com/b05-fixture",
+    "tags": [
+      "KB02虚构"
+    ],
+    "id": "35f6823e-07c4-43d5-b2ad-f0ff98d71a08",
+    "importedAt": "2026-10-22T13:20:02.144Z",
+    "status": "unprocessed",
+    "bodySha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+    "body": "【虚构验收资料，不是真实业务】\n虚构饮料甲在2026年9月的甲桥区域有100家目标门店，其中20家在售。铺货率定义为在售门店数除以目标门店数，即20÷100=20%。这里的门店数不能解释为销量。\n异常审批负责人待访谈确认；AI异常提示只是未来建议，没有上线或收益事实。"
+  },
+  "job": {
+    "jobId": "8c1ff463-3db7-465a-ba47-6fdb6959fbfe",
+    "rawId": "35f6823e-07c4-43d5-b2ad-f0ff98d71a08",
+    "status": "failed",
+    "stage": "extracting",
+    "progress": {
+      "chunksTotal": 1,
+      "chunksDone": 0,
+      "pagesFound": 0
+    },
+    "draftId": null,
+    "error": {
+      "code": "LLM_SCHEMA_INVALID",
+      "message": "不能将空白分隔符选择为陈述。",
+      "at": "2026-10-22T13:20:06.548Z",
+      "retryable": true
+    },
+    "provider": {
+      "name": "openai-compatible",
+      "model": "GLM-5.3-Flash"
+    },
+    "callCount": 1,
+    "startedAt": "2026-10-22T13:20:02.156Z",
+    "finishedAt": "2026-10-22T13:20:06.562Z",
+    "cancelRequested": false,
+    "pipelineVersion": "kb02-2",
+    "checkpoint": {
+      "stage": "extracting",
+      "validatedChunks": 0,
+      "totalChunks": 1,
+      "resumable": true,
+      "attempts": 1,
+      "reusedChunks": 0,
+      "reason": "不能将空白分隔符选择为陈述。"
+    },
+    "execution": "settled",
+    "recovery": null
+  },
+  "checkpoint": {
+    "version": 1,
+    "jobId": "8c1ff463-3db7-465a-ba47-6fdb6959fbfe",
+    "rawId": "35f6823e-07c4-43d5-b2ad-f0ff98d71a08",
+    "rawSha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+    "pipelineVersion": "kb02-2",
+    "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-8-7ae1409ead71",
+    "providerIdentity": "https://open.bigmodel.cn/api/coding/paas/v4|GLM-5.3-Flash",
+    "chunks": [
+      {
+        "index": 0,
+        "start": 0,
+        "end": 134
+      }
+    ],
+    "completedChunks": [],
+    "attempts": 1,
+    "stage": "extracting",
+    "updatedAt": "2026-10-22T13:20:06.548Z",
+    "integrity": "c284945a4aea1e43b8bc7c6c0015ce49ca46d9a50afe96a9a1667dc58bd968b8",
+    "lastError": {
+      "code": "LLM_SCHEMA_INVALID",
+      "message": "不能将空白分隔符选择为陈述。",
+      "at": "2026-10-22T13:20:06.548Z"
+    }
+  },
+  "blankAtoms": [
+    {
+      "id": "c1-a0005",
+      "text": "\n",
+      "fragment": false
+    }
+  ],
+  "response": {
+    "version": 2,
+    "facts": [
+      {
+        "atomId": "c1-a0002",
+        "kind": "fact"
+      },
+      {
+        "atomId": "c1-a0003",
+        "kind": "fact"
+      },
+      {
+        "atomId": "c1-a0004",
+        "kind": "fact"
+      },
+      {
+        "atomId": "c1-a0006",
+        "kind": "fact"
+      },
+      {
+        "atomId": "c1-a0007",
+        "kind": "fact"
+      }
+    ],
+    "questions": [
+      {
+        "atomId": "c1-a0006"
+      }
+    ],
+    "sourceNotes": [
+      {
+        "atomId": "c1-a0001"
+      },
+      {
+        "atomId": "c1-a0005"
+      }
+    ]
+  },
+  "rawUnchanged": true,
+  "draftAbsent": true,
+  "classification": "real model selected blank separator as sourceNotes; strict service rejection; no automatic retry"
+}
