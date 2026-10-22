@@ -1,0 +1,18 @@
+{
+  "batch": "KB02-EDGE-20261022",
+  "modified": [
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/rules.ts",
+    "app/pages/WikiPage.tsx",
+    "tests/llm.test.ts",
+    "tests/kb02-extraction-contract.test.ts",
+    "tests/kb02-final-classification.test.ts",
+    "tests/kb02-classification-priority.test.ts",
+    "tests/kb02-planning-context.test.ts"
+  ],
+  "addedTests": ["tests/kb02-edge-extraction.test.ts", "tests/wiki-selection.test.tsx"],
+  "constructionAssetPrefix": "KB02-EDGE-20261022",
+  "excludedAuditPrefix": "KB02-EDGE-AUDIT-20261022",
+  "deferredKnownIssue": "F-KB02-EDGE-DIAG-UI-02/P2 search response ordering is unchanged and not repaired in this scope",
+  "realProviderCalls": 0
+}

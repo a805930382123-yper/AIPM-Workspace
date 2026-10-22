@@ -1,0 +1,35 @@
+✔ EDGE original seq144 bad selection remains rejected although its blank atom is absent from the request (60.2806ms)
+✔ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (33.8178ms)
+✔ EDGE facts blank selection fails intact without partial chunk save (13.2431ms)
+✔ EDGE facts unknown selection fails intact without partial chunk save (11.2727ms)
+✔ EDGE facts cross-chunk selection fails intact without partial chunk save (10.9414ms)
+✔ EDGE questions blank selection fails intact without partial chunk save (9.936ms)
+✔ EDGE questions unknown selection fails intact without partial chunk save (11.3085ms)
+✔ EDGE questions cross-chunk selection fails intact without partial chunk save (10.2553ms)
+✔ EDGE sourceNotes blank selection fails intact without partial chunk save (11.2694ms)
+✔ EDGE sourceNotes unknown selection fails intact without partial chunk save (12.8786ms)
+✔ EDGE sourceNotes cross-chunk selection fails intact without partial chunk save (13.2338ms)
+✔ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (22.1545ms)
+✔ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8112 chars) (37.0751ms)
+✔ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (20.2602ms)
+✔ EDGE no-business input retains empty/source-only chunk and exact call accounting (7 chars) (13.5157ms)
+✔ EDGE no-business input retains empty/source-only chunk and exact call accounting (9 chars) (13.1768ms)
+✔ EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks (169.8668ms)
+✔ EDGE completed revision8 draft remains HTTP-readable and reused with no additional Provider call (110.3146ms)
+✔ EDGE Wiki repeated selected clicks keep loaded detail and do not start redundant reads (189.5121ms)
+✔ EDGE Wiki selected clicks during initial load preserve the existing request and eventually show detail (139.2951ms)
+✔ EDGE Wiki A→B→A ignores a delayed B response and same-item clicks do not clear the restored A (169.4637ms)
+✔ EDGE Wiki click same item exits editing and keeps its loaded reading content (123.2029ms)
+✔ EDGE Wiki ordinary search retains matching current selection, selects another result and clears safely (529.029ms)
+✔ EDGE Wiki selected click invalidates an older refresh response without clearing the current detail (155.4098ms)
+✔ EDGE Wiki selected click invalidates an older save/readback and returns from edit to current detail (159.1319ms)
+✔ EDGE Wiki recent-open wiki-b remains readable or reports missing explicitly (124.9055ms)
+✔ EDGE Wiki recent-open missing-wiki remains readable or reports missing explicitly (15.9351ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2665.5663

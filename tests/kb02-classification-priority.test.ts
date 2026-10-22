@@ -112,7 +112,7 @@ test('KB02 Q02 full seq62 original response and exact original atom catalog stil
     const base={...old.oldCheckpoint,jobId:f.checkpoint.jobId,rawId:f.args.raw.id,rulesVersion:f.bundle.rulesVersion};
     for(const chunk of base.completedChunks)for(const e of chunk.evidence)e.rawId=f.args.raw.id;
     const checkpoint=await f.store.save(base),before=structuredClone(checkpoint.completedChunks),callsBefore=f.requests.length;
-    f.reply(r=>{assert.deepEqual(atomsOf(r),old.atoms);return old.response;});
+    f.reply(r=>{assert.deepEqual(atomsOf(r),old.atoms.filter((atom:Atom)=>atom.text.trim().length>0));return old.response;});
     await assert.rejects(runKnowledgePipeline({...f.args,checkpoint,beforeCall:async(stage)=>f.store.save({...checkpoint,stage,attempts:checkpoint.attempts+1})}),
       (e:unknown)=>e instanceof LlmError&&e.code==='LLM_SCHEMA_INVALID'&&e.message==='来源声明与事实/问题分类冲突。');
     assert.equal(f.requests.length-callsBefore,1);assert.deepEqual((await f.store.get(checkpoint.jobId))!.completedChunks,before);assert(!(await f.store.get(checkpoint.jobId))!.plan);
@@ -122,7 +122,7 @@ test('KB02 Q02 full seq62 original response and exact original atom catalog stil
 
 test('KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes',async()=>{
   const originalBytes=await readFile(originalPath),old=JSON.parse(originalBytes.toString()),f=await fixture(old.body);try{
-    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-8');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
+    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-9');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
     assert.equal(old.oldCheckpoint.completedChunks.length,6);assert.equal(old.oldCheckpoint.completedChunks.flatMap((c:{facts:Array<{text:string}>})=>c.facts).filter((x:{text:string})=>/排版说明|长文验收附录/u.test(x.text)).length,11);
     const checkpoint=await f.store.save(old.oldCheckpoint),file=path.join(f.root,'state/extraction-checkpoints',checkpoint.jobId+'.json'),bytes=await readFile(file);
     const args={...f.args,raw:old.raw,checkpoint};

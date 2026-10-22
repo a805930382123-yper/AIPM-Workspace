@@ -1,0 +1,204 @@
+{
+  "at": "2026-10-22T13:50:59.492Z",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\kb02-edge-sol-rMFeiE",
+  "runtime": "v25.2.1",
+  "copyMismatch": [],
+  "rows": [
+    {
+      "name": "fullsuite",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/app-m05-raw-navigation.test.tsx",
+        "tests/app-navigation.test.tsx",
+        "tests/audit-secret-integrity.test.ts",
+        "tests/audit.test.ts",
+        "tests/b05.test.ts",
+        "tests/import.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-edge-extraction.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-final-agreement.test.ts",
+        "tests/kb02-final-classification.test.ts",
+        "tests/kb02-job-file-access.test.ts",
+        "tests/kb02-pipeline.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-planning-context.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/kb02-source-assignment.test.ts",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-ui.test.tsx",
+        "tests/llm-flow.test.ts",
+        "tests/llm-http.test.ts",
+        "tests/llm-repair.test.ts",
+        "tests/llm-repair2.test.ts",
+        "tests/llm-repair3.test.ts",
+        "tests/llm.test.ts",
+        "tests/meeting-integration-m05.test.tsx",
+        "tests/meeting-minutes-backup.test.ts",
+        "tests/meeting-minutes.test.ts",
+        "tests/meeting-raw-m04.test.ts",
+        "tests/meeting-raw-ui-m04.test.tsx",
+        "tests/meeting-ui.test.tsx",
+        "tests/meeting.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-recovery.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/prompt-ai.test.ts",
+        "tests/prompt-ui.test.tsx",
+        "tests/prompt.test.ts",
+        "tests/provider-config-ui.test.tsx",
+        "tests/provider-config.test.ts",
+        "tests/provider-knowledge-reasoning.test.ts",
+        "tests/raw-integrity.test.ts",
+        "tests/raw.test.ts",
+        "tests/security-output-sec.test.ts",
+        "tests/ui-b04.test.tsx",
+        "tests/ui-interaction.test.tsx",
+        "tests/ui.test.tsx",
+        "tests/wiki-selection.test.tsx",
+        "tests/wiki.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 23182,
+      "summary": [
+        "ℹ tests 385",
+        "ℹ pass 385",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 23051.6635"
+      ]
+    },
+    {
+      "name": "tsc",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "-b"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 3800,
+      "summary": []
+    },
+    {
+      "name": "vite",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "build"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 2883,
+      "summary": []
+    },
+    {
+      "name": "historical-boundary",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/acceptance/KB02-FINAL-REPAIR-AUDIT-20261022-boundary.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 692,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 404.3305"
+      ]
+    },
+    {
+      "name": "node24-version",
+      "command": [
+        "C:\\Users\\80593\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--version"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 129,
+      "summary": []
+    },
+    {
+      "name": "node24-sr01",
+      "command": [
+        "C:\\Users\\80593\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-job-file-access.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-ui.test.tsx"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 18259,
+      "summary": [
+        "ℹ tests 51",
+        "ℹ pass 51",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 18114.5188"
+      ]
+    },
+    {
+      "name": "node24-related",
+      "command": [
+        "C:\\Users\\80593\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-edge-extraction.test.ts",
+        "tests/wiki-selection.test.tsx",
+        "tests/kb02-source-assignment.test.ts",
+        "tests/kb02-planning-context.test.ts",
+        "tests/kb02-final-classification.test.ts",
+        "tests/kb02-final-agreement.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/b05.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 3541,
+      "summary": [
+        "ℹ tests 106",
+        "ℹ pass 106",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 3405.7858"
+      ]
+    }
+  ],
+  "realProviderCalls": 0,
+  "afterCopyChanges": [],
+  "pass": true
+}

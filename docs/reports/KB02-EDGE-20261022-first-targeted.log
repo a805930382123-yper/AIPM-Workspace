@@ -1,0 +1,324 @@
+✖ EDGE original seq144 bad selection remains rejected although its blank atom is absent from the request (386.4582ms)
+✖ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (353.9993ms)
+✖ EDGE facts blank selection fails intact without partial chunk save (357.9668ms)
+✖ EDGE facts unknown selection fails intact without partial chunk save (345.2296ms)
+✖ EDGE facts cross-chunk selection fails intact without partial chunk save (358.8903ms)
+✖ EDGE questions blank selection fails intact without partial chunk save (346.9222ms)
+✖ EDGE questions unknown selection fails intact without partial chunk save (347.0288ms)
+✖ EDGE questions cross-chunk selection fails intact without partial chunk save (341.4816ms)
+✖ EDGE sourceNotes blank selection fails intact without partial chunk save (341.4193ms)
+✖ EDGE sourceNotes unknown selection fails intact without partial chunk save (341.0896ms)
+✖ EDGE sourceNotes cross-chunk selection fails intact without partial chunk save (344.3478ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (341.2392ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8042 chars) (341.4843ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (356.8597ms)
+✖ EDGE no-business input retains empty/source-only chunk and exact call accounting (7 chars) (360.6276ms)
+✖ EDGE no-business input retains empty/source-only chunk and exact call accounting (9 chars) (343.4681ms)
+✖ EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks (13.1311ms)
+✖ EDGE completed revision8 draft remains HTTP-readable and reused with no additional Provider call (11.8784ms)
+✔ EDGE Wiki repeated selected clicks keep loaded detail and do not start redundant reads (181.0081ms)
+✔ EDGE Wiki selected clicks during initial load preserve the existing request and eventually show detail (171.2027ms)
+✔ EDGE Wiki A→B→A ignores a delayed B response and same-item clicks do not clear the restored A (171.5172ms)
+✔ EDGE Wiki click same item exits editing and keeps its loaded reading content (140.7916ms)
+✔ EDGE Wiki ordinary search retains matching current selection, selects another result and clears safely (535.8828ms)
+✔ EDGE Wiki selected click invalidates an older refresh response without clearing the current detail (171.5134ms)
+✔ EDGE Wiki selected click invalidates an older save/readback and returns from edit to current detail (170.3194ms)
+✔ EDGE Wiki recent-open wiki-b remains readable or reports missing explicitly (125.298ms)
+✖ EDGE Wiki recent-open missing-wiki remains readable or reports missing explicitly (1586.3988ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 8
+ℹ fail 19
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6287.2255
+
+✖ failing tests:
+
+test at tests\kb02-edge-extraction.test.ts:1:2980
+✖ EDGE original seq144 bad selection remains rejected although its blank atom is absent from the request (386.4582ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-qkZJgI\state\extraction-checkpoints\.8ab3e694-b672-45b5-8fa2-612d7bf6bfe5.json.602a6f5d-7d16-4c18-906e-69cc847fa587.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-qkZJgI\state\extraction-checkpoints\8ab3e694-b672-45b5-8fa2-612d7bf6bfe5.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-qkZJgI\\state\\extraction-checkpoints\\.8ab3e694-b672-45b5-8fa2-612d7bf6bfe5.json.602a6f5d-7d16-4c18-906e-69cc847fa587.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-qkZJgI\\state\\extraction-checkpoints\\8ab3e694-b672-45b5-8fa2-612d7bf6bfe5.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:3668
+✖ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (353.9993ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-KSMWXK\state\extraction-checkpoints\.7ac21f16-ba7a-48d3-a299-c5a35d6baedc.json.a5d632d2-2fd9-46ae-9d90-c3442e574280.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-KSMWXK\state\extraction-checkpoints\7ac21f16-ba7a-48d3-a299-c5a35d6baedc.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-KSMWXK\\state\\extraction-checkpoints\\.7ac21f16-ba7a-48d3-a299-c5a35d6baedc.json.a5d632d2-2fd9-46ae-9d90-c3442e574280.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-KSMWXK\\state\\extraction-checkpoints\\7ac21f16-ba7a-48d3-a299-c5a35d6baedc.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE facts blank selection fails intact without partial chunk save (357.9668ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-NLVOeT\state\extraction-checkpoints\.d3f99333-76be-427d-8808-6f10f99a7c1f.json.8e4938b4-9478-4941-b335-46fa6247b98c.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-NLVOeT\state\extraction-checkpoints\d3f99333-76be-427d-8808-6f10f99a7c1f.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-NLVOeT\\state\\extraction-checkpoints\\.d3f99333-76be-427d-8808-6f10f99a7c1f.json.8e4938b4-9478-4941-b335-46fa6247b98c.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-NLVOeT\\state\\extraction-checkpoints\\d3f99333-76be-427d-8808-6f10f99a7c1f.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE facts unknown selection fails intact without partial chunk save (345.2296ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-R5PRTR\state\extraction-checkpoints\.0b8d9343-93bb-4009-9fff-4c435063f9a6.json.e3a626cf-0360-4384-afd1-c74eeb8183e3.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-R5PRTR\state\extraction-checkpoints\0b8d9343-93bb-4009-9fff-4c435063f9a6.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-R5PRTR\\state\\extraction-checkpoints\\.0b8d9343-93bb-4009-9fff-4c435063f9a6.json.e3a626cf-0360-4384-afd1-c74eeb8183e3.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-R5PRTR\\state\\extraction-checkpoints\\0b8d9343-93bb-4009-9fff-4c435063f9a6.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE facts cross-chunk selection fails intact without partial chunk save (358.8903ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-xnZOCn\state\extraction-checkpoints\.b3ddc087-b054-472b-b607-3cbab1e6ff96.json.f2412542-4513-4b26-af02-832f0720a5ac.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-xnZOCn\state\extraction-checkpoints\b3ddc087-b054-472b-b607-3cbab1e6ff96.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-xnZOCn\\state\\extraction-checkpoints\\.b3ddc087-b054-472b-b607-3cbab1e6ff96.json.f2412542-4513-4b26-af02-832f0720a5ac.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-xnZOCn\\state\\extraction-checkpoints\\b3ddc087-b054-472b-b607-3cbab1e6ff96.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE questions blank selection fails intact without partial chunk save (346.9222ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-fRCK2P\state\extraction-checkpoints\.51f563e6-33e5-48cc-8c68-4367c816c955.json.0fc19dfd-6ae7-4733-a5a3-eac9a6bc7153.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-fRCK2P\state\extraction-checkpoints\51f563e6-33e5-48cc-8c68-4367c816c955.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-fRCK2P\\state\\extraction-checkpoints\\.51f563e6-33e5-48cc-8c68-4367c816c955.json.0fc19dfd-6ae7-4733-a5a3-eac9a6bc7153.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-fRCK2P\\state\\extraction-checkpoints\\51f563e6-33e5-48cc-8c68-4367c816c955.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE questions unknown selection fails intact without partial chunk save (347.0288ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-3CADKy\state\extraction-checkpoints\.7bbcc0bc-c479-4533-9632-79c54df65fea.json.cb9da95d-4a43-422e-b468-a69a81cdef4c.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-3CADKy\state\extraction-checkpoints\7bbcc0bc-c479-4533-9632-79c54df65fea.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-3CADKy\\state\\extraction-checkpoints\\.7bbcc0bc-c479-4533-9632-79c54df65fea.json.cb9da95d-4a43-422e-b468-a69a81cdef4c.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-3CADKy\\state\\extraction-checkpoints\\7bbcc0bc-c479-4533-9632-79c54df65fea.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE questions cross-chunk selection fails intact without partial chunk save (341.4816ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-2maakJ\state\extraction-checkpoints\.992531e9-3bb7-4497-8c00-cdc1e679e4d4.json.af793baa-b3da-4667-af9f-1bf431c9f597.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-2maakJ\state\extraction-checkpoints\992531e9-3bb7-4497-8c00-cdc1e679e4d4.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-2maakJ\\state\\extraction-checkpoints\\.992531e9-3bb7-4497-8c00-cdc1e679e4d4.json.af793baa-b3da-4667-af9f-1bf431c9f597.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-2maakJ\\state\\extraction-checkpoints\\992531e9-3bb7-4497-8c00-cdc1e679e4d4.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE sourceNotes blank selection fails intact without partial chunk save (341.4193ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-34khXE\state\extraction-checkpoints\.15428316-47d3-489e-a947-70f5d266e06b.json.35a71c68-77c1-4825-a91e-e5ec302c7cb0.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-34khXE\state\extraction-checkpoints\15428316-47d3-489e-a947-70f5d266e06b.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-34khXE\\state\\extraction-checkpoints\\.15428316-47d3-489e-a947-70f5d266e06b.json.35a71c68-77c1-4825-a91e-e5ec302c7cb0.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-34khXE\\state\\extraction-checkpoints\\15428316-47d3-489e-a947-70f5d266e06b.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE sourceNotes unknown selection fails intact without partial chunk save (341.0896ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-0PxrUw\state\extraction-checkpoints\.beb590c8-d723-49e2-809c-7a1c4fd868f8.json.af89ec17-6063-454e-889c-3970e222367f.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-0PxrUw\state\extraction-checkpoints\beb590c8-d723-49e2-809c-7a1c4fd868f8.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-0PxrUw\\state\\extraction-checkpoints\\.beb590c8-d723-49e2-809c-7a1c4fd868f8.json.af89ec17-6063-454e-889c-3970e222367f.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-0PxrUw\\state\\extraction-checkpoints\\beb590c8-d723-49e2-809c-7a1c4fd868f8.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:5224
+✖ EDGE sourceNotes cross-chunk selection fails intact without partial chunk save (344.3478ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-3icroK\state\extraction-checkpoints\.feafa361-5df9-407f-b8f4-fc53b35c4a0b.json.40a77dbb-894a-4f72-9335-983989b9b2b3.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-3icroK\state\extraction-checkpoints\feafa361-5df9-407f-b8f4-fc53b35c4a0b.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-3icroK\\state\\extraction-checkpoints\\.feafa361-5df9-407f-b8f4-fc53b35c4a0b.json.40a77dbb-894a-4f72-9335-983989b9b2b3.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-3icroK\\state\\extraction-checkpoints\\feafa361-5df9-407f-b8f4-fc53b35c4a0b.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:6116
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (341.2392ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-1b1pMA\state\extraction-checkpoints\.bb8480e8-48ad-4b4a-a9e9-8a4cf1e9ec12.json.1e73c4fd-c468-4c31-b7fc-e80c0f57d0f5.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-1b1pMA\state\extraction-checkpoints\bb8480e8-48ad-4b4a-a9e9-8a4cf1e9ec12.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-1b1pMA\\state\\extraction-checkpoints\\.bb8480e8-48ad-4b4a-a9e9-8a4cf1e9ec12.json.1e73c4fd-c468-4c31-b7fc-e80c0f57d0f5.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-1b1pMA\\state\\extraction-checkpoints\\bb8480e8-48ad-4b4a-a9e9-8a4cf1e9ec12.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:6116
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8042 chars) (341.4843ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-A4y3mL\state\extraction-checkpoints\.da650b68-48e3-4b26-90d9-e75c60a986b7.json.d25f76af-2bb3-4ceb-936d-d97b6cb17352.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-A4y3mL\state\extraction-checkpoints\da650b68-48e3-4b26-90d9-e75c60a986b7.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-A4y3mL\\state\\extraction-checkpoints\\.da650b68-48e3-4b26-90d9-e75c60a986b7.json.d25f76af-2bb3-4ceb-936d-d97b6cb17352.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-A4y3mL\\state\\extraction-checkpoints\\da650b68-48e3-4b26-90d9-e75c60a986b7.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:6116
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (356.8597ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-5umS2O\state\extraction-checkpoints\.bf5bbdd1-5d9d-4473-9d2a-13052049e79d.json.26524822-be53-481b-a2b5-371ce1f888dc.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-5umS2O\state\extraction-checkpoints\bf5bbdd1-5d9d-4473-9d2a-13052049e79d.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-5umS2O\\state\\extraction-checkpoints\\.bf5bbdd1-5d9d-4473-9d2a-13052049e79d.json.26524822-be53-481b-a2b5-371ce1f888dc.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-5umS2O\\state\\extraction-checkpoints\\bf5bbdd1-5d9d-4473-9d2a-13052049e79d.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:7092
+✖ EDGE no-business input retains empty/source-only chunk and exact call accounting (7 chars) (360.6276ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-kdByRj\state\extraction-checkpoints\.e97b696b-17e3-47d0-912d-d8f250d90c71.json.60f07020-4e65-44f4-8a6c-1f1c23774adc.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-kdByRj\state\extraction-checkpoints\e97b696b-17e3-47d0-912d-d8f250d90c71.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-kdByRj\\state\\extraction-checkpoints\\.e97b696b-17e3-47d0-912d-d8f250d90c71.json.60f07020-4e65-44f4-8a6c-1f1c23774adc.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-kdByRj\\state\\extraction-checkpoints\\e97b696b-17e3-47d0-912d-d8f250d90c71.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:7092
+✖ EDGE no-business input retains empty/source-only chunk and exact call accounting (9 chars) (343.4681ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-KxjDLO\state\extraction-checkpoints\.1af8e1ec-c62c-40f7-928e-7694cbe5356d.json.19408403-8c73-4fc7-82d0-3b7031748f00.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-edge-KxjDLO\state\extraction-checkpoints\1af8e1ec-c62c-40f7-928e-7694cbe5356d.json'
+      at async rename (node:internal/fs/promises:786:10)
+      at async renameAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:20:11)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\storage\files.ts:35:7)
+      at async writeJsonAtomic (E:\AI\Work\AIPM Workspace\services\storage\files.ts:44:3)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\checkpoints.ts:109:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-KxjDLO\\state\\extraction-checkpoints\\.1af8e1ec-c62c-40f7-928e-7694cbe5356d.json.19408403-8c73-4fc7-82d0-3b7031748f00.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-edge-KxjDLO\\state\\extraction-checkpoints\\1af8e1ec-c62c-40f7-928e-7694cbe5356d.json'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:7790
+✖ EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks (13.1311ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-budget-OuDHbx\knowledge\raw\reports\.a9fe31b4-031d-4878-a277-57db4c690f39.192af252-96b5-48b7-8509-70e92fe64c0c.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-budget-OuDHbx\knowledge\raw\reports\a9fe31b4-031d-4878-a277-57db4c690f39.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\tests\support\kb02-storage-fixture.ts:20:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:61:31)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-budget-OuDHbx\\knowledge\\raw\\reports\\.a9fe31b4-031d-4878-a277-57db4c690f39.192af252-96b5-48b7-8509-70e92fe64c0c.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-budget-OuDHbx\\knowledge\\raw\\reports\\a9fe31b4-031d-4878-a277-57db4c690f39.md'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:10182
+✖ EDGE completed revision8 draft remains HTTP-readable and reused with no additional Provider call (11.8784ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-budget-DPW9Lu\knowledge\raw\reports\.964e4019-99f7-4726-b7e4-a55ca57ae168.05e0ad57-108d-4e47-bb57-35d31d067ba8.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\AC\Temp\kb02-budget-DPW9Lu\knowledge\raw\reports\964e4019-99f7-4726-b7e4-a55ca57ae168.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\tests\support\kb02-storage-fixture.ts:20:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:71:31)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-budget-DPW9Lu\\knowledge\\raw\\reports\\.964e4019-99f7-4726-b7e4-a55ca57ae168.05e0ad57-108d-4e47-bb57-35d31d067ba8.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{14e352a8-6843-4b44-a7cb-37f1b4c149fe}\\AC\\Temp\\kb02-budget-DPW9Lu\\knowledge\\raw\\reports\\964e4019-99f7-4726-b7e4-a55ca57ae168.md'
+  }
+
+test at tests\wiki-selection.test.tsx:1:9921
+✖ EDGE Wiki recent-open missing-wiki remains readable or reports missing explicitly (1586.3988ms)
+  AssertionError [ERR_ASSERTION]: Timeout missing recent
+      at wait (E:\AI\Work\AIPM Workspace\tests\wiki-selection.test.tsx:9:140)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\wiki-selection.test.tsx:47:239)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'fail',
+    diff: 'simple'
+  }

@@ -1,0 +1,210 @@
+{
+  "at": "2026-10-22T13:44:14.374Z",
+  "realProviderCalls": 0,
+  "short": {
+    "originalReplay": {
+      "error": {
+        "code": "LLM_SCHEMA_INVALID",
+        "message": "不能将空白分隔符选择为陈述。"
+      },
+      "calls": 1,
+      "completedChunks": 0,
+      "attempts": 2,
+      "blankVisibleInActualRequest": true
+    },
+    "allColumns": {
+      "facts": {
+        "error": {
+          "code": "LLM_SCHEMA_INVALID",
+          "message": "不能将空白分隔符选择为陈述。"
+        },
+        "calls": 1,
+        "completedChunks": 0,
+        "attempts": 2,
+        "blankVisibleInActualRequest": true
+      },
+      "questions": {
+        "error": {
+          "code": "LLM_SCHEMA_INVALID",
+          "message": "不能将空白分隔符选择为陈述。"
+        },
+        "calls": 1,
+        "completedChunks": 0,
+        "attempts": 2,
+        "blankVisibleInActualRequest": true
+      },
+      "sourceNotes": {
+        "error": {
+          "code": "LLM_SCHEMA_INVALID",
+          "message": "不能将空白分隔符选择为陈述。"
+        },
+        "calls": 1,
+        "completedChunks": 0,
+        "attempts": 2,
+        "blankVisibleInActualRequest": true
+      }
+    },
+    "proposedInputProjection": [
+      {
+        "chars": 134,
+        "atomCount": 7,
+        "blankCount": 1,
+        "retainedIds": [
+          "c1-a0001",
+          "c1-a0002",
+          "c1-a0003",
+          "c1-a0004",
+          "c1-a0006",
+          "c1-a0007"
+        ],
+        "allNonWhitespaceCharactersCovered": true,
+        "exactTextAndStableOriginalIds": true
+      },
+      {
+        "chars": 7,
+        "atomCount": 3,
+        "blankCount": 3,
+        "retainedIds": [],
+        "allNonWhitespaceCharactersCovered": true,
+        "exactTextAndStableOriginalIds": true
+      },
+      {
+        "chars": 23,
+        "atomCount": 6,
+        "blankCount": 3,
+        "retainedIds": [
+          "c1-a0002",
+          "c1-a0003",
+          "c1-a0006"
+        ],
+        "allNonWhitespaceCharactersCovered": true,
+        "exactTextAndStableOriginalIds": true
+      },
+      {
+        "chars": 10,
+        "atomCount": 3,
+        "blankCount": 2,
+        "retainedIds": [
+          "c1-a0003"
+        ],
+        "allNonWhitespaceCharactersCovered": true,
+        "exactTextAndStableOriginalIds": true
+      },
+      {
+        "chars": 521,
+        "atomCount": 4,
+        "blankCount": 1,
+        "retainedIds": [
+          "c1-a0001",
+          "c1-a0002",
+          "c1-a0004"
+        ],
+        "allNonWhitespaceCharactersCovered": true,
+        "exactTextAndStableOriginalIds": true
+      },
+      {
+        "chars": 8,
+        "atomCount": 2,
+        "blankCount": 0,
+        "retainedIds": [
+          "c1-a0001",
+          "c1-a0002"
+        ],
+        "allNonWhitespaceCharactersCovered": true,
+        "exactTextAndStableOriginalIds": true
+      }
+    ],
+    "blank": [
+      {
+        "id": "c1-a0005",
+        "text": "\n",
+        "start": 97,
+        "end": 98,
+        "locatorIds": [
+          "c1-l001"
+        ],
+        "fragment": false
+      }
+    ],
+    "originalSelectedBusinessIds": [
+      "c1-a0002",
+      "c1-a0003",
+      "c1-a0004",
+      "c1-a0006",
+      "c1-a0007"
+    ],
+    "nonemptySourceNotePreserved": {
+      "id": "c1-a0001",
+      "text": "【虚构验收资料，不是真实业务】\n",
+      "start": 0,
+      "end": 16,
+      "locatorIds": [
+        "c1-l001"
+      ],
+      "fragment": false
+    },
+    "noBusinessBoundaries": [
+      {
+        "chars": 5,
+        "retainedSourceNotes": 0,
+        "calls": 1,
+        "checkpointAttempts": 1,
+        "error": {
+          "code": "LLM_EMPTY_RESULT",
+          "message": "整篇没有可规划的已验证事实（EMPTY_RESULT）。"
+        },
+        "planAbsent": true
+      },
+      {
+        "chars": 9,
+        "retainedSourceNotes": 1,
+        "calls": 1,
+        "checkpointAttempts": 1,
+        "error": {
+          "code": "LLM_EMPTY_RESULT",
+          "message": "整篇没有可规划的已验证事实（EMPTY_RESULT）。"
+        },
+        "planAbsent": true
+      }
+    ]
+  },
+  "ui": {
+    "sameItem": {
+      "initiallyLoaded": true,
+      "clearedAfterReclick": true,
+      "detailCallsBefore": 1,
+      "detailCallsAfter": 1,
+      "stillEmptyAfter120ms": true
+    },
+    "switchRestores": true,
+    "delayedOtherDetailIgnored": true,
+    "staleSearchList": {
+      "observed": true,
+      "query": "快",
+      "visibleItems": [
+        "指虚构指标甲指标 · 指标待验证"
+      ],
+      "detailStillB": true
+    },
+    "requests": [
+      "/api/wiki/schema",
+      "/api/raw?summary=true",
+      "/api/drafts?status=pending_confirmation",
+      "/api/knowledge/workflows",
+      "/api/wiki?",
+      "/api/wiki/wiki-a",
+      "/api/audits?wikiId=wiki-a",
+      "/api/wiki/wiki-b",
+      "/api/audits?wikiId=wiki-b",
+      "/api/wiki/wiki-a",
+      "/api/audits?wikiId=wiki-a",
+      "/api/wiki/wiki-b",
+      "/api/wiki/wiki-a",
+      "/api/audits?wikiId=wiki-a",
+      "/api/wiki?q=%E6%85%A2",
+      "/api/wiki?q=%E5%BF%AB",
+      "/api/wiki/wiki-b",
+      "/api/audits?wikiId=wiki-b"
+    ]
+  }
+}

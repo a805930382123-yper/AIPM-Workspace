@@ -157,7 +157,7 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, onInitialOpenHan
     const { id: _id, created: _created, updated: _updated, revision: _revision, domain: _domain, links: _links, ...fields } = item;
     setForm(fields);
   }
-  const chooseItem = (id: string) => { explicitOpenIdRef.current = null; setForm(null); setSelected(null); setError(''); setNotice(''); setLintResult(null); selectId(id); };
+  const chooseItem = (id: string) => { explicitOpenIdRef.current = null; setForm(null); if (selectedIdRef.current !== id) setSelected(null); setError(''); setNotice(''); setLintResult(null); selectId(id); };
   const setField = <K extends keyof WikiForm>(key: K, value: WikiForm[K]) => setForm(current => current ? { ...current, [key]: value } : current);
 
   const save = async (event: FormEvent) => {

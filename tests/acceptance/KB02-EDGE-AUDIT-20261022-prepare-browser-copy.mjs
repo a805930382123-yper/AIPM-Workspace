@@ -1,0 +1,3 @@
+import fs from'node:fs/promises';
+const old='KB02-SOURCE-AUDIT-20261022',now='KB02-EDGE-AUDIT-20261022';
+let lab=await fs.readFile('tests/acceptance/'+old+'-browser-lab.mjs','utf8');lab=lab.replaceAll(old,now).replace("original=JSON.parse(await fs.readFile(p+'main-lab.json','utf8'))","original=JSON.parse(await fs.readFile('docs/reports/KB02-SOURCE-AUDIT-20261022-browser-lab.json','utf8'))").replace('kb02-source-browser-','kb02-edge-browser-');await fs.writeFile('tests/acceptance/'+now+'-browser-lab.mjs',lab,{flag:'wx'});await fs.copyFile('tests/acceptance/'+old+'-browser-block-hook.mjs','tests/acceptance/'+now+'-browser-block-hook.mjs',fs.constants.COPYFILE_EXCL);

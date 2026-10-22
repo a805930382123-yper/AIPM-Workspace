@@ -1,0 +1,3 @@
+import fs from 'node:fs/promises';
+const files=['tests/llm.test.ts','tests/kb02-extraction-contract.test.ts','tests/kb02-final-classification.test.ts','tests/kb02-classification-priority.test.ts','tests/kb02-planning-context.test.ts'];
+for(const p of files){let text=await fs.readFile(p,'utf8');if(!text.includes('kb02-atoms-planning-8'))throw Error('Expected original revision assertion: '+p);text=text.replaceAll('kb02-atoms-planning-8','kb02-atoms-planning-9');if(p.includes('classification-priority'))text=text.replace('assert.deepEqual(atomsOf(r),old.atoms);','assert.deepEqual(atomsOf(r),old.atoms.filter((atom:Atom)=>atom.text.trim().length>0));');await fs.writeFile(p,text);}

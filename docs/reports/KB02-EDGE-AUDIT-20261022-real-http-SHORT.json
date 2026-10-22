@@ -1,0 +1,83 @@
+{
+  "checks": [
+    {
+      "id": "KB02-REAL-SHORT-extraction-awaiting-browser-confirm",
+      "result": "FAIL",
+      "message": "{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"整篇主题规划未通过严格结构校验（1项）。\",\"at\":\"2026-10-22T13:57:03.135Z\",\"retryable\":true,\"details\":{\"errors\":[\"$.pages[1].type: 值 \\\"ai_application\\\" 不在允许的枚举内（\\\"concept\\\"、\\\"entity\\\"、\\\"business_process\\\"、\\\"metric\\\"）\"]}}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "actual": "failed",
+      "elapsedMs": 7965
+    },
+    {
+      "id": "KB02-REAL-SAFETY-cumulative-attempt-ledger",
+      "result": "PASS",
+      "details": {
+        "historicalKB01": 27,
+        "priorKB02": 146,
+        "r1Attempts": 2,
+        "kb02Attempts": 148,
+        "allBatches": 175,
+        "kb02Cap": 200,
+        "allKnowledgeLow": true
+      },
+      "elapsedMs": 1
+    },
+    {
+      "id": "KB02-REAL-FINAL-cumulative-call-ledger",
+      "result": "PASS",
+      "details": {
+        "historicalKB01": 27,
+        "priorKB02": 146,
+        "r1Attempts": 2,
+        "kb02Attempts": 148,
+        "allBatches": 175,
+        "kb02Cap": 200
+      },
+      "elapsedMs": 0
+    }
+  ],
+  "artifacts": {
+    "job-4f322c20-3986-4c53-b667-46580a95cf5f": {
+      "jobId": "ba15779e-f26c-4536-9ae2-836ad7c041aa",
+      "rawId": "4f322c20-3986-4c53-b667-46580a95cf5f",
+      "status": "failed",
+      "stage": "planning",
+      "progress": {
+        "chunksTotal": 1,
+        "chunksDone": 1,
+        "pagesFound": 4
+      },
+      "draftId": null,
+      "error": {
+        "code": "LLM_SCHEMA_INVALID",
+        "message": "整篇主题规划未通过严格结构校验（1项）。",
+        "at": "2026-10-22T13:57:03.135Z",
+        "retryable": true,
+        "details": {
+          "errors": [
+            "$.pages[1].type: 值 \"ai_application\" 不在允许的枚举内（\"concept\"、\"entity\"、\"business_process\"、\"metric\"）"
+          ]
+        }
+      },
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "callCount": 2,
+      "startedAt": "2026-10-22T13:56:55.454Z",
+      "finishedAt": "2026-10-22T13:57:03.149Z",
+      "cancelRequested": false,
+      "pipelineVersion": "kb02-2",
+      "checkpoint": {
+        "stage": "planning",
+        "validatedChunks": 1,
+        "totalChunks": 1,
+        "resumable": true,
+        "attempts": 2,
+        "reusedChunks": 0,
+        "reason": "整篇主题规划未通过严格结构校验（1项）。"
+      },
+      "execution": "settled",
+      "recovery": null
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-22T13:53:12.614Z",
+  "product": {
+    "changed": [],
+    "added": []
+  },
+  "tests": {
+    "changed": [],
+    "added": []
+  },
+  "fixtures": {
+    "changed": [],
+    "added": []
+  },
+  "acceptanceScripts": {
+    "changed": [],
+    "added": []
+  },
+  "protected": {
+    "checked": 3091,
+    "changed": [],
+    "added": []
+  },
+  "coordinatedAuditBaselineChanges": [],
+  "coordinatedAuditAssets": [
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-boundary.test.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-browser-prepare.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-browser.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-integrity.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-lab.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-prepare-tools.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-quality.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-real-http.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-run.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-trace-hook.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-update-check.mjs",
+    "docs/reports/KB02-EDGE-AUDIT-20261022-authorization.json",
+    "docs/reports/KB02-EDGE-AUDIT-20261022-baseline.json",
+    "docs/reports/KB02-EDGE-AUDIT-20261022-plan-review.md",
+    "docs/reports/KB02-EDGE-AUDIT-20261022-preparation.md"
+  ],
+  "workspace": {
+    "changed": [],
+    "added": []
+  },
+  "config": {
+    "changed": [],
+    "added": []
+  },
+  "baselineProductChanges": [
+    "app/pages/WikiPage.tsx",
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/rules.ts"
+  ],
+  "baselineTestChanges": [
+    "tests/kb02-classification-priority.test.ts",
+    "tests/kb02-extraction-contract.test.ts",
+    "tests/kb02-final-classification.test.ts",
+    "tests/kb02-planning-context.test.ts",
+    "tests/llm.test.ts"
+  ],
+  "newTests": [
+    "tests/kb02-edge-extraction.test.ts",
+    "tests/wiki-selection.test.tsx"
+  ],
+  "scopeExact": true,
+  "pass": true
+}
