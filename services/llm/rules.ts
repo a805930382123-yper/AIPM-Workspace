@@ -30,7 +30,7 @@ export type ExtractionRulesBundle = {
 const TOP_LEVEL_RULE = 'JSON 顶层只有 document 与 suggested_pages 两个字段，不要增加其它字段。';
 const EVIDENCE_RULE = 'source_evidence 的 quote 必须是从资料中原样复制的连续片段（不要改写、不要拼接），并给出该片段的 id 与 rawId；同一页面内 id 唯一。';
 export const EXTRACTION_PROVIDER_FORMAT = 'locator-v2';
-export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-9';
+export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-10';
 
 function extractEnums(schema: JsonSchemaNode): { types: unknown[]; categories: unknown[] } {
   const page = schema.properties?.suggested_pages?.items;
@@ -113,7 +113,7 @@ export async function loadExtractionRules(rulesDir: string): Promise<ExtractionR
   const kb02Types = kb02PlanningSchema.properties?.pages?.items?.properties?.type?.enum ?? [];
   const kb02Categories = kb02PlanningSchema.properties?.pages?.items?.properties?.category?.enum ?? [];
   if (JSON.stringify(kb02Types) !== JSON.stringify(allowedTypes) || JSON.stringify(kb02Categories) !== JSON.stringify(allowedCategories)) throw new LlmError('LLM_RULES_INVALID', 'KB02规划schema枚举与FMCG schema不一致。', 500);
-  const rulesVersion = `b04-${rules.version ?? 'unknown'}-${EXTRACTION_PROVIDER_FORMAT}-${KB02_PROMPT_REVISION}-${createHash('sha256').update(`${schemaText}\n${rulesText}\n${EXTRACTION_PROVIDER_FORMAT}\n${KB02_PROMPT_REVISION}\n${kb02FactsText}\n${kb02PlanningText}`).digest('hex').slice(0, 12)}`;
+  const rulesVersion = `b04-${rules.version ?? 'unknown'}-${EXTRACTION_PROVIDER_FORMAT}-${KB02_PROMPT_REVISION}-${createHash('sha256').update(`${schemaText}\n${rulesText}\n${EXTRACTION_PROVIDER_FORMAT}\n${KB02_PROMPT_REVISION}\n${kb02FactsText}\n${kb02PlanningText}\n${fmcgText}`).digest('hex').slice(0, 12)}`;
   return { schema, kb02FactsSchema, kb02PlanningSchema, rules, fmcg, rulesVersion, systemPrompt: buildSystemPrompt(rules, schema) };
 }
 

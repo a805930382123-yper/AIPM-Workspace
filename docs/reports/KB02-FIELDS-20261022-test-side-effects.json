@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-22T15:06:09.462Z",
+  "action": "Preserved suspected default-test output, then restored exact baseline HEAD bytes",
+  "files": [
+    {
+      "path": "docs/reports/B04-http-evidence.json",
+      "backup": "docs/reports/KB02-FIELDS-20261022-test-side-effect-B04-http-evidence.json",
+      "beforeSha256": "a8a2b5fbe419100dad5a5e19e8abff25c991688e049e99854d9201d42bde21c9",
+      "restoredSha256": "147b45a9051ea0478eee6ffaff1bf7d5ed1d3c43d068ba131f71929208f23720",
+      "expectedBaselineSha256": "147b45a9051ea0478eee6ffaff1bf7d5ed1d3c43d068ba131f71929208f23720",
+      "restoredFrom": "git show HEAD:docs/reports/B04-http-evidence.json"
+    },
+    {
+      "path": "docs/reports/KB02-R1-20261015-builder-merge.json",
+      "backup": "docs/reports/KB02-FIELDS-20261022-test-side-effect-KB02-R1-20261015-builder-merge.json",
+      "beforeSha256": "229c6bda0924c04eea47324e307affcbb05f07094f19cf224a7910add7e1b01a",
+      "restoredSha256": "399492ca6d82edaf35bb8022f17e9c14be2af297cdc22bf802b1f4d0395a14e2",
+      "expectedBaselineSha256": "399492ca6d82edaf35bb8022f17e9c14be2af297cdc22bf802b1f4d0395a14e2",
+      "restoredFrom": "git show HEAD:docs/reports/KB02-R1-20261015-builder-merge.json"
+    }
+  ]
+}

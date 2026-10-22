@@ -32,6 +32,35 @@ export type KnowledgeRunInput = {
   onProgress?: (value: ExtractProgress) => void;
 };
 
+function planningFieldInstruction(bundle: Awaited<ReturnType<typeof loadExtractionRules>>): string {
+  const page = bundle.kb02PlanningSchema.properties?.pages?.items?.properties;
+  const typeIds = page?.type?.enum;
+  const categoryIds = page?.category?.enum;
+  if (!Array.isArray(typeIds) || !Array.isArray(categoryIds)) throw new LlmError('LLM_RULES_INVALID', 'KB02规划schema缺少type/category枚举。', 500);
+  const typeLabels = typeIds.map(id => {
+    const definition = bundle.fmcg.types.find(item => item.id === id);
+    if (!definition) throw new LlmError('LLM_RULES_INVALID', `FMCG schema缺少可提取type定义：${String(id)}`, 500);
+    return `${id}（${definition.label}：${definition.description}）`;
+  });
+  const categoryLabels = categoryIds.map(id => {
+    const definition = bundle.fmcg.categories.find(item => item.id === id);
+    if (!definition) throw new LlmError('LLM_RULES_INVALID', `FMCG schema缺少category定义：${String(id)}`, 500);
+    return `${id}（${definition.label}）`;
+  });
+  const examples = [
+    { type: 'metric', category: 'metric', meaning: '形态为业务指标，主题为数据指标' },
+    { type: 'concept', category: 'ai_application', meaning: '形态为概念，主题为AI应用' },
+  ].filter(example => typeIds.includes(example.type) && categoryIds.includes(example.category));
+  if (!examples.length) throw new LlmError('LLM_RULES_INVALID', '当前规划schema无法提供合法type/category配对示例。', 500);
+  return [
+    '字段职责：type表示知识页的知识形态，category表示该页涉及的快消业务主题；二者是独立维度。type应回答“这是什么形态的知识”，category应回答“它涉及什么业务主题”。',
+    `type仅可取当前schema/FMCG定义中的可提取形态：${typeLabels.join('；')}。`,
+    `category仅可取当前schema/FMCG定义中的业务主题：${categoryLabels.join('；')}。`,
+    '每页分别根据其实际内容判断两个字段；schema允许的type与category组合均可使用。同一值可出现在两个字段中，也可使用不同值。示例仅解释字段职责，不是默认值或主题分类规则；不要因为主题涉及AI就一律选择concept。',
+    `合法配对示例（当前schema枚举校验通过）：${JSON.stringify(examples.map(({ type, category, meaning }) => ({ type, category, meaning })))}`,
+  ].join('\n');
+}
+
 export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput, 'raw'|'body'|'bodySha256'|'provider'|'rulesDir'|'checkpoint'>) {
   const bundle = await loadExtractionRules(input.rulesDir);
   const chunks = chunkText(input.body, { maxChunkChars: FROZEN_BUDGETS.maxChunkChars, overlap: FROZEN_BUDGETS.chunkOverlap, maxRawChars: FROZEN_BUDGETS.maxRawChars });
@@ -162,11 +191,13 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     assertNoKnownSecret(planningPayload, input.provider.secrets ?? []);
     const planningJson = JSON.stringify(planningPayload);
     if (Buffer.byteLength(planningJson, 'utf8') > 192 * 1024) throw new LlmError('LLM_PLANNING_TOO_LARGE', '整篇事实规划输入超过192KiB；检查点已保存，请缩短资料后显式重新生成。', 422);
+    const plannerSchema = bundle.kb02PlanningSchema;
+    const planningSystem = `你是整篇知识主题规划器。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
+    assertNoKnownSecret(planningSystem, input.provider.secrets ?? []);
     current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: undefined });
     emit('planning', allFacts.length);
     current = await input.beforeCall('planning');
-    const plannerSchema = bundle.kb02PlanningSchema;
-    const result = await input.provider.complete({ system: `你是整篇知识主题规划器。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${KNOWLEDGE_PLANNING_INSTRUCTION}严格遵守schema：${JSON.stringify(plannerSchema)}`, user: `请对下列全部已验证事实规划知识页，只输出JSON。\n${planningJson}`, purpose: 'knowledge', timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())), maxOutputBytes: FROZEN_BUDGETS.maxOutputBytesPerCall, signal: input.signal });
+    const result = await input.provider.complete({ system: planningSystem, user: `请对下列全部已验证事实规划知识页，只输出JSON。\n${planningJson}`, purpose: 'knowledge', timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())), maxOutputBytes: FROZEN_BUDGETS.maxOutputBytesPerCall, signal: input.signal });
     guard();
     if (result.finishReason === 'length') throw new LlmError('LLM_OUTPUT_TRUNCATED', '整篇主题规划响应被截断，未保存规划。', 502);
     const parsed = parse(result.text, input.provider, '整篇主题规划');

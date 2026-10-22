@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-22T15:29:21.185Z",
+  "approved": true,
+  "parentReleasePending": false,
+  "workflowId": "7b7d667a-309a-40df-9574-da9c93899d7b",
+  "sectionsSha256": "76795ac9327c175a9a69ed8e54cb46e0a21d7d3b32c96b0e61eac96cc63f8d81",
+  "reviewer": "Sol independent",
+  "semanticAssessment": "required update checks acceptable for this synthetic metric; original long-region quality gate failed separately",
+  "claims": [
+    {
+      "text": "虚构饮料甲在2026年9月的甲桥区域有100家目标门店。",
+      "oldSupport": "100家目标门店",
+      "newSupport": "目标门店100家",
+      "assessment": "same entity/area/date/count directly supported both sides"
+    },
+    {
+      "text": "铺货率按在售门店数除以目标门店数计算。",
+      "oldSupport": "铺货率定义为在售门店数除以目标门店数，即20÷100=20%",
+      "newSupport": "目标门店100家，在售门店30家，按门店数计算铺货率30%",
+      "assessment": "new source implies this count ratio through 30/100=30%; it does not spell out the general formula verbatim; main reviewer should confirm this semantic reading"
+    }
+  ],
+  "conflictPreserved": [
+    "旧口径为2026年9月甲桥区域目标门店100家、在售20家、铺货率20%；新复核为同期目标门店100家、在售30家、铺货率30%。两份来源的口径或采样时间差异待确认，保留各自数值，不能静默覆盖。"
+  ],
+  "oldOnlyNotPromoted": "门店数不能解释为销量 stays existing and is absent from agreement",
+  "humanNotePreserved": true,
+  "noInference": true,
+  "bothSources": [
+    "93d0a50a-f7e4-4a56-91fc-06d356fb0f4e",
+    "ffb17cdb-b8f6-4436-9579-61923dd382bb"
+  ],
+  "oldWikiUnchangedBeforeConfirmation": true,
+  "parentApproval": "Main explicitly approved exact workflow/sections. Agreement2 accepted only for this metric/current measurement basis: old source defines ratio, new source says count-based and30/100=30%; not a verbatim general formula quote."
+}

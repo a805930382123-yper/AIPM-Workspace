@@ -286,7 +286,7 @@ test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致
   assert.equal(bundle.schema.additionalProperties, false);
   assert.equal(bundle.schema.properties?.suggested_pages?.items?.additionalProperties, false);
   assert.deepEqual(bundle.rules.budgets, FROZEN_BUDGETS);
-  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-9-[0-9a-f]{12}$/);
+  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-10-[0-9a-f]{12}$/);
   const prompt = buildSystemPrompt(bundle.rules, bundle.schema);
   assert.match(prompt, /只输出一个 JSON 对象/);
   assert.match(prompt, /一个条目只解决一个明确的知识问题/);

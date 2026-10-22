@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';import assert from 'node:assert/strict';import {RawStore} from '../../services/raw/store.ts';import {WikiStore} from '../../services/wiki/store.ts';
+const prefix='docs/reports/KB02-FIELDS-AUDIT-20261022-',read=async p=>JSON.parse(await fs.readFile(prefix+p+'.json','utf8')),meta=await read('main-lab'),a=(await read('real-http')).artifacts,before=await read('before-browser-confirm'),flow=await read('browser-workflow');
+const get=async p=>{const r=await fetch(meta.api+p);assert(r.ok);return r.json();};
+let current=await get('/api/wiki/'+a.shortMetricWiki.id);
+if(process.argv[2]==='before') {assert.deepEqual(current,before);assert(Array.isArray(flow.sections.agreement));assert(flow.sections.existing.includes('100家目标门店'));assert(flow.sections.newSource.includes('目标门店100家'));await fs.writeFile(prefix+'update-before-check.json',JSON.stringify({at:new Date().toISOString(),pass:true,revision:current.revision,unchangedBeforeConfirmation:true,agreementSemanticReviewRequired:true}));}
+else{
+ const confirm=await read('browser-confirm');assert.equal(confirm.status,201);assert.equal(current.revision,before.revision+1);for(const s of ['20%','30%','KB02_HUMAN','门店数不能解释为销量'])assert(current.body.includes(s));assert(before.body.split('\n').filter(s=>s.trim()).every(s=>current.body.includes(s)));assert(current.sources.includes(a.shortRaw.id)&&current.sources.includes(a.updateRaw.id));
+ const response=await fetch(meta.api+'/api/knowledge/workflows/'+flow.id+'/confirm',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(confirm.confirmBody)});assert([200,201].includes(response.status));const repeat=await response.json();assert.deepEqual(await get('/api/wiki/'+current.id),current);
+ const raws=new RawStore(meta.root);await raws.initialize();const store=new WikiStore(meta.root,raws);await store.initialize();const {links:apiDerivedLinks,...persisted}=current;assert(Array.isArray(apiDerivedLinks));assert.deepEqual(await store.get(current.id),persisted);
+ const list=await get('/api/wiki');assert(!list.items.some(w=>w.sources.includes(a.longRaw.id)));
+ await fs.writeFile(prefix+'final-wiki.json',JSON.stringify(current,null,2));await fs.writeFile(prefix+'update-final-check.json',JSON.stringify({at:new Date().toISOString(),pass:true,revision:current.revision,bothSources:true,humanAndOldBodyPreserved:true,repeatStatus:response.status,repeat,diskReopenSame:true,longNoFormalWiki:true},null,2));
+}console.log('Update '+process.argv[2]+' checks PASS');

@@ -1,0 +1,15 @@
+import fs from 'node:fs/promises';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
+import {chunkText} from '../../services/llm/chunk.ts';import {buildEvidenceLocatorCatalog} from '../../services/llm/locators.ts';import {buildKnowledgeAtoms} from '../../services/llm/knowledge-atoms.ts';
+const prefix='docs/reports/KB02-FIELDS-AUDIT-20261022-',meta=JSON.parse(await fs.readFile(prefix+'main-lab.json','utf8')),a=JSON.parse(await fs.readFile(prefix+'real-http.json','utf8')).artifacts;
+const get=async p=>{const r=await fetch(meta.api+p);assert(r.ok);return r.json();},sha=s=>createHash('sha256').update(s).digest('hex');
+const out={at:new Date().toISOString(),raws:[],longPages:[],issues:[]};
+for(const key of ['longRaw','shortRaw','updateRaw'].filter(k=>a[k])){const raw=await get('/api/raw/'+a[key].id);assert.equal(sha(raw.body),a[key].sha256);out.raws.push({key,id:raw.id,sha256:sha(raw.body),unchanged:true});}
+const raw=await get('/api/raw/'+a.longRaw.id),job=a['job-'+raw.id],cp=JSON.parse(await fs.readFile(path.join(meta.root,'state/extraction-checkpoints',job.jobId+'.json'),'utf8'));
+await fs.writeFile(prefix+'long-checkpoint.json',JSON.stringify(cp,null,2));
+const atoms=new Map(chunkText(raw.body,{maxChunkChars:8000,overlap:400,maxRawChars:500000}).map(c=>[c.index,new Map(buildKnowledgeAtoms(raw.body,buildEvidenceLocatorCatalog(raw.body,c)).map(x=>[x.id,x]))]));
+const records=cp.completedChunks.flatMap(c=>[...c.facts,...c.questions]);
+assert.equal(a.longDraft.pages.length,14);assert.equal(cp.plan.pages.length,14);
+for(const p of cp.plan.pages){const ids=[...p.factIds,...p.questionIds],members=ids.map(id=>{const rec=records.find(x=>x.id===id);assert(rec);const atom=atoms.get(rec.chunkIndex).get(rec.atomId);assert.equal(atom.text,rec.text);return {id,area:String(Math.floor(atom.start/7600)+1).padStart(2,'0'),start:atom.start,end:atom.end,text:rec.text};});const areas=[...new Set(members.map(m=>m.area))];if(areas.length!==1||!p.title.includes('区域'+areas[0]))out.issues.push({title:p.title,areas,kind:'region-attribution',members});if(members.some(m=>/排版说明|长文验收附录/.test(m.text)))out.issues.push({title:p.title,kind:'nonbusiness-selected',members});out.longPages.push({title:p.title,areas,facts:p.factIds.length,questions:p.questionIds.length,texts:[...new Set(members.map(m=>m.text))]});}
+out.longCounts={facts:cp.completedChunks.reduce((n,c)=>n+c.facts.length,0),questions:cp.completedChunks.reduce((n,c)=>n+c.questions.length,0),jobCalls:job.callCount,checkpointCalls:cp.attempts};assert.equal(job.callCount,cp.attempts);
+out.supplementPages=(a.updateDraft?.pages??[]).map(p=>({title:p.title,facts:p.source_facts.map(f=>f.text),questions:p.open_questions}));
+await fs.writeFile(prefix+'quality.json',JSON.stringify(out,null,2));console.log(JSON.stringify(out));
