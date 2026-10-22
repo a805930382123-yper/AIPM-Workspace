@@ -1,0 +1,140 @@
+{
+  "at": "2026-10-22T14:42:54.061Z",
+  "head": "b852904d3cacbb97205f57d425e0746cf47c802d",
+  "productCommit": "420e123997c9fffc179af7bf32bd361ed341b9a9",
+  "sequence": 148,
+  "networkCalls": 0,
+  "realProviderCalls": 0,
+  "rawSha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+  "requestAndResponseMatchRawTrace": true,
+  "requestSchemaEqualsLoadedSchema": true,
+  "enumsMatchFmcg": true,
+  "typeEnum": [
+    "concept",
+    "entity",
+    "business_process",
+    "metric"
+  ],
+  "categoryEnum": [
+    "industry_basics",
+    "category",
+    "channel",
+    "sales",
+    "store",
+    "distributor",
+    "supply_chain",
+    "product",
+    "metric",
+    "ai_application",
+    "company_business",
+    "customer",
+    "other"
+  ],
+  "requestFormat": {
+    "type": "json_object"
+  },
+  "reasoningEffort": "low",
+  "adapterIntercepts": 1,
+  "adapterWireExact": true,
+  "adapterTextUnchanged": true,
+  "schemaErrors": [
+    "$.pages[1].type: 值 \"ai_application\" 不在允许的枚举内（\"concept\"、\"entity\"、\"business_process\"、\"metric\"）"
+  ],
+  "unitCoverage": {
+    "facts": {
+      "missing": [],
+      "duplicate": [],
+      "unknown": []
+    },
+    "questions": {
+      "missing": [],
+      "duplicate": [],
+      "unknown": []
+    },
+    "duplicateTitles": []
+  },
+  "wireFieldChecks": [
+    {
+      "field": "type",
+      "value": "ai_application",
+      "accepted": false
+    },
+    {
+      "field": "type",
+      "value": "concept",
+      "accepted": true
+    },
+    {
+      "field": "type",
+      "value": "source",
+      "accepted": false
+    },
+    {
+      "field": "type",
+      "value": "synthesis",
+      "accepted": false
+    },
+    {
+      "field": "type",
+      "value": "bogus",
+      "accepted": false
+    },
+    {
+      "field": "category",
+      "value": "ai_application",
+      "accepted": true
+    },
+    {
+      "field": "category",
+      "value": "concept",
+      "accepted": false
+    },
+    {
+      "field": "category",
+      "value": "source",
+      "accepted": false
+    },
+    {
+      "field": "category",
+      "value": "synthesis",
+      "accepted": false
+    },
+    {
+      "field": "category",
+      "value": "bogus",
+      "accepted": false
+    }
+  ],
+  "pipeline": {
+    "code": "LLM_SCHEMA_INVALID",
+    "attemptsBefore": 2,
+    "attemptsAfter": 3,
+    "planningCalls": 1,
+    "requestExact": true,
+    "extractingCalls": 0,
+    "completedChunksUnchanged": true,
+    "planAbsent": true,
+    "automaticRetry": false
+  },
+  "explicitSecondInvocation": {
+    "planningCalls": 1,
+    "attemptsAfter": 4,
+    "extractionReused": true
+  },
+  "control": {
+    "fixtureOnlyType": "concept",
+    "schemaAccepted": true,
+    "pipelineAccepted": true,
+    "semanticsNotEvaluated": true
+  },
+  "tamperedRestore": {
+    "code": "LLM_CHECKPOINT_CORRUPT",
+    "status": 409
+  },
+  "incompatibleRules": {
+    "code": "LLM_CHECKPOINT_INCOMPATIBLE",
+    "calls": 0,
+    "writes": 0
+  },
+  "limits": "No product/default test changes; local stub controls do not prove model quality or a prompt fix"
+}

@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-22T14:47:13.715Z",
+  "head": "b852904d3cacbb97205f57d425e0746cf47c802d",
+  "productCommit": "420e123997c9fffc179af7bf32bd361ed341b9a9",
+  "commands": [
+    {
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "tests/acceptance/KB02-TYPE-AUDIT-20261022-replay.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "tests/acceptance/KB02-TYPE-AUDIT-20261022-recovery.mjs"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "protectedChecked": 3404,
+  "protectedChanges": [],
+  "realCalls": 0,
+  "networkCalls": 0,
+  "productTestsModified": false,
+  "pass": true
+}

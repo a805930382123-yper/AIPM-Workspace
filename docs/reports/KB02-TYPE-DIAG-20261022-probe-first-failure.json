@@ -1,0 +1,11 @@
+{
+  "command": "node --import tsx tests/acceptance/KB02-TYPE-DIAG-20261022-recovery.mjs",
+  "exitCode": 1,
+  "runtime": "Node.js v25.2.1",
+  "error": "AssertionError [ERR_ASSERTION]: false !== true",
+  "location": "recovery.mjs:11:74",
+  "cause": "Diagnostic script incorrectly assumed API reused=true for a restarted execution. jobs.ts returns reused=false when executing a resumed checkpoint; same job ID and unchanged extracted chunks are the evidence of extraction reuse.",
+  "correction": "Assert the actual API flag false and separately prove same job/chunks, attempts and planning-only calls. No product changes.",
+  "realProviderCalls": 0,
+  "networkCalls": 0
+}
