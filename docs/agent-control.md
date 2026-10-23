@@ -2,6 +2,8 @@
 
 ## B1最终验收收尾：工程通过，真实与批次未通过
 
+本轮受测代码与证据提交：`bb0f814ed1e360cdf1ceed517d2c80d8db0510c5`；主Agent统一保存失败结果，未标记批次通过。
+
 本轮沿用0/1/2/2=5的B模式，Sol施工自查及Astra独立验收完成，主Agent读实际diff、原schema/response和Chrome证据。默认424/build/独立旧Node245/新增5/历史18工程通过；seq206合法结构的错误pass仍发布边界-only页，seq209正例审核结构违规被正确拒绝，无有效草稿，故本轮真实修复未通过、KB02整体未通过。原补充P1未关闭，新增SEMANTIC-POSITIVE-01/P1；后续原短长文/通用更新/新增metric链均未运行，不能用历史或工程结果代签。
 
 同核心修后再失效已依规停止重试，原Sol只作有限离线定位，Astra比对原trace/schema/请求/实际结果独立复核；未发现接线或后处理问题，模型内部原因未知。产品冻结899保持；真实新增6，累计209/500、Prompt15/24。门禁关闭、服务浏览器关闭，无正式确认，两Raw不变；最终3543保护、42审查证据密钥扫描通过。报告见SEMANTIC-AUDIT acceptance及SEMANTIC-DIAG diagnosis，命令/首败/保护限制完整保留，主Agent补提交标识。

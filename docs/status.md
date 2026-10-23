@@ -2,6 +2,8 @@
 
 ## 最新验收：B1工程通过，真实返修与KB02整体未通过
 
+本轮受测代码及验收证据提交：`bb0f814ed1e360cdf1ceed517d2c80d8db0510c5`；后续附注仅关联版本，不改变FAIL结论。
+
 本轮已按确认的B模式完成Sol High施工/自查、Astra独立工程与真实阶段一验收，随后同核心失败的Sol受限离线定位及Astra独立复核。见[最终验收](reports/KB02-SEMANTIC-AUDIT-20261023-acceptance.md)、[失败定位](reports/KB02-SEMANTIC-DIAG-20261023-diagnosis.md)。产品为一次有界语义审核、revision12和必要预算/恢复接线；自查默认424/424/build/旧Node223+51/历史18通过，独立默认424/build/旧Node245/新增5/历史18通过，不能替代真实语义证明。
 
 本轮缺陷未修复：seq206对仅未来AI边界页给pass/OK并出草稿，F-KB02-REGION-SUPPLEMENT-01仍开放；新增F-KB02-SEMANTIC-POSITIVE-01/P1，seq209正例审核缺reason/重复pageIndex与unit，被严格拒绝无plan/草稿。六条请求与实际代码逐字匹配，schema完整，未发现请求错接或后处理差异；模型内部原因未证明。B1程序按既定保证工作，但实际审核误放和格式可靠性未达，KB02整体未通过。

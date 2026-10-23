@@ -1,5 +1,7 @@
 # Astra 独立工程验收：通过
 
+提交关联补注（主Agent）：本轮受测产品与测试提交为 `bb0f814ed1e360cdf1ceed517d2c80d8db0510c5`，与下文冻结对应。工程通过不改变随后真实验收失败结论。
+
 本轮施工的B1程序门禁工程验收**通过**；F-KB02-REGION-SUPPLEMENT-01真实质量尚待验证，不能据fake关闭；KB02整体仍未通过。真实新增0，累计203/500、Prompt15/24不变。阶段一六次尚待主Agent单独放行。
 
 对应HEAD `0e44ab5563e5de3f4cdd8ed663a51393fde53422`，产品基线 `17121be7ec20f73b367750d281a4e1dd2c742a76`，未提交施工以899文件冻结SHA256 `1cdc22d855c3a4e2175cfe22899799a49471f14ff355d6cf99669ed90220d421`绑定；最终提交由主Agent补关联。实际diff结论见 [code-review](KB02-SEMANTIC-AUDIT-20261023-code-review.md)。
