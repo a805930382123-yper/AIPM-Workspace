@@ -1,0 +1,19 @@
+KB02-REGION-20261023施工自查首败/修复记录
+工作区：E:\AI\Work\AIPM Workspace
+测试代码基线：5be06023bb8200e82cb0131b0588601632c4e941
+
+1. 首次沙箱内执行：node --import tsx --test tests/kb02-planning-attribution.test.ts
+   exit 1；Node test worker spawn EPERM，未进入测试主体。按任务环境要求升级执行后重跑。
+
+2. 首次升级定向测试：同上。
+   exit 1；2项中1 pass/1 fail。人工正例按“单元文本必须直接含主体”归组，两个边界句文本本身不重复主体，造成member ID分配缺失。修复为仅在隔离fixture中按原文顺序将每个边界unit随所属主体分配；没有过滤或改写产品数据。
+
+3. 新增完整pipeline正对照后的定向测试。
+   exit 1；4项中2 pass/2 fail：一项system断言仍检查旧措辞“不得删记录、补事实、自动搬移或发起重试”；另一项fixture已存在全部提取块，pipeline只发出1次规划请求，测试错误预期2次。更新为断言明确的同次响应自检措辞及实际1次规划调用。再次执行为4/4 pass。
+
+4. 隔离副本初次哈希比对。
+   报告8个测试脚本不同，其中6个内容已不同、2个缺失；核对为副本建立期间主工作区Astra新增的KB02-REGION-AUDIT文件，没有测试运行漂移。同步8份只读Astra资产后重算，874个产品/测试/配置文件0差异。两次报告均保留：freeze-check.json与freeze-check-r2.json。
+
+5. 隔离副本创建脚本首次PowerShell调用使用New-Item -LiteralPath（该cmdlet不支持此参数），命令报参数错误；目标目录仍被robocopy创建。检查绝对路径及排除项后补齐Node依赖junction。正式workspace、.env.local和配置密钥未复制。
+
+以上失败均为本轮测试断言/隔离准备问题，已逐项修复并重跑；没有产品语义测试失败。构建bundle大于500kB提示记录在build.log，不导致构建失败。

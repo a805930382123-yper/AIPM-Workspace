@@ -1,0 +1,55 @@
+// Independent offline review: network disabled, checkpoints only in memory.
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {chunkText} from '../../services/llm/chunk.ts';
+import {buildEvidenceLocatorCatalog} from '../../services/llm/locators.ts';
+import {buildKnowledgePlanningInput,expandKnowledgePlan} from '../../services/llm/knowledge-planning.ts';
+import {runKnowledgePipeline} from '../../services/llm/knowledge-extraction.ts';
+import {loadExtractionRules} from '../../services/llm/rules.ts';
+const prefix='docs/reports/KB02-REGION-AUDIT-20261023-';
+const old='docs/reports/KB02-FIELDS-AUDIT-20261022-';
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const read=async p=>JSON.parse(await fs.readFile(p,'utf8'));
+const watched=execFileSync('git',['ls-files','services','app','server','rules','tests','docs/reports'],{encoding:'utf8'}).trim().split('\n');
+const snapshot=async()=>Object.fromEntries(await Promise.all(watched.map(async p=>[p,sha(await fs.readFile(p))])));
+const before=await snapshot();
+let network=0; globalThis.fetch=async()=>{network++;throw Error('Offline only');};
+const trace=(await fs.readFile(old+'provider-trace.jsonl','utf8')).trim().split('\n').map(JSON.parse).find(x=>x.sequence===180);
+const cp=await read(old+'long-checkpoint.json');
+const input=JSON.parse(trace.request.messages.find(x=>x.role==='user').content.split('\n').at(-1));
+const response=JSON.parse(trace.response.content);
+let body='';
+for(let n=1;n<=14;n++){
+ const subject='虚构区域'+String(n).padStart(2,'0');
+ let block=`【长文验收附录${n}，虚构】\n${subject}2026年9月有100家目标门店，${n+10}家在售，门店数铺货率${n+10}%。此区域与其它附录区域独立，不能混用。异常审批负责人未知，AI仅未来分析建议。\n`,i=0;
+ while(block.length<7600)block+=`附录${n}排版说明${++i}：这里用于验证中文长文保存和完整处理，不补充任何新经营指标、客户身份、AI上线事实或收益。\n`;
+ body+=block.slice(0,7600);
+}
+assert.equal(sha(body),cp.rawSha256);
+const chunks=chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000});
+const catalogs=new Map(chunks.map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
+assert.deepEqual(buildKnowledgePlanningInput(body,cp.completedChunks,catalogs),input);
+const units=[...input.factUnits.map(u=>({...u,column:'factUnitIds'})),...input.questionUnits.map(u=>({...u,column:'questionUnitIds'}))];
+assert.equal(units.length,55);assert.equal(units.flatMap(u=>u.memberIds).length,100);
+const rows=units.filter(u=>u.text==='异常审批负责人未知，AI仅未来分析建议。').map(u=>{
+ const s=input.sourceContexts.find(s=>s.id===u.sourceId);
+ assert.equal(s.text,body.slice(s.contextStart,s.contextEnd));
+ const n=Math.floor(s.start/7600)+1,subject='虚构区域'+String(n).padStart(2,'0');
+ assert(s.text.includes(`${subject}2026年9月有100家目标门店，${n+10}家在售，门店数铺货率${n+10}%。此区域与其它附录区域独立，不能混用。`));
+ const owners=response.pages.filter(p=>p[u.column].includes(u.id));assert.equal(owners.length,1);
+ return {unit:u.id,subject,owner:owners[0].title,members:u.memberIds,column:u.column};
+});
+assert.equal(rows.length,27);assert.equal(new Set(rows.map(r=>r.subject)).size,14);assert.equal(new Set(rows.map(r=>r.owner)).size,1);
+assert.deepEqual(expandKnowledgePlan(response,input),cp.plan.pages);
+const system=trace.request.messages.find(x=>x.role==='system').content;
+for(const text of ['泛化待确认问题创建页面','保留不同主体、时间、条件和口径','根据sourceContexts','未知、否定、未来建议、待确认口径和ambiguous事实也必须归入有事实支撑的相关主题'])assert(system.includes(text));
+cp.rulesVersion=(await loadExtractionRules('rules')).rulesVersion;delete cp.plan;delete cp.lastError;cp.stage='planning';cp.attempts=14;
+let calls=0,writes=0;
+const result=await runKnowledgePipeline({raw:{id:cp.rawId,title:'独立离线重放',sourceType:'report',sourceName:'虚构',tags:[],body},body,bodySha256:sha(body),provider:{name:'independent-offline',model:'seq180',secrets:[],complete:async req=>{calls++;assert.notEqual(req.system,system);assert(req.system.includes('先逐个unit'));assert.deepEqual(JSON.parse(req.user.split('\n').at(-1)),input);return {text:trace.response.content,bytes:Buffer.byteLength(trace.response.content),finishReason:'stop'};}},rulesDir:'rules',checkpoint:cp,beforeCall:async stage=>({...cp,stage,attempts:cp.attempts+1}),saveCheckpoint:async c=>{writes++;return c;}});
+assert.equal(calls,1);assert.equal(result.outcome.pages.length,15);assert.equal(network,0);
+assert.deepEqual(await snapshot(),before);
+const report={at:new Date().toISOString(),head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),productCommit:'a836270f53f0fc5bb802695e3f4101cf182ee3b9',node:process.version,rawSha256:sha(body),sourceHashes:Object.fromEntries(await Promise.all(['provider-trace.jsonl','long-checkpoint.json'].map(async p=>[old+p,sha(await fs.readFile(old+p))]))),exactInput:true,currentSystemDiffersAsIntended:true,inMemoryCheckpointUsesCurrentRevision:true,units:55,originalIds:100,subjects:14,boundaryUnits:27,rows,existingRulesPresent:true,originalResponseAccepted:true,assembledPages:15,fakeCalls:calls,memoryWrites:writes,networkAttempts:network,protectedTrackedFiles:watched.length,protectedChanges:[],semanticQuality:'Original response remains a semantic negative control; new real quality NOT_RUN',modelInternalCause:'not established'};
+await fs.writeFile(prefix+'current-response-replay.json',JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({...report,rows:undefined,sourceHashes:undefined}));

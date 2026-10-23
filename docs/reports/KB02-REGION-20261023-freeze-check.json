@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-23T03:31:56.4091760Z",
+  "baseline": "5be06023bb8200e82cb0131b0588601632c4e941",
+  "coveredFiles": 874,
+  "roots": [
+    "app",
+    "server",
+    "services",
+    "rules",
+    "tests"
+  ],
+  "additionalFiles": [
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "vite.config.ts",
+    "index.html"
+  ],
+  "mismatchCount": 8,
+  "mismatches": [
+    {
+      "source": "656592a9f03c1f4a79a86716a6f53d22790471b3f1e60a5e1f7794e9aadfca7d",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-boundary.test.mjs",
+      "isolated": "33506e55aa88244873d3ad4f7540b0bf67fc0c22090486c6dcdfc8ff7fc7d6e3"
+    },
+    {
+      "source": "51c242e91862062b5e18e75bc3ab5a551edf6a35227855b380f48db98ff62996",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-final-evidence.mjs",
+      "isolated": "a95ff7df854b8f5526674794fb64607c0d66ef3a5d5ec12fb4c8be8e535c0a65"
+    },
+    {
+      "source": "b8ff831c492a279e208c6b04c35828654ebbe4e479333701ebdf99c6a9e0d94f",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-integrity.mjs",
+      "isolated": "a95ff7df854b8f5526674794fb64607c0d66ef3a5d5ec12fb4c8be8e535c0a65"
+    },
+    {
+      "source": "b9aa9d72a764de40c78abff3ec2ee66b73474d943fc21b9e5839b04316e8f452",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-local-safety.mjs",
+      "isolated": "a4e5294ef4f6005cbc875ddb7f3756ad10044994fd2a02e6ff9b3d1520225707"
+    },
+    {
+      "source": "6a254c7e680db9b03f3e5d16d5bdec071162f160a2f8099f72e17d1893e2c48f",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-preview-review.mjs",
+      "isolated": "ff2681acdf5cf35eb13cbe0dfb45ebc9e2c1d87048a72bf3cf055d18d6effaaa"
+    },
+    {
+      "source": "814a355116c1a2979b3a78359239a12388f49d4d0c0e8fd8658d21ce83a19d1b",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-real-http.mjs",
+      "isolated": "1075d3e1132bc0a4ab00aeb80b163296142a8e78097204538fe0fbaf9d7717bf"
+    },
+    {
+      "source": "655f6b1a9cc0e17ccbf5d7f6ca7e663438195fdd4e36dd4db5aaeeed0fdeb2af",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-run.mjs",
+      "isolated": "20ce8718e2e66b017ae713941bd1bf461f3e0954177fdb7eb5d45ab32eed65de"
+    },
+    {
+      "source": "51bb988bdb67e51d706688965469b85a9075c449fd23002524b040306b3f8329",
+      "path": "tests\\acceptance\\KB02-REGION-AUDIT-20261023-update-check.mjs",
+      "isolated": "27a8d809c3ebc8533909b0251e13307e1867f1c9c451eb7d4565b8da98af3d2f"
+    }
+  ],
+  "excluded": [
+    "workspace",
+    ".env.local",
+    "node_modules",
+    "dist",
+    "config secrets"
+  ]
+}

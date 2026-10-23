@@ -1,0 +1,365 @@
+{
+  "at": "2026-10-23T03:47:45.256Z",
+  "mode": "full",
+  "root": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\kb02-region-audit-LQ1i4f",
+  "runtime": "v24.20.0",
+  "copyMismatch": [],
+  "rows": [
+    {
+      "name": "fullsuite",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/app-m05-raw-navigation.test.tsx",
+        "tests/app-navigation.test.tsx",
+        "tests/audit-secret-integrity.test.ts",
+        "tests/audit.test.ts",
+        "tests/b05.test.ts",
+        "tests/import.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-edge-extraction.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-final-agreement.test.ts",
+        "tests/kb02-final-classification.test.ts",
+        "tests/kb02-job-file-access.test.ts",
+        "tests/kb02-pipeline.test.ts",
+        "tests/kb02-planning-attribution.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-planning-context.test.ts",
+        "tests/kb02-planning-fields.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/kb02-source-assignment.test.ts",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-ui.test.tsx",
+        "tests/llm-flow.test.ts",
+        "tests/llm-http.test.ts",
+        "tests/llm-repair.test.ts",
+        "tests/llm-repair2.test.ts",
+        "tests/llm-repair3.test.ts",
+        "tests/llm.test.ts",
+        "tests/meeting-integration-m05.test.tsx",
+        "tests/meeting-minutes-backup.test.ts",
+        "tests/meeting-minutes.test.ts",
+        "tests/meeting-raw-m04.test.ts",
+        "tests/meeting-raw-ui-m04.test.tsx",
+        "tests/meeting-ui.test.tsx",
+        "tests/meeting.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-recovery.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/prompt-ai.test.ts",
+        "tests/prompt-ui.test.tsx",
+        "tests/prompt.test.ts",
+        "tests/provider-config-ui.test.tsx",
+        "tests/provider-config.test.ts",
+        "tests/provider-knowledge-reasoning.test.ts",
+        "tests/raw-integrity.test.ts",
+        "tests/raw.test.ts",
+        "tests/security-output-sec.test.ts",
+        "tests/ui-b04.test.tsx",
+        "tests/ui-interaction.test.tsx",
+        "tests/ui.test.tsx",
+        "tests/wiki-selection.test.tsx",
+        "tests/wiki.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 73385,
+      "summary": [
+        "ℹ tests 393",
+        "ℹ pass 393",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 72179.7585"
+      ],
+      "counts": {
+        "tests": 393,
+        "pass": 393,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "tsc",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "-b"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 12913,
+      "summary": []
+    },
+    {
+      "name": "vite",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/vite/bin/vite.js",
+        "build"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 8253,
+      "summary": []
+    },
+    {
+      "name": "historical-boundary",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/acceptance/KB02-FINAL-REPAIR-AUDIT-20261022-boundary.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 849,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 686.5399"
+      ],
+      "counts": {
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "independent-source-boundary",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/acceptance/KB02-SOURCE-AUDIT-20261022-boundary.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 842,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 341.7887"
+      ],
+      "counts": {
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "independent-edge-boundary",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/acceptance/KB02-EDGE-AUDIT-20261022-boundary.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 914,
+      "summary": [
+        "ℹ tests 4",
+        "ℹ pass 4",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 569.4135"
+      ],
+      "counts": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "independent-fields-boundary",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/acceptance/KB02-FIELDS-AUDIT-20261022-boundary.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 717,
+      "summary": [
+        "ℹ tests 7",
+        "ℹ pass 7",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 578.5739"
+      ],
+      "counts": {
+        "tests": 7,
+        "pass": 7,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "node24-version",
+      "command": [
+        "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--version"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 641,
+      "summary": []
+    },
+    {
+      "name": "node24-sr01",
+      "command": [
+        "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-job-file-access.test.ts",
+        "tests/pa01-r01-r02.test.ts",
+        "tests/pa01-sol-recovery.test.ts",
+        "tests/kb02-sr01-r1.test.ts",
+        "tests/kb02-planning-budget.test.ts",
+        "tests/kb02-storage-recovery.test.ts",
+        "tests/kb02-storage-http.test.ts",
+        "tests/kb02-storage-ui.test.tsx"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 29337,
+      "summary": [
+        "ℹ tests 51",
+        "ℹ pass 51",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 28821.143"
+      ],
+      "counts": {
+        "tests": 51,
+        "pass": 51,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "node24-related",
+      "command": [
+        "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-planning-attribution.test.ts",
+        "tests/kb02-planning-fields.test.ts",
+        "tests/kb02-edge-extraction.test.ts",
+        "tests/wiki-selection.test.tsx",
+        "tests/kb02-source-assignment.test.ts",
+        "tests/kb02-planning-context.test.ts",
+        "tests/kb02-final-classification.test.ts",
+        "tests/kb02-final-agreement.test.ts",
+        "tests/kb02-classification-priority.test.ts",
+        "tests/kb02-extraction-contract.test.ts",
+        "tests/kb02-r2.test.ts",
+        "tests/b05.test.ts"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 19126,
+      "summary": [
+        "ℹ tests 114",
+        "ℹ pass 114",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 17472.0519"
+      ],
+      "counts": {
+        "tests": 114,
+        "pass": 114,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    },
+    {
+      "name": "independent-region-boundary",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/acceptance/KB02-REGION-AUDIT-20261023-boundary.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 564,
+      "summary": [
+        "ℹ tests 3",
+        "ℹ pass 3",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 292.4561"
+      ],
+      "counts": {
+        "tests": 3,
+        "pass": 3,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "zeroSkipPassed": true
+    }
+  ],
+  "realProviderCalls": 0,
+  "afterCopyChanges": [],
+  "pass": true
+}

@@ -42,7 +42,7 @@ async function fixture(pair = { type: 'concept', category: 'ai_application' }, s
 test('KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs', async () => {
   const f = await fixture();
   try {
-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-10');
+    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-11');
     const { outcome } = await f.run();
     const system = f.requests[1].system;
     assert.match(system, /type表示知识页的知识形态，category表示该页涉及的快消业务主题/u);

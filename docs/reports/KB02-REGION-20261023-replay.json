@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-23T03:23:32.236Z",
+  "head": "5be06023bb8200e82cb0131b0588601632c4e941",
+  "productCommit": "a836270f53f0fc5bb802695e3f4101cf182ee3b9",
+  "node": "v24.20.0",
+  "elapsedMs": 3225,
+  "sourceHashes": {
+    "docs/reports/KB02-FIELDS-AUDIT-20261022-provider-trace.jsonl": "0da4eb469e6c9b5448a9d891d6deb4660c172614ac536cdbf7c0ba62874f44eb",
+    "docs/reports/KB02-FIELDS-AUDIT-20261022-long-checkpoint.json": "af25611cb43d16f4dc9bfed365830c294344c837445b321d4a768d772bbfe28b",
+    "docs/reports/KB02-FIELDS-AUDIT-20261022-real-http-LONG.json": "80c2a5616782e9bdab5423dab654330315c970715e072d5e960265e30587dcbb",
+    "docs/reports/KB02-FIELDS-AUDIT-20261022-quality.json": "1447ea9d53b2fc638c73e4a34cf241a9e4b729c1b68b0d356402df34fc9a6909",
+    "docs/reports/KB02-FIELDS-AUDIT-20261022-browser-long-observed.json": "4cbb6b219970db9238f5acda859fc7e0f9d35df677ed960bb30f18581fcbbc5b"
+  },
+  "rawSha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7",
+  "inputBytes": 73721,
+  "actualInputMatchesRebuilt": true,
+  "currentSystemContainsAttributionSteps": true,
+  "historicalPromptNotReused": true,
+  "oldExtractedChunksReusedInMemoryWithCurrentRulesRevision": true,
+  "mechanical": {
+    "units": 55,
+    "originalIds": 100,
+    "sourceContexts": 42,
+    "originalPlanExpansionUnchanged": true,
+    "split": 0,
+    "schemaPass": true,
+    "coveragePass": true
+  },
+  "contexts": {
+    "boundarySubjects": 14,
+    "withExactSubjectDateMetricAndIndependenceText": 14,
+    "boundaryUnits": 27,
+    "facts": 25,
+    "questions": 21
+  },
+  "originalResponseReplay": {
+    "fakeCalls": 1,
+    "checkpointWritesInMemory": 3,
+    "acceptedByPipeline": true,
+    "pages": 15,
+    "assembledFieldsMatchStoredDraft": true,
+    "comparisonNormalization": "evidence.occurrences emitted as 1 but absent from stored draft; editor metadata excluded",
+    "genericPage": {
+      "title": "异常审批负责人未知与AI仅未来分析建议（待确认）",
+      "factCount": 25,
+      "questionCount": 21
+    },
+    "semanticRegionalQualityPass": false
+  },
+  "positiveControl": {
+    "fakeCalls": 1,
+    "acceptedByPipeline": true,
+    "unchangedUnitsAndOriginalIds": true,
+    "subjectAssociationsPreservedByFixture": true,
+    "modelQualityProof": false
+  },
+  "browserEvidence": {
+    "historicalOnly": true,
+    "cardIndex": 15,
+    "factAndQuestionTextareas": 46,
+    "fieldSubjectsPresent": false,
+    "currentBrowserStarted": false
+  },
+  "scope": {
+    "productsModified": false,
+    "defaultTestsModified": false,
+    "realCalls": 0,
+    "networkAttempts": 0,
+    "kb02Cumulative": 183,
+    "kb02Cap": 500,
+    "currentStageCap": 24,
+    "promptCumulative": 15,
+    "promptCap": 24,
+    "defectFixed": false,
+    "kb02Passed": false
+  },
+  "integrity": {
+    "protectedFiles": 3521,
+    "changed": [],
+    "historicalReportsUnchanged": true,
+    "workspaceAndConfigUnchanged": true
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "F-KB02-REGION-SUPPLEMENT-01",
+  "priority": "P1",
+  "criterion": "K2-02: boundary-only statements should not independently inflate pages",
+  "sequence": 202,
+  "raw": {
+    "id": "11509acd-efd2-4f2c-b9a6-42044be7bec6",
+    "chars": 160,
+    "sha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197"
+  },
+  "page": {
+    "title": "AI异常提示机制（未上线，未来建议）",
+    "type": "concept",
+    "category": "ai_application",
+    "factUnitIds": [
+      "fu-139-160-fact"
+    ],
+    "questionUnitIds": []
+  },
+  "units": [
+    {
+      "id": "fu-139-160-fact",
+      "sourceId": "s-139-160",
+      "text": "AI异常提示为未来建议，无上线或收益事实。",
+      "kind": "fact",
+      "memberIds": [
+        "f-c1-4"
+      ]
+    }
+  ],
+  "sourceContexts": [
+    {
+      "id": "s-139-160",
+      "start": 139,
+      "end": 160,
+      "contextStart": 0,
+      "contextEnd": 160,
+      "text": "【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。",
+      "factIds": [
+        "f-c1-4"
+      ],
+      "questionIds": []
+    }
+  ],
+  "decision": "FAIL",
+  "reason": "唯一原句仅陈述未来建议及无上线收益，未提供独立定义、触发条件或流程。标题新增机制框架但无独立业务主题依据；应保留作为相关事实主题的边界，不是删除该事实。此页未正式确认。"
+}
