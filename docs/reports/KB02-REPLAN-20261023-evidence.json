@@ -1,0 +1,51 @@
+{
+  "head": "63bd02f62897ca2a135fc9cdcf1a51951ebe40df",
+  "product": "bb0f814ed1e360cdf1ceed517d2c80d8db0510c5",
+  "realCalls": 0,
+  "realCumulative": 209,
+  "promptCumulative": 15,
+  "testsRun": 0,
+  "rawTraceAssertions": "Prior read-only command verified seq206 page2 pass and seq209 two entries with no reason",
+  "hashes": [
+    {
+      "path": "services/llm/provider.ts",
+      "sha256": "7f80cb0b7758de5b4c74112ab831f01409896d49c4a2afe7c3e2b04fa05ca945"
+    },
+    {
+      "path": "services/llm/knowledge-semantic-review.ts",
+      "sha256": "e1803a471446185f4cb79460acdf8130b1a4db98ff6a0a520316c6b409f13cd7"
+    },
+    {
+      "path": "rules/kb02-semantic-review.schema.json",
+      "sha256": "4b1f7eb304d09a9770ba376b853a8bbc74d51653747ccc950cb156a3dbcb6851"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-provider-trace.jsonl",
+      "sha256": "24020d976ad66f47ea9ba067ab999f21507a96b967e1592103e6d4bd3752a59e"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+      "sha256": "5cc5a6bdcb10738687e226bfca86e52a9a037ddad57d5eac492365c16745fbc5"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-DIAG-20261023-diagnosis.md",
+      "sha256": "b326f50ad793baf71a79c86c74c3d85eb0329b8ca60d706b8ace9bf8db8e5a28"
+    },
+    {
+      "path": "docs/reports/KB02-REPLAN-20261023-review.md",
+      "sha256": "08248c9d6372feb674b75cd6c0042cbeac9363f54b8a1d98cb2388f194ab8027"
+    }
+  ],
+  "scope": "Only new REPLAN report/evidence; status/control parent-owned",
+  "writeAttempt": "First ordinary Set-Content denied; no evidence file created. Retried authorized report-only write with escalation.",
+  "publicDocumentation": [
+    "https://docs.bigmodel.cn/cn/guide/capabilities/struct-output",
+    "https://docs.bigmodel.cn/cn/guide/models/vlm/glm-5.3-flash"
+  ],
+  "limitations": [
+    "No provider capability probe",
+    "No product/fake/full-suite test",
+    "No baseline-wide immutability claim",
+    "Experiment proposed only"
+  ]
+}

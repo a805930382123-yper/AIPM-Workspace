@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "realCalls": 0,
+  "requests": 8,
+  "cases": 4,
+  "checks": [
+    "historical A requests deep equal originals",
+    "plan schema",
+    "unit exact once coverage",
+    "source offsets/member bindings",
+    "oracle page count",
+    "same user/body within each A/B pair"
+  ],
+  "artifactSha256": "1d11e66fd8ba5e37dab18a1fc4722044d753d0907efa0ccded96f9332498f114",
+  "command": "node --import tsx tests/acceptance/KB02-REPLAN-20261023-freeze.mjs"
+}
