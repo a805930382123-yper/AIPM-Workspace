@@ -1,0 +1,96 @@
+{
+  "node": "v25.2.1",
+  "pass": true,
+  "realCalls": 0,
+  "simulationOnly": true,
+  "simulatedFakeCallbacks": 6,
+  "normalChainFakeCallsExcluded": true,
+  "rows": [
+    {
+      "name": "CLI and mutated plan cannot construct real transport",
+      "pass": true,
+      "realAuthorization": 0
+    },
+    {
+      "name": "Production fake boundary rejects B1, extra and early planning before returning response",
+      "pass": true
+    },
+    {
+      "name": "Environment has no real mode",
+      "pass": true
+    },
+    {
+      "name": "Unapproved stage cannot dispatch",
+      "pass": true
+    },
+    {
+      "name": "Pre-send durable ledger and exact stage ceiling",
+      "pass": true,
+      "sent": 1
+    },
+    {
+      "name": "Ledger failure prevents callback, uncertain reservation retained",
+      "pass": true
+    },
+    {
+      "name": "timeout counts and stops",
+      "pass": true,
+      "used": 1
+    },
+    {
+      "name": "cancelled counts and stops",
+      "pass": true,
+      "used": 1
+    },
+    {
+      "name": "invalid-json counts and stops",
+      "pass": true,
+      "used": 1
+    },
+    {
+      "name": "Two in-flight attempts counted; no third or planning after failure",
+      "pass": true,
+      "used": 2
+    },
+    {
+      "name": "Restart does not resume dispatch",
+      "pass": true
+    },
+    {
+      "name": "Five-stage approval proposal totals22, current authority0",
+      "pass": true,
+      "stages": [
+        {
+          "id": "A1",
+          "calls": 2,
+          "approved": false,
+          "cumulativeCeiling": 221
+        },
+        {
+          "id": "A2",
+          "calls": 2,
+          "approved": false,
+          "cumulativeCeiling": 223
+        },
+        {
+          "id": "A3",
+          "calls": 1,
+          "approved": false,
+          "cumulativeCeiling": 224
+        },
+        {
+          "id": "B",
+          "calls": 2,
+          "approved": false,
+          "cumulativeCeiling": 226
+        },
+        {
+          "id": "C",
+          "calls": 15,
+          "approved": false,
+          "cumulativeCeiling": 241
+        }
+      ]
+    }
+  ]
+}

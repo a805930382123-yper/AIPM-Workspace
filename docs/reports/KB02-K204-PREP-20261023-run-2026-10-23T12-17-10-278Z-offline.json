@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-10-23T12:17:10.281Z",
+  "node": "v25.2.1",
+  "realCalls": 0,
+  "fakeCalls": 0,
+  "rows": [
+    {
+      "name": "P01 frozen card/source/code/rules/body/chunks and22-call proposal",
+      "pass": true
+    }
+  ],
+  "actions": [],
+  "candidates": {},
+  "final": {},
+  "limitations": [
+    "React/jsdom + actual localhost HTTP, no Chrome/browser-engine evidence",
+    "All generated responses are fake; real quality NOT_RUN",
+    "Future real runner is not implemented by this preparation"
+  ],
+  "pass": false,
+  "protectedPaths": 188,
+  "error": {
+    "name": "Error",
+    "message": "EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{842697f0-7efe-4cc5-94bb-fa6d20d3a100}\\AC\\Temp\\kb02-budget-ypCdwN\\knowledge\\raw\\reports\\.2de17059-e460-40f7-8d56-2b9aedfc98c3.6ba44d63-67f7-4799-8c87-02be116245a8.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{842697f0-7efe-4cc5-94bb-fa6d20d3a100}\\AC\\Temp\\kb02-budget-ypCdwN\\knowledge\\raw\\reports\\2de17059-e460-40f7-8d56-2b9aedfc98c3.md'",
+    "stack": "Error: EPERM: operation not permitted, rename 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{842697f0-7efe-4cc5-94bb-fa6d20d3a100}\\AC\\Temp\\kb02-budget-ypCdwN\\knowledge\\raw\\reports\\.2de17059-e460-40f7-8d56-2b9aedfc98c3.6ba44d63-67f7-4799-8c87-02be116245a8.tmp' -> 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{842697f0-7efe-4cc5-94bb-fa6d20d3a100}\\AC\\Temp\\kb02-budget-ypCdwN\\knowledge\\raw\\reports\\2de17059-e460-40f7-8d56-2b9aedfc98c3.md'\n    at async rename (node:internal/fs/promises:786:10)\n    at async RawStore.createWithId (E:\\AI\\Work\\AIPM Workspace\\services\\raw\\store.ts:132:7)\n    at async storageFixture (E:\\AI\\Work\\AIPM Workspace\\tests\\support\\kb02-storage-fixture.ts:21:15)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-PREP-20261023-run.mjs:51:5)"
+  },
+  "trace": [],
+  "network": {
+    "externalSent": 0,
+    "blocked": 2,
+    "localRequests": 0
+  },
+  "protectionMismatches": [],
+  "cleaned": {
+    "serverClosed": false,
+    "fixtureRemoved": false,
+    "negativeAndSimulationRoots": 0
+  },
+  "finishedAt": "2026-10-23T12:17:10.396Z"
+}

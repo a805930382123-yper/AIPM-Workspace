@@ -1,0 +1,442 @@
+{
+  "version": 1,
+  "preparedAt": "2026-10-23T12:10:33.444Z",
+  "status": "PLAN_ONLY_REAL_AUTHORIZATION_ZERO",
+  "head": "5de67e33e19d4dce3ca650c8c5ee9f1c472970ba",
+  "productCommit": "60f83adba102d887fcd925df13a8021ff7669de1",
+  "sourceFile": {
+    "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+    "sha256": "5cc5a6bdcb10738687e226bfca86e52a9a037ddad57d5eac492365c16745fbc5"
+  },
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a",
+  "budgets": {
+    "maxChunkChars": 8000,
+    "chunkOverlap": 400,
+    "maxOutputBytesPerCall": 2097152,
+    "maxSuggestedPages": 50,
+    "maxConcurrentChunks": 2,
+    "callTimeoutMs": 60000,
+    "totalDeadlineMs": 600000,
+    "maxRawChars": 500000
+  },
+  "samples": [
+    {
+      "id": "explicit-metric-target",
+      "bodyReference": {
+        "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+        "fixtureId": "explicit-metric-target",
+        "field": "body"
+      },
+      "bodySha256": "0d22bbdfcac57ebc020296e96f4b42d69741834ef8d242026ca2785b78217726",
+      "chars": 208,
+      "utf8Bytes": 582,
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 208
+        }
+      ],
+      "normalExtractionCalls": 2,
+      "originalOracle": {
+        "required": [
+          "形成真实metric类型页面，包含定义、公式、适用维度、目标为零不计算边界",
+          "虚构饮料甲/甲桥/2026年9月/100目标/20在售/20%不变",
+          "门店数不表示销量/销售额，具体采样日期未注明保留"
+        ],
+        "targetGate": "先从实际metric草稿明确创建旧目标，写入人工备注；未生成metric则特定能力前置未达，不改type/不重抽",
+        "updateSource": "复用同施工冻结下supplement-original的合规草稿，与旧metric同一目标做预览",
+        "updateOracle": [
+          "100目标及主体月份双侧支持",
+          "20/20%与30/30%分别保留来源，口径或采样时间差异待确认",
+          "保留旧定义/公式/零分母边界/单位限制及人工备注",
+          "补充独有财务规则/AI未来限制不可称双侧共识",
+          "新增/冲突/推断/待确认分开；不编造精确采样日期或真实时间增长结论",
+          "实际Chrome确认前独立审核预览，再确认/刷新/持久回读/幂等"
+        ],
+        "historical": "新增前瞻metric能力证明，不回填原混合短文历史门槛"
+      }
+    },
+    {
+      "id": "supplement-original",
+      "bodyReference": {
+        "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+        "fixtureId": "supplement-original",
+        "field": "body"
+      },
+      "bodySha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197",
+      "chars": 160,
+      "utf8Bytes": 436,
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 160
+        }
+      ],
+      "normalExtractionCalls": 2,
+      "originalOracle": {
+        "required": [
+          "甲桥/虚构饮料甲/2026年9月/100目标/30在售/30%完整保留",
+          "旧20家及20%与新30家及30%并列，口径或采样时间差异待确认，不能静默替代",
+          "财务每周核对回款一次",
+          "异常审批负责人需访谈确认",
+          "AI未来建议、无上线或收益事实作为相关业务主题边界保留"
+        ],
+        "forbidden": [
+          "仅凭AI未来/未上线边界独立生成机制或边界空主题",
+          "编造上线、收益、触发条件或流程",
+          "删边界以使页面通过"
+        ],
+        "pageCount": "不固定；按实际独立主题支持判断",
+        "purpose": "原P1反例；必须生成完整合规草稿，只有拒绝不算修复成功"
+      }
+    },
+    {
+      "id": "mixed-short-original",
+      "bodyReference": {
+        "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+        "fixtureId": "mixed-short-original",
+        "field": "body"
+      },
+      "bodySha256": "d3c1512e32c2dc0654addce9e0381b5bb6fad16f693cb780d229877022734515",
+      "chars": 134,
+      "utf8Bytes": 355,
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 134
+        }
+      ],
+      "normalExtractionCalls": 2,
+      "originalOracle": {
+        "required": [
+          "全部原经营事实、计算方式和业务边界/未知保留并有依据归属"
+        ],
+        "type": "沿现有分类规范按实际内容判断；concept并非强制分类错误，不要求本混合样本必须metric",
+        "historical": "seq185未产生旧任务卡所需metric目标的事实保留；本轮不追改历史",
+        "purpose": "短文真实质量及通用候选更新回归"
+      }
+    },
+    {
+      "id": "long-original",
+      "bodyReference": {
+        "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+        "fixtureId": "long-original",
+        "field": "body"
+      },
+      "bodySha256": "a60cad47549b175a9eedcde1cb1246ddbaba2891abdb492f00212a26aac513c7",
+      "chars": 106400,
+      "utf8Bytes": 293828,
+      "chunks": [
+        {
+          "index": 0,
+          "start": 0,
+          "end": 8000
+        },
+        {
+          "index": 1,
+          "start": 7600,
+          "end": 15600
+        },
+        {
+          "index": 2,
+          "start": 15200,
+          "end": 23200
+        },
+        {
+          "index": 3,
+          "start": 22800,
+          "end": 30800
+        },
+        {
+          "index": 4,
+          "start": 30400,
+          "end": 38400
+        },
+        {
+          "index": 5,
+          "start": 38000,
+          "end": 46000
+        },
+        {
+          "index": 6,
+          "start": 45600,
+          "end": 53600
+        },
+        {
+          "index": 7,
+          "start": 53200,
+          "end": 61200
+        },
+        {
+          "index": 8,
+          "start": 60800,
+          "end": 68800
+        },
+        {
+          "index": 9,
+          "start": 68400,
+          "end": 76400
+        },
+        {
+          "index": 10,
+          "start": 76000,
+          "end": 84000
+        },
+        {
+          "index": 11,
+          "start": 83600,
+          "end": 91600
+        },
+        {
+          "index": 12,
+          "start": 91200,
+          "end": 99200
+        },
+        {
+          "index": 13,
+          "start": 98800,
+          "end": 106400
+        }
+      ],
+      "normalExtractionCalls": 15,
+      "originalOracle": {
+        "regions": [
+          {
+            "subject": "虚构区域01",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 11,
+            "distributionPercent": 11,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域02",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 12,
+            "distributionPercent": 12,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域03",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 13,
+            "distributionPercent": 13,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域04",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 14,
+            "distributionPercent": 14,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域05",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 15,
+            "distributionPercent": 15,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域06",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 16,
+            "distributionPercent": 16,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域07",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 17,
+            "distributionPercent": 17,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域08",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 18,
+            "distributionPercent": 18,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域09",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 19,
+            "distributionPercent": 19,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域10",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 20,
+            "distributionPercent": 20,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域11",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 21,
+            "distributionPercent": 21,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域12",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 22,
+            "distributionPercent": 22,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域13",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 23,
+            "distributionPercent": 23,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          },
+          {
+            "subject": "虚构区域14",
+            "month": "2026年9月",
+            "targetStores": 100,
+            "sellingStores": 24,
+            "distributionPercent": 24,
+            "independence": "此区域与其它附录区域独立，不能混用。",
+            "boundary": "异常审批负责人未知，AI仅未来分析建议。"
+          }
+        ],
+        "required": [
+          "逐区域原文事实/日期/数值及独立性保留，不跨主体混用",
+          "每个已提取unit和原ID恰好一次，且另查原文业务事实没有漏提",
+          "未知/未来边界归相关主体，非业务排版不转经营事实"
+        ],
+        "pageCount": "不固定14页；历史55unit/101ID仅作为旧结果参考，不固定本轮提取数量"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "services/llm/chunk.ts",
+      "sha256": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606"
+    },
+    {
+      "path": "services/llm/jobs.ts",
+      "sha256": "d7c6af163fc50f41a3573ce5597aca20a92e0ccf8842fd4606324569c34a1f21"
+    },
+    {
+      "path": "services/llm/knowledge-extraction.ts",
+      "sha256": "8724451bff68f5b10f4e16cea3a3637059aed55972daa13c1de95b8478e377dd"
+    },
+    {
+      "path": "services/llm/rules.ts",
+      "sha256": "2d08b513ae9c57e15ff56d99a31950e7aca7fcac0149eef6507e8993d90c4ccb"
+    },
+    {
+      "path": "services/wiki/knowledge-workflows.ts",
+      "sha256": "1e3488ff85908403b3789d5c52dd0dd70dba31fae8e97a9404e83470bc6ae20d"
+    },
+    {
+      "path": "server/knowledge-api.ts",
+      "sha256": "d83507f257a966e32792bcc23f63ffcab41e99cbfcff7245616dcc02177f0d29"
+    },
+    {
+      "path": "docs/reports/KB02-HUMAN-20261023-freeze.json",
+      "sha256": "94a375ddb4e46d0cc05be3c128f74a2b0283d2159aa660a615f2965b2416a1b7"
+    },
+    {
+      "path": "docs/reports/KB02-REGION-AUDIT-20261023-long-checkpoint.json",
+      "sha256": "985930192415afe6a93f103999a4fc6a8e42b3781779ee0216e25f564d3e5637"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-provider-trace.jsonl",
+      "sha256": "24020d976ad66f47ea9ba067ab999f21507a96b967e1592103e6d4bd3752a59e"
+    }
+  ],
+  "stages": [
+    {
+      "id": "A1",
+      "sample": "explicit-metric-target",
+      "calls": 2,
+      "formula": "1 extraction + 1 planning",
+      "cumulativeCeiling": 221,
+      "approved": false
+    },
+    {
+      "id": "A2",
+      "sample": "supplement-original",
+      "calls": 2,
+      "formula": "1 extraction + 1 planning",
+      "cumulativeCeiling": 223,
+      "approved": false
+    },
+    {
+      "id": "A3",
+      "sample": "A2 human-reviewed selected page -> A1 confirmed metric target",
+      "calls": 1,
+      "formula": "1 createUpdate provider.complete",
+      "cumulativeCeiling": 224,
+      "approved": false
+    },
+    {
+      "id": "B",
+      "sample": "mixed-short-original",
+      "calls": 2,
+      "formula": "1 extraction + 1 planning",
+      "cumulativeCeiling": 226,
+      "approved": false
+    },
+    {
+      "id": "C",
+      "sample": "long-original",
+      "calls": 15,
+      "formula": "14 extraction + 1 planning",
+      "cumulativeCeiling": 241,
+      "approved": false
+    }
+  ],
+  "budget": {
+    "authorizedNow": 0,
+    "knowledgeUsed": 219,
+    "knowledgeHistoricalCeiling": 500,
+    "prompt": "15/24",
+    "proposedMaximum": 22,
+    "retries": 0,
+    "semanticReviewCalls": 0,
+    "condition": "Each stage requires separate release after previous evidence passes; proposal is not authorization."
+  },
+  "oracleInterpretation": "originalOracle is immutable historical reference, not blindly current candidate gate. HUMAN permits explicit correction of candidate theme/whole-unit ownership, preserving original records; impossible provenance/coverage or invalid output fails. Metric capability must first yield metric without manually changing type. All pages reviewed with no unresolved before formal writes.",
+  "humanMemo": "人工备注：这是验收用虚构指标，保留基期口径；补充来源差异须并列核对。",
+  "limitations": [
+    "No real provider import/config/probe permitted in preparation runner",
+    "Dynamic planning/update requests cannot be frozen before earlier outputs exist: hash and inspect derived requests before any future authorized send",
+    "Old long plan replay does not prove fresh real extraction/plan quality",
+    "Original mixed short need not be metric",
+    "No new independent-ai-positive or B1 experiment required; reuse HUMAN proof"
+  ]
+}

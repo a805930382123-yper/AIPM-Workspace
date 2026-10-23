@@ -1,0 +1,22 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: OFFLINE_ONLY: no command line modes or authorization flags
+
+1 !== 0
+
+    at offlineArgs (file:///E:/AI/Work/AIPM%20Workspace/.scratch-KB02-K204-PREP-AUDIT-DjjBHF/tests/acceptance/KB02-K204-PREP-20261023-support.mjs:15:66)
+    at <anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-K204-PREP-AUDIT-DjjBHF\tests\acceptance\KB02-K204-PREP-20261023-run.mjs:19:1)
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1

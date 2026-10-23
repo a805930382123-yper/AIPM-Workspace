@@ -1,0 +1,55 @@
+{
+  "status": "PLAN_ONLY_REAL_AUTHORIZATION_ZERO",
+  "knowledgeUsed": 219,
+  "prompt": "15/24",
+  "maximumProposed": 22,
+  "maximumCumulative": 241,
+  "stages": [
+    {
+      "id": "A1",
+      "sample": "explicit-metric-target",
+      "calls": 2,
+      "formula": "1 extraction + 1 planning",
+      "cumulativeCeiling": 221,
+      "approved": false
+    },
+    {
+      "id": "A2",
+      "sample": "supplement-original",
+      "calls": 2,
+      "formula": "1 extraction + 1 planning",
+      "cumulativeCeiling": 223,
+      "approved": false
+    },
+    {
+      "id": "A3",
+      "sample": "A2 human-reviewed selected page -> A1 confirmed metric target",
+      "calls": 1,
+      "formula": "1 createUpdate provider.complete",
+      "cumulativeCeiling": 224,
+      "approved": false
+    },
+    {
+      "id": "B",
+      "sample": "mixed-short-original",
+      "calls": 2,
+      "formula": "1 extraction + 1 planning",
+      "cumulativeCeiling": 226,
+      "approved": false
+    },
+    {
+      "id": "C",
+      "sample": "long-original",
+      "calls": 15,
+      "formula": "14 extraction + 1 planning",
+      "cumulativeCeiling": 241,
+      "approved": false
+    }
+  ],
+  "updateLimits": {
+    "timeoutMs": 90000,
+    "maxOutputBytes": 256000
+  },
+  "realRunnerImplemented": false,
+  "dynamicRequestNote": "Future actual planning/update bytes require durable input reload and pre-send hash review; oracle/spec must not be sent."
+}

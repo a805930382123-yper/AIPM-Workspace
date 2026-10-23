@@ -1,5 +1,21 @@
 # 工程状态
 
+## 当前结论：K2-04补证准备通过，真实验收未授权（2026-10-23）
+
+已按B模式6/8完成Astra冻结卡/spec、Sol High施工/自查、Astra独立复验。**本轮准备工具PASS；KB02整体仍BLOCKED，真实质量NOT_RUN**。见[独立验收报告](reports/KB02-K204-PREP-AUDIT-20261023-acceptance.md)及[最小补证卡](handoffs/KB02-K204-PREP-20261023-task.md)。没有修改产品，HUMAN门禁PASS与原模型历史FAIL各自保留。
+
+最终repair1同字节24冻结文件、188历史源前后零漂移；本机Node25.2.1独立完整22次fake、12项门禁/6次模拟回调通过，实际React/localhost HTTP更新与回读完成，长文从空检查点14+1次、14主体逐Raw保全。首轮网络守卫P04失败已由Sol最小修复并经Astra复验关闭，两条绕过均拒绝且未登记本机sink命中0；原失败/首探针判据不足记录保留。实际组件证据不冒称Chrome；wrapper计数不冒称全进程网络遥测。
+
+后续真实建议硬上限 **22=5+2+15**：metric目标2、补充提取2、更新预览1；原混合短文2；原长文14块+规划15。若全部首次成功，知识累计最多241/500；没有重试/诊断余量。当前真实授权仍0、实际累计219/500、Prompt15/24，五阶段批准全false。工具为offline-only；未来真实接线需另获授权并独立审查，阶段由主Agent据独立质量证据放行，首失败停止新增请求、两在途仍计账。准备通过不等于真实放行或KB02结批，汇报后停止。
+
+## 历史过程：K2-04最小补证准备与离线验证（以下由上方结论覆盖）
+
+用户明确批准按B模式准备下一轮最小补证卡及离线验证，**真实模型调用授权为0**，不使用旧预算余额外发。基线HEAD `5de67e33e19d4dce3ca650c8c5ee9f1c472970ba`，产品 `60f83ad`；HUMAN门禁PASS、KB02整体BLOCKED保持。准备范围是明确metric目标/补充更新、必要原长文新链及人工回读证据，冻结实际调用上限、首失败停止和阶段审批；不改产品或旧失败资产。
+
+沿用用户确认B模式，准备范围评分6/8（需求1、耦合2、风险1、历史2）。Astra/medium `/root/human_closure_audit` 已冻结[最小补证卡](handoffs/KB02-K204-PREP-20261023-task.md)及[样本规格](reports/KB02-K204-PREP-AUDIT-20261023-spec.json)，建议后续真实上限22=5+2+15（累计最多241/500，当前批准仍0）。`sol_repair`（Sol High）`/root/k204_prep_sol` 已获卡范围施工授权，编制offline-only工具并自查，冻结后由Astra独立验收P01–P06。主Agent负责授权、台账、4045路径保护与Git；外部AGENTS/.agents/AGENT-ROUTER修改保留。本轮真实0，知识219/500、Prompt15/24不变；准备完成汇报方案与建议调用上限后停止。
+
+准备工具首轮独立P04未通过：只用两个localhost服务复现fetch重定向和http.request第二参数port覆盖均可到未登记服务，原externalSent=0计数不足以证明白名单限制；未连接外部主机或Provider。Astra原失败证据保留，主Agent已授权原Sol仅修网络守卫及相关回归，使用repair1新冻结，原卡/spec/产品不改；修后由Astra复跑网络探针和最终离线整链，不能凭自查签收。
+
 ## 当前结论：HUMAN人工门禁通过，KB02阻塞待补证（2026-10-23）
 
 产品与完整验收证据提交：`60f83adba102d887fcd925df13a8021ff7669de1`，提交后实时远端main核验一致。后续文档关联提交不改变产品与验收结论；并行外部工作仍未提交。详见[主Agent收尾记录](reports/KB02-HUMAN-FINAL-20261023-release.md)。

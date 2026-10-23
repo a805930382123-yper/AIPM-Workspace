@@ -1,0 +1,120 @@
+{
+  "node": "v25.2.1",
+  "startedAt": "2026-10-23T12:25:21.485Z",
+  "realProviderCalls": 0,
+  "onlyLocalServers": true,
+  "rows": [
+    {
+      "name": "Standard fetch GET/POST remain usable",
+      "pass": true
+    },
+    {
+      "name": "fetch redirect cannot reach unregistered sink",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "fetch explicit redirect follow rejected before request",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "fetch Request input rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "fetch unregistered URL rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "fetch dispatcher rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "fetch init URL/host override rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "fetch init accessor rejected without invoking getter",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options portPath",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options host",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options protocol",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options socketPath",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options customConnection",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options customAgent",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request second options customLookup",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.get second options rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request options-only rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "http.request direct unregistered URL rejected",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "name": "Standard HTTP URL[, callback] uses private Agent",
+      "pass": true
+    },
+    {
+      "name": "https client rejected",
+      "pass": true,
+      "sinkHits": 0
+    }
+  ],
+  "sinkHits": 0,
+  "allowedHits": 5,
+  "customTransportInvocations": 0,
+  "pass": true,
+  "guardWrapperCounters": {
+    "blocked": 18,
+    "localRequests": 5,
+    "redirectsBlocked": 1,
+    "deniedSignatures": 14
+  },
+  "counterLimit": "Wrapper counters are not total network telemetry. Two actual local servers independently measured allowed=5, unregistered sink=0; all denied paths failed before reaching the sink.",
+  "closed": true,
+  "finishedAt": "2026-10-23T12:25:21.537Z",
+  "supportSha256": "3cef9a2b4f47bb62bcc59a7ee1284f06c1087664924ea12e64fc20757df0c30f"
+}

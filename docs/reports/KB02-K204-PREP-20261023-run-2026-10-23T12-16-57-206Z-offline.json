@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-10-23T12:16:57.209Z",
+  "node": "v25.2.1",
+  "realCalls": 0,
+  "fakeCalls": 0,
+  "rows": [
+    {
+      "name": "P01 frozen card/source/code/rules/body/chunks and22-call proposal",
+      "pass": true
+    }
+  ],
+  "actions": [],
+  "candidates": {},
+  "final": {},
+  "limitations": [
+    "React/jsdom + actual localhost HTTP, no Chrome/browser-engine evidence",
+    "All generated responses are fake; real quality NOT_RUN",
+    "Future real runner is not implemented by this preparation"
+  ],
+  "pass": false,
+  "protectedPaths": 188,
+  "error": {
+    "name": "Error",
+    "message": "OFFLINE_NETWORK_DENIED",
+    "stack": "Error: OFFLINE_NETWORK_DENIED\n    at check (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-PREP-20261023-support.mjs:30:227)\n    at globalThis.fetch (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-PREP-20261023-support.mjs:31:47)\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-PREP-20261023-run.mjs:50:24)"
+  },
+  "trace": [],
+  "network": {
+    "externalSent": 0,
+    "blocked": 1,
+    "localRequests": 0
+  },
+  "protectionMismatches": [],
+  "cleaned": {
+    "serverClosed": false,
+    "fixtureRemoved": false,
+    "negativeAndSimulationRoots": 0
+  },
+  "finishedAt": "2026-10-23T12:16:57.302Z"
+}

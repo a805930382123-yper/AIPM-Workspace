@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "node": "v25.2.1",
+  "realCalls": 0,
+  "verifiedOriginalNormalRequests": 21,
+  "sourceRun": "docs/reports/KB02-K204-PREP-20261023-run-2026-10-23T12-18-25-513Z-offline.json",
+  "sourceRunSha256": "b9d852796b69b79dbdae85add84305b2f55f96905170c85bb5990e4787dcc0df",
+  "finalGuardOnlyChange": true,
+  "cliRealRejected": {
+    "status": 1,
+    "stderr": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: OFFLINE_ONLY: no command line modes or authorization flags\r\n\r\n1 !== 0\r\n\r\n    at offlineArgs (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-PREP-20261023-support.mjs:15:66)\r\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-PREP-20261023-run.mjs:19:1)\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 1,\r\n  expected: 0,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v25.2.1\r\n",
+    "stdout": ""
+  },
+  "unchangedHistoricalSourceFingerprints": 188
+}

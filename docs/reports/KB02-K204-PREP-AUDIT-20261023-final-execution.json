@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-10-23T12:27:37.107Z",
+  "node": "v25.2.1",
+  "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-PREP-AUDIT-DjjBHF",
+  "freezeSha": "cc8fbd4166d3ad79ab6a83a4ceaa0f1c38ebb9059210fab2eb9d8940abb61497",
+  "frozenPaths": 24,
+  "sourcePaths": 188,
+  "rows": [
+    {
+      "label": "network",
+      "args": [
+        "--import",
+        "tsx",
+        "tests/acceptance/KB02-K204-PREP-AUDIT-20261023-network.mjs",
+        "repair1"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "expected": 0,
+      "durationMs": 356,
+      "pass": true
+    },
+    {
+      "label": "complete",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "tests/acceptance/KB02-K204-PREP-20261023-run.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "expected": 0,
+      "durationMs": 5366,
+      "pass": true
+    },
+    {
+      "label": "real-denied",
+      "args": [
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "tests/acceptance/KB02-K204-PREP-20261023-run.mjs",
+        "--real"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "expected": 1,
+      "durationMs": 1101,
+      "pass": true
+    }
+  ],
+  "realCalls": 0,
+  "artifacts": [
+    "docs/reports/KB02-K204-PREP-AUDIT-20261023-final-run-2026-10-23T12-27-47-929Z-gates.json",
+    "docs/reports/KB02-K204-PREP-AUDIT-20261023-final-run-2026-10-23T12-27-47-929Z-offline.json",
+    "docs/reports/KB02-K204-PREP-AUDIT-20261023-final-run-2026-10-23T12-27-47-929Z-plan.json",
+    "docs/reports/KB02-K204-PREP-AUDIT-20261023-final-network-repair1.json"
+  ],
+  "postMismatches": [],
+  "pass": true,
+  "finishedAt": "2026-10-23T12:27:52.870Z"
+}

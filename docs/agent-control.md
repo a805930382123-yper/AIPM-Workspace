@@ -1,5 +1,23 @@
 # 项目总控记录
 
+## 2026-10-23 K204-PREP收尾
+
+本轮B模式6/8按实际指定实例完成：Astra/medium冻结方案，Sol High施工，Astra独立发现P04网络白名单绕过，原Sol仅返修support与定向回归，再由Astra独立网络及完整入口复验。**准备工具PASS、KB02仍BLOCKED/真实质量NOT_RUN**，见[独立结论](reports/KB02-K204-PREP-AUDIT-20261023-acceptance.md)。本机独立正常22fake、12项/6模拟回调、两原绕过均拒绝且sink0；最终24施工冻结及188源前后不变，没有产品改动或445/build重跑。
+
+先前P04失败及首探针判据不足保留，修复后不引用旧externalSent常量作传输证明。审批/账本只是fake模拟，不是已实现的真实transport。建议未来22（5+2+15）硬上限，累计最多241/500；本轮真实0、当前219/500和15/24保持，所有阶段真实approved=false。下一步可在用户明确授权后准备并审查真实接线，按阶段质量证据执行；本轮不外发、不自动推进。主Agent统一范围/保护/秘密扫描、提交及同步，外部AGENTS/.agents/AGENT-ROUTER工作保留。
+
+## 2026-10-23 K204-PREP授权与B模式调度
+
+用户明确授权“K2-04最小补证卡和离线验证，先不做真实模型调用”。目标为准备验收而非产品返修或真实质量签收。准备批评分：需求1（剩余门槛明确，精确样本/阶段待冻结）、耦合2（提取→人工审查→metric目标→更新→再次审查及长文）、风险1（仅隔离执行器/fake，不改产品/正式数据）、历史2（相关质量多轮失败）=6/8，B模式。
+
+复用已实际创建的Astra/medium `/root/human_closure_audit` 冻结任务卡及独立预期，另实际创建 `sol_repair`（GPT-6.1 Sol High）`/root/k204_prep_sol`，当前仅只读准备。任务卡冻结后由Sol编制执行器/自查并停写，Astra检查实际差异及必要离线重测，不自签施工。主Agent拥有status/control/acceptance/Git；Astra拥有任务卡及K204-PREP-AUDIT资产；Sol拥有K204-PREP施工脚本/报告；主Agent另有K204-PREP-MAIN保护证据。所有人保留外部AGENTS/.agents/AGENT-ROUTER工作，不提交其他任务。
+
+基线 `5de67e33e19d4dce3ca650c8c5ee9f1c472970ba`，产品60f83ad。门槛：固定来源/SHA与独立预期、按实际chunk/工作流计算调用上限、外发前记账/首失败停止/阶段审批、默认及本轮真实门禁关闭、隔离fake验证证据完整/预算不绕过/无正式数据变化。出现产品失败只报告，不扩展产品施工；同核心失败按既有升级规则处理。真实0、219/500及15/24保持；准备PASS与KB02整体结论分开，真实执行待后续明确授权。
+
+方案冻结并正式派工：任务卡SHA `bb1ff979a164a01c93d5439326b1137dc75ce51b23472c28cd7eb242e08abca2`，spec SHA `d722f40b885c2ebd02142ba530153fae672b57b38c9bc0167c62a44a59ee49f9`。Sol按P01–P06实现offline-only工具，禁止真实入口；Astra后续独立验收。实际chunk测算建议真实上限22（metric/补充/update共5、原混合短文2、原长文14+1=15），当前阶段批准全false；动态请求未来按实际持久输入临发送前冻结，不把fake请求当真实请求。已记录4045路径主Agent保护基线。
+
+首轮冻结后独立P04 FAIL：Astra用已登记localhost A与未登记B实测fetch自动302及http.request(A,{port:B})均命中B，证据 `KB02-K204-PREP-AUDIT-20261023-network-permitted.json`。没有外部/模型连接，问题属于离线工具白名单限制；常量externalSent0不能作为完整传输证明。主Agent交原Sol最小修support guard与定向回归，保留原19文件freeze及失败，新增repair1 freeze；Astra停跑已知失败整链，修复冻结后独立网络/22fake整链复验。产品、卡、spec不变，真实授权0。
+
 ## 2026-10-23 HUMAN独立验收收尾
 
 用户在只读预检后明确“继续”，本轮执行范围为既有HUMAN门禁验收收尾、台账与提交同步，不扩展真实调用或下一批。沿用B模式7/8（需求1、耦合2、风险2、历史2）；既有Sol施工保持冻结，主Agent明确以 `gpt-6-astra / medium` 创建 `/root/human_closure_audit` 独立验收子Agent，该实例没有施工产品。主Agent负责范围核对、台账及Git，未用配置文件冒称当前宿主身份。
