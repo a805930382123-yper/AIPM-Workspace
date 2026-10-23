@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import {createHash,randomUUID} from 'node:crypto';
 import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
@@ -21,7 +22,7 @@ async function fixture(body:string,reply:(r:LlmCompletionRequest)=>unknown=legal
  const root=await mkdtemp(path.join(os.tmpdir(),'kb02-edge-')),store=new ExtractionCheckpointStore(root);await store.initialize();
  const raw={id:randomUUID(),title:'隔离边界',sourceType:'report',sourceName:'离线',tags:[],body},bundle=await loadExtractionRules('rules');
  let cp=await store.save({version:1,jobId:randomUUID(),rawId:raw.id,rawSha256:sha(body),pipelineVersion:'kb02-2',rulesVersion:bundle.rulesVersion,providerIdentity:'offline|edge',chunks:chunks(body).map(({index,start,end})=>({index,start,end})),completedChunks:[],attempts:0,stage:'extracting',updatedAt:new Date().toISOString()});
- const requests:LlmCompletionRequest[]=[],provider:LlmProvider={name:'offline',model:'edge',complete:async r=>{requests.push(r);const p=payload(r);return {text:JSON.stringify(Array.isArray(p)?reply(r):{version:3,document:{title:'隔离指标',main_topic:'业务'},pages:[{title:'隔离指标',type:'metric',category:'metric',factUnitIds:p.factUnits.map((u:{id:string})=>u.id),questionUnitIds:p.questionUnits.map((u:{id:string})=>u.id)}]}),bytes:1,finishReason:'stop'};}};
+ const requests:LlmCompletionRequest[]=[],provider:LlmProvider={name:'offline',model:'edge',complete:async r=>{requests.push(r);const review=semanticReviewReply(r);if(review)return review;const p=payload(r);return {text:JSON.stringify(Array.isArray(p)?reply(r):{version:3,document:{title:'隔离指标',main_topic:'业务'},pages:[{title:'隔离指标',type:'metric',category:'metric',factUnitIds:p.factUnits.map((u:{id:string})=>u.id),questionUnitIds:p.questionUnits.map((u:{id:string})=>u.id)}]}),bytes:1,finishReason:'stop'};}};
  const args={raw,body,bodySha256:sha(body),rulesDir:'rules',provider,beforeCall:async(stage:'extracting'|'planning')=>cp=await store.save({...cp,stage,attempts:cp.attempts+1}),saveCheckpoint:async(value:Omit<ExtractionCheckpoint,'integrity'>)=>cp=await store.save(value)};
  return {root,store,args,requests,get cp(){return cp;},run:()=>runKnowledgePipeline({...args,checkpoint:cp}),clean:()=>rm(root,{recursive:true,force:true})};
 }
@@ -37,7 +38,7 @@ test('EDGE controlled short reply preserves five facts, one question, source not
  const f=await fixture(old.raw.body,()=>correct);try{const result=await f.run(),part=f.cp.completedChunks[0],all=buildKnowledgeAtoms(old.raw.body,buildEvidenceLocatorCatalog(old.raw.body,chunks(old.raw.body)[0]));
  assert.deepEqual(payload(f.requests[0]),all.filter(a=>a.text.trim()).map(({id,text,fragment})=>({id,text,fragment})));assert.deepEqual(part.facts.map(a=>a.atomId),old.response.facts.map((a:{atomId:string})=>a.atomId));assert.equal(part.facts.length,5);assert.equal(part.questions.length,1);assert.deepEqual(part.sourceNotes!.map(n=>n.atomId),['c1-a0001']);
  for(const item of [...part.facts,...part.questions,...part.sourceNotes!]){const atom=all.find(a=>a.id===item.atomId)!;assert.equal(item.text,atom.text);assert.deepEqual(item.locatorIds,atom.locatorIds);}
- for(const e of part.evidence)assert.equal(old.raw.body.slice(e.start,e.end),e.quote);assert.equal(result.outcome.pages[0].source_facts.length,5);assert.equal(f.requests.length,2);const saved=await f.store.get(f.cp.jobId);await validateKnowledgeCheckpoint({...f.args,checkpoint:saved!});await runKnowledgePipeline({...f.args,checkpoint:saved!});assert.equal(f.requests.length,2);
+ for(const e of part.evidence)assert.equal(old.raw.body.slice(e.start,e.end),e.quote);assert.equal(result.outcome.pages[0].source_facts.length,5);assert.equal(f.requests.length,3);const saved=await f.store.get(f.cp.jobId);await validateKnowledgeCheckpoint({...f.args,checkpoint:saved!});await runKnowledgePipeline({...f.args,checkpoint:saved!});assert.equal(f.requests.length,3);
  }finally{await f.clean();}
 });
 
@@ -49,7 +50,7 @@ for(const column of ['facts','questions','sourceNotes'] as const)for(const fault
 for(const body of ['\n\r\n \t\u00a0\u2003\n甲区20家。 \t乙区30家。\n','甲'.repeat(7599)+'。\n\t乙区20家。\n'+'甲'.repeat(500)+'😀。','\u200b\n甲区20家。'])test(`EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (${body.length} chars)`,async()=>{
  const f=await fixture(body);try{await f.run();const requests=f.requests.filter(r=>Array.isArray(payload(r)));assert.equal(requests.length,chunks(body).length);
  for(let n=0;n<requests.length;n++){const all=buildKnowledgeAtoms(body,buildEvidenceLocatorCatalog(body,chunks(body)[n])),sent=payload(requests[n]) as WireAtom[];assert.deepEqual(sent,all.filter(a=>a.text.trim()).map(({id,text,fragment})=>({id,text,fragment})));for(const atom of all)assert.equal(body.slice(atom.start,atom.end),atom.text);for(let i=chunks(body)[n].start;i<chunks(body)[n].end;i++)if(body[i].trim())assert(all.filter(a=>a.text.trim()).some(a=>i>=a.start&&i<a.end));}
- await validateKnowledgeCheckpoint({...f.args,checkpoint:f.cp});assert.equal(f.cp.attempts,chunks(body).length+1);
+ await validateKnowledgeCheckpoint({...f.args,checkpoint:f.cp});assert.equal(f.cp.attempts,chunks(body).length+2);
  }finally{await f.clean();}
 });
 
@@ -63,7 +64,7 @@ test('EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; e
  await f.jobs.insert({id:cp.jobId,rawId:raw.id,status:'failed',stage:'extracting',chunksTotal:1,chunksDone:0,pagesFound:0,provider:{name:f.provider.name,model:f.provider.model},error:{...cp.lastError,retryable:true},cancelRequested:false,callCount:1,pipelineVersion:'kb02-2',startedAt:now,finishedAt:now,updatedAt:now});await f.rawStates.set(raw.id,{status:'failed',reason:'隔离旧规则',jobId:cp.jobId});
  const files=[path.join(f.root,'state/extraction-checkpoints',cp.jobId+'.json'),path.join(f.root,'state/extraction-jobs',cp.jobId+'.json'),path.join(f.root,'state/raw-processing',raw.id+'.json')],before=await Promise.all(files.map(p=>readFile(p)));
  for(const options of [{},{planningRetry:true},{}]){const r=await h.request(`/api/raw/${raw.id}/extract`,options);assert.equal(r.status,409);assert.equal(r.json.error.code,'LLM_CHECKPOINT_INCOMPATIBLE');assert.deepEqual(await Promise.all(files.map(p=>readFile(p))),before);assert.equal(f.requests.length,0);}
- let seen=false;const hold=new Promise<void>(r=>{release=r;});f.setHook(async()=>{seen=true;await hold;});const result=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(result.status,202);restartId=result.json.jobId;assert.notEqual(restartId,cp.jobId);for(let i=0;i<200&&!seen;i++)await new Promise(r=>setTimeout(r,10));assert(seen);const fresh=await store.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-11-/u);await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
+ let seen=false;const hold=new Promise<void>(r=>{release=r;});f.setHook(async()=>{seen=true;await hold;});const result=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(result.status,202);restartId=result.json.jobId;assert.notEqual(restartId,cp.jobId);for(let i=0;i<200&&!seen;i++)await new Promise(r=>setTimeout(r,10));assert(seen);const fresh=await store.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-12-/u);await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
  }finally{release();if(restartId)await f.runner.waitForSettlement(restartId);await h.close();await f.clean();}
 });
 

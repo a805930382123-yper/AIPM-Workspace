@@ -1,0 +1,17 @@
+{
+  "type": "object", "additionalProperties": false, "required": ["version", "pages"],
+  "properties": {
+    "version": {"type": "integer", "enum": [1]},
+    "pages": {"type": "array", "minItems": 1, "maxItems": 50, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pageIndex", "decision", "code", "unitIds", "reason"],
+      "properties": {
+        "pageIndex": {"type": "integer", "minimum": 0, "maximum": 49},
+        "decision": {"type": "string", "enum": ["pass", "reject", "uncertain"]},
+        "code": {"type": "string", "enum": ["OK", "UNSUPPORTED_TOPIC", "BOUNDARY_ATTRIBUTION", "UNSUPPORTED_LABEL", "INSUFFICIENT_EVIDENCE"]},
+        "unitIds": {"type": "array", "minItems": 1, "maxItems": 384, "items": {"type": "string", "minLength": 1, "maxLength": 64}},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    }}
+  }
+}

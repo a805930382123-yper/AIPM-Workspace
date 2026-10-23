@@ -566,7 +566,7 @@ test('F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求
     const started = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
     const job = await client.waitForJob(String((shape(started) as { jobId?: string })?.jobId), 60000);
     assert.equal((shape(job) as { status?: string }).status, 'completed', job.text);
-    assert.equal((shape(job) as { callCount?: number }).callCount, 5, '四块 + 一次额外汇总');
+    assert.equal((shape(job) as { callCount?: number }).callCount, 6, '四块 + 一次规划 + 一次语义审核');
     const draftId = String((shape(job) as { draftId?: string }).draftId);
     const draft = shape(await client.request(`/api/drafts/${draftId}`)) as unknown as { pages: Array<{ pageId: string; source_evidence: Array<{ id: string; quote: string; start: number; end: number; rawId: string }>; source_facts: Array<{ text: string; evidenceIds: string[] }> }>; extraction: { chunkCount: number } };
     assert.equal(draft.extraction.chunkCount, 4);

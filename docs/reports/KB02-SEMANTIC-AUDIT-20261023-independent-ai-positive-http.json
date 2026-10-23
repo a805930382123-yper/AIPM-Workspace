@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-23T07:57:08.740Z",
+  "fixture": "independent-ai-positive",
+  "stage": 1,
+  "fixtureSha256": "269e5ed4fabd3af32e7fb6c1db1b2d7c56222b23ba077bb99356f49fb0336aca",
+  "semanticDecision": "PENDING independent source/page review",
+  "collectionStatus": "terminal-read",
+  "rawId": "613dc3fb-17de-4aa0-bc87-01544d83da94",
+  "jobId": "b5ad5992-13c5-4566-9164-d933ab41e44d",
+  "job": {
+    "jobId": "b5ad5992-13c5-4566-9164-d933ab41e44d",
+    "rawId": "613dc3fb-17de-4aa0-bc87-01544d83da94",
+    "status": "failed",
+    "stage": "planning",
+    "progress": {
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 4
+    },
+    "draftId": null,
+    "error": {
+      "code": "LLM_SCHEMA_INVALID",
+      "message": "语义审核未通过严格结构或引用校验，未保存规划。",
+      "at": "2026-10-23T07:57:22.743Z",
+      "retryable": true
+    },
+    "provider": {
+      "name": "openai-compatible",
+      "model": "GLM-5.3-Flash"
+    },
+    "callCount": 3,
+    "startedAt": "2026-10-23T07:57:08.794Z",
+    "finishedAt": "2026-10-23T07:57:22.771Z",
+    "cancelRequested": false,
+    "pipelineVersion": "kb02-2",
+    "checkpoint": {
+      "stage": "planning",
+      "validatedChunks": 1,
+      "totalChunks": 1,
+      "resumable": true,
+      "attempts": 3,
+      "reusedChunks": 0,
+      "reason": "语义审核未通过严格结构或引用校验，未保存规划。"
+    },
+    "execution": "settled",
+    "recovery": null
+  },
+  "collectionError": {
+    "at": "2026-10-23T07:57:22.972Z",
+    "message": "{\"code\":\"LLM_SCHEMA_INVALID\",\"message\":\"语义审核未通过严格结构或引用校验，未保存规划。\",\"at\":\"2026-10-23T07:57:22.743Z\",\"retryable\":true}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n"
+  }
+}

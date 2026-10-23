@@ -1,0 +1,58 @@
+✔ SEMANTIC original seq202 reject/uncertain gates the full pipeline with exact source/units and retained blocks (56.3308ms)
+✔ SEMANTIC complete pipeline rejects reject without saving plan or arbitrary review payload (8.7216ms)
+✔ SEMANTIC complete pipeline rejects uncertain without saving plan or arbitrary review payload (4.111ms)
+✔ SEMANTIC complete pipeline rejects missing without saving plan or arbitrary review payload (7.3476ms)
+✔ SEMANTIC complete pipeline rejects duplicate without saving plan or arbitrary review payload (6.6318ms)
+✔ SEMANTIC complete pipeline rejects unknownPage without saving plan or arbitrary review payload (2.6883ms)
+✔ SEMANTIC complete pipeline rejects unknownUnit without saving plan or arbitrary review payload (2.8378ms)
+✔ SEMANTIC complete pipeline rejects duplicateUnit without saving plan or arbitrary review payload (9.2908ms)
+✔ SEMANTIC complete pipeline rejects conflictingPass without saving plan or arbitrary review payload (3.5719ms)
+✔ SEMANTIC complete pipeline rejects conflictingReject without saving plan or arbitrary review payload (3.7919ms)
+✔ SEMANTIC complete pipeline rejects extraTop without saving plan or arbitrary review payload (7.0312ms)
+✔ SEMANTIC complete pipeline rejects extraPage without saving plan or arbitrary review payload (3.0281ms)
+✔ SEMANTIC complete pipeline rejects secret without saving plan or arbitrary review payload (4.8236ms)
+✔ SEMANTIC complete pipeline rejects emptyReason without saving plan or arbitrary review payload (8.0996ms)
+✔ SEMANTIC complete pipeline rejects longReason without saving plan or arbitrary review payload (2.5511ms)
+✔ SEMANTIC complete pipeline rejects badVersion without saving plan or arbitrary review payload (2.4918ms)
+✔ SEMANTIC complete pipeline rejects questionOnly without saving plan or arbitrary review payload (2.6852ms)
+✔ SEMANTIC malformed fails closed with no plan and no raw failure details (5.9185ms)
+✔ SEMANTIC length fails closed with no plan and no raw failure details (3.8672ms)
+✔ SEMANTIC oversize fails closed with no plan and no raw failure details (6.1035ms)
+✔ SEMANTIC schema/instruction revision fingerprint changes, old unfinished revision and new plan undercount fail without calls or writes (41.933ms)
+✔ SEMANTIC pre-call accounting failure stops review; crash before accepted-plan save resumes both calls, saved-plan resumes zero (8.4859ms)
+✔ SEMANTIC cancellation while review waits rejects immediately and ignores a late pass (6.999ms)
+✔ SEMANTIC actual 60s review timer bounds an ignoring provider and discards late success (3.1883ms)
+✔ SEMANTIC total deadline after review result cannot publish; cancellation during accounting cannot call review (6.6408ms)
+✖ SEMANTIC single-unit independent future AI mechanism passes without deleting future boundaries; candidate snapshot is binding (14.2062ms)
+✔ SEMANTIC runner semantic failure uses ordinary same-job continue, persists trusted code only and counts each call (229.1378ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 26
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 912.0545
+
+✖ failing tests:
+
+test at tests\kb02-semantic-review.test.ts:1:12163
+✖ SEMANTIC single-unit independent future AI mechanism passes without deleting future boundaries; candidate snapshot is binding (14.2062ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at <anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-semantic-review.test.ts:109:41)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-semantic-review.test.ts:29:152)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-semantic-review.test.ts:110:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

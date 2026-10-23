@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -23,7 +24,7 @@ async function fixture(pair = { type: 'concept', category: 'ai_application' }, s
   let checkpoint = await store.save({ version: 1, jobId: randomUUID(), rawId: raw.id, rawSha256: sha(body), pipelineVersion: 'kb02-2', rulesVersion: bundle.rulesVersion, providerIdentity: 'local|fake', chunks: chunkText(body, { maxChunkChars: 8000, overlap: 400, maxRawChars: 500000 }).map(({ index, start, end }) => ({ index, start, end })), completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: new Date().toISOString() });
   const requests: LlmCompletionRequest[] = [];
   const provider: LlmProvider = { name: 'local', model: 'fake', secrets, complete: async request => {
-    requests.push(request);
+    requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
     if (!request.user.includes(planningPrompt)) {
       const atoms = JSON.parse(request.user.split('\n').at(-1)!) as Array<{ id: string }>;
       return { text: JSON.stringify({ version: 2, facts: atoms.map(atom => ({ atomId: atom.id, kind: 'fact' })), questions: [], sourceNotes: [] }), bytes: 1, finishReason: 'stop' };
@@ -42,7 +43,7 @@ async function fixture(pair = { type: 'concept', category: 'ai_application' }, s
 test('KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs', async () => {
   const f = await fixture();
   try {
-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-11');
+    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-12');
     const { outcome } = await f.run();
     const system = f.requests[1].system;
     assert.match(system, /type表示知识页的知识形态，category表示该页涉及的快消业务主题/u);

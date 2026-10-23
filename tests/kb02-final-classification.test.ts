@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import {createHash, randomUUID} from 'node:crypto';
 import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
@@ -30,7 +31,7 @@ async function setup(text=body){
  let cp=await store.save({version:1,jobId:randomUUID(),rawId:raw.id,rawSha256:sha(text),pipelineVersion:'kb02-2',rulesVersion:bundle.rulesVersion,providerIdentity:'fake|final',chunks:chunkText(text,{maxChunkChars:8000,overlap:400,maxRawChars:500000}).map(({index,start,end})=>({index,start,end})),completedChunks:[],attempts:0,stage:'extracting',updatedAt:new Date().toISOString()});
  const requests:LlmCompletionRequest[]=[];
  const provider:LlmProvider={name:'fake',model:'final',complete:async r=>{
-  requests.push(r);const data=JSON.parse(r.user.split('\n').at(-1)!);
+  requests.push(r); { const review = semanticReviewReply(r); if (review) return review; }const data=JSON.parse(r.user.split('\n').at(-1)!);
   // Explicit fixture labels test plumbing only, never model quality or a product classifier.
   const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:3,document:{title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factUnitIds:data.factUnits.map((a:{id:string})=>a.id),questionUnitIds:data.questionUnits.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
   return {text:JSON.stringify(output),bytes:1,finishReason:'stop'};
@@ -75,7 +76,7 @@ test('FINAL-01 original seq75 full directory and response preserve semantic fail
   const oldCp=old.oldCheckpoint;assert.equal(oldCp.completedChunks.length,14);assert.deepEqual(coverageDiagnostic(oldCp.completedChunks.flatMap((c:any)=>c.facts.map((a:any)=>a.id)),oldCp.completedChunks.flatMap((c:any)=>c.questions.map((a:any)=>a.id)),old.planning.response.pages).facts.missing,['f-c13-4']);
   // Deliberate offline current-fingerprint rebind proves no filtering/forced placement workaround.
   const cp=await f.store.save({...oldCp,rulesVersion:f.bundle.rulesVersion});
-  f.args.provider.complete=async r=>{f.requests.push(r);return {text:JSON.stringify(old.planning.response),bytes:1,finishReason:'stop'};};
+  f.args.provider.complete=async r=>{f.requests.push(r); { const review = semanticReviewReply(r); if (review) return review; }return {text:JSON.stringify(old.planning.response),bytes:1,finishReason:'stop'};};
   await assert.rejects(runKnowledgePipeline({...f.args,raw:{...f.args.raw,id:oldCp.rawId},checkpoint:cp,beforeCall:async(stage)=>({...cp,stage,attempts:cp.attempts+1})}),{code:'LLM_SCHEMA_INVALID'});
   assert.equal(f.requests.length,1);assert.equal((await f.store.get(cp.jobId))!.completedChunks[12].facts.find(a=>a.id==='f-c13-4')!.text,bad.text);assert(!(await f.store.get(cp.jobId))!.plan);
   assert.deepEqual(await readFile(fixturePath),bytes);
@@ -96,7 +97,7 @@ test('FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero 
   let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});
   const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restartId=r.json.jobId;assert.notEqual(restartId,cp.jobId);
   for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);
-  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-11-/u);
+  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-12-/u);
   await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
  }finally{release();if(restartId)await f.runner.waitForSettlement(restartId);await h.close();await f.clean();}
 });

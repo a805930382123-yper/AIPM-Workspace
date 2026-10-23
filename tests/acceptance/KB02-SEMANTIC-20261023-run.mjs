@@ -1,0 +1,11 @@
+import fs from 'node:fs/promises';
+import {spawn} from 'node:child_process';
+const [label,executable,...args]=process.argv.slice(2);
+const started=Date.now();let log='';
+const child=spawn(executable,args,{stdio:['ignore','pipe','pipe'],shell:false});
+child.stdout.on('data',b=>{log+=b;});child.stderr.on('data',b=>{log+=b;});
+const code=await new Promise((resolve,reject)=>{child.on('error',reject);child.on('close',resolve);});
+const base=`docs/reports/KB02-SEMANTIC-20261023-${label}`;
+await fs.writeFile(base+'.log',log,{flag:'wx'});
+await fs.writeFile(base+'.json',JSON.stringify({executable,args,code,node:process.version,elapsedMs:Date.now()-started},null,2),{flag:'wx'});
+console.log(JSON.stringify({label,code,elapsedMs:Date.now()-started,tail:log.slice(-2500)}));process.exitCode=code;

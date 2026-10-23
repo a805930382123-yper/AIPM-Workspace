@@ -479,7 +479,7 @@ test('E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块�
     const started = await context.extract(raw.id, );
     assert.equal(started.finished.status, 'completed', started.finished.error?.message ?? '');
     assert.ok((started.finished.chunksTotal ?? 0) > 10, '十万字必须切成多块');
-    assert.equal(started.finished.callCount, started.finished.chunksTotal + 1, '每块一次调用 + 一次结构化汇总');
+    assert.equal(started.finished.callCount, started.finished.chunksTotal + 2, '每块一次调用 + 一次规划 + 一次语义审核');
     // KB02 planning sees all extracted fact/question IDs and text, without evidence or raw chunk payloads.
     const planningRequests = context.fake.requests.filter(request => request.user.includes('请对下列全部已验证事实规划知识页'));
     assert.equal(planningRequests.length, 1, '全部分块完成后必须恰好进行一次整篇规划');

@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
@@ -22,6 +23,7 @@ test('KB02 facts/planning builds existing draft outcome and preserves fact/quest
     const store = new ExtractionCheckpointStore(dir); await store.initialize();
     let checkpoint = await store.save({ version: 1, jobId: '123e4567-e89b-42d3-a456-426614174001', rawId: raw.id, rawSha256: createHash('sha256').update(body).digest('hex'), pipelineVersion: KB02_PIPELINE_VERSION, rulesVersion: bundle.rulesVersion, providerIdentity: 'fake|fake-model', chunks: chunks.map(({ index, start, end }) => ({ index, start, end })), completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: new Date().toISOString() });
     const provider: LlmProvider = { name: 'fake', model: 'fake-model', cacheIdentity: 'fake', complete: async (request: LlmCompletionRequest) => {
+      const review = semanticReviewReply(request); if (review) return review;
       if (request.user.includes('请对下列全部已验证事实规划知识页')) {
         const payload = JSON.parse(request.user.slice(request.user.indexOf('{', request.user.indexOf('。') + 1))) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
         return { text: JSON.stringify({ version:3,document: { title: raw.title, main_topic: '区域销售' }, pages: [{ title: '区域销售', type: 'metric', category: 'metric', factUnitIds:payload.factUnits.map(item => item.id), questionUnitIds:payload.questionUnits.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
@@ -35,7 +37,7 @@ test('KB02 facts/planning builds existing draft outcome and preserves fact/quest
     assert.deepEqual(result.outcome.pages[0].ai_inferences, []); assert.deepEqual(result.outcome.pages[0].ai_organized, []);
     assert.equal(result.outcome.pages[0].open_questions[0], '是否为含税口径?'.replace('?', '？'));
     assert.equal(result.outcome.pages[0].source_evidence[0].rawId, raw.id);
-    assert.equal(checkpoint.attempts, chunks.length + 1); calls = checkpoint.attempts; assert.equal(calls, 2);
+    assert.equal(checkpoint.attempts, chunks.length + 2); calls = checkpoint.attempts; assert.equal(calls, 3);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
@@ -49,6 +51,7 @@ test('KB02 resume reuses validated chunks and counts failed outbound attempts', 
     let checkpoint = await store.save({ version: 1, jobId: '123e4567-e89b-42d3-a456-426614174002', rawId: raw.id, rawSha256: createHash('sha256').update(body).digest('hex'), pipelineVersion: KB02_PIPELINE_VERSION, rulesVersion: bundle.rulesVersion, providerIdentity: 'fake|fake-model', chunks: chunks.map(({ index, start, end }) => ({ index, start, end })), completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: new Date().toISOString() });
     let failSecond = true; const seen: string[] = [];
     const provider: LlmProvider = { name: 'fake', model: 'fake-model', complete: async (request: LlmCompletionRequest) => {
+      const review = semanticReviewReply(request); if (review) return review;
       if (request.user.includes('请对下列全部已验证事实规划知识页')) {
         const json = request.user.slice(request.user.lastIndexOf('\n') + 1); const payload = JSON.parse(json) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
         return { text: JSON.stringify({ version:3,document: { title: '简报', main_topic: '销售' }, pages: [{ title: '销售', type: 'metric', category: 'metric', factUnitIds:payload.factUnits.map(item => item.id), questionUnitIds:payload.questionUnits.map(item => item.id) }] }), finishReason: 'stop', bytes: 10 };
@@ -61,7 +64,7 @@ test('KB02 resume reuses validated chunks and counts failed outbound attempts', 
     await assert.rejects(runKnowledgePipeline({ ...args, checkpoint }), /simulated timeout/);
     assert.equal(checkpoint.completedChunks.length, 1); assert.equal(checkpoint.attempts, 2);
     const resumed = await runKnowledgePipeline({ ...args, checkpoint });
-    assert.deepEqual(seen, ['c1', 'c2', 'c2']); assert.equal(checkpoint.attempts, 4);
+    assert.deepEqual(seen, ['c1', 'c2', 'c2']); assert.equal(checkpoint.attempts, 5);
     assert.equal(resumed.outcome.pages[0].source_facts.length, 2);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });

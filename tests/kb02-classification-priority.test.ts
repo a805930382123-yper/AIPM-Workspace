@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
@@ -35,7 +36,7 @@ async function fixture(body = text) {
     return {version:2,facts:[...atoms.filter(a=>[negative,future].includes(a.text)),...longAtoms].map(a=>({atomId:a.id,kind:'fact'})),questions:atoms.filter(a=>a.text===unknown).map(a=>({atomId:a.id})),sourceNotes:[...titleAtoms,note].map(a=>({atomId:a.id}))};
   };
   const provider: LlmProvider = {name:'local',model:'fake',complete:async r=>{
-    requests.push(r);
+    requests.push(r); { const review = semanticReviewReply(r); if (review) return review; }
     const planning=r.user.includes('请对下列全部已验证事实规划知识页');
     const d=planning?JSON.parse(r.user.split('\n').at(-1)!):undefined;
     return {text:JSON.stringify(planning?{version:3,document:{title:'虚构业务边界',main_topic:'业务边界'},pages:[{title:'虚构业务边界',type:'metric',category:'metric',factUnitIds:d.factUnits.map((x:{id:string})=>x.id),questionUnitIds:d.questionUnits.map((x:{id:string})=>x.id)}]}:respond(r)),bytes:1,finishReason:'stop'};
@@ -80,7 +81,7 @@ test('KB02 Q02 controlled correct classifications keep both title fragment forms
     const noteIds=new Set(part.sourceNotes!.map(n=>n.atomId));
     assert([...part.facts,...part.questions].every(n=>n.atomId!==undefined&&!noteIds.has(n.atomId)));
     for(const e of outcome.pages[0].source_evidence)assert.equal(text.slice(e.start,e.end),e.quote);
-    assert.equal(f.checkpoint.rawSha256,sha(text)); assert.equal(outcome.callCount,2);
+    assert.equal(f.checkpoint.rawSha256,sha(text)); assert.equal(outcome.callCount,3);
   }finally{await f.clean();}
 });
 
@@ -122,7 +123,7 @@ test('KB02 Q02 full seq62 original response and exact original atom catalog stil
 
 test('KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes',async()=>{
   const originalBytes=await readFile(originalPath),old=JSON.parse(originalBytes.toString()),f=await fixture(old.body);try{
-    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-11');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
+    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-12');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
     assert.equal(old.oldCheckpoint.completedChunks.length,6);assert.equal(old.oldCheckpoint.completedChunks.flatMap((c:{facts:Array<{text:string}>})=>c.facts).filter((x:{text:string})=>/排版说明|长文验收附录/u.test(x.text)).length,11);
     const checkpoint=await f.store.save(old.oldCheckpoint),file=path.join(f.root,'state/extraction-checkpoints',checkpoint.jobId+'.json'),bytes=await readFile(file);
     const args={...f.args,raw:old.raw,checkpoint};

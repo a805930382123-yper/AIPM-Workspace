@@ -138,7 +138,7 @@ for (const omitOffsets of [false, true]) {
       assert.equal(finished.status, 'completed', finished.error?.message ?? '');
       assert.ok(draft, '必须生成草稿');
       assert.equal(draft?.extraction.chunkCount, 4, '长文必须切成四块');
-      assert.equal(finished.callCount, 5, '四块各一次调用 + 一次额外汇总');
+      assert.equal(finished.callCount, 6, '四块各一次调用 + 一次规划 + 一次语义审核');
       // 真实汇总请求必须存在且输入完整。
       const mergeRequests = context.fake.requests.filter(request => isPlanningPrompt(request.user));
       assert.equal(mergeRequests.length, 1, '四块事实完成后必须进行一次整篇规划');

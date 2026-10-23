@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "jobId": "232f6c84-4a82-41a1-b53a-79e1757f7abd",
+  "rawId": "1210e5d5-8312-40bc-944b-ad58d45f0a8f",
+  "rawSha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197",
+  "pipelineVersion": "kb02-2",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-12-61776799c4d4",
+  "providerIdentity": "https://open.bigmodel.cn/api/coding/paas/v4|GLM-5.3-Flash",
+  "chunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 160
+    }
+  ],
+  "completedChunks": [
+    {
+      "index": 0,
+      "start": 0,
+      "end": 160,
+      "facts": [
+        {
+          "text": "虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0002",
+          "kind": "fact",
+          "id": "f-c1-1",
+          "chunkIndex": 0
+        },
+        {
+          "text": "旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0003",
+          "kind": "ambiguous",
+          "id": "f-c1-2",
+          "chunkIndex": 0
+        },
+        {
+          "text": "补充规则：财务每周核对回款一次。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0005",
+          "kind": "fact",
+          "id": "f-c1-3",
+          "chunkIndex": 0
+        },
+        {
+          "text": "AI异常提示为未来建议，无上线或收益事实。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0007",
+          "kind": "fact",
+          "id": "f-c1-4",
+          "chunkIndex": 0
+        }
+      ],
+      "questions": [
+        {
+          "text": "异常审批负责人仍需访谈确认。",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0006",
+          "id": "q-c1-1",
+          "chunkIndex": 0
+        }
+      ],
+      "sourceNotes": [
+        {
+          "text": "【虚构补充验收，非真实客户资料】\n",
+          "locatorIds": [
+            "c1-l001"
+          ],
+          "atomId": "c1-a0001",
+          "chunkIndex": 0
+        }
+      ],
+      "evidence": [
+        {
+          "id": "c1-l001",
+          "rawId": "1210e5d5-8312-40bc-944b-ad58d45f0a8f",
+          "quote": "【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。",
+          "start": 0,
+          "end": 160,
+          "chunkIndex": 0
+        }
+      ]
+    }
+  ],
+  "attempts": 3,
+  "stage": "done",
+  "updatedAt": "2026-10-23T07:56:15.861Z",
+  "integrity": "4fde9e0159529886d5ec0269246b0417f84e2bb502d948bed1596b2cd75daa3b",
+  "plan": {
+    "document": {
+      "title": "虚构饮料甲甲桥区域铺货率与运营规则补充验收",
+      "main_topic": "虚构饮料甲甲桥区域2026年9月铺货率复核、回款核对规则与AI异常提示规划",
+      "summary": "来源事实：\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。\n旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。\nAI异常提示为未来建议，无上线或收益事实。"
+    },
+    "pages": [
+      {
+        "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+        "type": "metric",
+        "category": "metric",
+        "factIds": [
+          "f-c1-1",
+          "f-c1-2"
+        ],
+        "questionIds": []
+      },
+      {
+        "title": "财务回款核对与异常审批规则",
+        "type": "business_process",
+        "category": "sales",
+        "factIds": [
+          "f-c1-3"
+        ],
+        "questionIds": [
+          "q-c1-1"
+        ]
+      },
+      {
+        "title": "AI异常提示（未来建议，未上线）",
+        "type": "concept",
+        "category": "ai_application",
+        "factIds": [
+          "f-c1-4"
+        ],
+        "questionIds": []
+      }
+    ]
+  },
+  "draftId": "df4a42b0-063b-4d99-9ab8-61ba3425fff8"
+}

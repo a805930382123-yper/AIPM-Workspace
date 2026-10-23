@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
@@ -32,7 +33,7 @@ async function source() {
 test('KB02 planning system contains the subject-first decisions and abstract contrast cases',async()=>{
   const f=await source(),requests:LlmCompletionRequest[]=[];
   const provider:LlmProvider={name:'offline',model:'fixture',complete:async request=>{
-    requests.push(request);
+    requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
     if(request.user.includes('请对下列全部已验证事实规划知识页')){
       const p=payload(request);
       return {text:JSON.stringify({version:3,document:{title:'未知事项',main_topic:'未知事项'},pages:[{title:'泛化未知与未来建议',type:'concept',category:'ai_application',factUnitIds:p.factUnits.map((u:{id:string})=>u.id),questionUnitIds:p.questionUnits.map((u:{id:string})=>u.id)}]}),bytes:1,finishReason:'stop'};
@@ -49,7 +50,7 @@ test('KB02 planning system contains the subject-first decisions and abstract con
     const p=payload(planning),units=[...p.factUnits,...p.questionUnits],assigned=checkpoint.plan!.pages.flatMap(page=>[...page.factIds,...page.questionIds]);
     assert.equal(new Set(assigned).size,units.length);
     assert.deepEqual([...assigned].sort(),units.flatMap((u:{memberIds:string[]})=>u.memberIds).sort());
-    assert.equal(checkpoint.plan!.pages.length,1,'原有泛化响应仍通过机械unit覆盖；本测试记录其语义负例');
+    assert.equal(checkpoint.plan!.pages.length,1,'机械覆盖及fake审核pass不证明语义正确；本测试记录其负例');
     assert(checkpoint.plan!.pages[0].title.includes('泛化未知'));
   } finally { /* all checkpoint state is in memory; no persistent product data is touched */ }
 });
@@ -74,7 +75,7 @@ test('a manually assigned abstract subject plan is representable while retaining
 test('a subject-preserving fake plan is accepted by the complete pipeline',async()=>{
   const f=await source(),requests:LlmCompletionRequest[]=[];
   const provider:LlmProvider={name:'offline',model:'fixture-positive',complete:async request=>{
-    requests.push(request);
+    requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
     if(request.user.includes('请对下列全部已验证事实规划知识页')){
       const p=payload(request),first=p.factUnits.slice(0,2).map((unit:{id:string})=>unit.id),second=p.factUnits.slice(2,4).map((unit:{id:string})=>unit.id),alert=p.factUnits.slice(4).map((unit:{id:string})=>unit.id);
       return {text:JSON.stringify({version:3,document:{title:'渠道经营与告警机制',main_topic:'渠道门店指标及公司告警机制'},pages:[
@@ -88,14 +89,14 @@ test('a subject-preserving fake plan is accepted by the complete pipeline',async
   }};
   let checkpoint=f.checkpoint;
   await runKnowledgePipeline({raw:f.raw,body:f.sample.body,bodySha256:sha(f.sample.body),provider,rulesDir:'rules',checkpoint,beforeCall:async stage=>checkpoint={...checkpoint,stage,attempts:checkpoint.attempts+1},saveCheckpoint:async value=>checkpoint=value as ExtractionCheckpoint});
-  assert.equal(requests.length,1);assert.equal(checkpoint.plan!.pages.length,3);
+  assert.equal(requests.length,2);assert.equal(checkpoint.plan!.pages.length,3);
   const factIds=checkpoint.plan!.pages.flatMap(page=>page.factIds);
   assert.deepEqual([...factIds].sort(),checkpoint.completedChunks.flatMap(chunk=>chunk.facts.map(fact=>fact.id)).sort());
   assert.deepEqual(checkpoint.plan!.pages.map(page=>page.title),['岚河渠道门店经营','栖岸渠道门店经营','公司告警机制']);
 });
 
 test('revision10 unfinished checkpoint is rejected before Provider calls and retained chunks stay byte-identical',async()=>{
-  const f=await source(),before=JSON.stringify(f.checkpoint.completedChunks),old={...f.checkpoint,rulesVersion:f.bundle.rulesVersion.replace('kb02-atoms-planning-11-','kb02-atoms-planning-10-')};
+  const f=await source(),before=JSON.stringify(f.checkpoint.completedChunks),old={...f.checkpoint,rulesVersion:f.bundle.rulesVersion.replace('kb02-atoms-planning-12-','kb02-atoms-planning-10-')};
   let calls=0;const provider:LlmProvider={name:'offline',model:'must-not-run',complete:async()=>{calls++;throw new Error('unexpected Provider call');}};
   await assert.rejects(validateKnowledgeCheckpoint({raw:f.raw,body:f.sample.body,bodySha256:sha(f.sample.body),provider,rulesDir:'rules',checkpoint:old}),
     (error:unknown)=>error instanceof LlmError&&error.code==='LLM_CHECKPOINT_INCOMPATIBLE'&&error.status===409);

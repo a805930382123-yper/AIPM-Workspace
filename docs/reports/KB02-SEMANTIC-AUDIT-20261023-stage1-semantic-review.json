@@ -1,0 +1,525 @@
+{
+  "at": "2026-10-23T08:03:31.910Z",
+  "freezeSha256": "1cdc22d855c3a4e2175cfe22899799a49471f14ff355d6cf99669ed90220d421",
+  "traceSha256": "24020d976ad66f47ea9ba067ab999f21507a96b967e1592103e6d4bd3752a59e",
+  "cases": [
+    {
+      "fixture": "supplement-original",
+      "rawId": "1210e5d5-8312-40bc-944b-ad58d45f0a8f",
+      "jobId": "232f6c84-4a82-41a1-b53a-79e1757f7abd",
+      "bodySha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197",
+      "draftSha256": "c960f4d87c3536e9f8489711a7dea1d0d7c75d5f2b39b4484a99e492a7d14021",
+      "planSequence": 205,
+      "reviewSequence": 206,
+      "inputMatchesPlan": true,
+      "fullSourceContext": true,
+      "mapping": [
+        {
+          "id": "fu-17-67-fact",
+          "sourceId": "s-17-67",
+          "text": "虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-1"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            17,
+            67
+          ],
+          "contextRange": [
+            0,
+            160
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+              "type": "metric",
+              "category": "metric"
+            }
+          ]
+        },
+        {
+          "id": "fu-67-108-ambiguous",
+          "sourceId": "s-67-108",
+          "text": "旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。",
+          "kind": "ambiguous",
+          "memberIds": [
+            "f-c1-2"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            67,
+            108
+          ],
+          "contextRange": [
+            0,
+            160
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+              "type": "metric",
+              "category": "metric"
+            }
+          ]
+        },
+        {
+          "id": "fu-109-125-fact",
+          "sourceId": "s-109-125",
+          "text": "补充规则：财务每周核对回款一次。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-3"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            109,
+            125
+          ],
+          "contextRange": [
+            0,
+            160
+          ],
+          "owners": [
+            {
+              "pageIndex": 1,
+              "title": "财务回款核对与异常审批规则",
+              "type": "business_process",
+              "category": "sales"
+            }
+          ]
+        },
+        {
+          "id": "fu-139-160-fact",
+          "sourceId": "s-139-160",
+          "text": "AI异常提示为未来建议，无上线或收益事实。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-4"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            139,
+            160
+          ],
+          "contextRange": [
+            0,
+            160
+          ],
+          "owners": [
+            {
+              "pageIndex": 2,
+              "title": "AI异常提示（未来建议，未上线）",
+              "type": "concept",
+              "category": "ai_application"
+            }
+          ]
+        },
+        {
+          "id": "qu-125-139",
+          "sourceId": "s-125-139",
+          "text": "异常审批负责人仍需访谈确认。",
+          "memberIds": [
+            "q-c1-1"
+          ],
+          "column": "questionUnitIds",
+          "sourceRange": [
+            125,
+            139
+          ],
+          "contextRange": [
+            0,
+            160
+          ],
+          "owners": [
+            {
+              "pageIndex": 1,
+              "title": "财务回款核对与异常审批规则",
+              "type": "business_process",
+              "category": "sales"
+            }
+          ]
+        }
+      ],
+      "actualPlan": {
+        "version": 3,
+        "document": {
+          "title": "虚构饮料甲甲桥区域铺货率与运营规则补充验收",
+          "main_topic": "虚构饮料甲甲桥区域2026年9月铺货率复核、回款核对规则与AI异常提示规划"
+        },
+        "pages": [
+          {
+            "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+            "type": "metric",
+            "category": "metric",
+            "factUnitIds": [
+              "fu-17-67-fact",
+              "fu-67-108-ambiguous"
+            ],
+            "questionUnitIds": []
+          },
+          {
+            "title": "财务回款核对与异常审批规则",
+            "type": "business_process",
+            "category": "sales",
+            "factUnitIds": [
+              "fu-109-125-fact"
+            ],
+            "questionUnitIds": [
+              "qu-125-139"
+            ]
+          },
+          {
+            "title": "AI异常提示（未来建议，未上线）",
+            "type": "concept",
+            "category": "ai_application",
+            "factUnitIds": [
+              "fu-139-160-fact"
+            ],
+            "questionUnitIds": []
+          }
+        ]
+      },
+      "actualReview": {
+        "version": 1,
+        "pages": [
+          {
+            "pageIndex": 0,
+            "decision": "pass",
+            "code": "OK",
+            "unitIds": [
+              "fu-17-67-fact",
+              "fu-67-108-ambiguous"
+            ],
+            "reason": "原文明确给出甲桥区域2026年9月铺货率复核：目标100家、在售30家、按门店数30%，与旧资料20家20%的口径差异作为ambiguous一并归属同一metric主题，主体、时间、数值均有原文支持，标题type=metric有内容依据。"
+          },
+          {
+            "pageIndex": 1,
+            "decision": "pass",
+            "code": "OK",
+            "unitIds": [
+              "fu-109-125-fact",
+              "qu-125-139"
+            ],
+            "reason": "原文明确载有补充规则'财务每周核对回款一次'及待确认事项'异常审批负责人仍需访谈确认'，同属甲桥区域运营规则主题，fact与question各自独立unit且边界归属一致，business_process/sales分类有原文支持。"
+          },
+          {
+            "pageIndex": 2,
+            "decision": "pass",
+            "code": "OK",
+            "unitIds": [
+              "fu-139-160-fact"
+            ],
+            "reason": "原文明确写出'AI异常提示为未来建议，无上线或收益事实'，即原文对AI主题给出了明确陈述（含触发对象与状态边界），满足独立AI主题允许条件，标题已标注未上线，unit归属无越界。"
+          }
+        ]
+      },
+      "rawSchemaIssues": [],
+      "duplicatePageIndices": [],
+      "duplicateUnitIds": [],
+      "job": {
+        "jobId": "232f6c84-4a82-41a1-b53a-79e1757f7abd",
+        "rawId": "1210e5d5-8312-40bc-944b-ad58d45f0a8f",
+        "status": "completed",
+        "stage": "done",
+        "progress": {
+          "chunksTotal": 1,
+          "chunksDone": 1,
+          "pagesFound": 3
+        },
+        "draftId": "df4a42b0-063b-4d99-9ab8-61ba3425fff8",
+        "error": null,
+        "provider": {
+          "name": "openai-compatible",
+          "model": "GLM-5.3-Flash"
+        },
+        "callCount": 3,
+        "startedAt": "2026-10-23T07:55:24.002Z",
+        "finishedAt": "2026-10-23T07:56:15.877Z",
+        "cancelRequested": false,
+        "pipelineVersion": "kb02-2",
+        "checkpoint": {
+          "stage": "done",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": false,
+          "attempts": 3,
+          "reusedChunks": 0
+        },
+        "execution": "settled",
+        "recovery": null
+      },
+      "planSaved": true,
+      "independentDecision": "FAIL",
+      "reasons": [
+        "仅AI未来/未上线/无收益原句不足以独立成页；审核称含触发对象不构成真实触发条件，未引用任何定义或流程",
+        "metric数值/旧值差异及财务规则负责人未知均保留；失败精准定位pageIndex2，不将合法事实保留误判成错误"
+      ]
+    },
+    {
+      "fixture": "independent-ai-positive",
+      "rawId": "613dc3fb-17de-4aa0-bc87-01544d83da94",
+      "jobId": "b5ad5992-13c5-4566-9164-d933ab41e44d",
+      "bodySha256": "269e5ed4fabd3af32e7fb6c1db1b2d7c56222b23ba077bb99356f49fb0336aca",
+      "draftSha256": null,
+      "planSequence": 208,
+      "reviewSequence": 209,
+      "inputMatchesPlan": true,
+      "fullSourceContext": true,
+      "mapping": [
+        {
+          "id": "fu-19-80-fact",
+          "sourceId": "s-19-80",
+          "text": "甲桥财务团队的AI回款异常提示是一项拟议的辅助复核机制，定义为依据应收账款到期日和到账记录，向财务人员提示可能逾期的款项。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-1"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            19,
+            80
+          ],
+          "contextRange": [
+            0,
+            203
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "type": "business_process",
+              "category": "ai_application"
+            }
+          ]
+        },
+        {
+          "id": "fu-81-110-fact",
+          "sourceId": "s-81-110",
+          "text": "拟议触发条件是款项已超过应收账款到期日三天且仍无到账记录。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-2"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            81,
+            110
+          ],
+          "contextRange": [
+            0,
+            203
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "type": "business_process",
+              "category": "ai_application"
+            }
+          ]
+        },
+        {
+          "id": "fu-110-162-fact",
+          "sourceId": "s-110-162",
+          "text": "触发后，系统拟生成包含单据编号、到期日和未到账金额的提示，由财务人员逐笔核对，再将核对结果交给审批人员。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-3"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            110,
+            162
+          ],
+          "contextRange": [
+            0,
+            203
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "type": "business_process",
+              "category": "ai_application"
+            }
+          ]
+        },
+        {
+          "id": "fu-163-191-fact",
+          "sourceId": "s-163-191",
+          "text": "该机制尚未上线，未发生实际提示，也没有收益或准确率实测。",
+          "kind": "fact",
+          "memberIds": [
+            "f-c1-4"
+          ],
+          "column": "factUnitIds",
+          "sourceRange": [
+            163,
+            191
+          ],
+          "contextRange": [
+            0,
+            203
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "type": "business_process",
+              "category": "ai_application"
+            }
+          ]
+        },
+        {
+          "id": "qu-191-203",
+          "sourceId": "s-191-203",
+          "text": "异常审批负责人尚未确定。",
+          "memberIds": [
+            "q-c1-1"
+          ],
+          "column": "questionUnitIds",
+          "sourceRange": [
+            191,
+            203
+          ],
+          "contextRange": [
+            0,
+            203
+          ],
+          "owners": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "type": "business_process",
+              "category": "ai_application"
+            }
+          ]
+        }
+      ],
+      "actualPlan": {
+        "version": 3,
+        "document": {
+          "title": "甲桥财务团队AI回款异常提示机制设计记录",
+          "main_topic": "甲桥财务团队拟议的AI回款异常提示机制及其流程与边界"
+        },
+        "pages": [
+          {
+            "title": "甲桥财务团队AI回款异常提示机制",
+            "type": "business_process",
+            "category": "ai_application",
+            "factUnitIds": [
+              "fu-19-80-fact",
+              "fu-81-110-fact",
+              "fu-110-162-fact",
+              "fu-163-191-fact"
+            ],
+            "questionUnitIds": [
+              "qu-191-203"
+            ]
+          }
+        ]
+      },
+      "actualReview": {
+        "version": 1,
+        "pages": [
+          {
+            "pageIndex": 0,
+            "decision": "pass",
+            "code": "OK",
+            "unitIds": [
+              "fu-19-80-fact",
+              "fu-81-110-fact",
+              "fu-110-162-fact",
+              "fu-110-162-fact"
+            ]
+          },
+          {
+            "pageIndex": 0,
+            "decision": "pass",
+            "code": "OK",
+            "unitIds": [
+              "fu-19-80-fact",
+              "fu-81-110-fact",
+              "fu-110-162-fact",
+              "fu-163-191-fact",
+              "qu-191-203"
+            ]
+          }
+        ]
+      },
+      "rawSchemaIssues": [
+        "$.pages[0]: 缺少必需字段 reason",
+        "$.pages[1]: 缺少必需字段 reason"
+      ],
+      "duplicatePageIndices": [
+        0
+      ],
+      "duplicateUnitIds": [
+        "fu-110-162-fact"
+      ],
+      "job": {
+        "jobId": "b5ad5992-13c5-4566-9164-d933ab41e44d",
+        "rawId": "613dc3fb-17de-4aa0-bc87-01544d83da94",
+        "status": "failed",
+        "stage": "planning",
+        "progress": {
+          "chunksTotal": 1,
+          "chunksDone": 1,
+          "pagesFound": 4
+        },
+        "draftId": null,
+        "error": {
+          "code": "LLM_SCHEMA_INVALID",
+          "message": "语义审核未通过严格结构或引用校验，未保存规划。",
+          "at": "2026-10-23T07:57:22.743Z",
+          "retryable": true
+        },
+        "provider": {
+          "name": "openai-compatible",
+          "model": "GLM-5.3-Flash"
+        },
+        "callCount": 3,
+        "startedAt": "2026-10-23T07:57:08.794Z",
+        "finishedAt": "2026-10-23T07:57:22.771Z",
+        "cancelRequested": false,
+        "pipelineVersion": "kb02-2",
+        "checkpoint": {
+          "stage": "planning",
+          "validatedChunks": 1,
+          "totalChunks": 1,
+          "resumable": true,
+          "attempts": 3,
+          "reusedChunks": 0,
+          "reason": "语义审核未通过严格结构或引用校验，未保存规划。"
+        },
+        "execution": "settled",
+        "recovery": null
+      },
+      "planSaved": false,
+      "independentDecision": "FAIL",
+      "reasons": [
+        "规划含独立定义、超过到期三天且无到账触发、字段及财务复核流程、未上线/无实测、负责人未知，原文内容完整支持",
+        "审核重复pageIndex0、首项重复同unit、两项缺reason；程序fail closed正确，但正例无法产出成功草稿，真实验收未过"
+      ]
+    }
+  ],
+  "coreDefect": "F-KB02-REGION-SUPPLEMENT-01/P1 remains open: review false acceptance",
+  "positiveDefect": "F-KB02-SEMANTIC-POSITIVE-01/P1: malformed review blocks valid independent mechanism",
+  "mechanismEngineering": "PASS",
+  "stage1": "FAIL",
+  "kb02": "FAIL",
+  "budget": {
+    "prior": 203,
+    "newCalls": 6,
+    "cumulative": 209,
+    "cap": 500,
+    "stage1Used": 6,
+    "stage1Cap": 6,
+    "stages2and3Calls": 0
+  },
+  "retryCount": 0
+}

@@ -116,7 +116,7 @@ test('SR01 App recovers coverage storage failure then polls same-job explicit pl
     await act(async () => { await new Promise(r => setTimeout(r, 1600)); });
     f.succeed(); await click(button('仅重新规划（带覆盖诊断）'));
     await tick(() => !!w.document.querySelector('.draft-page h1')?.textContent?.includes('审核'), 'same-job completed opens draft');
-    assert.equal((await f.jobs.get(job.id))?.status, 'completed'); assert.equal(f.requests.length, 3); assert.equal((await f.jobs.list()).length, 1);
+    assert.equal((await f.jobs.get(job.id))?.status, 'completed'); assert.equal(f.requests.length, 4); assert.equal((await f.jobs.list()).length, 1);
   } finally { if (root) await act(async () => { root!.unmount(); }); globalThis.fetch = nativeFetch; fault.restore(); await h.close(); await f.clean(); }
 });
 

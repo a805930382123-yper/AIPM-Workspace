@@ -286,7 +286,7 @@ test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致
   assert.equal(bundle.schema.additionalProperties, false);
   assert.equal(bundle.schema.properties?.suggested_pages?.items?.additionalProperties, false);
   assert.deepEqual(bundle.rules.budgets, FROZEN_BUDGETS);
-  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-11-[0-9a-f]{12}$/);
+  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-12-[0-9a-f]{12}$/);
   const prompt = buildSystemPrompt(bundle.rules, bundle.schema);
   assert.match(prompt, /只输出一个 JSON 对象/);
   assert.match(prompt, /一个条目只解决一个明确的知识问题/);
@@ -301,6 +301,7 @@ test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败'
     await writeFile(path.join(temporary, 'wiki-extract.schema.json'), JSON.stringify({ type: 'object', properties: { suggested_pages: { items: { properties: { type: { enum: ['concept'] }, category: { enum: ['x'] } } } } } }), 'utf8');
     await writeFile(path.join(temporary, 'extraction-rules.yaml'), await readFile(path.join(rulesDir, 'extraction-rules.yaml'), 'utf8'), 'utf8');
     await writeFile(path.join(temporary, 'kb02-facts.schema.json'), await readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'), 'utf8');
+    await writeFile(path.join(temporary, 'kb02-semantic-review.schema.json'), await readFile(path.join(rulesDir, 'kb02-semantic-review.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(temporary, 'kb02-planning.schema.json'), await readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'), 'utf8');
     const mismatch = await rejection(loadExtractionRules(temporary));
     assert.equal(mismatch.code, 'LLM_RULES_INVALID');
@@ -312,6 +313,7 @@ test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败'
     await writeFile(path.join(drifted, 'wiki-extract.schema.json'), await readFile(path.join(rulesDir, 'wiki-extract.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'extraction-rules.yaml'), 'version: x\nrole: r\ninstructions: [a]\nbudgets: {maxChunkChars: 1}\n', 'utf8');
     await writeFile(path.join(drifted, 'kb02-facts.schema.json'), await readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'), 'utf8');
+    await writeFile(path.join(drifted, 'kb02-semantic-review.schema.json'), await readFile(path.join(rulesDir, 'kb02-semantic-review.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'kb02-planning.schema.json'), await readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'), 'utf8');
     const driftedError = await rejection(loadExtractionRules(drifted));
     assert.equal(driftedError.code, 'LLM_RULES_INVALID');

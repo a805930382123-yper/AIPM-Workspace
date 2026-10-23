@@ -15,7 +15,7 @@ import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import { createHash } from 'node:crypto';
 import { chunkText } from './chunk.ts';
 import { loadExtractionRules } from './rules.ts';
-import { runKnowledgePipeline, validateKnowledgeCheckpoint } from './knowledge-extraction.ts';
+import { knowledgePlanCallMinimum, runKnowledgePipeline, validateKnowledgeCheckpoint } from './knowledge-extraction.ts';
 import { ExtractionCheckpointStore, KB02_PIPELINE_VERSION, knowledgeCallLimit, type ExtractionCheckpoint } from './checkpoints.ts';
 
 export const JOB_STATUSES = ['running', 'completed', 'failed', 'cancelled'] as const;
@@ -146,7 +146,7 @@ export class ExtractionRunner {
       // state. A changed binding/history or an already-executed task fails closed.
       if (job.status !== 'running' || job.callCount !== 0 || !cp || cp.attempts !== 0 || cp.stage !== 'extracting' || cp.completedChunks.length || cp.plan || cp.draftId || pending.draftId || fingerprint(state) !== job.startStateHash) this.conflict();
     } else if (state.jobId && state.jobId !== job.id) this.conflict();
-    if (cp && (cp.jobId !== job.id || cp.rawId !== job.rawId || cp.rawSha256 !== createHash('sha256').update(raw.body).digest('hex') || cp.attempts < job.callCount || cp.attempts > knowledgeCallLimit(cp.chunks.length) || cp.attempts < cp.completedChunks.length + (cp.plan ? 1 : 0) || (job.pipelineVersion && cp.pipelineVersion !== job.pipelineVersion))) this.conflict();
+    if (cp && (cp.jobId !== job.id || cp.rawId !== job.rawId || cp.rawSha256 !== createHash('sha256').update(raw.body).digest('hex') || cp.attempts < job.callCount || cp.attempts > knowledgeCallLimit(cp.chunks.length) || cp.attempts < knowledgePlanCallMinimum(cp) || (job.pipelineVersion && cp.pipelineVersion !== job.pipelineVersion))) this.conflict();
     const draft = pending.draftId ? await this.deps.drafts.get(pending.draftId) : undefined;
     if (cp?.pipelineVersion === KB02_PIPELINE_VERSION) {
       const bundle = await loadExtractionRules(this.deps.rulesDir);
@@ -154,7 +154,7 @@ export class ExtractionRunner {
       if (!draft && (cp.rulesVersion !== bundle.rulesVersion || (currentProvider && cp.providerIdentity !== `${currentProvider.cacheIdentity ?? currentProvider.name}|${currentProvider.model}`))) this.conflict();
       // Prompt revisions do not invalidate completed drafts. Validate the saved atoms, plan
       // and evidence using the unchanged strict schema, without a Provider call.
-      await validateKnowledgeCheckpoint({ raw, body: raw.body, bodySha256: cp.rawSha256, rulesDir: this.deps.rulesDir, checkpoint: draft ? { ...cp, rulesVersion: bundle.rulesVersion } : cp, provider: { ...job.provider, secrets: currentProvider?.secrets, complete: async () => { throw new Error('Storage reconciliation cannot call Provider'); } } });
+      await validateKnowledgeCheckpoint({ raw, body: raw.body, bodySha256: cp.rawSha256, rulesDir: this.deps.rulesDir, checkpoint: draft ? { ...cp, rulesVersion: bundle.rulesVersion } : cp, provider: { ...job.provider, secrets: currentProvider?.secrets, complete: async () => { throw new Error('Storage reconciliation cannot call Provider'); } } }, draft ? { rulesVersion: cp.rulesVersion, callCount: draft.extraction.callCount } : undefined);
     }
     if (pending.draftId) {
       if (!draft || draft.jobId !== job.id || draft.rawId !== job.rawId || (draft.status === 'discarded' && pending.status !== 'cancelled') || draft.rawSha256 !== createHash('sha256').update(raw.body).digest('hex') || draft.provider.name !== job.provider.name || draft.provider.model !== job.provider.model || draft.extraction.callCount < job.callCount) this.conflict();
@@ -276,7 +276,7 @@ export class ExtractionRunner {
       if (priorCheckpoint) {
         if (prior?.status === 'running') throw new JobError('LLM_JOB_ALREADY_RUNNING', '此 Raw 已有运行中的提取任务。', 409);
         if (priorCheckpoint.stage !== 'done') {
-          if (prior && (priorCheckpoint.attempts < prior.callCount || priorCheckpoint.attempts < priorCheckpoint.completedChunks.length + (priorCheckpoint.plan ? 1 : 0))) throw new JobError('LLM_CHECKPOINT_CORRUPT', '检查点累计调用次数低于已持久化作业记录，已拒绝恢复。', 409);
+          if (prior && (priorCheckpoint.attempts < prior.callCount || priorCheckpoint.attempts < knowledgePlanCallMinimum(priorCheckpoint))) throw new JobError('LLM_CHECKPOINT_CORRUPT', '检查点累计调用次数低于已持久化作业记录，已拒绝恢复。', 409);
           const bundle = await loadExtractionRules(this.deps.rulesDir);
           const chunks = chunkText(raw.body, { maxChunkChars: bundle.rules.budgets.maxChunkChars, overlap: bundle.rules.budgets.chunkOverlap, maxRawChars: bundle.rules.budgets.maxRawChars }).map(({ index, start, end }) => ({ index, start, end }));
           const actualSha = createHash('sha256').update(raw.body).digest('hex');
@@ -288,7 +288,7 @@ export class ExtractionRunner {
       }
     }
     if (options.planningRetry && (options.restart || !resume || resume.plan || resume.completedChunks.length !== resume.chunks.length || resume.lastError?.code !== 'LLM_PLAN_COVERAGE_INVALID' || !resume.lastError.diagnostic)) throw new JobError('LLM_PLANNING_RETRY_UNAVAILABLE', '仅重新规划需要兼容的完整提取检查点及覆盖失败诊断。', 409);
-    if (options.planningRetry && resume && resume.attempts >= knowledgeCallLimit(resume.chunks.length)) throw new JobError('LLM_ATTEMPT_LIMIT', `已达到此任务累计 ${knowledgeCallLimit(resume.chunks.length)} 次调用上限，请检查资料后显式重新生成。`, 409);
+    if (resume && !resume.plan && resume.completedChunks.length === resume.chunks.length && knowledgeCallLimit(resume.chunks.length) - resume.attempts < 2) throw new JobError('LLM_ATTEMPT_LIMIT', `剩余预算不足以完成规划和语义审核（累计 ${knowledgeCallLimit(resume.chunks.length)} 次调用上限）；请检查资料后显式重新生成。`, 409);
     if (this.pending.size >= EXTRACTION_RECOVERY_CAPACITY) throw new JobError('STORAGE_RECOVERY_CAPACITY', '本进程待保存及运行中任务已达上限，请先保存状态。', 503);
     const revertStatus = state.status === 'unprocessed' || state.status === 'generated' ? state.status : (state.revertStatus ?? 'unprocessed');
     const bundle = await loadExtractionRules(this.deps.rulesDir);

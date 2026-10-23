@@ -1,0 +1,13 @@
+import fs from 'node:fs/promises';import path from 'node:path';import os from 'node:os';import {spawn} from 'node:child_process';import {createHash} from 'node:crypto';
+const root=path.resolve('.scratch-KB02-SEMANTIC-20261023'),prefix='docs/reports/KB02-SEMANTIC-20261023-',sha=b=>createHash('sha256').update(b).digest('hex');
+const originals=['KB02-FINAL-REPAIR-AUDIT-20261022-boundary.test.ts','KB02-SOURCE-AUDIT-20261022-boundary.test.mjs','KB02-EDGE-AUDIT-20261022-boundary.test.mjs','KB02-FIELDS-AUDIT-20261022-boundary.test.mjs','KB02-REGION-AUDIT-20261023-boundary.test.mjs'];
+const args=[],adaptations=[];
+for(const name of originals){const rel='tests/acceptance/'+name,before=await fs.readFile(rel),copy=await fs.readFile(path.join(root,rel));if(sha(before)!==sha(copy))throw Error('history copy differs');let s=copy.toString();
+ if(name.includes('FIELDS')||name.includes('REGION')){
+   const old='calls++;request=r;',next="calls++;const review=semanticReviewReply(r);if(review)return review;request=r;";if(!s.includes(old))throw Error('unrecognized historical fake');s="import {semanticReviewReply} from '../support/semantic-review.ts';\n"+s.replace(old,next);
+   if(name.includes('FIELDS'))s=s.replace('assert.equal(f.calls,1);});','assert.equal(f.calls,2);});');
+   else s=s.replace('assert.equal(f.calls,1);assert(f.request.system','assert.equal(f.calls,2);assert(f.request.system');
+   const dest='tests/acceptance/KB02-SEMANTIC-20261023-adapted-'+name;await fs.writeFile(path.join(root,dest),s,{flag:'wx'});args.push(dest);adaptations.push({original:rel,originalSha256:sha(before),adapted:dest,adaptedSha256:sha(s),changes:'Added semantic-review fake only and +1 call assertion on successful pipeline cases; original negative, source, coverage and metadata assertions retained.'});
+ }else args.push(rel);
+}
+const node=path.join(os.homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'),cmd=['--import','tsx','--test',...args],started=Date.now(),child=spawn(node,cmd,{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});let log='';child.stdout.on('data',b=>log+=b);child.stderr.on('data',b=>log+=b);const code=await new Promise((resolve,reject)=>{child.on('error',reject);child.on('close',resolve);});await fs.writeFile(prefix+'historical.log',log,{flag:'wx'});const report={root,node,cmd,code,elapsedMs:Date.now()-started,adaptations,summary:log.split(/\r?\n/u).filter(l=>/^ℹ (tests|pass|fail|skipped|cancelled|duration)/u.test(l))};await fs.writeFile(prefix+'historical.json',JSON.stringify(report,null,2),{flag:'wx'});console.log(JSON.stringify(report));process.exitCode=code;

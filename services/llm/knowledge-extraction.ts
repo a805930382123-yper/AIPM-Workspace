@@ -7,6 +7,7 @@ import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } f
 import { validateSchema } from './schema-validator.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
 import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
+import { reviewKnowledgePlan } from './knowledge-semantic-review.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -61,7 +62,11 @@ function planningFieldInstruction(bundle: Awaited<ReturnType<typeof loadExtracti
   ].join('\n');
 }
 
-export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput, 'raw'|'body'|'bodySha256'|'provider'|'rulesDir'|'checkpoint'>) {
+export function knowledgePlanCallMinimum(checkpoint: Pick<ExtractionCheckpoint, 'rulesVersion'|'completedChunks'|'plan'>): number {
+  return checkpoint.completedChunks.length + (checkpoint.plan ? (checkpoint.rulesVersion.includes('-kb02-atoms-planning-12-') ? 2 : 1) : 0);
+}
+
+export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput, 'raw'|'body'|'bodySha256'|'provider'|'rulesDir'|'checkpoint'>, completedDraft?: { rulesVersion: string; callCount: number }) {
   const bundle = await loadExtractionRules(input.rulesDir);
   const chunks = chunkText(input.body, { maxChunkChars: FROZEN_BUDGETS.maxChunkChars, overlap: FROZEN_BUDGETS.chunkOverlap, maxRawChars: FROZEN_BUDGETS.maxRawChars });
   if (!chunks.length) throw new LlmError('LLM_EMPTY_RESULT', '这条原文没有可分析的正文，无法提取知识。', 422);
@@ -74,7 +79,10 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
   if (current.rawId !== input.raw.id || current.rawSha256 !== input.bodySha256 || current.pipelineVersion !== 'kb02-2' || current.rulesVersion !== bundle.rulesVersion || JSON.stringify(current.chunks) !== JSON.stringify(descriptors)) throw new LlmError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则或分块版本已变化；检查点保留，请明确重新生成。', 409);
   const catalogByChunk = new Map<number, ReturnType<typeof buildEvidenceLocatorCatalog>>();
   for (const chunk of chunks) catalogByChunk.set(chunk.index, buildEvidenceLocatorCatalog(input.body, chunk));
-  if (current.attempts < current.completedChunks.length + (current.plan ? 1 : 0) || current.completedChunks.reduce((sum, part) => sum + part.facts.length, 0) > 256 || current.completedChunks.reduce((sum, part) => sum + part.questions.length, 0) > 128 || current.attempts > knowledgeCallLimit(chunks.length)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点事实/问题或调用计数超出任务上限，已拒绝恢复。', 409);
+  // Only storage reconciliation with an already-associated completed draft may use its
+  // original revision's call floor. Pipeline/resume callers never pass this argument.
+  const countRulesVersion = completedDraft && completedDraft.callCount === current.attempts ? completedDraft.rulesVersion : current.rulesVersion;
+  if (current.attempts < knowledgePlanCallMinimum({ ...current, rulesVersion: countRulesVersion }) || current.completedChunks.reduce((sum, part) => sum + part.facts.length, 0) > 256 || current.completedChunks.reduce((sum, part) => sum + part.questions.length, 0) > 128 || current.attempts > knowledgeCallLimit(chunks.length)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点事实/问题或调用计数超出任务上限，已拒绝恢复。', 409);
   const validatedChunkIds = new Set<number>();
   const factIdsSeen = new Set<string>(); const questionIdsSeen = new Set<string>();
   for (const saved of current.completedChunks) {
@@ -185,6 +193,8 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     const allFacts = current.completedChunks.flatMap(part => part.facts);
     const allQuestions = current.completedChunks.flatMap(part => part.questions);
     if (!allFacts.length) throw new LlmError('LLM_EMPTY_RESULT', '整篇没有可规划的已验证事实（EMPTY_RESULT）。', 422);
+    guard();
+    if (knowledgeCallLimit(chunks.length) - current.attempts < 2) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划和语义审核；成功块已保留，请检查资料后显式重新生成。', 429);
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
     const planningPayload = { ...planningInput, ...(feedback ? { coverageFeedback: feedback } : {}) };
@@ -213,6 +223,8 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     const rawPlan = {document:wirePlan.document,pages:expandKnowledgePlan(wirePlan,planningInput)};
     if(hasCoverageErrors(coverageDiagnostic(factIds,questionIds,rawPlan.pages)))throw new LlmError('LLM_PLAN_COVERAGE_INVALID','分配单元与原记录覆盖不一致，未组装草稿。',502);
     assertNoKnownSecret(rawPlan, input.provider.secrets ?? []);
+    await reviewKnowledgePlan({ input: planningInput, plan: wirePlan, schema: bundle.kb02SemanticReviewSchema, provider: input.provider, signal: input.signal, deadline, guard, beforeCall: async () => { current = await input.beforeCall('planning'); } });
+    guard();
     current = await input.saveCheckpoint({ ...current, plan: { document: { ...rawPlan.document, summary: sourceSummary(allFacts.map(item => item.text)) }, pages: rawPlan.pages }, stage: 'assembling', lastError: undefined });
   }
 

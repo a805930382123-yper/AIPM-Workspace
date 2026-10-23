@@ -1,0 +1,40 @@
+{
+  "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-SEMANTIC-20261023",
+  "node": "C:\\Users\\David.chen\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "cmd": [
+    "--import",
+    "tsx",
+    "--test",
+    "tests/acceptance/KB02-FINAL-REPAIR-AUDIT-20261022-boundary.test.ts",
+    "tests/acceptance/KB02-SOURCE-AUDIT-20261022-boundary.test.mjs",
+    "tests/acceptance/KB02-EDGE-AUDIT-20261022-boundary.test.mjs",
+    "tests/acceptance/KB02-SEMANTIC-20261023-adapted-KB02-FIELDS-AUDIT-20261022-boundary.test.mjs",
+    "tests/acceptance/KB02-SEMANTIC-20261023-adapted-KB02-REGION-AUDIT-20261023-boundary.test.mjs"
+  ],
+  "code": 0,
+  "elapsedMs": 766,
+  "adaptations": [
+    {
+      "original": "tests/acceptance/KB02-FIELDS-AUDIT-20261022-boundary.test.mjs",
+      "originalSha256": "1b9c07123cbd73cce49c7fe4931b26a5be5eda409c94420bb0a68269d19d8905",
+      "adapted": "tests/acceptance/KB02-SEMANTIC-20261023-adapted-KB02-FIELDS-AUDIT-20261022-boundary.test.mjs",
+      "adaptedSha256": "da3f6fe9e3162f169ff93b35e99c19fe43976d6d2ed4d5ecdd20d140a3ddb400",
+      "changes": "Added semantic-review fake only and +1 call assertion on successful pipeline cases; original negative, source, coverage and metadata assertions retained."
+    },
+    {
+      "original": "tests/acceptance/KB02-REGION-AUDIT-20261023-boundary.test.mjs",
+      "originalSha256": "656592a9f03c1f4a79a86716a6f53d22790471b3f1e60a5e1f7794e9aadfca7d",
+      "adapted": "tests/acceptance/KB02-SEMANTIC-20261023-adapted-KB02-REGION-AUDIT-20261023-boundary.test.mjs",
+      "adaptedSha256": "2acf6f6ce7ef3e6c9ce51147181cbb67e0164b0064ec82ad7fca0b97f0635f04",
+      "changes": "Added semantic-review fake only and +1 call assertion on successful pipeline cases; original negative, source, coverage and metadata assertions retained."
+    }
+  ],
+  "summary": [
+    "ℹ tests 18",
+    "ℹ pass 18",
+    "ℹ fail 0",
+    "ℹ cancelled 0",
+    "ℹ skipped 0",
+    "ℹ duration_ms 607.9355"
+  ]
+}

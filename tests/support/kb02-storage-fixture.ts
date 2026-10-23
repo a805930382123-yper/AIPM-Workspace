@@ -1,3 +1,4 @@
+import { semanticReviewReply } from './semantic-review.ts';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
@@ -25,6 +26,7 @@ export async function storageFixture() {
   const provider: LlmProvider = { name: 'fake', model: 'budget-model', complete: async request => {
     requests.push(request);
     await hook?.(request);
+    const review = semanticReviewReply(request); if (review) return review;
     const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
     const result = request.user.includes('请对下列全部已验证事实规划知识页')
       ? { version:3,document: { title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }

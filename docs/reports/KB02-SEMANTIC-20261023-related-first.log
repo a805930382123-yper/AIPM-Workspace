@@ -1,0 +1,532 @@
+✔ KB02 Q02 request puts business relevance before fragment ambiguity and supplies schema-valid counterexamples (205.1649ms)
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (139.8045ms)
+✔ KB02 Q02 controlled omitted nonbusiness fragments are not promoted to facts or questions (64.9533ms)
+✔ KB02 Q02 all nonbusiness title/layout variants still reject sourceNotes overlap without cleaning or retry (226.6556ms)
+✔ KB02 Q02 full seq62 original response and exact original atom catalog still reject offline (132.3071ms)
+✔ KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes (43.8591ms)
+✔ EDGE original seq144 bad selection remains rejected although its blank atom is absent from the request (149.2252ms)
+✖ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (97.9332ms)
+✔ EDGE facts blank selection fails intact without partial chunk save (39.0797ms)
+✔ EDGE facts unknown selection fails intact without partial chunk save (32.207ms)
+✔ EDGE facts cross-chunk selection fails intact without partial chunk save (32.9225ms)
+✔ EDGE questions blank selection fails intact without partial chunk save (60.5807ms)
+✔ EDGE questions unknown selection fails intact without partial chunk save (51.0667ms)
+✔ EDGE questions cross-chunk selection fails intact without partial chunk save (35.071ms)
+✔ EDGE sourceNotes blank selection fails intact without partial chunk save (50.7586ms)
+✔ EDGE sourceNotes unknown selection fails intact without partial chunk save (49.0225ms)
+✔ EDGE sourceNotes cross-chunk selection fails intact without partial chunk save (33.5495ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (78.4729ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8112 chars) (96.1054ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (37.8534ms)
+✔ EDGE no-business input retains empty/source-only chunk and exact call accounting (7 chars) (33.4183ms)
+✔ EDGE no-business input retains empty/source-only chunk and exact call accounting (9 chars) (198.5258ms)
+✔ EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks (525.3908ms)
+✔ EDGE completed revision8 draft remains HTTP-readable and reused with no additional Provider call (432.5616ms)
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planning records and draft (159.1399ms)
+✔ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (99.3892ms)
+✔ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (40.9189ms)
+✔ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (31.9698ms)
+✔ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (31.7063ms)
+✔ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (63.234ms)
+✔ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (222.5149ms)
+✔ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (44.9202ms)
+✔ FINAL-02 request requires minimal common propositions per assertion and version-bound two-sided IDs (211.4659ms)
+✔ FINAL-02 missing-old rejects without workflow or Wiki writes (176.1545ms)
+✔ FINAL-02 missing-new rejects without workflow or Wiki writes (143.3336ms)
+✔ FINAL-02 wrong-side-old rejects without workflow or Wiki writes (116.6479ms)
+✔ FINAL-02 wrong-side-new rejects without workflow or Wiki writes (186.2206ms)
+✔ FINAL-02 unknown-old rejects without workflow or Wiki writes (148.6153ms)
+✔ FINAL-02 unknown-new rejects without workflow or Wiki writes (130.5562ms)
+✔ FINAL-02 extra-field rejects without workflow or Wiki writes (99.8368ms)
+✔ FINAL-02 wrong-version rejects without workflow or Wiki writes (239.5922ms)
+✔ FINAL-02 cross-target rejects without workflow or Wiki writes (178.9849ms)
+✔ FINAL-02 original seq82 unilateral compound agreement lacks old-side binding and is rejected, no auto-fill (269.9302ms)
+✔ FINAL-02 controlled synonym/one-sided/partial compound/conflict/unknown/future samples preserve exact support boundaries (296.6953ms)
+✔ FINAL-02 only-old statements may produce empty agreement without inventing a shared claim (69.6299ms)
+✔ FINAL-02 target edited during provider call rejects bound old version with no saved preview (203.7754ms)
+✔ FINAL-02 legacy synthesis evidence contract remains unchanged (131.1198ms)
+✔ FINAL-01 request defines mechanical concatenations and schema-valid content-neutral paired examples (173.7814ms)
+✔ FINAL-01 controlled labels retain real business fragments/negative/unknown/future and exclude concatenated notes (128.3252ms)
+✔ FINAL-01 original seq75 full directory and response preserve semantic failure and strict seq77 coverage rejection (152.6499ms)
+✔ FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero calls/three-file writes; restart uses zero old chunks (911.469ms)
+✔ FINAL-01 old completed revision5 draft remains HTTP-readable and start reuses it without outbound call (287.4453ms)
+✔ FINAL-01 revision5 preflight rejects without invoking any pipeline callbacks (54.4572ms)
+✔ job file held get excludes update from another store but not another job (103.1655ms)
+✔ job file held get excludes insert from another store but not another job (73.4256ms)
+✔ job atomic replacement excludes get, list, generic JSON read and recovery scan across instances (98.8587ms)
+✔ job list keeps coordination until its real file handle closes (63.1308ms)
+✔ job recovery keeps coordination until its real file handle closes (290.3484ms)
+✔ job mutations across instances retain independent fields and release after corrupt reads or persistent rename refusal (482.5429ms)
+✔ job polling and independent recovery scans coexist with atomic updates without native rename rejection (1100.7829ms)
+✖ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (134.7894ms)
+✖ KB02 resume reuses validated chunks and counts failed outbound attempts (152.953ms)
+✔ KB02 corrupted checkpoint integrity fails closed (30.877ms)
+✔ KB02 planning system contains the subject-first decisions and abstract contrast cases (76.1288ms)
+✔ a manually assigned abstract subject plan is representable while retaining every original ID (18.0557ms)
+✖ a subject-preserving fake plan is accepted by the complete pipeline (21.1334ms)
+✔ revision10 unfinished checkpoint is rejected before Provider calls and retained chunks stay byte-identical (16.9674ms)
+Budget assertion snapshot: [{"node":"v24.20.0","job":{"status":"failed","stage":"planning","callCount":5,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"checkpoint":{"stage":"planning","attempts":5,"validatedChunks":1,"diagnosticPresent":true,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"rawStatus":"failed","requests":5,"execution":"settled","recovery":null}]
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (929.6392ms)
+Budget assertion snapshot: [{"node":"v24.20.0","job":{"status":"failed","stage":"planning","callCount":5,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"checkpoint":{"stage":"planning","attempts":5,"validatedChunks":1,"diagnosticPresent":true,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"rawStatus":"failed","requests":5,"execution":"settled","recovery":null}]
+✖ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (940.9956ms)
+✖ PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts (193.0169ms)
+✔ PLAN-03 seq100 original-v2 remains strict rejection with every original record retained (96.072ms)
+✔ PLAN-03 seq100 missing-v3 remains strict rejection with every original record retained (136.5757ms)
+✔ PLAN-03 seq104 original-v2 remains strict rejection with every original record retained (14.9941ms)
+✔ PLAN-03 seq104 missing-v3 remains strict rejection with every original record retained (7.8508ms)
+✔ PLAN-03 supplement keeps fact and question at the same source, including ambiguous business boundary (14.8733ms)
+✖ PLAN-04 fresh extraction through planning uses context only for attribution, without promoting unselected nearby source notes (14.7568ms)
+✔ PLAN-04 exact context windows remain UTF16-safe on both boundaries (34.1699ms)
+✔ PLAN-04 selected record with unresolved atom position fails before planning callbacks (14.8856ms)
+✔ PLAN-04 unselected Raw context known secret rejects before any planning call, ledger or checkpoint write (15.5297ms)
+✔ PLAN-04 complete context payload exceeding 192KiB stops before Provider and preserves extracted chunks (39.11ms)
+✔ PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit (763.4685ms)
+✖ PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts (26.6473ms)
+✔ PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks (870.0401ms)
+✔ PLAN completed revision6 draft remains HTTP-readable and reused with zero Provider increment (756.4894ms)
+✔ KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs (130.8599ms)
+✔ KB02 planning keeps strict rejection for category values placed in type and swapped fields (186.0577ms)
+✔ KB02 planning scans the expanded system instructions for known secrets before the planning Provider call (59.6256ms)
+✔ KB02 planning rules fingerprint tracks FMCG labels and descriptions and rejects checkpoints from old prompt metadata (84.0776ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (165.7332ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (78.1529ms)
+✖ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (121.9738ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (109.1248ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (122.764ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.4181ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (67.9464ms)
+✔ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (438.5945ms)
+✔ SOURCE seq121 exact real failure passed old ID coverage and is refused as v2 without changing any extracted ID (359.4865ms)
+✖ SOURCE controlled real seq121 creates 14 correct areas with all 104 original IDs then saves and restores the new plan (110.2846ms)
+✖ SOURCE v3 missing units fail before expansion and only explicit retry resumes planning (240.4702ms)
+✖ SOURCE v3 duplicate units fail before expansion and only explicit retry resumes planning (291.4053ms)
+✖ SOURCE v3 unknown units fail before expansion and only explicit retry resumes planning (273.9847ms)
+✖ SOURCE v3 wrong-column units fail before expansion and only explicit retry resumes planning (279.2372ms)
+✖ SOURCE v3 split units fail before expansion and only explicit retry resumes planning (265.3099ms)
+✖ SOURCE current-rule tampered persisted split, unknown page field and metadata are rejected; valid plan remains restorable (239.4813ms)
+✖ SOURCE same text at different Raw positions is not merged and may have distinct primary pages (171.5892ms)
+✖ SOURCE same multi-business atom remains whole; duplicate full statements cannot invent separate semantic projections (46.6665ms)
+✖ SOURCE different kinds and fact/question units at the same span can belong to different topics without losing ambiguity (144.3556ms)
+✔ SOURCE exact text binding rejects a fabricated different fact projection before any Provider call (42.9516ms)
+✔ SOURCE old revision7 unfinished checkpoint fails preflight with no call/write and original extraction retained (213.9509ms)
+✖ SOURCE complete unit/context/feedback payload at 192KiB is accepted (59.752ms)
+✔ SOURCE complete unit/context/feedback payload at 192KiB plus one byte rejects before call (43.0619ms)
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (1534.0557ms)
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=true (1101.243ms)
+✔ F-SR01-01 refuses externally changed binding and preserves bytes (573.0449ms)
+✔ F-SR01-01 refuses externally changed history and preserves bytes (587.2267ms)
+✔ F-SR01-01 refuses externally changed body and preserves bytes (503.6357ms)
+✖ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (816.7391ms)
+✔ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (89.2083ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (114.4027ms)
+✔ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (514.234ms)
+✔ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (498.4952ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (2018.7569ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (603.4239ms)
+✔ SR01 real atomic failed-job transient retry (509.7271ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic failed-job persistent explicit recovery (1218.886ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","rejectedRenames":12,"failedTargetBefore":"2df5ceef3b0817fd1dbdd5780bd918b41cde5b06562b729d1056bffcc72d9978","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["d398bf62bc810cffb771eff23fb62ac75b89d19a8c969b8e783b606a9f434f7a","61eb7c9cad204a73efcfa615f3214ef95d3dc9a824030498f0869b57109e1cdb","3233770292a2668690b2c2027c781a1c6f0f9d1aa6b7f94aaada27804bf0d431"]}
+✔ SR01 real atomic done-checkpoint transient retry (239.1266ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":3}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (997.314ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"ec645bd1bb6e257be92281a58051d272c0738c4dd8e2aa538e5fba44a4098bfc","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":3,"providerAfter":3,"attemptsBefore":3,"attemptsAfter":3,"draftIds":["c3660e6c-97bc-4d79-b012-9d612c5b77e0"],"finalJob":"completed","idempotentHashes":["d7028f558a3c0eb84e9db565d88fb25f391eedf152108e8e7f5cec50948d06b3","d2ca21426352380e125640a5ac9f26e9aef2bcac1064f428eb34a3a787ed5414","4900068da5a3c770ed4453c6d01f4db6863981320e43e4e3c7f76839324eb44f"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (182.6561ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (1033.9248ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","rejectedRenames":12,"failedTargetBefore":"a26c4d5b0bf1a2a5e57c510981968eb761038fd05c4712ed300648d42274a6c1","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["41422f4d143b3938c7da31291a939eeda7c01c38323378304dccb89bfadf9219","c6bb465b9ab1b7d753e7df2f9a9b1919b5da7877f84be34f5fd6367b5a05d458","2952ea6598c1b600c981cdb921de44da0e7cbc9f2ffab1c23fdb0456589d860c"]}
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (552.0669ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (448.7195ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (464.5078ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (478.933ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (127.0948ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (400.6001ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (4171.8457ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (3.3097ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (7564.9242ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1568.0572ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (179.7747ms)
+✔ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (446.27ms)
+ℹ tests 141
+ℹ suites 0
+ℹ pass 112
+ℹ fail 29
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28240.5014
+
+✖ failing tests:
+
+test at tests\kb02-classification-priority.test.ts:1:6092
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (139.8045ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-classification-priority.test.ts:84:60)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:3668
+✖ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (97.9332ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:24:330)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:37:67)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-edge-extraction.test.ts:1:6120
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (78.4729ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:24:330)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:50:34)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-edge-extraction.test.ts:1:6120
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8112 chars) (96.1054ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:24:330)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:50:34)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-edge-extraction.test.ts:1:6120
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (37.8534ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:24:330)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-edge-extraction.test.ts:50:34)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-extraction-contract.test.ts:1:3689
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planning records and draft (159.1399ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-extraction-contract.test.ts:70:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-pipeline.test.ts:1:901
+✖ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (134.7894ms)
+  TypeError: Cannot read properties of undefined (reading 'id')
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-pipeline.test.ts:31:78)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-pipeline.test.ts:34:20)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests\kb02-pipeline.test.ts:1:3792
+✖ KB02 resume reuses validated chunks and counts failed outbound attempts (152.953ms)
+  TypeError: Cannot read properties of undefined (reading 'id')
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-pipeline.test.ts:57:114)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-pipeline.test.ts:64:21)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-planning-attribution.test.ts:1:7169
+✖ a subject-preserving fake plan is accepted by the complete pipeline (21.1334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-attribution.test.ts:92:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:5031
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (929.6392ms)
+  Error: 剩余预算不足以完成规划和语义审核（累计 6 次调用上限）；请检查资料后显式重新生成。
+      at ExtractionRunner.startOnce (E:\AI\Work\AIPM Workspace\services\llm\jobs.ts:291:163)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\jobs.ts:231:59) {
+    code: 'LLM_ATTEMPT_LIMIT',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:6906
+✖ KB02 last available planning call stays in the same job with successful chunks and cumulative attempts (940.9956ms)
+  Error: 剩余预算不足以完成规划和语义审核（累计 6 次调用上限）；请检查资料后显式重新生成。
+      at ExtractionRunner.startOnce (E:\AI\Work\AIPM Workspace\services\llm\jobs.ts:291:163)
+      at async <anonymous> (E:\AI\Work\AIPM Workspace\services\llm\jobs.ts:231:59) {
+    code: 'LLM_ATTEMPT_LIMIT',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-planning-context.test.ts:1:4830
+✖ PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts (193.0169ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-context.test.ts:67:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-context.test.ts:1:8905
+✖ PLAN-04 fresh extraction through planning uses context only for attribution, without promoting unselected nearby source notes (14.7568ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-context.test.ts:92:35)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-context.test.ts:1:13411
+✖ PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts (26.6473ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-planning-context.test.ts:129:39)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-r2.test.ts:1:6015
+✖ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (121.9738ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-r2.test.ts:42:413)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:5054
+✖ SOURCE controlled real seq121 creates 14 correct areas with all 104 original IDs then saves and restores the new plan (110.2846ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at <anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:45:52)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:46:62)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:6824
+✖ SOURCE v3 missing units fail before expansion and only explicit retry resumes planning (240.4702ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:56:16)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:6824
+✖ SOURCE v3 duplicate units fail before expansion and only explicit retry resumes planning (291.4053ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:56:16)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:6824
+✖ SOURCE v3 unknown units fail before expansion and only explicit retry resumes planning (273.9847ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:56:16)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:6824
+✖ SOURCE v3 wrong-column units fail before expansion and only explicit retry resumes planning (279.2372ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:56:16)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:6824
+✖ SOURCE v3 split units fail before expansion and only explicit retry resumes planning (265.3099ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:56:16)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:8030
+✖ SOURCE current-rule tampered persisted split, unknown page field and metadata are rejected; valid plan remains restorable (239.4813ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at <anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:61:52)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:61:194)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:9004
+✖ SOURCE same text at different Raw positions is not merged and may have distinct primary pages (171.5892ms)
+  TypeError: Cannot read properties of undefined (reading 'length')
+      at <anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:67:140)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:67:356)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:9683
+✖ SOURCE same multi-business atom remains whole; duplicate full statements cannot invent separate semantic projections (46.6665ms)
+  TypeError: Cannot read properties of undefined (reading 'length')
+      at <anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:71:166)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:71:331)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:10433
+✖ SOURCE different kinds and fact/question units at the same span can belong to different topics without losing ambiguity (144.3556ms)
+  TypeError: Cannot read properties of undefined (reading 'length')
+      at <anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:76:56)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:76:370)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-source-assignment.test.ts:1:13054
+✖ SOURCE complete unit/context/feedback payload at 192KiB is accepted (59.752ms)
+  TypeError: Cannot read properties of undefined (reading 'map')
+      at plan (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:21:141)
+      at Object.complete (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:26:138)
+      at reviewKnowledgePlan (E:\AI\Work\AIPM Workspace\services\llm\knowledge-semantic-review.ts:38:49)
+      at async runKnowledgePipeline (E:\AI\Work\AIPM Workspace\services\llm\knowledge-extraction.ts:226:5)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-source-assignment.test.ts:96:148)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (1534.0557ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-sr01-r1.test.ts:48:61)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=true (1101.243ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-sr01-r1.test.ts:48:61)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:4316
+✖ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (816.7391ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\tests\kb02-sr01-r1.test.ts:96:96)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

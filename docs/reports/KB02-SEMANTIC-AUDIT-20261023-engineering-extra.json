@@ -1,0 +1,9 @@
+{
+  "reviewed": true,
+  "reason": "Prepared against current actual interfaces; engineering authorization remains false until final freeze. FINAL/SOURCE/EDGE unchanged: update binding, fixed-unit structure and pre-planning rejection purposes do not reach new review. FIELDS/REGION owned copies only add one protocol fake pass to positive full-pipeline paths, retain all negative call/write assertions. Independent new controls include dishonest pass remaining semantically wrong.",
+  "commands": [
+    {"name":"independent-semantic-boundary","args":["--import","tsx","--test","tests/acceptance/KB02-SEMANTIC-AUDIT-20261023-boundary.test.mjs"]},
+    {"name":"historical-final-source-edge","args":["--import","tsx","--test","tests/acceptance/KB02-FINAL-REPAIR-AUDIT-20261022-boundary.test.ts","tests/acceptance/KB02-SOURCE-AUDIT-20261022-boundary.test.mjs","tests/acceptance/KB02-EDGE-AUDIT-20261022-boundary.test.mjs"]},
+    {"name":"historical-fields-region-adapted","args":["--import","tsx","--test","tests/acceptance/KB02-SEMANTIC-AUDIT-20261023-historical-fields.test.mjs","tests/acceptance/KB02-SEMANTIC-AUDIT-20261023-historical-region.test.mjs"]}
+  ]
+}

@@ -1,0 +1,37 @@
+✔ SEMANTIC original seq202 reject/uncertain gates the full pipeline with exact source/units and retained blocks (62.3055ms)
+✔ SEMANTIC complete pipeline rejects reject without saving plan or arbitrary review payload (4.8478ms)
+✔ SEMANTIC complete pipeline rejects uncertain without saving plan or arbitrary review payload (3.394ms)
+✔ SEMANTIC complete pipeline rejects missing without saving plan or arbitrary review payload (2.7988ms)
+✔ SEMANTIC complete pipeline rejects duplicate without saving plan or arbitrary review payload (7.563ms)
+✔ SEMANTIC complete pipeline rejects unknownPage without saving plan or arbitrary review payload (4.9502ms)
+✔ SEMANTIC complete pipeline rejects unknownUnit without saving plan or arbitrary review payload (3.4165ms)
+✔ SEMANTIC complete pipeline rejects duplicateUnit without saving plan or arbitrary review payload (6.7582ms)
+✔ SEMANTIC complete pipeline rejects conflictingPass without saving plan or arbitrary review payload (6.657ms)
+✔ SEMANTIC complete pipeline rejects conflictingReject without saving plan or arbitrary review payload (3.8292ms)
+✔ SEMANTIC complete pipeline rejects extraTop without saving plan or arbitrary review payload (7.1095ms)
+✔ SEMANTIC complete pipeline rejects extraPage without saving plan or arbitrary review payload (4.8904ms)
+✔ SEMANTIC complete pipeline rejects secret without saving plan or arbitrary review payload (11.3398ms)
+✔ SEMANTIC complete pipeline rejects emptyReason without saving plan or arbitrary review payload (3.1153ms)
+✔ SEMANTIC complete pipeline rejects longReason without saving plan or arbitrary review payload (4.5623ms)
+✔ SEMANTIC complete pipeline rejects badVersion without saving plan or arbitrary review payload (4.9481ms)
+✔ SEMANTIC complete pipeline rejects questionOnly without saving plan or arbitrary review payload (4.1992ms)
+✔ SEMANTIC malformed fails closed with no plan and no raw failure details (2.6563ms)
+✔ SEMANTIC length fails closed with no plan and no raw failure details (3.7143ms)
+✔ SEMANTIC oversize fails closed with no plan and no raw failure details (8.4338ms)
+✔ SEMANTIC schema/instruction revision fingerprint changes, old unfinished revision and new plan undercount fail without calls or writes (35.4994ms)
+✔ SEMANTIC pre-call accounting failure stops review; crash before accepted-plan save resumes both calls, saved-plan resumes zero (9.3187ms)
+✔ SEMANTIC cancellation while review waits rejects immediately and ignores a late pass (5.6395ms)
+✔ SEMANTIC actual 60s review timer bounds an ignoring provider and discards late success (3.8539ms)
+✔ SEMANTIC total deadline after review result cannot publish; cancellation during accounting cannot call review (8.3246ms)
+✔ SEMANTIC single-unit independent future AI mechanism passes without deleting future boundaries; candidate snapshot is binding (8.6864ms)
+✔ SEMANTIC runner semantic failure uses ordinary same-job continue, persists trusted code only and counts each call (194.697ms)
+✔ SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and explicitly confirms with zero outbound calls (226.8111ms)
+✔ SEMANTIC single closure freezes actual candidate and review cannot be reused for a different plan (4.3622ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1258.5364
