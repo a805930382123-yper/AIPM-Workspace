@@ -13,4 +13,6 @@
 
 状态、验收、总控、批卡及架构已同步当前双层结论；原历史FAIL保留。AGENTS.md、.agents/skills/agent-router/SKILL.md、AGENT-ROUTER-20261023-packaging.md为并行外部工作，不纳入HUMAN提交。下轮只建议准备最小K2-04补证卡，明确metric/更新、新链长文的证据与调用门禁；本轮不追加真实调用。
 
-提交关联与实时远端核验在提交后补记；下文若无关联，不得把提交前远端一致称作本轮变更已同步。
+## 提交关联
+
+产品、测试、施工/独立验收证据与台账保存于 `60f83adba102d887fcd925df13a8021ff7669de1`（129文件）。现有post-commit钩子成功将main由28b6d14推送至60f83ad；随后 `git rev-parse HEAD` 和单次禁代理 `git ls-remote origin refs/heads/main` 实时返回同一完整SHA。同步不包含外部AGENTS/.agents/AGENT-ROUTER工作，其余HUMAN文件均已提交。此附注及报告/状态版本关联另作纯文档提交，不改产品或验收结论。

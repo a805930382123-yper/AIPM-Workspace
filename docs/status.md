@@ -2,6 +2,8 @@
 
 ## 当前结论：HUMAN人工门禁通过，KB02阻塞待补证（2026-10-23）
 
+产品与完整验收证据提交：`60f83adba102d887fcd925df13a8021ff7669de1`，提交后实时远端main核验一致。后续文档关联提交不改变产品与验收结论；并行外部工作仍未提交。详见[主Agent收尾记录](reports/KB02-HUMAN-FINAL-20261023-release.md)。
+
 用户在状态预检后授权继续完成本轮验收收尾。Sol施工已冻结；本次明确派发 `gpt-6-astra / medium` 独立验收，结论为 **HUMAN人工审查/正式确认门禁PASS；KB02整体BLOCKED，未结批**。详见[独立收尾报告](reports/KB02-HUMAN-CLOSE-20261023-acceptance.md)。本次没有产品返修，不把人工纠正称作模型自动语义质量修复，原模型历史FAIL保留。
 
 受测基线HEAD `28b6d144a07d03d4e85fc8cc766027a763012c0e`；43施工文件aggregate SHA `b6205b532fccfdb4c0e620182fc7ef11b22276c1a53a269ea39c98f4c47d777e`。本机Node25.2.1隔离核心21/21、独立React/HTTP五步通过，原106400字长文14主体/55unit/101ID离线保全通过；43施工及188历史独立源码指纹无漂移，因此复用同冻结历史独立445/445、Node24.19核心64/64与tsc/Vite通过，不称为本机全量重跑。首轮沙箱EPERM与获准后同字节通过的证据分别保留。没有Chrome实测。
