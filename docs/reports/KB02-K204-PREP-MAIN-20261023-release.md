@@ -13,4 +13,4 @@
 
 主Agent只暂存本轮K204-PREP前缀任务卡/脚本/报告及四份台账。AGENTS.md、.agents/skills/agent-router/SKILL.md、AGENT-ROUTER-20261023-packaging.md为外部工作，保留不提交；scratch、配置、正式数据及依赖不提交。下轮真实调用没有被本轮准备通过自动授权，汇报后停止。
 
-提交前HEAD `5de67e33e19d4dce3ca650c8c5ee9f1c472970ba`；提交与实时远端一致性核验完成后追加版本关联。
+提交前HEAD `5de67e33e19d4dce3ca650c8c5ee9f1c472970ba`。暂存完整范围50文件，`git diff --cached --check` exit0；主Agent对全部50个暂存blob再次执行已知实际密钥扫描，0匹配、范围外0。准备交付提交为 `5f38e98732474b933ba4692383843d1d7b823e66`，post-commit钩子推送成功；随后 `git rev-parse HEAD` 与单次禁代理 `git ls-remote origin refs/heads/main` 实时同SHA。持久网络配置未改、未强推。剩余工作区仅三项原外部工作。本版本关联附注另作纯文档提交，不改工具/产品或验收结论。

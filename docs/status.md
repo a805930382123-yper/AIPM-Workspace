@@ -2,6 +2,8 @@
 
 ## 当前结论：K2-04补证准备通过，真实验收未授权（2026-10-23）
 
+准备交付与完整证据提交：`5f38e98732474b933ba4692383843d1d7b823e66`，提交后实时远端main一致；后续版本关联文档提交不改变受测工具或结论。见[主Agent收尾](reports/KB02-K204-PREP-MAIN-20261023-release.md)。并行外部工作保留未提交。
+
 已按B模式6/8完成Astra冻结卡/spec、Sol High施工/自查、Astra独立复验。**本轮准备工具PASS；KB02整体仍BLOCKED，真实质量NOT_RUN**。见[独立验收报告](reports/KB02-K204-PREP-AUDIT-20261023-acceptance.md)及[最小补证卡](handoffs/KB02-K204-PREP-20261023-task.md)。没有修改产品，HUMAN门禁PASS与原模型历史FAIL各自保留。
 
 最终repair1同字节24冻结文件、188历史源前后零漂移；本机Node25.2.1独立完整22次fake、12项门禁/6次模拟回调通过，实际React/localhost HTTP更新与回读完成，长文从空检查点14+1次、14主体逐Raw保全。首轮网络守卫P04失败已由Sol最小修复并经Astra复验关闭，两条绕过均拒绝且未登记本机sink命中0；原失败/首探针判据不足记录保留。实际组件证据不冒称Chrome；wrapper计数不冒称全进程网络遥测。
