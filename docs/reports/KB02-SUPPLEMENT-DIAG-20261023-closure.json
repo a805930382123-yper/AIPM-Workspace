@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-23T06:48:02.227Z",
+  "head": "4ee5dd13f2abce6c6124e3f2ce4d33fd846e65ac",
+  "productCommit": "17121be7ec20f73b367750d281a4e1dd2c742a76",
+  "command": "node tests/acceptance/KB02-SUPPLEMENT-DIAG-20261023-closure.mjs",
+  "protectedPaths": 3711,
+  "changed": [],
+  "ownedFiles": [
+    {
+      "path": "docs/reports/KB02-SUPPLEMENT-DIAG-20261023-baseline.json",
+      "sha256": "a9d3417276d6b8f17c6fbdb380b6e7a03e383144d07f809c99c459cf61a3a91a"
+    },
+    {
+      "path": "docs/reports/KB02-SUPPLEMENT-DIAG-20261023-diagnosis.md",
+      "sha256": "14d9c0380e403eb35fc53fdbc0595a1c2106f8c4fb2f66fece16bdeb226e618b"
+    },
+    {
+      "path": "docs/reports/KB02-SUPPLEMENT-DIAG-20261023-initial-failure.log",
+      "sha256": "7cdf2c7eb96153b3fb4f5c6bbce4b9147ae38dd93a8ec10751a13eaaa125330f"
+    },
+    {
+      "path": "docs/reports/KB02-SUPPLEMENT-DIAG-20261023-replay.json",
+      "sha256": "31a0ab4bc4b3e860a685ad7235ddb86c84ca1e7ac2b3ddfe9238830164c9c64b"
+    },
+    {
+      "path": "docs/reports/KB02-SUPPLEMENT-DIAG-20261023-source-evidence.json",
+      "sha256": "7feb22f2397aa9d869092deb2888cdca82733923151e99089d84251826897fcf"
+    },
+    {
+      "path": "tests/acceptance/KB02-SUPPLEMENT-DIAG-20261023-closure.mjs",
+      "sha256": "0e7970d68f8065de63eba49d1f86d3cae7d520a97c8f7628cd5adb959b524c93"
+    },
+    {
+      "path": "tests/acceptance/KB02-SUPPLEMENT-DIAG-20261023-replay.mjs",
+      "sha256": "ce7126b50a4dcef06f8230cd74a19b262024085038ee130f1dda3283c81e1b6b"
+    }
+  ],
+  "networkCalls": 0,
+  "realProviderCalls": 0,
+  "productWrites": 0,
+  "kb02Cumulative": 203,
+  "promptCumulative": 15,
+  "defectFixed": false,
+  "batchPassed": false,
+  "readyForIndependentAstraReview": true,
+  "mainOwnedExcluded": [
+    "docs/status.md",
+    "docs/agent-control.md"
+  ]
+}

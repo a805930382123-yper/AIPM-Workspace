@@ -1,0 +1,6 @@
+Initial command: node --import tsx tests/acceptance/KB02-SUPPLEMENT-DIAG-20261023-replay.mjs
+Node v24.20.0, exit 1: spawnSync git EPERM at snapshot/git ls-files. No replay or product write occurred.
+Harness removed child-process Git dependency, using filesystem inventory and direct HEAD read instead.
+Shell attempt to write read-only Git inventories and this diagnostic log with Set-Content also returned Access denied for the new owned diagnostic paths; no target files created. This log is retained with apply_patch.
+These are diagnostic harness/environment failures, not product failures or approval auto-review rejections.
+Second diagnostic command, approved local execution: exit 1, LLM_EVIDENCE_CATALOG_INVALID at diagnostic line 90. The replay itself had already succeeded; the harness then passed stripped checkpoint chunk descriptors (without text) to buildEvidenceLocatorCatalog. Corrected harness to pass original full chunkText results; no product code changed. The baseline-only report written before this failure is refreshed on final completed replay, not presented as completed evidence.
