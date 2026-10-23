@@ -1,3 +1,4 @@
+import {persistedUpdateInput,approveWorkflow} from './support/human-review.ts';
 import assert from 'node:assert/strict';
 import { appendFile, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -35,6 +36,8 @@ test('B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认
     const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '销量综合', category: 'industry_basics', agreement: [{ text: '销量增长', rawId: one.id, quote: '销量增长10%', start: 0, end: 7 }], conflicts: [{ text: '幅度不同', rawId: two.id, quote: '销量增长12%', start: 0, end: 7 }], inferences: ['需核对统计口径'], openQuestions: ['口径是否一致？'], suggestedAdditions: [] }), finishReason: 'stop', bytes: 300 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     const draft = await service.createSynthesis({ rawIds: [one.id, two.id, one.id], provider });
+    const draftReviewed = await approveWorkflow(service,draft.id);
+    draft.revision=draftReviewed.revision;
     assert.equal(draft.sources.length, 2);
     assert.equal((await wiki.allRecords()).length, 0);
     const result = await service.confirm(draft.id, draft.revision, 'key-one');
@@ -76,6 +79,8 @@ test('B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认', async
     const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '市场综合', category: 'industry_basics', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] }), finishReason: 'stop', bytes: 200 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     const draft = await service.createSynthesis({ rawIds: [one.id, two.id], provider });
+    const draftReviewed = await approveWorkflow(service,draft.id);
+    draft.revision=draftReviewed.revision;
     const tamperedFile = path.join(root, 'knowledge', 'raw', 'reports', `${one.id}.md`);
     await appendFile(tamperedFile, '\n外部追加但未更新frontmatter哈希');
     await assert.rejects(() => service.confirm(draft.id, draft.revision, 'tampered-key'), (error: any) => error.code === 'RAW_CHANGED');
@@ -94,6 +99,8 @@ test('B05 重启恢复完成提交后收敛workflow，completed manifest不覆�
     const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '销量综合', category: 'industry_basics', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] }), finishReason: 'stop', bytes: 200 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     const draft = await service.createSynthesis({ rawIds: [one.id, two.id], provider });
+    const draftReviewed = await approveWorkflow(service,draft.id);
+    draft.revision=draftReviewed.revision;
     const rebuild = wiki.rebuildIndexLocked.bind(wiki);
     (wiki as any).rebuildIndexLocked = async () => { throw new Error('injected index EIO'); };
     await assert.rejects(() => service.confirm(draft.id, draft.revision, 'recovery-key'), (error: any) => error.code === 'WORKFLOW_COMMIT_PENDING');
@@ -124,8 +131,10 @@ test('B05 更新预览保留两套公式，Raw证据可定位，旧revision会�
     const target = await wiki.create(wikiInput('毛利率', { type: 'metric', category: 'metric', sources: [oldRaw.id], knowledge_status: 'source_supported', source_level: 'C', body: '既有公式：毛利率=毛利/销售额。' }));
     const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ suggestedAdditions: [{ text: '新来源采用含税销售额', evidenceId: 'new-evidence' }], conflicts: [{ text: '分母口径不同', evidenceId: 'new-evidence' }], inferences: ['统计范围需要确认'], openQuestions: ['两种口径适用场景是什么？'], agreement: [] }), finishReason: 'stop', bytes: 300 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
-    const draft = { id: 'draft', revision: 2, rawId: newRaw.id, rawSha256: newRaw.bodySha256, pages: [{ pageId: 'page', title: '毛利率', source_facts: [{ text: newRaw.body, evidenceIds: ['new-evidence'] }], source_evidence: [{ id: 'new-evidence', rawId: newRaw.id, quote: newRaw.body, start: 0, end: newRaw.body.length }], ai_organized: [], ai_inferences: [], open_questions: [] }] };
-    const workflow = await service.createUpdate({ draftId: draft.id, pageId: 'page', baseRevision: 2, targetWikiId: target.id, draft, raw: newRaw, target, provider });
+    const draft = await persistedUpdateInput(root,newRaw,{ id: 'draft', revision: 2, rawId: newRaw.id, rawSha256: newRaw.bodySha256, pages: [{ pageId: 'page', title: '毛利率', source_facts: [{ text: newRaw.body, evidenceIds: ['new-evidence'] }], source_evidence: [{ id: 'new-evidence', rawId: newRaw.id, quote: newRaw.body, start: 0, end: newRaw.body.length }], ai_organized: [], ai_inferences: [], open_questions: [] }] });
+    const workflow = await service.createUpdate({ draftId: draft.id, pageId: draft.pages[0].pageId, baseRevision: draft.revision, targetWikiId: target.id, draft, raw: newRaw, target, provider });
+    const workflowReviewed = await approveWorkflow(service,workflow.id);
+    workflow.revision=workflowReviewed.revision;
     assert.equal((await wiki.get(target.id))?.body, target.body);
     const result = await service.confirm(workflow.id, workflow.revision, 'update-key');
     const updated = await wiki.get(target.id);
@@ -136,7 +145,9 @@ test('B05 更新预览保留两套公式，Raw证据可定位，旧revision会�
     assert.equal(result.workflow.status, 'confirmed');
 
     const targetNow = await wiki.get(target.id);
-    const stale = await service.createUpdate({ draftId: draft.id, pageId: 'page', baseRevision: 2, targetWikiId: target.id, draft, raw: newRaw, target: targetNow!, provider });
+    const stale = await service.createUpdate({ draftId: draft.id, pageId: draft.pages[0].pageId, baseRevision: draft.revision, targetWikiId: target.id, draft, raw: newRaw, target: targetNow!, provider });
+    const staleReviewed = await approveWorkflow(service,stale.id);
+    stale.revision=staleReviewed.revision;
     await wiki.update(target.id, targetNow!.revision, { ...targetNow!, body: `${targetNow!.body}\n人工新编辑` });
     await assert.rejects(() => service.confirm(stale.id, stale.revision, 'stale-key'), /已被修改/);
     assert.ok((await wiki.get(target.id))?.body.includes('人工新编辑'));

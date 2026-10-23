@@ -1,0 +1,72 @@
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (2142.9708ms)
+✔ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (930.2796ms)
+✔ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (1268.1462ms)
+✔ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (66.5074ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (47.1304ms)
+✔ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (1194.3511ms)
+✔ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (812.9635ms)
+✔ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (395.8939ms)
+✔ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (557.4689ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (436.4227ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (617.6922ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (1188.5667ms)
+✔ HUMAN synthesis zero legacy transaction recovery requires real disk evidence and remains reviewable (694.459ms)
+✔ HUMAN synthesis partial legacy transaction recovery requires real disk evidence and remains reviewable (602.7716ms)
+✔ HUMAN synthesis conflict legacy transaction recovery requires real disk evidence and remains reviewable (647.8679ms)
+✔ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (2 attempts) (258.7135ms)
+✔ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (3 attempts) (270.1302ms)
+✔ HUMAN legacy merge retains same text at different positions and colliding evidence IDs; deleting an occupied page keeps units unresolved (555.2437ms)
+✔ HUMAN legitimate old standalone update migrates explicit snapshots; new missing input binding and damaged legacy source cannot downgrade (540.761ms)
+✔ job file held get excludes update from another store but not another job (196.3115ms)
+✔ job file held get excludes insert from another store but not another job (44.0557ms)
+✔ job atomic replacement excludes get, list, generic JSON read and recovery scan across instances (437.0458ms)
+✔ job list keeps coordination until its real file handle closes (199.1107ms)
+✔ job recovery keeps coordination until its real file handle closes (112.0879ms)
+✔ job mutations across instances retain independent fields and release after corrupt reads or persistent rename refusal (1226.7931ms)
+✔ job polling and independent recovery scans coexist with atomic updates without native rename rejection (2543.7378ms)
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (3333.9061ms)
+✔ KB02 revision13 last single planning slot stays in the same job with successful chunks and cumulative attempts (1726.6047ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=false (2820.8914ms)
+✔ F-SR01-01 old-bound restart recovers storage only, reboot=true (1591.2962ms)
+✔ F-SR01-01 refuses externally changed binding and preserves bytes (1001.5909ms)
+✔ F-SR01-01 refuses externally changed history and preserves bytes (857.7222ms)
+✔ F-SR01-01 refuses externally changed body and preserves bytes (777.9599ms)
+✔ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (1575.0148ms)
+✔ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (172.793ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (225.7493ms)
+✔ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (919.8686ms)
+✔ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (809.6603ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (3080.5109ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (758.7415ms)
+✔ SR01 real atomic failed-job transient retry (622.522ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic failed-job persistent explicit recovery (1366.1671ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","rejectedRenames":12,"failedTargetBefore":"e5de29f975a3804630041b40e385f6be172f7f8602f0d2abb2ae298b7438dcf3","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["43ebd0056574274e144af30ef0d7c837f17194f2436b3dff93a07709c7dfa056","7cb65c49a4047627227c69d00b006959a341787fbc3a275577f9c6386675ba33","5ea554f99d5210601d67416df504f1fd36fef93d0fbcb1cebb8f710e33e6fca2"]}
+✔ SR01 real atomic done-checkpoint transient retry (398.4067ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":2}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (1312.8727ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"6c979330e9d2d51fc631a96afd2f6a8daec704d00f8cf4c7d178530c903049c7","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":["b5181a7d-8221-4ec8-9bdd-98b52d001fae"],"finalJob":"completed","idempotentHashes":["8b456c61d1e29a99c0f1497bc42bd324c797da83217e8259a1b865818d192e0c","8a6f325d52be192c9c428d0ef720b20a22f4365e99cd43fae61d22b024550b0e","929116f06f27c0a7dda54d8155d0e6dd883539f04458b8b1a427d00795fce61a"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (585.3961ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (1311.2328ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","rejectedRenames":12,"failedTargetBefore":"fcd99f1ea2bcda22384a98968c96e0d7e8ecd92a5f735bbede6dd5e7557ab4fb","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["18d15593be62439a35f4b38ee253ee013c87f22727dd8412785257b3add378de","e422747ea3fc6eb47b16183785c983f93c90f2ab2ff55f827f7e5c875b30c304","41e69a90e12cf8dd71bd48b99590739a68db359cdfcaab6e362f329f3acc7a37"]}
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (922.6336ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (616.953ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (660.6058ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (559.785ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (263.4829ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (580.117ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (4472.7505ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (4.5152ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (8728.9697ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1775.6661ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (329.001ms)
+✔ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (476.5583ms)
+ℹ tests 58
+ℹ suites 0
+ℹ pass 58
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33960.6592

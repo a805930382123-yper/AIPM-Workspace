@@ -1,3 +1,4 @@
+import {addLegacyReviewPrecondition} from './support/human-review.ts';
 // B04 第二次返修专项测试（B04-recheck-fix-card 的三项残留 F04-04 / F04-05 / F04-11）。
 // 每个用例复刻独立复验报告里的"最小实际复现"，修复前必须失败。
 // Provider 是真实 HTTP fake，经真实 OpenAI-compatible 适配器调用。
@@ -34,6 +35,7 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined) 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
+  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }])) };

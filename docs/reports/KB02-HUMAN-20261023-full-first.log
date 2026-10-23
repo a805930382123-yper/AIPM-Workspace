@@ -1,0 +1,1814 @@
+✔ explicitly linked Raw missing from refreshed list stays selected and never displays another Raw (312.1314ms)
+✔ missing explicit target survives a transport failure and reconnect, then ordinary Raw navigation clears it (206.7154ms)
+✔ a user Raw selection made during a pending refresh wins over the stale preferred target (227.4472ms)
+✔ Home recent Raw navigation preserves the clicked older Raw ID (116.5332ms)
+✔ deleting the selected Raw returns to the first remaining real item (200.522ms)
+✔ a settled background job refresh follows the current Raw selection, not the poll closure selection (164.1846ms)
+✔ App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw退出工作流且Raw选择保留 (499.1332ms)
+✔ Audit rejects parsed Provider secrets in every output field without changing pending state, then clean retry succeeds (305.5137ms)
+✔ B06 Anchor supports context after line movement and rejects duplicate/missing/page-stale targets (2.3598ms)
+✔ B06 four decisions preserve history, only accepted/partial write, and accepted retry is idempotent (853.923ms)
+✔ B06 failed Audit log leaves open operation evidence and restart reconciles it (248.4943ms)
+✔ B06 recovery preserves conflict manifests and does not resolve against changed Wiki or Raw bytes (940.0094ms)
+✔ B06 a slow Provider cannot save or revive a suggestion after a human resolves the Audit (187.1013ms)
+✔ B06 Wiki Lint reads disk directly and reports all 11 frozen codes without repairing files (720.6374ms)
+✔ B05 五维候选显示标题、别名、分类、标签和内容理由，分类单独命中权重低 (152.5324ms)
+✖ B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认幂等 (181.8776ms)
+✔ B05 非法综合分类在保存草稿前拒绝 (119.9716ms)
+✔ B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认 (162.1467ms)
+✖ B05 重启恢复完成提交后收敛workflow，completed manifest不覆盖后续人工编辑 (109.1178ms)
+✖ B05 更新预览保留两套公式，Raw证据可定位，旧revision会拒绝覆盖 (98.288ms)
+✔ Markdown/TXT 真实文件：严格 UTF-8、去掉 BOM、正文逐字符一致且不 trim (21.5773ms)
+✔ DOCX/PDF 真实文件：实际解析库提取的正文与已知样本一致 (2959.5537ms)
+Warning: Indexing all PDF objects
+✔ 损坏、扫描件、伪扩展名与不支持编码给出可区分的错误码 (23.9558ms)
+✔ 原件按原始字节落盘，SHA-256 与源文件一致，文件名不参与路径 (50.1604ms)
+✔ 文件导入成功：正文与原件都入库，元数据、哈希与关联可回读 (146.2308ms)
+✔ 解析失败保留隔离原件与失败记录，不创建正式 Raw、不增加统计 (347.6234ms)
+✔ 超限文件在接收阶段拒绝；超限正文保留原件但不创建 Raw (238.5005ms)
+✔ 文件名与标题不参与路径：含路径字符与 HTML 时仍在 assets 内且只作元数据 (74.2334ms)
+✔ 重复导入生成独立记录与独立原件，旧资料字节哈希不变 (104.1103ms)
+✔ 删除：无引用可删且原件保留；被正式 Wiki 引用时由服务端重新检查后阻止 (115.4003ms)
+✔ 重新导入：创建新 ID 的 Raw，旧记录与旧原件保持不变 (92.2478ms)
+✔ 既有粘贴导入与校验契约不受影响 (1.7268ms)
+✔ 解析失败不留下正式 Raw 文件，且失败记录在重新读取后仍可解释 (48.8359ms)
+✔ 提取正文继续遵守 500,000 字符上限常量，服务端与文档同源 (0.2153ms)
+Warning: Indexing all PDF objects
+✔ 解析层不会因为扩展名而跳过内容检查 (3.7161ms)
+✔ F03-01 关联写入失败：非成功状态、给出已提交 ID，并说明未创建 Raw 不成立 (84.0292ms)
+✔ F03-01 启动对账：补齐关联、补偿中断导入、分离失效关联，且不受被阻断记录影响 (132.1338ms)
+✔ F03-04/子路径：列表同步只依赖已提交结果，重复同步不会重复添加 (82.2166ms)
+✔ M04 compatibility: ordinary legacy meeting category remains available for file imports (63.8159ms)
+✔ KB02 Q02 request puts business relevance before fragment ambiguity and supplies schema-valid counterexamples (174.6184ms)
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (106.7156ms)
+✔ KB02 Q02 controlled omitted nonbusiness fragments are not promoted to facts or questions (36.3487ms)
+✔ KB02 Q02 all nonbusiness title/layout variants still reject sourceNotes overlap without cleaning or retry (166.1153ms)
+✔ KB02 Q02 full seq62 original response and exact original atom catalog still reject offline (101.0572ms)
+✖ KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes (443.8819ms)
+✔ EDGE original seq144 bad selection remains rejected although its blank atom is absent from the request (95.1705ms)
+✖ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (58.6943ms)
+✔ EDGE facts blank selection fails intact without partial chunk save (29.8359ms)
+✔ EDGE facts unknown selection fails intact without partial chunk save (21.3838ms)
+✔ EDGE facts cross-chunk selection fails intact without partial chunk save (19.4153ms)
+✔ EDGE questions blank selection fails intact without partial chunk save (20.2643ms)
+✔ EDGE questions unknown selection fails intact without partial chunk save (20.4589ms)
+✔ EDGE questions cross-chunk selection fails intact without partial chunk save (35.7202ms)
+✔ EDGE sourceNotes blank selection fails intact without partial chunk save (36.67ms)
+✔ EDGE sourceNotes unknown selection fails intact without partial chunk save (43.9878ms)
+✔ EDGE sourceNotes cross-chunk selection fails intact without partial chunk save (28.6739ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (61.9666ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8112 chars) (87.3928ms)
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (34.002ms)
+✔ EDGE no-business input retains empty/source-only chunk and exact call accounting (7 chars) (33.4223ms)
+✔ EDGE no-business input retains empty/source-only chunk and exact call accounting (9 chars) (31.475ms)
+✖ EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks (398.9327ms)
+✔ EDGE completed revision8 draft remains HTTP-readable and reused with no additional Provider call (203.0421ms)
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planning records and draft (76.3649ms)
+✔ KB02 Q01 request limits follow the loaded schema, whose cap still rejects excess declarations (74.526ms)
+✔ KB02 Q01 original sanitized seq41 remains rejected without retry or successful cache (33.5257ms)
+✔ KB02 Q01 original sanitized seq44 remains rejected without retry or successful cache (77.786ms)
+✔ KB02 Q01 original sanitized seq45 remains rejected without retry or successful cache (220.36ms)
+✔ KB02 Q01 original sanitized seq49 remains rejected without retry or successful cache (50.0678ms)
+✔ KB02 Q01 preserves strict classification, unknown IDs, duplicates and source declaration separation (443.278ms)
+✖ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (26.9392ms)
+✖ FINAL-02 request requires minimal common propositions per assertion and version-bound two-sided IDs (113.4573ms)
+✖ FINAL-02 missing-old rejects without workflow or Wiki writes (87.076ms)
+✖ FINAL-02 missing-new rejects without workflow or Wiki writes (86.6564ms)
+✖ FINAL-02 wrong-side-old rejects without workflow or Wiki writes (91.7075ms)
+✖ FINAL-02 wrong-side-new rejects without workflow or Wiki writes (73.5636ms)
+✖ FINAL-02 unknown-old rejects without workflow or Wiki writes (58.9952ms)
+✖ FINAL-02 unknown-new rejects without workflow or Wiki writes (60.054ms)
+✖ FINAL-02 extra-field rejects without workflow or Wiki writes (94.7759ms)
+✖ FINAL-02 wrong-version rejects without workflow or Wiki writes (48.591ms)
+✖ FINAL-02 cross-target rejects without workflow or Wiki writes (63.1801ms)
+✖ FINAL-02 original seq82 unilateral compound agreement lacks old-side binding and is rejected, no auto-fill (78.208ms)
+✖ FINAL-02 controlled synonym/one-sided/partial compound/conflict/unknown/future samples preserve exact support boundaries (85.2926ms)
+✖ FINAL-02 only-old statements may produce empty agreement without inventing a shared claim (66.962ms)
+✖ FINAL-02 target edited during provider call rejects bound old version with no saved preview (81.805ms)
+✔ FINAL-02 legacy synthesis evidence contract remains unchanged (131.9082ms)
+✔ FINAL-01 request defines mechanical concatenations and schema-valid content-neutral paired examples (89.8423ms)
+✔ FINAL-01 controlled labels retain real business fragments/negative/unknown/future and exclude concatenated notes (39.3886ms)
+✔ FINAL-01 original seq75 full directory and response preserve semantic failure and strict seq77 coverage rejection (91.5025ms)
+✖ FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero calls/three-file writes; restart uses zero old chunks (402.8284ms)
+✔ FINAL-01 old completed revision5 draft remains HTTP-readable and start reuses it without outbound call (221.5532ms)
+✔ FINAL-01 revision5 preflight rejects without invoking any pipeline callbacks (25.5474ms)
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (308.0569ms)
+✔ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (197.4216ms)
+✔ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (402.2101ms)
+✔ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (27.3504ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (79.8584ms)
+✔ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (408.35ms)
+✔ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (299.1729ms)
+✔ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (306.8037ms)
+✔ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (563.5974ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (194.4855ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (517.8835ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (406.1555ms)
+✔ job file held get excludes update from another store but not another job (102.1446ms)
+✔ job file held get excludes insert from another store but not another job (65.0816ms)
+✔ job atomic replacement excludes get, list, generic JSON read and recovery scan across instances (56.8923ms)
+✔ job list keeps coordination until its real file handle closes (38.1562ms)
+✔ job recovery keeps coordination until its real file handle closes (37.5551ms)
+✔ job mutations across instances retain independent fields and release after corrupt reads or persistent rename refusal (407.8261ms)
+✔ job polling and independent recovery scans coexist with atomic updates without native rename rejection (574.7497ms)
+✖ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (92.3262ms)
+✖ KB02 resume reuses validated chunks and counts failed outbound attempts (103.2021ms)
+✔ KB02 corrupted checkpoint integrity fails closed (20.4844ms)
+✔ KB02 planning system contains the subject-first decisions and abstract contrast cases (30.3914ms)
+✔ a manually assigned abstract subject plan is representable while retaining every original ID (6.2643ms)
+✖ a subject-preserving fake plan is accepted by the complete pipeline (11.3857ms)
+✖ revision10 unfinished checkpoint is rejected before Provider calls and retained chunks stay byte-identical (21.2607ms)
+Budget assertion snapshot: [{"node":"v24.20.0","job":{"status":"running","stage":"planning","callCount":5},"checkpoint":{"stage":"planning","attempts":5,"validatedChunks":1,"diagnosticPresent":true,"errorCode":"LLM_PLAN_COVERAGE_INVALID"},"rawStatus":"processing","requests":5,"execution":"running","recovery":null}]
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (528.9714ms)
+Budget assertion snapshot: [{"node":"v24.20.0","job":{"status":"completed","stage":"done","callCount":5},"checkpoint":{"stage":"done","attempts":5,"validatedChunks":1,"diagnosticPresent":false},"rawStatus":"pending_confirmation","requests":5,"execution":"settled","recovery":null}]
+✖ KB02 last available planning and review pair stays in the same job with successful chunks and cumulative attempts (592.1364ms)
+✖ PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts (128.8987ms)
+✔ PLAN-03 seq100 original-v2 remains strict rejection with every original record retained (43.7933ms)
+✔ PLAN-03 seq100 missing-v3 remains strict rejection with every original record retained (39.9521ms)
+✔ PLAN-03 seq104 original-v2 remains strict rejection with every original record retained (7.561ms)
+✔ PLAN-03 seq104 missing-v3 remains strict rejection with every original record retained (8.9175ms)
+✔ PLAN-03 supplement keeps fact and question at the same source, including ambiguous business boundary (7.3819ms)
+✖ PLAN-04 fresh extraction through planning uses context only for attribution, without promoting unselected nearby source notes (6.5736ms)
+✔ PLAN-04 exact context windows remain UTF16-safe on both boundaries (5.363ms)
+✔ PLAN-04 selected record with unresolved atom position fails before planning callbacks (8.5113ms)
+✔ PLAN-04 unselected Raw context known secret rejects before any planning call, ledger or checkpoint write (6.1862ms)
+✔ PLAN-04 complete context payload exceeding 192KiB stops before Provider and preserves extracted chunks (31.9551ms)
+✔ PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit (474.4935ms)
+✖ PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts (5.4371ms)
+✖ PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks (490.2108ms)
+✔ PLAN completed revision6 draft remains HTTP-readable and reused with zero Provider increment (409.2443ms)
+✖ KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs (87.0337ms)
+✔ KB02 planning keeps strict rejection for category values placed in type and swapped fields (94.6077ms)
+✔ KB02 planning scans the expanded system instructions for known secrets before the planning Provider call (19.2872ms)
+✔ KB02 planning rules fingerprint tracks FMCG labels and descriptions and rejects checkpoints from old prompt metadata (85.1947ms)
+✔ KB02 R2 exact atoms preserve dimensions, negatives, ambiguity and source declarations separately (183.9963ms)
+✔ KB02 R2 native wire rejects rewritten text and unknown/cross-chunk atoms before checkpoint success (56.4405ms)
+✖ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (63.6574ms)
+✔ KB02 R2 summary, atom classification and current-secret tampering fail closed on restore (46.6692ms)
+✔ KB02 R2 500000 characters retain exact full atom coverage and fragment ambiguity (48.7576ms)
+✔ KB02 R2 diagnostics distinguish missing duplicate unknown and duplicate normalized titles (0.2488ms)
+✔ KB02 R2 empty checkpoint permits a short key without matching program-owned cache metadata (94.6286ms)
+✖ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (236.66ms)
+✔ SEMANTIC original seq202 reject/uncertain gates the full pipeline with exact source/units and retained blocks (55.5582ms)
+✔ SEMANTIC complete pipeline rejects reject without saving plan or arbitrary review payload (12.4906ms)
+✔ SEMANTIC complete pipeline rejects uncertain without saving plan or arbitrary review payload (4.2944ms)
+✔ SEMANTIC complete pipeline rejects missing without saving plan or arbitrary review payload (12.9648ms)
+✔ SEMANTIC complete pipeline rejects duplicate without saving plan or arbitrary review payload (9.0889ms)
+✔ SEMANTIC complete pipeline rejects unknownPage without saving plan or arbitrary review payload (9.0161ms)
+✔ SEMANTIC complete pipeline rejects unknownUnit without saving plan or arbitrary review payload (4.5621ms)
+✔ SEMANTIC complete pipeline rejects duplicateUnit without saving plan or arbitrary review payload (5.3941ms)
+✔ SEMANTIC complete pipeline rejects conflictingPass without saving plan or arbitrary review payload (6.5178ms)
+✔ SEMANTIC complete pipeline rejects conflictingReject without saving plan or arbitrary review payload (5.2063ms)
+✔ SEMANTIC complete pipeline rejects extraTop without saving plan or arbitrary review payload (4.6142ms)
+✔ SEMANTIC complete pipeline rejects extraPage without saving plan or arbitrary review payload (3.0496ms)
+✔ SEMANTIC complete pipeline rejects secret without saving plan or arbitrary review payload (3.0758ms)
+✔ SEMANTIC complete pipeline rejects emptyReason without saving plan or arbitrary review payload (4.8504ms)
+✔ SEMANTIC complete pipeline rejects longReason without saving plan or arbitrary review payload (5.6931ms)
+✔ SEMANTIC complete pipeline rejects badVersion without saving plan or arbitrary review payload (7.3416ms)
+✔ SEMANTIC complete pipeline rejects questionOnly without saving plan or arbitrary review payload (3.3169ms)
+✔ SEMANTIC malformed fails closed with no plan and no raw failure details (3.297ms)
+✔ SEMANTIC length fails closed with no plan and no raw failure details (3.3515ms)
+✔ SEMANTIC oversize fails closed with no plan and no raw failure details (5.8699ms)
+✔ SEMANTIC schema/instruction revision fingerprint changes, old unfinished revision and new plan undercount fail without calls or writes (163.9039ms)
+✔ SEMANTIC pre-call accounting failure stops review; crash before accepted-plan save resumes both calls, saved-plan resumes zero (13.7507ms)
+✔ SEMANTIC cancellation while review waits rejects immediately and ignores a late pass (4.8259ms)
+✔ SEMANTIC actual 60s review timer bounds an ignoring provider and discards late success (6.165ms)
+✔ SEMANTIC total deadline after review result cannot publish; cancellation during accounting cannot call review (6.3377ms)
+✔ SEMANTIC single-unit independent future AI mechanism passes without deleting future boundaries; candidate snapshot is binding (12.2269ms)
+✔ SEMANTIC revision13 runner no longer requests semantic rejection; candidate remains unreviewed across zero-call restart (504.9001ms)
+✔ SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and explicitly confirms with zero outbound calls (640.4222ms)
+✔ SEMANTIC single closure freezes actual candidate and review cannot be reused for a different plan (5.4301ms)
+✔ SEMANTIC audit input over192KiB fails before review accounting without truncating validated source or candidate (21.4833ms)
+✔ SEMANTIC pass must cite its own page fact, not a known neighboring fact or known question (8.405ms)
+✔ SOURCE seq121 exact real failure passed old ID coverage and is refused as v2 without changing any extracted ID (284.9936ms)
+✔ SOURCE controlled real seq121 creates 14 correct areas with all 104 original IDs then saves and restores the new plan (341.3371ms)
+✖ SOURCE v3 missing units fail before expansion and only explicit retry resumes planning (263.4284ms)
+✖ SOURCE v3 duplicate units fail before expansion and only explicit retry resumes planning (165.1925ms)
+✖ SOURCE v3 unknown units fail before expansion and only explicit retry resumes planning (283.5665ms)
+✖ SOURCE v3 wrong-column units fail before expansion and only explicit retry resumes planning (164.8389ms)
+✖ SOURCE v3 split units fail before expansion and only explicit retry resumes planning (438.3142ms)
+✖ SOURCE current-rule tampered persisted split, unknown page field and metadata are rejected; valid plan remains restorable (424.0592ms)
+✔ SOURCE same text at different Raw positions is not merged and may have distinct primary pages (35.0657ms)
+✔ SOURCE same multi-business atom remains whole; duplicate full statements cannot invent separate semantic projections (27.3274ms)
+✔ SOURCE different kinds and fact/question units at the same span can belong to different topics without losing ambiguity (37.847ms)
+✔ SOURCE exact text binding rejects a fabricated different fact projection before any Provider call (17.6179ms)
+✔ SOURCE old revision7 unfinished checkpoint fails preflight with no call/write and original extraction retained (20.5137ms)
+✖ SOURCE complete unit/context/feedback payload at 192KiB is accepted (44.326ms)
+✔ SOURCE complete unit/context/feedback payload at 192KiB plus one byte rejects before call (14.9983ms)
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (1391.5434ms)
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=true (736.9978ms)
+✔ F-SR01-01 refuses externally changed binding and preserves bytes (544.1295ms)
+✔ F-SR01-01 refuses externally changed history and preserves bytes (518.6963ms)
+✔ F-SR01-01 refuses externally changed body and preserves bytes (506.4995ms)
+✖ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (705.2353ms)
+✔ F-SR01-02 failed modern job without checkpoint refuses ordinary start even without recovery scan (185.3725ms)
+✔ F-SR01-02 legacy completed draft without pipeline/checkpoint remains readable and reusable (132.9032ms)
+✔ F-SR01-01 HTTP exposes old-bound restart recovery and accepts idempotent storage-only save (591.2693ms)
+✔ F-SR01-01 startup recovery scan includes new running job whose Raw still has the old binding (463.8677ms)
+✔ SR01 HTTP disk/runtime read and strict storage-only POST preserve requests/bytes then recover (1663.9752ms)
+✔ SR01 HTTP start-state failure is discoverable after refresh through explicit recoveryJobId (561.5105ms)
+✔ SR01 real atomic failed-job transient retry (638.9168ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic failed-job persistent explicit recovery (1148.0941ms)
+ℹ {"controlled":true,"mode":"failed-job","errno":"EPERM","rejectedRenames":12,"failedTargetBefore":"c14f5b7628bdcb882134356a901e7dc86f42ef2ccb58a7481c4db5755519ef37","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["5bf01f03d3ce9e7a4c629b2e5a9a5c68e5763f9c427f826b4b4f1c9aa5d59e70","aab659949d9fb0ff4995a3503ec8c050141772f51975948316dc929d9da04c8e","729b392ff767b1feb487b459a5dc8a7c751d5b0f66376f0bc06569a6f9e46e8b"]}
+✔ SR01 real atomic done-checkpoint transient retry (179.8783ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","transientRefusals":2,"status":"completed","providerCalls":2}
+✔ SR01 real atomic done-checkpoint persistent explicit recovery (903.3783ms)
+ℹ {"controlled":true,"mode":"done-checkpoint","errno":"EACCES","rejectedRenames":12,"failedTargetBefore":"fb6b821db0fc0682e1c219d56d4dcbae053f60c80932aefb17ba8cfa664823d3","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":["6e710043-cb81-4cc0-9d17-8db0b8f6f49c"],"finalJob":"completed","idempotentHashes":["d3a9827b0700607cabff76458fcdbd904dc21a53183946b79148bb65c8492aac","54745bd4ef886c4577509d09811398fba4b5a9fffb1016fd8b8d63da2561990a","a93a6c0cb67b6d380aa893cad22a96ec9f5d29a12fb713fb0a3db02d1ae35ae4"]}
+✔ SR01 real atomic coverage-checkpoint transient retry (248.3837ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","transientRefusals":2,"status":"failed","providerCalls":2}
+✔ SR01 real atomic coverage-checkpoint persistent explicit recovery (953.2643ms)
+ℹ {"controlled":true,"mode":"coverage-checkpoint","errno":"EBUSY","rejectedRenames":12,"failedTargetBefore":"b2215fbb43298ea37af12c2292df0a6dbeb65874ddda6701232bedab832c67c2","failedTargetPreserved":true,"execution":"settled","recoveryCleared":true,"providerBefore":2,"providerAfter":2,"attemptsBefore":2,"attemptsAfter":2,"draftIds":[],"finalJob":"failed","finalError":"LLM_PLAN_COVERAGE_INVALID","idempotentHashes":["cc2c9fa3625c589d27d1c0ba5a164bc4fc8a46dc7449ee850349563389a70153","ddadab335d4f11c1f00397f5b0dc79609e5afca6558ca1bf74e283ecfafe14bf","b9cc67235e58711d563d41ae7e60b7569bf22a48e98a79bd5e4ef804c21f1e91"]}
+✔ SR01 restart reuses a verified existing draft with Provider unconfigured and skips historical jobs (521.4542ms)
+✔ SR01 restart without saved diagnostic reports loss explicitly and never calls Provider (492.5324ms)
+✔ SR01 changed checkpoint and corrupt restart fail closed with original bytes (553.3253ms)
+✔ SR01 cancel before late Provider return and failed cancelled terminal recover without a draft (543.985ms)
+✔ SR01 cancel during terminal Raw write wins and discards a just-created draft (142.5001ms)
+✔ SR01 start Raw state failure leaves observable recoverable job and zero Provider calls (807.2787ms)
+✔ SR01 bounded registry refuses new tasks without evicting unresolved writes or blocking reads (3831.079ms)
+✔ SR01 errno classification is bounded and never returns OS paths or text (1.3318ms)
+✔ SR01 restart capacity overflow remains lazily recoverable after registered issues clear (8177.065ms)
+✔ SR01 incompatible persisted task identity and missing bound draft are never overwritten on restart (1674.7748ms)
+✔ SR01 actual atomic mkdir and temp write failures are safely classified before any Provider call (216.4252ms)
+✔ SR01 new-job insert failure has no unreachable recovery id and permits a later explicit start (776.6058ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (1302.185ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3617.6478ms)
+✔ SR01 start failure reload is actionable and late storage response cannot change a different Raw selection (594.9176ms)
+✖ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3995.0348ms)
+✔ F-SR01-01 React refresh selects new recovery id over old failed job and saves without regenerating (638.9699ms)
+✖ E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log (345.736ms)
+✖ E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变 (205.5122ms)
+✖ E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份 (171.3449ms)
+✖ E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面 (167.0688ms)
+✔ E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值 (1178.8385ms)
+✔ E04-06 fake 注入：鉴权/限流/网络/非法JSON/空结果/schema/证据越界/截断/超限都不写正式知识 (977.2042ms)
+✔ locator v2 映射后再次扫凭证：Raw锚点包含已知Key时失败且不生成草稿或正式Wiki (142.0375ms)
+✔ E04-01 无配置：未配置 Provider 时明确失败且零正式变化（手动链路仍可用） (54.5141ms)
+✖ E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败 (748.7681ms)
+✔ E04-09 超过 50 条建议：明确预算失败，不静默丢弃 (310.6961ms)
+✔ E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核 (292.421ms)
+✖ E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突 (726.7732ms)
+✖ E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑 (227.3829ms)
+✖ E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变 (1813.0151ms)
+✔ E04-06 HTTP 失败注入：鉴权/限流/非法JSON 都不写正式知识且状态可重试 (1634.8041ms)
+✔ E04-01 HTTP 无配置：缺 Key 不阻止启动，AI 明确报错，手动链路仍可用 (1317.1504ms)
+✔ E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审核草稿时禁止删除 Raw (2984.8236ms)
+✔ F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串行且不留孤儿草稿 (4104.728ms)
+✖ F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据 (1482.2839ms)
+✖ F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集 (1800.2587ms)
+✖ F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验 (1814.9399ms)
+✖ E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志 (1663.2581ms)
+✔ F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都不含密钥 (382.2116ms)
+✔ F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它 (124.3902ms)
+✖ F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断 (902.5096ms)
+✔ F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿 (1828.363ms)
+✖ F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全 (216.589ms)
+✖ F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本 (201.5459ms)
+✖ F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现 (181.9284ms)
+✖ F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供 (228.7887ms)
+✖ F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功 (223.9189ms)
+✖ F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准 (167.5826ms)
+✔ F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end (244.0333ms)
+✖ F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (403.637ms)
+✖ F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (302.5128ms)
+✔ F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总 (428.7439ms)
+✖ F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据 (514.1914ms)
+✔ 分块：覆盖完整原文、重叠 400、全局索引连续、不拆代理对 (1.4363ms)
+✔ 分块：10 万字符中文长文含 emoji/CRLF/空白时完整覆盖且不截尾 (0.655ms)
+✔ 分块：超过 500,000 字符预算时明确失败，不静默截尾 (0.2522ms)
+✔ Evidence locator目录：句段优先、连续全覆盖、CRLF/emoji安全且重复位置各有ID (2.5214ms)
+✔ locator v2：服务端按chunk锚点派生Raw引文/全局范围，旧quote响应继续兼容 (24.7534ms)
+✔ 相邻chunk合并：同ID、Raw范围和原文的重叠证据只保留一份 (8.8146ms)
+✔ 多chunk合并：provider合法ID占用生成后缀时循环选空位并保留全部引用 (10.5201ms)
+✔ locator v2和legacy：未知/跨chunk/混合定位与页间证据引用均fail closed (24.5384ms)
+✖ 规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致、system prompt 含规则与结构 (7.7524ms)
+✔ 规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败 (40.1ms)
+✔ 结构校验：未知字段、错误枚举、错误类型、缺字段都被拒绝 (2.7638ms)
+✔ 证据定位：唯一匹配取全局索引，重复出现报歧义，找不到/越界/跨块明确失败 (0.6651ms)
+✔ 证据引用：重复 id 与未知引用被拒绝 (0.1793ms)
+✔ 配置：环境变量优先于本地文件、摘要只给掩码与主机 (6.6807ms)
+✔ Provider 适配器：真实 HTTP 下的超时、响应超限、鉴权与截断都以明确错误码失败 (182.2979ms)
+✔ 渲染：事实/整理/推断/问题/证据分节，Source 是摘要而非全文 (2.0041ms)
+✔ successful Meeting Raw registration refreshes the shared Raw cache and linked Raw can be opened by ID (144.3604ms)
+✔ failed Meeting Raw registration does not refresh the shared Raw cache (14.9944ms)
+✔ large meeting record exports as canonical base64 without regex stack overflow (2933.1816ms)
+✔ malformed base64 is rejected before creating a restore target (10.2883ms)
+✔ original text bytes survive BOM, CRLF, edits, reimport, and idempotent retries; clear tombstones old requests (103.497ms)
+✔ strict record validation verifies text digest, active version, policy, and request ledger links (46.3653ms)
+✔ HTTP checks authorization before parsing, handles UTF-8 multipart names, and hides idempotency ledger (182.4767ms)
+✔ M04 registers the selected original as immutable local-only Raw and retries idempotently (191.4759ms)
+✔ linked replay verifies the persisted Raw and refuses missing or mismatched origins without recreating it (120.5462ms)
+✔ deleting a Raw after pending or failed partial registration leaves readable raw_deleted history without fake registered time (206.2404ms)
+✔ interrupted pending registration resumes without creating a duplicate Raw (93.5309ms)
+✔ Sensitive and Restricted are denied, forged fields fail, and ordinary Raw API cannot create Meeting Raw (50.7916ms)
+✔ active Raw projection follows the active imported version and clear preserves every Raw link (85.2709ms)
+✔ derived Raw metadata stays within schema for legal 195, 196, and 200 character titles (178.8744ms)
+✔ same registration retry tolerates a newer revision while retaining the fixed ID (77.6696ms)
+✔ legacy high-revision receipt retries by durable business identity, while inputs, authorization, source digest, and Raw are rechecked (120.3636ms)
+✔ failed bridge retry uses the same fixed Raw ID after meeting metadata changes (120.7606ms)
+✔ missing source records fail closed for explicit Wiki source links and shared policy checks (85.0926ms)
+✔ meeting registration HTTP contract enforces exact fields and stable errors (236.4446ms)
+✔ all old AI/Wiki/Prompt/Audit entrypoints deny Meeting Raw before providers or writes (167.5037ms)
+✔ Raw link UI retries failed request unchanged, confirms explicitly, and reloads conflict (176.753ms)
+✔ late Raw response from a previous meeting cannot refresh the current meeting after a component rerender (21.1292ms)
+✔ Meeting UI retries create with the same requestId after a lost response (191.0284ms)
+✔ Meeting defaults, single initialization and idempotent creation (74.0256ms)
+✔ policy confirmation and Restricted conversion clear only the allowlisted metadata (46.4424ms)
+✔ policy grants and revocations are internally consistent (101.3692ms)
+✔ Restricted conversion returns field names and clears restricted metadata after confirmation (42.7272ms)
+✔ revision, validation, stopped catalog choices, and corrupt records fail without overwrite (54.3501ms)
+✔ creation stores only a digest and retries survive later metadata clearing and type stop (169.0662ms)
+✔ catalog damage is never treated as absent or overwritten (32.7183ms)
+✔ missing catalog with records is not silently reseeded (43.2777ms)
+✔ catalog persistence rejects unknown keys, malformed names, duplicates and missing references (89.5511ms)
+✔ default catalog type names remain editable while stable IDs keep historical references valid (40.0664ms)
+✔ unknown input keys and corrupted stored shapes are rejected without echo or overwrite (204.4773ms)
+✔ inactive directory entries remain readable but reject new selection (36.6159ms)
+✔ Restricted creation rejects disallowed metadata instead of silently dropping it (11.0733ms)
+✔ record directory junctions are rejected before reads (80.9504ms)
+✔ HTTP contract returns detail capabilities, summary list, and stable error envelopes (232.6415ms)
+✔ backup includes meetings and accepts legacy archives without meetings (162.6737ms)
+✖ PA01 R01 real workflow records reject deep corruption consistently before reads and writes (134.4396ms)
+✖ PA01 R01 optional evidence and legacy unused snapshots remain readable editable confirmable (152.3101ms)
+✔ PA01 R02 499/500/501/1201 results are bounded with persistent hidden issues and correct rescan totals (10415.0757ms)
+✔ PA01 R02 file/byte/observer budgets remain bounded and partial count stays a lower bound (89.3612ms)
+✔ PA01 damaged JSON remains byte-identical, healthy neighbors list, API scan emits safe recovery issue (58.2342ms)
+✔ PA01 strict draft reads preserve corrupt bytes and return a healthy neighbor including manual evidence (158.2381ms)
+✔ PA01 recovery reuses full Prompt draft validation and retains deep shape problems (67.3396ms)
+✔ PA01 recovery clears an observed missing draft only after rescanning (44.768ms)
+✔ B08 Generator 保存预览草稿，编辑字段后显式确认；重试不重复创建且来源明确 (110.9578ms)
+✔ B08 Wiki 背景只采用实际勾选页面片段，记录预算和知识状态 (128.669ms)
+✔ B08 Wiki 多段摘录把段落分隔符计入每页与总预算 (188.9657ms)
+✔ B08 Optimizer 校验九维缺项，更新原 Prompt 只追加 ai_optimized 版本 (78.9118ms)
+✔ B08 Provider 非法 JSON 和不完整 Schema 不落草稿或正式 Prompt (38.5381ms)
+✔ B08 Provider Prompt 预览复用 B07 严格分类与字段长度规则，失败不落草稿 (39.079ms)
+✔ PA01 检查先持久化；重写失败保留已检查草稿并可显式续做 (96.2872ms)
+✔ PA01 R1 malformed submitted Brief is rejected as user input before any provider call (101.8599ms)
+✔ B07 UI：切换模板时身份、变量、预览与消息互不串页，迟到的旧响应不会覆盖当前选择 (605.4668ms)
+✔ B07 UI：未填变量时不能复制、不出现成功提示，剪贴板失败时给出可手动选择的最终正文 (330.6598ms)
+✔ B07 UI：无变量模板可直接复制；查看历史版本为只读，且不请求当前版本的渲染 (354.6958ms)
+✔ B07 UI：保存冲突时保留用户输入并提示刷新；删除必须二次确认目标 (447.4087ms)
+✔ B07/B08 UI：Generator 与 Optimizer 入口已开放，Library 新建仍走 requestId 且只提交可编辑字段 (341.5956ms)
+✔ 返修 F07-02：变量改动后旧渲染结果不能再作为本次结果复制 (526.442ms)
+✔ 返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选择 (924.1933ms)
+✔ 返修 F07-04：迟到的 render 既不锁死新记录，也不误解锁新记录自己的请求 (467.2519ms)
+✔ 返修 F07-05：迟到的保存响应不得清空之后新建的表单 (485.0943ms)
+✔ 返修 F07-05：迟到的冲突响应不得把错误串到新表单 (366.1421ms)
+✔ 返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误清新建表单 (1784.8375ms)
+✔ 返修 F07-04 残留：同模板打开历史/返回当前都作废在途 render，错误与缺值不得回灌 (814.7379ms)
+✔ 返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally 不得清掉后一张表单的占用 (741.7234ms)
+✔ 返修 F07-07：重复点击当前模板仍能看到完整历史，重复选择不得清空版本列表 (1534.4392ms)
+✔ 返修 F07-07：初次历史仍在途中时重复点当前行，必须重新读取并最终加载完整历史 (422.4641ms)
+✔ 变量扫描：中文、重复、边界空格，以及必须原样保留的畸形占位符 (8.9388ms)
+✔ 变量填充：单次替换、字面值、缺值与 0 (0.7255ms)
+✔ 变量值只接受由自己键读取的字符串，原型键不会污染原型 (1.1048ms)
+✔ 输入校验：白名单字段、系统字段与长度上限 (24.2892ms)
+✔ 创建：requestId 成为 id，版本 1，变量由服务端提取，文件同时保存 current 与快照 (96.1129ms)
+✔ 保存：每次有效保存追加完整快照并递增版本；同内容保存不产生版本也不改时间 (90.3812ms)
+✔ 冲突：同 baseVersion 只有一个成功，过期写入与删除返回 409 且不改动资产 (41.5105ms)
+✔ 创建重试：同 requestId 同内容返回当前对象，不同内容 409，已回收 id 不复活 (53.065ms)
+✔ 删除：原子转移到回收区，从读取/版本接口消失，其他 Prompt 不受影响 (40.0748ms)
+✔ 列表：中文名称/标签/正文搜索、分类标签收藏筛选与分类计数 (93.8718ms)
+✔ 变量渲染：纯计算、缺值 422、未知键 400、版本不符 409，都不改文件 (64.0427ms)
+✔ 导出：YAML 元数据 + 正文原文，围栏与反引号不会被破坏 (298.906ms)
+✔ 关联 Wiki：已失效的旧关联仍可读，新增不存在的关联被拒绝 (724.5634ms)
+✔ 统计：只统计顶层有效的 current 记录，回收/临时/其他 JSON 一律不算 (221.0846ms)
+✔ 返修 F07-01：结构损坏或身份不一致的记录不计为有效，直接读取给出受控错误且文件保持原样 (76.4445ms)
+✔ 分类规则文件提供六个固定分类且不带任何预置 Prompt (43.5303ms)
+✔ 保存失败时报告可读错误，且不产生新版本或半成品文件 (826.4776ms)
+✔ 系统字段由服务端维护：客户端提交的一律被拒绝 (299.971ms)
+✔ settings saves, clears the password field, tests only after save, and confirms clearing (120.706ms)
+✔ initial and reload reads lock editing until the returned configuration is loaded (31.9686ms)
+✔ a configuration response arriving after unmount does not update the page (11.2376ms)
+✔ configuration reader distinguishes missing files from read failures and honors per-field environment precedence (22.9797ms)
+✔ manager saves atomically, preserves unrelated bytes, retains or replaces Key, and rejects stale revisions (34.7587ms)
+✔ old local keys are protected under environment overrides and quoted keys round-trip unchanged into adapter auth (79.9594ms)
+✔ environment overrides lock mutations but permit an explicit connection test; API enforces token, origin, content type and fields (153.0854ms)
+✔ provider caps non-success response bodies without Content-Length and keeps ordinary auth errors safe (2.9849ms)
+✔ tagged UTF-8/base64url configuration values round-trip exactly and legacy manual escapes remain literal (11.6231ms)
+✔ manager rejects unpaired surrogates before any file write (6.0281ms)
+✔ shared secret guard rejects mixed, partial, malformed, deep-encoded and environment credentials without writing or fetching (12.8805ms)
+✔ knowledge and prompt GLM-5.3-Flash on exact official hosts receive low reasoning and JSON mode (32.2941ms)
+✔ no reasoning hint for spoofed hosts, other models, or calls without knowledge purpose (2.7031ms)
+✔ knowledge purpose does not extend the configured timeout budget (20.8704ms)
+✔ knowledge purpose preserves caller cancellation within the existing request budget (29.6895ms)
+✔ Raw get/list reject missing, malformed, or mismatched bodySha256; restored bytes remain readable (62.6612ms)
+✔ first extraction rejects a corrupt Raw before reading state, jobs, drafts, or Provider (1.1329ms)
+✔ Raw 文本逐字符持久化，正文包含分隔线、中文和首尾空白 (45.2184ms)
+✔ 无效导入不会创建文件，标题不会影响文件路径 (24.8913ms)
+✔ 首页六项统计从空目录返回零，Raw 导入后即时计数 (48.0048ms)
+✔ 本周新增只包含上海时间周一零点到下周周一零点 (47.5035ms)
+✔ Wiki统计只计页面，不把index.md计作知识条目 (23.9961ms)
+✔ 十万字符正文允许保存，超过上限会返回明确错误 (4.046ms)
+✔ SEC output gate checks nonempty short and long credentials in nested JSON keys and values (2.0214ms)
+✔ SEC Brief, Prompt generation, and optimization reject tainted output before saving drafts (61.6833ms)
+✔ SEC Raw extraction rejects a tainted chunk before a later chunk or merge request (8.3833ms)
+A component is changing a controlled input to be uncontrolled. This is likely caused by the value changing from a defined to undefined, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components
+✔ B04 设置页：显示 Provider/模型/掩码，绝不显示 Key (49.8442ms)
+✔ B04 设置页：未配置时给出缺失项与手动链路提示 (13.1848ms)
+✔ B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口 (102.896ms)
+✖ B04 审核页：分栏预览、选择与确认只提交选中项 (94.5915ms)
+✔ B04 审核页：Source 编辑与页面编辑一起持久化，且不丢 Raw 元数据 (71.9462ms)
+✖ B04 审核页：新草稿默认全不选，零选择不能确认 (113.787ms)
+✔ B04 审核页：保存编辑、删除、合并与放弃都走明确的接口 (256.2173ms)
+✖ B04 审核页：冲突提示与部分提交面板 (87.395ms)
+✖ B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁 (47.0774ms)
+✖ B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍使用可见快照 (269.1293ms)
+✔ F03-03 重新导入未经编辑的两个标签仍是两项 (116.4196ms)
+✔ F03-03 用户编辑标签时支持中文逗号、英文逗号与顿号 (35.9556ms)
+✔ F03-04 上传成功后关闭结果面板，列表与统计已同步 (90.786ms)
+✔ F03-04 继续导入下一条也保持列表同步，且不重复上传 (73.965ms)
+✔ F03-01 部分提交：界面显示待恢复、不显示成功，并立即同步已创建的 Raw (98.09ms)
+✔ F03-04 前端超限拦截：超过 20 MiB 的文件不会上传 (95.4772ms)
+✔ F03-04 右上角关闭与查看这条资料同样保持同步，首页计数一致 (189.3553ms)
+✔ UI 最终确认删除与引用阻止：确认后列表同步，被引用时按钮禁用 (114.5061ms)
+✔ F03-01 关联写入成功后不出现待恢复面板 (94.6096ms)
+✔ 粘贴导入对话框保留原有文本流程与字符上限 (42.9594ms)
+✔ 文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界 (2.3588ms)
+✔ Raw 详情区分“原件已保留”和粘贴资料 (40.1792ms)
+✔ 导入入口渲染出对话框，空列表也有导入按钮 (5.696ms)
+✔ 删除确认先检查引用，未确认前不能删除 (1.1072ms)
+✔ EDGE Wiki repeated selected clicks keep loaded detail and do not start redundant reads (239.5832ms)
+✔ EDGE Wiki selected clicks during initial load preserve the existing request and eventually show detail (169.894ms)
+✔ EDGE Wiki A→B→A ignores a delayed B response and same-item clicks do not clear the restored A (173.0104ms)
+✔ EDGE Wiki click same item exits editing and keeps its loaded reading content (171.9017ms)
+✔ EDGE Wiki ordinary search retains matching current selection, selects another result and clears safely (656.535ms)
+✔ EDGE Wiki selected click invalidates an older refresh response without clearing the current detail (170.0507ms)
+✔ EDGE Wiki selected click invalidates an older save/readback and returns from edit to current detail (170.5247ms)
+✔ EDGE Wiki recent-open wiki-b remains readable or reports missing explicitly (124.2435ms)
+✔ EDGE Wiki recent-open missing-wiki remains readable or reports missing explicitly (107.4413ms)
+✔ 规则文件为UI提供六类型、13分类、枚举、Source Policy和真实页面模板 (61.4786ms)
+✔ 统计读取统一created字段，Index和回收页不算正式Wiki或本周新增 (110.4204ms)
+✔ 六种Wiki都可创建、回读与导出；YAML符合统一结构且不重复写正文 (151.5059ms)
+✔ 五字段中文搜索含分类label，13分类数量不受搜索条件影响 (68.7544ms)
+✔ 改名自动保留旧标题别名；Wikilink唯一解析、缺失与歧义明确 (111.4388ms)
+✔ revision冲突阻止覆盖；删除前返回入链并将资产移出有效Wiki目录 (113.5494ms)
+✔ verified需要Raw且reviewed；source_supported只需要有效Raw；Raw摘要保持不变 (52.5121ms)
+✔ Index失败明确报告已提交revision并在重启时通过pending记录恢复 (68.0484ms)
+ℹ tests 436
+ℹ suites 0
+ℹ pass 355
+ℹ fail 81
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43679.8115
+
+✖ failing tests:
+
+test at tests\b05.test.ts:1:2113
+✖ B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认幂等 (181.8776ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at KnowledgeWorkflowStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:74:45)
+      at async KnowledgeWorkflowStore.confirmLocked (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:305:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ 'e0bc531b-f0ca-4845-92ff-43dff036c7ac' ] }
+  }
+
+test at tests\b05.test.ts:2:3467
+✖ B05 重启恢复完成提交后收敛workflow，completed manifest不覆盖后续人工编辑 (109.1178ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\b05.test.ts:99:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+        at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+        at KnowledgeWorkflowStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:74:45)
+        at async KnowledgeWorkflowStore.confirmLocked (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:305:29),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\b05.test.ts:3:330
+✖ B05 更新预览保留两套公式，Raw证据可定位，旧revision会拒绝覆盖 (98.288ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\b05.test.ts:128:22)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-classification-priority.test.ts:1:6092
+✖ KB02 Q02 controlled correct classifications keep both title fragment forms and truncated layout out of business output (106.7156ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-classification-priority.test.ts:84:60)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-classification-priority.test.ts:1:10827
+✖ KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes (443.8819ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'kb02-atoms-planning-13'
+  - 'kb02-atoms-planning-12'
+                          ^
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-classification-priority.test.ts:126:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'kb02-atoms-planning-13',
+    expected: 'kb02-atoms-planning-12',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:3790
+✖ EDGE controlled short reply preserves five facts, one question, source note and exact original IDs/evidence then restores without a call (58.6943ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-edge-extraction.test.ts:41:154)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:6242
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (23 chars) (61.9666ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-edge-extraction.test.ts:53:72)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:6242
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8112 chars) (87.3928ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-edge-extraction.test.ts:53:72)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:6242
+✖ EDGE exact nonempty projection preserves IDs, UTF16 text and source coverage (8 chars) (34.002ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-edge-extraction.test.ts:53:72)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-edge-extraction.test.ts:1:7916
+✖ EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks (398.9327ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /kb02-atoms-planning-12-/u. Input:
+  
+  'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-edge-extraction.test.ts:67:482)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a',
+    expected: /kb02-atoms-planning-12-/u,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:3689
+✖ KB02 Q01 sends the complete loaded schema and valid nonempty examples; declarations stay out of planning records and draft (76.3649ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-extraction-contract.test.ts:70:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-extraction-contract.test.ts:1:9457
+✖ KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact (26.9392ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'kb02-atoms-planning-13'
+  - 'kb02-atoms-planning-12'
+                          ^
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-extraction-contract.test.ts:132:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'kb02-atoms-planning-13',
+    expected: 'kb02-atoms-planning-12',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:3376
+✖ FINAL-02 request requires minimal common propositions per assertion and version-bound two-sided IDs (113.4573ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:28:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 missing-old rejects without workflow or Wiki writes (87.076ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 missing-new rejects without workflow or Wiki writes (86.6564ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 wrong-side-old rejects without workflow or Wiki writes (91.7075ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 wrong-side-new rejects without workflow or Wiki writes (73.5636ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 unknown-old rejects without workflow or Wiki writes (58.9952ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 unknown-new rejects without workflow or Wiki writes (60.054ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 extra-field rejects without workflow or Wiki writes (94.7759ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:56:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 wrong-version rejects without workflow or Wiki writes (48.591ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:43:4)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:5054
+✖ FINAL-02 cross-target rejects without workflow or Wiki writes (63.1801ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:43:4)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:6694
+✖ FINAL-02 original seq82 unilateral compound agreement lacks old-side binding and is rejected, no auto-fill (78.208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'INPUT_REVIEW_CHANGED'
+  -   code: 'LLM_SCHEMA_INVALID'
+    }
+  
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:63:43)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:63:43)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    expected: { code: 'LLM_SCHEMA_INVALID' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:7677
+✖ FINAL-02 controlled synonym/one-sided/partial compound/conflict/unknown/future samples preserve exact support boundaries (85.2926ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:74:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:10171
+✖ FINAL-02 only-old statements may produce empty agreement without inventing a shared claim (66.962ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:83:163)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\kb02-final-agreement.test.ts:1:10681
+✖ FINAL-02 target edited during provider call rejects bound old version with no saved preview (81.805ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    Comparison {
+  +   code: 'INPUT_REVIEW_CHANGED'
+  -   code: 'WIKI_REVISION_CONFLICT'
+    }
+  
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:89:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-agreement.test.ts:89:3)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    expected: { code: 'WIKI_REVISION_CONFLICT' },
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-final-classification.test.ts:1:8502
+✖ FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero calls/three-file writes; restart uses zero old chunks (402.8284ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /kb02-atoms-planning-12-/u. Input:
+  
+  'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-final-classification.test.ts:100:129)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a',
+    expected: /kb02-atoms-planning-12-/u,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\kb02-pipeline.test.ts:1:963
+✖ KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage (92.3262ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-pipeline.test.ts:40:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-pipeline.test.ts:1:3920
+✖ KB02 resume reuses validated chunks and counts failed outbound attempts (103.2021ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 5
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-pipeline.test.ts:67:56)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 5,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-attribution.test.ts:1:7167
+✖ a subject-preserving fake plan is accepted by the complete pipeline (11.3857ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-attribution.test.ts:92:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-attribution.test.ts:1:9414
+✖ revision10 unfinished checkpoint is rejected before Provider calls and retained chunks stay byte-identical (21.2607ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-attribution.test.ts:101:3)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:5031
+✖ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (528.9714ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-budget.test.ts:88:7)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-budget.test.ts:1:6906
+✖ KB02 last available planning and review pair stays in the same job with successful chunks and cumulative attempts (592.1364ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 6
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-budget.test.ts:121:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-context.test.ts:1:4830
+✖ PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts (128.8987ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-context.test.ts:67:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-context.test.ts:1:8905
+✖ PLAN-04 fresh extraction through planning uses context only for attribution, without promoting unselected nearby source notes (6.5736ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-context.test.ts:92:35)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-context.test.ts:1:13411
+✖ PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts (5.4371ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 5
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-context.test.ts:129:39)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 5,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-context.test.ts:1:14249
+✖ PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks (490.2108ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /kb02-atoms-planning-12-/u. Input:
+  
+  'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-context.test.ts:142:220)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a',
+    expected: /kb02-atoms-planning-12-/u,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\kb02-planning-fields.test.ts:1:3277
+✖ KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs (87.0337ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'kb02-atoms-planning-13'
+  - 'kb02-atoms-planning-12'
+                          ^
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-planning-fields.test.ts:46:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'kb02-atoms-planning-13',
+    expected: 'kb02-atoms-planning-12',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-r2.test.ts:1:6015
+✖ KB02 R2 coverage diagnostics persist IDs only and explicit retry reuses validated chunks (63.6574ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-r2.test.ts:42:413)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-r2.test.ts:1:10225
+✖ KB02 R2 update derives exact repeated-position evidence IDs and preserves old storage/confirmation (236.66ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: 更新输入必须是当前持久化草稿。
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-r2.test.ts:50:384)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: 更新输入必须是当前持久化草稿。
+        at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-r2.test.ts:50:384)
+        at async Test.run (node:internal/test_runner/test:1404:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:969:7),
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:6946
+✖ SOURCE v3 missing units fail before expansion and only explicit retry resumes planning (263.4284ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:57:41)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:6946
+✖ SOURCE v3 duplicate units fail before expansion and only explicit retry resumes planning (165.1925ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:57:41)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:6946
+✖ SOURCE v3 unknown units fail before expansion and only explicit retry resumes planning (283.5665ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:57:41)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:6946
+✖ SOURCE v3 wrong-column units fail before expansion and only explicit retry resumes planning (164.8389ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:57:41)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:6946
+✖ SOURCE v3 split units fail before expansion and only explicit retry resumes planning (438.3142ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 3
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:57:41)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:8152
+✖ SOURCE current-rule tampered persisted split, unknown page field and metadata are rejected; valid plan remains restorable (424.0592ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:63:587)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-source-assignment.test.ts:1:13176
+✖ SOURCE complete unit/context/feedback payload at 192KiB is accepted (44.326ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-source-assignment.test.ts:97:173)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=false (1391.5434ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 5
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-sr01-r1.test.ts:48:61)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 5,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:1251
+✖ F-SR01-01 old-bound restart recovers storage only, reboot=true (736.9978ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 5
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-sr01-r1.test.ts:48:61)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 5,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-sr01-r1.test.ts:1:4316
+✖ F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger (705.2353ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-sr01-r1.test.ts:96:96)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\kb02-storage-ui.test.tsx:1:8742
+✖ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3995.0348ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  3 !== 4
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-storage-ui.test.tsx:119:75)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 3,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:1:5139
+✖ E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log (345.736ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ 'c21c9786-be36-4806-978d-acd8f2d7526d', '61a90d75-c5a3-4bc5-ae28-61ba503f8230' ] }
+  }
+
+test at tests\llm-flow.test.ts:5:3749
+✖ E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变 (205.5122ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ '36690751-57b2-4be8-a025-fa4bac5c8bf0', 'f0572e44-1cd6-44a4-aa90-d3a583374607' ] }
+  }
+
+test at tests\llm-flow.test.ts:7:1411
+✖ E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份 (171.3449ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ 'b8c2b31d-409c-4b24-a640-790f91f94ed5', '4b578647-0af6-4367-b3cf-1183d0432ce1' ] }
+  }
+
+test at tests\llm-flow.test.ts:11:1357
+✖ E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面 (167.0688ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-flow.test.ts:297:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:13:12818
+✖ E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败 (748.7681ms)
+  AssertionError [ERR_ASSERTION]: 每块一次调用 + 一次规划 + 一次语义审核
+  
+  15 !== 16
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-flow.test.ts:482:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 15,
+    expected: 16,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-flow.test.ts:14:2340
+✖ E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突 (726.7732ms)
+  Error: 原事实、原问题和来源证据只读；请移动完整 unit 或添加人工说明。
+      at <anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:286:125) {
+    code: 'SOURCE_RECORD_IMMUTABLE',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\llm-flow.test.ts:16:4143
+✖ E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑 (227.3829ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'HUMAN_REVIEW_INCOMPLETE'
+  - 'WIKI_TITLE_CONFLICT'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-flow.test.ts:684:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'HUMAN_REVIEW_INCOMPLETE',
+    expected: 'WIKI_TITLE_CONFLICT',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:4036
+✖ E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变 (1813.0151ms)
+  AssertionError [ERR_ASSERTION]: {"error":{"code":"HUMAN_REVIEW_INCOMPLETE","message":"全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。","details":{"unresolvedUnitIds":[],"unreviewedPageIds":["e67af60c-70ea-48f5-ae02-6caaab7624f0","7aece4c0-453e-4e40-8c9d-8bedaac1ae70"]}}}
+  
+  409 !== 201
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-http.test.ts:203:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:21561
+✖ F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据 (1482.2839ms)
+  AssertionError [ERR_ASSERTION]: {"error":{"code":"HUMAN_REVIEW_INCOMPLETE","message":"全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。","details":{"unresolvedUnitIds":[],"unreviewedPageIds":["f322e14f-0299-4eba-8aba-f79530ab240d"]}}}
+  
+  409 !== 201
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-http.test.ts:445:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:26000
+✖ F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集 (1800.2587ms)
+  AssertionError [ERR_ASSERTION]: {"error":{"code":"HUMAN_REVIEW_INCOMPLETE","message":"全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。","details":{"unresolvedUnitIds":[],"unreviewedPageIds":["7ca954e4-91d0-4df4-8b50-5b52a7eaa588","0705309f-6d27-4181-ac09-d77a1193c3de"]}}}
+  
+  409 !== 201
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-http.test.ts:506:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:30093
+✖ F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验 (1814.9399ms)
+  AssertionError [ERR_ASSERTION]: 四块 + 一次规划 + 一次语义审核
+  
+  5 !== 6
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-http.test.ts:569:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-http.test.ts:2:34608
+✖ E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志 (1663.2581ms)
+  AssertionError [ERR_ASSERTION]: {"error":{"code":"HUMAN_REVIEW_INCOMPLETE","message":"全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。","details":{"unresolvedUnitIds":[],"unreviewedPageIds":["193aa628-6819-4a78-8767-057fdf300f20","2f194a61-2ebd-4dd8-a555-37e4906c2fd2"]}}}
+  
+  409 !== 500
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-http.test.ts:619:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 500,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:8643
+✖ F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断 (902.5096ms)
+  AssertionError [ERR_ASSERTION]: 相同事实必须去重，不得重复
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-repair.test.ts:199:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:18194
+✖ F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全 (216.589ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  409 !== 500
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-repair.test.ts:299:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 500,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair.test.ts:1:24424
+✖ F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本 (201.5459ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ 'ba1bc446-6078-4156-a27f-846658e27ae8' ] }
+  }
+
+test at tests\llm-repair.test.ts:1:27349
+✖ F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现 (181.9284ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ '10556c15-8b4a-4692-b6b7-c9dbd5c9dc96', '43d0ba64-3ce7-401c-880b-89a543d22e84' ] }
+  }
+
+test at tests\llm-repair.test.ts:1:30276
+✖ F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供 (228.7887ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ 'c90aa0e7-09fe-480e-af4f-b6c37a902b3d' ] }
+  }
+
+test at tests\llm-repair2.test.ts:1:4838
+✖ F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功 (223.9189ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ '5ca1cbe5-03c6-40a3-818c-e5c9f0ce9360' ] }
+  }
+
+test at tests\llm-repair2.test.ts:1:7167
+✖ F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准 (167.5826ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ '31381464-f28f-4a06-88a0-da3f2bb85ea6', 'e7ebc585-632e-4fe7-8360-110d051760ee' ] }
+  }
+
+test at tests\llm-repair3.test.ts:2:5161
+✖ F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (403.637ms)
+  AssertionError [ERR_ASSERTION]: 四块各一次调用 + 一次规划 + 一次语义审核
+  
+  5 !== 6
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-repair3.test.ts:141:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:5161
+✖ F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved (302.5128ms)
+  AssertionError [ERR_ASSERTION]: 四块各一次调用 + 一次规划 + 一次语义审核
+  
+  5 !== 6
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm-repair3.test.ts:141:14)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\llm-repair3.test.ts:2:10671
+✖ F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据 (514.1914ms)
+  Error: 全部候选页必须逐页确认主题与完整归属，且不能存在未解决项。
+      at assertHumanReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\human-review.ts:47:60)
+      at DraftStore.assertReviewed (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:104:45)
+      at async WikiCommitService.confirm (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\commits.ts:171:29) {
+    code: 'HUMAN_REVIEW_INCOMPLETE',
+    status: 409,
+    details: { unresolvedUnitIds: [], unreviewedPageIds: [ '06c89693-93d0-4c87-8be6-b03ccce6508a' ] }
+  }
+
+test at tests\llm.test.ts:1:17161
+✖ 规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致、system prompt 含规则与结构 (7.7524ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^b04-b04-1-locator-v2-kb02-atoms-planning-12-[0-9a-f]{12}$/. Input:
+  
+  'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\llm.test.ts:289:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'b04-b04-1-locator-v2-kb02-atoms-planning-13-23b8c3da386a',
+    expected: /^b04-b04-1-locator-v2-kb02-atoms-planning-12-[0-9a-f]{12}$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\pa01-r01-r02.test.ts:1:2800
+✖ PA01 R01 real workflow records reject deep corruption consistently before reads and writes (134.4396ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async fixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\pa01-r01-r02.test.ts:22:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\pa01-r01-r02.test.ts:27:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\pa01-r01-r02.test.ts:1:5761
+✖ PA01 R01 optional evidence and legacy unused snapshots remain readable editable confirmable (152.3101ms)
+  Error: 更新输入必须是当前持久化草稿。
+      at KnowledgeWorkflowStore.createUpdate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\knowledge-workflows.ts:113:112)
+      at async fixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\pa01-r01-r02.test.ts:22:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\pa01-r01-r02.test.ts:51:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    code: 'INPUT_REVIEW_CHANGED',
+    status: 409,
+    details: undefined
+  }
+
+test at tests\ui-b04.test.tsx:1:16808
+✖ B04 审核页：分栏预览、选择与确认只提交选中项 (94.5915ms)
+  AssertionError [ERR_ASSERTION]: 必须调用确认接口
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\ui-b04.test.tsx:251:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\ui-b04.test.tsx:1:20507
+✖ B04 审核页：新草稿默认全不选，零选择不能确认 (113.787ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\ui-b04.test.tsx:311:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\ui-b04.test.tsx:1:24548
+✖ B04 审核页：冲突提示与部分提交面板 (87.395ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /index 写入失败，已部分提交/. Input:
+  
+  '<div class="page draft-page"><div class="page-heading"><div><p class="eyebrow">AI 知识整理预览 · 人工审核</p><h1>审核「渠道动销资料」</h1><p class="subheading">草稿版本 v3 · 状态 pending_confirmation · 提供方 openai-compatible/fake-model · 规则 b04-b04-1-abcdef123456 · 1 段 / 1 次调用</p></div><div class="heading-actions"><button class="secondary-button">返回 Raw</button><button class="secondary-button">保存草稿</button><button class="secondary-button danger-quiet">放弃草稿</button><button class="primary-button" disabled="">确认写入 Wiki（1）</button></div></div><section class="panel draft-card-body" aria-label="主题与归属人工审查"><h2>逐页确认主题与完整归属</h2><p>所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。</p><button class="secondary-button">开始主题与归属审查</button></section><div class="draft-columns"><section class="panel draft-source-panel"><div class="panel-heading"><div><h2>原始资料</h2><p>网页文章 · 来源</p></div><button class="text-button">打开 Raw <span>›</span></button></div><div class="draft-source-body"><h3>渠道动销资料</h3><p class="detail-source">正文 28 字符 · 正文校验值 <code class="mono">aaaaaaaaaaaaaaaa…</code></p><pre class="draft-raw-preview">渠道动销分析：动销率衡量门店销售速度。\n' +
+    '经销商库存周转���</pre></div></section><section class="panel draft-source-summary"><div class="panel-heading"><div><h2>Source 预览（本次提交组成）</h2><p>将新建 1 个 Source 页面</p></div></div><div class="draft-card-body"><label class="field">Source 标题<input maxlength="300" value="渠道动销资料"></label><label class="field">Source 摘要<textarea rows="8">## 摘要\n' +
+    '\n' +
+    '摘要\n' +
+    '</textarea></label><div class="draft-enum-row"><label class="field">来源等级<select><option value="A">A 级</option><option value="B">B 级</option><option value="C">C 级</option><option value="D">D 级</option></select></label><label class="field">知识状态<select><option value="source_supported">source_supported</option><option value="ai_organized">ai_organized</option><option value="inferred">inferred</option><option value="needs_verification">needs_verification</option><option value="verified">verified</option></select></label><label class="field">可信度<select><option value="high">high</option><option value="medium">medium</option><option value="low">low</option></select></label></div><p class="extract-note">保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。</p></div></section></div><section class="panel draft-pages-panel"><div class="panel-heading"><div><h2>知识建议（2 条，已选 1 条）</h2><p>默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。</p></div><div class="action-group"><button class="secondary-button">全选</button><button class="secondary-button">全不选</button><button class="secondary-button" disabled="">合并所选（0）</button></div></div><article class="draft-card "><div class="draft-card-head"><label class="draft-select"><input type="checkbox"><span>写入</span></label><label class="draft-select"><input type="checkbox"><span>合并</span></label><span class="draft-index">#1</span><input class="draft-title" maxlength="300" aria-label="建议标题" value="动销率"><button class="text-button danger">删除</button></div><div class="draft-enum-row"><label class="field">类型<select><option value="concept">概念</option><option value="entity">业务实体</option><option value="business_process">业务流程</option><option value="metric">业务指标</option></select></label><label class="field">分类<select><option value="industry_basics">行业基础</option><option value="metric">数据指标</option><option value="supply_chain">供应链</option></select></label><label class="field">来源等级<select><option value="A">A 级</option><option value="B">B 级</option><option value="C">C 级</option><option value="D">D 级</option></select></label><label class="field">知识状态<select><option value="source_supported">source_supported</option><option value="ai_organized">ai_organized</option><option value="inferred">inferred</option><option value="needs_verification">needs_verification</option><option value="verified">verified</option></select></label><label class="field">可信度<select><option value="high">high</option><option value="medium">medium</option><option value="low">low</option></select></label></div><div class="duplicate-review"><button class="secondary-button">刷新重复候选</button></div><label class="field">一句话说明<input maxlength="300" value="衡量门店动销的指标"></label><div class="draft-split"><div class="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4><div class="draft-line"><textarea readonly="" rows="2">动销率衡量门店销售速度</textarea><span class="draft-evidence-ref">证据 e1</span></div></div><div class="draft-block"><h4>AI 整理 / 人工说明</h4><button class="text-button">添加人工整理说明</button><div class="draft-line"><textarea rows="2">整理</textarea></div></div><div class="draft-block"><h4>AI 推断</h4><div class="draft-line"><textarea rows="2">推断</textarea></div></div><div class="draft-block"><h4>待确认问题</h4><div class="draft-line"><textarea readonly="" rows="2">口径待确认</textarea></div></div></div><div class="draft-evidence"><h4>来源证据（全局位置已按完整 Raw 校验）</h4><div class="draft-evidence-row"><code class="mono">e1</code><span class="draft-evidence-quote">动销率衡量门店销售速度</span><span class="draft-evidence-pos">[8, 20) · 第 1 段</span><button class="text-button">查看原文</button></div></div></article><article class="draft-card selected"><div class="draft-card-head"><label class="draft-select"><input type="checkbox" checked=""><span>写入</span></label><label class="draft-select"><input type="checkbox"><span>合并</span></label><span class="draft-index">#2</span><input class="draft-title" maxlength="300" aria-label="建议标题" value="库存周转"><button class="text-button danger">删除</button></div><div class="draft-enum-row"><label class="field">类型<select><option value="concept">概念</option><option value="entity">业务实体</option><option value="business_process">业务流程</option><option value="metric">业务指标</option></select></label><label class="field">分类<select><option value="industry_basics">行业基础</option><option value="metric">数据指标</option><option value="supply_chain">供应链</option></select></label><label class="field">来源等级<select><option value="A">A 级</option><option value="B">B 级</option><option value="C">C 级</option><option value="D">D 级</option></select></label><label class="field">知识状态<select><option value="source_supported">source_supported</option><option value="ai_organized">ai_organized</option><option value="inferred">inferred</option><option value="needs_verification">needs_verification</option><option value="verified">verified</option></select></label><label class="field">可信度<select><option value="high">high</option><option value="medium">medium</option><option value="low">low</option></select></label></div><div class="duplicate-review"><button class="secondary-button">刷新重复候选</button></div><label class="field">一句话说明<input maxlength="300" value="库存周转说明"></label><div class="draft-split"><div class="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4><div class="draft-line"><textarea readonly="" rows="2">经销商库存周转</textarea><span class="draft-evidence-ref">证据 e1</span></div></div><div class="draft-block"><h4>AI 整理 / 人工说明</h4><button class="text-button">添加人工整理说明</button><p class="extract-note">暂无</p></div><div class="draft-block"><h4>AI 推断</h4><p class="extract-note">暂无</p></div><div class="draft-block"><h4>待确认问题</h4><p class="extract-note">暂无</p></div></div><div class="draft-evidence"><h4>来源证据（全局位置已按完整 Raw 校验）</h4><div class="draft-evidence-row"><code class="mono">e1</code><span class="draft-evidence-quote">动销率衡量门店销售速度</span><span class="draft-evidence-pos">[8, 20) · 第 1 段</span><button class="text-button">查看原文</button></div></div></article></section><p class="extract-note">预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。</p></div>'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\ui-b04.test.tsx:371:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<div class="page draft-page"><div class="page-heading"><div><p class="eyebrow">AI 知识整理预览 · 人工审核</p><h1>审核「渠道动销资料」</h1><p class="subheading">草稿版本 v3 · 状态 pending_confirmation · 提供方 openai-compatible/fake-model · 规则 b04-b04-1-abcdef123456 · 1 段 / 1 次调用</p></div><div class="heading-actions"><button class="secondary-button">返回 Raw</button><button class="secondary-button">保存草稿</button><button class="secondary-button danger-quiet">放弃草稿</button><button class="primary-button" disabled="">确认写入 Wiki（1）</button></div></div><section class="panel draft-card-body" aria-label="主题与归属人工审查"><h2>逐页确认主题与完整归属</h2><p>所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。</p><button class="secondary-button">开始主题与归属审查</button></section><div class="draft-columns"><section class="panel draft-source-panel"><div class="panel-heading"><div><h2>原始资料</h2><p>网页文章 · 来源</p></div><button class="text-button">打开 Raw <span>›</span></button></div><div class="draft-source-body"><h3>渠道动销资料</h3><p class="detail-source">正文 28 字符 · 正文校验值 <code class="mono">aaaaaaaaaaaaaaaa…</code></p><pre class="draft-raw-preview">渠道动销分析：动销率衡量门店销售速度。\n经销商库存周转。</pre></div></section><section class="panel draft-source-summary"><div class="panel-heading"><div><h2>Source 预览（本次提交组成）</h2><p>将新建 1 个 Source 页面</p></div></div><div class="draft-card-body"><label class="field">Source 标题<input maxlength="300" value="渠道动销资料"></label><label class="field">Source 摘要<textarea rows="8">## 摘要\n\n摘要\n</textarea></label><div class="draft-enum-row"><label class="field">来源等级<select><option value="A">A 级</option><option value="B">B 级</option><option value="C">C 级</option><option value="D">D 级</option></select></label><label class="field">知识状态<select><option value="source_supported">source_supported</option><option value="ai_organized">ai_organized</option><option value="inferred">inferred</option><option value="needs_verification">needs_verification</option><option value="verified">verified</option></select></label><label class="field">可信度<select><option value="high">high</option><option value="medium">medium</option><option value="low">low</option></select></label></div><p class="extract-note">保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。</p></div></section></div><section class="panel draft-pages-panel"><div class="panel-heading"><div><h2>知识建议（2 条，已选 1 条）</h2><p>默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。</p></div><div class="action-group"><button class="secondary-button">全选</button><button class="secondary-button">全不选</button><button class="secondary-button" disabled="">合并所选（0）</button></div></div><article class="draft-card "><div class="draft-card-head"><label class="draft-select"><input type="checkbox"><span>写入</span></label><label class="draft-select"><input type="checkbox"><span>合并</span></label><span class="draft-index">#1</span><input class="draft-title" maxlength="300" aria-label="建议标题" value="动销率"><button class="text-button danger">删除</button></div><div class="draft-enum-row"><label class="field">类型<select><option value="concept">概念</option><option value="entity">业务实体</option><option value="business_process">业务流程</option><option value="metric">业务指标</option></select></label><label class="field">分类<select><option value="industry_basics">行业基础</option><option value="metric">数据指标</option><option value="supply_chain">供应链</option></select></label><label class="field">来源等级<select><option value="A">A 级</option><option value="B">B 级</option><option value="C">C 级</option><option value="D">D 级</option></select></label><label class="field">知识状态<select><option value="source_supported">source_supported</option><option value="ai_organized">ai_organized</option><option value="inferred">inferred</option><option value="needs_verification">needs_verification</option><option value="verified">verified</option></select></label><label class="field">可信度<select><option value="high">high</option><option value="medium">medium</option><option value="low">low</option></select></label></div><div class="duplicate-review"><button class="secondary-button">刷新重复候选</button></div><label class="field">一句话说明<input maxlength="300" value="衡量门店动销的指标"></label><div class="draft-split"><div class="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4><div class="draft-line"><textarea readonly="" rows="2">动销率衡量门店销售速度</textarea><span class="draft-evidence-ref">证据 e1</span></div></div><div class="draft-block"><h4>AI 整理 / 人工说明</h4><button class="text-button">添加人工整理说明</button><div class="draft-line"><textarea rows="2">整理</textarea></div></div><div class="draft-block"><h4>AI 推断</h4><div class="draft-line"><textarea rows="2">推断</textarea></div></div><div class="draft-block"><h4>待确认问题</h4><div class="draft-line"><textarea readonly="" rows="2">口径待确认</textarea></div></div></div><div class="draft-evidence"><h4>来源证据（全局位置已按完整 Raw 校验）</h4><div class="draft-evidence-row"><code class="mono">e1</code><span class="draft-evidence-quote">动销率衡量门店销售速度</span><span class="draft-evidence-pos">[8, 20) · 第 1 段</span><button class="text-button">查看原文</button></div></div></article><article class="draft-card selected"><div class="draft-card-head"><label class="draft-select"><input type="checkbox" checked=""><span>写入</span></label><label class="draft-select"><input type="checkbox"><span>合并</span></label><span class="draft-index">#2</span><input class="draft-title" maxlength="300" aria-label="建议标题" value="库存周转"><button class="text-button danger">删除</button></div><div class="draft-enum-row"><label class="field">类型<select><option value="concept">概念</option><option value="entity">业务实体</option><option value="business_process">业务流程</option><option value="metric">业务指标</option></select></label><label class="field">分类<select><option value="industry_basics">行业基础</option><option value="metric">数据指标</option><option value="supply_chain">供应链</option></select></label><label class="field">来源等级<select><option value="A">A 级</option><option value="B">B 级</option><option value="C">C 级</option><option value="D">D 级</option></select></label><label class="field">知识状态<select><option value="source_supported">source_supported</option><option value="ai_organized">ai_organized</option><option value="inferred">inferred</option><option value="needs_verification">needs_verification</option><option value="verified">verified</option></select></label><label class="field">可信度<select><option value="high">high</option><option value="medium">medium</option><option value="low">low</option></select></label></div><div class="duplicate-review"><button class="secondary-button">刷新重复候选</button></div><label class="field">一句话说明<input maxlength="300" value="库存周转说明"></label><div class="draft-split"><div class="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4><div class="draft-line"><textarea readonly="" rows="2">经销商库存周转</textarea><span class="draft-evidence-ref">证据 e1</span></div></div><div class="draft-block"><h4>AI 整理 / 人工说明</h4><button class="text-button">添加人工整理说明</button><p class="extract-note">暂无</p></div><div class="draft-block"><h4>AI 推断</h4><p class="extract-note">暂无</p></div><div class="draft-block"><h4>待确认问题</h4><p class="extract-note">暂无</p></div></div><div class="draft-evidence"><h4>来源证据（全局位置已按完整 Raw 校验）</h4><div class="draft-evidence-row"><code class="mono">e1</code><span class="draft-evidence-quote">动销率衡量门店销售速度</span><span class="draft-evidence-pos">[8, 20) · 第 1 段</span><button class="text-button">查看原文</button></div></div></article></section><p class="extract-note">预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。</p></div>',
+    expected: /index 写入失败，已部分提交/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\ui-b04.test.tsx:1:26155
+✖ B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁 (47.0774ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /候选查询失败，已阻止确认写入/. Input:
+  
+  'AI 知识整理预览 · 人工审核审核「渠道动销资料」草稿版本 v3 · 状态 pending_confirmation · 提供方 openai-compatible/fake-model · 规则 b04-b04-1-abcdef123456 · 1 段 / 1 次调用返回 Raw保存草稿放弃草稿确认写入 Wiki（1）逐页确认主题与完整归属所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。开始主题与归属审查原始资料网页文章 · 来源打开 Raw ›渠道动销资料正文 28 字符 · 正文校验值 aaaaaaaaaaaaaaaa…渠道动销分析：动销率衡量门店销售速度。\n' +
+    '经销商库存周转。Source 预览（本次提交组成）将新建 1 个 Source 页面Source 标题Source 摘要## 摘要\n' +
+    '\n' +
+    '摘要\n' +
+    '来源等级A 级B 级C 级D 级知识状态source_supportedai_organizedinferredneeds_verificationverified可信度highmediumlow保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。知识建议（2 条，已选 1 条）默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。全选全不选合并所选（0）写入合并#1删除类型概念业务实体业务流程业务指标分类行业基础数据指标供应链来源等级A 级B 级C 级D 级知识状态source_supportedai_organizedinferredneeds_verificationverified可信度highmediumlow刷新重复候选一句话说明来源事实（原文支持，逐条带证据）动销率衡量门店销售速度证据 e1AI 整理 / 人工说明添加人工整理说明整理AI 推断推断待确认问题口径待确认来源证据（全局位置已按完整 Raw 校验）e1动销率衡量门店销售速度[8, 20) · 第 1 段查看原文写入合并#2删除类型概念业务实体业务流程业务指标分类行业基础数据指标供应链来源等级A 级B 级C 级D 级知识状态source_supportedai_organizedinferredneeds_verificationverified可信度highmediumlow刷新重复候选一句话说明来源事实（原文支持，逐条带证据）经销商库存周转证据 e1AI 整理 / 人工说明添加人工整理说明暂无AI 推断暂无待确认问题暂无来源证据（全局位置已按完整 Raw 校验）e1动销率衡量门店销售速度[8, 20) · 第 1 段查看原文预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。'
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\ui-b04.test.tsx:386:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'AI 知识整理预览 · 人工审核审核「渠道动销资料」草稿版本 v3 · 状态 pending_confirmation · 提供方 openai-compatible/fake-model · 规则 b04-b04-1-abcdef123456 · 1 段 / 1 次调用返回 Raw保存草稿放弃草稿确认写入 Wiki（1）逐页确认主题与完整归属所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。开始主题与归属审查原始资料网页文章 · 来源打开 Raw ›渠道动销资料正文 28 字符 · 正文校验值 aaaaaaaaaaaaaaaa…渠道动销分析：动销率衡量门店销售速度。\n经销商库存周转。Source 预览（本次提交组成）将新建 1 个 Source 页面Source 标题Source 摘要## 摘要\n\n摘要\n来源等级A 级B 级C 级D 级知识状态source_supportedai_organizedinferredneeds_verificationverified可信度highmediumlow保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。知识建议（2 条，已选 1 条）默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。全选全不选合并所选（0）写入合并#1删除类型概念业务实体业务流程业务指标分类行业基础数据指标供应链来源等级A 级B 级C 级D 级知识状态source_supportedai_organizedinferredneeds_verificationverified可信度highmediumlow刷新重复候选一句话说明来源事实（原文支持，逐条带证据）动销率衡量门店销售速度证据 e1AI 整理 / 人工说明添加人工整理说明整理AI 推断推断待确认问题口径待确认来源证据（全局位置已按完整 Raw 校验）e1动销率衡量门店销售速度[8, 20) · 第 1 段查看原文写入合并#2删除类型概念业务实体业务流程业务指标分类行业基础数据指标供应链来源等级A 级B 级C 级D 级知识状态source_supportedai_organizedinferredneeds_verificationverified可信度highmediumlow刷新重复候选一句话说明来源事实（原文支持，逐条带证据）经销商库存周转证据 e1AI 整理 / 人工说明添加人工整理说明暂无AI 推断暂无待确认问题暂无来源证据（全局位置已按完整 Raw 校验）e1动销率衡量门店销售速度[8, 20) · 第 1 段查看原文预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。',
+    expected: /候选查询失败，已阻止确认写入/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\ui-b04.test.tsx:1:28782
+✖ B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍使用可见快照 (269.1293ms)
+  AssertionError [ERR_ASSERTION]: 确认需等待每条建议的最新候选
+  
+  0 !== 2
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\ui-b04.test.tsx:426:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

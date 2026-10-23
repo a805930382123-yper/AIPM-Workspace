@@ -2,6 +2,7 @@
 // settings masking, Raw AI actions and status, review editing/merge/discard/confirm and the
 // partial-commit panel. Real HTTP behaviour of the same endpoints is covered in llm-http.test.ts.
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import type { DraftView, Raw } from '../app/api';
@@ -86,6 +87,34 @@ function makeDraft(overrides: Partial<DraftView> = {}): DraftView {
   };
 }
 
+// This is an HTTP stub, not an approval shortcut: each page needs a separate UI
+// request, tied to the server's current content digest and optimistic revision.
+const stubDigest = (draft: DraftView) => createHash('sha256').update(JSON.stringify({
+  id: draft.id, rawSha256: draft.raw?.bodySha256, document: draft.document, source: draft.source,
+  pages: draft.pages.map(page => ({ ...page, source_evidence: page.source_evidence.map(({ chunkIndex: _chunk, ...evidence }) => evidence) })),
+  basisDigest: draft.humanReview?.basisDigest, assignments: draft.humanReview?.assignments,
+}, function (_key, value: unknown) {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b))) : value;
+})).digest('hex');
+
+async function reviewPages(container: HTMLElement) {
+  const start = byText('开始主题与归属审查', container);
+  if (start) await click(start);
+  const cards = [...container.querySelectorAll<HTMLElement>('.draft-card')];
+  assert.ok(cards.length, '必须逐页显示审查对象');
+  for (const [index, card] of cards.entries()) {
+    if (index < cards.length - 1) assert.equal(required(byText('确认写入 Wiki', container), '最终确认').disabled, true, '缺少任一页确认时阻止正式写入');
+    await click(required(byText('确认本页主题与归属', card), '本页主题与归属确认'));
+    assert.match(card.textContent ?? '', /本页主题与完整归属已确认/);
+  }
+}
+
+async function saveAndReview(container: HTMLElement) {
+  await click(required(byText('保存草稿', container), '保存按钮'));
+  await reviewPages(container);
+}
+
 type Stub = { calls: Array<{ url: string; method: string; body: string | null }>; setDraft: (draft: DraftView) => void; setConfig: (config: unknown) => void; setDuplicateResponse: (handler: () => Response | Promise<Response>) => void };
 function stubFetch(options: { draft?: DraftView; config?: unknown; confirmResponse?: () => Response; duplicateResponse?: () => Response | Promise<Response> } = {}): Stub {
   let draft = options.draft ?? makeDraft();
@@ -111,20 +140,53 @@ function stubFetch(options: { draft?: DraftView; config?: unknown; confirmRespon
     if (url.endsWith('/extract') && method === 'POST') return reply({ jobId: 'job-1', rawId: makeRaw().id, status: 'running', stage: 'extracting', progress: { chunksTotal: 2, chunksDone: 0, pagesFound: 0 }, draftId: null, error: null, provider: { name: 'openai-compatible', model: 'fake-model' }, callCount: 0, startedAt: '2026-10-05T00:00:00.000Z', finishedAt: null, cancelRequested: false, reused: false }, 202);
     if (url.includes('/api/extraction-jobs/') && url.endsWith('/cancel')) return reply({ jobId: 'job-1', status: 'cancelled', cancelled: true });
     if (url.startsWith('/api/extraction-jobs/')) return reply({ jobId: 'job-1', rawId: makeRaw().id, status: 'running', stage: 'extracting', progress: { chunksTotal: 2, chunksDone: 1, pagesFound: 1 }, draftId: null, error: null, provider: { name: 'openai-compatible', model: 'fake-model' }, callCount: 1, startedAt: '2026-10-05T00:00:00.000Z', finishedAt: null, cancelRequested: false });
-    if (url.startsWith('/api/drafts/') && url.endsWith('/confirm') && method === 'POST') return (options.confirmResponse ? options.confirmResponse() : reply({ operationId: '33333333-3333-4333-8333-333333333333', status: 'completed', reused: false, sourceReused: false, sourceId: 'source-1', wikiIds: ['wiki-1'], writtenWikiIds: ['source-1', 'wiki-1'], warnings: [], phases: [] }, 201));
+    if (url.startsWith('/api/drafts/') && url.includes('/review/') && method === 'POST') {
+      const body = JSON.parse(String(init.body)) as { baseRevision: number; reviewContentDigest?: string; confirmed?: boolean };
+      if (body.baseRevision !== draft.revision) return reply({ error: { code: 'REVISION_CONFLICT', message: '草稿版本已变化' } }, 409);
+      if (url.endsWith('/review/start')) {
+        if (!draft.humanReview) {
+          const units = draft.pages.flatMap(page => [
+            ...page.source_facts.map((fact, index) => ({ id: `legacy-${page.pageId}-fact-${index}`, kind: 'fact' as const, origin: 'legacy' as const, text: fact.text, memberIds: [], records: [{ id: `fact-${index}`, text: fact.text, evidenceIds: fact.evidenceIds }], evidence: page.source_evidence.filter(e => fact.evidenceIds.includes(e.id)), sourceLabel: '旧草稿来源事实' })),
+            ...page.open_questions.map((text, index) => ({ id: `legacy-${page.pageId}-question-${index}`, kind: 'question' as const, origin: 'legacy' as const, text, memberIds: [], records: [], evidence: [], sourceLabel: '旧草稿问题（无原文定位）' })),
+          ].map(unit => ({ unit, pageId: page.pageId })));
+          draft = { ...draft, humanReview: { version: 1, units: units.map(item => item.unit), basisDigest: createHash('sha256').update(JSON.stringify(units.map(item => item.unit))).digest('hex'), assignments: Object.fromEntries(units.map(item => [item.unit.id, item.pageId])), approvals: [] } };
+        }
+      } else if (url.includes('/review/pages/')) {
+        const pageId = decodeURIComponent(url.split('/').at(-1) ?? '');
+        if (!draft.humanReview || !draft.pages.some(page => page.pageId === pageId) || body.reviewContentDigest !== stubDigest(draft)) return reply({ error: { code: 'REVIEW_CONTENT_CHANGED', message: '请重新审查当前内容' } }, 409);
+        const approvals = draft.humanReview.approvals.filter(item => item.pageId !== pageId);
+        if (body.confirmed) approvals.push({ pageId, digest: stubDigest(draft), at: '2026-10-23T00:00:00.000Z' });
+        draft = { ...draft, humanReview: { ...draft.humanReview, approvals } };
+      } else return reply({}, 404);
+      draft = { ...draft, revision: draft.revision + 1, reviewContentDigest: stubDigest(draft) };
+      return reply(draft);
+    }
+    if (url.startsWith('/api/drafts/') && url.endsWith('/confirm') && method === 'POST') {
+      const body = JSON.parse(String(init.body)) as { baseRevision: number };
+      const digest = stubDigest(draft);
+      if (body.baseRevision !== draft.revision || !draft.humanReview || Object.values(draft.humanReview.assignments).some(id => id === null) || draft.pages.some(page => !draft.humanReview!.approvals.some(item => item.pageId === page.pageId && item.digest === digest))) return reply({ error: { code: 'HUMAN_REVIEW_INCOMPLETE', message: '必须逐页确认当前主题与归属' } }, 409);
+      return (options.confirmResponse ? options.confirmResponse() : reply({ operationId: '33333333-3333-4333-8333-333333333333', status: 'completed', reused: false, sourceReused: false, sourceId: 'source-1', wikiIds: ['wiki-1'], writtenWikiIds: ['source-1', 'wiki-1'], warnings: [], phases: [] }, 201));
+    }
     if (url.startsWith('/api/drafts/') && url.endsWith('/discard') && method === 'POST') return reply({ id: draft.id, status: 'discarded', rawId: draft.rawId });
     if (url.includes('/duplicates') && method === 'GET') return duplicateResponse();
     if (url.includes('/decision') && method === 'PATCH') {
       const pageId = url.split('/').at(-2) ?? '';
       const body = JSON.parse(String(init.body)) as { decision: 'update' | 'create' | 'defer'; targetWikiId?: string };
       draft = { ...draft, revision: draft.revision + 1, pages: draft.pages.map(page => page.pageId === pageId ? { ...page, reviewDecision: body.decision, updateTargetWikiId: body.targetWikiId } : page) };
+      if (draft.humanReview) draft = { ...draft, humanReview: { ...draft.humanReview, approvals: [] }, reviewContentDigest: stubDigest(draft) };
       return reply({ draftId: draft.id, revision: draft.revision, page: draft.pages.find(page => page.pageId === pageId) });
     }
     if (url.startsWith('/api/drafts/') && method === 'PATCH') {
-      const body = JSON.parse(String(init.body)) as { pages?: Array<{ pageId: string; title?: string; selected?: boolean }>; deletePageIds?: string[]; merge?: { pageIds: string[] } };
+      const previousDigest = stubDigest(draft);
+      const body = JSON.parse(String(init.body)) as { document?: DraftView['document']; source?: DraftView['source']; pages?: Array<{ pageId: string; title?: string; selected?: boolean }>; deletePageIds?: string[]; merge?: { pageIds: string[] } };
       if (body.deletePageIds?.length) draft = { ...draft, revision: draft.revision + 1, pages: draft.pages.filter(page => !body.deletePageIds?.includes(page.pageId)) };
       else if (body.merge) draft = { ...draft, revision: draft.revision + 1, pages: [{ ...draft.pages[0], pageId: 'merged-1', title: '合并后的知识页', mergedFrom: ['动销率', '库存周转'] }] };
       else if (body.pages) draft = { ...draft, revision: draft.revision + 1, pages: draft.pages.map(page => ({ ...page, ...(body.pages?.find(item => item.pageId === page.pageId) ?? {}) })) };
+      draft = { ...draft, document: body.document ?? draft.document, source: { ...draft.source, ...body.source } };
+      if (draft.humanReview) {
+        if (previousDigest !== stubDigest(draft)) draft = { ...draft, humanReview: { ...draft.humanReview, approvals: [] } };
+        draft = { ...draft, reviewContentDigest: stubDigest(draft) };
+      }
       return reply(draft);
     }
     if (url.startsWith('/api/drafts/')) return reply(draft);
@@ -244,6 +306,8 @@ test('B04 审核页：分栏预览、选择与确认只提交选中项', async (
     assert.equal(boxes.length, 2);
     await setChecked(boxes[0] as HTMLInputElement, true);
     assert.match(mounted.container.innerHTML, /已选 2 条/);
+    assert.equal(required(byText('确认写入 Wiki', mounted.container), '确认按钮').disabled, true, '勾选页面不能代替逐页审查');
+    await saveAndReview(mounted.container);
     await click(required(byText('确认写入 Wiki', mounted.container), '确认按钮'));
     // F04-02: confirming first persists the on-screen snapshot, then commits that revision.
     const callsBeforeConfirm = stub.calls.map(call => call.method + ' ' + call.url);
@@ -258,7 +322,9 @@ test('B04 审核页：分栏预览、选择与确认只提交选中项', async (
     const confirm = stub.calls[confirmIndex];
     const body = JSON.parse(String(confirm.body)) as { selectedPageIds: string[]; idempotencyKey: string; baseRevision: number };
     assert.deepEqual(body.selectedPageIds.sort(), ['page-1', 'page-2']);
-    assert.equal(body.baseRevision, 4, '确认必须使用保存后的 revision');
+    const lastPageReview = stub.calls.filter(call => call.url.includes('/review/pages/')).at(-1);
+    assert.ok(lastPageReview);
+    assert.equal(body.baseRevision, JSON.parse(String(lastPageReview.body)).baseRevision + 2, '确认使用逐页审查及最后保存后的 revision');
     assert.match(body.idempotencyKey, /^[0-9a-f-]{36}$/i);
   } finally { await mounted.unmount(); }
 });
@@ -308,7 +374,10 @@ test('B04 审核页：新草稿默认全不选，零选择不能确认', async (
     assert.match(mounted.container.innerHTML, /已选 0 条/);
     writeBoxes(mounted.container)[1] && await setChecked(writeBoxes(mounted.container)[1] as HTMLInputElement, true);
     assert.match(mounted.container.innerHTML, /已选 1 条/);
+    assert.equal(required(byText('确认写入 Wiki', mounted.container), '确认按钮').disabled, true, '仅勾选不能替代审查');
+    await saveAndReview(mounted.container);
     assert.equal(required(byText('确认写入 Wiki', mounted.container), '确认按钮').disabled, false);
+    assert.equal(stub.calls.filter(call => call.url.includes('/review/pages/')).length, 2, '未选中的候选页也必须逐页确认');
     assert.equal(stub.calls.some(call => call.url.endsWith('/confirm')), false, '仅勾选不应触发确认');
   } finally { await mounted.unmount(); }
 });
@@ -366,6 +435,7 @@ test('B04 审核页：冲突提示与部分提交面板', async () => {
   const partial = stubFetch({ confirmResponse: () => reply({ error: { code: 'COMMIT_FAILED', message: 'index 写入失败，已部分提交', details: { committed: true, recoverable: true, operationId: '33333333-3333-4333-8333-333333333333' } } }, 500) });
   const stubbed = await mount(<DraftReviewPage draftId={makeDraft().id} onBack={() => undefined} onCommitted={async () => undefined} onOpenRaw={() => undefined} />);
   try {
+    await saveAndReview(stubbed.container);
     await click(required(byText('确认写入 Wiki', stubbed.container), '确认按钮'));
     const html = stubbed.container.innerHTML;
     assert.match(html, /index 写入失败，已部分提交/);
@@ -378,14 +448,17 @@ test('B04 审核页：冲突提示与部分提交面板', async () => {
 });
 
 test('B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁', async () => {
-  const stub = stubFetch({ duplicateResponse: () => reply({ error: { code: 'CANDIDATE_DOWN', message: '候选服务不可用' } }, 503) });
+  const stub = stubFetch();
   const mounted = await mount(<DraftReviewPage draftId={makeDraft().id} onBack={() => undefined} onCommitted={async () => undefined} onOpenRaw={() => undefined} />);
   try {
+    await saveAndReview(mounted.container);
+    stub.setDuplicateResponse(() => reply({ error: { code: 'CANDIDATE_DOWN', message: '候选服务不可用' } }, 503));
+    const callsBeforeFailure = stub.calls.length;
     const confirmButton = required(byText('确认写入 Wiki', mounted.container), '确认按钮');
     await click(confirmButton);
     assert.match(mounted.container.textContent ?? '', /候选查询失败，已阻止确认写入/);
     assert.equal(stub.calls.some(call => call.url.endsWith('/confirm')), false, '候选失败时不得请求正式确认');
-    assert.equal(stub.calls.some(call => call.method === 'PATCH'), false, '候选失败时不得把默认创建决定写入草稿');
+    assert.equal(stub.calls.slice(callsBeforeFailure).some(call => call.method === 'PATCH'), false, '候选失败时不得把默认创建决定写入草稿');
 
     stub.setDuplicateResponse(() => reply({
       draftId: makeDraft().id, pageId: 'page-1', draftRevision: 3, decision: null, targetWikiId: null,
@@ -401,6 +474,8 @@ test('B04 审核页：候选查询失败阻断提交，成功恢复后保留显�
     assert.equal(stub.calls.some(call => call.url.endsWith('/confirm')), false, '发现候选后仍需用户明确决定');
 
     await click(required(byText('仍创建新页', cards[1] as ParentNode), '明确新建决定'));
+    assert.equal(confirmButton.disabled, true, '处理决定变化使全部页审查失效');
+    await reviewPages(mounted.container);
     await click(confirmButton);
     const confirmCall = stub.calls.find(call => call.url.endsWith('/confirm'));
     assert.ok(confirmCall, '明确选择新建后允许提交');
@@ -417,6 +492,10 @@ test('B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍�
     const boxes = writeBoxes(mounted.container);
     await setChecked(boxes[0], true);
     await setChecked(boxes[1], false);
+    await saveAndReview(mounted.container);
+    // Drain the normal debounced lookup before installing the deliberately pending
+    // confirm lookup, so the two requests below belong only to final confirmation.
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 150)); });
     let release!: (response: Response) => void;
     let pending = 0;
     const waiting = new Promise<Response>(resolve => { release = resolve; });
@@ -425,7 +504,10 @@ test('B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍�
     await act(async () => { await tick(); });
     assert.equal(pending, 2, '确认需等待每条建议的最新候选');
     assert.ok(boxes.every(box => box.disabled), '确认请求期间锁定所有写入勾选框');
-    assert.ok([...mounted.container.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select')].filter(element => !element.closest('.draft-evidence')).every(element => element.disabled), '确认请求期间锁定全部可编辑字段');
+    assert.ok([...mounted.container.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select')].filter(element => !element.closest('.draft-evidence')).every(element => element.disabled || ('readOnly' in element && element.readOnly)), '确认请求期间锁定全部可编辑字段（原文事实/问题保持只读）');
+    const immutableInputs = [...mounted.container.querySelectorAll<HTMLTextAreaElement>('.draft-block textarea')].filter(element => /来源事实|待确认问题/.test(element.closest('.draft-block')?.querySelector('h4')?.textContent ?? ''));
+    assert.equal(immutableInputs.length, 3, '两页来源事实及原问题均保留展示');
+    assert.ok(immutableInputs.every(element => element.readOnly), '原文事实及原问题始终不能被编辑');
     assert.equal(boxes[0].checked, true);
     assert.equal(boxes[1].checked, false);
     const available = { draftId: makeDraft().id, pageId: 'page-1', draftRevision: 3, decision: null, targetWikiId: null, candidates: [] };

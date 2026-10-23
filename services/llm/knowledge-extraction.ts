@@ -7,7 +7,6 @@ import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } f
 import { validateSchema } from './schema-validator.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
 import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
-import { reviewKnowledgePlan } from './knowledge-semantic-review.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -194,7 +193,7 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     const allQuestions = current.completedChunks.flatMap(part => part.questions);
     if (!allFacts.length) throw new LlmError('LLM_EMPTY_RESULT', '整篇没有可规划的已验证事实（EMPTY_RESULT）。', 422);
     guard();
-    if (knowledgeCallLimit(chunks.length) - current.attempts < 2) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划和语义审核；成功块已保留，请检查资料后显式重新生成。', 429);
+    if (knowledgeCallLimit(chunks.length) - current.attempts < 1) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划；成功块已保留，请检查资料后显式重新生成。', 429);
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
     const planningPayload = { ...planningInput, ...(feedback ? { coverageFeedback: feedback } : {}) };
@@ -223,7 +222,8 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     const rawPlan = {document:wirePlan.document,pages:expandKnowledgePlan(wirePlan,planningInput)};
     if(hasCoverageErrors(coverageDiagnostic(factIds,questionIds,rawPlan.pages)))throw new LlmError('LLM_PLAN_COVERAGE_INVALID','分配单元与原记录覆盖不一致，未组装草稿。',502);
     assertNoKnownSecret(rawPlan, input.provider.secrets ?? []);
-    await reviewKnowledgePlan({ input: planningInput, plan: wirePlan, schema: bundle.kb02SemanticReviewSchema, provider: input.provider, signal: input.signal, deadline, guard, beforeCall: async () => { current = await input.beforeCall('planning'); } });
+    // Revision13 publishes mechanically valid candidates for mandatory human review.
+    // Historical model semantic decisions are not an approval token.
     guard();
     current = await input.saveCheckpoint({ ...current, plan: { document: { ...rawPlan.document, summary: sourceSummary(allFacts.map(item => item.text)) }, pages: rawPlan.pages }, stage: 'assembling', lastError: undefined });
   }
@@ -249,6 +249,16 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     document: current.plan.document, pages, provider: { name: input.provider.name, model: input.provider.model }, rulesVersion: `${bundle.rulesVersion}-kb02-2`,
     callCount: current.attempts, chunkCount: chunks.length, chunkCoverage: chunks.map(({ index, start, end }) => ({ index, start, end })), usage: { promptTokens: 0, completionTokens: 0 },
     warnings: ['本草稿由 kb02-2 精简事实与整篇规划程序组装；AI 整理和推断字段为空，未生成推断。'],
+  };
+  const basisInput=buildKnowledgePlanningInput(input.body,current.completedChunks,catalogByChunk);
+  const unitPlan=projectKnowledgePlan(current.plan,basisInput);
+  outcome.reviewBasis={
+    units:[...basisInput.factUnits.map(unit=>({unit,kind:'fact' as const})),...basisInput.questionUnits.map(unit=>({unit,kind:'question' as const}))].map(({unit,kind})=>{
+      const records=(kind==='fact'?facts:questions).filter(record=>unit.memberIds.includes(record.id));
+      const context=basisInput.sourceContexts.find(c=>c.id===unit.sourceId)!;
+      return {id:unit.id,kind,origin:'kb02' as const,text:unit.text,memberIds:[...unit.memberIds],sourceId:unit.sourceId,start:context.start,end:context.end,...(unit.kind?{factKind:unit.kind}:{}),records:records.map(r=>({id:r.id,text:r.text,evidenceIds:[...r.locatorIds]})),evidence:[...new Set(records.flatMap(r=>r.locatorIds))].map(id=>({...evidenceById.get(id)!}))};
+    }),
+    pageUnitIds:unitPlan.pages.map(p=>[...p.factUnitIds,...p.questionUnitIds]),
   };
   assertNoKnownSecret(outcome, input.provider.secrets ?? []);
   return { outcome, checkpoint: current };

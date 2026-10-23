@@ -1,3 +1,4 @@
+import {addLegacyReviewPrecondition} from './support/human-review.ts';
 // B04 service-level closed loop: extraction → draft → review edits → confirmed commit, plus
 // failure, cancel, idempotency and recovery behaviour. The provider is a real HTTP server
 // (tests/support/fake-llm.ts) reached through the real OpenAI-compatible adapter.
@@ -42,6 +43,7 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined) 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
+  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     const rawId = rawIdFromPrompt(request.user);
@@ -479,7 +481,7 @@ test('E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块�
     const started = await context.extract(raw.id, );
     assert.equal(started.finished.status, 'completed', started.finished.error?.message ?? '');
     assert.ok((started.finished.chunksTotal ?? 0) > 10, '十万字必须切成多块');
-    assert.equal(started.finished.callCount, started.finished.chunksTotal + 2, '每块一次调用 + 一次规划 + 一次语义审核');
+    assert.equal(started.finished.callCount, started.finished.chunksTotal + 1, 'revision13每块一次调用 + 一次规划，人审不外发');
     // KB02 planning sees all extracted fact/question IDs and text, without evidence or raw chunk payloads.
     const planningRequests = context.fake.requests.filter(request => request.user.includes('请对下列全部已验证事实规划知识页'));
     assert.equal(planningRequests.length, 1, '全部分块完成后必须恰好进行一次整篇规划');
@@ -625,20 +627,21 @@ test('E04-04 审核编辑：部分选择、删除、合并、改名与证据重�
     }
     // Evidence edited by hand is re-validated against the Raw.
     const quote = raw.body.slice(2, 12);
-    const edited = await context.drafts.patch(draft.id, {
+    await assert.rejects(context.drafts.patch(draft.id, {
       baseRevision: merged.revision,
       pages: [{ pageId: merged.pages[0].pageId, source_evidence: [{ id: 'e1', rawId: raw.id, quote }], source_facts: [{ text: '人工确认的事实', evidenceIds: ['e1'] }] }],
-    }, { body: raw.body, rules });
-    assert.equal(edited.pages[0].source_evidence[0].quote, quote);
-    assert.equal(raw.body.slice(edited.pages[0].source_evidence[0].start, edited.pages[0].source_evidence[0].end), quote);
+    }, { body: raw.body, rules }),{code:'SOURCE_RECORD_IMMUTABLE'});
+    const edited=merged;
+    assert.deepEqual((await context.drafts.get(draft.id))!.pages[0].source_evidence,merged.pages[0].source_evidence);
+    for(const evidence of edited.pages[0].source_evidence)assert.equal(raw.body.slice(evidence.start,evidence.end),evidence.quote);
     const badEvidence = await (async () => {
       try {
         await context.drafts.patch(draft.id, { baseRevision: edited.revision, pages: [{ pageId: edited.pages[0].pageId, source_evidence: [{ id: 'e1', rawId: raw.id, quote: '原文里没有的句子' }] }] }, { body: raw.body, rules });
       } catch (error) { return error as { code: string; status: number }; }
       return undefined;
     })();
-    assert.equal(badEvidence?.code, 'LLM_EVIDENCE_QUOTE_NOT_FOUND');
-    assert.equal(badEvidence?.status, 422);
+    assert.equal(badEvidence?.code, 'SOURCE_RECORD_IMMUTABLE');
+    assert.equal(badEvidence?.status, 409);
     const committing = await context.drafts.markCommitting(draft.id, crypto.randomUUID());
     assert.equal(committing.status, 'committing');
     const blocked = await (async () => {

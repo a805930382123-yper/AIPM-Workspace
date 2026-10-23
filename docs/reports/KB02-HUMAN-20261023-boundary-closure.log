@@ -1,0 +1,29 @@
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (343.6157ms)
+✔ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (153.3039ms)
+✔ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (440.378ms)
+✔ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (19.2107ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (61.1949ms)
+✔ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (571.6846ms)
+✔ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (633.0582ms)
+✔ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (1986.4822ms)
+✔ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (1386.2385ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (178.7401ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (217.5234ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (224.5814ms)
+✔ HUMAN synthesis zero legacy transaction recovery requires real disk evidence and remains reviewable (224.5711ms)
+✔ HUMAN synthesis partial legacy transaction recovery requires real disk evidence and remains reviewable (314.8505ms)
+✔ HUMAN synthesis conflict legacy transaction recovery requires real disk evidence and remains reviewable (351.3968ms)
+✔ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (2 attempts) (191.4334ms)
+✔ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (3 attempts) (2224.4103ms)
+✔ HUMAN legacy merge retains same text at different positions and colliding evidence IDs; deleting an occupied page keeps units unresolved (219.5052ms)
+✔ HUMAN legitimate old standalone update migrates explicit snapshots; new missing input binding and damaged legacy source cannot downgrade (173.4066ms)
+✔ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (3081.3911ms)
+✔ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (1626.51ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11788.1637

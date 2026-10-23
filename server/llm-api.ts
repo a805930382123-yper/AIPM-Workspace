@@ -12,7 +12,7 @@ import type { RawStateStore } from '../services/raw/state.ts';
 import type { RawStore } from '../services/raw/store.ts';
 import type { WikiStore } from '../services/wiki/store.ts';
 import { InputError } from './validation.ts';
-import { validateConfirm, validateDiscard, validateDraftPatch } from './llm-validation.ts';
+import { validateConfirm, validateDiscard, validateDraftPatch, validateHumanReview } from './llm-validation.ts';
 
 export type B04Deps = {
   root: string;
@@ -151,6 +151,7 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     const reuseTitle = previewValue?.sourceReuse?.title;
     return {
       ...deps.drafts.view(draft, { sourceTitle: reuseTitle ?? draft.source.title }),
+      reviewContentDigest: draft.humanReview ? deps.drafts.contentDigest(draft) : null,
       preview: previewValue,
       raw: raw ? { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author ?? null, publishedAt: raw.publishedAt ?? null, url: raw.url ?? null, importedAt: raw.importedAt, bodySha256: raw.bodySha256 } : null,
     };
@@ -175,6 +176,16 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
       res.json(await draftPayload(updated));
     } catch (error) { next(error); }
   });
+
+  for(const action of ['start','move','page'] as const) {
+    const route=action==='page'?'/api/drafts/:draftId/review/pages/:pageId':`/api/drafts/:draftId/review/${action}`;
+    app.post(route,async(req,res,next)=>{try{
+      const input=validateHumanReview(req.body,action,String(req.params.pageId));
+      const draft=await deps.drafts.get(String(req.params.draftId));if(!draft)throw new InputError('DRAFT_NOT_FOUND','草稿不存在。',404);
+      const raw=await deps.rawStore.get(draft.rawId);if(!raw)throw new InputError('RAW_MISSING','原文不存在。',409);
+      res.json(await draftPayload(await deps.drafts.reviewOperation(draft.id,input,{body:raw.body,rulesDir:deps.rulesDir})));
+    }catch(error){next(error);}});
+  }
 
   app.post('/api/drafts/:draftId/discard', async (req, res, next) => {
     try {

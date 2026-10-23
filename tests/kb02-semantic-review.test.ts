@@ -15,6 +15,10 @@ import { storageFixture } from './support/kb02-storage-fixture.ts';
 import { WikiStore } from '../services/wiki/store.ts';
 import { WikiCommitService } from '../services/wiki/commits.ts';
 import { reviewKnowledgePlan } from '../services/llm/knowledge-semantic-review.ts';
+import {buildKnowledgePlanningInput,projectKnowledgePlan} from '../services/llm/knowledge-planning.ts';
+import {buildEvidenceLocatorCatalog} from '../services/llm/locators.ts';
+import {knowledgeCallLimit} from '../services/llm/checkpoints.ts';
+import {approveDraft} from './support/human-review.ts';
 
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 const payload=(r:LlmCompletionRequest)=>JSON.parse(r.user.split('\n').at(-1)!);
@@ -32,7 +36,23 @@ async function fixture(body='岚河渠道门店20家。异常审批负责人未�
   const provider:LlmProvider={name:'fake',model:'semantic',secrets:['semantic-isolated-secret'],complete:async r=>{requests.push(r);return isReview(r)?audit(r):r.user.includes('请对下列全部已验证事实规划知识页')?reply(planner(r)):reply(select(r));}};
   let beforeHook:((n:number)=>void|Promise<void>)|undefined,saveHook:((c:Omit<ExtractionCheckpoint,'integrity'>)=>void)|undefined;
   const args={raw,body,bodySha256:sha(body),provider,rulesDir:'rules',beforeCall:async(stage:'extracting'|'planning')=>{await beforeHook?.(checkpoint.attempts+1);return checkpoint={...checkpoint,stage,attempts:checkpoint.attempts+1};},saveCheckpoint:async(c:Omit<ExtractionCheckpoint,'integrity'>)=>{saveHook?.(c);checkpoint=c as ExtractionCheckpoint;saves.push(structuredClone(checkpoint));return checkpoint;}};
-  return {args,requests,saves,get cp(){return checkpoint;},set cp(c:ExtractionCheckpoint){checkpoint=c;},audit:(f:typeof audit)=>audit=f,plan:(f:typeof planner)=>planner=f,select:(f:typeof select)=>select=f,before:(f:typeof beforeHook)=>beforeHook=f,onSave:(f:typeof saveHook)=>saveHook=f,run:(signal?:AbortSignal)=>runKnowledgePipeline({...args,checkpoint,signal})};
+  // Revision13 intentionally does NOT call B1. Preserve its historical failure, safety,
+  // timer and accounting assertions through an explicit test-only direct-function harness.
+  // The production runner's new two-call behavior is separately asserted below/HUMAN tests.
+  const historicalReview=async(signal?:AbortSignal)=>{
+    if(checkpoint.plan)return runKnowledgePipeline({...args,checkpoint,signal});
+    if(knowledgeCallLimit(checkpoint.chunks.length)-checkpoint.attempts<2)throw new LlmError('LLM_ATTEMPT_LIMIT','Historical B1 requires planning + review',429);
+    const deadline=Date.now()+600_000;let staged:ExtractionCheckpoint|undefined;
+    const result=await runKnowledgePipeline({...args,checkpoint,signal,saveCheckpoint:async value=>{if(value.plan){staged={...value,integrity:'memory'};return staged;}return args.saveCheckpoint(value);}});
+    assert(staged?.plan);const accepted=staged;
+    const catalogs=new Map(chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000}).map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
+    const input=buildKnowledgePlanningInput(body,accepted.completedChunks,catalogs),plan=projectKnowledgePlan(accepted.plan!,input);
+    const guard=()=>{if(signal?.aborted)throw new LlmError('LLM_CANCELLED','cancelled',409);if(Date.now()>=deadline)throw new LlmError('LLM_DEADLINE_EXCEEDED','deadline',504);};
+    await reviewKnowledgePlan({input,plan,schema:bundle.kb02SemanticReviewSchema,provider,signal,deadline,guard,beforeCall:async()=>{await args.beforeCall('planning');}});
+    const saved=await args.saveCheckpoint({...accepted,attempts:checkpoint.attempts});
+    return {...result,checkpoint:saved,outcome:{...result.outcome,callCount:checkpoint.attempts}};
+  };
+  return {args,requests,saves,get cp(){return checkpoint;},set cp(c:ExtractionCheckpoint){checkpoint=c;},audit:(f:typeof audit)=>audit=f,plan:(f:typeof planner)=>planner=f,select:(f:typeof select)=>select=f,before:(f:typeof beforeHook)=>beforeHook=f,onSave:(f:typeof saveHook)=>saveHook=f,run:historicalReview};
 }
 
 test('SEMANTIC original seq202 reject/uncertain gates the full pipeline with exact source/units and retained blocks',async()=>{
@@ -75,9 +95,9 @@ for(const [name,result,code] of [
 ] as const)test(`SEMANTIC ${name} fails closed with no plan and no raw failure details`,async()=>{const f=await fixture();f.audit(()=>result);await assert.rejects(f.run(),(e:unknown)=>e instanceof LlmError&&e.code===code&&!JSON.stringify(e).includes('arbitrary-failure-payload'));assert(!f.cp.plan);assert.equal(f.cp.attempts,3);});
 
 test('SEMANTIC schema/instruction revision fingerprint changes, old unfinished revision and new plan undercount fail without calls or writes',async()=>{
-  const f=await fixture();await f.run();const valid=structuredClone(f.cp);assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-12');
-  const n=f.requests.length,writes=f.saves.length;f.cp={...valid,attempts:valid.completedChunks.length+1};await assert.rejects(f.run(),{code:'LLM_CHECKPOINT_CORRUPT'});
-  f.cp={...valid,plan:undefined,rulesVersion:valid.rulesVersion.replace('planning-12-','planning-11-')};const before=structuredClone(f.cp);await assert.rejects(f.run(),{code:'LLM_CHECKPOINT_INCOMPATIBLE',status:409});assert.deepEqual(f.cp,before);assert.equal(f.requests.length,n);assert.equal(f.saves.length,writes);
+  const f=await fixture();await f.run();const valid=structuredClone(f.cp);assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-13');
+  const n=f.requests.length,writes=f.saves.length;f.cp={...valid,attempts:valid.completedChunks.length};await assert.rejects(f.run(),{code:'LLM_CHECKPOINT_CORRUPT'});
+  f.cp={...valid,plan:undefined,rulesVersion:valid.rulesVersion.replace('planning-13-','planning-12-')};const before=structuredClone(f.cp);await assert.rejects(f.run(),{code:'LLM_CHECKPOINT_INCOMPATIBLE',status:409});assert.deepEqual(f.cp,before);assert.equal(f.requests.length,n);assert.equal(f.saves.length,writes);
   const dir=await mkdtemp(path.join(os.tmpdir(),'semantic-rules-'));try{await cp('rules',dir,{recursive:true});const file=path.join(dir,'kb02-semantic-review.schema.json');await writeFile(file,(await readFile(file,'utf8'))+'\n');assert.notEqual((await loadExtractionRules(dir)).rulesVersion,valid.rulesVersion);}finally{await rm(dir,{recursive:true,force:true});}
 });
 
@@ -114,14 +134,14 @@ test('SEMANTIC single-unit independent future AI mechanism passes without deleti
   const frozen=await fixture(sample.body);await frozen.run();assert.equal(frozen.cp.plan!.pages.flatMap(p=>p.factIds).length,frozen.cp.completedChunks.flatMap(c=>c.facts).length);
 });
 
-test('SEMANTIC runner semantic failure uses ordinary same-job continue, persists trusted code only and counts each call',async()=>{
-  const f=await storageFixture();try{f.succeed();const original=f.provider.complete;f.provider.complete=async r=>{if(!isReview(r))return original(r);f.requests.push(r);const v=JSON.parse(semanticReviewReply(r)!.text) as Review;v.pages[0].decision='reject';v.pages[0].code='UNSUPPORTED_TOPIC';v.pages[0].reason='UNTRUSTED-REASON-NEVER-PERSIST';return reply(v);};const first=await f.wait((await f.start()).job.id);assert.equal(first.error?.code,'LLM_PLAN_SEMANTIC_REJECTED');assert.equal(first.callCount,3);assert(!first.error?.details);assert.equal((await f.drafts.list()).length,0);const cp=(await f.checkpoint(first.id))!;assert(!cp.plan);assert(!cp.lastError?.diagnostic);assert(!JSON.stringify(cp).includes('UNTRUSTED-REASON'));await assert.rejects(f.start({planningRetry:true}),{code:'LLM_PLANNING_RETRY_UNAVAILABLE'});const before=f.requests.length;const restart=f.newRunner();await restart.reconcile();assert.equal(f.requests.length,before);f.provider.complete=original;const resumed=await f.start();assert.equal(resumed.job.id,first.id);const completed=await f.wait(first.id);assert.equal(completed.status,'completed');assert.equal(completed.callCount,5);assert.deepEqual((await f.checkpoint(first.id))!.completedChunks,cp.completedChunks);assert.equal((await f.drafts.list()).length,1);}finally{await f.clean();}
+test('SEMANTIC revision13 runner no longer requests semantic rejection; candidate remains unreviewed across zero-call restart',async()=>{
+  const f=await storageFixture();try{f.succeed();const original=f.provider.complete;f.provider.complete=async r=>{assert(!isReview(r),'B1 is not a production request');return original(r);};const first=await f.wait((await f.start()).job.id);assert.equal(first.status,'completed');assert.equal(first.callCount,2);assert(!first.error);const cp=(await f.checkpoint(first.id))!;assert(cp.plan);assert(!cp.lastError);assert(!JSON.stringify(cp).includes('UNTRUSTED-REASON'));await assert.rejects(f.start({planningRetry:true}));const before=f.requests.length;const restart=f.newRunner();await restart.reconcile();assert.equal(f.requests.length,before);assert.deepEqual((await f.checkpoint(first.id))!.completedChunks,cp.completedChunks);assert.equal((await f.drafts.list()).length,1);assert.equal((await f.drafts.list())[0].humanReview!.approvals.length,0);}finally{await f.clean();}
 });
 
 test('SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and explicitly confirms with zero outbound calls',async()=>{
   const f=await storageFixture();try{
     f.succeed();const job=await f.wait((await f.start()).job.id),original=(await f.checkpoint(job.id))!,draft=(await f.drafts.get(job.draftId!))!;
-    const oldRules=original.rulesVersion.replace('planning-12-','planning-11-');
+    const oldRules=original.rulesVersion.replace('planning-13-','planning-11-');
     const legacy={...draft,rulesVersion:oldRules+'-kb02-2',extraction:{...draft.extraction,callCount:2}};
     await writeFile(path.join(f.root,'drafts',draft.id+'.json'),JSON.stringify(legacy));
     const old=await new ExtractionCheckpointStore(f.root).save({...original,rulesVersion:oldRules,attempts:2,stage:'assembling'});
@@ -129,7 +149,8 @@ test('SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and exp
     const runner=f.newRunner();await runner.reconcile();const recovered=await runner.readJob(job.id);assert.equal(recovered.job?.status,'completed');assert.equal(recovered.recovery,undefined);assert.equal(f.requests.length,calls);
     const settled=(await f.checkpoint(job.id))!;assert.equal(settled.rulesVersion,oldRules);assert.equal(settled.attempts,2);assert.deepEqual(settled.plan,old.plan);assert.notDeepEqual(await readFile(cpFile),before,'settlement may finish stage, never revision or attempts');
     const bundle=await loadExtractionRules('rules'),rules={types:['metric'],categories:['metric'],knowledge_status:bundle.fmcg.enums.knowledge_status,confidence:bundle.fmcg.enums.confidence,source_level:bundle.fmcg.enums.source_level,review_status:bundle.fmcg.enums.review_status};
-    const edited=await f.drafts.patch(draft.id,{baseRevision:legacy.revision,pages:[{pageId:legacy.pages[0].pageId,title:'旧草稿人工审核'}]},{body:f.raw.body,rules});
+    await f.drafts.patch(draft.id,{baseRevision:legacy.revision,pages:[{pageId:legacy.pages[0].pageId,title:'旧草稿人工审核'}]},{body:f.raw.body,rules});
+    const edited=await approveDraft(f.drafts,draft.id,f.raw.body);
     const wiki=new WikiStore(f.root,f.rawStore);await wiki.initialize();const commits=new WikiCommitService({root:f.root,wikiStore:wiki,drafts:f.drafts,rawStates:f.rawStates,rawStore:f.rawStore});await commits.initialize();
     const committed=await wiki.withLock(()=>commits.confirm({draftId:draft.id,baseRevision:edited.revision,selectedPageIds:edited.pages.map(p=>p.pageId),idempotencyKey:'legacy-semantic-test',operationId:randomUUID(),now:new Date().toISOString()}));assert.equal(committed.manifest.status,'completed');assert.equal(f.requests.length,calls);
   }finally{await f.clean();}

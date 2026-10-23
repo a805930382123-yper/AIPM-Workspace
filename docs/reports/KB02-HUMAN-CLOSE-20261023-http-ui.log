@@ -1,0 +1,17 @@
+node:internal/fs/promises:786
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-Xu7nyu\knowledge\raw\reports\.45283054-1654-4447-8044-7cec4bc34071.12eacb5c-7891-4488-84ee-6f6c97de3546.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-Xu7nyu\knowledge\raw\reports\45283054-1654-4447-8044-7cec4bc34071.md'
+    at async rename (node:internal/fs/promises:786:10)
+    at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+    at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+    at async <anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\acceptance\KB02-HUMAN-CLOSE-20261023-http-ui.mjs:10:9) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-Xu7nyu\\knowledge\\raw\\reports\\.45283054-1654-4447-8044-7cec4bc34071.12eacb5c-7891-4488-84ee-6f6c97de3546.tmp',
+  dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-Xu7nyu\\knowledge\\raw\\reports\\45283054-1654-4447-8044-7cec4bc34071.md'
+}
+
+Node.js v25.2.1

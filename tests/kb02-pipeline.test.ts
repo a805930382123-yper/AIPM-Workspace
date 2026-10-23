@@ -37,7 +37,7 @@ test('KB02 facts/planning builds existing draft outcome and preserves fact/quest
     assert.deepEqual(result.outcome.pages[0].ai_inferences, []); assert.deepEqual(result.outcome.pages[0].ai_organized, []);
     assert.equal(result.outcome.pages[0].open_questions[0], '是否为含税口径?'.replace('?', '？'));
     assert.equal(result.outcome.pages[0].source_evidence[0].rawId, raw.id);
-    assert.equal(checkpoint.attempts, chunks.length + 2); calls = checkpoint.attempts; assert.equal(calls, 3);
+    assert.equal(checkpoint.attempts, chunks.length + 1); calls = checkpoint.attempts; assert.equal(calls, 2);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
@@ -64,7 +64,7 @@ test('KB02 resume reuses validated chunks and counts failed outbound attempts', 
     await assert.rejects(runKnowledgePipeline({ ...args, checkpoint }), /simulated timeout/);
     assert.equal(checkpoint.completedChunks.length, 1); assert.equal(checkpoint.attempts, 2);
     const resumed = await runKnowledgePipeline({ ...args, checkpoint });
-    assert.deepEqual(seen, ['c1', 'c2', 'c2']); assert.equal(checkpoint.attempts, 5);
+    assert.deepEqual(seen, ['c1', 'c2', 'c2']); assert.equal(checkpoint.attempts, 4);
     assert.equal(resumed.outcome.pages[0].source_facts.length, 2);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });

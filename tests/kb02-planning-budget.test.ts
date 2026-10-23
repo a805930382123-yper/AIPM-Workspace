@@ -71,7 +71,7 @@ test('KB02 exhausted explicit replanning rejects before writes, retains diagnost
     assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
     assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
     assert.equal(job.callCount, 2);
-    for (let calls = 3; calls <= 5; calls++) {
+    for (let calls = 3; calls <= 6; calls++) {
       assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
       assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
       assert.equal((await f.start({ planningRetry: true })).job.id, job.id);
@@ -80,31 +80,31 @@ test('KB02 exhausted explicit replanning rejects before writes, retains diagnost
       assert.equal(job.callCount, calls);
     }
     const saved = await f.checkpoint(job.id), before = await f.hashes(job.id);
-    assert.equal(saved?.attempts, 5);
+    assert.equal(saved?.attempts, 6);
     assert.equal(saved?.completedChunks.length, 1);
     assert.deepEqual(saved?.lastError?.diagnostic?.facts.missing, ['fu-13-26-fact']);
     assert.deepEqual(job.error?.details, saved?.lastError?.diagnostic);
     for (let replay = 0; replay < 3; replay++) {
       await assert.rejects(f.start({ planningRetry: true }), (error: unknown) => error instanceof JobError && error.code === 'LLM_ATTEMPT_LIMIT' && error.status === 409 && /累计 6 次调用上限.*显式重新生成/u.test(error.message));
       assert.deepEqual(await f.hashes(job.id), before);
-      assert.equal(f.requests.length, 5);
+      assert.equal(f.requests.length, 6);
     }
     f.succeed();
     const restarted = await f.start({ restart: true });
     assert.notEqual(restarted.job.id, job.id);
     const completed = await f.wait(restarted.job.id);
     assert.equal(completed.status, 'completed');
-    assert.equal(completed.callCount, 3);
+    assert.equal(completed.callCount, 2);
     assert.deepEqual(await f.checkpoint(job.id), saved);
   } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
 });
 
-test('KB02 last available planning and review pair stays in the same job with successful chunks and cumulative attempts', async () => {
+test('KB02 revision13 last single planning slot stays in the same job with successful chunks and cumulative attempts', async () => {
   const f = await fixture();
   let primaryFailure = false;
   try {
     let job = await f.wait((await f.start()).job.id);
-    for (let calls = 3; calls <= 4; calls++) {
+    for (let calls = 3; calls <= 5; calls++) {
       assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
       assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
       await f.start({ planningRetry: true });
@@ -122,6 +122,6 @@ test('KB02 last available planning and review pair stays in the same job with su
     assert.deepEqual((await f.checkpoint(job.id))!.completedChunks, chunk);
     assert.equal(f.requests.length, 6);
     assert.equal(f.requests.filter(r => !r.user.includes('请对下列全部已验证事实规划知识页') && !r.user.startsWith('请审核下列完整候选知识规划')).length, 1);
-    assert.deepEqual(JSON.parse(f.requests.at(-2)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
+    assert.deepEqual(JSON.parse(f.requests.at(-1)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
   } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
 });

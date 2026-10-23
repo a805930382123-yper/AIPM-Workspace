@@ -64,7 +64,7 @@ test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area pla
     return {version:3,document:{title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factUnitIds:p.factUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id),questionUnitIds:p.questionUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id)};})};
   });
   const done=await f.run(),payload=data(f.requests[0]);
-  assert.equal(f.requests.length,2);assert.equal(f.cp.attempts,17);assert.deepEqual(f.cp.completedChunks,before);
+  assert.equal(f.requests.length,1);assert.equal(f.cp.attempts,16);assert.deepEqual(f.cp.completedChunks,before);
   assert.equal(done.outcome.pages.length,14);assert.equal(done.outcome.pages.reduce((n,p)=>n+p.source_facts.length,0),81);assert.equal(done.outcome.pages.reduce((n,p)=>n+p.open_questions.length,0),25);
   for(const p of f.cp.plan!.pages){const area=p.title.slice(-2);for(const id of [...p.factIds,...p.questionIds])assert.equal(old.expectedAreas[id],area);}
   assert.equal(payload.facts.find((i:any)=>i.id==='f-c1-4').sourceId,payload.facts.find((i:any)=>i.id==='f-c2-1').sourceId);
@@ -89,7 +89,7 @@ test('PLAN-04 fresh extraction through planning uses context only for attributio
   const source=await synthetic('【资料说明】\n甲桥区域在售门店30家。未选择的来源说明。',t=>t==='甲桥区域在售门店30家。');
   source.checkpoint.completedChunks=[];source.checkpoint.attempts=0;
   const f=await runFixture(source,r=>r.user.includes('请对下列全部已验证事实规划知识页')?validPlan(data(r)):{version:2,facts:data(r).filter((a:any)=>a.text==='甲桥区域在售门店30家。').map((a:any)=>({atomId:a.id,kind:'fact'})),questions:[],sourceNotes:[]});
-  const done=await f.run();assert.equal(f.requests.length,3);assert.equal(f.cp.attempts,3);assert(data(f.requests[1]).sourceContexts[0].text.includes('未选择的来源说明'));
+  const done=await f.run();assert.equal(f.requests.length,2);assert.equal(f.cp.attempts,2);assert(data(f.requests[1]).sourceContexts[0].text.includes('未选择的来源说明'));
   assert.deepEqual(done.outcome.pages[0].source_facts.map(i=>i.text),['甲桥区域在售门店30家。']);assert(!done.outcome.document.summary.includes('未选择'));assert.deepEqual(done.outcome.pages[0].ai_organized,[]);assert.deepEqual(done.outcome.pages[0].ai_inferences,[]);
 });
 
@@ -126,7 +126,7 @@ test('PLAN-04 explicit coverage feedback counts toward the complete 192KiB limit
 test('PLAN-03 explicit planning retry retains all source context, diagnostics and cumulative attempts',async()=>{
   const old=(await fixture()).cases[1];let bad=true;const f=await runFixture(old,r=>bad?projectOldFailure(old.response,data(r)):validPlan(data(r)));
   await assert.rejects(f.run(),{code:'LLM_PLAN_COVERAGE_INVALID'});const before=structuredClone(f.cp.completedChunks),attempts=f.cp.attempts;bad=false;
-  const done=await f.run(true);assert.equal(f.cp.attempts,attempts+2);assert.equal(done.outcome.callCount,attempts+2);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.requests.length,3);assert.deepEqual(data(f.requests[1]).sourceContexts,data(f.requests[0]).sourceContexts);assert.deepEqual(data(f.requests[1]).coverageFeedback.facts.missing,[data(f.requests[1]).factUnits.find((u:any)=>u.memberIds.includes('f-c1-2')).id]);
+  const done=await f.run(true);assert.equal(f.cp.attempts,attempts+1);assert.equal(done.outcome.callCount,attempts+1);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.requests.length,2);assert.deepEqual(data(f.requests[1]).sourceContexts,data(f.requests[0]).sourceContexts);assert.deepEqual(data(f.requests[1]).coverageFeedback.facts.missing,[data(f.requests[1]).factUnits.find((u:any)=>u.memberIds.includes('f-c1-2')).id]);
 });
 
 test('PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; explicit restart does not reuse old chunks',async()=>{
@@ -139,7 +139,7 @@ test('PLAN revision6 original checkpoint HTTP409 preserves job/cp/raw state; exp
     const files=[path.join(f.root,'state/extraction-checkpoints',cp.jobId+'.json'),path.join(f.root,'state/extraction-jobs',cp.jobId+'.json'),path.join(f.root,'state/raw-processing',raw.id+'.json')],before=await Promise.all(files.map(p=>readFile(p)));
     for(const options of [{},{planningRetry:true},{}]){const r=await h.request(`/api/raw/${raw.id}/extract`,options);assert.equal(r.status,409);assert.equal(r.json.error.code,'LLM_CHECKPOINT_INCOMPATIBLE');assert.deepEqual(await Promise.all(files.map(p=>readFile(p))),before);assert.equal(f.requests.length,0);}
     let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restart=r.json.jobId;assert.notEqual(restart,cp.jobId);
-    for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);const fresh=await store.get(restart);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-12-/u);
+    for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);const fresh=await store.get(restart);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-13-/u);
     await f.runner.cancel(restart);release();await f.runner.waitForSettlement(restart);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
   }finally{release();if(restart)await f.runner.waitForSettlement(restart);await h.close();await f.clean();}
 });

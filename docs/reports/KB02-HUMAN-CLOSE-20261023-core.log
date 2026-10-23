@@ -1,0 +1,352 @@
+✖ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (21.1198ms)
+✖ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (13.9889ms)
+✖ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (10.1125ms)
+✔ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (13.0509ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (30.8081ms)
+✖ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (13.8316ms)
+✖ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (9.7337ms)
+✖ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (12.3028ms)
+✖ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (10.4553ms)
+✖ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (10.9501ms)
+✖ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (11.8077ms)
+✖ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (10.8627ms)
+✖ HUMAN synthesis zero legacy transaction recovery requires real disk evidence and remains reviewable (10.587ms)
+✖ HUMAN synthesis partial legacy transaction recovery requires real disk evidence and remains reviewable (11.5382ms)
+✖ HUMAN synthesis conflict legacy transaction recovery requires real disk evidence and remains reviewable (10.2981ms)
+✖ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (2 attempts) (9.9902ms)
+✖ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (3 attempts) (11.5064ms)
+✖ HUMAN legacy merge retains same text at different positions and colliding evidence IDs; deleting an occupied page keeps units unresolved (9.8865ms)
+✖ HUMAN legitimate old standalone update migrates explicit snapshots; new missing input binding and damaged legacy source cannot downgrade (9.9967ms)
+✖ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (20.4535ms)
+✖ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (11.9256ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 2
+ℹ fail 19
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2878.2979
+
+✖ failing tests:
+
+test at tests\kb02-human-review.test.ts:1:2285
+✖ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (21.1198ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-6eqBU2\knowledge\raw\reports\.de7f6d63-154e-4f47-9f29-57c880178bfd.3f9241a3-d214-47d8-b20b-123b3f45b38c.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-6eqBU2\knowledge\raw\reports\de7f6d63-154e-4f47-9f29-57c880178bfd.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:27:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-6eqBU2\\knowledge\\raw\\reports\\.de7f6d63-154e-4f47-9f29-57c880178bfd.3f9241a3-d214-47d8-b20b-123b3f45b38c.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-6eqBU2\\knowledge\\raw\\reports\\de7f6d63-154e-4f47-9f29-57c880178bfd.md'
+  }
+
+test at tests\kb02-human-review.test.ts:1:4144
+✖ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (13.9889ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-6uIshq\knowledge\raw\reports\.151ee649-20b4-4c73-a844-74f2e4a87d8e.0ce78200-08b5-4758-a3f1-09ad02189ca2.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-6uIshq\knowledge\raw\reports\151ee649-20b4-4c73-a844-74f2e4a87d8e.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:43:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-6uIshq\\knowledge\\raw\\reports\\.151ee649-20b4-4c73-a844-74f2e4a87d8e.0ce78200-08b5-4758-a3f1-09ad02189ca2.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-6uIshq\\knowledge\\raw\\reports\\151ee649-20b4-4c73-a844-74f2e4a87d8e.md'
+  }
+
+test at tests\kb02-human-review.test.ts:1:6559
+✖ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (10.1125ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-i4k5mH\knowledge\raw\reports\.4a82afba-1fd4-4ce7-b83a-83021c89be2c.8f32b775-1221-41d6-a620-529ab1bd9b46.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-i4k5mH\knowledge\raw\reports\4a82afba-1fd4-4ce7-b83a-83021c89be2c.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:58:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-i4k5mH\\knowledge\\raw\\reports\\.4a82afba-1fd4-4ce7-b83a-83021c89be2c.8f32b775-1221-41d6-a620-529ab1bd9b46.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-i4k5mH\\knowledge\\raw\\reports\\4a82afba-1fd4-4ce7-b83a-83021c89be2c.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:1348
+✖ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (13.8316ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-Zx93mh\knowledge\raw\reports\.a801fd01-7393-4ab5-a165-1c2fc0728d34.8da52491-6bfa-430b-bc11-cadad5855e94.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-Zx93mh\knowledge\raw\reports\a801fd01-7393-4ab5-a165-1c2fc0728d34.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:87:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-Zx93mh\\knowledge\\raw\\reports\\.a801fd01-7393-4ab5-a165-1c2fc0728d34.8da52491-6bfa-430b-bc11-cadad5855e94.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-Zx93mh\\knowledge\\raw\\reports\\a801fd01-7393-4ab5-a165-1c2fc0728d34.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:1348
+✖ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (9.7337ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-jA5PDZ\knowledge\raw\reports\.df48f83f-8ef8-43d0-aae2-783734541055.c2d89829-37a7-49bd-9165-4aafdc3aced0.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-jA5PDZ\knowledge\raw\reports\df48f83f-8ef8-43d0-aae2-783734541055.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:87:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-jA5PDZ\\knowledge\\raw\\reports\\.df48f83f-8ef8-43d0-aae2-783734541055.c2d89829-37a7-49bd-9165-4aafdc3aced0.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-jA5PDZ\\knowledge\\raw\\reports\\df48f83f-8ef8-43d0-aae2-783734541055.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:1348
+✖ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (12.3028ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-s3fE8C\knowledge\raw\reports\.09563b6e-0db1-4e94-a09f-94a22e74dbde.10597d74-dcf9-4e71-8d8b-f677eac8971d.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-s3fE8C\knowledge\raw\reports\09563b6e-0db1-4e94-a09f-94a22e74dbde.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:87:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-s3fE8C\\knowledge\\raw\\reports\\.09563b6e-0db1-4e94-a09f-94a22e74dbde.10597d74-dcf9-4e71-8d8b-f677eac8971d.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-s3fE8C\\knowledge\\raw\\reports\\09563b6e-0db1-4e94-a09f-94a22e74dbde.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:1348
+✖ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (10.4553ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-Ek5hF4\knowledge\raw\reports\.6776cc3a-69f4-4cfb-bed1-bb1ae5ea4f2d.1bb3b31f-9e77-493e-8d49-3d643abdc0a8.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-Ek5hF4\knowledge\raw\reports\6776cc3a-69f4-4cfb-bed1-bb1ae5ea4f2d.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:87:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-Ek5hF4\\knowledge\\raw\\reports\\.6776cc3a-69f4-4cfb-bed1-bb1ae5ea4f2d.1bb3b31f-9e77-493e-8d49-3d643abdc0a8.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-Ek5hF4\\knowledge\\raw\\reports\\6776cc3a-69f4-4cfb-bed1-bb1ae5ea4f2d.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:3580
+✖ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (10.9501ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-s0S9v0\knowledge\raw\reports\.06d764f4-0fa8-4c5b-a663-34940a216b47.4d729877-50d9-46b7-846f-8d04f300aa5b.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-s0S9v0\knowledge\raw\reports\06d764f4-0fa8-4c5b-a663-34940a216b47.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:102:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-s0S9v0\\knowledge\\raw\\reports\\.06d764f4-0fa8-4c5b-a663-34940a216b47.4d729877-50d9-46b7-846f-8d04f300aa5b.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-s0S9v0\\knowledge\\raw\\reports\\06d764f4-0fa8-4c5b-a663-34940a216b47.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:4884
+✖ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (11.8077ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-ksDBlY\knowledge\raw\reports\.c2d0305c-45cd-4f45-90ca-aa9e70dc3b45.1fdf9ccc-25af-4dcf-b074-b372c6eb6d05.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-ksDBlY\knowledge\raw\reports\c2d0305c-45cd-4f45-90ca-aa9e70dc3b45.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:111:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-ksDBlY\\knowledge\\raw\\reports\\.c2d0305c-45cd-4f45-90ca-aa9e70dc3b45.1fdf9ccc-25af-4dcf-b074-b372c6eb6d05.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-ksDBlY\\knowledge\\raw\\reports\\c2d0305c-45cd-4f45-90ca-aa9e70dc3b45.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:6772
+✖ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (10.8627ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-0jiAKL\knowledge\raw\reports\.38ff4d69-1ef4-4ed2-9e67-f73e3d37b1a2.3aeaf841-a67e-43d6-9beb-eee72c69f9da.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-0jiAKL\knowledge\raw\reports\38ff4d69-1ef4-4ed2-9e67-f73e3d37b1a2.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:124:11)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-0jiAKL\\knowledge\\raw\\reports\\.38ff4d69-1ef4-4ed2-9e67-f73e3d37b1a2.3aeaf841-a67e-43d6-9beb-eee72c69f9da.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-0jiAKL\\knowledge\\raw\\reports\\38ff4d69-1ef4-4ed2-9e67-f73e3d37b1a2.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:8578
+✖ HUMAN synthesis zero legacy transaction recovery requires real disk evidence and remains reviewable (10.587ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-7YM1Wy\knowledge\raw\reports\.02ccd0f2-fef5-4c36-a46e-9e2d1c4daae3.2443f653-94b0-4da5-98db-595888287363.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-7YM1Wy\knowledge\raw\reports\02ccd0f2-fef5-4c36-a46e-9e2d1c4daae3.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:134:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-7YM1Wy\\knowledge\\raw\\reports\\.02ccd0f2-fef5-4c36-a46e-9e2d1c4daae3.2443f653-94b0-4da5-98db-595888287363.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-7YM1Wy\\knowledge\\raw\\reports\\02ccd0f2-fef5-4c36-a46e-9e2d1c4daae3.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:8578
+✖ HUMAN synthesis partial legacy transaction recovery requires real disk evidence and remains reviewable (11.5382ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-RMsUnZ\knowledge\raw\reports\.94e23310-1595-466a-bf8d-1cbcfaf93502.01ca3c6d-79eb-46f1-9a02-d983f4ee19b5.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-RMsUnZ\knowledge\raw\reports\94e23310-1595-466a-bf8d-1cbcfaf93502.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:134:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-RMsUnZ\\knowledge\\raw\\reports\\.94e23310-1595-466a-bf8d-1cbcfaf93502.01ca3c6d-79eb-46f1-9a02-d983f4ee19b5.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-RMsUnZ\\knowledge\\raw\\reports\\94e23310-1595-466a-bf8d-1cbcfaf93502.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:8578
+✖ HUMAN synthesis conflict legacy transaction recovery requires real disk evidence and remains reviewable (10.2981ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-geUOi3\knowledge\raw\reports\.c10bc266-a9d7-4fd8-8325-852cbdb0eaf8.ce4676a3-2094-43df-ae61-0d1c459e777e.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-geUOi3\knowledge\raw\reports\c10bc266-a9d7-4fd8-8325-852cbdb0eaf8.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:134:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-geUOi3\\knowledge\\raw\\reports\\.c10bc266-a9d7-4fd8-8325-852cbdb0eaf8.ce4676a3-2094-43df-ae61-0d1c459e777e.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-geUOi3\\knowledge\\raw\\reports\\c10bc266-a9d7-4fd8-8325-852cbdb0eaf8.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:11591
+✖ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (2 attempts) (9.9902ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-h0A98Z\knowledge\raw\reports\.9582f566-047b-48ed-aedc-84435a689493.7f4b8e00-05b9-492e-be0f-e6b8ed2755da.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-h0A98Z\knowledge\raw\reports\9582f566-047b-48ed-aedc-84435a689493.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:150:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-h0A98Z\\knowledge\\raw\\reports\\.9582f566-047b-48ed-aedc-84435a689493.7f4b8e00-05b9-492e-be0f-e6b8ed2755da.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-h0A98Z\\knowledge\\raw\\reports\\9582f566-047b-48ed-aedc-84435a689493.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:11591
+✖ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (3 attempts) (11.5064ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-EqD7qD\knowledge\raw\reports\.d3d3e203-84dd-4353-b00f-6d241b03ed7f.be59b1d5-8ebe-4852-9e9c-577154c1701c.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-EqD7qD\knowledge\raw\reports\d3d3e203-84dd-4353-b00f-6d241b03ed7f.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:150:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-EqD7qD\\knowledge\\raw\\reports\\.d3d3e203-84dd-4353-b00f-6d241b03ed7f.be59b1d5-8ebe-4852-9e9c-577154c1701c.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-EqD7qD\\knowledge\\raw\\reports\\d3d3e203-84dd-4353-b00f-6d241b03ed7f.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:12653
+✖ HUMAN legacy merge retains same text at different positions and colliding evidence IDs; deleting an occupied page keeps units unresolved (9.8865ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-ghQWdV\knowledge\raw\reports\.a3480ea1-0eb4-4bb6-af0d-0aab4177432e.c1eb07c8-c43d-49b7-9640-85df117839f3.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-ghQWdV\knowledge\raw\reports\a3480ea1-0eb4-4bb6-af0d-0aab4177432e.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:154:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-ghQWdV\\knowledge\\raw\\reports\\.a3480ea1-0eb4-4bb6-af0d-0aab4177432e.c1eb07c8-c43d-49b7-9640-85df117839f3.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-ghQWdV\\knowledge\\raw\\reports\\a3480ea1-0eb4-4bb6-af0d-0aab4177432e.md'
+  }
+
+test at tests\kb02-human-review.test.ts:3:14943
+✖ HUMAN legitimate old standalone update migrates explicit snapshots; new missing input binding and damaged legacy source cannot downgrade (9.9967ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-pe2lxM\knowledge\raw\reports\.c6a264ba-963c-44da-b6b5-c398731f0bc2.511516e9-8c72-4fc2-ad77-1df24e72c013.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-pe2lxM\knowledge\raw\reports\c6a264ba-963c-44da-b6b5-c398731f0bc2.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async candidate (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:20:11)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-review.test.ts:161:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-pe2lxM\\knowledge\\raw\\reports\\.c6a264ba-963c-44da-b6b5-c398731f0bc2.511516e9-8c72-4fc2-ad77-1df24e72c013.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-pe2lxM\\knowledge\\raw\\reports\\c6a264ba-963c-44da-b6b5-c398731f0bc2.md'
+  }
+
+test at tests\kb02-human-ui.test.tsx:1:2621
+✖ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (20.4535ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-llZwv0\knowledge\raw\reports\.39af3131-7909-4a35-bf84-014b21a193dd.f0f226ab-b323-49a5-bcab-a74a3b418171.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-llZwv0\knowledge\raw\reports\39af3131-7909-4a35-bf84-014b21a193dd.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-ui.test.tsx:19:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-llZwv0\\knowledge\\raw\\reports\\.39af3131-7909-4a35-bf84-014b21a193dd.f0f226ab-b323-49a5-bcab-a74a3b418171.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-llZwv0\\knowledge\\raw\\reports\\39af3131-7909-4a35-bf84-014b21a193dd.md'
+  }
+
+test at tests\kb02-human-ui.test.tsx:1:6525
+✖ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (11.9256ms)
+  Error: EPERM: operation not permitted, rename 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-DTOC79\knowledge\raw\reports\.e5a75d71-f812-4e71-a5fe-cbfaf3e25091.753a0d25-6c6f-4baa-8a18-b4e081c8c1b0.tmp' -> 'C:\Users\80593\AppData\Local\Packages\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\AC\Temp\kb02-budget-DTOC79\knowledge\raw\reports\e5a75d71-f812-4e71-a5fe-cbfaf3e25091.md'
+      at async rename (node:internal/fs/promises:786:10)
+      at async RawStore.createWithId (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\services\raw\store.ts:132:7)
+      at async storageFixture (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\support\kb02-storage-fixture.ts:21:15)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-CLOSE-20261023-1MWKi7\tests\kb02-human-ui.test.tsx:39:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -4048,
+    code: 'EPERM',
+    syscall: 'rename',
+    path: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-DTOC79\\knowledge\\raw\\reports\\.e5a75d71-f812-4e71-a5fe-cbfaf3e25091.753a0d25-6c6f-4baa-8a18-b4e081c8c1b0.tmp',
+    dest: 'C:\\Users\\80593\\AppData\\Local\\Packages\\sandbox.{b8ded557-8814-49cd-afa8-355fa5e13efb}\\AC\\Temp\\kb02-budget-DTOC79\\knowledge\\raw\\reports\\e5a75d71-f812-4e71-a5fe-cbfaf3e25091.md'
+  }

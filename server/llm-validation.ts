@@ -26,6 +26,7 @@ export type DraftPatchBody = DraftPatch;
 /** Structural validation only: the service validates every field again before writing. */
 export function validateDraftPatch(value: unknown): DraftPatch {
   const body = object(value, '请求内容');
+  if(Object.keys(body).some(k=>!['baseRevision','document','source','pages','deletePageIds','merge'].includes(k)))throw new InputError('INVALID_PATCH','请求包含未知或受保护的审查字段。',400);
   const patch: DraftPatch = { baseRevision: revision(body.baseRevision) };
   if (body.document !== undefined) patch.document = object(body.document, 'document') as DraftPatch['document'];
   if (body.source !== undefined) patch.source = object(body.source, 'source') as DraftPatch['source'];
@@ -50,6 +51,23 @@ export function validateDraftPatch(value: unknown): DraftPatch {
     throw new InputError('EMPTY_PATCH', '这次修改没有任何内容。', 400);
   }
   return patch;
+}
+
+export function validateHumanReview(value:unknown,action:'start'|'move'|'page',pageId?:string) {
+  const body=object(value,'审查请求');
+  const allowed=action==='start'?['baseRevision']:action==='move'?['baseRevision','unitIds','pageId']:['baseRevision','reviewContentDigest','confirmed'];
+  if(Object.keys(body).some(k=>!allowed.includes(k)))throw new InputError('INVALID_REVIEW','审查请求包含未知字段。');
+  const input:{baseRevision:number;action:typeof action;unitIds?:string[];pageId?:string|null;reviewContentDigest?:string;confirmed?:boolean}={baseRevision:revision(body.baseRevision),action};
+  if(action==='move'){
+    input.unitIds=stringList(body.unitIds,'unitIds',{required:true});
+    if(!input.unitIds.length||input.unitIds.length>4096||(body.pageId!==null&&typeof body.pageId!=='string'))throw new InputError('INVALID_REVIEW','移动须指定完整unit及目标页或null。');
+    input.pageId=body.pageId as string|null;
+  }
+  if(action==='page'){
+    if(typeof body.reviewContentDigest!=='string'||!/^[0-9a-f]{64}$/u.test(body.reviewContentDigest)||typeof body.confirmed!=='boolean')throw new InputError('INVALID_REVIEW','页确认需要当前内容摘要与明确确认值。');
+    input.pageId=pageId;input.reviewContentDigest=body.reviewContentDigest;input.confirmed=body.confirmed;
+  }
+  return input;
 }
 
 export function validateDiscard(value: unknown): { baseRevision?: number } {

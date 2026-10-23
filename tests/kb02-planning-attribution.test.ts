@@ -89,14 +89,14 @@ test('a subject-preserving fake plan is accepted by the complete pipeline',async
   }};
   let checkpoint=f.checkpoint;
   await runKnowledgePipeline({raw:f.raw,body:f.sample.body,bodySha256:sha(f.sample.body),provider,rulesDir:'rules',checkpoint,beforeCall:async stage=>checkpoint={...checkpoint,stage,attempts:checkpoint.attempts+1},saveCheckpoint:async value=>checkpoint=value as ExtractionCheckpoint});
-  assert.equal(requests.length,2);assert.equal(checkpoint.plan!.pages.length,3);
+  assert.equal(requests.length,1);assert.equal(checkpoint.plan!.pages.length,3);
   const factIds=checkpoint.plan!.pages.flatMap(page=>page.factIds);
   assert.deepEqual([...factIds].sort(),checkpoint.completedChunks.flatMap(chunk=>chunk.facts.map(fact=>fact.id)).sort());
   assert.deepEqual(checkpoint.plan!.pages.map(page=>page.title),['岚河渠道门店经营','栖岸渠道门店经营','公司告警机制']);
 });
 
 test('revision10 unfinished checkpoint is rejected before Provider calls and retained chunks stay byte-identical',async()=>{
-  const f=await source(),before=JSON.stringify(f.checkpoint.completedChunks),old={...f.checkpoint,rulesVersion:f.bundle.rulesVersion.replace('kb02-atoms-planning-12-','kb02-atoms-planning-10-')};
+  const f=await source(),before=JSON.stringify(f.checkpoint.completedChunks),old={...f.checkpoint,rulesVersion:f.bundle.rulesVersion.replace('kb02-atoms-planning-13-','kb02-atoms-planning-10-')};
   let calls=0;const provider:LlmProvider={name:'offline',model:'must-not-run',complete:async()=>{calls++;throw new Error('unexpected Provider call');}};
   await assert.rejects(validateKnowledgeCheckpoint({raw:f.raw,body:f.sample.body,bodySha256:sha(f.sample.body),provider,rulesDir:'rules',checkpoint:old}),
     (error:unknown)=>error instanceof LlmError&&error.code==='LLM_CHECKPOINT_INCOMPATIBLE'&&error.status===409);

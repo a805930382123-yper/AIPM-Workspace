@@ -1,0 +1,34 @@
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (346.247ms)
+✔ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (422.0906ms)
+✖ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (418.504ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (162.0922ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (220.0227ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (307.9904ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 5
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4024.9767
+
+✖ failing tests:
+
+test at tests\kb02-human-review.test.ts:1:6257
+✖ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (418.504ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  409 !== 200
+  
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-human-review.test.ts:60:205)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,45 @@
+✔ FINAL-02 request requires minimal common propositions per assertion and version-bound two-sided IDs (243.657ms)
+✔ FINAL-02 missing-old rejects without workflow or Wiki writes (185.6984ms)
+✔ FINAL-02 missing-new rejects without workflow or Wiki writes (553.1043ms)
+✔ FINAL-02 wrong-side-old rejects without workflow or Wiki writes (128.7769ms)
+✔ FINAL-02 wrong-side-new rejects without workflow or Wiki writes (66.8828ms)
+✔ FINAL-02 unknown-old rejects without workflow or Wiki writes (60.1393ms)
+✔ FINAL-02 unknown-new rejects without workflow or Wiki writes (87.9612ms)
+✔ FINAL-02 extra-field rejects without workflow or Wiki writes (106.0731ms)
+✔ FINAL-02 wrong-version rejects without workflow or Wiki writes (252.0393ms)
+✔ FINAL-02 cross-target rejects without workflow or Wiki writes (174.9201ms)
+✔ FINAL-02 original seq82 unilateral compound agreement lacks old-side binding and is rejected, no auto-fill (294.9329ms)
+✔ FINAL-02 controlled synonym/one-sided/partial compound/conflict/unknown/future samples preserve exact support boundaries (147.09ms)
+✔ FINAL-02 only-old statements may produce empty agreement without inventing a shared claim (70.7034ms)
+✔ FINAL-02 target edited during provider call rejects bound old version with no saved preview (86.8901ms)
+✔ FINAL-02 legacy synthesis evidence contract remains unchanged (106.9494ms)
+✖ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (9058.222ms)
+✔ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (584.9336ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 16
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15067.4298
+
+✖ failing tests:
+
+test at tests\kb02-human-ui.test.tsx:1:2621
+✖ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (9058.222ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(!button.disabled)
+  
+      at click (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-human-ui.test.tsx:15:73)
+      at TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-human-ui.test.tsx:32:30)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

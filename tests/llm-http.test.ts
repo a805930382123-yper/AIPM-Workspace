@@ -63,6 +63,13 @@ async function stopServer(service: Service | undefined): Promise<void> {
 type Reply = { status: number; json: unknown; text: string };
 function makeClient(service: Service) {
   const request = async (url: string, method = 'GET', body?: unknown): Promise<Reply> => {
+    // Legacy HTTP transaction tests perform the new required individual user actions first.
+    if(method==='POST'&&/^\/api\/drafts\/[^/]+\/confirm$/u.test(url)){
+      const base=url.slice(0,-8),input=body as any,view=await request(base);let draft=view.json as any;
+      if(view.status===200&&draft.status==='pending_confirmation'&&draft.revision===input.baseRevision&&input.selectedPageIds?.length&&input.selectedPageIds.every((id:string)=>draft.pages.some((p:any)=>p.pageId===id))){
+        const started=await request(base+'/review/start','POST',{baseRevision:draft.revision});if(started.status===200){draft=started.json;for(const page of draft.pages){const result=await request(base+'/review/pages/'+page.pageId,'POST',{baseRevision:draft.revision,reviewContentDigest:draft.reviewContentDigest,confirmed:true});assert.equal(result.status,200,result.text);draft=result.json;}body={...input,baseRevision:draft.revision};}
+      }
+    }
     const response = await fetch(`${service.base}${url}`, {
       method,
       ...(body === undefined ? {} : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
@@ -566,7 +573,7 @@ test('F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求
     const started = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
     const job = await client.waitForJob(String((shape(started) as { jobId?: string })?.jobId), 60000);
     assert.equal((shape(job) as { status?: string }).status, 'completed', job.text);
-    assert.equal((shape(job) as { callCount?: number }).callCount, 6, '四块 + 一次规划 + 一次语义审核');
+    assert.equal((shape(job) as { callCount?: number }).callCount, 5, 'revision13四块 + 一次规划，人审不外发');
     const draftId = String((shape(job) as { draftId?: string }).draftId);
     const draft = shape(await client.request(`/api/drafts/${draftId}`)) as unknown as { pages: Array<{ pageId: string; source_evidence: Array<{ id: string; quote: string; start: number; end: number; rawId: string }>; source_facts: Array<{ text: string; evidenceIds: string[] }> }>; extraction: { chunkCount: number } };
     assert.equal(draft.extraction.chunkCount, 4);

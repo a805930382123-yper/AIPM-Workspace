@@ -8,6 +8,7 @@ import { locateEvidence, validateEvidenceReferences, type LocatedEvidence } from
 import { buildEvidenceLocatorCatalog, locatorProviderSchema, resolveLocatorEvidence, EVIDENCE_LOCATOR_FORMAT_VERSION } from './locators.ts';
 import { assertNoKnownSecret, LlmError, describeUnparsable, sanitizeDeep, sanitizeProviderText, type LlmProvider } from './provider.ts';
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
+import type { ReviewBasis } from '../wiki/human-review.ts';
 
 export type ExtractRawInput = {
   id: string; title: string; sourceType: string; sourceName: string;
@@ -27,6 +28,7 @@ export type ExtractedPage = {
 };
 export type ExtractDocument = { title: string; main_topic: string; summary: string };
 export type ExtractOutcome = {
+  reviewBasis?: ReviewBasis;
   document: ExtractDocument; pages: ExtractedPage[];
   provider: { name: string; model: string }; rulesVersion: string;
   callCount: number; chunkCount: number;

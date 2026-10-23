@@ -1,0 +1,45 @@
+{
+  "startedAt": "2026-10-23T11:54:12.661Z",
+  "node": "v25.2.1",
+  "head": "28b6d144a07d03d4e85fc8cc766027a763012c0e",
+  "freezePaths": 43,
+  "previousSourcePaths": 188,
+  "sourceMismatches": [],
+  "rows": [
+    {
+      "name": "core",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "--test",
+        "tests/kb02-human-review.test.ts",
+        "tests/kb02-human-ui.test.tsx"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 3272
+    },
+    {
+      "name": "http-ui",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--import",
+        "tsx",
+        "--import",
+        "./tests/support/css-stub.mjs",
+        "tests/acceptance/KB02-HUMAN-CLOSE-20261023-http-ui.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1964
+    }
+  ],
+  "realCalls": 0,
+  "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-HUMAN-CLOSE-20261023-OBc2rc",
+  "postMismatches": [],
+  "finishedAt": "2026-10-23T11:54:25.903Z",
+  "pass": true
+}

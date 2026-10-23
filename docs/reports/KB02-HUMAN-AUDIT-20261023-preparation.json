@@ -1,0 +1,75 @@
+{
+  "status": "PREPARATION_ONLY_NO_PRODUCT_EXECUTION",
+  "head": "28b6d144a07d03d4e85fc8cc766027a763012c0e",
+  "realCalls": 0,
+  "realCumulative": 219,
+  "prompt": "15/24",
+  "engineeringApproved": false,
+  "files": [
+    {
+      "path": "docs/handoffs/KB02-HUMAN-20261023-task.md",
+      "sha256": "aa56ee05e9b3248f85fa0903beceff8c6a4d47469c7a082ac5010be5a7f5e076"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json",
+      "sha256": "5cc5a6bdcb10738687e226bfca86e52a9a037ddad57d5eac492365c16745fbc5"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-provider-trace.jsonl",
+      "sha256": "24020d976ad66f47ea9ba067ab999f21507a96b967e1592103e6d4bd3752a59e"
+    },
+    {
+      "path": "docs/reports/KB02-REGION-AUDIT-20261023-long-checkpoint.json",
+      "sha256": "985930192415afe6a93f103999a4fc6a8e42b3781779ee0216e25f564d3e5637"
+    },
+    {
+      "path": "docs/reports/KB02-REGION-AUDIT-20261023-long-readback.json",
+      "sha256": "9218aab026acb50e024a9d516ae0f2c00b8401a8561e8edd22a4b15123596d06"
+    },
+    {
+      "path": "docs/reports/KB02-REGION-AUDIT-20261023-long-semantic-review.json",
+      "sha256": "687a026b97a473f6c309e9a94068426af2ccef72f5848e066d69a069f82e9c05"
+    },
+    {
+      "path": "docs/reports/KB02-REGION-AUDIT-20261023-provider-trace.jsonl",
+      "sha256": "ae2b1bc90e196abba25b85fcb777456ba6d709b4abf0f94fb9716800317ae121"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "original-boundary",
+      "extractSequence": 204,
+      "planSequence": 205,
+      "reviewSequence": 206,
+      "use": "Replay extraction/plan only; reviewer third request forbidden; inspect malformed independent theme then human repair or unresolved."
+    },
+    {
+      "id": "independent-ai-positive",
+      "extractSequence": 207,
+      "planSequence": 208,
+      "reviewSequence": 209,
+      "use": "Replay extraction/plan only; former invalid review must not block candidate; starts wholly unreviewed."
+    },
+    {
+      "id": "long-original",
+      "checkpoint": "docs/reports/KB02-REGION-AUDIT-20261023-long-checkpoint.json",
+      "use": "Historical 14 source blocks; compare actual units/memberIds by subject/date/value, never use fixed page count as quality oracle."
+    }
+  ],
+  "newSyntheticCases": [
+    "legacy draft: no review metadata, duplicate fact strings, question without locator",
+    "legacy workflow: update and synthesis pending without metadata",
+    "zero-write prepared manifest",
+    "partially-written manifest with actual matching disk record",
+    "manifest claiming writtenIds but missing disk record",
+    "two-tab stale approval plus editing",
+    "update input draft change after preview, target change, workflow patch"
+  ],
+  "constraints": [
+    "No scripts running against unfinished product",
+    "No services or network during preparation",
+    "No change to old fixtures or historical reports",
+    "Builder freeze then main-agent release required for engineering and isolated HTTP/UI",
+    "Synthetic transactions in isolated temporary roots only; no real workspace manipulation"
+  ]
+}

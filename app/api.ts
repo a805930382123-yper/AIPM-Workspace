@@ -1,3 +1,4 @@
+import type { HumanReview } from '../services/wiki/human-review.ts';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string; title: string; sourceType: SourceType; sourceName: string; author?: string; publishedAt?: string; url?: string;
@@ -125,7 +126,7 @@ export type DraftPage = {
 };
 
 export type DuplicateResult = { draftId: string; pageId: string; draftRevision: number; decision: 'update' | 'create' | 'defer' | null; targetWikiId: string | null; candidates: Array<{ wiki: Wiki; score: number; matches: Array<{ dimension: string; score: number; reason: string }> }> };
-export type KnowledgeWorkflow = { id: string; kind: 'update' | 'synthesis'; status: 'pending_confirmation' | 'confirmed' | 'discarded' | 'conflict'; revision: number; title: string; category: string; provider: { name: string; model: string }; rawSnapshots: Array<{ id: string; title: string; bodySha256: string }>; targetWikiId?: string; baseRevision?: number; lastCommitError?: string; commitOperationId?: string; sections: { existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[]; inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{id:string;title:string}> }; evidence?: Array<{section:string;text:string;rawId:string;quote:string;start:number;end:number}>; sources: string[] };
+export type KnowledgeWorkflow = { humanReview?:HumanReview; reviewContentDigest?:string|null; humanEditedSections?:string[]; id: string; kind: 'update' | 'synthesis'; status: 'pending_confirmation' | 'confirmed' | 'discarded' | 'conflict'; revision: number; title: string; category: string; provider: { name: string; model: string }; rawSnapshots: Array<{ id: string; title: string; bodySha256: string }>; targetWikiId?: string; baseRevision?: number; lastCommitError?: string; commitOperationId?: string; sections: { existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[]; inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{id:string;title:string}> }; evidence?: Array<{section:string;text:string;rawId:string;quote:string;start:number;end:number}>; sources: string[] };
 export type KnowledgeWorkflowSummary = { id:string;kind:'update'|'synthesis';status:KnowledgeWorkflow['status'];title:string;revision:number;createdAt:string;updatedAt:string;targetWikiId:string|null;lastCommitError:string|null;commitOperationId:string|null };
 export type DraftSource = {
   title: string; category: string; summary: string; key_takeaways: string[];
@@ -140,6 +141,7 @@ export type DraftPreview = {
   batchDuplicateTitles: string[];
 };
 export type DraftView = {
+  humanReview?:HumanReview; reviewContentDigest?:string|null;
   id: string; rawId: string; rawTitle: string; status: 'pending_confirmation' | 'committing' | 'confirmed' | 'discarded';
   revision: number; createdAt: string; updatedAt: string; rulesVersion: string;
   provider: { name: string; model: string }; jobId: string;
@@ -194,6 +196,9 @@ export const discardDraft = (draftId: string, baseRevision?: number) => api<{ id
 export const confirmDraft = (draftId: string, input: { baseRevision: number; selectedPageIds: string[]; idempotencyKey: string }) =>
   api<{ operationId: string; status: string; reused: boolean; sourceReused: boolean; sourceId: string | null; wikiIds: string[]; writtenWikiIds: string[]; warnings: string[]; phases: WikiCommitStatus['phases'] }>(`/api/drafts/${encodeURIComponent(draftId)}/confirm`, { method: 'POST', body: JSON.stringify(input) });
 export const wikiCommit = (operationId: string) => api<WikiCommitStatus>(`/api/wiki-commits/${encodeURIComponent(operationId)}`);
+export const startDraftReview=(id:string,baseRevision:number)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/start`,{method:'POST',body:JSON.stringify({baseRevision})});
+export const moveDraftUnits=(id:string,baseRevision:number,unitIds:string[],pageId:string|null)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/move`,{method:'POST',body:JSON.stringify({baseRevision,unitIds,pageId})});
+export const reviewDraftPage=(id:string,pageId:string,baseRevision:number,reviewContentDigest:string,confirmed:boolean)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/pages/${encodeURIComponent(pageId)}`,{method:'POST',body:JSON.stringify({baseRevision,reviewContentDigest,confirmed})});
 export const duplicateCandidates = (draftId: string, pageId: string, edited?: {title:string;category:string;content:string}) => {
   const query = new URLSearchParams();
   if (edited) { query.set('title', edited.title); query.set('category', edited.category); query.set('content', edited.content); }
@@ -209,6 +214,9 @@ export const knowledgeWorkflows = () => api<{items:KnowledgeWorkflowSummary[]}>(
 export const patchKnowledgeWorkflow = (id:string,input:{baseRevision:number;sections:KnowledgeWorkflow['sections'];title?:string}) => api<KnowledgeWorkflow>(`/api/knowledge/workflows/${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(input)});
 export const discardKnowledgeWorkflow = (id:string,baseRevision:number) => api(`/api/knowledge/workflows/${encodeURIComponent(id)}`,{method:'DELETE',body:JSON.stringify({baseRevision})});
 export const confirmKnowledgeWorkflow = (id:string,input:{baseRevision:number;idempotencyKey:string}) => api<{workflow:KnowledgeWorkflow;wikiId:string;reused:boolean;operationId:string}>(`/api/knowledge/workflows/${encodeURIComponent(id)}/confirm`,{method:'POST',body:JSON.stringify(input)});
+export const startWorkflowReview=(id:string,baseRevision:number)=>api<KnowledgeWorkflow>(`/api/knowledge/workflows/${encodeURIComponent(id)}/review/start`,{method:'POST',body:JSON.stringify({baseRevision})});
+export const moveWorkflowUnits=(id:string,baseRevision:number,unitIds:string[],pageId:string|null)=>api<KnowledgeWorkflow>(`/api/knowledge/workflows/${encodeURIComponent(id)}/review/move`,{method:'POST',body:JSON.stringify({baseRevision,unitIds,pageId})});
+export const reviewWorkflowPage=(id:string,baseRevision:number,reviewContentDigest:string,confirmed:boolean)=>api<KnowledgeWorkflow>(`/api/knowledge/workflows/${encodeURIComponent(id)}/review/pages/${encodeURIComponent(id)}`,{method:'POST',body:JSON.stringify({baseRevision,reviewContentDigest,confirmed})});
 
 // --- B07：Prompt Library ---------------------------------------------------------------------
 

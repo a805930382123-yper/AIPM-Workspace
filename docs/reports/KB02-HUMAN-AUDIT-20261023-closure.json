@@ -1,0 +1,30 @@
+{
+  "pass": true,
+  "realCalls": 0,
+  "cumulative": 219,
+  "prompt": "15/24",
+  "frozenPaths": 43,
+  "independentSourceCopyPaths": 188,
+  "reusedHistoricalProtectionPaths": 3656,
+  "reusedProtectionSource": "Previous independent PROTOCOL baseline, filtered to historical reports/scripts and private .env/workspace; not claimed a new pre-HUMAN full workspace baseline",
+  "changes": [],
+  "secretScan": {
+    "files": 9,
+    "matches": 0
+  },
+  "exclusions": [
+    "AGENTS.md",
+    ".agents/",
+    "main status/control",
+    "current builder and independent assets"
+  ],
+  "cleanup": "Own localhost HTTP server closed in finally; React root unmounted; no Chrome or external provider service started; independent TEMP retained",
+  "firstProbeFailures": [
+    "PowerShell Push-Location failed on 8.3 TEMP path; first probe consequently ran from workspace but only used isolated fixture data",
+    "Probe find predicate incorrectly incremented fake sequence; corrected own script, no product change",
+    "Second Push-Location attempt failed before test",
+    "Probe expected succeeded instead of actual completed status; corrected own assertion",
+    "Final probe passed with two React act warnings retained"
+  ],
+  "command": "node --import tsx tests/acceptance/KB02-HUMAN-AUDIT-20261023-close.mjs"
+}

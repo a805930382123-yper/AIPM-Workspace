@@ -1,3 +1,4 @@
+import {persistedUpdateInput,approveWorkflow} from './support/human-review.ts';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {mkdtemp, readFile, rm} from 'node:fs/promises';
@@ -16,10 +17,11 @@ async function fixture(existing=oldBody,incoming=newBody){
  const root=await mkdtemp(path.join(os.tmpdir(),'kb02-final-agreement-')),raws=new RawStore(root);await raws.initialize();const wiki=new WikiStore(root,raws);await wiki.initialize();const workflows=new KnowledgeWorkflowStore(root,wiki,raws);await workflows.initialize();
  const first=await raws.create({title:'虚构旧来源',sourceType:'report',sourceName:'隔离',tags:[],body:existing}),raw=await raws.create({title:'虚构新来源',sourceType:'report',sourceName:'隔离',tags:[],body:incoming});
  const target=await wiki.create({title:'虚构指标',type:'metric',category:'metric',sources:[first.id],tags:[],knowledge_status:'source_supported',confidence:'medium',source_level:'C',review_status:'unreviewed',aliases:[],body:existing});
- const draftId=randomUUID(),pageId=randomUUID(),draft={id:draftId,rawId:raw.id,revision:1,rawSha256:raw.bodySha256,pages:[{pageId,source_facts:[{text:incoming,evidenceIds:['new-e1']}],source_evidence:[{id:'new-e1',rawId:raw.id,quote:incoming,start:0,end:incoming.length}],ai_organized:[],ai_inferences:[],open_questions:[]}]};
+ const draftId=randomUUID(),pageId=randomUUID(),draftInput={id:draftId,rawId:raw.id,revision:1,rawSha256:raw.bodySha256,pages:[{pageId,source_facts:[{text:incoming,evidenceIds:['new-e1']}],source_evidence:[{id:'new-e1',rawId:raw.id,quote:incoming,start:0,end:incoming.length}],ai_organized:[],ai_inferences:[],open_questions:[]}]};
+ const draft=await persistedUpdateInput(root,raw,draftInput);
  const requests:LlmCompletionRequest[]=[];let reply=(input:any):any=>({...empty(),agreement:[{text:'目标门店100家。',evidenceId:input.newSource.evidence[0].id,existingLocatorId:input.existing.locators[0].id}]});
  const provider:LlmProvider={name:'fake',model:'final-agreement',secrets:['synthetic-final-secret'],complete:async r=>{requests.push(r);return {text:JSON.stringify(await reply(JSON.parse(r.user))),bytes:1,finishReason:'stop'};}};
- const args={draftId,pageId,baseRevision:1,targetWikiId:target.id,draft,raw,target,provider};
+ const args={draftId:draft.id,pageId:draft.pages[0].pageId,baseRevision:draft.revision,targetWikiId:target.id,draft,raw,target,provider};
  return {root,raws,wiki,workflows,first,raw,target,args,requests,setReply:(fn:typeof reply)=>{reply=fn;},run:()=>workflows.createUpdate(args),clean:()=>rm(root,{recursive:true,force:true})};
 }
 
@@ -74,6 +76,7 @@ test('FINAL-02 controlled synonym/one-sided/partial compound/conflict/unknown/fu
   const flow=await f.run();assert.equal(flow.sections.agreement.length,3);assert(!flow.sections.agreement.some(t=>t.includes('不等于销量')));assert(flow.sections.existing!.includes('门店数不等于销量'));assert.deepEqual(flow.sections.suggestedAdditions,['本期新增渠道复核。']);assert(flow.sections.conflicts[0].includes('20%')&&flow.sections.conflicts[0].includes('30%'));
   assert.equal((await f.wiki.get(f.target.id))!.revision,f.target.revision);
   const reboot=new KnowledgeWorkflowStore(f.root,f.wiki,f.raws);await reboot.initialize();assert.deepEqual((await reboot.get(flow.id))!.sections,flow.sections);
+  flow.revision=(await approveWorkflow(reboot,flow.id)).revision;
   const done=await reboot.confirm(flow.id,flow.revision,'final-two-sided-confirm'),saved=await f.wiki.get(f.target.id);assert.equal(done.workflow.status,'confirmed');assert(saved!.body.includes(oldBody));assert(saved!.body.includes('KB02_HUMAN'));assert(saved!.body.includes('20%')&&saved!.body.includes('30%'));assert(saved!.sources.includes(f.first.id)&&saved!.sources.includes(f.raw.id));
   const restart=new KnowledgeWorkflowStore(f.root,f.wiki,f.raws);await restart.initialize();const again=await restart.confirm(flow.id,flow.revision,'final-two-sided-confirm');assert(again.reused);assert.deepEqual(await f.wiki.get(f.target.id),saved);
  }finally{await f.clean();}

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { DraftPatch, DraftPage, DraftView, Raw, WikiCommitStatus, WikiSchema, DuplicateResult } from '../api';
-import { ApiError, api, confirmDraft, discardDraft, draftView, patchDraft, sourceLabels, wikiCommit, duplicateCandidates, savePageDecision, startUpdateWorkflow } from '../api';
+import { ApiError, api, confirmDraft, discardDraft, draftView, patchDraft, sourceLabels, wikiCommit, duplicateCandidates, savePageDecision, startUpdateWorkflow, startDraftReview, moveDraftUnits, reviewDraftPage } from '../api';
 
 type PageDraft = DraftPage & { renderedBody?: string };
+const reviewFingerprint=(value:DraftView,items:PageDraft[]=value.pages)=>JSON.stringify({document:value.document,source:value.source,pages:items.map(({renderedBody:_body,...p})=>p)});
 
 const conflictText = (view: DraftView) => {
   const preview = view.preview;
@@ -36,12 +37,14 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const [idempotencyKey] = useState(() => globalThis.crypto?.randomUUID?.() ?? `key-${Date.now()}`);
   const [duplicateViews, setDuplicateViews] = useState<Record<string, DuplicateResult>>({});
   const [duplicateErrors, setDuplicateErrors] = useState<Record<string, string>>({});
+  const [savedFingerprint,setSavedFingerprint]=useState('');
 
   const load = async () => {
     setError('');
     try {
       const next = await draftView(draftId);
       setView(next);
+      setSavedFingerprint(reviewFingerprint(next));
       setPages(next.pages.map(page => ({ ...page })));
       const raw = await api<Raw>(`/api/raw/${encodeURIComponent(next.rawId)}`).catch(() => null);
       setBody(raw?.body ?? '');
@@ -58,6 +61,8 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const selectedIds = pages.filter(page => page.selected).map(page => page.pageId);
   const conflicts = view ? conflictText(view) : [];
   const readOnly = view ? view.status !== 'pending_confirmation' : true;
+  const dirty=!!view&&reviewFingerprint(view,pages)!==savedFingerprint;
+  const reviewComplete=!!view?.humanReview&&Object.values(view.humanReview.assignments).every(id=>id!==null)&&pages.every(p=>view.humanReview!.approvals.some(a=>a.pageId===p.pageId&&a.digest===view.reviewContentDigest));
 
   useEffect(() => {
     if (!view || readOnly || pages.length === 0) return;
@@ -119,7 +124,10 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
       knowledge_status: page.knowledge_status, confidence: page.confidence, source_level: page.source_level,
     })),
   });
-  const applyView = (updated: DraftView) => { setView(updated); setPages(updated.pages.map(page => ({ ...page }))); };
+  const applyView = (updated: DraftView) => { setView(updated); setPages(updated.pages.map(page => ({ ...page })));setSavedFingerprint(reviewFingerprint(updated)); };
+  const startReview=()=>run('review:start',async()=>{if(!view||dirty)throw new Error('请先保存当前编辑，再开始审查。');applyView(await startDraftReview(draftId,view.revision));});
+  const moveUnit=(unitId:string,pageId:string|null)=>run('review:move',async()=>{if(!view||dirty)throw new Error('请先保存编辑。');applyView(await moveDraftUnits(draftId,view.revision,[unitId],pageId));});
+  const confirmPage=(pageId:string,confirmed:boolean)=>run('review:page',async()=>{if(!view?.reviewContentDigest||dirty)throw new Error('请先保存编辑，并重新审查当前内容。');applyView(await reviewDraftPage(draftId,pageId,view.revision,view.reviewContentDigest,confirmed));});
   const duplicateInput = (page: PageDraft) => ({ title: page.title, category: page.category, content: [page.one_line_definition, ...page.source_facts.map(item => item.text), ...page.ai_organized].join('\n') });
   const checkDuplicates = (pageId: string) => run(`duplicates:${pageId}`, async () => {
     const page = pages.find(item => item.pageId === pageId);
@@ -161,6 +169,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   // F04-02: confirming first persists the current review snapshot, then commits that exact
   // revision — the formal pages can never differ from what the user sees on screen.
   const confirm = () => run('confirm', async () => {
+    if(dirty||!reviewComplete)throw new ApiError('请保存编辑并逐页确认全部主题与归属，解决所有未解决项。','HUMAN_REVIEW_INCOMPLETE',409);
     const refreshedDuplicates = await Promise.all(pages.map(async page => [page.pageId, await duplicateCandidates(draftId, page.pageId, duplicateInput(page)).catch(() => null)] as const));
     if (refreshedDuplicates.some(([, result]) => result === null)) {
       setDuplicateErrors(Object.fromEntries(refreshedDuplicates.filter(item => item[1] === null).map(([id]) => [id, '候选查询失败，请重试。'])));
@@ -198,11 +207,23 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         <button className="secondary-button" onClick={onBack}>返回 Raw</button>
         <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => void saveEdits()}>{busy === 'save' ? '正在保存…' : '保存草稿'}</button>
         <button className="secondary-button danger-quiet" disabled={readOnly || busy !== ''} onClick={() => setConfirmingDiscard(true)}>放弃草稿</button>
-        <button className="primary-button" disabled={readOnly || busy !== '' || selectedIds.length === 0} onClick={() => void confirm()}>{busy === 'confirm' ? '正在保存并提交…' : `确认写入 Wiki（${selectedIds.length}）`}</button>
+        <button className="primary-button" disabled={readOnly || busy !== '' || selectedIds.length === 0 || dirty || !reviewComplete} onClick={() => void confirm()}>{busy === 'confirm' ? '正在保存并提交…' : `确认写入 Wiki（${selectedIds.length}）`}</button>
       </div>
     </div>
 
     {error && <div className="form-error" role="alert"><p>{error}</p></div>}
+    {!readOnly&&<section className="panel draft-card-body" aria-label="主题与归属人工审查">
+      <h2>逐页确认主题与完整归属</h2><p>所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。</p>
+      {dirty&&<p className="notice-warn">当前有未保存编辑。保存后全部页需重新审查。</p>}
+      {!view.humanReview?<button className="secondary-button" disabled={busy!==''||dirty} onClick={()=>void startReview()}>开始主题与归属审查</button>:<>
+        <p>未解决 {Object.values(view.humanReview.assignments).filter(id=>id===null).length} 项 · 已审 {view.humanReview.approvals.filter(a=>a.digest===view.reviewContentDigest).length}/{pages.length} 页</p>
+        {view.humanReview.units.map(unit=><div className="draft-evidence-row" key={unit.id}>
+          <div><strong>{unit.kind==='fact'?'来源事实':unit.kind==='question'?'原文明示问题':'整理提议'}</strong> <code>{unit.id}</code><p>{unit.text}</p><small>{unit.sourceLabel??`原记录：${unit.memberIds.join('、')}`}</small>
+          {unit.evidence.map((e,i)=><p key={`${e.id}-${i}`}>原文 [{e.start}, {e.end})：“{e.quote}”</p>)}{!unit.evidence.length&&<p>旧记录无原文定位</p>}</div>
+          <label className="field">完整 unit 归属<select aria-label={`归属 ${unit.id}`} value={view.humanReview!.assignments[unit.id]??''} disabled={busy!==''||dirty} onChange={e=>void moveUnit(unit.id,e.target.value||null)}><option value="">未解决</option>{pages.map(p=><option key={p.pageId} value={p.pageId}>{p.title}</option>)}</select></label>
+        </div>)}
+      </>}
+    </section>}
     {!readOnly && selectedIds.length === 0 && <div className="notice-warn">默认没有选中任何知识建议：勾选要写入正式 Wiki 的条目后，确认按钮才可用。</div>}
     {view.warnings.length > 0 && <div className="notice-warn">{view.warnings.map(warning => <p key={warning}>{warning}</p>)}</div>}
     {conflicts.length > 0 && <div className="notice-warn conflict-warn">{conflicts.map(line => <p key={line}>{line}</p>)}</div>}
@@ -259,6 +280,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         </div>
       </div>
       {pages.map((page, index) => <article className={`draft-card ${page.selected ? 'selected' : ''}`} key={page.pageId}>
+        {view.humanReview&&<div className="draft-card-body"><p>{!dirty&&view.humanReview.approvals.some(a=>a.pageId===page.pageId&&a.digest===view.reviewContentDigest)?'本页主题与完整归属已确认':'本页主题与完整归属尚未确认'}</p><button className="secondary-button" disabled={readOnly||busy!==''||dirty} onClick={()=>void confirmPage(page.pageId,true)}>确认本页主题与归属</button><button className="text-button" disabled={readOnly||busy!==''||dirty} onClick={()=>void confirmPage(page.pageId,false)}>撤销本页确认</button></div>}
         <div className="draft-card-head">
           <label className="draft-select"><input type="checkbox" checked={page.selected} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { selected: event.target.checked })} /><span>写入</span></label>
           <label className="draft-select"><input type="checkbox" checked={mergePick.includes(page.pageId)} disabled={readOnly || busy !== ''} onChange={event => setMergePick(current => event.target.checked ? [...current, page.pageId] : current.filter(id => id !== page.pageId))} /><span>合并</span></label>
@@ -292,7 +314,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         <div className="draft-split">
           <div className="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4>
             {page.source_facts.map((fact, factIndex) => <div className="draft-line" key={`${page.pageId}-fact-${factIndex}`}>
-              <textarea value={fact.text} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
+              <textarea value={fact.text} readOnly rows={2} onChange={event => {
                 const source_facts = page.source_facts.map((item, itemIndex) => itemIndex === factIndex ? { ...item, text: event.target.value } : item);
                 updatePage(page.pageId, { source_facts });
               }} />
@@ -300,7 +322,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
             </div>)}
             {!page.source_facts.length && <p className="extract-note">没有原文支持的事实。</p>}
           </div>
-          <div className="draft-block"><h4>AI 整理</h4>
+          <div className="draft-block"><h4>AI 整理 / 人工说明</h4><button className="text-button" disabled={readOnly||busy!==''} onClick={()=>updatePage(page.pageId,{ai_organized:[...page.ai_organized,'']})}>添加人工整理说明</button>
             {page.ai_organized.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-org-${itemIndex}`}><textarea value={item} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
               const ai_organized = page.ai_organized.map((value, valueIndex) => valueIndex === itemIndex ? event.target.value : value);
               updatePage(page.pageId, { ai_organized });
@@ -315,7 +337,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
             {!page.ai_inferences.length && <p className="extract-note">暂无</p>}
           </div>
           <div className="draft-block"><h4>待确认问题</h4>
-            {page.open_questions.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-q-${itemIndex}`}><textarea value={item} disabled={readOnly || busy !== ''} rows={2} onChange={event => {
+            {page.open_questions.map((item, itemIndex) => <div className="draft-line" key={`${page.pageId}-q-${itemIndex}`}><textarea value={item} readOnly rows={2} onChange={event => {
               const open_questions = page.open_questions.map((value, valueIndex) => valueIndex === itemIndex ? event.target.value : value);
               updatePage(page.pageId, { open_questions });
             }} /></div>)}

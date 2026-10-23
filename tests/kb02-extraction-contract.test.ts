@@ -67,7 +67,7 @@ test('KB02 Q01 sends the complete loaded schema and valid nonempty examples; dec
     // Locator evidence retains the exact containing source span, even when it spans several atoms.
     for (const evidence of result.outcome.pages[0].source_evidence) assert.equal(text.slice(evidence.start, evidence.end), evidence.quote);
     assert(result.outcome.pages[0].open_questions.some(x => x.includes('旧资料20家未注明维度。')));
-    assert.equal(result.outcome.callCount, 3);
+    assert.equal(result.outcome.callCount, 2);
   } finally { await f.clean(); }
 });
 
@@ -129,7 +129,7 @@ test('KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkp
     const [schema, rules, facts, planning] = await Promise.all(['wiki-extract.schema.json', 'extraction-rules.yaml', 'kb02-facts.schema.json', 'kb02-planning.schema.json'].map(name => readFile(path.join('rules', name), 'utf8')));
     const revision = 'kb02-atoms-planning-3', format = 'locator-v2';
     const oldVersion = `b04-${f.bundle.rules.version}-${format}-${revision}-${sha(`${schema}\n${rules}\n${format}\n${revision}\n${facts}\n${planning}`).slice(0, 12)}`;
-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-12'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
+    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-13'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
     const old = await f.store.save({ ...f.checkpoint, rulesVersion: oldVersion });
     const file = path.join(f.root, 'state/extraction-checkpoints', old.jobId + '.json'), bytes = await readFile(file);
     await assert.rejects(validateKnowledgeCheckpoint({ ...f.args, checkpoint: old }), (e: unknown) => e instanceof LlmError && e.code === 'LLM_CHECKPOINT_INCOMPATIBLE' && e.status === 409);

@@ -1,0 +1,36 @@
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (990.1083ms)
+✔ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (3022.0748ms)
+✔ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (1004.768ms)
+✔ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (215.9431ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (216.935ms)
+✔ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (727.7273ms)
+✔ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (397.1381ms)
+✔ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (196.8533ms)
+✔ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (181.4316ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (148.3875ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (380.098ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (1202.6258ms)
+✔ HUMAN synthesis zero legacy transaction recovery requires real disk evidence and remains reviewable (568.5112ms)
+✔ HUMAN synthesis partial legacy transaction recovery requires real disk evidence and remains reviewable (286.7395ms)
+✔ HUMAN synthesis conflict legacy transaction recovery requires real disk evidence and remains reviewable (811.162ms)
+✔ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (2818.2129ms)
+✔ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (369.7754ms)
+A component is changing a controlled input to be uncontrolled. This is likely caused by the value changing from a defined to undefined, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components
+✔ B04 设置页：显示 Provider/模型/掩码，绝不显示 Key (101.1436ms)
+✔ B04 设置页：未配置时给出缺失项与手动链路提示 (50.6343ms)
+✔ B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口 (341.9953ms)
+✔ B04 审核页：分栏预览、选择与确认只提交选中项 (458.2533ms)
+✔ B04 审核页：Source 编辑与页面编辑一起持久化，且不丢 Raw 元数据 (113.0962ms)
+✔ B04 审核页：新草稿默认全不选，零选择不能确认 (308.9926ms)
+✔ B04 审核页：保存编辑、删除、合并与放弃都走明确的接口 (393.6262ms)
+✔ B04 审核页：冲突提示与部分提交面板 (259.7956ms)
+✔ B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁 (526.9873ms)
+✔ B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍使用可见快照 (666.8157ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13245.2882

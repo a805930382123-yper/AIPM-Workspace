@@ -1,3 +1,4 @@
+import {addLegacyReviewPrecondition} from './support/human-review.ts';
 ﻿// B04 第三次返修专项测试（B04-recheck2-fix-card 的 F04-11 残留）：
 // 聚合不得与各分块快照共享可变状态；真实额外汇总请求必须对每条事实引用给出
 // 可解析的 Raw 来源、原文 quote 与全局 UTF-16 start/end（有/无 Provider 位置 hint 两种输入）。
@@ -45,6 +46,7 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined) 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
+  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }])) };
@@ -138,7 +140,7 @@ for (const omitOffsets of [false, true]) {
       assert.equal(finished.status, 'completed', finished.error?.message ?? '');
       assert.ok(draft, '必须生成草稿');
       assert.equal(draft?.extraction.chunkCount, 4, '长文必须切成四块');
-      assert.equal(finished.callCount, 6, '四块各一次调用 + 一次规划 + 一次语义审核');
+      assert.equal(finished.callCount, 5, 'revision13四块各一次调用 + 一次规划，人审不外发');
       // 真实汇总请求必须存在且输入完整。
       const mergeRequests = context.fake.requests.filter(request => isPlanningPrompt(request.user));
       assert.equal(mergeRequests.length, 1, '四块事实完成后必须进行一次整篇规划');

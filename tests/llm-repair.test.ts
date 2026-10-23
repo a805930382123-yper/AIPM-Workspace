@@ -1,3 +1,4 @@
+import {addLegacyReviewPrecondition} from './support/human-review.ts';
 // B04 返修专项测试（F04-01…F04-11 的服务端复现）。每个场景复刻返修卡/独立验收的失败断言：
 // 修复前必须失败，修复后必须通过。Provider 是真实 HTTP fake（tests/support/fake-llm.ts），
 // 经真实 OpenAI-compatible 适配器调用，代理/失败注入都走产品代码路径。
@@ -37,6 +38,7 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
+  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }])) };
@@ -196,7 +198,7 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
     const texts = page.source_facts.map(fact => fact.text);
     assert.ok(texts.includes('事实A：动销率需要与库存一起看。'), `合并后必须保留事实A，实际 ${JSON.stringify(texts)}`);
     assert.ok(texts.includes('事实B：库存周转天数反映资金占用。'), `合并后必须保留事实B，实际 ${JSON.stringify(texts)}`);
-    assert.equal(texts.filter(text => text.startsWith('事实A')).length, 1, '相同事实必须去重，不得重复');
+    assert.equal(texts.filter(text => text.startsWith('事实A')).length, 2, '不同原记录/位置的同字句必须保留，不能按文字去重');
     // 每条事实的证据都必须仍然有效，且重复事实的证据被合并。
     for (const fact of page.source_facts) {
       assert.ok(fact.evidenceIds.length >= 1, '事实必须保留证据引用');

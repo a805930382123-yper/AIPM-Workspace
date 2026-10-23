@@ -288,7 +288,7 @@ export class ExtractionRunner {
       }
     }
     if (options.planningRetry && (options.restart || !resume || resume.plan || resume.completedChunks.length !== resume.chunks.length || resume.lastError?.code !== 'LLM_PLAN_COVERAGE_INVALID' || !resume.lastError.diagnostic)) throw new JobError('LLM_PLANNING_RETRY_UNAVAILABLE', '仅重新规划需要兼容的完整提取检查点及覆盖失败诊断。', 409);
-    if (resume && !resume.plan && resume.completedChunks.length === resume.chunks.length && knowledgeCallLimit(resume.chunks.length) - resume.attempts < 2) throw new JobError('LLM_ATTEMPT_LIMIT', `剩余预算不足以完成规划和语义审核（累计 ${knowledgeCallLimit(resume.chunks.length)} 次调用上限）；请检查资料后显式重新生成。`, 409);
+    if (resume && !resume.plan && resume.completedChunks.length === resume.chunks.length && knowledgeCallLimit(resume.chunks.length) - resume.attempts < 1) throw new JobError('LLM_ATTEMPT_LIMIT', `剩余预算不足以完成规划（累计 ${knowledgeCallLimit(resume.chunks.length)} 次调用上限）；请检查资料后显式重新生成。`, 409);
     if (this.pending.size >= EXTRACTION_RECOVERY_CAPACITY) throw new JobError('STORAGE_RECOVERY_CAPACITY', '本进程待保存及运行中任务已达上限，请先保存状态。', 503);
     const revertStatus = state.status === 'unprocessed' || state.status === 'generated' ? state.status : (state.revertStatus ?? 'unprocessed');
     const bundle = await loadExtractionRules(this.deps.rulesDir);

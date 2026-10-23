@@ -1,3 +1,4 @@
+import {persistedUpdateInput,approveWorkflow} from './support/human-review.ts';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
@@ -18,8 +19,9 @@ async function fixture(){
  const provider={name:'local-fixture',model:'fake',async complete(request: { system: string }){calls++;if(request.system.includes('evidenceId'))return {finishReason:'stop',bytes:256,text:JSON.stringify({suggestedAdditions:[{text:'虚构资料',evidenceId:'update-e1'}],conflicts:[],agreement:[],inferences:[],openQuestions:[]})};return {finishReason:'stop',bytes:256,text:JSON.stringify({title:'测试综合',category:'other',suggestedAdditions:[{text:'虚构资料',rawId:a.id,quote:a.body,start:0,end:a.body.length}],conflicts:[],agreement:[],inferences:[],openQuestions:[]})};}};
  const synthesis=await store.createSynthesis({rawIds:[a.id,b.id],provider});
  const target=await wiki.create({title:'手动目标',type:'concept',category:'other',sources:[b.id],tags:[],knowledge_status:'source_supported',confidence:'medium',source_level:'C',review_status:'unreviewed',aliases:[],body:'旧正文'});
- const pageId=randomUUID(),draftId=randomUUID(),draft={id:draftId,rawId:a.id,revision:1,rawSha256:a.bodySha256,pages:[{pageId,source_facts:[{text:a.body,evidenceIds:['update-e1']}],source_evidence:[{id:'update-e1',rawId:a.id,quote:a.body,start:0,end:a.body.length}],ai_organized:[],ai_inferences:[],open_questions:[]}]};
- const update=await store.createUpdate({draftId,pageId,baseRevision:1,targetWikiId:target.id,draft,raw:a,target,provider});
+ const pageId=randomUUID(),draftId=randomUUID(),draftInput={id:draftId,rawId:a.id,revision:1,rawSha256:a.bodySha256,pages:[{pageId,source_facts:[{text:a.body,evidenceIds:['update-e1']}],source_evidence:[{id:'update-e1',rawId:a.id,quote:a.body,start:0,end:a.body.length}],ai_organized:[],ai_inferences:[],open_questions:[]}]};
+ const draft=await persistedUpdateInput(root,a,draftInput);
+ const update=await store.createUpdate({draftId:draft.id,pageId:draft.pages[0].pageId,baseRevision:draft.revision,targetWikiId:target.id,draft,raw:a,target,provider});
  return {root,store,wiki,synthesis,update,calls:()=>calls};
 }
 
@@ -48,7 +50,7 @@ test('PA01 R01 real workflow records reject deep corruption consistently before 
 });
 
 test('PA01 R01 optional evidence and legacy unused snapshots remain readable editable confirmable',async()=>{
- const f=await fixture();try{for(const original of [f.synthesis,f.update]){const v=structuredClone(original);delete v.evidence;delete v.baseWiki;delete v.inputDraft;assert(isWorkflow(v));if(v.kind==='update')v.inputDraft={draftId:'draft',pageId:'page',revision:2};assert(isWorkflow(v));await f.store.save(v);assert((await f.store.get(v.id)));await f.store.patch(v.id,1,v.sections);const result=await f.store.confirm(v.id,2,randomUUID());assert.equal(result.workflow.status,'confirmed');}assert.equal((await new RecoveryRegistry(f.root).scan()).items.length,0);}finally{await rm(f.root,{recursive:true,force:true});}
+ const f=await fixture();try{for(const original of [f.synthesis,f.update]){const v=structuredClone(original);delete v.evidence;delete v.baseWiki;delete v.inputDraft;assert(isWorkflow(v));if(v.kind==='update')v.inputDraft=structuredClone(original.inputDraft);assert(isWorkflow(v));await f.store.save(v);assert((await f.store.get(v.id)));await f.store.patch(v.id,1,v.sections);const reviewed=await approveWorkflow(f.store,v.id);const result=await f.store.confirm(v.id,reviewed.revision,randomUUID());assert.equal(result.workflow.status,'confirmed');}assert.equal((await new RecoveryRegistry(f.root).scan()).items.length,0);}finally{await rm(f.root,{recursive:true,force:true});}
 });
 
 test('PA01 R02 499/500/501/1201 results are bounded with persistent hidden issues and correct rescan totals',async()=>{

@@ -45,7 +45,7 @@ for (const reboot of [false, true]) test(`F-SR01-01 old-bound restart recovers s
     assert.equal((await f.checkpoint(old.id))?.lastError?.code, 'LLM_PLAN_COVERAGE_INVALID');
     f.succeed(); const next = await runner.start(f.raw.id, options()); assert.equal(next.job.id, id);
     assert.equal((await runner.waitForSettlement(id)).job?.status, 'completed');
-    assert.equal((await f.drafts.list()).length, 1); assert.equal(f.requests.length, calls + 3);
+    assert.equal((await f.drafts.list()).length, 1); assert.equal(f.requests.length, calls + 2);
   } finally { setup?.fault.restore(); await f.clean(); }
 });
 
@@ -93,8 +93,8 @@ test('F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue;
     assert.equal((await h.request(`/api/extraction-jobs/${job.id}/reconcile-storage`, {})).json.status, 'failed');
     assert.equal((await f.checkpoint(job.id))?.attempts, 2); assert.equal(f.requests.length, calls);
     f.succeed(); const resumed = await restarted.start(f.raw.id, { ...options(), planningRetry: true }); assert.equal(resumed.job.id, job.id);
-    assert.equal((await restarted.waitForSettlement(job.id)).job?.status, 'completed'); assert.equal(f.requests.length, calls + 2);
-    assert.equal((await f.checkpoint(job.id))?.attempts, 4);
+    assert.equal((await restarted.waitForSettlement(job.id)).job?.status, 'completed'); assert.equal(f.requests.length, calls + 1);
+    assert.equal((await f.checkpoint(job.id))?.attempts, 3);
   } finally { if (held) await rename(held + '.held', held); fault.restore(); await h?.close(); await f.clean(); }
 });
 

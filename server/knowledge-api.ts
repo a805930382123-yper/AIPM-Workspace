@@ -5,6 +5,7 @@ import { WikiError, type WikiStore } from '../services/wiki/store.ts';
 import { KnowledgeWorkflowStore } from '../services/wiki/knowledge-workflows.ts';
 import type { LlmProvider } from '../services/llm/provider.ts';
 import { findDuplicateCandidates } from '../services/search/duplicates.ts';
+import { validateHumanReview } from './llm-validation.ts';
 
 export function registerKnowledgeRoutes(app: express.Express, deps: {
   root: string; raws: RawStore; drafts: DraftStore; wiki: WikiStore; provider: () => LlmProvider | undefined;
@@ -61,7 +62,7 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
       if (!target) throw new WikiError('TARGET_NOT_FOUND', '选择的目标 Wiki 不存在。', 404);
       const raw = await deps.raws.get(draft.rawId);
       const result = await workflows.createUpdate({ draftId, pageId, baseRevision, targetWikiId, draft, raw, target, provider: requireProvider() });
-      res.status(201).json(result);
+      res.status(201).json(workflows.view(result));
     } catch (error) { next(error); }
   });
   app.post('/api/knowledge/syntheses', async (req, res, next) => {
@@ -76,7 +77,7 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
         rawIds.push(source.sources[0]);
       }
       const result = await workflows.createSynthesis({ rawIds, provider: requireProvider() });
-      res.status(201).json(result);
+      res.status(201).json(workflows.view(result));
     } catch (error) { next(error); }
   });
   app.get('/api/knowledge/workflows', async (req, res, next) => {
@@ -88,7 +89,7 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
     } catch (error) { next(error); }
   });
   app.get('/api/knowledge/workflows/:workflowId', async (req, res, next) => {
-    try { await ready; const value = await workflows.get(req.params.workflowId); if (!value) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404); res.json(value); }
+    try { await ready; const value = await workflows.get(req.params.workflowId); if (!value) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404); res.json(workflows.view(value)); }
     catch (error) { next(error); }
   });
   app.patch('/api/knowledge/workflows/:workflowId', async (req, res, next) => {
@@ -96,9 +97,14 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
       await ready;
       const { baseRevision, sections, title } = req.body ?? {};
       if (!Number.isInteger(baseRevision) || !sections || !Array.isArray(sections.suggestedAdditions) || !Array.isArray(sections.conflicts) || !Array.isArray(sections.inferences) || !Array.isArray(sections.openQuestions) || !Array.isArray(sections.agreement) || !Array.isArray(sections.sourceList)) throw new WikiError('INVALID_WORKFLOW', '草稿更新内容不符合结构要求。');
-      res.json(await workflows.patch(req.params.workflowId, baseRevision, sections, title));
+      if(Object.keys(req.body??{}).some(k=>!['baseRevision','sections','title'].includes(k)))throw new WikiError('INVALID_PATCH','工作流请求包含受保护或未知字段。');
+      res.json(workflows.view(await workflows.patch(req.params.workflowId, baseRevision, sections, title)));
     } catch (error) { next(error); }
   });
+  for(const action of ['start','move','page'] as const){
+    const route=action==='page'?'/api/knowledge/workflows/:workflowId/review/pages/:pageId':`/api/knowledge/workflows/:workflowId/review/${action}`;
+    app.post(route,async(req,res,next)=>{try{await ready;const input=validateHumanReview(req.body,action,String(req.params.pageId));res.json(workflows.view(await workflows.reviewOperation(String(req.params.workflowId),input)));}catch(error){next(error);}});
+  }
   app.delete('/api/knowledge/workflows/:workflowId', async (req, res, next) => {
     try { await ready; const value = await workflows.discard(req.params.workflowId, req.body?.baseRevision); res.json({ id: value.id, status: value.status, revision: value.revision }); }
     catch (error) { next(error); }

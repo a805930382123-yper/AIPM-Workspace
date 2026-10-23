@@ -30,6 +30,8 @@ export type CommitSnapshot = {
   warnings: string[];
 };
 export type CommitManifest = {
+  humanReviewDigest?: string; humanReviewBasisDigest?: string;
+  legacyRecovery?: 'verified_partial'; awaitingHumanReview?: boolean; supersededBy?: string;
   operationId: string; draftId: string; idempotencyKey: string;
   rawId: string; rawSha256: string; rawTitle: string;
   /** F04-04: digest of the frozen payload; a retry compares payloads, not idempotency keys. */
@@ -70,7 +72,7 @@ export class WikiCommitService {
     const records=await scanJsonRecords<CommitManifest>(this.directory(),(v,file):v is CommitManifest=>isCommitManifest(v,path.basename(file,'.json')),this.deps.root);
     return records.records.map(x=>x.value);
   }  async findByDraft(draftId: string): Promise<CommitManifest | undefined> {
-    return (await this.list()).find(manifest => manifest.draftId === draftId);
+    return (await this.list()).find(manifest => manifest.draftId === draftId && !manifest.supersededBy);
   }
 
   async status(operationId: string): Promise<CommitManifest | undefined> { return this.get(operationId); }
@@ -106,7 +108,7 @@ export class WikiCommitService {
 
   /** Public entry: must be called inside `wikiStore.withLock`. */
   async confirm(input: { draftId: string; baseRevision: number; selectedPageIds: string[]; idempotencyKey: string; operationId: string; now: string }): Promise<{ manifest: CommitManifest; reused: boolean; sourceReused: boolean }> {
-    const draft = await this.deps.drafts.get(input.draftId);
+    let draft = await this.deps.drafts.get(input.draftId);
     if (!draft) throw new CommitError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
     // F04-04: the same business rule applies to the first confirm and to a retry — every incoming
     // page id must exist before anything is compared. A different request is never silently
@@ -120,7 +122,22 @@ export class WikiCommitService {
     }
     const raw = await this.deps.rawStore.get(draft.rawId);
     assertRawNotMeeting(raw);
-    const existing = await this.findByDraft(draft.id);
+    let existing = await this.findByDraft(draft.id);
+    if(existing&&existing.status!=='completed'&&!existing.humanReviewDigest){
+      const onDisk=await this.verifiedTargets(existing);
+      if(!onDisk.length){
+        if(draft.status==='committing')await this.deps.drafts.resetToPending(draft.id,'旧零写入事务等待逐页人工审查');
+        const editable=(await this.deps.drafts.get(draft.id))!;
+        const digest=await this.deps.drafts.assertReviewed(editable,raw?.body??'');
+        if(input.baseRevision!==editable.revision)throw new CommitError('DRAFT_REVISION_CONFLICT','草稿已变化，请刷新。',409);
+        existing.supersededBy=input.operationId;existing.awaitingHumanReview=true;
+        await writeJsonAtomic(this.fileFor(existing.operationId),existing);
+        existing=undefined;
+        draft=editable;
+        // The old immutable snapshot remains on disk; a new reviewed operation supersedes it.
+        void digest;
+      }
+    }
     if (existing) {
       // F04-04: the retry semantics are defined by the frozen payload, not by the key: the same
       // payload reuses the original operation (any key), a different payload is rejected.
@@ -151,6 +168,7 @@ export class WikiCommitService {
     }
     if (!raw) throw new CommitError('RAW_MISSING', '对应的原始资料不存在（可能已被删除），不能确认写入。', 409);
     if (raw.bodySha256 !== draft.rawSha256) throw new CommitError('RAW_CHANGED', '原始正文的校验值与整理时不一致，已停止写入以避免产生坏来源。', 409);
+    const humanReviewDigest=await this.deps.drafts.assertReviewed(draft,raw.body);
 
     const selectedIds = requested;
     const selectedPages = draft.pages.filter(page => selectedIds.includes(page.pageId));
@@ -187,6 +205,7 @@ export class WikiCommitService {
     }
     const snapshot = this.freeze(draft, selectedPages, raw, conflict.reuseSourceId, reuseSourceTitle, warnings, input.now);
     const manifest: CommitManifest = {
+      humanReviewDigest,humanReviewBasisDigest:draft.humanReview!.basisDigest,
       operationId: input.operationId, draftId: draft.id, idempotencyKey: input.idempotencyKey,
       rawId: draft.rawId, rawSha256: draft.rawSha256, rawTitle: draft.rawTitle,
       payloadDigest: this.payloadDigest(draft, selectedPages, reuseSourceTitle ?? draft.source.title, conflict.reuseSourceId),
@@ -199,9 +218,9 @@ export class WikiCommitService {
     };
     // The frozen manifest must be durable before any formal write happens.
     try {
-      await writeJsonAtomic(this.fileFor(manifest.operationId), manifest);
-      await this.deps.drafts.markCommitting(draft.id, manifest.operationId);
+      await this.deps.drafts.prepareReviewedCommit(draft.id,draft.revision,humanReviewDigest,raw.body,manifest.operationId,()=>writeJsonAtomic(this.fileFor(manifest.operationId),manifest));
     } catch (error) {
+      if((error as {status?:number}).status===409)throw error;
       // Nothing formal was written yet; report the real cause and the (empty) commit facts so the
       // user can retry instead of guessing whether anything happened.
       const fsCode = (error as { code?: unknown }).code;
@@ -292,7 +311,21 @@ export class WikiCommitService {
   private async execute(input: CommitManifest): Promise<CommitManifest> {
     return this.queue.run(async () => {
       let manifest = { ...input };
-      assertRawNotMeeting(await this.deps.rawStore.get(input.rawId));
+      if(input.supersededBy)throw new CommitError('HUMAN_REVIEW_SUPERSEDED','旧事务已由重新审查事务替代。',409);
+      const raw=await this.deps.rawStore.get(input.rawId);assertRawNotMeeting(raw);
+      if(!raw||raw.bodySha256!==input.rawSha256||sha256(raw.body)!==input.rawSha256)throw new CommitError('RAW_CHANGED','提交来源已变化。',409);
+      const actual=await this.verifiedTargets(input);
+      if(!input.humanReviewDigest){
+        if(!actual.length){
+          manifest.awaitingHumanReview=true;await writeJsonAtomic(this.fileFor(manifest.operationId),manifest);
+          await this.deps.drafts.resetToPending(input.draftId,'旧零写入事务需逐页人工审查');
+          throw new CommitError('HUMAN_REVIEW_REQUIRED','旧事务没有实际写入；请回到草稿逐页审查后重新明确确认。',409,{operationId:input.operationId,writtenWikiIds:[],committed:false});
+        }
+        manifest.legacyRecovery='verified_partial';await writeJsonAtomic(this.fileFor(manifest.operationId),manifest);
+      }else{
+        const draft=await this.deps.drafts.get(input.draftId);
+        if(!draft||await this.deps.drafts.assertReviewed(draft,raw.body)!==input.humanReviewDigest||draft.humanReview?.basisDigest!==input.humanReviewBasisDigest)throw new CommitError('REVIEW_CONTENT_CHANGED','提交审查快照与当前候选不一致。',409);
+      }
       const save = async (patch: Partial<CommitManifest>) => {
         manifest = { ...manifest, ...patch, updatedAt: new Date().toISOString() };
         await writeJsonAtomic(this.fileFor(manifest.operationId), manifest);
@@ -406,13 +439,23 @@ export class WikiCommitService {
     }
     return written;
   }
+  private async verifiedTargets(manifest:CommitManifest):Promise<string[]> {
+    const matched:string[]=[];
+    for(const record of [...(manifest.snapshot.sourceRecord?[manifest.snapshot.sourceRecord]:[]),...manifest.snapshot.pageRecords]){
+      const current=await this.deps.wikiStore.readPageFile(record.id);
+      if(current===undefined)continue;
+      if(sha256(current)!==manifest.snapshot.digests[record.id])throw new CommitError('COMMIT_TARGET_CONFLICT','已有事务目标与冻结快照冲突，停止恢复。',409,{wikiId:record.id});
+      matched.push(record.id);
+    }
+    return matched;
+  }
 
   /** Startup recovery: finish every manifest the user already confirmed. */
   async reconcile(): Promise<{ resumed: CommitManifest[]; conflicts: Array<{ operationId: string; code: string; message: string; committed: boolean; writtenWikiIds: string[]; failedPhase?: string }> }> {
     const resumed: CommitManifest[] = [];
     const conflicts: Array<{ operationId: string; code: string; message: string; committed: boolean; writtenWikiIds: string[]; failedPhase?: string }> = [];
     for (const manifest of await this.list()) {
-      if (manifest.status === 'completed') continue;
+      if (manifest.status === 'completed'||manifest.supersededBy) continue;
       try {
         const finished = await this.deps.wikiStore.withLock(() => this.execute(manifest));
         resumed.push(finished);

@@ -1,0 +1,31 @@
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (322.6471ms)
+✔ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (161.8888ms)
+✔ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (351.7128ms)
+✖ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (23.7957ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (61.0955ms)
+✔ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (787.0365ms)
+✔ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (165.9498ms)
+✔ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (159.9773ms)
+✔ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (173.4743ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (123.0358ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (225.6791ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (204.1219ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3620.9602
+
+✖ failing tests:
+
+test at tests\kb02-human-review.test.ts:1:7687
+✖ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (23.7957ms)
+  TypeError: Cannot read properties of undefined (reading 'response')
+      at Object.complete (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-human-review.test.ts:76:289)
+      at runKnowledgePipeline (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\llm\knowledge-extraction.ts:209:41)
+      at async TestContext.<anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\tests\kb02-human-review.test.ts:76:30)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)

@@ -2,19 +2,24 @@ import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import {isWorkflow,isWorkflowManifest} from '../storage/record-validators.ts';
 import { mkdir } from 'node:fs/promises';
-import { scanJsonRecords, StorageError, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
+import { SerialQueue, scanJsonRecords, StorageError, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
 import { RawIntegrityError, type RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting, assertRawsNotMeeting } from '../meeting/source-policy.ts';
 import { assertNoKnownSecret, LlmError, sanitizeDeep, sanitizeProviderText, type LlmProvider } from '../llm/provider.ts';
 import { buildEvidenceLocatorCatalog } from '../llm/locators.ts';
 import { WikiError, type WikiInput, type WikiRecord, type WikiStore } from './store.ts';
+import { DraftStore } from './drafts.ts';
+import { assertHumanReviewed, assertReviewSources, assertReviewStructure, candidateContent, confirmHumanPage, moveHumanUnits, newHumanReview, reviewContentDigest, type HumanReview, type ReviewUnit } from './human-review.ts';
 
 export type KnowledgeWorkflow = {
+  reviewProtocolVersion?:1;
+  legacyStandaloneInput?:{version:1;source:'stored_workflow';rawSnapshots:KnowledgeWorkflow['rawSnapshots'];targetWikiId:string;targetBaseRevision:number;snapshotDigest:string};
+  humanReview?: HumanReview; humanEditedSections?: string[];
   id: string; kind: 'update' | 'synthesis'; status: 'pending_confirmation' | 'confirmed' | 'discarded' | 'conflict';
   revision: number; createdAt: string; updatedAt: string; provider: { name: string; model: string };
   rawSnapshots: Array<{ id: string; title: string; bodySha256: string }>;
   targetWikiId?: string; baseRevision?: number; baseWiki?: WikiRecord;
-  inputDraft?: { draftId: string; pageId: string; revision: number };
+  inputDraft?: { draftId: string; pageId: string; revision: number; reviewContentDigest?: string };
   sections: {
     existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[];
     inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{ id: string; title: string }>;
@@ -24,12 +29,14 @@ export type KnowledgeWorkflow = {
   evidence?: Array<{ section: string; text: string; rawId: string; quote: string; start: number; end: number }>;
   lastCommitError?: string;
 };
-type WorkflowManifest = { operationId: string; workflowId: string; idempotencyKey: string; payloadDigest: string; status: 'prepared' | 'committing' | 'completed' | 'conflict'; createdAt: string; updatedAt: string; records: WikiRecord[]; updateTargetId?: string; targetBaseRevision?: number; rawSnapshots: KnowledgeWorkflow['rawSnapshots']; writtenIds: string[]; error?: string };
+type WorkflowManifest = { humanReviewDigest?:string; humanReviewBasisDigest?:string; legacyRecovery?:'verified_partial'; awaitingHumanReview?:boolean; supersededBy?:string; operationId: string; workflowId: string; idempotencyKey: string; payloadDigest: string; status: 'prepared' | 'committing' | 'completed' | 'conflict'; createdAt: string; updatedAt: string; records: WikiRecord[]; updateTargetId?: string; targetBaseRevision?: number; rawSnapshots: KnowledgeWorkflow['rawSnapshots']; writtenIds: string[]; error?: string };
 const sha = (value: string) => createHash('sha256').update(value, 'utf8').digest('hex');
 const object = (value: unknown): value is Record<string, unknown> => Boolean(value && typeof value === 'object' && !Array.isArray(value));
 
+const workflowQueues=new Map<string,SerialQueue>();
 export class KnowledgeWorkflowStore {
-  constructor(private readonly root: string, private readonly wiki: WikiStore, private readonly raws: RawStore) {}
+  private readonly queue:SerialQueue;
+  constructor(private readonly root: string, private readonly wiki: WikiStore, private readonly raws: RawStore) {const key=path.resolve(root);this.queue=workflowQueues.get(key)??new SerialQueue();workflowQueues.set(key,this.queue);}
   private dir() { return path.join(this.root, 'drafts', 'knowledge-workflows'); }
   private file(id: string) { return path.join(this.dir(), `${id}.json`); }
   async initialize() { await mkdir(this.dir(), { recursive: true }); await mkdir(this.operationsDir(), { recursive: true }); await this.reconcile(); }
@@ -40,6 +47,79 @@ export class KnowledgeWorkflowStore {
   async list() { return (await scanJsonRecords<KnowledgeWorkflow>(this.dir(),(v,file):v is KnowledgeWorkflow=>isWorkflow(v,path.basename(file,'.json')),this.root)).records.map(x=>x.value); }
   async save(record: KnowledgeWorkflow) { await writeJsonAtomic(this.file(record.id), record); return record; }
 
+  contentDigest(record:KnowledgeWorkflow):string {
+    if(!record.humanReview)throw new WikiError('HUMAN_REVIEW_REQUIRED','请先开始审查知识预览。',409);
+    return reviewContentDigest({workflowId:record.id,rawSnapshots:record.rawSnapshots},candidateContent(record),record.humanReview);
+  }
+  view(record:KnowledgeWorkflow) {return {...record,reviewContentDigest:record.humanReview?this.contentDigest(record):null};}
+  private workflowReview(record:KnowledgeWorkflow,inherited:ReviewUnit[]=[]):HumanReview {
+    const units:ReviewUnit[]=structuredClone(inherited);
+    for(const section of ['suggestedAdditions','conflicts','inferences','openQuestions','agreement'] as const)record.sections[section].forEach((text,i)=>{
+      const evidence=(record.evidence??[]).filter(e=>e.section===section)[i];
+      units.push({id:`proposal-${record.id}-${section}-${i+1}`,kind:'proposal',origin:'model',text,memberIds:[],records:[],section,evidence:evidence?[{...evidence,id:`proposal-evidence-${section}-${i+1}`,chunkIndex:-1}]:[],sourceLabel:section==='inferences'?'模型推断':section==='openQuestions'?'待确认问题':evidence?'模型整理（有原文定位，须人工核对）':'模型整理（无原文定位）'});
+    });
+    return newHumanReview(units,Object.fromEntries(units.map(u=>[u.id,record.id])));
+  }
+  private async assertInput(record:KnowledgeWorkflow):Promise<void> {
+    if(record.kind!=='update')return;
+    if(!record.inputDraft&&record.reviewProtocolVersion===1&&record.legacyStandaloneInput){
+      const legacy=record.legacyStandaloneInput;
+      if(legacy.version!==1||legacy.source!=='stored_workflow'||legacy.targetWikiId!==record.targetWikiId||legacy.targetBaseRevision!==record.baseRevision||JSON.stringify(legacy.rawSnapshots)!==JSON.stringify(record.rawSnapshots))throw new WikiError('INPUT_REVIEW_CHANGED','旧更新的来源快照或目标绑定已变化。',409);
+      const target=await this.wiki.get(record.targetWikiId!);
+      if(!target||JSON.stringify([...new Set([...target.sources,...record.rawSnapshots.map(r=>r.id)])].sort())!==JSON.stringify([...record.sources].sort()))throw new WikiError('INPUT_REVIEW_CHANGED','旧更新来源集合与真实目标/Raw不一致。',409);
+      return;
+    }
+    if(!record.inputDraft?.reviewContentDigest)throw new WikiError('INPUT_REVIEW_REQUIRED','旧更新预览需重新绑定已完成审查的输入草稿。请开始本预览审查。',409);
+    const store=new DraftStore(this.root),draft=await store.get(record.inputDraft.draftId);
+    const raw=draft?await this.raws.get(draft.rawId):undefined;
+    if(!draft||!raw||draft.revision!==record.inputDraft.revision||await store.assertReviewed(draft,raw.body)!==record.inputDraft.reviewContentDigest||!draft.pages.some(p=>p.pageId===record.inputDraft!.pageId))throw new WikiError('INPUT_REVIEW_CHANGED','更新输入的完整草稿已变化或撤销审查；请重新生成预览。',409);
+  }
+  private async assertReviewed(record:KnowledgeWorkflow):Promise<string> {
+    assertReviewStructure(record.humanReview,[record.id]);
+    const raws=await Promise.all(record.rawSnapshots.map(s=>this.getRawSnapshot(s.id)));
+    if(raws.some(r=>!r))throw new WikiError('RAW_CHANGED','来源缺失。',409);
+    assertReviewSources(record.humanReview,raws as NonNullable<(typeof raws)[number]>[]);
+    for(const snapshot of record.rawSnapshots)if(!raws.some(r=>r?.id===snapshot.id&&r.bodySha256===snapshot.bodySha256))throw new WikiError('RAW_CHANGED','来源版本已变化。',409);
+    await this.assertInput(record);
+    const digest=this.contentDigest(record);assertHumanReviewed(record.humanReview,[record.id],digest);return digest;
+  }
+  async reviewOperation(id:string,input:{baseRevision:number;action:'start'|'move'|'page';unitIds?:string[];pageId?:string|null;reviewContentDigest?:string;confirmed?:boolean}):Promise<KnowledgeWorkflow> {
+    return this.queue.run(async()=>{
+      const record=await this.get(id);if(!record)throw new WikiError('WORKFLOW_NOT_FOUND','知识预览不存在。',404);
+      if(record.status!=='pending_confirmation'||record.revision!==input.baseRevision)throw new WikiError('WORKFLOW_REVISION_CONFLICT','知识预览状态或版本已变化，请刷新。',409);
+      const before=JSON.stringify(record);
+      if(input.action==='start'&&!record.humanReview){
+        let inherited:ReviewUnit[]=[];
+        if(record.kind==='update'&&!record.inputDraft){
+          if(record.reviewProtocolVersion!==undefined)throw new WikiError('INPUT_REVIEW_REQUIRED','新版更新输入绑定缺失，不得降级为旧工作流。',409);
+          await this.validateForConfirm(record);
+          const target=await this.wiki.get(record.targetWikiId!);
+          if(!target||target.revision!==record.baseRevision)throw new WikiError('REVISION_CONFLICT','旧工作流的目标版本已变化，请重新生成预览。',409);
+          if(JSON.stringify([...new Set([...target.sources,...record.rawSnapshots.map(r=>r.id)])].sort())!==JSON.stringify([...record.sources].sort()))throw new WikiError('INPUT_REVIEW_CHANGED','旧工作流的来源集合不匹配。',409);
+          record.legacyStandaloneInput={version:1,source:'stored_workflow',rawSnapshots:structuredClone(record.rawSnapshots),targetWikiId:target.id,targetBaseRevision:target.revision,snapshotDigest:sha(JSON.stringify(candidateContent(record)))};
+        }
+        if(record.kind==='update'&&record.inputDraft){
+          const drafts=new DraftStore(this.root),draft=await drafts.get(record.inputDraft.draftId),raw=draft?await this.raws.get(draft.rawId):undefined;
+          if(!draft||!raw)throw new WikiError('INPUT_REVIEW_REQUIRED','输入草稿或来源缺失。',409);
+          const digest=await drafts.assertReviewed(draft,raw.body);
+          const page=draft.pages.find(p=>p.pageId===record.inputDraft!.pageId);
+          if(!page||record.sections.newSource!==raw.body||(record.evidence??[]).some(e=>!page.source_evidence.some(p=>p.rawId===e.rawId&&p.start<=e.start&&p.end>=e.end)))throw new WikiError('INPUT_REVIEW_CHANGED','旧更新预览来源无法与当前输入页严格匹配；请从已审草稿重新生成预览。',409);
+          record.inputDraft={...record.inputDraft,revision:draft.revision,reviewContentDigest:digest};
+          inherited=draft.humanReview!.units.filter(u=>draft.humanReview!.assignments[u.id]===page.pageId);
+        }
+        record.humanReview=this.workflowReview(record,inherited);
+        record.reviewProtocolVersion=1;
+      }
+      assertReviewStructure(record.humanReview,[record.id]);
+      const raws=await Promise.all(record.rawSnapshots.map(s=>this.getRawSnapshot(s.id)));if(raws.some(r=>!r))throw new WikiError('RAW_CHANGED','来源缺失。',409);
+      assertReviewSources(record.humanReview,raws as NonNullable<(typeof raws)[number]>[]);
+      if(input.action==='move')moveHumanUnits(record.humanReview,[record.id],input.unitIds!,input.pageId!);
+      if(input.action==='page'){await this.assertInput(record);confirmHumanPage(record.humanReview,[record.id],{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(record));}
+      if(JSON.stringify(record)===before)return record;
+      record.revision++;record.updatedAt=new Date().toISOString();return this.save(record);
+    });
+  }
+
   async createUpdate(args: { draftId: string; pageId: string; baseRevision: number; targetWikiId: string; draft: any; raw: any; target: WikiRecord; provider: LlmProvider }) {
     assertRawNotMeeting(args.raw);
     for (const id of args.target.sources) assertRawNotMeeting(await this.raws.get(id));
@@ -49,6 +129,9 @@ export class KnowledgeWorkflowStore {
     const page = args.draft.pages.find((item: any) => item.pageId === args.pageId);
     if (!page) throw new WikiError('PAGE_NOT_FOUND', '提取草稿中没有这条建议。', 404);
     const evidenceDirectory = this.updateEvidenceDirectory(page, args.raw);
+    const drafts=new DraftStore(this.root),stored=await drafts.get(args.draftId);
+    if(!stored||stored.revision!==args.baseRevision||JSON.stringify(stored)!==JSON.stringify(args.draft))throw new WikiError('INPUT_REVIEW_CHANGED','更新输入必须是当前持久化草稿。',409);
+    const inputDigest=await drafts.assertReviewed(stored,args.raw.body);
     await this.assertUpdateTarget(args.target);
     const existingLocators = this.updateExistingLocators(args.target);
     assertNoKnownSecret({ page, evidenceDirectory, existingLocators }, args.provider.secrets);
@@ -65,13 +148,16 @@ export class KnowledgeWorkflowStore {
     assertNoKnownSecret(output, args.provider.secrets);
     this.validateEvidence(output, [args.raw]);
     const record: KnowledgeWorkflow = {
+      reviewProtocolVersion:1,
       id: randomUUID(), kind: 'update', status: 'pending_confirmation', revision: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       provider: { name: args.provider.name, model: args.provider.model }, rawSnapshots: [{ id: args.raw.id, title: args.raw.title, bodySha256: args.raw.bodySha256 }],
-      targetWikiId: args.target.id, baseRevision: args.target.revision, baseWiki: args.target, inputDraft: { draftId: args.draftId, pageId: args.pageId, revision: args.draft.revision },
+      targetWikiId: args.target.id, baseRevision: args.target.revision, baseWiki: args.target, inputDraft: { draftId: args.draftId, pageId: args.pageId, revision: args.draft.revision,reviewContentDigest:inputDigest },
       sections: { existing: args.target.body, newSource: args.raw.body, suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList: [{ id: args.raw.id, title: args.raw.title }] },
       evidence: [...output.suggestedAdditions.map((x: any) => ({ section: 'suggestedAdditions', ...x })), ...output.conflicts.map((x: any) => ({ section: 'conflicts', ...x })), ...output.agreement.map((x: any) => ({ section: 'agreement', ...x }))],
       title: args.target.title, category: args.target.category, sources: [...new Set([...args.target.sources, args.raw.id])],
     };
+    record.humanReview=this.workflowReview(record,stored.humanReview!.units.filter(u=>stored.humanReview!.assignments[u.id]===args.pageId));
+    await this.assertInput(record);
     return this.save(record);
   }
 
@@ -92,12 +178,14 @@ export class KnowledgeWorkflowStore {
     }
     this.validateEvidence(output, entries);
     const record: KnowledgeWorkflow = {
+      reviewProtocolVersion:1,
       id: randomUUID(), kind: 'synthesis', status: 'pending_confirmation', revision: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       provider: { name: args.provider.name, model: args.provider.model }, rawSnapshots: entries.map(raw => ({ id: raw.id, title: raw.title, bodySha256: raw.bodySha256 })),
       title: output.title, category: output.category, sources: ids,
       sections: { suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList: entries.map(raw => ({ id: raw.id, title: raw.title })) },
       evidence: [...output.suggestedAdditions.map((x: any) => ({ section: 'suggestedAdditions', ...x })), ...output.conflicts.map((x: any) => ({ section: 'conflicts', ...x })), ...output.agreement.map((x: any) => ({ section: 'agreement', ...x }))],
     };
+    record.humanReview=this.workflowReview(record);
     return this.save(record);
   }
 
@@ -175,6 +263,9 @@ export class KnowledgeWorkflowStore {
   }
 
   async patch(id: string, baseRevision: number, sections: KnowledgeWorkflow['sections'], title?: string) {
+    return this.queue.run(()=>this.patchLocked(id,baseRevision,sections,title));
+  }
+  private async patchLocked(id: string, baseRevision: number, sections: KnowledgeWorkflow['sections'], title?: string) {
     const workflow = await this.get(id);
     if (!workflow) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404);
     if (workflow.status !== 'pending_confirmation') throw new WikiError('WORKFLOW_NOT_EDITABLE', '知识草稿不在可编辑状态。', 409);
@@ -190,6 +281,10 @@ export class KnowledgeWorkflowStore {
     for (const field of ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] as const) {
       if (!Array.isArray(sections[field]) || sections[field].some(value => typeof value !== 'string')) throw new WikiError('INVALID_WORKFLOW', `草稿字段 ${field} 必须为字符串列表。`);
     }
+    if(JSON.stringify(workflow.sections)===JSON.stringify(sections)&&workflow.title===nextTitle.trim())return workflow;
+    const fields=['suggestedAdditions','conflicts','inferences','openQuestions','agreement'] as const;
+    workflow.humanEditedSections=[...new Set([...(workflow.humanEditedSections??[]),...fields.filter(f=>JSON.stringify(workflow.sections[f])!==JSON.stringify(sections[f]))])];
+    if(workflow.humanReview)workflow.humanReview.approvals=[];
     workflow.sections = sections; workflow.title = nextTitle.trim();
     workflow.revision++; workflow.updatedAt = new Date().toISOString(); return this.save(workflow);
   }
@@ -202,10 +297,17 @@ export class KnowledgeWorkflowStore {
   }
 
   async confirm(id: string, baseRevision: number, idempotencyKey: string) {
+    return this.queue.run(async()=>{const record=await this.get(id);return record?.inputDraft?new DraftStore(this.root).withReviewLock(()=>this.confirmLocked(id,baseRevision,idempotencyKey)):this.confirmLocked(id,baseRevision,idempotencyKey);});
+  }
+  private async confirmLocked(id: string, baseRevision: number, idempotencyKey: string) {
     const workflow = await this.get(id);
     if (!workflow) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404);
     const payloadDigest = sha(JSON.stringify({ kind: workflow.kind, title: workflow.title, sections: workflow.sections, evidence: workflow.evidence, targetWikiId: workflow.targetWikiId, baseRevision: workflow.baseRevision, sources: workflow.sources }));
-    const priorManifest = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root).then(x=>x.records)).map(item => item.value).find(item => item.workflowId === workflow.id);
+    let priorManifest = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root).then(x=>x.records)).map(item => item.value).find(item => item.workflowId === workflow.id&&!item.supersededBy);
+    let superseded:WorkflowManifest|undefined;
+    if(priorManifest&&priorManifest.status!=='completed'&&!priorManifest.humanReviewDigest&&!(await this.verifiedTargets(priorManifest)).length){
+      await this.assertReviewed(workflow);superseded=priorManifest;priorManifest=undefined;
+    }
     if (priorManifest) {
       const old = await this.getCommit(priorManifest.operationId);
       if (!old || old.payloadDigest !== payloadDigest) throw new WikiError('CONFIRM_PAYLOAD_CHANGED', '该草稿已有不同内容的确认提交；请查看原提交，不要重复确认。', 409, { operationId: priorManifest.operationId });
@@ -222,6 +324,7 @@ export class KnowledgeWorkflowStore {
     if (workflow.status !== 'pending_confirmation') throw new WikiError('WORKFLOW_NOT_CONFIRMABLE', '知识草稿不在待确认状态。', 409);
     if (workflow.revision !== baseRevision) throw new WikiError('WORKFLOW_REVISION_CONFLICT', '知识草稿已过期，请刷新后重新审阅。', 409, { currentRevision: workflow.revision });
     await this.validateForConfirm(workflow);
+    const humanReviewDigest=await this.assertReviewed(workflow);
     if (workflow.kind === 'update' && workflow.targetWikiId) {
       const target = await this.wiki.get(workflow.targetWikiId);
       if (!target) throw new WikiError('NOT_FOUND', '更新目标已不存在。', 404);
@@ -240,6 +343,7 @@ export class KnowledgeWorkflowStore {
       if (!current) throw new WikiError('NOT_FOUND', '更新目标已不存在。', 404);
       if (current.revision !== workflow.baseRevision) throw new WikiError('REVISION_CONFLICT', '目标 Wiki 已被修改，旧预览不能覆盖新版本。', 409, { currentRevision: current.revision });
       const evidenceLines = (section: string, edited: string[]) => edited.map((text, i) => {
+        if(workflow.humanEditedSections?.includes(section))return `- 人工整理：${text}`;
         const item = (workflow.evidence ?? []).filter(value => value.section === section)[i];
         return item ? `- ${text}（来源 Raw ${item.rawId}，原文 [${item.start}, ${item.end})：“${item.quote}”）` : `- ${text}（用户整理）`;
       });
@@ -271,6 +375,7 @@ export class KnowledgeWorkflowStore {
         records.push({ id: randomUUID(), title: raw.title, type: 'source', domain: 'fmcg', category: workflow.category, created: now, updated: now, sources: [rawId], tags: raw.tags, knowledge_status: 'source_supported', confidence: 'medium', source_level: 'C', review_status: 'unreviewed', aliases: [], revision: 1, body: `来源 Raw：${rawId}\n\n${raw.title}\n\n${raw.body.slice(0, 1200)}` });
       }
       const cited = (section: string, edited: string[]) => edited.map((text, i) => {
+        if(workflow.humanEditedSections?.includes(section))return `- 人工整理：${text}`;
         const item = (workflow.evidence ?? []).filter(value => value.section === section)[i];
         return item ? `- ${text}（来源 Raw ${item.rawId}，原文 [${item.start}, ${item.end})：“${item.quote}”）` : `- ${text}（用户整理）`;
       });
@@ -278,8 +383,9 @@ export class KnowledgeWorkflowStore {
       records.push({ id: randomUUID(), title: workflow.title, type: 'synthesis', domain: 'fmcg', category: workflow.category, created: now, updated: now, sources: workflow.sources, tags: [], knowledge_status: 'ai_organized', confidence: 'medium', source_level: 'C', review_status: 'unreviewed', aliases: [], revision: 1, body });
     }
     const operationId = randomUUID();
-    let manifest: WorkflowManifest = { operationId, workflowId: id, idempotencyKey, payloadDigest, status: 'prepared', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), records, updateTargetId, targetBaseRevision, rawSnapshots: workflow.rawSnapshots, writtenIds: [] };
+    let manifest: WorkflowManifest = {humanReviewDigest,humanReviewBasisDigest:workflow.humanReview!.basisDigest, operationId, workflowId: id, idempotencyKey, payloadDigest, status: 'prepared', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), records, updateTargetId, targetBaseRevision, rawSnapshots: workflow.rawSnapshots, writtenIds: [] };
     await writeJsonAtomic(this.operationFile(operationId), manifest);
+    if(superseded){superseded.supersededBy=operationId;superseded.awaitingHumanReview=true;await writeJsonAtomic(this.operationFile(superseded.operationId),superseded);}
     try { manifest = await this.execute(manifest); }
     catch (error) {
       manifest.status = 'committing'; manifest.error = error instanceof Error ? error.message : '磁盘提交失败'; manifest.updatedAt = new Date().toISOString();
@@ -297,6 +403,15 @@ export class KnowledgeWorkflowStore {
 
   private async execute(input: WorkflowManifest): Promise<WorkflowManifest> {
     let manifest = input;
+    if(manifest.supersededBy)throw new WikiError('HUMAN_REVIEW_SUPERSEDED','旧事务已由重新审查替代。',409);
+    const actual=await this.verifiedTargets(manifest);
+    if(!manifest.humanReviewDigest){
+      if(!actual.length){manifest.awaitingHumanReview=true;await writeJsonAtomic(this.operationFile(manifest.operationId),manifest);throw new WikiError('HUMAN_REVIEW_REQUIRED','旧零写入事务等待人工逐页审查。',409);}
+      manifest.legacyRecovery='verified_partial';
+    }else{
+      const record=await this.get(manifest.workflowId);
+      if(!record||await this.assertReviewed(record)!==manifest.humanReviewDigest||record.humanReview?.basisDigest!==manifest.humanReviewBasisDigest)throw new WikiError('REVIEW_CONTENT_CHANGED','工作流审查快照已变化。',409);
+    }
     manifest.status = 'committing'; manifest.updatedAt = new Date().toISOString(); await writeJsonAtomic(this.operationFile(manifest.operationId), manifest);
     for (const snapshot of manifest.rawSnapshots) {
       let raw: Awaited<ReturnType<RawStore['get']>>;
@@ -346,9 +461,19 @@ export class KnowledgeWorkflowStore {
     const files = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root)).records;
     for (const item of files.map(x => x.value).filter((value): value is WorkflowManifest => Boolean(value))) {
       let manifest = item;
-      if (['prepared', 'committing'].includes(item.status)) manifest = await this.execute(item).catch(() => item);
+      if (['prepared', 'committing'].includes(item.status)&&!item.supersededBy) manifest = await this.wiki.withLock(()=>this.queue.run(async()=>{const record=await this.get(item.workflowId);return record?.inputDraft?new DraftStore(this.root).withReviewLock(()=>this.execute(item)):this.execute(item);})).catch(() => item);
       if (manifest.status === 'completed' || manifest.status === 'conflict') await this.finalizeWorkflow(manifest).catch(() => undefined);
     }
+  }
+  private async verifiedTargets(manifest:WorkflowManifest):Promise<string[]> {
+    const matched:string[]=[];
+    for(const record of manifest.records){
+      const actual=await this.wiki.get(record.id);if(!actual)continue;
+      if(this.wiki.pageContent(actual)===this.wiki.pageContent(record)){matched.push(record.id);continue;}
+      if(record.id===manifest.updateTargetId&&actual.revision===manifest.targetBaseRevision)continue;
+      throw new WikiError('COMMIT_TARGET_CONFLICT','已有目标与冻结事务冲突，停止恢复。',409,{wikiId:record.id});
+    }
+    return matched;
   }
 
   private async validateForConfirm(workflow: KnowledgeWorkflow) {

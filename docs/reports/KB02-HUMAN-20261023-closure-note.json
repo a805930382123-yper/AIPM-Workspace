@@ -1,0 +1,9 @@
+{
+  "purpose": "Correct the compact Git status display in closure.json without replacing its original evidence",
+  "originalField": "closure.externalStatus",
+  "cause": "Collector used stdout.trim(), which removed the first status row's leading space before slice(3); the AGENTS.md row was omitted from that compact list only",
+  "actualReadOnlyGitStatus": [" M AGENTS.md", "?? .agents/"],
+  "protectedHashEvidence": "closure.parallelExternal correctly records AGENTS.md baseline/current SHA256; unexpected remains empty",
+  "classification": "Parallel external changes, preserved and excluded from this builder's scope; not attributed to the main agent",
+  "productOrHistoricalEvidenceChanged": false
+}

@@ -1,0 +1,39 @@
+✔ HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes (358.1458ms)
+✖ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (148.9301ms)
+✔ HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests and revisions are server bound (337.0525ms)
+✔ HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request (22.0172ms)
+✔ HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls (54.415ms)
+✔ HUMAN zero transaction recovery verifies disk, never trusts written IDs, and retains old evidence (266.5233ms)
+✔ HUMAN partial transaction recovery verifies disk, never trusts written IDs, and retains old evidence (206.4031ms)
+✔ HUMAN conflict transaction recovery verifies disk, never trusts written IDs, and retains old evidence (159.1512ms)
+✔ HUMAN reviewed-restart transaction recovery verifies disk, never trusts written IDs, and retains old evidence (202.1843ms)
+✔ HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries (132.5174ms)
+✔ HUMAN update requires all input pages before any call; output needs new review and input revocation invalidates (209.7787ms)
+✔ HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks (172.5947ms)
+✔ HUMAN synthesis zero legacy transaction recovery requires real disk evidence and remains reviewable (198.5535ms)
+✔ HUMAN synthesis partial legacy transaction recovery requires real disk evidence and remains reviewable (182.0902ms)
+✔ HUMAN synthesis conflict legacy transaction recovery requires real disk evidence and remains reviewable (150.2698ms)
+✔ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (2 attempts) (141.2498ms)
+✔ HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (3 attempts) (142.0293ms)
+✔ HUMAN legacy merge retains same text at different positions and colliding evidence IDs; deleting an occupied page keeps units unresolved (207.9491ms)
+✔ HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits (1151.5005ms)
+✔ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (226.8018ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 19
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5273.9937
+
+✖ failing tests:
+
+test at tests\kb02-human-review.test.ts:1:4144
+✖ HUMAN whole-unit unresolved/move and merge retain immutable records; edits invalidate all, no-op preserves (148.9301ms)
+  Error: Source 的 category 取值无效。
+      at <anonymous> (E:\AI\Work\AIPM Workspace\.scratch-KB02-HUMAN-20261023\services\wiki\drafts.ts:327:58) {
+    code: 'INVALID_FIELD',
+    status: 400,
+    details: undefined
+  }

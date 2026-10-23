@@ -54,13 +54,13 @@ test('SOURCE controlled real seq121 creates 14 correct areas with all 104 origin
 for(const fault of ['missing','duplicate','unknown','wrong-column','split'] as const)test(`SOURCE v3 ${fault} units fail before expansion and only explicit retry resumes planning`,async()=>{
  const old=await fixture(),f=await run(old,p=>{const bad=plan(p),ids=bad.pages[0].factUnitIds;if(fault==='missing')ids.pop();if(fault==='duplicate')ids.push(ids[0]);if(fault==='unknown')ids.push('fu-unknown');if(fault==='wrong-column')bad.pages[0].questionUnitIds.push(ids.pop()!);if(fault==='split')bad.pages.push(page('另一主题',[ids[0]]));return bad;});
  try{const before=structuredClone(f.cp.completedChunks),attempts=f.cp.attempts;await assert.rejects(f.run(),{code:'LLM_PLAN_COVERAGE_INVALID'});assert(!f.cp.plan);assert.deepEqual(f.cp.completedChunks,before);assert.equal(f.cp.attempts,attempts+1);assert.equal(f.requests.length,1);await new Promise(resolve=>setTimeout(resolve,20));assert.equal(f.requests.length,1);assert.equal((await f.store.get(f.cp.jobId))!.stage,'planning');
- f.reply(plan);await f.run(true);assert.equal(f.requests.length,3);assert.equal(f.cp.attempts,attempts+3);assert.deepEqual(f.cp.completedChunks,before);assert(payload(f.requests[1]).factUnits.length>0);assert(JSON.parse(f.requests[1].user.split('\n').at(-1)!).coverageFeedback);
+ f.reply(plan);await f.run(true);assert.equal(f.requests.length,2);assert.equal(f.cp.attempts,attempts+2);assert.deepEqual(f.cp.completedChunks,before);assert(payload(f.requests[1]).factUnits.length>0);assert(JSON.parse(f.requests[1].user.split('\n').at(-1)!).coverageFeedback);
  }finally{await f.clean();}
 });
 
 test('SOURCE current-rule tampered persisted split, unknown page field and metadata are rejected; valid plan remains restorable',async()=>{
  const old=await fixture(),f=await run(old,p=>({...plan(p),pages:[page('甲',p.factUnits.slice(0,1).map(u=>u.id)),page('乙',p.factUnits.slice(1).map(u=>u.id),p.questionUnits.map(u=>u.id))]}));try{await f.run();const good=structuredClone(f.cp);await validateKnowledgeCheckpoint({...f.args,checkpoint:good});
- for(const change of [(cp:ExtractionCheckpoint)=>{const p=cp.plan!.pages,from=p.find(p=>p.factIds.includes('f-c6-3'))!,to=p.find(p=>p!==from)!;from.factIds.splice(from.factIds.indexOf('f-c6-3'),1);to.factIds.push('f-c6-3');},(cp:ExtractionCheckpoint)=>{(cp.plan!.pages[0] as any).unknown='x';},(cp:ExtractionCheckpoint)=>{cp.plan!.pages[0].type='unknown';},(cp:ExtractionCheckpoint)=>{(cp.plan!.document as any).unknown='x';}]){const cp=structuredClone(good);change(cp);await assert.rejects(validateKnowledgeCheckpoint({...f.args,checkpoint:cp}),{code:'LLM_CHECKPOINT_CORRUPT'});assert.equal(f.requests.length,2);}
+ for(const change of [(cp:ExtractionCheckpoint)=>{const p=cp.plan!.pages,from=p.find(p=>p.factIds.includes('f-c6-3'))!,to=p.find(p=>p!==from)!;from.factIds.splice(from.factIds.indexOf('f-c6-3'),1);to.factIds.push('f-c6-3');},(cp:ExtractionCheckpoint)=>{(cp.plan!.pages[0] as any).unknown='x';},(cp:ExtractionCheckpoint)=>{cp.plan!.pages[0].type='unknown';},(cp:ExtractionCheckpoint)=>{(cp.plan!.document as any).unknown='x';}]){const cp=structuredClone(good);change(cp);await assert.rejects(validateKnowledgeCheckpoint({...f.args,checkpoint:cp}),{code:'LLM_CHECKPOINT_CORRUPT'});assert.equal(f.requests.length,1);}
  }finally{await f.clean();}
 });
 
@@ -94,6 +94,6 @@ for(const extra of [0,1])test('SOURCE complete unit/context/feedback payload at 
  for(let i=count-1;excess>0;i--){const cut=Math.min(excess,diagnostic.facts.unknown[i].length-5);diagnostic.facts.unknown[i]=diagnostic.facts.unknown[i].slice(0,-cut||undefined);excess-=cut;}
  assert.equal(Buffer.byteLength(JSON.stringify({...input,coverageFeedback:diagnostic}),'utf8'),target);
  f.cp.lastError={code:'LLM_PLAN_COVERAGE_INVALID',message:'隔离边界',at:new Date().toISOString(),diagnostic};const before=structuredClone(f.cp);
- if(extra){await assert.rejects(f.run(true),{code:'LLM_PLANNING_TOO_LARGE'});assert.equal(f.requests.length,0);assert.deepEqual(f.cp,before);}else{await f.run(true);assert.equal(f.requests.length,2);assert.equal(Buffer.byteLength(f.requests[0].user.split('\n').at(-1)!,'utf8'),target);}
+ if(extra){await assert.rejects(f.run(true),{code:'LLM_PLANNING_TOO_LARGE'});assert.equal(f.requests.length,0);assert.deepEqual(f.cp,before);}else{await f.run(true);assert.equal(f.requests.length,1);assert.equal(Buffer.byteLength(f.requests[0].user.split('\n').at(-1)!,'utf8'),target);}
  }finally{await f.clean();}
 });
