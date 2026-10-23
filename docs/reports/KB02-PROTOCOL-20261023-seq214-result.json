@@ -1,0 +1,33 @@
+{
+  "sequence": 214,
+  "ordinal": 5,
+  "sampleId": "sample-3",
+  "condition": "A",
+  "requestSha256": "80d808dfa1cf09142bb25f5230025947a5a7cb9f21435bb555bd2acb696bd937",
+  "httpStatus": 200,
+  "responseSha256": "015bfeedb269a7cb073539ae6a68c70855e67dd1303f1cd44b0f32762771c93c",
+  "responseBytes": 1289,
+  "outcome": {
+    "structure": true,
+    "semantic": {
+      "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+      "matches": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥仓库库存数量核对",
+          "expected": "pass",
+          "actual": "pass",
+          "matches": true
+        },
+        {
+          "pageIndex": 1,
+          "title": "甲桥仓库破损商品隔离（拟议）",
+          "expected": "reject",
+          "actual": "pass",
+          "matches": false
+        }
+      ]
+    }
+  }
+}

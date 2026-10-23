@@ -1,0 +1,341 @@
+{
+  "artifactSha256": "b8f28bdab8f9b3408703bd1201a2f7b613b34b7fb56bf2b874162438269d6ace",
+  "start": 209,
+  "attempted": 10,
+  "totalLimit": 500,
+  "results": [
+    {
+      "sequence": 210,
+      "ordinal": 1,
+      "sampleId": "sample-1",
+      "condition": "A",
+      "requestSha256": "67166559ed22221d86817fad88c5221068c6880bb6f31218896d9da0cb5ef5bf",
+      "httpStatus": 200,
+      "responseSha256": "8ecccdae2956e233e807fd7a723220767c403118b345333c8cc9b57500407add",
+      "responseBytes": 2147,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": false,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "财务回款核对与异常审批规则",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 2,
+              "title": "AI异常提示（未来建议，未上线）",
+              "expected": "reject",
+              "actual": "pass",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 211,
+      "ordinal": 2,
+      "sampleId": "sample-1",
+      "condition": "B",
+      "requestSha256": "c95fcb3c81ef16d72a01f69f9de5931f09e5d971ab8bc1e6f771769894247820",
+      "httpStatus": 200,
+      "responseSha256": "4b2b22a3f8267a424b42132a2aae099716361346eb261829b2fb4969bef7c178",
+      "responseBytes": 775,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": false,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "财务回款核对与异常审批规则",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 2,
+              "title": "AI异常提示（未来建议，未上线）",
+              "expected": "reject",
+              "actual": "pass",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 212,
+      "ordinal": 3,
+      "sampleId": "sample-2",
+      "condition": "B",
+      "requestSha256": "a5787df87e9cdc5b65e336ddd892a4dd015c4be3c65f7294ceb88fbcf371ae11",
+      "httpStatus": 200,
+      "responseSha256": "14d3d1f63b2dadfb6903cf6083d8a4d12e6ac904d127bf5c92090918fcbaf230",
+      "responseBytes": 444,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": true,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 213,
+      "ordinal": 4,
+      "sampleId": "sample-2",
+      "condition": "A",
+      "requestSha256": "eaddce8d9e2afdd4f9e711b5d2a5b8dd532416491a75e64fd000e1f42b6a7687",
+      "httpStatus": 200,
+      "responseSha256": "9f04b59c7aada94c34e64858002c1f93aa1b045bedd7f34a8c0dbebe24ccbcf6",
+      "responseBytes": 940,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": true,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥财务团队AI回款异常提示机制",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 214,
+      "ordinal": 5,
+      "sampleId": "sample-3",
+      "condition": "A",
+      "requestSha256": "80d808dfa1cf09142bb25f5230025947a5a7cb9f21435bb555bd2acb696bd937",
+      "httpStatus": 200,
+      "responseSha256": "015bfeedb269a7cb073539ae6a68c70855e67dd1303f1cd44b0f32762771c93c",
+      "responseBytes": 1289,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": false,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥仓库库存数量核对",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "甲桥仓库破损商品隔离（拟议）",
+              "expected": "reject",
+              "actual": "pass",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 215,
+      "ordinal": 6,
+      "sampleId": "sample-3",
+      "condition": "B",
+      "requestSha256": "70c9c7b48403671dbc08063c00c1570b02dce9bbd73386dedf4cbea1e38131cf",
+      "httpStatus": 200,
+      "responseSha256": "4e2d3efeec1eb085eb8fa7fd57bd04e98e368d2313c2ca748693faa1c6ce3641",
+      "responseBytes": 1109,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": false,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥仓库库存数量核对",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "甲桥仓库破损商品隔离（拟议）",
+              "expected": "reject",
+              "actual": "uncertain",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 216,
+      "ordinal": 7,
+      "sampleId": "sample-4",
+      "condition": "B",
+      "requestSha256": "ad52ca1eddc94a1ea96cdf92b6128ec106e3f2dc529d4ff72ddb00a4b2f6d278",
+      "httpStatus": 200,
+      "responseSha256": "1d33383c62c2e6332b783de2d8a207bd35d2a9bfd3eae2ea0a47559b6fed8486",
+      "responseBytes": 648,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": true,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥仓库库存数量核对",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "甲桥仓库破损商品隔离（拟议）",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 217,
+      "ordinal": 8,
+      "sampleId": "sample-4",
+      "condition": "A",
+      "requestSha256": "9d2d43f4d18dc5243b59a231e497bef85b5cc1137a646369e8024aa1698759b0",
+      "httpStatus": 200,
+      "responseSha256": "822e14a490866747236b93bde195a7e0721855f28a0e040f82f0052d25c03d50",
+      "responseBytes": 1451,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": true,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "甲桥仓库库存数量核对",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "甲桥仓库破损商品隔离（拟议）",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 218,
+      "ordinal": 9,
+      "sampleId": "sample-5",
+      "condition": "A",
+      "requestSha256": "afe35b797cc39b7cc089c1d26f4f242369c42a4198beab5a130aa453ef46f5a9",
+      "httpStatus": 200,
+      "responseSha256": "3ab6dc26fa76d956b8dc42368d2740efc60e038d41841adedf1a4a5054573690",
+      "responseBytes": 1851,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": false,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "财务回款核对与异常审批规则",
+              "expected": "pass",
+              "actual": "reject",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 219,
+      "ordinal": 10,
+      "sampleId": "sample-5",
+      "condition": "B",
+      "requestSha256": "72dc60078ae493bd3b2c2a3c21be177476b2bac3aa6bf30159d5ad660494dc56",
+      "httpStatus": 200,
+      "responseSha256": "c2580c07877e97b58e3c53cea60aff9e1bcfd2c239fec8f1e7a3aec5435febb3",
+      "responseBytes": 879,
+      "outcome": {
+        "structure": true,
+        "semantic": {
+          "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+          "matches": true,
+          "pages": [
+            {
+              "pageIndex": 0,
+              "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            },
+            {
+              "pageIndex": 1,
+              "title": "财务回款核对与异常审批规则",
+              "expected": "pass",
+              "actual": "pass",
+              "matches": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "decision": "REQUIRES_ASTRA_INDEPENDENT_PAGE_REVIEW_NOT_BATCH_ACCEPTANCE",
+  "completedFixedMatrix": true,
+  "cumulative": 219
+}

@@ -1,0 +1,33 @@
+{
+  "sequence": 218,
+  "ordinal": 9,
+  "sampleId": "sample-5",
+  "condition": "A",
+  "requestSha256": "afe35b797cc39b7cc089c1d26f4f242369c42a4198beab5a130aa453ef46f5a9",
+  "httpStatus": 200,
+  "responseSha256": "3ab6dc26fa76d956b8dc42368d2740efc60e038d41841adedf1a4a5054573690",
+  "responseBytes": 1851,
+  "outcome": {
+    "structure": true,
+    "semantic": {
+      "status": "PRELIMINARY_ORACLE_COMPARISON_REQUIRES_ASTRA_PAGE_REVIEW",
+      "matches": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+          "expected": "pass",
+          "actual": "pass",
+          "matches": true
+        },
+        {
+          "pageIndex": 1,
+          "title": "财务回款核对与异常审批规则",
+          "expected": "pass",
+          "actual": "reject",
+          "matches": false
+        }
+      ]
+    }
+  }
+}

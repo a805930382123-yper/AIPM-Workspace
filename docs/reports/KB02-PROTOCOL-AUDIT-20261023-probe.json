@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "realCalls": 0,
+  "fakeCalls": 10,
+  "runnerSha256": "cbbfaba28717ad0419eb080741effdae9353962e951ac7d751ad1320ce972067",
+  "artifactSha256": "b8f28bdab8f9b3408703bd1201a2f7b613b34b7fb56bf2b874162438269d6ace",
+  "checks": [
+    "real entry closed: no started record and no config/provider reached",
+    "actual seq206 remains structure-valid semantic mismatch; actual seq209 remains structure-invalid",
+    "ten exact wire bodies; no oracle fields; ledger persisted before each fake send; malformed first output counted once; remaining fixed cells completed; rerun refused"
+  ],
+  "temporaryEvidence": "C:\\Users\\DAVID~1.CHE\\AppData\\Local\\Temp\\KB02-PROTOCOL-AUDIT-fdm5mP",
+  "command": "node --import tsx tests/acceptance/KB02-PROTOCOL-AUDIT-20261023-probe.mjs",
+  "limits": "Finite independent probe; other edge controls were code-reviewed and builder tested, not all independently rerun."
+}

@@ -1,0 +1,393 @@
+{
+  "head": "13e4104e63150c10ec74b2ef2be36ae56c206fb2",
+  "product": "bb0f814",
+  "realCalls": 10,
+  "cumulative": 219,
+  "prompt": "15/24",
+  "structurePassed": 10,
+  "realGateClosed": true,
+  "knownSecretScan": {
+    "pass": true,
+    "files": 34,
+    "baselinePathPatternMatches": 4,
+    "initialFailure": "Generic key-like regex matched existing filenames in protection hash map. Strictly checked every map value is SHA256 and each key is an existing path; known-secret checks retained for all keys/values. No raw Provider response exemption."
+  },
+  "outcomes": [
+    {
+      "sequence": 210,
+      "sampleId": "sample-1",
+      "condition": "A",
+      "requestSha256": "67166559ed22221d86817fad88c5221068c6880bb6f31218896d9da0cb5ef5bf",
+      "responseSha256": "8ecccdae2956e233e807fd7a723220767c403118b345333c8cc9b57500407add",
+      "structure": true,
+      "preRegisteredMatch": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+          "unitIds": [
+            "fu-17-67-fact",
+            "fu-67-108-ambiguous"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "页主题为甲桥区域2026年9月按门店数铺货率，fu-17-67-fact给出100/30/30%数值与口径，fu-67-108-ambiguous保留旧资料20家及20%的口径差异待确认，原文s-17-67与s-67-108直接支持，metric类型有数值与口径依据。",
+          "independentAssessment": "原文100/30/30%与旧20/20%及差异待确认均在同指标页，符合。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "财务回款核对与异常审批规则",
+          "unitIds": [
+            "fu-109-125-fact",
+            "qu-125-139"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "页主题为财务每周核对回款一次与异常审批负责人待访谈确认，分别由s-109-125的fact与s-125-139的question原文直接支持，business_process归属有触发主体与流程内容依据，同主题业务规则可合并承载。",
+          "independentAssessment": "回款每周核对与负责人未知留在业务页，符合已有审核范围。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 2,
+          "title": "AI异常提示（未来建议，未上线）",
+          "unitIds": [
+            "fu-139-160-fact"
+          ],
+          "expected": "reject",
+          "actual": "pass",
+          "originalReason": "原文s-139-160明确给出AI异常提示的独立表述及其状态（未来建议、无上线或收益事实），该unit即为该主题的承载事实，非仅靠边界词或机制标题自证，独立主题成立。",
+          "independentAssessment": "只有AI建议/未上线/无收益状态。A把独立表述当独立主题依据，错误；B同样pass，无理由可额外推断。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 211,
+      "sampleId": "sample-1",
+      "condition": "B",
+      "requestSha256": "c95fcb3c81ef16d72a01f69f9de5931f09e5d971ab8bc1e6f771769894247820",
+      "responseSha256": "4b2b22a3f8267a424b42132a2aae099716361346eb261829b2fb4969bef7c178",
+      "structure": true,
+      "preRegisteredMatch": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+          "unitIds": [
+            "fu-17-67-fact",
+            "fu-67-108-ambiguous"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "原文100/30/30%与旧20/20%及差异待确认均在同指标页，符合。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "财务回款核对与异常审批规则",
+          "unitIds": [
+            "fu-109-125-fact",
+            "qu-125-139"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "回款每周核对与负责人未知留在业务页，符合已有审核范围。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 2,
+          "title": "AI异常提示（未来建议，未上线）",
+          "unitIds": [
+            "fu-139-160-fact"
+          ],
+          "expected": "reject",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "只有AI建议/未上线/无收益状态。A把独立表述当独立主题依据，错误；B同样pass，无理由可额外推断。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 212,
+      "sampleId": "sample-2",
+      "condition": "B",
+      "requestSha256": "a5787df87e9cdc5b65e336ddd892a4dd015c4be3c65f7294ceb88fbcf371ae11",
+      "responseSha256": "14d3d1f63b2dadfb6903cf6083d8a4d12e6ac904d127bf5c92090918fcbaf230",
+      "structure": true,
+      "preRegisteredMatch": true,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥财务团队AI回款异常提示机制",
+          "unitIds": [
+            "fu-19-80-fact",
+            "fu-81-110-fact",
+            "fu-110-162-fact",
+            "fu-163-191-fact",
+            "qu-191-203"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "定义、逾期三天无到账触发、提示/核对/审批流程完整，未上线及未知负责人边界保留，A/B均正确。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 213,
+      "sampleId": "sample-2",
+      "condition": "A",
+      "requestSha256": "eaddce8d9e2afdd4f9e711b5d2a5b8dd532416491a75e64fd000e1f42b6a7687",
+      "responseSha256": "9f04b59c7aada94c34e64858002c1f93aa1b045bedd7f34a8c0dbebe24ccbcf6",
+      "structure": true,
+      "preRegisteredMatch": true,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥财务团队AI回款异常提示机制",
+          "unitIds": [
+            "fu-19-80-fact",
+            "fu-81-110-fact",
+            "fu-110-162-fact",
+            "fu-163-191-fact",
+            "qu-191-203"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "原文明确给出AI回款异常提示的独立定义、触发条件（超期三天无到账）、生成提示流程及未上线边界，标题/type/category有内容依据；所有fact与question unit均归属同一机制主题，主体甲桥财务团队一致，页面0起覆盖全部sourceContexts且不重复。",
+          "independentAssessment": "定义、逾期三天无到账触发、提示/核对/审批流程完整，未上线及未知负责人边界保留，A/B均正确。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 214,
+      "sampleId": "sample-3",
+      "condition": "A",
+      "requestSha256": "80d808dfa1cf09142bb25f5230025947a5a7cb9f21435bb555bd2acb696bd937",
+      "responseSha256": "015bfeedb269a7cb073539ae6a68c70855e67dd1303f1cd44b0f32762771c93c",
+      "structure": true,
+      "preRegisteredMatch": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥仓库库存数量核对",
+          "unitIds": [
+            "fu-19-37-fact"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "原文明确记载甲桥仓库每天按商品编号核对库存数量，页面标题与business_process类型有该事实unit支持，主题归属一致。",
+          "independentAssessment": "每天按编号核对库存数量有独立行为支持。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "甲桥仓库破损商品隔离（拟议）",
+          "unitIds": [
+            "fu-38-63-fact",
+            "qu-64-78"
+          ],
+          "expected": "reject",
+          "actual": "pass",
+          "originalReason": "原文明确给出破损商品隔离为拟议流程（未实施、无效果事实、负责人未定），标题标注拟议，主体同为甲桥仓库；未来建议及其未定负责人由fu-38-63-fact与qu-64-78承载，归属正确。",
+          "independentAssessment": "原文只命名隔离建议和状态/负责人未知。A声称拟议流程足以支持独立页，错误；B uncertain不放行但未达到预注册reject，不能算准确分类通过。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 215,
+      "sampleId": "sample-3",
+      "condition": "B",
+      "requestSha256": "70c9c7b48403671dbc08063c00c1570b02dce9bbd73386dedf4cbea1e38131cf",
+      "responseSha256": "4e2d3efeec1eb085eb8fa7fd57bd04e98e368d2313c2ca748693faa1c6ce3641",
+      "structure": true,
+      "preRegisteredMatch": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥仓库库存数量核对",
+          "unitIds": [
+            "fu-19-37-fact"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "每天按编号核对库存数量有独立行为支持。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "甲桥仓库破损商品隔离（拟议）",
+          "unitIds": [
+            "fu-38-63-fact",
+            "qu-64-78"
+          ],
+          "expected": "reject",
+          "actual": "uncertain",
+          "originalReason": null,
+          "independentAssessment": "原文只命名隔离建议和状态/负责人未知。A声称拟议流程足以支持独立页，错误；B uncertain不放行但未达到预注册reject，不能算准确分类通过。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 216,
+      "sampleId": "sample-4",
+      "condition": "B",
+      "requestSha256": "ad52ca1eddc94a1ea96cdf92b6128ec106e3f2dc529d4ff72ddb00a4b2f6d278",
+      "responseSha256": "1d33383c62c2e6332b783de2d8a207bd35d2a9bfd3eae2ea0a47559b6fed8486",
+      "structure": true,
+      "preRegisteredMatch": true,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥仓库库存数量核对",
+          "unitIds": [
+            "fu-19-37-fact"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "日常库存数量核对独立成立。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "甲桥仓库破损商品隔离（拟议）",
+          "unitIds": [
+            "fu-38-119-fact",
+            "fu-120-145-fact",
+            "qu-146-160"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "包装破损触发、登记/移入/质检复核及未实施边界明示，A/B允许独立拟议流程合理。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 217,
+      "sampleId": "sample-4",
+      "condition": "A",
+      "requestSha256": "9d2d43f4d18dc5243b59a231e497bef85b5cc1137a646369e8024aa1698759b0",
+      "responseSha256": "822e14a490866747236b93bde195a7e0721855f28a0e040f82f0052d25c03d50",
+      "structure": true,
+      "preRegisteredMatch": true,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "甲桥仓库库存数量核对",
+          "unitIds": [
+            "fu-19-37-fact"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "第0页主题为甲桥仓库库存数量核对，fu-19-37明确给出每天按商品编号核对库存数量的流程事实，主体（甲桥仓库）、频次、对象均由原文支持，标题type/category有内容依据，unit覆盖本页。",
+          "independentAssessment": "日常库存数量核对独立成立。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "甲桥仓库破损商品隔离（拟议）",
+          "unitIds": [
+            "fu-38-119-fact",
+            "fu-120-145-fact",
+            "qu-146-160"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "原文明确给出破损商品隔离的定义、触发条件（包装破损）与流程（登记—移入隔离区—质检复核），构成独立业务主题；fu-120-145的未实施状态与qu-146-160负责人未定均归属该承载事实主题。页面标注'拟议'符合原文口径，unit归属边界正确。",
+          "independentAssessment": "包装破损触发、登记/移入/质检复核及未实施边界明示，A/B允许独立拟议流程合理。",
+          "oracleAmbiguity": false
+        }
+      ]
+    },
+    {
+      "sequence": 218,
+      "sampleId": "sample-5",
+      "condition": "A",
+      "requestSha256": "afe35b797cc39b7cc089c1d26f4f242369c42a4198beab5a130aa453ef46f5a9",
+      "responseSha256": "3ab6dc26fa76d956b8dc42368d2740efc60e038d41841adedf1a4a5054573690",
+      "structure": true,
+      "preRegisteredMatch": false,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+          "unitIds": [
+            "fu-17-67-fact",
+            "fu-67-108-ambiguous"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": "页面主题为甲桥区域2026年9月铺货率30%（100/30家，按门店数），fu-17-67-fact直接提供指标定义与数值，fu-67-108-ambiguous为同主题旧口径20家/20%的歧义补充，归属一致，type=metric有内容依据。",
+          "independentAssessment": "同案例1指标，事实冲突边界不变。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "财务回款核对与异常审批规则",
+          "unitIds": [
+            "fu-109-125-fact",
+            "fu-139-160-fact",
+            "qu-125-139"
+          ],
+          "expected": "pass",
+          "actual": "reject",
+          "originalReason": "fu-109-125-fact（财务每周核对回款）与qu-125-139（异常审批负责人待访谈）可共同构成运营规则主题，但fu-139-160-fact的AI异常提示为未来建议且无独立定义、触发或流程，原文未赋予其独立主题，也不能归入回款核对主题，属边界归属错误，混入后整页不支持。",
+          "independentAssessment": "预注册允许补充规则段承载AI边界；原文没有明确AI与回款的业务关系。A指出此缺口，B允许该归属。该页oracle存在关系范围歧义，独立结论为未决，不将A机械失配认定确定模型错误，也不把B匹配认定语义真值。",
+          "oracleAmbiguity": true
+        }
+      ]
+    },
+    {
+      "sequence": 219,
+      "sampleId": "sample-5",
+      "condition": "B",
+      "requestSha256": "72dc60078ae493bd3b2c2a3c21be177476b2bac3aa6bf30159d5ad660494dc56",
+      "responseSha256": "c2580c07877e97b58e3c53cea60aff9e1bcfd2c239fec8f1e7a3aec5435febb3",
+      "structure": true,
+      "preRegisteredMatch": true,
+      "pages": [
+        {
+          "pageIndex": 0,
+          "title": "虚构饮料甲甲桥区域2026年9月铺货率（按门店数）",
+          "unitIds": [
+            "fu-17-67-fact",
+            "fu-67-108-ambiguous"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "同案例1指标，事实冲突边界不变。",
+          "oracleAmbiguity": false
+        },
+        {
+          "pageIndex": 1,
+          "title": "财务回款核对与异常审批规则",
+          "unitIds": [
+            "fu-109-125-fact",
+            "fu-139-160-fact",
+            "qu-125-139"
+          ],
+          "expected": "pass",
+          "actual": "pass",
+          "originalReason": null,
+          "independentAssessment": "预注册允许补充规则段承载AI边界；原文没有明确AI与回款的业务关系。A指出此缺口，B允许该归属。该页oracle存在关系范围歧义，独立结论为未决，不将A机械失配认定确定模型错误，也不把B匹配认定语义真值。",
+          "oracleAmbiguity": true
+        }
+      ]
+    }
+  ],
+  "conclusion": "Protocol simplification does not repair original false pass. Case5 page1 oracle relation is ambiguous; frozen oracle retained. Product defects and KB02 remain FAIL.",
+  "command": "node --import tsx tests/acceptance/KB02-PROTOCOL-AUDIT-20261023-close.mjs"
+}

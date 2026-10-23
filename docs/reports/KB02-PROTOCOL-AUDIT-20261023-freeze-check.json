@@ -1,0 +1,21 @@
+{
+  "pass": true,
+  "realCalls": 0,
+  "artifactSha256": "b8f28bdab8f9b3408703bd1201a2f7b613b34b7fb56bf2b874162438269d6ace",
+  "originalArtifactSha256": "1d11e66fd8ba5e37dab18a1fc4722044d753d0907efa0ccded96f9332498f114",
+  "caseCount": 5,
+  "requestCount": 10,
+  "firstEightExact": true,
+  "originalFourCasesExact": true,
+  "caseFiveOriginalInputExact": true,
+  "checks": [
+    "planning schema",
+    "all units exactly once",
+    "source offsets",
+    "oracle lengths",
+    "request hashes",
+    "unchanged A/B system",
+    "same user content within each pair"
+  ],
+  "command": "node --import tsx tests/acceptance/KB02-PROTOCOL-AUDIT-20261023-freeze.mjs"
+}
