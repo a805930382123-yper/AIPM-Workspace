@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-24T05:41:02.778Z",
+  "node": "v25.2.1",
+  "modelCalls": 0,
+  "configReads": 0,
+  "rows": [
+    {
+      "name": "original16 files and precise initial session/Raw/candidate/ledger/source binding",
+      "pass": true
+    },
+    {
+      "name": "wrong root and candidate bytes rejected",
+      "pass": true
+    }
+  ],
+  "pass": false,
+  "freezeSha256": "bebb4687fe37b71b4f8bf43bf09f356dace965e4576b418ff477639a342b7341",
+  "copyRoot": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-BR-20261024-copy-g5GKec",
+  "sidecar": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-BR-20261024-control-sZXK2X",
+  "error": {
+    "message": "fetch failed",
+    "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:15845:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async globalThis.fetch (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-PREP-20261023-support.mjs:41:42)\n    at async request (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-BR-20261024-selftest.mjs:19:71)\n    at async Module.selftest (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-BR-20261024-selftest.mjs:24:130)\n    at async runCli (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-BR-20261024-cli.mjs:9:62)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-BR-20261024-cli.mjs:28:89)"
+  },
+  "configAttempts": 0,
+  "finishedAt": "2026-10-24T05:41:03.189Z"
+}

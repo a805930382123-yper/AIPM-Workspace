@@ -1,0 +1,331 @@
+{
+  "startedAt": "2026-10-24T05:44:26.046Z",
+  "node": "v25.2.1",
+  "modelCalls": 0,
+  "configReads": 0,
+  "rows": [
+    {
+      "name": "original16 files and precise initial session/Raw/candidate/ledger/source binding",
+      "pass": true
+    },
+    {
+      "name": "wrong root and candidate bytes rejected",
+      "pass": true
+    },
+    {
+      "name": "startup/GET leave business files unchanged; duplicate service denied",
+      "pass": true
+    },
+    {
+      "name": "both front-end duplicate queries return production empty results200",
+      "pass": true
+    },
+    {
+      "name": "all model paths/old arm/update decision/flag/env rejected before provider callback/config/send",
+      "pass": true
+    },
+    {
+      "name": "unregistered local transport denied; actual sink0",
+      "pass": true
+    },
+    {
+      "name": "actual DraftReviewPage refuses failed duplicate query on confirm, no formal write",
+      "pass": true
+    },
+    {
+      "name": "actual component load/query/edit/save/full-review/confirm; unit preservation and identical confirm idempotent",
+      "pass": true,
+      "formalRecords": 2,
+      "units": 5,
+      "duplicateQueries": 12
+    },
+    {
+      "name": "reopen accepts exact controlled revision without writes; unknown subsequent edit rejected",
+      "pass": true
+    },
+    {
+      "name": "production similarity query returns actual candidate; create/defer selection/version/full-clear semantics",
+      "pass": true
+    },
+    {
+      "name": "original16 files and all frozen dependencies unchanged; configuration spies0/model0",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "freezeSha256": "a6345e9dbcd1742515c88662f0ab03765a4b485364be86b5f1151f672d2d1da6",
+  "copyRoot": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-BR-20261024-copy-R3Z9T8",
+  "sidecar": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-BR-20261024-control-9iGEG0",
+  "normal": {
+    "draftRevision": 7,
+    "commit": {
+      "operationId": "598f0002-c583-4c58-ad77-91fbb8543faa",
+      "status": "completed",
+      "reused": true,
+      "sourceReused": false,
+      "sourceId": "7e8fd0d0-ebb6-4021-9b86-850f03345619",
+      "wikiIds": [
+        "26794c54-86ce-4bea-a3d8-12a18d3d4539"
+      ],
+      "sourceReuseId": null,
+      "writtenWikiIds": [
+        "7e8fd0d0-ebb6-4021-9b86-850f03345619",
+        "26794c54-86ce-4bea-a3d8-12a18d3d4539"
+      ],
+      "phases": [
+        {
+          "name": "source",
+          "status": "done",
+          "at": "2026-10-24T05:44:28.397Z"
+        },
+        {
+          "name": "pages",
+          "status": "done",
+          "at": "2026-10-24T05:44:28.404Z"
+        },
+        {
+          "name": "index",
+          "status": "done",
+          "at": "2026-10-24T05:44:28.414Z"
+        },
+        {
+          "name": "log",
+          "status": "done",
+          "at": "2026-10-24T05:44:28.427Z"
+        },
+        {
+          "name": "state",
+          "status": "done",
+          "at": "2026-10-24T05:44:28.440Z"
+        }
+      ],
+      "warnings": []
+    },
+    "statistics": {
+      "modelCalls": 0,
+      "configReads": 0,
+      "providerCallbacks": 0,
+      "modelRoutesDenied": 6,
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        },
+        {
+          "method": "GET",
+          "path": "/api/raw"
+        },
+        {
+          "method": "GET",
+          "path": "/api/raw-processing"
+        },
+        {
+          "method": "GET",
+          "path": "/api/wiki"
+        },
+        {
+          "method": "GET",
+          "path": "/api/wiki/schema"
+        },
+        {
+          "method": "GET",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "GET",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/25971c2b-4f32-479c-b77c-58984a715a5d/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/wiki/schema"
+        },
+        {
+          "method": "GET",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "GET",
+          "path": "/api/raw/3942d90b-0d66-4196-82bb-0acfdd14904a"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "POST",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/review/pages/25971c2b-4f32-479c-b77c-58984a715a5d"
+        },
+        {
+          "method": "POST",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/review/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77"
+        },
+        {
+          "method": "GET",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "GET",
+          "path": "/api/wiki/schema"
+        },
+        {
+          "method": "GET",
+          "path": "/api/raw/3942d90b-0d66-4196-82bb-0acfdd14904a"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/25971c2b-4f32-479c-b77c-58984a715a5d/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77/duplicates"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/25971c2b-4f32-479c-b77c-58984a715a5d/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "POST",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/review/pages/25971c2b-4f32-479c-b77c-58984a715a5d"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/25971c2b-4f32-479c-b77c-58984a715a5d/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77/duplicates"
+        },
+        {
+          "method": "POST",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/review/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/25971c2b-4f32-479c-b77c-58984a715a5d/duplicates"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "POST",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/confirm"
+        },
+        {
+          "method": "GET",
+          "path": "/api/wiki-commits/598f0002-c583-4c58-ad77-91fbb8543faa"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/6bbe0f22-143f-4af2-bd71-c463774d3d77/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/knowledge/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/pages/25971c2b-4f32-479c-b77c-58984a715a5d/duplicates"
+        },
+        {
+          "method": "GET",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4"
+        },
+        {
+          "method": "POST",
+          "path": "/api/drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4/confirm"
+        }
+      ]
+    },
+    "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-BR-20261024-copy-R3Z9T8",
+    "sidecar": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-BR-20261024-control-9iGEG0"
+  },
+  "originalFiles": [
+    {
+      "path": "attempts.jsonl",
+      "sha256": "7b743ab847ac9378fb02efcb71ca60563b4ffce069fd6ac72818de5e7921337c"
+    },
+    {
+      "path": "candidate-B.json",
+      "sha256": "08217d6d809edbf5143ebae1d3be54c4423321c7fb3b67db22c3fa208b2a7882"
+    },
+    {
+      "path": "drafts/4c2d4689-7827-4bec-a9d2-92517f12e3f4.json",
+      "sha256": "08217d6d809edbf5143ebae1d3be54c4423321c7fb3b67db22c3fa208b2a7882"
+    },
+    {
+      "path": "knowledge/raw/reports/3942d90b-0d66-4196-82bb-0acfdd14904a.md",
+      "sha256": "eff10bbe26ea793d7d3fd03dc8d7bfa0b247fc66c66c1769a3f2b6d5375d13a9"
+    },
+    {
+      "path": "knowledge/wiki/index.md",
+      "sha256": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+    },
+    {
+      "path": "request-225.json",
+      "sha256": "14d491e2ce1422596c9cfd162735ed55a9e62857477eef6eccb659cd784b1718"
+    },
+    {
+      "path": "request-226.json",
+      "sha256": "5380f57b7e7c25c8dc04b0ac7fbbae24edd289ba4651257c7fbc21cc1dff6cd6"
+    },
+    {
+      "path": "response-225.private.bin",
+      "sha256": "8fe2a42dc0c8d02a7439f1a72819d91c2062b0e04021bb16f6b5102134280f8e"
+    },
+    {
+      "path": "response-226.private.bin",
+      "sha256": "d8763bd939f4f9fcd0f10c8f3d77093c41bc7d7ea6eb8b0c6b1ff58ba97ca228"
+    },
+    {
+      "path": "result-225.json",
+      "sha256": "865861153f506f6ab2efdca72a6618f1f4e98957fb4e2ba912101fd760da241d"
+    },
+    {
+      "path": "result-226.json",
+      "sha256": "ab94dd11779b2d4b4052ebbe3c1862462de788ce7adc2ebfd358a76d8d6b2936"
+    },
+    {
+      "path": "session-marker.json",
+      "sha256": "9358aea330d04c3316aa6fa48b14ae3ab7e55fa3af1efdd0725c9e27da18d1bc"
+    },
+    {
+      "path": "session.json",
+      "sha256": "ef7313fc77045268a2282ec9565be61b216c08e1d8f9657f4c3b1ed1cbcca06e"
+    },
+    {
+      "path": "state/extraction-checkpoints/0299575f-963f-4bc3-b5c0-f281034d6e84.json",
+      "sha256": "a252d1c7784f0ff62916fab1ba4f688772f1688d4527bc4034547db67a2b657a"
+    },
+    {
+      "path": "state/extraction-jobs/0299575f-963f-4bc3-b5c0-f281034d6e84.json",
+      "sha256": "251c3cb46e5a820225430be4101375de07dd76d876e682cd90b0eb63dfd7f5c7"
+    },
+    {
+      "path": "state/raw-processing/3942d90b-0d66-4196-82bb-0acfdd14904a.json",
+      "sha256": "6a9c1f3b644360e5be5c1045ac9fd2ea9d368790472dddd2d9ba294378a28401"
+    }
+  ],
+  "configAttempts": 0,
+  "finishedAt": "2026-10-24T05:44:29.301Z"
+}

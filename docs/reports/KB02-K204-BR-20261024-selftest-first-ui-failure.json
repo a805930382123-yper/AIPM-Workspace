@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-24T05:42:04.816Z",
+  "pass": false,
+  "modelCalls": 0,
+  "configAttempts": 0,
+  "root": ".scratch-KB02-K204-BR-20261024-copy-Fjjl6i",
+  "reason": "Selftest enabled-button assertion after save. Cleanup additionally assumed React act thenable has .catch, so report finalization did not run; owned process interrupted.",
+  "fix": "Preserve assertion, include UI diagnostic text, await act in try/catch during cleanup."
+}

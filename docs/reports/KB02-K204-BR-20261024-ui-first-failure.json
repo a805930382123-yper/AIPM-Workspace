@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-24T05:44:21.919Z",
+  "pass": false,
+  "modelCalls": 0,
+  "configReads": 0,
+  "scope": "UI-only smoke, no original session service",
+  "error": "Port 5173 is already in use: Vite treats port:0 as default",
+  "fix": "Reserve then release free localhost port and pass exact port with strictPort; envFile/configFile remain false"
+}
