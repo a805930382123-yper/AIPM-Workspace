@@ -1,0 +1,31 @@
+{
+  "startedAt": "2026-10-24T05:23:10.565Z",
+  "node": "v25.2.1",
+  "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-YQEHCe",
+  "freezeSha256": "12dad741181e7e74a95d58d2f49a24774343c6f11903b1083d7bbb4d4f6f2463",
+  "frozenPaths": 202,
+  "realCalls": 0,
+  "rows": [
+    {
+      "name": "independent final-byte B selftest",
+      "args": [
+        "--import",
+        "tsx",
+        "tests/acceptance/KB02-K204-B-20261024-cli.mjs",
+        "selftest"
+      ],
+      "exitCode": 1,
+      "signal": null
+    }
+  ],
+  "pass": false,
+  "artifacts": [
+    "docs/reports/KB02-K204-B-AUDIT-20261024-independent-selftest-2026-10-24T05-23-11-580Z.json"
+  ],
+  "error": {
+    "message": "Expected values to be strictly equal:\n\n1 !== 0\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 0\n\n    at <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-B-AUDIT-20261024-engineering-run.mjs:15:12)"
+  },
+  "postMismatches": [],
+  "finishedAt": "2026-10-24T05:23:11.763Z"
+}

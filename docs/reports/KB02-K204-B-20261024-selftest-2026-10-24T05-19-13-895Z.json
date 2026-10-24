@@ -1,0 +1,30 @@
+{
+  "node": "v25.2.1",
+  "startedAt": "2026-10-24T05:19:13.898Z",
+  "realCalls": 0,
+  "rows": [
+    {
+      "name": "prepare/startup/GET/missing release/wrong stage read no configuration and send0",
+      "pass": true
+    },
+    {
+      "name": "single real flag and real env overrides rejected",
+      "pass": true
+    },
+    {
+      "name": "wrong/changed release, source, code, retry rejected before loader/send",
+      "pass": true
+    },
+    {
+      "name": "production B exactly225/226 pending-before-send; duplicate process/click/third/update/C blocked",
+      "pass": true,
+      "fakeCalls": 2
+    }
+  ],
+  "pass": false,
+  "error": {
+    "message": "{\"operationId\":\"a19f61b8-1cfe-43d5-ad22-8dfefecce4ae\",\"status\":\"completed\",\"reused\":true,\"sourceReused\":false,\"sourceId\":\"84f14a60-0ab4-4f5a-913a-1b4982815eba\",\"wikiIds\":[\"d41be006-5f27-4b5a-8596-4b29dae459ac\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"84f14a60-0ab4-4f5a-913a-1b4982815eba\",\"d41be006-5f27-4b5a-8596-4b29dae459ac\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.741Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.747Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.757Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.765Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.775Z\"}],\"warnings\":[]}\n\n201 !== 200\n",
+    "stack": "AssertionError [ERR_ASSERTION]: {\"operationId\":\"a19f61b8-1cfe-43d5-ad22-8dfefecce4ae\",\"status\":\"completed\",\"reused\":true,\"sourceReused\":false,\"sourceId\":\"84f14a60-0ab4-4f5a-913a-1b4982815eba\",\"wikiIds\":[\"d41be006-5f27-4b5a-8596-4b29dae459ac\"],\"sourceReuseId\":null,\"writtenWikiIds\":[\"84f14a60-0ab4-4f5a-913a-1b4982815eba\",\"d41be006-5f27-4b5a-8596-4b29dae459ac\"],\"phases\":[{\"name\":\"source\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.741Z\"},{\"name\":\"pages\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.747Z\"},{\"name\":\"index\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.757Z\"},{\"name\":\"log\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.765Z\"},{\"name\":\"state\",\"status\":\"done\",\"at\":\"2026-10-24T05:19:15.775Z\"}],\"warnings\":[]}\n\n201 !== 200\n\n    at call (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-B-20261024-selftest.mjs:27:380)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async Module.selftest (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-B-20261024-selftest.mjs:49:212)\n    at async runCli (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-B-20261024-cli.mjs:12:62)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-B-20261024-cli.mjs:31:89)"
+  },
+  "finishedAt": "2026-10-24T05:19:15.808Z"
+}

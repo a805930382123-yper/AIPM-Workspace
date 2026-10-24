@@ -1,0 +1,12 @@
+{
+  "node": "v25.2.1",
+  "startedAt": "2026-10-24T05:23:11.582Z",
+  "realCalls": 0,
+  "rows": [],
+  "pass": false,
+  "error": {
+    "message": "ENOENT: no such file or directory, open 'E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-YQEHCe\\docs\\reports\\KB02-HUMAN-20261023-freeze.json'",
+    "stack": "Error: ENOENT: no such file or directory, open 'E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-YQEHCe\\docs\\reports\\KB02-HUMAN-20261023-freeze.json'\n    at async open (node:internal/fs/promises:641:25)\n    at async Object.readFile (node:internal/fs/promises:1279:14)\n    at async frozen (file:///E:/AI/Work/AIPM%20Workspace/.scratch-KB02-K204-B-AUDIT-YQEHCe/tests/acceptance/KB02-K204-PREP-20261023-support.mjs:20:46)\n    at async createSession (E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-YQEHCe\\tests\\acceptance\\KB02-K204-B-20261024-core.mjs:28:20)\n    at async startFake (file:///E:/AI/Work/AIPM%20Workspace/.scratch-KB02-K204-B-AUDIT-YQEHCe/tests/acceptance/KB02-K204-B-20261024-selftest.mjs:14:19)\n    at async Module.selftest (file:///E:/AI/Work/AIPM%20Workspace/.scratch-KB02-K204-B-AUDIT-YQEHCe/tests/acceptance/KB02-K204-B-20261024-selftest.mjs:34:13)\n    at async runCli (E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-YQEHCe\\tests\\acceptance\\KB02-K204-B-20261024-cli.mjs:12:62)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-YQEHCe\\tests\\acceptance\\KB02-K204-B-20261024-cli.mjs:31:89)"
+  },
+  "finishedAt": "2026-10-24T05:23:11.639Z"
+}

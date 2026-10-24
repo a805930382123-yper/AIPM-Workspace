@@ -1,0 +1,76 @@
+{
+  "startedAt": "2026-10-24T05:23:37.790Z",
+  "node": "v25.2.1",
+  "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-Miz8dq",
+  "freezeSha256": "12dad741181e7e74a95d58d2f49a24774343c6f11903b1083d7bbb4d4f6f2463",
+  "frozenPaths": 202,
+  "realCalls": 0,
+  "rows": [
+    {
+      "name": "independent final-byte B selftest",
+      "args": [
+        "--import",
+        "tsx",
+        "tests/acceptance/KB02-K204-B-20261024-cli.mjs",
+        "selftest"
+      ],
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "name": "independent absent gate has no state/loader/send side effect",
+      "pass": true
+    },
+    {
+      "name": "independent successful response/result persistence failure stops at225",
+      "pass": true,
+      "fakeCalls": 1,
+      "stopCode": "EEXIST",
+      "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-B-AUDIT-Miz8dq\\.scratch-KB02-K204-B-20261024-kW67TA"
+    }
+  ],
+  "pass": true,
+  "transitiveSpecFiles": [
+    {
+      "path": "services/llm/chunk.ts",
+      "sha256": "9e0556144628d12b089fd67385611646e37804c725c1d341407bff0cdd328606"
+    },
+    {
+      "path": "services/llm/jobs.ts",
+      "sha256": "d7c6af163fc50f41a3573ce5597aca20a92e0ccf8842fd4606324569c34a1f21"
+    },
+    {
+      "path": "services/llm/knowledge-extraction.ts",
+      "sha256": "8724451bff68f5b10f4e16cea3a3637059aed55972daa13c1de95b8478e377dd"
+    },
+    {
+      "path": "services/llm/rules.ts",
+      "sha256": "2d08b513ae9c57e15ff56d99a31950e7aca7fcac0149eef6507e8993d90c4ccb"
+    },
+    {
+      "path": "services/wiki/knowledge-workflows.ts",
+      "sha256": "1e3488ff85908403b3789d5c52dd0dd70dba31fae8e97a9404e83470bc6ae20d"
+    },
+    {
+      "path": "server/knowledge-api.ts",
+      "sha256": "d83507f257a966e32792bcc23f63ffcab41e99cbfcff7245616dcc02177f0d29"
+    },
+    {
+      "path": "docs/reports/KB02-HUMAN-20261023-freeze.json",
+      "sha256": "94a375ddb4e46d0cc05be3c128f74a2b0283d2159aa660a615f2965b2416a1b7"
+    },
+    {
+      "path": "docs/reports/KB02-REGION-AUDIT-20261023-long-checkpoint.json",
+      "sha256": "985930192415afe6a93f103999a4fc6a8e42b3781779ee0216e25f564d3e5637"
+    },
+    {
+      "path": "docs/reports/KB02-SEMANTIC-AUDIT-20261023-provider-trace.jsonl",
+      "sha256": "24020d976ad66f47ea9ba067ab999f21507a96b967e1592103e6d4bd3752a59e"
+    }
+  ],
+  "artifacts": [
+    "docs/reports/KB02-K204-B-AUDIT-20261024-independent-selftest-2026-10-24T05-23-39-018Z.json"
+  ],
+  "postMismatches": [],
+  "finishedAt": "2026-10-24T05:23:47.736Z"
+}
