@@ -13,3 +13,5 @@
 保护检查PASS：4284项基线仅status/agent-control/acceptance三入口授权变更，其他无变化；12个新交付凭证模式扫描0命中（未读取实际配置，非已知密钥值扫描）。结果见NEXT-PREP-MAIN-20261024-protection.json。主Agent检查差异并只暂存本轮NEXT-PREP与三入口；提交及实时远端结果另附。
 
 暂存字节与工作区一致。严格git diff --cached --check发现四个已冻结交付文件末尾多一个空行（next-task/gap-map/verify/audit-check）；仅为格式提示，为保持独立签署SHA不改冻结实物。关闭blank-at-eof这一项后，其余空白检查通过，不将首检查失败隐去。
+
+P05 PASS：交付提交 ded4042d53c0fb1e9f5b85bb400b4be07337f3b1，post-commit推送成功，实时git ls-remote origin refs/heads/main与本地HEAD完全一致。提交仅16个本轮文件；外部三项原样留工作区。本条及入口关联另作文档提交，不改变独立验收冻结。
