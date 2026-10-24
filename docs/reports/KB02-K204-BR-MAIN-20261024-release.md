@@ -15,3 +15,7 @@
 本轮新增模型0，旧225/226账本不改，知识226/500、Prompt15/24。最终export-2026-10-24T05-53-54-661Z.json SHA b275393eeb4935dd9cae36ce92cc1a6f48329bf08d3dbd4fc569be4c3b760d0f排除配置/private响应。stop后serve会话48227 exit0，自有Chrome115182507关闭。原16文件仅draft/wiki index/raw-processing三项受控改变，13原始只读文件无变；新增正式记录/commit/log均由现行确认产生。
 
 首失败与测试包装问题均保留在施工/独立报告。未改旧冻结、真实模型响应或产品，未重复提取、未启动C。主Agent提交前检查4242保护路径、范围/敏感路径与代码差异；外部AGENTS/.agents/AGENT-ROUTER保留并排除同步。下一步仅建议B模式准备/申请C长文剩余补证，不自动运行。
+
+## 交付提交与同步核验
+
+本轮源码/冻结/独立报告/Chrome证据交付提交 e4a221e25c65756693b54b836bbe8ef4a50752ed；post-commit推送后实时git ls-remote origin refs/heads/main同完整SHA。44份暂存文件与磁盘逐字节一致，无越界文件；4242保护路径无意外变化、207冻结无漂移，凭证模式扫描无命中，未为扫描加载真实配置，导出排除私有响应及配置。原始AX保留原文本空白，其余diff --check通过。仅外部AGENTS/.agents/AGENT-ROUTER未提交。后续版本关联附注不改变受测字节或独立裁决。
