@@ -11,3 +11,7 @@
 执行 `node --import tsx tests/acceptance/KB02-K204-A-20261023-cli.mjs stop` 返回closing:true；Chrome自有tab已关闭，进程结束另核。A3运行器awaiting_review为等待独立签收的内部状态，最终PASS以独立报告为据，不修改冻结适配器。旧失败与沙箱localhost限制记录保留；恢复验收重新创建实际Astra/medium，未冒充原实例持续运行。主Agent首次文档编辑尝试Python命令不可用，未写入；改用Node成功。
 
 提交前执行A-MAIN-check核4091保护路径、限定所有权及已知密钥扫描；结果见closure.json。外部AGENTS.md、.agents/skills/agent-router、AGENT-ROUTER报告不提交。后续建议B模式先B短文最多2次，未获本轮授权，不启动。提交与远端核验关联随后追加。
+
+## 提交关联与实际收尾结果
+
+本轮受测接线、卡、原始证据及独立报告统一提交 `ab17448e596637f0eee4586a0f02ab9af72e90d0`，post-commit推送后实时 `git ls-remote origin refs/heads/main` 与本地完整SHA一致。93个暂存文件逐字节核验与磁盘一致、无越界路径、已知秘密匹配0；4091保护路径无漂移。serve进程会话56454在stop后exit0，自有Chrome页已关闭。工作区仅保留外部AGENTS/.agents/AGENT-ROUTER修改，未提交。后续本附注提交只关联版本，不改变冻结或测试结果。
