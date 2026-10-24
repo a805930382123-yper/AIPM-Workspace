@@ -1,0 +1,64 @@
+{
+  "at": "2026-10-24T14:33:24.7841382Z",
+  "command": "powershell -NoProfile -File docs/reports/NEXT-PREP-AUDIT-20261024-check.ps1",
+  "head": "7c9654f06d6830e1f7ae37f69b0a9c54a96da759",
+  "deliveryHashes": [
+    {
+      "path": "docs/reports/NEXT-PREP-20261024-gap-map.md",
+      "sha256": "0179e1f417d362199b543aa94db9cdf70617b328e3cc39ffd9a3ef98d45ff8af"
+    },
+    {
+      "path": "docs/reports/NEXT-PREP-20261024-builder.md",
+      "sha256": "8261dc31a5d5c2f26f0bd96fe3d54a282f92db1665d6a5a9bac568db4b999923"
+    },
+    {
+      "path": "docs/handoffs/NEXT-PREP-20261024-next-task.md",
+      "sha256": "b30aeb86ea62ff9287e71f80eeedff390b003629d575eb0a385fba386379b6b0"
+    }
+  ],
+  "brokenLinks": [],
+  "historicalMatrixCount": 109,
+  "historicalMatrixStates": {
+    "PASS": 78,
+    "FAIL": 3,
+    "BLOCKED": 28
+  },
+  "unpassedIdsNotLiterallyNamed": [],
+  "pa01FrozenCount": 96,
+  "pa01Changed": [
+    "app/api.ts",
+    "app/App.tsx",
+    "app/pages/DraftReviewPage.tsx",
+    "app/pages/KnowledgeWorkflowPage.tsx",
+    "app/pages/RawPage.tsx",
+    "app/pages/WikiPage.tsx",
+    "server/knowledge-api.ts",
+    "server/llm-api.ts",
+    "server/llm-validation.ts",
+    "services/llm/checkpoints.ts",
+    "services/llm/jobs.ts",
+    "services/llm/knowledge-extraction.ts",
+    "services/llm/rules.ts",
+    "services/llm/service.ts",
+    "services/storage/files.ts",
+    "services/storage/record-validators.ts",
+    "services/storage/recovery.ts",
+    "services/wiki/commits.ts",
+    "services/wiki/drafts.ts",
+    "services/wiki/knowledge-workflows.ts",
+    "rules/kb02-facts.schema.json",
+    "rules/kb02-planning.schema.json",
+    ".gitignore",
+    "tsconfig.json"
+  ],
+  "humanFrozenCount": 188,
+  "humanChanged": [],
+  "stageCFrozenCount": 213,
+  "stageCChanged": [],
+  "matrixHash": "203d5a714603cc8236542beb9647b48700ed1d768e07b615fa116550e0a18ea0",
+  "realCalls": 0,
+  "knowledgeCumulative": 241,
+  "promptCumulative": 15,
+  "productTests": "NOT_RUN",
+  "nextCardExecution": "NOT_RUN"
+}
