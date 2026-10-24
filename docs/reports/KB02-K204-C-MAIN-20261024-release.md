@@ -29,4 +29,4 @@
 
 正式workspace、配置、产品代码、A/B/BR/PREP历史证据保留；隔离session及私有响应留本机。外部AGENTS.md、.agents/、AGENT-ROUTER报告不纳入本次提交。历史自动质量FAIL继续保留。当前未授权下一批；建议先整理全产品剩余验收缺口和下一张最小任务卡，新增模型上限0，范围确认后再执行。
 
-交付提交与实时远端校验将在最终关联记录补入。
+交付提交 d007d41a6a4ac05b21fe762e09d27e326fb0e13a；post-commit推送成功，实时git ls-remote origin refs/heads/main与本地HEAD一致。暂存70文件全部与工作区字节一致，差异检查通过（原始AX尾空白保持，检查排除*-ax.txt）。外部三项未提交；本关联记录另作文档提交，不改变受测冻结或验收结论。
