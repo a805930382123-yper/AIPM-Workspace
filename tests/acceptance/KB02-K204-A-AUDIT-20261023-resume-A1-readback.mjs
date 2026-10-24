@@ -1,0 +1,15 @@
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {RawStore} from '../../services/raw/store.ts';
+import {WikiStore} from '../../services/wiki/store.ts';
+const root='.scratch-KB02-K204-A-20261023-9hponb',sha=x=>createHash('sha256').update(x).digest('hex'),read=async p=>JSON.parse(await fs.readFile(p,'utf8'));
+const s=await read(root+'/session.json'),c=await read(root+'/candidate-A1.json'),d=await read(root+'/drafts/'+c.id+'.json'),m=await read(root+'/state/wiki-commits/73fe35f7-e8a9-4144-aa1c-215330f41318.json');
+const rawStore=new RawStore(root),wiki=new WikiStore(root,rawStore),raw=await rawStore.get(c.rawId),target=await wiki.get('c6590bed-1325-4456-899b-84804136ce1d');
+const spec=await read('docs/reports/KB02-K204-PREP-AUDIT-20261023-spec.json');
+assert.equal(sha(raw.body),c.rawSha256);assert.equal(d.status,'confirmed');assert.deepEqual(d.humanReview.units,c.humanReview.units);assert.deepEqual(d.humanReview.assignments,c.humanReview.assignments);assert.equal(d.pages[0].type,'metric');assert.deepEqual(d.pages[0].source_facts,c.pages[0].source_facts);assert.deepEqual(d.pages[0].open_questions,c.pages[0].open_questions);assert.equal(d.humanReview.approvals.length,1);
+assert.equal(m.status,'completed');assert(m.phases.every(p=>p.status==='done'));assert.equal(m.snapshot.selectedPageIds[0],c.pages[0].pageId);assert.equal(m.snapshot.pageRecords[0].id,target.id);assert.equal(target.type,'metric');assert.equal(target.revision,2);assert.deepEqual(target.sources,[c.rawId]);
+assert.equal(target.body.trim(),(m.snapshot.pageRecords[0].body+'\n## 人工备注\n\n'+spec.humanMemo).trim());
+const attempts=(await fs.readFile(root+'/attempts.jsonl','utf8')).trim().split('\n').map(JSON.parse);assert.deepEqual(attempts.map(x=>x.sequence),[220,221]);assert.equal(s.stopped,false);assert.equal(s.stages.A2.status,'pending');
+const report={pass:true,stage:'A1-readback',checkedAt:new Date().toISOString(),rawUnchanged:true,factsAndOriginalIdsUnchanged:true,completedOperation:m.operationId,allCommitPhasesDone:true,approvalCount:1,onlyBodyChange:'Appended fixed humanMemo under 人工备注',target:{id:target.id,revision:target.revision,bodySha256:sha(target.body)},realCalls:2,sequences:[220,221],knowledgeCumulative:221};
+await fs.writeFile('docs/reports/KB02-K204-A-AUDIT-20261023-resume-A1-readback.json',JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(report));

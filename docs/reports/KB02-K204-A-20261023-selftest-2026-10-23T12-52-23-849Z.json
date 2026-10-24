@@ -1,0 +1,21 @@
+{
+  "node": "v25.2.1",
+  "startedAt": "2026-10-23T12:52:23.851Z",
+  "realCalls": 0,
+  "rows": [
+    {
+      "name": "startup/GET/unreleased extraction load no configuration and send0",
+      "pass": true
+    },
+    {
+      "name": "B/C/all/invalid release rejected before loader",
+      "pass": true
+    }
+  ],
+  "pass": false,
+  "error": {
+    "message": "{\"error\":{\"code\":\"SESSION_BUSY\",\"message\":\"SESSION_BUSY\"}}\n\n409 !== 202\n",
+    "stack": "AssertionError [ERR_ASSERTION]: {\"error\":{\"code\":\"SESSION_BUSY\",\"message\":\"SESSION_BUSY\"}}\n\n409 !== 202\n\n    at call (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-A-20261023-selftest.mjs:30:246)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async Promise.all (index 0)\n    at async Module.selftest (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-A-20261023-selftest.mjs:42:18)\n    at async runCli (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-A-20261023-cli.mjs:11:62)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-A-20261023-cli.mjs:29:89)"
+  },
+  "finishedAt": "2026-10-23T12:52:27.237Z"
+}

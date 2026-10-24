@@ -1,0 +1,29 @@
+{
+  "stage":"A2-content",
+  "status":"AWAITING_EXPLICIT_HUMAN_CORRECTION_AND_REVIEW",
+  "extractionCoverage":"PASS",
+  "originalAutomaticThemeQuality":"FAIL; isolated AI future-boundary page and unsupported unified approval-process wording remain",
+  "sessionId":"ebf4e417-d0ff-4f69-a983-db5fafb65948",
+  "sequences":[222,223],
+  "realCallsThisStage":2,
+  "realCallsTotalStageA":4,
+  "knowledgeCumulative":223,
+  "draftId":"708b3cd7-3cd1-4b56-b965-2f35576ff287",
+  "rawSha256":"c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197",
+  "export":{"path":"docs/reports/KB02-K204-A-20261023-export-2026-10-24T04-51-53-355Z.json","sha256":"7763d42c3f07fb5c8021c1df92f9592c7d56b60cca2746a48d455e575354a347"},
+  "findings":[
+    "All four facts and one explicit unknown retained, including 100/30/30%, old20/20%, unresolved basis/sampling difference, weekly finance check, unknown approver and AI future-only/no benefit boundary.",
+    "Original page1 metric contains the two distribution-rate units and is suitable as the sole update input after full-draft review.",
+    "Original page2 title claims an approval process; source gives no steps or connection between finance and approval. Original page3 is an isolated future-AI boundary.",
+    "No original source relationship between the three supplementary statements can be established. Do not assert one by moving units."
+  ],
+  "allowedCorrection":{
+    "authority":"docs/handoffs/KB02-K204-PREP-20261023-task.md line29 explicitly permits human document grouping if it is marked as a human organization choice, not a source-implied business relationship.",
+    "moveWholeUnit":"fu-139-160-fact to page30f60625-b91d-4cb3-9985-a48e50437578; then remove empty page71a4bec7-478a-43bb-a923-d59df3a4deb5",
+    "title":"补充资料整理：回款核对、异常审批待确认与AI未来建议",
+    "humanNote":"这是人工资料分组；三项并列记录，不代表原文已证明它们属于同一流程或存在因果关系。",
+    "constraints":"All original unit records and IDs immutable. Do not claim automatic semantic repair. If explicit document grouping cannot be represented, keep unresolved and stop. Save metric update target then separately review every remaining page."
+  },
+  "a3":"NOT_RELEASED",
+  "batchKB02":"BLOCKED"
+}

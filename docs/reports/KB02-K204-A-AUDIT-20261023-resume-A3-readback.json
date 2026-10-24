@@ -1,0 +1,127 @@
+{
+  "stage": "A3-readback",
+  "pass": true,
+  "at": "2026-10-24T04:56:59.477Z",
+  "originalModelSectionsUnedited": true,
+  "allEightUnitsAndAssignmentsUnchanged": true,
+  "previewStartedUnreviewed": true,
+  "confirmedApprovalCount": 1,
+  "oldBodyPreserved": true,
+  "bothRawHashesUnchanged": true,
+  "uniqueKnowledgeCommit": true,
+  "commit": {
+    "humanReviewDigest": "d12c2a4861b73dcc7b12c95298b579e0c665732b16ef5dd1229337510f1a2829",
+    "humanReviewBasisDigest": "ecf766dc32528d8be8624e4cb46bd225bfade55f42e68428c373407cdbaf678b",
+    "operationId": "b2e8703e-e8cf-468a-8f04-927158d1c287",
+    "workflowId": "37207020-a863-44bf-a07f-150cd55fab76",
+    "idempotencyKey": "b092f634-f69f-4650-ace9-d6eb1ddb2605",
+    "payloadDigest": "711e168dd7d063e12239abfc2a9d12a31523d13c1643270e621e761db56989d1",
+    "status": "completed",
+    "createdAt": "2026-10-24T04:56:38.680Z",
+    "updatedAt": "2026-10-24T04:56:38.727Z",
+    "records": [
+      {
+        "id": "0a0e0208-edb1-4873-ba6e-26426e6c9711",
+        "title": "K204-A supplement-original",
+        "type": "source",
+        "domain": "fmcg",
+        "category": "metric",
+        "created": "2026-10-24T04:56:38.680Z",
+        "updated": "2026-10-24T04:56:38.680Z",
+        "sources": [
+          "8f43919b-fcbf-48b4-8acd-8f50c8b56720"
+        ],
+        "tags": [
+          "KB02"
+        ],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C",
+        "review_status": "unreviewed",
+        "aliases": [],
+        "revision": 1,
+        "body": "来源 Raw：8f43919b-fcbf-48b4-8acd-8f50c8b56720\n\nK204-A supplement-original\n\n【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。"
+      },
+      {
+        "title": "门店数铺货率",
+        "type": "metric",
+        "category": "metric",
+        "sources": [
+          "fd191984-5dc0-457f-a220-f871d879a48b",
+          "8f43919b-fcbf-48b4-8acd-8f50c8b56720"
+        ],
+        "tags": [
+          "KB02"
+        ],
+        "aliases": [],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "C",
+        "review_status": "unreviewed",
+        "id": "c6590bed-1325-4456-899b-84804136ce1d",
+        "domain": "fmcg",
+        "created": "2026-10-24T04:49:02.700Z",
+        "updated": "2026-10-24T04:56:38.679Z",
+        "revision": 3,
+        "body": "## 一句话说明\n\n门店数铺货率\n\n## 来源事实\n\n- 指标名称：门店数铺货率。（证据 c1-l001）\n- 指标定义：同一产品、区域和统计月份内，在售门店数占目标门店数的比例。（证据 c1-l001）\n- 计算公式：门店数铺货率＝在售门店数÷目标门店数×100%。（证据 c1-l001）\n- 目标门店数为零时该比率不计算。（证据 c1-l001）\n- 虚构饮料甲2026年9月甲桥区域的基期记录为目标门店100家、在售门店20家，按上述公式计算门店数铺货率为20%。（证据 c1-l001）\n- 统计单位为门店数，该指标不表示销量或销售额。（证据 c1-l001）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 本记录的具体采样日期尚未注明。\n\n## 来源证据\n\n- c1-l001｜原文 [0, 208)：【虚构指标定义与基期记录，非真实客户资料】\n指标名称：门店数铺货率。指标定义：同一产品、区域和统计月份内，在售门店数占目标门店数的比例。计算公式：门店数铺货率＝在售门店数÷目标门店…\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[门店数铺货率指标定义与基期记录]]（Raw fd191984-5dc0-457f-a220-f871d879a48b）\n\n## 人工备注\n\n人工备注：这是验收用虚构指标，保留基期口径；补充来源差异须并列核对。\n\n\n## 本次更新审核\n\n### 一致观点\n\n- 虚构饮料甲2026年9月甲桥区域的目标门店数为100家。（来源 Raw 8f43919b-fcbf-48b4-8acd-8f50c8b56720，原文 [0, 160)：“【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。”）\n\n### 建议增加\n\n- 虚构饮料甲的甲桥区域2026年9月复核记录：目标门店100家，在售门店30家，按门店数计算铺货率为30%。（来源 Raw 8f43919b-fcbf-48b4-8acd-8f50c8b56720，原文 [0, 160)：“【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。”）\n\n### 来源冲突（均保留）\n\n- 2026年9月甲桥区域铺货率及在售门店数：旧记录为在售门店20家、铺货率20%，新复核记录为在售门店30家、铺货率30%，两处数值不一致，须分别保留各自口径，待确认差异原因。（来源 Raw 8f43919b-fcbf-48b4-8acd-8f50c8b56720，原文 [0, 160)：“【虚构补充验收，非真实客户资料】\n虚构饮料甲的甲桥区域2026年9月复核：目标门店100家，在售门店30家，按门店数计算铺货率30%。旧资料是20家及20%，两份来源的口径或采样时间差异待确认，不能静默覆盖任何一方。\n补充规则：财务每周核对回款一次。异常审批负责人仍需访谈确认。AI异常提示为未来建议，无上线或收益事实。”）\n\n### AI 推断\n\n- 新旧记录中目标门店数、产品、区域和统计月份一致，差异集中在在售门店数与铺货率数值，可能源于复核口径或采样时间不同，尚无证据支持确定结论。\n\n### 待确认问题\n\n- 两份来源的统计口径或采样时间差异具体原因待确认。\n\n- 旧记录已有的『具体采样日期尚未注明』问题在新来源中仍未解决。\n\n来源：[K204-A supplement-original](8f43919b-fcbf-48b4-8acd-8f50c8b56720)"
+      }
+    ],
+    "updateTargetId": "c6590bed-1325-4456-899b-84804136ce1d",
+    "targetBaseRevision": 2,
+    "rawSnapshots": [
+      {
+        "id": "8f43919b-fcbf-48b4-8acd-8f50c8b56720",
+        "title": "K204-A supplement-original",
+        "bodySha256": "c95c8135f8904824fba6fb4a864932de36561f80d621b530e2543786564e3197"
+      }
+    ],
+    "writtenIds": [
+      "0a0e0208-edb1-4873-ba6e-26426e6c9711",
+      "c6590bed-1325-4456-899b-84804136ce1d"
+    ]
+  },
+  "target": {
+    "id": "c6590bed-1325-4456-899b-84804136ce1d",
+    "revision": 3,
+    "bodySha256": "099416f2c859fb128dfd10e88fca3b731bb923f49cf02144958244b3c044ed7b",
+    "sources": [
+      "fd191984-5dc0-457f-a220-f871d879a48b",
+      "8f43919b-fcbf-48b4-8acd-8f50c8b56720"
+    ]
+  },
+  "calls": [
+    {
+      "sequence": 220,
+      "requestHash": "6d33c35849d0f185ab2b015930204f2d488a942ea546a75c6f249d723716cb83",
+      "responseHash": "44784a82c388b16c7e8ec6cc5f081d6a1a786608a68401cd3de6688b5c033d84",
+      "status": 200
+    },
+    {
+      "sequence": 221,
+      "requestHash": "700cae421669246f92de9646b079bc3ef170fed500cbfb94e5c59ff7fe024e26",
+      "responseHash": "f40fa4535d1bf38dd4e82e1371fcd1fe27f063a522d63216638743ce562fbfc9",
+      "status": 200
+    },
+    {
+      "sequence": 222,
+      "requestHash": "fcad6996c1930d0f4c9a194589dcdb8371451d104f86f1bb055c2baa4133f978",
+      "responseHash": "3b751f32976d6a603bc2a5066fdab5de5665f0e16b5777d99ba27181a5215110",
+      "status": 200
+    },
+    {
+      "sequence": 223,
+      "requestHash": "a88a687c9d30265146dba508f5c625ca4fc2d078976b232d4a3c38a5b30970c9",
+      "responseHash": "2a8833ced3b965013b7a32380a13508b646eedcd193c0b5ca8a163c8931b7266",
+      "status": 200
+    },
+    {
+      "sequence": 224,
+      "requestHash": "a668179d9846a51ed5b2147b8bf5dc24afc9793905d317cc7a10f315caadf830",
+      "responseHash": "c2ba7fdabbedda4ad70ecc6df2a0777b60d1b50ee4664399126e8c9462d172cd",
+      "status": 200
+    }
+  ],
+  "knowledgeCumulative": 224,
+  "frozenFileCount": 192,
+  "freezeUnchanged": true
+}

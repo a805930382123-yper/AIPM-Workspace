@@ -1,0 +1,27 @@
+{
+  "stage": "A1-content",
+  "pass": true,
+  "completeStagePass": false,
+  "sessionId": "ebf4e417-d0ff-4f69-a983-db5fafb65948",
+  "baselineCommit": "41ee7862305f71ae9a35c26b84a8db58dcc747c3",
+  "adapterFreezeSha256": "a6ba495b97cb271da732cbed32c0243ab4508a675333e3e1b440093d48d00aaa",
+  "sequences": [220,221],
+  "realCalls": 2,
+  "knowledgeCumulative": 221,
+  "jobId": "03c4d7dd-19df-4cf3-9d56-685e4a0b1466",
+  "draftId": "c34c069e-ec38-4838-a782-70ec427780fc",
+  "pageId": "947400bf-f41b-4e95-9107-a11182b04ede",
+  "rawSha256": "0d22bbdfcac57ebc020296e96f4b42d69741834ef8d242026ca2785b78217726",
+  "export": {"path":"docs/reports/KB02-K204-A-20261023-export-2026-10-24T04-48-35-255Z.json","sha256":"1cf97f65e354f6a6fcfed3ec74d8b357b31f05f094d2abc8cc2fa5215e3fbbb8"},
+  "findings": [
+    "Original provider planning yielded metric without manual type changes.",
+    "All six facts and one explicit sampling-date unknown retained; all seven original units assigned once to the metric page.",
+    "Definition, formula, product/region/month dimensions, zero-denominator boundary, 100/20/20%, and store-count not sales volume/value retained.",
+    "Both responses HTTP200, finish_reason stop; job completed, one chunk, two calls, no reused checkpoint or retry.",
+    "No invented sampling date, relation, business fact, or inferred metric growth."
+  ],
+  "pending": "Actual Chrome explicit review/create, humanMemo save and persistent target readback; no A2 release until full A1 report.",
+  "a2": "NOT_RELEASED",
+  "a3": "NOT_RELEASED",
+  "batchKB02": "BLOCKED"
+}

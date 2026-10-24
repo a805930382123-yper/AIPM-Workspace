@@ -1,0 +1,27 @@
+{
+  "stage": "engineering-probes",
+  "startedAt": "2026-10-24T04:45:09.070Z",
+  "freezeSha256": "a6ba495b97cb271da732cbed32c0243ab4508a675333e3e1b440093d48d00aaa",
+  "realCalls": 0,
+  "rows": [
+    {
+      "id": "E01",
+      "pass": true,
+      "configReads": 0,
+      "sent": 0,
+      "stateUnchanged": true
+    },
+    {
+      "id": "E06-direct-sink",
+      "pass": true,
+      "sinkHits": 0
+    }
+  ],
+  "pass": false,
+  "error": {
+    "message": "fetch failed",
+    "stack": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:15845:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async globalThis.fetch (file:///E:/AI/Work/AIPM%20Workspace/.scratch-KB02-K204-A-AUDIT-c0bLuc/tests/acceptance/KB02-K204-A-20261023-core.mjs:62:430)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-A-AUDIT-20261023-resume-probes.mjs:36:35)"
+  },
+  "postMismatches": [],
+  "finishedAt": "2026-10-24T04:45:09.344Z"
+}

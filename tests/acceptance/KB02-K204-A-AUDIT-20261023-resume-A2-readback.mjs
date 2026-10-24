@@ -1,0 +1,17 @@
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {RawStore} from '../../services/raw/store.ts';
+import {WikiStore} from '../../services/wiki/store.ts';
+import {DraftStore} from '../../services/wiki/drafts.ts';
+const root='.scratch-KB02-K204-A-20261023-9hponb',sha=x=>createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex'),read=async p=>JSON.parse(await fs.readFile(p,'utf8'));
+const s=await read(root+'/session.json'),c=await read(root+'/candidate-A2.json'),store=new DraftStore(root),d=await store.get(c.id),raws=new RawStore(root),raw=await raws.get(c.rawId),wiki=new WikiStore(root,raws),target=await wiki.get(s.target.id);
+assert.equal(sha(raw.body),c.rawSha256);assert.deepEqual(d.humanReview.units,c.humanReview.units);assert.equal(d.revision,9);assert.equal(d.pages.length,2);assert.equal(d.humanReview.approvals.length,2);const digest=await store.assertReviewed(d,raw.body);
+const metric=d.pages.find(p=>p.pageId===c.pages[0].pageId),group=d.pages.find(p=>p.pageId===c.pages[1].pageId);
+assert.equal(metric.reviewDecision,'update');assert.equal(metric.updateTargetWikiId,target.id);assert.deepEqual(metric.source_facts,c.pages[0].source_facts);assert.deepEqual(metric.open_questions,c.pages[0].open_questions);
+assert.equal(group.type,'concept');assert.equal(group.category,'other');assert.equal(group.one_line_definition,'这是人工资料分组；三项并列记录，不代表原文已证明它们属于同一流程或存在因果关系。');assert.deepEqual(group.source_facts,[...c.pages[1].source_facts,...c.pages[2].source_facts]);assert.deepEqual(group.open_questions,c.pages[1].open_questions);
+assert.deepEqual(Object.keys(d.humanReview.assignments).sort(),c.humanReview.units.map(u=>u.id).sort());for(const u of c.humanReview.units)assert.equal(d.humanReview.assignments[u.id],['fu-17-67-fact','fu-67-108-ambiguous'].includes(u.id)?metric.pageId:group.pageId);
+assert.equal(d.source.title,'补充验收资料：铺货率复核、回款规则与未确认事项（人工并列分组）');assert.deepEqual({id:target.id,revision:target.revision,bodySha256:sha(target.body)},s.target);
+const attempts=(await fs.readFile(root+'/attempts.jsonl','utf8')).trim().split('\n').map(JSON.parse);assert.deepEqual(attempts.map(x=>x.sequence),[220,221,222,223]);assert.equal(s.stages.A3.status,'pending');assert.equal(s.stopped,false);
+const bindings={rawId:raw.id,rawSha256:sha(raw.body),target:s.target,draftId:d.id,revision:d.revision,reviewContentDigest:digest,approvalSha256:sha(d.humanReview.approvals),pageId:metric.pageId};
+const report={stage:'A2-readback',pass:true,at:new Date().toISOString(),rawAndOriginalUnitsUnchanged:true,allFiveUnitsAssignedExactlyOnce:true,allTwoPagesReviewed:true,explicitHumanGroupingNotSourceRelationship:true,originalAutomaticThemesRepairedByHuman:true,targetUnchanged:true,bindings,sequences:[222,223],knowledgeCumulative:223};await fs.writeFile('docs/reports/KB02-K204-A-AUDIT-20261023-resume-A2-readback.json',JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(report));

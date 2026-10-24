@@ -1,0 +1,31 @@
+{
+  "stage": "engineering-probes",
+  "startedAt": "2026-10-24T04:45:23.719Z",
+  "freezeSha256": "a6ba495b97cb271da732cbed32c0243ab4508a675333e3e1b440093d48d00aaa",
+  "realCalls": 0,
+  "rows": [
+    {
+      "id": "E01",
+      "pass": true,
+      "configReads": 0,
+      "sent": 0,
+      "stateUnchanged": true
+    },
+    {
+      "id": "E06-direct-sink",
+      "pass": true,
+      "sinkHits": 0
+    },
+    {
+      "id": "E04-result-persistence-failure",
+      "pass": true,
+      "fakeCalls": 1,
+      "attempts": 1,
+      "stopCode": "EEXIST",
+      "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-KB02-K204-A-AUDIT-c0bLuc\\.scratch-KB02-K204-A-20261023-6JXbzK"
+    }
+  ],
+  "pass": true,
+  "postMismatches": [],
+  "finishedAt": "2026-10-24T04:45:24.135Z"
+}

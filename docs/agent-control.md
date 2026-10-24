@@ -1,5 +1,20 @@
 # 项目总控记录
 
+## 2026-10-24 K204-A完成与封账
+
+B模式0/2/2/2=6沿用。原Sol High完成四模块并冻结；原Astra独立16组测试完成后会话中断，本轮实际重新创建gpt-6-astra/medium `/root/stage_a_audit_resume`，复核同字节既有证据并补必要边界探针，独立工程PASS。主Agent逐段持久release、Chrome触发及明确人审；Astra分别签A1/A2/A3。详见[最终报告](reports/KB02-K204-A-AUDIT-20261023-resume-final.md)。
+
+阶段A PASS，KB02 BLOCKED；A2原自动主题FAIL保留，人工作为明确资料分组处理，不宣称自动修复。真实5/5、220–224无重试，累计224/500；Prompt15/24。A3原始预览质量与确认回读/幂等PASS。新接线工程通过，产品未改；B/C未授权，不推进。下一建议B模式先B短文2次，依据仍为跨来源/人审、真实数据持久化与历史质量风险。自有服务已停；主Agent仅提交本轮文件，外部AGENTS/.agents/AGENT-ROUTER排除。
+
+
+## 2026-10-23 K204-A授权与调度
+
+最新用户授权按B模式仅推进阶段A，覆盖旧准备阶段“真实授权0”的范围限制，但不授权B/C或22次总额。A1/A2/A3各2/2/1，共至多5，知识219→最多224/500，Prompt15/24不变。新调用接线经Sol离线自查、Astra独立工程审查及主Agent正式放行后执行；阶段通过才逐步放行，不自动连跑，不重试/换样本。基线41ee786，产品60f83ad。
+
+正式评分0/2/2/2=6/8，B：需求已由PREP卡/spec冻结，跨生产提取/人审/目标更新，真实网络与持久化风险2，历史相关失败2。复用实际创建的Astra/medium `/root/human_closure_audit` 冻结新增A卡、独立工程与真实质量裁定；原Sol High `/root/k204_prep_sol` 新A前缀施工和fake自查，禁止其真实外发；主Agent状态/control/acceptance/Git与阶段放行。Astra拥有A卡及A-AUDIT脚本报告，Sol拥有A施工脚本报告，主Agent另有A-MAIN保护证据。不是独自工作，旧PREP/产品/配置/正式workspace和并行外部工作均保留。
+
+门槛：真实请求由现行生产链构建，动态请求逐次send前冻结并持久记账、无oracle泄漏；A1真实metric候选不能手改type过测；人审逐页/全覆盖后才正式隔离写入；A2决策清审及A3预览重新审查；阶段许可/版本/预算不符即停止、首失败不继续，已发送失败同样计账。浏览器实际证据与jsdom分列，不能冒称；无工程签收前外发，不启动B/C。当前真实本轮0，预算219。
+
 ## 2026-10-23 K204-PREP收尾
 
 本轮B模式6/8按实际指定实例完成：Astra/medium冻结方案，Sol High施工，Astra独立发现P04网络白名单绕过，原Sol仅返修support与定向回归，再由Astra独立网络及完整入口复验。**准备工具PASS、KB02仍BLOCKED/真实质量NOT_RUN**，见[独立结论](reports/KB02-K204-PREP-AUDIT-20261023-acceptance.md)。本机独立正常22fake、12项/6模拟回调、两原绕过均拒绝且sink0；最终24施工冻结及188源前后不变，没有产品改动或445/build重跑。

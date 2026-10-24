@@ -1,0 +1,13 @@
+import fs from 'node:fs/promises';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {spawn} from 'node:child_process';
+const sha=b=>createHash('sha256').update(b).digest('hex'),P='docs/reports/KB02-K204-A-AUDIT-20261023-engineering-';
+const bytes=await fs.readFile('docs/reports/KB02-K204-A-20261023-freeze.json');assert.equal(sha(bytes),'a6ba495b97cb271da732cbed32c0243ab4508a675333e3e1b440093d48d00aaa');const freeze=JSON.parse(bytes);
+for(const f of freeze.files)assert.equal(sha(await fs.readFile(f.path)),f.sha256,f.path);
+const root=await fs.mkdtemp(path.resolve('.scratch-KB02-K204-A-AUDIT-'));const report={startedAt:new Date().toISOString(),node:process.version,root,freezeSha:sha(bytes),frozenPaths:freeze.files.length,realCalls:0,rows:[]};
+async function copy(dir){for(const e of await fs.readdir(dir,{withFileTypes:true})){const file=path.join(dir,e.name);if(e.isDirectory())await copy(file);else if(e.isFile()){await fs.mkdir(path.dirname(path.join(root,file)),{recursive:true});await fs.copyFile(file,path.join(root,file));}}}
+for(const dir of ['app','server','services','rules','scripts','tests','docs'])await copy(dir);for(const f of freeze.files.filter(f=>!f.path.includes('/')))await fs.copyFile(f.path,path.join(root,f.path));
+for(const f of freeze.files)assert.equal(sha(await fs.readFile(path.join(root,f.path))),f.sha256,f.path);
+const before=new Set(await fs.readdir(path.join(root,'docs/reports')));
+const args=['--import','tsx','--import','./tests/support/css-stub.mjs','tests/acceptance/KB02-K204-A-20261023-cli.mjs','selftest'];
+const child=spawn(process.execPath,args,{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});let output='';child.stdout.on('data',b=>output+=b);child.stderr.on('data',b=>output+=b);const result=await new Promise(resolve=>{child.once('error',e=>resolve({error:e.message}));child.once('close',(exitCode,signal)=>resolve({exitCode,signal}));});await fs.writeFile(P+'selftest.log',output);report.rows.push({args,...result});
+report.artifacts=[];for(const file of await fs.readdir(path.join(root,'docs/reports'))){if(before.has(file)||!/^KB02-K204-A-20261023-selftest-\d{4}-\d{2}-\d{2}T/.test(file))continue;const dest=P+file.replace('KB02-K204-A-20261023-','');await fs.copyFile(path.join(root,'docs/reports',file),dest);report.artifacts.push(dest);}
+report.postMismatches=[];for(const f of freeze.files)if(sha(await fs.readFile(f.path))!==f.sha256)report.postMismatches.push(f.path);report.pass=result.exitCode===0&&!report.postMismatches.length;report.finishedAt=new Date().toISOString();await fs.writeFile(P+'execution.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));if(!report.pass)process.exitCode=1;

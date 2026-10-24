@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "realCalls": 0,
+  "node": "v25.2.1",
+  "probe": "Synthetic fake-only direct completion with20ms timeout; production pipeline timeouts unchanged",
+  "attempts": [
+    {
+      "sequence": 220,
+      "stage": "A1",
+      "purpose": "extracting",
+      "requestHash": "35c87e2647b0bb62d48f3244c0249f569b7fa1c89a9879293953f0d6a1435cb5",
+      "at": "2026-10-23T12:54:17.456Z",
+      "status": "pending-counts-if-unknown"
+    }
+  ],
+  "transportInvocations": 1,
+  "localFakeRequests": 0,
+  "stop": {
+    "code": 20,
+    "stage": "A1",
+    "at": "2026-10-23T12:54:17.470Z"
+  }
+}

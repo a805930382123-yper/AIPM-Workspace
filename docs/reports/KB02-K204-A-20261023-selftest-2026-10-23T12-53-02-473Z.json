@@ -1,0 +1,21 @@
+{
+  "node": "v25.2.1",
+  "startedAt": "2026-10-23T12:53:02.475Z",
+  "realCalls": 0,
+  "rows": [
+    {
+      "name": "startup/GET/unreleased extraction load no configuration and send0",
+      "pass": true
+    },
+    {
+      "name": "B/C/all/invalid release rejected before loader",
+      "pass": true
+    }
+  ],
+  "pass": false,
+  "error": {
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'failed'\n- 'awaiting_review'\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'failed'\n- 'awaiting_review'\n\n    at Module.selftest (file:///E:/AI/Work/AIPM%20Workspace/tests/acceptance/KB02-K204-A-20261023-selftest.mjs:42:278)\n    at async runCli (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-A-20261023-cli.mjs:11:62)\n    at async <anonymous> (E:\\AI\\Work\\AIPM Workspace\\tests\\acceptance\\KB02-K204-A-20261023-cli.mjs:29:89)"
+  },
+  "finishedAt": "2026-10-23T12:53:03.036Z"
+}
