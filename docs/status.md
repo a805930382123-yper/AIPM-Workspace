@@ -1,5 +1,14 @@
 # 工程状态
 
+## 最新结论：SYN01真实尝试失败并封账（2026-10-25）
+
+**R01/R02工程PASS保持；R03真实输出FAIL，R04保存回读NOT_RUN，SYN01整体未通过，全产品/B09仍未通过。** 浏览器控制已恢复，主Agent在实际Chrome选中固定双Raw并仅单击一次生成。序号242返回`LLM_SCHEMA_INVALID`：缺少必填`suggestedAdditions`；脱敏原稿的8个引用end均少1，不符合UTF-16左闭右开要求。原稿保留共同100、20%/30%冲突及未知/未来内容，但不能以语义部分正确代替有效草稿通过。
+
+本轮真实1次、无重试，知识累计242/500，Prompt15/24不变；本轮额度用尽，后续新增调用授权0。无合法candidate、无人工改写、无正式Wiki写入；两Raw保持不变。Chrome错误截图与脱敏请求/响应已保留，自有标签及API/Vite服务已关闭。复用工程提交d09fd7b、产品60f83ad；未重复旧11+6/445/build。
+
+证据：[独立最终验收](reports/SYN01-REAL-AUDIT-20261025-final.md)、[主Agent执行记录](reports/SYN01-REAL-MAIN-20261025-final.md)、[脱敏导出](reports/SYN01-REAL-20261025-export-1792936917825.json)。下一步建议B模式围绕本次原始失败输出做零调用的结构/引用契约修复，先离线验收，再单独确定是否需要新真实额度。本轮不自动扩大施工。下方为历史记录，旧浏览器阻塞及尚可调用242已被本结论取代。
+
+
 ## 最新结论：SYN01受控入口通过，Chrome工具阻塞（2026-10-25）
 
 **新增R01/R02工程PASS；真实R03/R04未执行，SYN01整体BLOCKED，全产品未通过。** 受控Provider装配、固定双Raw/冻结release绑定、先落pending的唯一242额度与实际App/Vite/API路由已完成。独立仅复跑新增smoke（3个顺序组）及pending/failed零调用微断言，未重复旧11+6/H/445/build；107项冻结aggregate f6455c07eb2150260f15165ea9c22be2901dcd76a6620007e02087ec9f249df0不变，产品仍60f83ad。

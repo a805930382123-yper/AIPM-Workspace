@@ -1,0 +1,81 @@
+{
+  "status": {
+    "sessionId": "08b79756-cdb8-4b91-88a6-1dedb5804126",
+    "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-SYN01-REAL-20261025-c8B9EE",
+    "mode": "real",
+    "armed": true,
+    "attempt": {
+      "sequence": 242,
+      "status": "pending-counts-if-unknown",
+      "at": "2026-10-25T14:01:17.312Z",
+      "sessionId": "08b79756-cdb8-4b91-88a6-1dedb5804126",
+      "releaseSha256": "38cbb6199ce12faf3b6c9b4d9b7162a675b206f585fc3663fcd718f5ef0013ac",
+      "requestSha256": "27b8dea6ab104d5a01aa383266fa69e1c862e4d9305af4ec2266332c0dc21ea8"
+    },
+    "result": {
+      "sequence": 242,
+      "status": "failed",
+      "code": "LLM_SCHEMA_INVALID"
+    },
+    "realCalls": 1,
+    "fakeCalls": 0,
+    "knowledgeUsed": 242,
+    "promptUsed": 15,
+    "configReads": 1,
+    "sentThisProcess": 1,
+    "safeProvider": {
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash"
+    }
+  },
+  "raws": [
+    {
+      "title": "演示数据｜虚构清禾区域9月铺货资料B",
+      "sourceType": "report",
+      "sourceName": "SYN01虚构隔离fixture",
+      "tags": [
+        "SYN01-isolated"
+      ],
+      "id": "84bfff72-4c62-4195-8a5f-32931def768e",
+      "importedAt": "2026-10-25T14:00:10.402Z",
+      "status": "unprocessed",
+      "bodySha256": "2bb56ff5456c3b0d35a3634f0ddcaac2e1ddd805620396bcb5019e1c6444bfb4",
+      "body": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+    },
+    {
+      "title": "演示数据｜虚构清禾区域9月铺货资料A",
+      "sourceType": "report",
+      "sourceName": "SYN01虚构隔离fixture",
+      "tags": [
+        "SYN01-isolated"
+      ],
+      "id": "8874f295-7453-40e4-819c-42846e0672c7",
+      "importedAt": "2026-10-25T14:00:10.391Z",
+      "status": "unprocessed",
+      "bodySha256": "9b9315e337c79270e472d4fc2084c776a7259dfee9cb633fe6ce337d3da476d7",
+      "body": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+    }
+  ],
+  "wiki": [],
+  "artifacts": {
+    "request-242.json": {
+      "sequence": 242,
+      "request": {
+        "system": "你是多来源知识综合助手。仅输出JSON。只根据输入原文整理：列出跨来源一致观点、冲突、推断、待确认问题；保留冲突两方，不把推断写成事实。agreement/conflicts/suggestedAdditions每项必须为{text,rawId,quote,start,end}，quote必须是对应Raw的连续原文，start/end为UTF-16左闭右开全局索引。结构：{\"title\":string,\"category\":string,\"agreement\":[object],\"conflicts\":[object],\"inferences\":[string],\"openQuestions\":[string],\"suggestedAdditions\":[object]}",
+        "user": "[{\"id\":\"8874f295-7453-40e4-819c-42846e0672c7\",\"title\":\"演示数据｜虚构清禾区域9月铺货资料A\",\"body\":\"2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。\"},{\"id\":\"84bfff72-4c62-4195-8a5f-32931def768e\",\"title\":\"演示数据｜虚构清禾区域9月铺货资料B\",\"body\":\"2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。\"}]",
+        "timeoutMs": 90000,
+        "maxOutputBytes": 256000,
+        "purpose": "knowledge"
+      }
+    },
+    "response": {
+      "text": "{\"title\":\"虚构清禾区域9月铺货率资料A/B综合\",\"category\":\"铺货率数据核对\",\"agreement\":[{\"text\":\"2026年9月虚构清禾区域目标门店100家\",\"rawId\":\"8874f295-7453-40e4-819c-42846e0672c7\",\"quote\":\"2026年9月，虚构清禾区域目标门店100家。\",\"start\":0,\"end\":22},{\"text\":\"2026年9月虚构清禾区域目标门店100家\",\"rawId\":\"84bfff72-4c62-4195-8a5f-32931def768e\",\"quote\":\"2026年9月，虚构清禾区域目标门店100家。\",\"start\":0,\"end\":22},{\"text\":\"铺货率口径一致：在售门店数除以目标门店数\",\"rawId\":\"8874f295-7453-40e4-819c-42846e0672c7\",\"quote\":\"铺货率口径为在售门店数除以目标门店数。\",\"start\":43,\"end\":61},{\"text\":\"铺货率口径一致：在售门店数除以目标门店数\",\"rawId\":\"84bfff72-4c62-4195-8a5f-32931def768e\",\"quote\":\"铺货率口径为在售门店数除以目标门店数。\",\"start\":43,\"end\":61},{\"text\":\"AI辅助审批仅为未来分析建议，尚未上线，收益未知\",\"rawId\":\"8874f295-7453-40e4-819c-42846e0672c7\",\"quote\":\"AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"start\":74,\"end\":98},{\"text\":\"AI辅助审批仅为未来分析建议，尚未上线，收益未知\",\"rawId\":\"84bfff72-4c62-4195-8a5f-32931def768e\",\"quote\":\"AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"start\":79,\"end\":103}],\"conflicts\":[{\"text\":\"在售门店数与铺货率：资料A记录20家/20%，资料B记录30家/30%\",\"rawId\":\"8874f295-7453-40e4-819c-42846e0672c7\",\"quote\":\"资料A记录在售门店20家，铺货率20%。\",\"start\":23,\"end\":42},{\"text\":\"在售门店数与铺货率：资料A记录20家/20%，资料B记录30家/30%\",\"rawId\":\"84bfff72-4c62-4195-8a5f-32931def768e\",\"quote\":\"资料B记录在售门店30家，铺货率30%。\",\"start\":23,\"end\":42}],\"inferences\":[\"两资料铺货率均与'在售门店数/目标门店数'口径自洽（20/100=20%，30/100=30%），差异可能来自统计时点不同，但采样日是否一致尚无原文确认。\"],\"openQuestions\":[\"两资料采样日是否一致尚未确认。\",\"在售门店数20家与30家哪一方为准、差异原因是什么。\",\"异常审批负责人尚未确认。\"]}",
+      "finishReason": "stop",
+      "bytes": 2183,
+      "usage": {
+        "promptTokens": 368,
+        "completionTokens": 1379
+      }
+    }
+  }
+}
