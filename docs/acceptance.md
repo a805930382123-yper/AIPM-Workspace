@@ -1,5 +1,15 @@
 # 快消 AI 产品经理工作台：分批验收与监控规约
 
+## 最新结论：SYN01受控入口通过，Chrome工具阻塞（2026-10-25）
+
+**新增R01/R02工程PASS；真实R03/R04未执行，SYN01整体BLOCKED，全产品未通过。** 受控Provider装配、固定双Raw/冻结release绑定、先落pending的唯一242额度与实际App/Vite/API路由已完成。独立仅复跑新增smoke（3个顺序组）及pending/failed零调用微断言，未重复旧11+6/H/445/build；107项冻结aggregate f6455c07eb2150260f15165ea9c22be2901dcd76a6620007e02087ec9f249df0不变，产品仍60f83ad。
+
+[独立报告](reports/SYN01-REAL-AUDIT-20261025-acceptance.md) SHA d52e9165c76a943a128ea2709fe847d1e1f32710570a430f8c32431cff7386b3；[交接与续接命令](reports/SYN01-REAL-20261025-handoff.md)。CLI重启控制文件问题已修并针对变更重跑，未发现产品缺陷。所有自有服务关闭。独立fake1/config0/real0，知识241/500、Prompt15/24保持，未签实际release、未消耗242。
+
+主Agent的CUA及备用Node/Computer Use均报kernel assets路径不存在，一次reset重建仍失败；浏览器动作未执行。阻塞来自本机控制工具，不是产品或真实模型失败；不以组件/HTTP代替Chrome，不因工具失败消耗唯一真实机会。详见[主Agent记录](reports/SYN01-REAL-MAIN-20261025-release.md)。
+
+用户本轮已经授权完整真实验收，授权持续有效，无需重复确认：工具恢复后复用本冻结入口，主Agentprepare/serve→bindings→唯一release/arm→Chrome触发最多1次→原稿质量核验→明确审查/保存/刷新回读→交付；失败即停，不重试、不重复旧测试。当前等待恢复Codex浏览器控制工具（可重启应用后继续），不自动推进其他批次。
+
 ## 最新结论：SYN01零调用工程准备通过（2026-10-25）
 
 **本轮SP01–06工程准备PASS；SYN01真实样本综合闭环仍BLOCKED/NOT_RUN，全产品/B09未通过。** Sol施工11组自查、Astra冻结复跑11组与自有6组核验通过（计数存在层级，不合称17个业务场景）。未发现需产品返修的缺陷。实际RawPage→KnowledgeWorkflowPage→生产HTTP/Store闭环，2 Source+1 synthesis落盘；未审/未解决/陈旧阻断、来源拒坏、修改失效、重启/故障恢复/23文件幂等通过。

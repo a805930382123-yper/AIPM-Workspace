@@ -1,5 +1,21 @@
 # 工程状态
 
+## 最新结论：SYN01受控入口通过，Chrome工具阻塞（2026-10-25）
+
+**新增R01/R02工程PASS；真实R03/R04未执行，SYN01整体BLOCKED，全产品未通过。** 受控Provider装配、固定双Raw/冻结release绑定、先落pending的唯一242额度与实际App/Vite/API路由已完成。独立仅复跑新增smoke（3个顺序组）及pending/failed零调用微断言，未重复旧11+6/H/445/build；107项冻结aggregate f6455c07eb2150260f15165ea9c22be2901dcd76a6620007e02087ec9f249df0不变，产品仍60f83ad。
+
+[独立报告](reports/SYN01-REAL-AUDIT-20261025-acceptance.md) SHA d52e9165c76a943a128ea2709fe847d1e1f32710570a430f8c32431cff7386b3；[交接与续接命令](reports/SYN01-REAL-20261025-handoff.md)。CLI重启控制文件问题已修并针对变更重跑，未发现产品缺陷。所有自有服务关闭。独立fake1/config0/real0，知识241/500、Prompt15/24保持，未签实际release、未消耗242。
+
+主Agent的CUA及备用Node/Computer Use均报kernel assets路径不存在，一次reset重建仍失败；浏览器动作未执行。阻塞来自本机控制工具，不是产品或真实模型失败；不以组件/HTTP代替Chrome，不因工具失败消耗唯一真实机会。详见[主Agent记录](reports/SYN01-REAL-MAIN-20261025-release.md)。
+
+用户本轮已经授权完整真实验收，授权持续有效，无需重复确认：工具恢复后复用本冻结入口，主Agentprepare/serve→bindings→唯一release/arm→Chrome触发最多1次→原稿质量核验→明确审查/保存/刷新回读→交付；失败即停，不重试、不重复旧测试。当前等待恢复Codex浏览器控制工具（可重启应用后继续），不自动推进其他批次。
+
+## 当前执行：SYN01受控真实入口及最多一次验收（2026-10-25）
+
+用户在明确最多1次真实综合、Chrome审查保存回读、失败即停及不重复旧测试后批准“好的，开始下一步计划”。沿用B模式0/2/2/1=5；原Sol High施工、Astra medium独立审查、主Agent负责真实放行/Chrome/Git。按[本轮卡](handoffs/SYN01-REAL-20261025-task.md)只新增受控真实/Chrome接线及必要新smoke，复用旧11+6/H/445，禁止无关回归。
+
+基线9bd732c、产品60f83ad。本轮实际调用尚0，知识241/500，Prompt15/24。工程通过后唯一release绑定双Raw/会话/冻结，最多序号242一次synthesis，失败亦计、无重试；未放行前不读取实际配置。主Agent发现浏览器控制CUA及备用Node运行器均无法初始化，一次会话reset后仍报kernel assets路径不存在；Chrome依赖步骤待恢复，不改变产品或伪称已验收。先完成不依赖浏览器的工程工作。旧证据/正式数据/外部任务改动保留。
+
 ## 最新结论：SYN01零调用工程准备通过（2026-10-25）
 
 交付提交 eeec75973db0c4f3214a66383637f2b39f5c410b 已实时核对远端main一致；后续文档关联不改变受测冻结。
