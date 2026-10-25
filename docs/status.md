@@ -2,6 +2,8 @@
 
 ## 最新结论：SYN01零调用工程准备通过（2026-10-25）
 
+交付提交 eeec75973db0c4f3214a66383637f2b39f5c410b 已实时核对远端main一致；后续文档关联不改变受测冻结。
+
 **本轮SP01–06工程准备PASS；SYN01真实样本综合闭环仍BLOCKED/NOT_RUN，全产品/B09未通过。** Sol施工11组自查、Astra冻结复跑11组与自有6组核验通过（计数存在层级，不合称17个业务场景）。未发现需产品返修的缺陷。实际RawPage→KnowledgeWorkflowPage→生产HTTP/Store闭环，2 Source+1 synthesis落盘；未审/未解决/陈旧阻断、来源拒坏、修改失效、重启/故障恢复/23文件幂等通过。
 
 [独立验收](reports/SYN01-AUDIT-20261025-acceptance.md) SHA e42a6f420e3706006d69e8a30b456d4902dfcece3fe58e419f9dd29ea502790b；[施工交接与命令](reports/SYN01-PREP-20261025-handoff.md)。102项受测冻结aggregate 141c302d43fe0b2a7b0ff81b7df73f23c08dfad348f7caa7b0ee8eed70ef1985无漂移，产品仍60f83ad。H188/C213同冻结历史证据有效，本轮未重跑445/build。B模式实际Sol High施工/Astra medium独立审查，评分0/2/2/1=5。

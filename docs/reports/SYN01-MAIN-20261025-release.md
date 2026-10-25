@@ -21,3 +21,5 @@
 正式workspace/.env.local共63项元数据最终同规范化摘要一致。中间after检查未像before做JSON往返，PowerShell ISO日期自动转换导致假差异；原after记录保留，final使用相同规范化后匹配。该检查不读取内容，不冒称内容SHA校验。最终保护与同步结果下方补记。
 
 最终保护PASS：4297项基线仅三个入口授权变更；C213无漂移；21个新交付文件凭证模式扫描0命中（未读取实际密钥值）；正式数据/配置元数据一致。见SYN01-MAIN-20261025-protection.json。下一步仅建议B模式受控真实入口和最多1次真实验收；当前授权0。
+
+交付提交 eeec75973db0c4f3214a66383637f2b39f5c410b；post-commit推送成功，实时git ls-remote origin refs/heads/main与本地HEAD一致。25个本轮文件暂存字节逐项与工作区相同，严格diff --cached --check通过；原外部三项仍留工作区未提交。本关联补记不改独立验收/产品冻结。
