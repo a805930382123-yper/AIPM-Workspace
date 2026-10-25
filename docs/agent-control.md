@@ -1,5 +1,21 @@
 # 项目总控记录
 
+## 最新结论：SYN01零调用工程准备通过（2026-10-25）
+
+**本轮SP01–06工程准备PASS；SYN01真实样本综合闭环仍BLOCKED/NOT_RUN，全产品/B09未通过。** Sol施工11组自查、Astra冻结复跑11组与自有6组核验通过（计数存在层级，不合称17个业务场景）。未发现需产品返修的缺陷。实际RawPage→KnowledgeWorkflowPage→生产HTTP/Store闭环，2 Source+1 synthesis落盘；未审/未解决/陈旧阻断、来源拒坏、修改失效、重启/故障恢复/23文件幂等通过。
+
+[独立验收](reports/SYN01-AUDIT-20261025-acceptance.md) SHA e42a6f420e3706006d69e8a30b456d4902dfcece3fe58e419f9dd29ea502790b；[施工交接与命令](reports/SYN01-PREP-20261025-handoff.md)。102项受测冻结aggregate 141c302d43fe0b2a7b0ff81b7df73f23c08dfad348f7caa7b0ee8eed70ef1985无漂移，产品仍60f83ad。H188/C213同冻结历史证据有效，本轮未重跑445/build。B模式实际Sol High施工/Astra medium独立审查，评分0/2/2/1=5。
+
+新增真实调用0，知识241/500、Prompt15/24保持；6次内存fake仅为独立工程模拟，不计真实预算。没有加载实际配置、创建真实Provider或真实release；默认fake/offline，真实/未知模式及非本轮模型路由拒绝。全部自有服务关闭，未运行Chrome。接口serve只有fake API，没有真实/静态UI入口，不能把组件jsdom证据称Chrome验收。
+
+下一步建议继续B模式，以新卡交付受控真实/Chrome入口，先工程审查与唯一release/账本，再经明确授权最多1次synthesis，首失败停止、无重试。当前真实授权仍0，不自动执行。A18/R20/R07真实综合缺证以及R12/模板/等级/四链集成保持，KB02既有HUMAN PASS不变。保护/提交见[主Agent收尾](reports/SYN01-MAIN-20261025-release.md)。下方为历史过程。
+
+## 当前执行：SYN01零调用工程准备（2026-10-25）
+
+用户明确批准B模式启动双来源综合零调用工程准备，真实调用上限0，禁止读取实际模型配置。按[工程卡](handoffs/SYN01-PREP-20261025-task.md)SP01–06执行：固定双Raw、fake生产综合/HTTP/实际React、来源和人工审查门禁、正式化/回读/幂等、默认拒绝真实外发。评分0/2/2/1=5，实际Sol High施工syn01_prep_sol、Astra medium独立审查syn01_prep_audit，主Agent负责范围/保护/入口/Git。
+
+基线ba2d854，产品60f83ad，知识241/500、Prompt15/24保持。仅新增隔离工具与证据，不改产品/旧证据/实际配置/正式workspace。原外部AGENTS/.agents/AGENT-ROUTER改动保留。施工交接停写后独立验收；工程准备不等于SYN01真实质量或全产品通过，未来真实阶段需另行授权。下方为此前结论。
+
 ## 最新结论：剩余验收准备完成（2026-10-24）
 
 用户批准上一建议，已按B模式完成NEXT-PREP：Sol High施工、Astra medium独立验收，P01–P04 PASS。配置阶段边界/证据字段的最小修正已复验；P05已由主Agent完成：交付提交ded4042d53c0fb1e9f5b85bb400b4be07337f3b1，实时远端main同SHA；后续文档关联不改变冻结。准备评分0/2/1/1=4，沿用用户明确B选择，不冒称阈值强制B。
