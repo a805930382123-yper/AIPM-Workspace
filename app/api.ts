@@ -141,7 +141,7 @@ export type DraftPreview = {
   batchDuplicateTitles: string[];
 };
 export type DraftView = {
-  humanReview?:HumanReview; reviewContentDigest?:string|null;
+  humanReview?:HumanReview; humanQuestionUnitIds?:string[]; reviewContentDigest?:string|null;
   id: string; rawId: string; rawTitle: string; status: 'pending_confirmation' | 'committing' | 'confirmed' | 'discarded';
   revision: number; createdAt: string; updatedAt: string; rulesVersion: string;
   provider: { name: string; model: string }; jobId: string;
@@ -198,6 +198,7 @@ export const confirmDraft = (draftId: string, input: { baseRevision: number; sel
 export const wikiCommit = (operationId: string) => api<WikiCommitStatus>(`/api/wiki-commits/${encodeURIComponent(operationId)}`);
 export const startDraftReview=(id:string,baseRevision:number)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/start`,{method:'POST',body:JSON.stringify({baseRevision})});
 export const moveDraftUnits=(id:string,baseRevision:number,unitIds:string[],pageId:string|null)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/move`,{method:'POST',body:JSON.stringify({baseRevision,unitIds,pageId})});
+export const markDraftQuestions=(id:string,baseRevision:number,unitIds:string[],marked:boolean)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/questions`,{method:'POST',body:JSON.stringify({baseRevision,unitIds,marked})});
 export const reviewDraftPage=(id:string,pageId:string,baseRevision:number,reviewContentDigest:string,confirmed:boolean)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/pages/${encodeURIComponent(pageId)}`,{method:'POST',body:JSON.stringify({baseRevision,reviewContentDigest,confirmed})});
 export const duplicateCandidates = (draftId: string, pageId: string, edited?: {title:string;category:string;content:string}) => {
   const query = new URLSearchParams();

@@ -53,6 +53,14 @@ export function validateDraftPatch(value: unknown): DraftPatch {
   return patch;
 }
 
+export function validateDraftQuestionReview(value:unknown) {
+  const body=object(value,'待确认标记');
+  if(Object.keys(body).some(key=>!['baseRevision','unitIds','marked'].includes(key)))throw new InputError('INVALID_REVIEW','待确认标记包含未知字段。');
+  const unitIds=stringList(body.unitIds,'unitIds',{required:true});
+  if(!unitIds.length||unitIds.length>4096||new Set(unitIds).size!==unitIds.length||typeof body.marked!=='boolean')throw new InputError('INVALID_REVIEW','请提供不重复的完整unit与明确标记值。');
+  return {action:'questions' as const,baseRevision:revision(body.baseRevision),unitIds,marked:body.marked};
+}
+
 export function validateHumanReview(value:unknown,action:'start'|'move'|'page',pageId?:string) {
   const body=object(value,'审查请求');
   const allowed=action==='start'?['baseRevision']:action==='move'?['baseRevision','unitIds','pageId']:['baseRevision','reviewContentDigest','confirmed'];

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { DraftPatch, DraftPage, DraftView, Raw, WikiCommitStatus, WikiSchema, DuplicateResult } from '../api';
-import { ApiError, api, confirmDraft, discardDraft, draftView, patchDraft, sourceLabels, wikiCommit, duplicateCandidates, savePageDecision, startUpdateWorkflow, startDraftReview, moveDraftUnits, reviewDraftPage } from '../api';
+import { ApiError, api, confirmDraft, discardDraft, draftView, patchDraft, sourceLabels, wikiCommit, duplicateCandidates, savePageDecision, startUpdateWorkflow, startDraftReview, moveDraftUnits, reviewDraftPage, markDraftQuestions } from '../api';
 
 type PageDraft = DraftPage & { renderedBody?: string };
 const reviewFingerprint=(value:DraftView,items:PageDraft[]=value.pages)=>JSON.stringify({document:value.document,source:value.source,pages:items.map(({renderedBody:_body,...p})=>p)});
@@ -127,6 +127,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const applyView = (updated: DraftView) => { setView(updated); setPages(updated.pages.map(page => ({ ...page })));setSavedFingerprint(reviewFingerprint(updated)); };
   const startReview=()=>run('review:start',async()=>{if(!view||dirty)throw new Error('请先保存当前编辑，再开始审查。');applyView(await startDraftReview(draftId,view.revision));});
   const moveUnit=(unitId:string,pageId:string|null)=>run('review:move',async()=>{if(!view||dirty)throw new Error('请先保存编辑。');applyView(await moveDraftUnits(draftId,view.revision,[unitId],pageId));});
+  const markQuestion=(unitId:string,marked:boolean)=>run('review:questions',async()=>{if(!view||dirty)throw new Error('请先保存编辑。');applyView(await markDraftQuestions(draftId,view.revision,[unitId],marked));});
   const confirmPage=(pageId:string,confirmed:boolean)=>run('review:page',async()=>{if(!view?.reviewContentDigest||dirty)throw new Error('请先保存编辑，并重新审查当前内容。');applyView(await reviewDraftPage(draftId,pageId,view.revision,view.reviewContentDigest,confirmed));});
   const duplicateInput = (page: PageDraft) => ({ title: page.title, category: page.category, content: [page.one_line_definition, ...page.source_facts.map(item => item.text), ...page.ai_organized].join('\n') });
   const checkDuplicates = (pageId: string) => run(`duplicates:${pageId}`, async () => {
@@ -221,6 +222,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
           <div><strong>{unit.kind==='fact'?'来源事实':unit.kind==='question'?'原文明示问题':'整理提议'}</strong> <code>{unit.id}</code><p>{unit.text}</p><small>{unit.sourceLabel??`原记录：${unit.memberIds.join('、')}`}</small>
           {unit.evidence.map((e,i)=><p key={`${e.id}-${i}`}>原文 [{e.start}, {e.end})：“{e.quote}”</p>)}{!unit.evidence.length&&<p>旧记录无原文定位</p>}</div>
           <label className="field">完整 unit 归属<select aria-label={`归属 ${unit.id}`} value={view.humanReview!.assignments[unit.id]??''} disabled={busy!==''||dirty} onChange={e=>void moveUnit(unit.id,e.target.value||null)}><option value="">未解决</option>{pages.map(p=><option key={p.pageId} value={p.pageId}>{p.title}</option>)}</select></label>
+          {unit.kind==='fact'&&<label className="draft-select"><input type="checkbox" aria-label={`同时列入待确认问题 ${unit.id}`} checked={view.humanQuestionUnitIds?.includes(unit.id)??false} disabled={busy!==''||dirty} onChange={e=>void markQuestion(unit.id,e.target.checked)}/>同时列入待确认问题（人工标记）</label>}
         </div>)}
       </>}
     </section>}

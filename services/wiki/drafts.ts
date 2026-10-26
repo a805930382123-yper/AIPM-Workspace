@@ -45,6 +45,8 @@ export type DraftSource = {
 };
 export type DraftRecord = {
   humanReview?: HumanReview;
+  /** Explicit user references; original source units and classifications stay immutable. */
+  humanQuestionUnitIds?: string[];
   id: string; rawId: string; rawSha256: string; rawTitle: string; rawMeta: DraftRawMeta;
   status: DraftStatus; revision: number; createdAt: string; updatedAt: string;
   rulesVersion: string; provider: { name: string; model: string }; jobId: string;
@@ -152,11 +154,11 @@ export class DraftStore {
         map.set(item.id,id);if(!evidence.some(e=>e.id===id))evidence.push({...item,id});
       }aliases.set(unit.id,map);}
       page.source_facts=facts.flatMap(u=>u.records.map(r=>({text:r.text,evidenceIds:r.evidenceIds.map(id=>aliases.get(u.id)?.get(id)??id)})));
-      page.open_questions=[...questions.flatMap(u=>u.records.map(r=>r.text)),...facts.filter(u=>u.factKind==='ambiguous').flatMap(u=>u.records.map(r=>'原文口径或边界待确认：'+r.text))];
+      page.open_questions=[...questions.flatMap(u=>u.records.map(r=>r.text)),...facts.filter(u=>u.factKind==='ambiguous').flatMap(u=>u.records.map(r=>'原文口径或边界待确认：'+r.text)),...facts.filter(u=>record.humanQuestionUnitIds?.includes(u.id)).map(u=>'人工标记待确认：'+u.text)];
       page.source_evidence=evidence;
     }
   }
-  async reviewOperation(id:string,input:{baseRevision:number;action:'start'|'move'|'page';unitIds?:string[];pageId?:string|null;reviewContentDigest?:string;confirmed?:boolean},context:{body:string;rulesDir:string}):Promise<DraftRecord> {
+  async reviewOperation(id:string,input:{baseRevision:number;action:'start'|'move'|'page'|'questions';unitIds?:string[];pageId?:string|null;reviewContentDigest?:string;confirmed?:boolean;marked?:boolean},context:{body:string;rulesDir:string}):Promise<DraftRecord> {
     return this.queue.run(async()=>{
       const current=await this.get(id);if(!current)throw new DraftError('NOT_FOUND','没有找到这份草稿。',404);
       if(current.status!=='pending_confirmation')throw new DraftError('DRAFT_NOT_EDITABLE','草稿不在待审查状态。',409);
@@ -166,7 +168,19 @@ export class DraftStore {
       if(input.action==='start'&&!next.humanReview)next.humanReview=await this.migratedReview(next,context.body,context.rulesDir);
       assertReviewStructure(next.humanReview,next.pages.map(p=>p.pageId));
       assertReviewSources(next.humanReview,[{id:next.rawId,body:context.body,bodySha256:next.rawSha256}]);
+      if(input.action==='questions'){
+        const ids=input.unitIds;
+        if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length||ids.some(id=>!next.humanReview!.units.some(u=>u.id===id&&u.kind==='fact'))||typeof input.marked!=='boolean')throw new DraftError('INVALID_QUESTION_MARK','请明确标记已知且不重复的完整来源事实。',400);
+        const marked=new Set(next.humanQuestionUnitIds??[]);
+        for(const id of ids)if(input.marked)marked.add(id);else marked.delete(id);
+        const ordered=next.humanReview.units.filter(u=>marked.has(u.id)).map(u=>u.id);
+        if(JSON.stringify(ordered)===JSON.stringify(next.humanQuestionUnitIds??[]))return current;
+        if(ordered.length)next.humanQuestionUnitIds=ordered;else delete next.humanQuestionUnitIds;
+        next.humanReview.approvals=[];
+        this.deriveReviewPages(next);
+      }
       if(input.action==='move'){moveHumanUnits(next.humanReview,next.pages.map(p=>p.pageId),input.unitIds!,input.pageId!);this.deriveReviewPages(next);}
+      if((input.action==='questions'||(input.action==='move'&&next.humanQuestionUnitIds?.length))&&!next.source.bodyEditedByUser)next.source.body=renderSourceBody(next.source,next.rawMeta,next.pages.filter(p=>p.selected),next.pages.filter(p=>!p.selected));
       if(input.action==='page')confirmHumanPage(next.humanReview,next.pages.map(p=>p.pageId),{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(next));
       if(JSON.stringify(next)===JSON.stringify(current))return current;
       next.revision++;next.updatedAt=new Date().toISOString();await writeJsonAtomic(this.fileFor(id),next);return next;

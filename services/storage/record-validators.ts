@@ -7,6 +7,10 @@ const digest=(v:unknown)=>str(v)&&/^[0-9a-f]{64}$/i.test(v);
 /** Shared by the extraction draft reader and recovery scan, before any recovery action. */
 export function isExtractionDraft(v:unknown,id?:string):boolean {
  if(obj(v)&&v.humanReview!==undefined&&!validHumanReview(v.humanReview))return false;
+ if(obj(v)&&v.humanQuestionUnitIds!==undefined){
+  if(!strings(v.humanQuestionUnitIds)||!validHumanReview(v.humanReview)||new Set(v.humanQuestionUnitIds).size!==v.humanQuestionUnitIds.length)return false;
+  const review=v.humanReview;if(v.humanQuestionUnitIds.some(id=>!review.units.some(u=>u.id===id&&u.kind==='fact')))return false;
+ }
  if(!obj(v)||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!isUuid(v.rawId)||!digest(v.rawSha256)||!str(v.rawTitle)||!obj(v.rawMeta)||v.rawMeta.rawId!==v.rawId||!str(v.rawMeta.title)||!str(v.rawMeta.sourceType)||!str(v.rawMeta.sourceName)||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!Number.isInteger(v.revision)||Number(v.revision)<1||!str(v.createdAt)||!str(v.updatedAt)||!str(v.rulesVersion)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!str(v.jobId)||!obj(v.document)||!str(v.document.title)||!str(v.document.main_topic)||!str(v.document.summary)||!Array.isArray(v.pages)||!obj(v.source)||!strings(v.warnings)||!obj(v.extraction)||!nonnegative(v.extraction.callCount)||!nonnegative(v.extraction.chunkCount)||!nonnegative(v.extraction.pagesFound))return false;
  const s=v.source;if(!['title','category','summary','body','knowledge_status','confidence','source_level'].every(k=>str(s[k]))||!strings(s.key_takeaways)||(s.reuseWikiId!==undefined&&!isUuid(s.reuseWikiId))||(s.editedByUser!==undefined&&typeof s.editedByUser!=='boolean')||(s.bodyEditedByUser!==undefined&&typeof s.bodyEditedByUser!=='boolean'))return false;
  const ids=new Set<string>();for(const p of v.pages){

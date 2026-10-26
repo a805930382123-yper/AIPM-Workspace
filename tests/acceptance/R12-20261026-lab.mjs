@@ -1,0 +1,12 @@
+import {createServer} from 'vite';
+import react from '@vitejs/plugin-react';
+import {writeFile} from 'node:fs/promises';
+import {r12Fixture,questionUnitIds} from './R12-20261026-fixture.ts';
+const f=await r12Fixture();
+const vite=await createServer({configFile:false,root:process.cwd(),plugins:[react()],appType:'custom',server:{host:'127.0.0.1',port:5174,strictPort:true,proxy:{'/api':f.h.base}}});
+vite.middlewares.use('/r12',async(req,res,next)=>{try{const html=await vite.transformIndexHtml('/r12','<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>R12 隔离原稿人工审查</title></head><body><div id="root"></div><script type="module" src="/tests/acceptance/R12-20261026-browser.tsx"></script></body></html>');res.statusCode=200;res.setHeader('Content-Type','text/html;charset=utf-8');res.end(html);}catch(e){next(e);}});
+await vite.listen();
+const manifest={root:f.root,draftId:f.draft.id,rawId:f.raw.id,questionUnitIds,api:f.h.base,url:`http://127.0.0.1:5174/r12?draftId=${f.draft.id}`,originalCalls:0,realCalls:0,configReads:0};
+await writeFile('docs/reports/R12-20261026-builder-lab.json',JSON.stringify(manifest,null,2)+'\n');console.log(JSON.stringify(manifest));
+let stopping=false;const stop=async()=>{if(stopping)return;stopping=true;await vite.close();await f.h.close();console.log('R12 lab stopped; isolated files retained.');process.exit(0);};
+process.on('SIGINT',stop);process.on('SIGTERM',stop);
