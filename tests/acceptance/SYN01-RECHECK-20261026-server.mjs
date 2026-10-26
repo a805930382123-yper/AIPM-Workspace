@@ -1,0 +1,34 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import express from 'express';
+import {RawStore} from '../../services/raw/store.ts';
+import {RawStateStore} from '../../services/raw/state.ts';
+import {DraftStore} from '../../services/wiki/drafts.ts';
+import {WikiStore} from '../../services/wiki/store.ts';
+import {KnowledgeWorkflowStore} from '../../services/wiki/knowledge-workflows.ts';
+import {registerKnowledgeRoutes} from '../../server/knowledge-api.ts';
+import {registerRecoveryRoutes} from '../../server/recovery-api.ts';
+import {RecoveryRegistry} from '../../services/storage/recovery.ts';
+import {getStats} from '../../services/stats/index.ts';
+import {Engine,sessionAt,durable,optional,must} from './SYN01-RECHECK-20261026-core.mjs';
+
+export async function createLab(root){
+  const session=await sessionAt(root),engine=new Engine(session),lease=path.join(root,'server.lock');
+  const prior=await optional(lease);if(prior){try{process.kill(prior.pid,0);must(false,'SERVER_ALREADY_RUNNING');}catch(error){if(error.code!=='ESRCH')throw error;}await fs.unlink(lease);}await durable(lease,{pid:process.pid});
+  let server;try{
+    const raws=new RawStore(root),rawStates=new RawStateStore(root),drafts=new DraftStore(root),wiki=new WikiStore(root,raws);for(const store of [raws,rawStates,drafts,wiki])await store.initialize();const workflows=new KnowledgeWorkflowStore(root,wiki,raws);await workflows.initialize();await engine.bindings();
+    const app=express(),trace=[];app.use(express.json({limit:'1mb'}));app.use((q,_r,next)=>{trace.push({method:q.method,path:q.path});if(q.path.startsWith('/__syn01-recheck/'))return next();const get=q.method==='GET'&&(/^\/api\/(?:health|raw|raw-processing|stats|drafts|audits|recovery-issues)$/.test(q.path)||/^\/api\/wiki(?:\/.*)?$/.test(q.path)||/^\/api\/raw\/[0-9a-f-]{36}(?:\/references)?$/.test(q.path)||q.path.startsWith('/api/knowledge/workflows')||q.path.startsWith('/api/knowledge/commits/'));const write=q.method==='POST'&&(q.path==='/api/knowledge/syntheses'||/^\/api\/knowledge\/workflows\/[0-9a-f-]{36}\/(?:confirm|review\/start|review\/move|review\/pages\/[0-9a-f-]{36})$/.test(q.path))||q.method==='PATCH'&&/^\/api\/knowledge\/workflows\/[0-9a-f-]{36}$/.test(q.path);try{must(get||write,'OUT_OF_SCOPE_ROUTE');next();}catch(error){next(error);}});
+    app.get('/api/health',(_q,r)=>r.json({ok:true,isolated:true}));app.get('/api/raw',async(_q,r,n)=>{try{r.json({items:await raws.list()});}catch(e){n(e);}});app.get('/api/raw-processing',async(_q,r,n)=>{try{r.json({items:await rawStates.list()});}catch(e){n(e);}});app.get('/api/stats',async(_q,r,n)=>{try{r.json(await getStats(root,raws));}catch(e){n(e);}});app.get('/api/drafts',async(_q,r,n)=>{try{r.json({items:await drafts.list()});}catch(e){n(e);}});app.get('/api/audits',(_q,r)=>r.json({items:[]}));
+    app.get('/api/raw/:id/references',async(q,r,n)=>{try{r.json({items:await wiki.referencesToRaw(q.params.id)});}catch(e){n(e);}});
+    app.get('/api/raw/:id',async(q,r,n)=>{try{const item=await raws.get(q.params.id);must(item,'RAW_NOT_FOUND');r.json(item);}catch(e){n(e);}});
+    app.get('/api/wiki/schema',async(_q,r,n)=>{try{r.json(await wiki.schema());}catch(e){n(e);}});app.get('/api/wiki',async(q,r,n)=>{try{r.json({items:await wiki.list({q:q.query.q,category:q.query.category}),categoryCounts:await wiki.categoryCounts()});}catch(e){n(e);}});
+    app.get('/api/wiki/:id/export',async(q,r,n)=>{try{const item=await wiki.exportMarkdown(q.params.id);must(item,'WIKI_NOT_FOUND');r.type('text/markdown').send(item.markdown);}catch(e){n(e);}});app.get('/api/wiki/:id/references',async(q,r,n)=>{try{r.json({items:await wiki.references(q.params.id)});}catch(e){n(e);}});app.get('/api/wiki/:id',async(q,r,n)=>{try{const item=await wiki.get(q.params.id);must(item,'WIKI_NOT_FOUND');r.json({...item,links:(await wiki.links(item.id)).map(x=>({target:x.text,status:x.status==='found'?'resolved':x.status,candidates:x.candidates}))});}catch(e){n(e);}});
+    // This one route reserves the session budget around production createSynthesis.
+    app.post('/api/knowledge/syntheses',async(q,r,n)=>{let provider;try{must(q.body&&Object.keys(q.body).every(x=>['rawIds','sourceIds'].includes(x))&&Array.isArray(q.body.rawIds)&&q.body.rawIds.length===2&&new Set(q.body.rawIds).size===2&&q.body.rawIds.every(x=>session.samples.some(s=>s.id===x))&&(q.body.sourceIds===undefined||Array.isArray(q.body.sourceIds)&&q.body.sourceIds.length===0),'FIXED_INPUT_REQUIRED');provider=await engine.provider();const workflow=await workflows.createSynthesis({rawIds:session.samples.map(x=>x.id),provider});await durable(path.join(root,'candidate-original.json'),workflows.view(workflow));await engine.finish({status:'completed',workflowId:workflow.id});r.status(201).json(workflows.view(workflow));}catch(error){if(provider?.attemptReserved&&!await optional(path.join(root,'result-243.json')))await engine.finish({status:'failed',code:error.code??'SYNTHESIS_FAILED'});n(error);}});
+    registerKnowledgeRoutes(app,{root,raws,drafts,wiki,provider:()=>{must(false,'OTHER_MODEL_ROUTE_DENIED');}});registerRecoveryRoutes(app,new RecoveryRegistry(root));
+    app.get('/__syn01-recheck/status',async(_q,r,n)=>{try{r.json(await engine.status());}catch(e){n(e);}});app.get('/__syn01-recheck/bindings',async(_q,r,n)=>{try{r.json(await engine.bindings());}catch(e){n(e);}});app.post('/__syn01-recheck/arm',async(q,r,n)=>{try{r.json(await engine.arm(q.body.releaseFile,q.body.exactSha256));}catch(e){n(e);}});app.get('/__syn01-recheck/export',async(_q,r,n)=>{try{r.json(await engine.export(raws,wiki));}catch(e){n(e);}});let lab;app.post('/__syn01-recheck/stop',(_q,r)=>{r.json({closing:true});setImmediate(()=>lab.close());});
+    app.use((error,_q,r,_n)=>r.status(error.status??500).json({error:{code:error.code??'LOCAL_ADAPTER_ERROR',message:error.code??'LOCAL_ADAPTER_ERROR'}}));server=app.listen(0,'127.0.0.1');await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});let closed=false;
+    lab={session,engine,root,raws,wiki,workflows,trace,base:`http://127.0.0.1:${server.address().port}`,get closed(){return closed;},async close(){if(closed)return;closed=true;await new Promise(resolve=>server.close(resolve));await fs.unlink(lease);}};return lab;
+  }catch(error){if(server?.listening)await new Promise(resolve=>server.close(resolve));await fs.unlink(lease);throw error;}
+}
+export async function startUi(lab){const {createServer}=await import('vite'),react=(await import('@vitejs/plugin-react')).default;const vite=await createServer({configFile:false,envFile:false,plugins:[react()],server:{host:'127.0.0.1',port:0,strictPort:false,proxy:{'/api':lab.base,'/__syn01-recheck':lab.base}}});try{await vite.listen();return {url:vite.resolvedUrls.local.find(x=>x.includes('127.0.0.1')).replace(/\/$/,''),close:()=>vite.close()};}catch(error){await vite.close();throw error;}}

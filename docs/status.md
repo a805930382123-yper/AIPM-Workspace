@@ -1,5 +1,18 @@
 # 工程状态
 
+## 最新结论：RECHECK工程通过，seq243原稿未通过（2026-10-26）
+
+Sol High新增入口施工自查、Astra独立工程验收通过。真实八字段/metric分类/9条来源定位通过；但遗漏未来AI建议的未上线/收益未知语义，三条复合断言超出单一引用支持。**局部工程通过；R03原稿质量FAIL，R04正式保存回读NOT_RUN；SYN01及全产品/B09仍未通过。** 详见[独立质量报告](reports/SYN01-RECHECK-AUDIT-20261026-quality.md)。
+
+Chrome真实仅1次243，无重试；知识243/500、Prompt15/24。候选revision1/pending_confirmation/approvals0/Wiki0，未人工补写或正式保存。原稿、Raw及旧242保留，自有Chrome/API/Vite均已关闭。产品提交d0553163a09f3ac5f4681430e398e7ef2b2d934a未变。新增smoke施工及独立通过，未重跑旧矩阵。见[收尾记录](reports/SYN01-RECHECK-MAIN-20261026-final.md)。
+
+下一建议B模式零调用诊断243固定原稿，由Astra确认最小方案再决定施工。本轮一次额度已耗尽，不自动调用或推进下一批。下方为历史过程，旧“尚未实测/起242”已被本结论取代。
+
+
+## 当前执行：新协议最多一次真实复验（2026-10-26）
+
+用户已接受建议并授权[RECHECK任务](handoffs/SYN01-RECHECK-20261026-task.md)。B模式5/8，Sol准备当前d055316产品的新冻结受控入口，Astra独立核后主AgentChrome最多触发一次243；成功才人审保存回读，失败停止不重试。知识起242/500、上限243/500、Prompt15/24，工程前真实关闭；不复用旧242、不重复旧工程矩阵。原SYN01失败保留，当前尚未实测新协议。
+
 ## 最新结论：SYN01契约返修工程通过（2026-10-26）
 
 按用户授权完成B模式Sol诊断→Astra确认最小方案→Sol施工自查→Astra独立验收，F01–F05工程PASS。产品仅knowledge-workflows.ts新synthesis协议：八字段必填、分类枚举、当前Raw/SHA绑定locator、服务端派生引用与秘密检查；旧持久化/UI/人工确认契约保持。见[独立验收](reports/SYN01-FIX-AUDIT-20261026-acceptance.md)及[施工交接](reports/SYN01-FIX-20261026-builder-handoff.md)。
