@@ -1,0 +1,520 @@
+{
+  "status": {
+    "sessionId": "5963ce8a-b3fc-4e3d-98b7-94137373e489",
+    "root": "E:\\AI\\Work\\AIPM Workspace\\.scratch-SYN01-VERIFY-20261026-vlShr1",
+    "mode": "real",
+    "armed": true,
+    "attempt": {
+      "sequence": 244,
+      "status": "pending-counts-if-unknown",
+      "at": "2026-10-26T08:35:07.365Z",
+      "sessionId": "5963ce8a-b3fc-4e3d-98b7-94137373e489",
+      "releaseSha256": "127488df9470dca88d0ed15fa91a41b2b5e2eae258c8daee7e75ebc2977d0473",
+      "requestSha256": "89d1374abcf6bea32c5851409a86c5f372c081d49cbae1bc6ccd2458a7015ba1"
+    },
+    "result": {
+      "sequence": 244,
+      "status": "completed",
+      "workflowId": "2fa6839d-52b9-4236-b98d-b05b0fa9b805"
+    },
+    "realCalls": 1,
+    "fakeCalls": 0,
+    "knowledgeUsed": 244,
+    "promptUsed": 15,
+    "configReads": 1,
+    "sentThisProcess": 1,
+    "safeProvider": {
+      "host": "open.bigmodel.cn",
+      "model": "GLM-5.3-Flash"
+    }
+  },
+  "raws": [
+    {
+      "title": "演示数据｜虚构清禾区域9月铺货资料B",
+      "sourceType": "report",
+      "sourceName": "SYN01虚构隔离fixture",
+      "tags": [
+        "SYN01-isolated"
+      ],
+      "id": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+      "importedAt": "2026-10-26T08:26:31.700Z",
+      "status": "unprocessed",
+      "bodySha256": "2bb56ff5456c3b0d35a3634f0ddcaac2e1ddd805620396bcb5019e1c6444bfb4",
+      "body": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+    },
+    {
+      "title": "演示数据｜虚构清禾区域9月铺货资料A",
+      "sourceType": "report",
+      "sourceName": "SYN01虚构隔离fixture",
+      "tags": [
+        "SYN01-isolated"
+      ],
+      "id": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+      "importedAt": "2026-10-26T08:26:31.683Z",
+      "status": "unprocessed",
+      "bodySha256": "9b9315e337c79270e472d4fc2084c776a7259dfee9cb633fe6ce337d3da476d7",
+      "body": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+    }
+  ],
+  "wiki": [
+    {
+      "id": "abbeaf73-2077-4e1e-870d-1cec2944558a",
+      "title": "虚构清禾区域2026年9月铺货率资料综合",
+      "type": "synthesis",
+      "domain": "fmcg",
+      "category": "metric",
+      "created": "2026-10-26T08:41:32.925Z",
+      "updated": "2026-10-26T08:41:32.925Z",
+      "sources": [
+        "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+        "6afa32dd-36a7-42b0-9e86-99b509f3485e"
+      ],
+      "tags": [],
+      "knowledge_status": "ai_organized",
+      "confidence": "medium",
+      "source_level": "C",
+      "review_status": "unreviewed",
+      "aliases": [],
+      "revision": 1,
+      "body": "## 主要来源\n- 演示数据｜虚构清禾区域9月铺货资料A（Raw 9d3ecc3c-ee95-4539-9e22-2143a23f5325）\n- 演示数据｜虚构清禾区域9月铺货资料B（Raw 6afa32dd-36a7-42b0-9e86-99b509f3485e）\n## 一致观点\n- 资料A记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。（来源 Raw 9d3ecc3c-ee95-4539-9e22-2143a23f5325，原文 [0, 99)：“2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n- 资料B记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。（来源 Raw 6afa32dd-36a7-42b0-9e86-99b509f3485e，原文 [0, 104)：“2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n- 资料A记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。（来源 Raw 9d3ecc3c-ee95-4539-9e22-2143a23f5325，原文 [0, 99)：“2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n- 资料B记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。（来源 Raw 6afa32dd-36a7-42b0-9e86-99b509f3485e，原文 [0, 104)：“2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n## 冲突\n- 资料A记录铺货率为20%（在售门店20家、目标门店100家）。（来源 Raw 9d3ecc3c-ee95-4539-9e22-2143a23f5325，原文 [0, 99)：“2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n- 资料B记录铺货率为30%（在售门店30家、目标门店100家）。（来源 Raw 6afa32dd-36a7-42b0-9e86-99b509f3485e，原文 [0, 104)：“2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n## AI 推断\n- 在口径相同（在售门店数/目标门店数）且目标门店数均为100家的情况下，两资料铺货率差异（20%对30%）可能来自在售门店统计口径或采样时点不同，此为推断而非已证事实。\n## 待确认问题\n- 两个资料的采样日是否一致尚未确认。\n- 异常审批负责人尚未确认，需明确责任归属。\n- 两资料在售门店数量差异的具体原因待确认。\n## 综合整理\n- 资料A记录2026年9月虚构清禾区域目标门店100家中在售门店20家，铺货率20%；异常审批负责人尚未确认；AI辅助审批仅为未来分析建议，尚未上线，收益未知。（来源 Raw 9d3ecc3c-ee95-4539-9e22-2143a23f5325，原文 [0, 99)：“2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）\n- 资料B记录2026年9月虚构清禾区域目标门店100家中在售门店30家，铺货率30%；AI辅助审批仅为未来分析建议，尚未上线，收益未知；两个资料的采样日是否一致尚未确认。（来源 Raw 6afa32dd-36a7-42b0-9e86-99b509f3485e，原文 [0, 104)：“2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。”）"
+    },
+    {
+      "id": "bc1d444b-5c8b-4b34-8e42-1602eb598818",
+      "title": "演示数据｜虚构清禾区域9月铺货资料A",
+      "type": "source",
+      "domain": "fmcg",
+      "category": "metric",
+      "created": "2026-10-26T08:41:32.925Z",
+      "updated": "2026-10-26T08:41:32.925Z",
+      "sources": [
+        "9d3ecc3c-ee95-4539-9e22-2143a23f5325"
+      ],
+      "tags": [
+        "SYN01-isolated"
+      ],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "C",
+      "review_status": "unreviewed",
+      "aliases": [],
+      "revision": 1,
+      "body": "来源 Raw：9d3ecc3c-ee95-4539-9e22-2143a23f5325\n\n演示数据｜虚构清禾区域9月铺货资料A\n\n2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+    },
+    {
+      "id": "29b7001b-0877-4627-8d2f-9a6425254a72",
+      "title": "演示数据｜虚构清禾区域9月铺货资料B",
+      "type": "source",
+      "domain": "fmcg",
+      "category": "metric",
+      "created": "2026-10-26T08:41:32.925Z",
+      "updated": "2026-10-26T08:41:32.925Z",
+      "sources": [
+        "6afa32dd-36a7-42b0-9e86-99b509f3485e"
+      ],
+      "tags": [
+        "SYN01-isolated"
+      ],
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "C",
+      "review_status": "unreviewed",
+      "aliases": [],
+      "revision": 1,
+      "body": "来源 Raw：6afa32dd-36a7-42b0-9e86-99b509f3485e\n\n演示数据｜虚构清禾区域9月铺货资料B\n\n2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+    }
+  ],
+  "artifacts": {
+    "request-244.json": {
+      "sequence": 244,
+      "request": {
+        "system": "你是多来源知识综合助手。只输出一个合法JSON对象，不输出代码围栏或前后说明。严格只含八个必填字段，空数组也必须出现：{\"synthesis_format_version\":1,\"title\":\"综合标题\",\"category\":\"请求提供的分类id\",\"suggestedAdditions\":[],\"conflicts\":[],\"agreement\":[],\"inferences\":[],\"openQuestions\":[]}。synthesis_format_version必须为数值1；category只能选输入categories中的id，不能写label或自行命名。suggestedAdditions/conflicts/agreement每项严格只含{text,rawId,locatorId}，text非空且最多4000字符，rawId与locatorId必须同时来自输入中同一Raw的当前locators，不得猜测、跨来源或沿用旧正文ID。不得返回或计算quote/start/end。只根据完整原文整理，每条只陈述所附来源支持的最小断言；定位目录只保证原文位置，不证明语义。共同观点需跨来源支持，并分别列出各来源的支持条目；冲突两方各自列证，分别保留各自数值、时间和统计口径，不静默覆盖、平均或调和。未知、未来建议、尚未上线与收益未知不得写成已证事实；推断和待确认问题分别写入inferences/openQuestions字符串数组。没有证据支持则不输出事实条目，不把未提及当作同意。请逐一检查所有输入来源的核心事实及与其含义相关的限制，不只提取显眼数字：否定、条件、适用范围、时间、未知或未证实状态、未来建议等重要限定，必须实际写入输出section的text或字符串正文，不能仅因quote包含原文就视为已表达，不能因为与主数字无关而静默略去。允许忠实概括、同义整理，不要求逐句抄写非实质文本。未来计划或建议、尚未实施、效果或收益未知须保留原限定：有跨来源支持时分别写入agreement，否则保留在对应单源suggestedAdditions；仍待确认的问题单列openQuestions，不把未知变成答案，不把可能原因变成事实。每条有证据text的每个断言都必须由本条所附Raw独立支持，另一条引用不能替本条补支持。通用正例：共同命题分别写“来源甲记载该规则适用于指定范围”“来源乙记载该规则适用于指定范围”，各自附本来源引用；冲突分别写“来源甲记载统计采用周口径”“来源乙记载统计采用月口径”，由分栏和并列体现冲突。反例：只引甲却写“乙也采用该规则”或“与乙的月口径不同”，即使另一条引用乙也不合格。输出前自检：重要限定是否实际进入语义正文；每条的每个断言是否有本条Raw支持；冲突双方是否分别保留；未知、待确认与推断是否分开。这是本次生成的自检要求，不是服务器已证明语义正确。",
+        "user": "{\"synthesis_format_version\":1,\"categories\":[{\"id\":\"industry_basics\",\"label\":\"行业基础\"},{\"id\":\"category\",\"label\":\"品类\"},{\"id\":\"channel\",\"label\":\"渠道\"},{\"id\":\"sales\",\"label\":\"销售\"},{\"id\":\"store\",\"label\":\"门店\"},{\"id\":\"distributor\",\"label\":\"经销商\"},{\"id\":\"supply_chain\",\"label\":\"供应链\"},{\"id\":\"product\",\"label\":\"商品\"},{\"id\":\"metric\",\"label\":\"数据指标\"},{\"id\":\"ai_application\",\"label\":\"AI应用\"},{\"id\":\"company_business\",\"label\":\"公司业务\"},{\"id\":\"customer\",\"label\":\"客户\"},{\"id\":\"other\",\"label\":\"其他\"}],\"raws\":[{\"id\":\"9d3ecc3c-ee95-4539-9e22-2143a23f5325\",\"title\":\"演示数据｜虚构清禾区域9月铺货资料A\",\"body\":\"2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"bodySha256\":\"9b9315e337c79270e472d4fc2084c776a7259dfee9cb633fe6ce337d3da476d7\",\"locators\":[{\"id\":\"raw-3f9ae3026b97208d88def62535cd16d7b9ef7e0e909c115afdd120e7cfb3cacb-1\",\"start\":0,\"end\":99,\"text\":\"2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。\"}]},{\"id\":\"6afa32dd-36a7-42b0-9e86-99b509f3485e\",\"title\":\"演示数据｜虚构清禾区域9月铺货资料B\",\"body\":\"2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"bodySha256\":\"2bb56ff5456c3b0d35a3634f0ddcaac2e1ddd805620396bcb5019e1c6444bfb4\",\"locators\":[{\"id\":\"raw-67abcd881efda92c0fbd552e07ccf2fe09f508937296951280501dff0ef6d98b-1\",\"start\":0,\"end\":104,\"text\":\"2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。\"}]}]}",
+        "timeoutMs": 90000,
+        "maxOutputBytes": 256000,
+        "purpose": "knowledge"
+      }
+    },
+    "candidate-original.json": {
+      "reviewProtocolVersion": 1,
+      "id": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+      "kind": "synthesis",
+      "status": "pending_confirmation",
+      "revision": 1,
+      "createdAt": "2026-10-26T08:35:26.649Z",
+      "updatedAt": "2026-10-26T08:35:26.649Z",
+      "provider": {
+        "name": "openai-compatible",
+        "model": "GLM-5.3-Flash"
+      },
+      "rawSnapshots": [
+        {
+          "id": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+          "title": "演示数据｜虚构清禾区域9月铺货资料A",
+          "bodySha256": "9b9315e337c79270e472d4fc2084c776a7259dfee9cb633fe6ce337d3da476d7"
+        },
+        {
+          "id": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+          "title": "演示数据｜虚构清禾区域9月铺货资料B",
+          "bodySha256": "2bb56ff5456c3b0d35a3634f0ddcaac2e1ddd805620396bcb5019e1c6444bfb4"
+        }
+      ],
+      "title": "虚构清禾区域2026年9月铺货率资料综合",
+      "category": "metric",
+      "sources": [
+        "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+        "6afa32dd-36a7-42b0-9e86-99b509f3485e"
+      ],
+      "sections": {
+        "suggestedAdditions": [
+          "资料A记录2026年9月虚构清禾区域目标门店100家中在售门店20家，铺货率20%；异常审批负责人尚未确认；AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "资料B记录2026年9月虚构清禾区域目标门店100家中在售门店30家，铺货率30%；AI辅助审批仅为未来分析建议，尚未上线，收益未知；两个资料的采样日是否一致尚未确认。"
+        ],
+        "conflicts": [
+          "资料A记录铺货率为20%（在售门店20家、目标门店100家）。",
+          "资料B记录铺货率为30%（在售门店30家、目标门店100家）。"
+        ],
+        "inferences": [
+          "在口径相同（在售门店数/目标门店数）且目标门店数均为100家的情况下，两资料铺货率差异（20%对30%）可能来自在售门店统计口径或采样时点不同，此为推断而非已证事实。"
+        ],
+        "openQuestions": [
+          "两个资料的采样日是否一致尚未确认。",
+          "异常审批负责人尚未确认，需明确责任归属。",
+          "两资料在售门店数量差异的具体原因待确认。"
+        ],
+        "agreement": [
+          "资料A记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+          "资料B记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+          "资料A记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "资料B记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。"
+        ],
+        "sourceList": [
+          {
+            "id": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+            "title": "演示数据｜虚构清禾区域9月铺货资料A"
+          },
+          {
+            "id": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+            "title": "演示数据｜虚构清禾区域9月铺货资料B"
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "section": "suggestedAdditions",
+          "text": "资料A记录2026年9月虚构清禾区域目标门店100家中在售门店20家，铺货率20%；异常审批负责人尚未确认；AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 99
+        },
+        {
+          "section": "suggestedAdditions",
+          "text": "资料B记录2026年9月虚构清禾区域目标门店100家中在售门店30家，铺货率30%；AI辅助审批仅为未来分析建议，尚未上线，收益未知；两个资料的采样日是否一致尚未确认。",
+          "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 104
+        },
+        {
+          "section": "conflicts",
+          "text": "资料A记录铺货率为20%（在售门店20家、目标门店100家）。",
+          "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 99
+        },
+        {
+          "section": "conflicts",
+          "text": "资料B记录铺货率为30%（在售门店30家、目标门店100家）。",
+          "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 104
+        },
+        {
+          "section": "agreement",
+          "text": "资料A记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+          "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 99
+        },
+        {
+          "section": "agreement",
+          "text": "资料B记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+          "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 104
+        },
+        {
+          "section": "agreement",
+          "text": "资料A记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 99
+        },
+        {
+          "section": "agreement",
+          "text": "资料B记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+          "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+          "start": 0,
+          "end": 104
+        }
+      ],
+      "humanReview": {
+        "version": 1,
+        "units": [
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-suggestedAdditions-1",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料A记录2026年9月虚构清禾区域目标门店100家中在售门店20家，铺货率20%；异常审批负责人尚未确认；AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+            "memberIds": [],
+            "records": [],
+            "section": "suggestedAdditions",
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "资料A记录2026年9月虚构清禾区域目标门店100家中在售门店20家，铺货率20%；异常审批负责人尚未确认；AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 99,
+                "id": "proposal-evidence-suggestedAdditions-1",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-suggestedAdditions-2",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料B记录2026年9月虚构清禾区域目标门店100家中在售门店30家，铺货率30%；AI辅助审批仅为未来分析建议，尚未上线，收益未知；两个资料的采样日是否一致尚未确认。",
+            "memberIds": [],
+            "records": [],
+            "section": "suggestedAdditions",
+            "evidence": [
+              {
+                "section": "suggestedAdditions",
+                "text": "资料B记录2026年9月虚构清禾区域目标门店100家中在售门店30家，铺货率30%；AI辅助审批仅为未来分析建议，尚未上线，收益未知；两个资料的采样日是否一致尚未确认。",
+                "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 104,
+                "id": "proposal-evidence-suggestedAdditions-2",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-conflicts-1",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料A记录铺货率为20%（在售门店20家、目标门店100家）。",
+            "memberIds": [],
+            "records": [],
+            "section": "conflicts",
+            "evidence": [
+              {
+                "section": "conflicts",
+                "text": "资料A记录铺货率为20%（在售门店20家、目标门店100家）。",
+                "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 99,
+                "id": "proposal-evidence-conflicts-1",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-conflicts-2",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料B记录铺货率为30%（在售门店30家、目标门店100家）。",
+            "memberIds": [],
+            "records": [],
+            "section": "conflicts",
+            "evidence": [
+              {
+                "section": "conflicts",
+                "text": "资料B记录铺货率为30%（在售门店30家、目标门店100家）。",
+                "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 104,
+                "id": "proposal-evidence-conflicts-2",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-inferences-1",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "在口径相同（在售门店数/目标门店数）且目标门店数均为100家的情况下，两资料铺货率差异（20%对30%）可能来自在售门店统计口径或采样时点不同，此为推断而非已证事实。",
+            "memberIds": [],
+            "records": [],
+            "section": "inferences",
+            "evidence": [],
+            "sourceLabel": "模型推断"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-openQuestions-1",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "两个资料的采样日是否一致尚未确认。",
+            "memberIds": [],
+            "records": [],
+            "section": "openQuestions",
+            "evidence": [],
+            "sourceLabel": "待确认问题"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-openQuestions-2",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "异常审批负责人尚未确认，需明确责任归属。",
+            "memberIds": [],
+            "records": [],
+            "section": "openQuestions",
+            "evidence": [],
+            "sourceLabel": "待确认问题"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-openQuestions-3",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "两资料在售门店数量差异的具体原因待确认。",
+            "memberIds": [],
+            "records": [],
+            "section": "openQuestions",
+            "evidence": [],
+            "sourceLabel": "待确认问题"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-1",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料A记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+            "memberIds": [],
+            "records": [],
+            "section": "agreement",
+            "evidence": [
+              {
+                "section": "agreement",
+                "text": "资料A记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+                "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 99,
+                "id": "proposal-evidence-agreement-1",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-2",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料B记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+            "memberIds": [],
+            "records": [],
+            "section": "agreement",
+            "evidence": [
+              {
+                "section": "agreement",
+                "text": "资料B记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。",
+                "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 104,
+                "id": "proposal-evidence-agreement-2",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-3",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料A记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+            "memberIds": [],
+            "records": [],
+            "section": "agreement",
+            "evidence": [
+              {
+                "section": "agreement",
+                "text": "资料A记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "rawId": "9d3ecc3c-ee95-4539-9e22-2143a23f5325",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料A记录在售门店20家，铺货率20%。铺货率口径为在售门店数除以目标门店数。异常审批负责人尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 99,
+                "id": "proposal-evidence-agreement-3",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          },
+          {
+            "id": "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-4",
+            "kind": "proposal",
+            "origin": "model",
+            "text": "资料B记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+            "memberIds": [],
+            "records": [],
+            "section": "agreement",
+            "evidence": [
+              {
+                "section": "agreement",
+                "text": "资料B记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "rawId": "6afa32dd-36a7-42b0-9e86-99b509f3485e",
+                "quote": "2026年9月，虚构清禾区域目标门店100家。资料B记录在售门店30家，铺货率30%。铺货率口径为在售门店数除以目标门店数。两个资料的采样日是否一致尚未确认。AI辅助审批仅为未来分析建议，尚未上线，收益未知。",
+                "start": 0,
+                "end": 104,
+                "id": "proposal-evidence-agreement-4",
+                "chunkIndex": -1
+              }
+            ],
+            "sourceLabel": "模型整理（有原文定位，须人工核对）"
+          }
+        ],
+        "basisDigest": "76ced81158a8986b6efe5d65d304a583a84068bf9a76ccee622d9e831f4ea992",
+        "assignments": {
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-suggestedAdditions-1": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-suggestedAdditions-2": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-conflicts-1": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-conflicts-2": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-inferences-1": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-openQuestions-1": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-openQuestions-2": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-openQuestions-3": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-1": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-2": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-3": "2fa6839d-52b9-4236-b98d-b05b0fa9b805",
+          "proposal-2fa6839d-52b9-4236-b98d-b05b0fa9b805-agreement-4": "2fa6839d-52b9-4236-b98d-b05b0fa9b805"
+        },
+        "approvals": []
+      },
+      "reviewContentDigest": "f903e4baf81e58f1c13e28d3ddcbc8dcb77115633dd9d7ccb0e1b5a9cf0f36c6"
+    },
+    "response": {
+      "text": "{\"synthesis_format_version\":1,\"title\":\"虚构清禾区域2026年9月铺货率资料综合\",\"category\":\"metric\",\"suggestedAdditions\":[{\"text\":\"资料A记录2026年9月虚构清禾区域目标门店100家中在售门店20家，铺货率20%；异常审批负责人尚未确认；AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"rawId\":\"9d3ecc3c-ee95-4539-9e22-2143a23f5325\",\"locatorId\":\"raw-3f9ae3026b97208d88def62535cd16d7b9ef7e0e909c115afdd120e7cfb3cacb-1\"},{\"text\":\"资料B记录2026年9月虚构清禾区域目标门店100家中在售门店30家，铺货率30%；AI辅助审批仅为未来分析建议，尚未上线，收益未知；两个资料的采样日是否一致尚未确认。\",\"rawId\":\"6afa32dd-36a7-42b0-9e86-99b509f3485e\",\"locatorId\":\"raw-67abcd881efda92c0fbd552e07ccf2fe09f508937296951280501dff0ef6d98b-1\"}],\"conflicts\":[{\"text\":\"资料A记录铺货率为20%（在售门店20家、目标门店100家）。\",\"rawId\":\"9d3ecc3c-ee95-4539-9e22-2143a23f5325\",\"locatorId\":\"raw-3f9ae3026b97208d88def62535cd16d7b9ef7e0e909c115afdd120e7cfb3cacb-1\"},{\"text\":\"资料B记录铺货率为30%（在售门店30家、目标门店100家）。\",\"rawId\":\"6afa32dd-36a7-42b0-9e86-99b509f3485e\",\"locatorId\":\"raw-67abcd881efda92c0fbd552e07ccf2fe09f508937296951280501dff0ef6d98b-1\"}],\"agreement\":[{\"text\":\"资料A记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。\",\"rawId\":\"9d3ecc3c-ee95-4539-9e22-2143a23f5325\",\"locatorId\":\"raw-3f9ae3026b97208d88def62535cd16d7b9ef7e0e909c115afdd120e7cfb3cacb-1\"},{\"text\":\"资料B记载铺货率口径为在售门店数除以目标门店数，适用于2026年9月虚构清禾区域目标门店100家的统计。\",\"rawId\":\"6afa32dd-36a7-42b0-9e86-99b509f3485e\",\"locatorId\":\"raw-67abcd881efda92c0fbd552e07ccf2fe09f508937296951280501dff0ef6d98b-1\"},{\"text\":\"资料A记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"rawId\":\"9d3ecc3c-ee95-4539-9e22-2143a23f5325\",\"locatorId\":\"raw-3f9ae3026b97208d88def62535cd16d7b9ef7e0e909c115afdd120e7cfb3cacb-1\"},{\"text\":\"资料B记载AI辅助审批仅为未来分析建议，尚未上线，收益未知。\",\"rawId\":\"6afa32dd-36a7-42b0-9e86-99b509f3485e\",\"locatorId\":\"raw-67abcd881efda92c0fbd552e07ccf2fe09f508937296951280501dff0ef6d98b-1\"}],\"inferences\":[\"在口径相同（在售门店数/目标门店数）且目标门店数均为100家的情况下，两资料铺货率差异（20%对30%）可能来自在售门店统计口径或采样时点不同，此为推断而非已证事实。\"],\"openQuestions\":[\"两个资料的采样日是否一致尚未确认。\",\"异常审批负责人尚未确认，需明确责任归属。\",\"两资料在售门店数量差异的具体原因待确认。\"]}",
+      "finishReason": "stop",
+      "bytes": 2778,
+      "usage": {
+        "promptTokens": 1343,
+        "completionTokens": 1043
+      }
+    }
+  }
+}

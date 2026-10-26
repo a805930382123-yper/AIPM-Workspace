@@ -1,0 +1,30 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import yaml from 'js-yaml';
+const dir='docs/reports/',root='.scratch-SYN01-VERIFY-20261026-vlShr1/';
+const json=n=>JSON.parse(fs.readFileSync(n)),sha=x=>crypto.createHash('sha256').update(x).digest('hex');
+const md=n=>{const s=fs.readFileSync(n,'utf8');const m=s.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);assert.ok(m);return {...yaml.load(m[1]),body:m[2].trim()};};
+const o=json(dir+'SYN01-VERIFY-20261026-export-1793003796373.json'),f=json(dir+'SYN01-VERIFY-20261026-export-1793004448646.json'),p=json(dir+'SYN01-VERIFY-MAIN-20261026-persisted.json');
+const w=json(root+'drafts/knowledge-workflows/'+p.workflow.id+'.json');
+assert.equal(Date.parse(w.updatedAt),Date.parse(p.workflow.updatedAt));
+assert.deepEqual(w,{...p.workflow,updatedAt:w.updatedAt});assert.deepEqual(o.artifacts,f.artifacts);assert.deepEqual(o.raws,f.raws);
+const c=o.artifacts['candidate-original.json'],original=typeof c==='string'?JSON.parse(c):c;
+for(const k of ['title','category','sources','rawSnapshots','sections','evidence'])assert.deepEqual(w[k],original[k]);
+assert.equal(w.status,'confirmed');assert.equal(w.revision,3);assert.equal(w.evidence.length,8);
+const r=w.humanReview;assert.deepEqual(r.units,original.humanReview.units);assert.equal(r.units.length,12);
+assert.equal(sha(JSON.stringify(r.units)),r.basisDigest);assert.ok(r.units.every(u=>r.assignments[u.id]===w.id));
+const content=structuredClone(w);
+for(const k of ['humanReview','reviewView','reviewContentDigest','revision','createdAt','updatedAt','status','commitOperationId','confirmedAt','discardedAt','lastCommitError','committedWikiId','warnings'])delete content[k];
+const digest=sha(JSON.stringify({identity:{workflowId:w.id,rawSnapshots:w.rawSnapshots},content,basisDigest:r.basisDigest,assignments:r.assignments}));
+assert.equal(r.approvals.length,1);assert.equal(r.approvals[0].digest,digest);assert.equal(r.approvals[0].pageId,w.id);
+for(const raw of f.raws){const m=md(root+'knowledge/raw/reports/'+raw.id+'.md');assert.equal(m.body,raw.body);assert.equal(sha(m.body),raw.bodySha256);assert.equal(m.bodySha256,raw.bodySha256);}
+assert.equal(f.wiki.length,3);const syn=f.wiki.find(x=>x.type==='synthesis');assert.equal(syn.id,w.committedWikiId);
+const cited=s=>w.sections[s].map((t,i)=>{const e=w.evidence.filter(e=>e.section===s)[i];return `- ${t}（来源 Raw ${e.rawId}，原文 [${e.start}, ${e.end})：“${e.quote}”）`;});
+const expected=['## 主要来源',...w.sections.sourceList.map(x=>`- ${x.title}（Raw ${x.id}）`),'## 一致观点',...cited('agreement'),'## 冲突',...cited('conflicts'),'## AI 推断',...w.sections.inferences.map(x=>`- ${x}`),'## 待确认问题',...w.sections.openQuestions.map(x=>`- ${x}`),'## 综合整理',...cited('suggestedAdditions')].join('\n');
+assert.equal(syn.body,expected);
+for(const page of f.wiki){assert.deepEqual(md(root+'knowledge/wiki/'+page.id+'.md'),{...page,body:`# ${page.title}\n\n${page.body}`});if(page.type==='source'){const raw=f.raws.find(x=>x.id===page.sources[0]);assert.equal(page.body,`来源 Raw：${raw.id}\n\n${raw.title}\n\n${raw.body}`);}}
+const logs=fs.readFileSync(root+'knowledge/logs/wiki.jsonl','utf8').trim().split('\n').map(JSON.parse);
+assert.deepEqual(logs,p.wikiLog);assert.equal(logs.length,3);assert.deepEqual(logs.map(x=>x.id).sort(),f.wiki.map(x=>x.id).sort());assert.ok(logs.every(x=>x.action==='create'&&x.operationId===w.commitOperationId));
+assert.equal(f.status.realCalls,1);assert.equal(f.status.knowledgeUsed,244);
+console.log(JSON.stringify({result:'PASS',node:process.version,raws:2,wiki:3,logs:3,evidence:8,units:12,approvalDigest:digest,finalExportSha:sha(fs.readFileSync(dir+'SYN01-VERIFY-20261026-export-1793004448646.json')),persistedSha:sha(fs.readFileSync(dir+'SYN01-VERIFY-MAIN-20261026-persisted.json'))},null,2));
