@@ -14,6 +14,7 @@ import { assertHumanReviewed, assertReviewSources, assertReviewStructure, candid
 import { ExtractionCheckpointStore } from '../llm/checkpoints.ts';
 import { runKnowledgePipeline, validateKnowledgeCheckpoint } from '../llm/knowledge-extraction.ts';
 import { loadExtractionRules } from '../llm/rules.ts';
+import { hasTemplateFields, validTemplateFields, type TemplateFields } from './template-fields.ts';
 
 export const DRAFT_STATUSES = ['pending_confirmation', 'committing', 'confirmed', 'discarded'] as const;
 export type DraftStatus = typeof DRAFT_STATUSES[number];
@@ -21,6 +22,7 @@ export type DraftStatus = typeof DRAFT_STATUSES[number];
 export type DraftEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type DraftFact = { text: string; evidenceIds: string[] };
 export type DraftPage = {
+  templateFields?: TemplateFields;
   pageId: string; title: string; type: string; category: string; one_line_definition: string;
   source_facts: DraftFact[]; ai_organized: string[]; ai_inferences: string[]; related_pages: string[]; open_questions: string[];
   source_evidence: DraftEvidence[];
@@ -61,6 +63,7 @@ export class DraftError extends Error {
 }
 
 export type DraftPagePatch = {
+  templateFields?: TemplateFields;
   pageId: string; selected?: boolean; reviewDecision?: 'update' | 'create' | 'defer'; updateTargetWikiId?: string; title?: string; type?: string; category?: string; one_line_definition?: string;
   source_facts?: DraftFact[]; ai_organized?: string[]; ai_inferences?: string[]; related_pages?: string[]; open_questions?: string[];
   source_evidence?: Array<{ id: string; rawId?: string; quote: string; start?: number; end?: number }>;
@@ -180,6 +183,7 @@ export class DraftStore {
         this.deriveReviewPages(next);
       }
       if(input.action==='move'){moveHumanUnits(next.humanReview,next.pages.map(p=>p.pageId),input.unitIds!,input.pageId!);this.deriveReviewPages(next);}
+      for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId));
       if((input.action==='questions'||(input.action==='move'&&next.humanQuestionUnitIds?.length))&&!next.source.bodyEditedByUser)next.source.body=renderSourceBody(next.source,next.rawMeta,next.pages.filter(p=>p.selected),next.pages.filter(p=>!p.selected));
       if(input.action==='page')confirmHumanPage(next.humanReview,next.pages.map(p=>p.pageId),{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(next));
       if(JSON.stringify(next)===JSON.stringify(current))return current;
@@ -190,6 +194,7 @@ export class DraftStore {
   /** Defensive load-time check: a draft whose evidence no longer matches its Raw is reported. */
   async assertEvidenceStillValid(draft: DraftRecord, body: string): Promise<void> {
     for (const page of draft.pages) {
+      this.validateTemplateReferences(page, draft.rawId);
       for (const evidence of page.source_evidence) {
         if (body.slice(evidence.start, evidence.end) !== evidence.quote) {
           throw new DraftError(
@@ -300,6 +305,7 @@ export class DraftStore {
       }
       const next: DraftRecord = JSON.parse(JSON.stringify(current)) as DraftRecord;
       if(!next.humanReview&&(patch.merge||patch.deletePageIds?.length))throw new DraftError('HUMAN_REVIEW_REQUIRED','请先开始审查以保存不可变来源目录，再合并或删除页面。',409);
+      if (patch.merge && current.pages.some(page => patch.merge!.pageIds.includes(page.pageId) && hasTemplateFields(page.templateFields))) throw new DraftError('TEMPLATE_MERGE_UNSUPPORTED', '本批不支持带字段归位的合并，原字段及人工说明已保留。', 409);
       // Source records are read-only even for an old draft before migration.
       for(const item of patch.pages??[]) {
         if(Object.keys(item).some(k=>['humanReview','reviewBasis','reviewContentDigest','reviewView'].includes(k)))throw new DraftError('INVALID_PATCH','不能通过页面编辑写入审查字段。');
@@ -359,6 +365,7 @@ export class DraftStore {
         for(const unit of next.humanReview.units)if(next.humanReview.assignments[unit.id]!==null&&!next.pages.some(p=>p.pageId===next.humanReview!.assignments[unit.id]))next.humanReview.assignments[unit.id]=null;
         this.deriveReviewPages(next);
       }
+      for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId));
       // F04-05: the Source body and its Key Takeaways list exactly the pages that would be
       // created, unless the user has written their own body text.
       const takeawaysUnchanged = incomingTakeaways === undefined
@@ -400,7 +407,7 @@ export class DraftStore {
 
   private applyPagePatch(page: DraftPage, item: DraftPagePatch, context: { body: string; rules: DraftRules }, rawId: string): void {
     const edited = new Set(page.editedFields ?? []);
-    const candidateBasis = new Set(['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized']);
+    const candidateBasis = new Set(['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized', 'templateFields']);
     const setField = (key: keyof DraftPage, value: unknown) => {
       const name = key as string;
       if(JSON.stringify((page as Record<string,unknown>)[name])===JSON.stringify(value))return;
@@ -416,7 +423,21 @@ export class DraftStore {
       if (item.reviewDecision === 'defer') page.selected = false;
     }
     if (item.title !== undefined) { if (!item.title.trim()) throw new DraftError('INVALID_FIELD', '标题不能为空。', 400); setField('title', item.title.trim()); }
-    if (item.type !== undefined) { if (!context.rules.types.includes(item.type)) throw new DraftError('INVALID_TYPE', '知识类型无效。', 400); setField('type', item.type); }
+    if (item.type !== undefined) {
+      if (!context.rules.types.includes(item.type)) throw new DraftError('INVALID_TYPE', '知识类型无效。', 400);
+      if (item.type !== page.type && hasTemplateFields(page.templateFields)) throw new DraftError('TEMPLATE_TYPE_CHANGE_UNSUPPORTED', '本批不支持带字段归位的类型切换，原内容已保留。', 409);
+      setField('type', item.type);
+    }
+    if (item.templateFields !== undefined) {
+      if (!validTemplateFields(item.templateFields, page.type)) throw new DraftError('INVALID_TEMPLATE_FIELDS', '字段归位格式或字段名称无效。', 400);
+      const normalized: TemplateFields = {};
+      for (const [key, field] of Object.entries(item.templateFields)) {
+        const humanText = field.humanText?.trim();
+        if (field.evidenceIds.length || humanText) normalized[key as keyof TemplateFields] = { evidenceIds: [...field.evidenceIds], ...(humanText ? { humanText } : {}) };
+      }
+      setField('templateFields', hasTemplateFields(normalized) ? normalized : undefined);
+      if (page.templateFields === undefined) delete page.templateFields;
+    }
     if (item.category !== undefined) { if (!context.rules.categories.includes(item.category)) throw new DraftError('INVALID_CATEGORY', '分类无效。', 400); setField('category', item.category); }
     if (item.one_line_definition !== undefined) { if (!item.one_line_definition.trim()) throw new DraftError('INVALID_FIELD', '一句话定义不能为空。', 400); setField('one_line_definition', item.one_line_definition.trim()); }
     if (item.ai_organized !== undefined) setField('ai_organized', item.ai_organized.map(value => value.trim()).filter(Boolean));
@@ -465,6 +486,7 @@ export class DraftStore {
     const targets = ids.map(id => next.pages.find(page => page.pageId === id));
     if (targets.some(page => !page)) throw new DraftError('NOT_FOUND', '合并目标里有不存在的建议。', 404);
     const pages = targets as DraftPage[];
+    if (pages.some(page => hasTemplateFields(page.templateFields))) throw new DraftError('TEMPLATE_MERGE_UNSUPPORTED', '本批不支持带字段归位的合并，原字段及人工说明已保留。', 409);
     const [first, ...rest] = pages;
     const merged: DraftPage = JSON.parse(JSON.stringify(first)) as DraftPage;
     merged.selected = pages.some(page => page.selected);
@@ -513,6 +535,20 @@ export class DraftStore {
     merged.confidence = pages.some(page => page.confidence === 'low') ? 'low' : first.confidence;
     next.pages = [...next.pages.filter(page => !ids.includes(page.pageId)), merged];
     if(next.humanReview)for(const unit of next.humanReview.units)if(ids.includes(next.humanReview.assignments[unit.id]??''))next.humanReview.assignments[unit.id]=merged.pageId;
+  }
+
+  private validateTemplateReferences(page: DraftPage, rawId: string, previous?: DraftPage): void {
+    if (page.templateFields === undefined) return;
+    if (!validTemplateFields(page.templateFields, page.type)) throw new DraftError('INVALID_TEMPLATE_FIELDS', '字段归位格式或字段名称无效。', 422);
+    const previousIds = new Set(Object.values(previous?.templateFields ?? {}).flatMap(field => field.evidenceIds));
+    for (const field of Object.values(page.templateFields)) for (const id of field.evidenceIds) {
+      const evidence = page.source_evidence.find(item => item.id === id);
+      if (!evidence || evidence.rawId !== rawId) throw new DraftError('TEMPLATE_EVIDENCE_UNKNOWN', `字段引用 ${id} 不属于当前页面；请撤销对应引用后再移动来源。`, 422);
+      const old = previousIds.has(id) ? previous?.source_evidence.find(item => item.id === id) : undefined;
+      if (old && (old.rawId !== evidence.rawId || old.quote !== evidence.quote || old.start !== evidence.start || old.end !== evidence.end)) {
+        throw new DraftError('TEMPLATE_EVIDENCE_CHANGED', `来源移动会改变字段引用 ${id} 的原文，操作已停止，原字段已保留。`, 409);
+      }
+    }
   }
 
   private validatePage(page: DraftPage, rules: DraftRules): void {

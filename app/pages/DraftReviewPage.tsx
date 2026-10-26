@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { DraftPatch, DraftPage, DraftView, Raw, WikiCommitStatus, WikiSchema, DuplicateResult } from '../api';
+import { hasTemplateFields, templateSections, type TemplateFieldKey, type TemplateFieldContent } from '../../services/wiki/template-fields';
 import { ApiError, api, confirmDraft, discardDraft, draftView, patchDraft, sourceLabels, wikiCommit, duplicateCandidates, savePageDecision, startUpdateWorkflow, startDraftReview, moveDraftUnits, reviewDraftPage, markDraftQuestions } from '../api';
 
 type PageDraft = DraftPage & { renderedBody?: string };
@@ -84,11 +85,23 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     return () => { active = false; window.clearTimeout(timer); };
   }, [draftId, view?.revision, readOnly, pages]);
   const updatePage = (pageId: string, patch: Partial<PageDraft>) => {
+    const currentPage = pages.find(page => page.pageId === pageId);
+    if (patch.type && currentPage && patch.type !== currentPage.type && hasTemplateFields(currentPage.templateFields)) {
+      setError('本批不支持带字段归位的类型切换，原内容已保留。'); return;
+    }
     setDuplicateViews(current => { const next = { ...current }; delete next[pageId]; return next; });
     setDuplicateErrors(current => { const next = { ...current }; delete next[pageId]; return next; });
-    const basis = ['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized'] as const;
+    const basis = ['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized', 'templateFields'] as const;
     const invalidatesDecision = basis.some(key => key in patch);
     setPages(current => current.map(page => page.pageId === pageId ? { ...page, ...patch, ...(invalidatesDecision ? { reviewDecision: undefined, updateTargetWikiId: undefined } : {}) } : page));
+  };
+  const updateTemplateField = (page: PageDraft, key: TemplateFieldKey, patch: Partial<TemplateFieldContent>) => {
+    const next = { ...page.templateFields, [key]: { evidenceIds: [], ...page.templateFields?.[key], ...patch } };
+    for (const fieldKey of Object.keys(next) as TemplateFieldKey[]) {
+      const field = next[fieldKey]!;
+      if (!field.evidenceIds.length && !field.humanText?.trim()) delete next[fieldKey];
+    }
+    updatePage(page.pageId, { templateFields: next });
   };
   const run = async (label: string, work: () => Promise<void>) => {
     setBusy(label); setError('');
@@ -120,6 +133,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
       pageId: page.pageId, selected: page.selected, title: page.title, type: page.type, category: page.category,
       one_line_definition: page.one_line_definition, source_facts: page.source_facts, ai_organized: page.ai_organized,
       ai_inferences: page.ai_inferences, related_pages: page.related_pages, open_questions: page.open_questions,
+      ...(page.templateFields !== undefined ? { templateFields: page.templateFields } : {}),
       source_evidence: page.source_evidence.map(evidence => ({ id: evidence.id, rawId: evidence.rawId, quote: evidence.quote, start: evidence.start, end: evidence.end })),
       knowledge_status: page.knowledge_status, confidence: page.confidence, source_level: page.source_level,
     })),
@@ -144,6 +158,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     setDuplicateViews(current => ({ ...current, [pageId]: { ...current[pageId], decision, targetWikiId: targetWikiId ?? null } }));
   });
   const makeUpdate = (pageId: string, targetWikiId: string) => run(`update:${pageId}`, async () => {
+    if (hasTemplateFields(pages.find(page => page.pageId === pageId)?.templateFields)) throw new Error('本批字段归位仅支持新建正式页，旧 Wiki 更新未执行，原草稿已保留。');
     const saved = await patchDraft(draftId, snapshot());
     applyView(saved);
     const workflow = await startUpdateWorkflow({ draftId, pageId, targetWikiId, baseRevision: saved.revision });
@@ -159,6 +174,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     applyView(updated); setMergePick(current => current.filter(id => id !== pageId));
   });
   const mergePages = () => run('merge', async () => {
+    if (pages.some(page => mergePick.includes(page.pageId) && hasTemplateFields(page.templateFields))) throw new Error('本批不支持带字段归位的合并，原字段及人工说明已保留。');
     applyView(await patchDraft(draftId, { ...snapshot(), merge: { pageIds: mergePick } }));
     setMergePick([]);
   });
@@ -281,7 +297,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
           <button className="secondary-button" disabled={readOnly || mergePick.length < 2 || busy !== ''} onClick={() => void mergePages()}>{busy === 'merge' ? '正在合并…' : `合并所选（${mergePick.length}）`}</button>
         </div>
       </div>
-      {pages.map((page, index) => <article className={`draft-card ${page.selected ? 'selected' : ''}`} key={page.pageId}>
+      {pages.map((page, index) => <article className={`draft-card ${page.selected ? 'selected' : ''}`} key={page.pageId} data-page-id={page.pageId}>
         {view.humanReview&&<div className="draft-card-body"><p>{!dirty&&view.humanReview.approvals.some(a=>a.pageId===page.pageId&&a.digest===view.reviewContentDigest)?'本页主题与完整归属已确认':'本页主题与完整归属尚未确认'}</p><button className="secondary-button" disabled={readOnly||busy!==''||dirty} onClick={()=>void confirmPage(page.pageId,true)}>确认本页主题与归属</button><button className="text-button" disabled={readOnly||busy!==''||dirty} onClick={()=>void confirmPage(page.pageId,false)}>撤销本页确认</button></div>}
         <div className="draft-card-head">
           <label className="draft-select"><input type="checkbox" checked={page.selected} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { selected: event.target.checked })} /><span>写入</span></label>
@@ -313,6 +329,28 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
           </div>}
         </div>
         <label className="field">一句话说明<input value={page.one_line_definition} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { one_line_definition: event.target.value })} maxLength={300} /></label>
+        {templateSections(page.type).length > 0 && <section className="draft-block" aria-label={`${page.title}字段归位`}>
+          <h4>字段归位</h4>
+          <p className="extract-note">选择本页来源摘录，另外填写人工说明。引用只说明出处，归位含义仍需逐页审查。带字段内容的合并、类型切换及旧 Wiki 更新本批不支持。</p>
+          <button className="text-button danger" disabled={readOnly || busy !== '' || !hasTemplateFields(page.templateFields)} onClick={() => updatePage(page.pageId, { templateFields: {} })}>清空字段归位（删除当前内容）</button>
+          <p className="extract-note">清空是删除。未保存可刷新撤回；保存后不提供恢复。</p>
+          {((page.type === 'concept' || page.type === 'business_process' ? schema?.pageTemplates[page.type]?.sections : undefined) ?? templateSections(page.type)).filter(field => templateSections(page.type).some(item => item.key === field.key)).map(field => {
+            const key = field.key as TemplateFieldKey;
+            const value = page.templateFields?.[key] ?? { evidenceIds: [] };
+            return <fieldset key={key} data-template-field={key} disabled={readOnly || busy !== ''}>
+              <legend>{key === 'ai_opportunities' ? '可能的 AI 机会（分析建议）' : field.label}</legend>
+              <div>来源摘录（用户归位）</div>
+              {page.source_evidence.map(evidence => <label key={evidence.id} className="draft-line">
+                <input type="checkbox" checked={value.evidenceIds.includes(evidence.id)} onChange={event => updateTemplateField(page, key, { evidenceIds: event.target.checked ? [...value.evidenceIds, evidence.id] : value.evidenceIds.filter(id => id !== evidence.id) })} />
+                <span>{evidence.id}：{evidence.quote}</span>
+              </label>)}
+              <label className="field">{key === 'ai_opportunities' ? '分析建议' : '人工说明（待核对）'}
+                <textarea value={value.humanText ?? ''} rows={2} onChange={event => updateTemplateField(page, key, { humanText: event.target.value })} />
+              </label>
+            </fieldset>;
+          })}
+        </section>}
+        {page.renderedBody && <details className="draft-block"><summary>完整正文预览（已保存内容）</summary>{dirty && <p className="notice-warn">存在未保存编辑；此处仍为上次保存后的正文。</p>}<pre className="draft-raw-preview">{page.renderedBody}</pre></details>}
         <div className="draft-split">
           <div className="draft-block"><h4>来源事实（原文支持，逐条带证据）</h4>
             {page.source_facts.map((fact, factIndex) => <div className="draft-line" key={`${page.pageId}-fact-${factIndex}`}>

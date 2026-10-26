@@ -86,6 +86,7 @@ export class WikiCommitService {
         title: page.title, type: page.type, category: page.category,
         knowledge_status: page.knowledge_status, confidence: page.confidence, source_level: page.source_level,
         facts: page.source_facts, evidence: page.source_evidence.map(item => [item.id, item.quote, item.start, item.end]),
+        ...(page.templateFields ? { templateFields: page.templateFields } : {}),
       })),
       source: reuseSourceId ? { reused: true, title: effectiveSourceTitle } : {
         title: draft.source.title, category: draft.source.category, body: this.sourceBodyFor(draft, selectedPages),

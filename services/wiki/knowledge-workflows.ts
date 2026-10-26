@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { hasTemplateFields } from './template-fields.ts';
 import path from 'node:path';
 import {isWorkflow,isWorkflowManifest} from '../storage/record-validators.ts';
 import { mkdir } from 'node:fs/promises';
@@ -128,6 +129,7 @@ export class KnowledgeWorkflowStore {
     if (!args.raw || this.actualRawSha(args.raw) !== args.raw.bodySha256 || args.raw.bodySha256 !== args.draft.rawSha256) throw new WikiError('RAW_CHANGED', '原文已变化或校验值与实际正文不一致，不能生成更新预览。', 409);
     const page = args.draft.pages.find((item: any) => item.pageId === args.pageId);
     if (!page) throw new WikiError('PAGE_NOT_FOUND', '提取草稿中没有这条建议。', 404);
+    if (hasTemplateFields(page.templateFields)) throw new WikiError('TEMPLATE_UPDATE_UNSUPPORTED', '本批字段归位仅支持新建正式页，不能生成旧 Wiki 更新预览；原草稿已保留。', 409);
     const evidenceDirectory = this.updateEvidenceDirectory(page, args.raw);
     const drafts=new DraftStore(this.root),stored=await drafts.get(args.draftId);
     if(!stored||stored.revision!==args.baseRevision||JSON.stringify(stored)!==JSON.stringify(args.draft))throw new WikiError('INPUT_REVIEW_CHANGED','更新输入必须是当前持久化草稿。',409);

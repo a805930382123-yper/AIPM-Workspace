@@ -2,6 +2,7 @@
 // Facts, organized notes, inferences, questions and evidence keep their own sections so the
 // boundary between "原文支持" and "模型推断" survives into the正式文件.
 import type { DraftPage, DraftRawMeta, DraftSource } from './drafts.ts';
+import { hasTemplateFields, templateSections } from './template-fields.ts';
 
 const quoted = (value: string, limit = 90) => value.length > limit ? `${value.slice(0, limit)}…` : value;
 const orMissing = (value: string | undefined | null, label: string) => (value && String(value).trim()) ? String(value) : `未提供（${label}）`;
@@ -10,19 +11,23 @@ const sourceTypeLabels: Record<string, string> = {
   customer: '客户资料', meeting: '会议纪要', note: '个人笔记', other: '其他',
 };
 
-// These fields are intentionally unfilled: assigning source statements to a domain
-// field needs review, and the current extraction contract does not carry that mapping.
-const pendingTemplateSections: Record<string, string[]> = {
-  concept: ['定义', '为什么重要', '在业务中的位置', '关键特征', '常见分类', '与其他概念关系', '常见业务场景'],
-  business_process: ['业务目标', '涉及角色', '触发条件', '输入', '完整流程', '输出', '使用系统', '关键规则', '人工判断点', '异常情况', '痛点', '可能的 AI 机会（分析建议）', '相关指标', '相关知识'],
-};
-
 export function renderPageBody(page: DraftPage, context: { sourceTitle: string; rawId: string; createdTitles: Set<string> }): string {
-  const lines: string[] = [page.type === 'concept' ? '## 一句话解释' : '## 一句话说明', '', page.one_line_definition, ''];
-  const templateSections = pendingTemplateSections[page.type];
-  if (templateSections) {
-    lines.push('> 以下模板字段待整理；请核对来源事实，无来源支持的内容保持空或待确认。', '');
-    for (const label of templateSections) lines.push(`## ${label}`, '', '待确认。', '');
+  const active = hasTemplateFields(page.templateFields);
+  const lines: string[] = [page.type === 'concept' ? active ? '## 原草稿一句话说明（未归位）' : '## 一句话解释' : '## 一句话说明', '', page.one_line_definition, ''];
+  const sections = templateSections(page.type).filter(field => page.type !== 'concept' || active || field.key !== 'one_line_explanation');
+  if (sections.length) {
+    lines.push('> 字段来源摘录由用户归位，人工说明独立标记；无来源支持的内容保持空或待确认。', '');
+    for (const { key, label } of sections) {
+      lines.push(`## ${label}`, '');
+      const field = page.templateFields?.[key];
+      if (!field?.evidenceIds.length && !field?.humanText?.trim()) lines.push('待确认。');
+      for (const id of field?.evidenceIds ?? []) {
+        const evidence = page.source_evidence.find(item => item.id === id);
+        if (evidence) lines.push(`- 来源摘录（用户归位）：${evidence.quote}（证据 ${id}）`);
+      }
+      if (field?.humanText?.trim()) lines.push(`- ${key === 'ai_opportunities' ? '分析建议' : '人工说明（待核对）'}：${field.humanText}`);
+      lines.push('');
+    }
   }
   lines.push('## 来源事实', '');
   for (const fact of page.source_facts) {

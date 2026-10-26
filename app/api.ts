@@ -1,4 +1,5 @@
 import type { HumanReview } from '../services/wiki/human-review.ts';
+import type { TemplateFields } from '../services/wiki/template-fields';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string; title: string; sourceType: SourceType; sourceName: string; author?: string; publishedAt?: string; url?: string;
@@ -115,6 +116,7 @@ export type ExtractionJob = {
 export type DraftEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type DraftFact = { text: string; evidenceIds: string[] };
 export type DraftPage = {
+  templateFields?: TemplateFields;
   pageId: string; title: string; type: string; category: string; one_line_definition: string;
   source_facts: DraftFact[]; ai_organized: string[]; ai_inferences: string[]; related_pages: string[]; open_questions: string[];
   source_evidence: DraftEvidence[];
