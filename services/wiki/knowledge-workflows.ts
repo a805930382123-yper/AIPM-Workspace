@@ -169,13 +169,30 @@ export class KnowledgeWorkflowStore {
     const entries = raws as NonNullable<(typeof raws)[number]>[];
     assertRawsNotMeeting(entries);
     if (entries.some(raw => this.actualRawSha(raw) !== raw.bodySha256)) throw new WikiError('RAW_HASH_MISMATCH', '至少一条Raw的frontmatter校验值与实际正文不一致，未生成综合草稿。', 409);
-    const input = entries.map(raw => ({ id: raw.id, title: raw.title, body: raw.body }));
-    const output = await this.call(args.provider, '你是多来源知识综合助手。仅输出JSON。只根据输入原文整理：列出跨来源一致观点、冲突、推断、待确认问题；保留冲突两方，不把推断写成事实。agreement/conflicts/suggestedAdditions每项必须为{text,rawId,quote,start,end}，quote必须是对应Raw的连续原文，start/end为UTF-16左闭右开全局索引。结构：{"title":string,"category":string,"agreement":[object],"conflicts":[object],"inferences":[string],"openQuestions":[string],"suggestedAdditions":[object]}', JSON.stringify(input));
     const schema = await this.wiki.schema();
+    const input = entries.map(raw => {
+      const binding = sha(JSON.stringify([raw.id, raw.bodySha256]));
+      // Keep the shared catalog's default size/count limits and complete Raw coverage.
+      const locators = buildEvidenceLocatorCatalog(raw.body, { index: 0, start: 0, end: raw.body.length, text: raw.body })
+        .map(({ start, end, text }, index) => ({ id: `raw-${binding}-${index + 1}`, start, end, text }));
+      return { id: raw.id, title: raw.title, body: raw.body, bodySha256: raw.bodySha256, locators };
+    });
+    const output = await this.call(args.provider, '你是多来源知识综合助手。只输出一个合法JSON对象，不输出代码围栏或前后说明。严格只含八个必填字段，空数组也必须出现：{"synthesis_format_version":1,"title":"综合标题","category":"请求提供的分类id","suggestedAdditions":[],"conflicts":[],"agreement":[],"inferences":[],"openQuestions":[]}。synthesis_format_version必须为数值1；category只能选输入categories中的id，不能写label或自行命名。suggestedAdditions/conflicts/agreement每项严格只含{text,rawId,locatorId}，text非空且最多4000字符，rawId与locatorId必须同时来自输入中同一Raw的当前locators，不得猜测、跨来源或沿用旧正文ID。不得返回或计算quote/start/end。只根据完整原文整理，每条只陈述所附来源支持的最小断言；定位目录只保证原文位置，不证明语义。共同观点需跨来源支持，并分别列出各来源的支持条目；冲突两方各自列证，分别保留各自数值、时间和统计口径，不静默覆盖、平均或调和。未知、未来建议、尚未上线与收益未知不得写成已证事实；推断和待确认问题分别写入inferences/openQuestions字符串数组。没有证据支持则不输出事实条目，不把未提及当作同意。', JSON.stringify({ synthesis_format_version: 1, categories: schema.categories.map(({ id, label }) => ({ id, label })), raws: input }), 'synthesis-locator-v1');
     if (typeof output.title !== 'string' || !output.title.trim() || output.title.trim().length > 300 || /[\r\n]/u.test(output.title)
       || typeof output.category !== 'string' || !schema.categories.some(item => item.id === output.category)) {
       throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回的综合标题或分类不符合 Wiki Schema，未生成草稿。', 502);
     }
+    const directories = new Map(input.map(raw => [raw.id, new Map(raw.locators.map(locator => [locator.id, locator]))]));
+    for (const field of ['suggestedAdditions', 'conflicts', 'agreement']) output[field] = output[field].map((item: { text: string; rawId: string; locatorId: string }) => {
+      const locator = directories.get(item.rawId)?.get(item.locatorId);
+      const body = entries.find(raw => raw.id === item.rawId)?.body;
+      if (!locator || body === undefined || !Number.isSafeInteger(locator.start) || !Number.isSafeInteger(locator.end)
+        || locator.start < 0 || locator.end <= locator.start || locator.end > body.length || body.slice(locator.start, locator.end) !== locator.text) {
+        throw new WikiError('EVIDENCE_INVALID', '综合建议未选择当前指定Raw的有效定位ID，未生成草稿。', 502);
+      }
+      return { text: item.text, rawId: item.rawId, quote: locator.text, start: locator.start, end: locator.end };
+    });
+    assertNoKnownSecret(output, args.provider.secrets);
     this.validateEvidence(output, entries);
     const record: KnowledgeWorkflow = {
       reviewProtocolVersion:1,
@@ -189,7 +206,7 @@ export class KnowledgeWorkflowStore {
     return this.save(record);
   }
 
-  private async call(provider: LlmProvider, system: string, user: string, format: 'legacy' | 'evidence-id' = 'legacy'): Promise<any> {
+  private async call(provider: LlmProvider, system: string, user: string, format: 'legacy' | 'evidence-id' | 'synthesis-locator-v1' = 'legacy'): Promise<any> {
     let result;
     try { result = await provider.complete({ system, user, timeoutMs: 90000, maxOutputBytes: 256_000, purpose: 'knowledge' }); }
     catch (error) {
@@ -199,18 +216,25 @@ export class KnowledgeWorkflowStore {
       throw new LlmError(code, message, (error as { status?: number }).status ?? 502, details === undefined ? undefined : sanitizeDeep(details, provider.secrets));
     }
     let parsed: unknown;
-    if (format === 'evidence-id' && result.finishReason === 'length') throw new WikiError('LLM_OUTPUT_TRUNCATED', '更新建议响应被截断，未创建草稿。', 502);
+    if (format !== 'legacy' && result.finishReason === 'length') throw new WikiError('LLM_OUTPUT_TRUNCATED', '知识建议响应被截断，未创建草稿。', 502);
     try { parsed = JSON.parse(result.text); } catch { throw new WikiError('LLM_INVALID_JSON', 'Provider 返回的内容不是合法 JSON，未创建草稿。', 502); }
     assertNoKnownSecret(parsed, provider.secrets);
     if (!object(parsed)) throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回结构无效，未创建草稿。', 502);
-    const allowedTopLevel = new Set(format === 'evidence-id' ? ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] : ['title', 'category', 'suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement']);
+    const allowedTopLevel = new Set(format === 'evidence-id' ? ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] : ['title', 'category', 'suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement', ...(format === 'synthesis-locator-v1' ? ['synthesis_format_version'] : [])]);
     if (Object.keys(parsed).some(key => !allowedTopLevel.has(key))) throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回了未定义字段，未创建草稿。', 502);
+    if (format === 'synthesis-locator-v1' && (parsed.synthesis_format_version !== 1 || Object.keys(parsed).length !== allowedTopLevel.size)) throw new WikiError('LLM_SCHEMA_INVALID', '综合建议协议版本或必填字段无效，未创建草稿。', 502);
     for (const key of ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement']) {
       const valid = Array.isArray(parsed[key]) && (parsed[key] as unknown[]).every(x => {
         if (['inferences', 'openQuestions'].includes(key)) return typeof x === 'string';
         if (format === 'evidence-id') {
           const fields = key === 'agreement' ? ['text','evidenceId','existingLocatorId'] : ['text','evidenceId'];
           return object(x) && Object.keys(x).length === fields.length && Object.keys(x).every(field => fields.includes(field)) && typeof x.text === 'string' && !!x.text.trim() && x.text.length <= 4000 && fields.slice(1).every(field => typeof x[field] === 'string' && (x[field] as string).length > 0 && (x[field] as string).length <= 128);
+        }
+        if (format === 'synthesis-locator-v1') {
+          const fields = ['text', 'rawId', 'locatorId'];
+          return object(x) && Object.keys(x).length === fields.length && Object.keys(x).every(field => fields.includes(field))
+            && typeof x.text === 'string' && !!x.text.trim() && x.text.length <= 4000
+            && fields.slice(1).every(field => typeof x[field] === 'string' && !!(x[field] as string).trim() && (x[field] as string).length <= 128);
         }
         return object(x) && Object.keys(x).every(field => ['text', 'rawId', 'quote', 'start', 'end'].includes(field))
           && typeof x.text === 'string' && x.text.trim().length > 0 && typeof x.rawId === 'string'

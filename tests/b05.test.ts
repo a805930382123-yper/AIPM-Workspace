@@ -1,4 +1,5 @@
 import {persistedUpdateInput,approveWorkflow} from './support/human-review.ts';
+import {synthesisFixture} from './acceptance/SYN01-FIX-20261026-fake.ts';
 import assert from 'node:assert/strict';
 import { appendFile, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -33,7 +34,7 @@ test('B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认
     const wiki = new WikiStore(root, raws); await wiki.initialize();
     const one = await raws.create({ title: '报告甲', sourceType: 'report', sourceName: '甲', tags: [], body: '销量增长10%。' });
     const two = await raws.create({ title: '报告乙', sourceType: 'report', sourceName: '乙', tags: [], body: '销量增长12%。' });
-    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '销量综合', category: 'industry_basics', agreement: [{ text: '销量增长', rawId: one.id, quote: '销量增长10%', start: 0, end: 7 }], conflicts: [{ text: '幅度不同', rawId: two.id, quote: '销量增长12%', start: 0, end: 7 }], inferences: ['需核对统计口径'], openQuestions: ['口径是否一致？'], suggestedAdditions: [] }), finishReason: 'stop', bytes: 300 }) };
+    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async request => ({ text: JSON.stringify(synthesisFixture(request,{ title: '销量综合', category: 'industry_basics', agreement: [{ text: '销量增长', rawId: one.id, quote: '销量增长10%', start: 0, end: 7 }], conflicts: [{ text: '幅度不同', rawId: two.id, quote: '销量增长12%', start: 0, end: 7 }], inferences: ['需核对统计口径'], openQuestions: ['口径是否一致？'], suggestedAdditions: [] })), finishReason: 'stop', bytes: 300 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     const draft = await service.createSynthesis({ rawIds: [one.id, two.id, one.id], provider });
     const draftReviewed = await approveWorkflow(service,draft.id);
@@ -61,7 +62,7 @@ test('B05 非法综合分类在保存草稿前拒绝', async () => {
     const wiki = new WikiStore(root, raws); await wiki.initialize();
     const one = await raws.create({ title: '来源甲', sourceType: 'report', sourceName: '甲', tags: [], body: '市场增长10%。' });
     const two = await raws.create({ title: '来源乙', sourceType: 'report', sourceName: '乙', tags: [], body: '市场增长12%。' });
-    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '综合', category: 'not-a-real-category', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] }), finishReason: 'stop', bytes: 200 }) };
+    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async request => ({ text: JSON.stringify(synthesisFixture(request,{ title: '综合', category: 'not-a-real-category', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] })), finishReason: 'stop', bytes: 200 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     await assert.rejects(() => service.createSynthesis({ rawIds: [one.id, two.id], provider }), (error: any) => error.code === 'LLM_SCHEMA_INVALID');
     assert.equal((await service.list()).length, 0);
@@ -76,7 +77,7 @@ test('B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认', async
     const wiki = new WikiStore(root, raws); await wiki.initialize();
     const one = await raws.create({ title: '来源甲', sourceType: 'report', sourceName: '甲', tags: [], body: '市场增长10%。' });
     const two = await raws.create({ title: '来源乙', sourceType: 'report', sourceName: '乙', tags: [], body: '市场增长12%。' });
-    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '市场综合', category: 'industry_basics', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] }), finishReason: 'stop', bytes: 200 }) };
+    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async request => ({ text: JSON.stringify(synthesisFixture(request,{ title: '市场综合', category: 'industry_basics', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] })), finishReason: 'stop', bytes: 200 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     const draft = await service.createSynthesis({ rawIds: [one.id, two.id], provider });
     const draftReviewed = await approveWorkflow(service,draft.id);
@@ -96,7 +97,7 @@ test('B05 重启恢复完成提交后收敛workflow，completed manifest不覆�
     const wiki = new WikiStore(root, raws); await wiki.initialize();
     const one = await raws.create({ title: '来源甲', sourceType: 'report', sourceName: '甲', tags: [], body: '销量增长10%。' });
     const two = await raws.create({ title: '来源乙', sourceType: 'report', sourceName: '乙', tags: [], body: '销量增长12%。' });
-    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async () => ({ text: JSON.stringify({ title: '销量综合', category: 'industry_basics', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] }), finishReason: 'stop', bytes: 200 }) };
+    const provider: LlmProvider = { name: 'fake-test', model: 'b05', secrets: [], complete: async request => ({ text: JSON.stringify(synthesisFixture(request,{ title: '销量综合', category: 'industry_basics', agreement: [], conflicts: [], inferences: [], openQuestions: [], suggestedAdditions: [] })), finishReason: 'stop', bytes: 200 }) };
     const service = new KnowledgeWorkflowStore(root, wiki, raws); await service.initialize();
     const draft = await service.createSynthesis({ rawIds: [one.id, two.id], provider });
     const draftReviewed = await approveWorkflow(service,draft.id);

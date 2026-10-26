@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {synthesisFixture} from './acceptance/SYN01-FIX-20261026-fake.ts';
 import {createHash,randomUUID} from 'node:crypto';
 import {readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
@@ -122,7 +123,7 @@ test('HUMAN update requires all input pages before any call; output needs new re
 });
 test('HUMAN synthesis proposals have separate immutable snapshots; corrected prose is human organized, unresolved blocks',async()=>{
   const f=await candidate(false);try{const second=await f.rawStore.create({title:'第二来源',sourceType:'report',sourceName:'虚构',tags:[],body:'门店增长12%。'}),service=new KnowledgeWorkflowStore(f.root,f.wiki,f.rawStore);await service.initialize();
-    const provider={name:'fake',model:'synthesis',complete:async()=>({text:JSON.stringify({title:'综合候选',category:'metric',suggestedAdditions:[],conflicts:[],inferences:['模型原推断'],openQuestions:['待确认'],agreement:[]}),bytes:1,finishReason:'stop'})};
+    const provider={name:'fake',model:'synthesis',complete:async(request:{user:string})=>({text:JSON.stringify(synthesisFixture(request,{title:'综合候选',category:'metric',suggestedAdditions:[],conflicts:[],inferences:['模型原推断'],openQuestions:['待确认'],agreement:[]})),bytes:1,finishReason:'stop'})};
     let w=await service.createSynthesis({rawIds:[f.raw.id,second.id],provider});const snapshot=structuredClone(w.humanReview!.units);
     w=await service.patch(w.id,w.revision,{...w.sections,inferences:['人工修正说明']});assert.deepEqual(w.humanReview!.units,snapshot);assert(w.humanEditedSections!.includes('inferences'));
     w=await service.reviewOperation(w.id,{action:'move',baseRevision:w.revision,unitIds:[snapshot[0].id],pageId:null});w=await approveWorkflow(service,w.id);await assert.rejects(f.wiki.withLock(()=>service.confirm(w.id,w.revision,'unresolved')),{code:'HUMAN_REVIEW_INCOMPLETE'});
@@ -133,7 +134,7 @@ test('HUMAN synthesis proposals have separate immutable snapshots; corrected pro
 for(const mode of ['zero','partial','conflict'] as const)test(`HUMAN synthesis ${mode} legacy transaction recovery requires real disk evidence and remains reviewable`,async()=>{
  const f=await candidate(false);try{
   const second=await f.rawStore.create({title:'第二事务来源',sourceType:'report',sourceName:'虚构',tags:[],body:'门店120家。'}),service=new KnowledgeWorkflowStore(f.root,f.wiki,f.rawStore);await service.initialize();
-  let w=await service.createSynthesis({rawIds:[f.raw.id,second.id],provider:{name:'fake',model:'legacy',complete:async()=>({text:JSON.stringify({title:'旧综合事务',category:'metric',suggestedAdditions:[],conflicts:[],agreement:[],inferences:['原始推断'],openQuestions:[]}),bytes:1,finishReason:'stop'})}});w=await approveWorkflow(service,w.id);
+  let w=await service.createSynthesis({rawIds:[f.raw.id,second.id],provider:{name:'fake',model:'legacy',complete:async(request:{user:string})=>({text:JSON.stringify(synthesisFixture(request,{title:'旧综合事务',category:'metric',suggestedAdditions:[],conflicts:[],agreement:[],inferences:['原始推断'],openQuestions:[]})),bytes:1,finishReason:'stop'})}});w=await approveWorkflow(service,w.id);
   const write=f.wiki.writePageLocked.bind(f.wiki);let calls=0;f.wiki.writePageLocked=async record=>{if(++calls===(mode==='zero'?1:2))throw Error('legacy workflow disk stop');return write(record);};
   await assert.rejects(f.wiki.withLock(()=>service.confirm(w.id,w.revision,'first')),{code:'WORKFLOW_COMMIT_PENDING'});f.wiki.writePageLocked=write;
   const saved=(await service.get(w.id))!,operation=(await import('node:fs/promises')).readdir;const names=await operation(path.join(f.root,'state/knowledge-commits'));assert.equal(names.length,1);const file=path.join(f.root,'state/knowledge-commits',names[0]),manifest=JSON.parse(await readFile(file,'utf8'));delete manifest.humanReviewDigest;delete manifest.humanReviewBasisDigest;manifest.status='prepared';manifest.writtenIds=manifest.records.map((r:any)=>r.id);await writeFile(file,JSON.stringify(manifest));delete saved.humanReview;await writeFile(path.join(f.root,'drafts/knowledge-workflows',w.id+'.json'),JSON.stringify(saved));

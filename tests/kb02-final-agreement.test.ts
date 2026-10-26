@@ -1,4 +1,5 @@
 import {persistedUpdateInput,approveWorkflow} from './support/human-review.ts';
+import {synthesisFixture} from './acceptance/SYN01-FIX-20261026-fake.ts';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {mkdtemp, readFile, rm} from 'node:fs/promises';
@@ -93,6 +94,6 @@ test('FINAL-02 target edited during provider call rejects bound old version with
  }finally{await f.clean();}
 });
 
-test('FINAL-02 legacy synthesis evidence contract remains unchanged',async()=>{
- const f=await fixture();try{f.setReply(()=>({title:'虚构综合',category:'metric',...empty(),agreement:[{text:'旧来源目标100家。',rawId:f.first.id,quote:'目标门店100家。',start:0,end:9}]}));const flow=await f.workflows.createSynthesis({rawIds:[f.first.id,f.raw.id],provider:f.args.provider});assert.equal(flow.kind,'synthesis');assert(!f.requests[0].system.includes('existingLocatorId'));}finally{await f.clean();}
+test('FINAL-02 synthesis stored evidence contract remains unchanged',async()=>{
+ const f=await fixture();try{f.setReply(input=>synthesisFixture({user:JSON.stringify(input)},{title:'虚构综合',category:'metric',...empty(),agreement:[{text:'旧来源目标100家。',rawId:f.first.id,quote:'目标门店100家。',start:0,end:9}]}));const flow=await f.workflows.createSynthesis({rawIds:[f.first.id,f.raw.id],provider:f.args.provider});assert.equal(flow.kind,'synthesis');assert(!f.requests[0].system.includes('existingLocatorId'));assert.deepEqual(Object.keys(flow.evidence![0]).sort(),['section','text','rawId','quote','start','end'].sort());}finally{await f.clean();}
 });

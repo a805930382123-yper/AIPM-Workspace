@@ -1,4 +1,5 @@
 import {persistedUpdateInput,approveWorkflow} from './support/human-review.ts';
+import {synthesisFixture} from './acceptance/SYN01-FIX-20261026-fake.ts';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
@@ -16,7 +17,7 @@ async function fixture(){
  const root=await mkdtemp(path.join(os.tmpdir(),'pa01-r01-')),raws=new RawStore(root);await raws.initialize();const wiki=new WikiStore(root,raws);await wiki.initialize();const store=new KnowledgeWorkflowStore(root,wiki,raws);await store.initialize();
  const input=(title:string)=>({title,sourceType:'note' as const,sourceName:'虚构测试',author:'',sourceDate:'',url:'',body:'虚构资料',tags:[]});
  const a=await raws.create(input('虚构甲')),b=await raws.create(input('虚构乙'));let calls=0;
- const provider={name:'local-fixture',model:'fake',async complete(request: { system: string }){calls++;if(request.system.includes('evidenceId'))return {finishReason:'stop',bytes:256,text:JSON.stringify({suggestedAdditions:[{text:'虚构资料',evidenceId:'update-e1'}],conflicts:[],agreement:[],inferences:[],openQuestions:[]})};return {finishReason:'stop',bytes:256,text:JSON.stringify({title:'测试综合',category:'other',suggestedAdditions:[{text:'虚构资料',rawId:a.id,quote:a.body,start:0,end:a.body.length}],conflicts:[],agreement:[],inferences:[],openQuestions:[]})};}};
+ const provider={name:'local-fixture',model:'fake',async complete(request: { system: string; user: string }){calls++;if(request.system.includes('evidenceId'))return {finishReason:'stop',bytes:256,text:JSON.stringify({suggestedAdditions:[{text:'虚构资料',evidenceId:'update-e1'}],conflicts:[],agreement:[],inferences:[],openQuestions:[]})};return {finishReason:'stop',bytes:256,text:JSON.stringify(synthesisFixture(request,{title:'测试综合',category:'other',suggestedAdditions:[{text:'虚构资料',rawId:a.id,quote:a.body,start:0,end:a.body.length}],conflicts:[],agreement:[],inferences:[],openQuestions:[]}))};}};
  const synthesis=await store.createSynthesis({rawIds:[a.id,b.id],provider});
  const target=await wiki.create({title:'手动目标',type:'concept',category:'other',sources:[b.id],tags:[],knowledge_status:'source_supported',confidence:'medium',source_level:'C',review_status:'unreviewed',aliases:[],body:'旧正文'});
  const pageId=randomUUID(),draftId=randomUUID(),draftInput={id:draftId,rawId:a.id,revision:1,rawSha256:a.bodySha256,pages:[{pageId,source_facts:[{text:a.body,evidenceIds:['update-e1']}],source_evidence:[{id:'update-e1',rawId:a.id,quote:a.body,start:0,end:a.body.length}],ai_organized:[],ai_inferences:[],open_questions:[]}]};
