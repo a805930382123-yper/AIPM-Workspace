@@ -74,7 +74,8 @@ app.get('/lab/export', async (_req, res, next) => {
 app.use((error, _req, res, _next) => res.status(error.status ?? 500).json({ error: { code: error.code, message: error.message, details: error.details } }));
 const apiServer = app.listen(0, '127.0.0.1'); await new Promise(resolve => apiServer.once('listening', resolve));
 const api = `http://127.0.0.1:${apiServer.address().port}`;
-const vite = await createServer({ configFile: false, envDir: root, root: process.cwd(), plugins: [react()], appType: 'custom', server: { host: '127.0.0.1', port: 5176, strictPort: true, proxy: { '/api': api, '/lab': api } } });
+// Avoid Vite's Windows realpath network-drive probe in the isolated sandbox.
+const vite = await createServer({ configFile: false, envDir: root, cacheDir: path.join(root, 'vite-cache'), root: process.cwd(), resolve: { preserveSymlinks: true }, optimizeDeps: { entries: ['tests/acceptance/R1618-FIELDS-20261026-browser.tsx'] }, plugins: [react()], appType: 'custom', server: { host: '127.0.0.1', port: 5176, strictPort: true, proxy: { '/api': api, '/lab': api } } });
 vite.middlewares.use('/r1618-fields', async (_req, res, next) => {
   try {
     const html = await vite.transformIndexHtml('/r1618-fields', '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>R16/R18 人工字段隔离验证</title></head><body><div id="root"></div><script type="module" src="/tests/acceptance/R1618-FIELDS-20261026-browser.tsx"></script></body></html>');
