@@ -1,5 +1,9 @@
 # 快消 AI 产品经理工作台：分批验收与监控规约
 
+## R16/R18零调用诊断方案审查（2026-10-27）
+
+**方案可接受；未施工，未验证修复。** Sol诊断建议仅澄清现有规划字段提示并递增既有提示revision13→14，Astra独立核实版本依赖和question→待确认正文通道；不扩协议、放宽schema或强制页数。基线c23b536，实际命令与0.454秒内存探针见[诊断报告](reports/R1618-DIAG-20261027-plan.md)，独立源码/方案审查见[审查报告](reports/R1618-DIAG-AUDIT-20261027-plan.md)。本轮真实/config0，知识246/500、Prompt15/24；旧Q02 FAIL、Q03 NOT_RUN及R16/R18/B09整体未通过保持。后续工程与真实语义结果分别验收，不能以本次方案接受关闭缺陷。
+
 ## R16/R18真实固定样本验收（2026-10-27）
 
 **Q02真实原稿质量FAIL；Q03真实Draft/渲染NOT_RUN；Q01准备PASS保持。R16/R18整项、B09/全产品未通过。** 基线86c9c58，唯一真实流程2请求后exit1 `LLM_SCHEMA_INVALID`。独立核原响应：页面顶层metrics/related_knowledge违反schema；离线expand另拒绝Process中definition，异常负责人引用AI事实不支持且仅Process未覆盖Concept。见[独立真实验收及命令](reports/R1618-QUALITY-AUDIT-20261027-real.md)、[主Agent执行记录](reports/R1618-QUALITY-MAIN-20261027-real.md)。原稿未人工修订，无草稿/UI/正式提交；Raw SHA不变。授权最多3、实际2、失败计入后停，知识246/500、Prompt15/24，247未用，不自动复验或推进其他项。

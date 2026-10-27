@@ -1,5 +1,11 @@
 # 项目总控记录
 
+## R16/R18零调用诊断及方案审查完成（2026-10-27）
+
+用户批准仅诊断+最小方案+独立审查。基线c23b536，0/2/2/1=5、沿B模式，Sol High `r1618_quality_prepare`和Astra medium `r1618_quality_audit`完成并停写。[方案](reports/R1618-DIAG-20261027-plan.md)、[独立审查](reports/R1618-DIAG-AUDIT-20261027-plan.md)。两产品落点仅作为待启动建议：字段提示澄清与既有revision13→14；一项定向测试增量，原拒坏/未知问题正文/存储机制保持。方案审查可接受不等于真实修复，未施工产品；Q02 FAIL/Q03 NOT_RUN及整体未通过不变。
+
+真实/config0，知识246/500、Prompt15/24，247未用。一次内存探针核实际schema及语义支持边界，独立审查核源码/版本依赖复用已证失败，未重复全矩阵。文案“所有模板栏目”建议已采纳；请求核新说明/原schema，bundle另核revision14，不新增请求字段。下一步建议B模式按此范围施工与独立工程验收；真实复验后续另定，不自动推进。仅提交本轮文档，外部工作排除。
+
 ## R16/R18固定资料真实验证FAIL（2026-10-27）
 
 用户新授权最多3次，主Agent只放行已审245/246两请求，247不安排；基线86c9c58、入口不变。245抽取后246规划schema失败，进程exit1立即停止，无重试。Astra medium `r1618_quality_audit`独立读取实际请求/原响应并离线复现：页面多余metrics/related_knowledge首阻断、Process含definition后续约束错误、异常负责人引用AI事实、未生成Concept。见[真实独立报告](reports/R1618-QUALITY-AUDIT-20261027-real.md)。Q02 FAIL/Q03 NOT_RUN，Q01准备PASS保持，整项/B09未通过。

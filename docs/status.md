@@ -1,5 +1,15 @@
 # 工程状态
 
+## 最新结论：R16/R18零调用诊断与最小方案已独立审查（2026-10-27）
+
+按用户批准B模式，Sol High完成seq246原响应/实际契约诊断，Astra medium独立审查，方案可接受。[诊断及精确文案](reports/R1618-DIAG-20261027-plan.md)、[独立审查](reports/R1618-DIAG-AUDIT-20261027-plan.md)。基线c23b536；本轮只改文档，没有产品/tests施工，故不能宣称缺陷修复成功。Q02真实FAIL、Q03 NOT_RUN、两型覆盖缺证及R16/R18/B09整体未通过保持。
+
+最小后续范围：knowledge-planning.ts澄清模板栏目嵌套、按当前类型取字段、question-only未知省略字段并保留问题；rules.ts既有prompt revision13→14，避免新旧提示共用检查点版本。未知问题已有完整正文通道，不扩字段协议/validator、不修补响应、不强拆页。只需既有测试文件内一项定向增量核实际请求/版本、人造合规问题通道及旧原响应仍拒绝；真实遵从须后续另证。Sol一次内存探针exit0、0.454秒，Astra核源码和方案、未重复探针/旧矩阵。真实/config0，知识246/500、Prompt15/24，247未用。下一步建议沿B模式启动该最小工程小批，当前未施工，汇报后停止。外部AGENTS与AGENT-ROUTER报告排除。
+
+## 当前执行：R16/R18失败响应零调用诊断与方案审查（2026-10-27）
+
+用户批准按B模式基于seq246失败响应做零调用诊断、确定最小修复方案并独立审查，完成后汇报。基线c23b536；需求0/耦合2/风险2/历史1=5，沿已确认B模式。Sol High `r1618_quality_prepare`负责诊断方案，Astra medium `r1618_quality_audit`独立审查，只写诊断/审查及状态文档，不改产品/tests、不读实际配置、不调用模型。知识246/500、Prompt15/24保持，247未用；真实Q02 FAIL/Q03 NOT_RUN及旧工程PASS保持。复用已确认失败证据，不重复旧矩阵；外部AGENTS及AGENT-ROUTER报告排除。
+
 ## 最新结论：R16/R18固定样本真实验证未通过（2026-10-27）
 
 用户批准本轮最多3次，实际仅执行245抽取+246规划两请求；规划`LLM_SCHEMA_INVALID`后立即停止、未重试，247未用。**Q02真实质量FAIL，Q03真实Draft/渲染NOT_RUN；Q01准备PASS保持。R16/R18整项、B09及全产品仍未通过。** [独立验收](reports/R1618-QUALITY-AUDIT-20261027-real.md)、[主Agent实际命令/授权](reports/R1618-QUALITY-MAIN-20261027-real.md)、[结果证据](reports/R1618-QUALITY-20261027-real-evidence/result.json)。执行基线86c9c58，产品及入口未改。
