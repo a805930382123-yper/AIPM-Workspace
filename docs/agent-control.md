@@ -1,5 +1,9 @@
 # 项目总控记录
 
+## 通用调度规则更新（2026-10-27）
+
+用户批准采用通用 Agent Router：按当前批次评分，A 模式分为 Luna High 轻量施工及 Terra High 标准施工，Sol 独立验收；B 模式 Sol 施工、Astra 独立验收，均由 Astra 规划标准。现行规则见 [coordination](coordination.md#通用-agent-router-现行规则2026-10-27) 和 [Skill](../.agents/skills/agent-router/SKILL.md)。本记录下方较早的固定 A 模式及旧调度为历史；任务进度、实际模型身份、预算和产品验收结论不变。本次仅更新规则，不启动产品任务。
+
 ## R16/R18最小提示工程闭环PASS（2026-10-27）
 
 用户批准已审方案施工/定向测试/独立验收且禁止真实调用。基线4c27037，0/2/2/1=5、B模式；实际Sol High `r1618_quality_prepare`两产品落点加一测试增量，Astra medium `r1618_quality_audit`核最终差异、三SHA与新增定向1/1（0.591秒）通过。[最终独立报告](reports/R1618-FIX-AUDIT-20261027-final.md)。不扩接口/校验器/存储，提示revision14沿既有检查点版本机制。施工首跑证据断言包含非Draft存储的occurrences，修正为六字段精确比较且保留fact/Raw/quote/checkpoint断言，经独立审查合理；失败记录保留。
