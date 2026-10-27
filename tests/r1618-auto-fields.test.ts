@@ -10,6 +10,7 @@ import { runKnowledgePipeline, validateKnowledgeCheckpoint } from '../services/l
 import { expandKnowledgePlan, projectKnowledgePlan, type KnowledgePlanningInput, type KnowledgeWirePlan } from '../services/llm/knowledge-planning.ts';
 import type { LlmCompletionRequest, LlmProvider } from '../services/llm/provider.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
+import { validateSchema } from '../services/llm/schema-validator.ts';
 import { RawStore } from '../services/raw/store.ts';
 import { RawStateStore } from '../services/raw/state.ts';
 import { WikiCommitService } from '../services/wiki/commits.ts';
@@ -201,4 +202,70 @@ test('R1618 AUTO: 字段unit展开与反投影保留全部等价原ID，重命�
   assert.deepEqual(projectKnowledgePlan({document:{...wire.document,summary:'原文'},pages},input).pages[0].templateFields,wire.pages[0].templateFields);
   pages[0].templateFields!.definition!.factIds.pop();
   assert.throws(()=>projectKnowledgePlan({document:{...wire.document,summary:'原文'},pages},input),{code:'LLM_CHECKPOINT_CORRUPT'});
+});
+
+test('R1618 FIX: 规划契约说明进入实际请求，question-only保持独立正文且旧246响应拒绝',async()=>{
+  // Artificial compliant plan for the existing channel, not a model-quality oracle.
+  const f = await fixture(wire=>{
+    const [concept,process] = wire.pages;
+    wire.pages=[{title:'人工合规补货流程',type:'business_process',category:'supply_chain',
+      factUnitIds:wire.pages.flatMap(page=>page.factUnitIds),questionUnitIds:process.questionUnitIds,
+      templateFields:{...process.templateFields,
+        business_goal:{text:'门店补货以降低缺货风险为目标。',factUnitIds:[concept.factUnitIds[1]]},
+        ai_opportunities:{text:'AI尚未上线，仅为未来建议，收益未知。',factUnitIds:[process.factUnitIds[2]]},
+      }}];
+  });
+  try {
+    const rawPath=path.join(f.root,'knowledge/raw/notes',`${f.raw.id}.md`),rawBefore=await readFile(rawPath,'utf8');
+    const archived='docs/reports/R1618-QUALITY-20261027-real-evidence';
+    const oldCheckpoint=JSON.parse(await readFile(path.join(archived,'checkpoint.json'),'utf8'));
+    assert(f.bundle.rulesVersion.includes('kb02-atoms-planning-14-'));
+    assert(oldCheckpoint.rulesVersion.includes('kb02-atoms-planning-13-'));
+    assert.notEqual(f.bundle.rulesVersion,oldCheckpoint.rulesVersion);
+    const {outcome}=await f.run();
+    assert.equal(f.requests.length,2,'只使用现有fake抽取和规划，不新增调用');
+    const system=f.requests[1].system;
+    for(const instruction of [
+      '页面对象仅可包含title、type、category、factUnitIds、questionUnitIds和可选templateFields',
+      '所有模板栏目内容都必须放在templateFields内部',
+      '例如business_process不能输出definition',
+      '仅仅同属本页、同主题或上下文相邻不构成支持',
+      '没有相应支持事实时省略该栏目，程序会把原问题显示在待确认问题中',
+      '不得为填满栏目借用无关fact，也不得将question ID填入factUnitIds',
+      '资料没有给出指标等内容时省略相应栏目',
+      'page.templateFields.metrics={text,factUnitIds}',
+      '不是资料答案或页数要求',
+    ]) assert(system.includes(instruction),instruction);
+    const sentSchema=JSON.parse(system.slice(system.lastIndexOf('严格遵守schema：')+'严格遵守schema：'.length));
+    const oldRequest=JSON.parse(await readFile(path.join(archived,'request-246.json'),'utf8'));
+    const oldSchema=JSON.parse(oldRequest.system.slice(oldRequest.system.lastIndexOf('严格遵守schema：')+'严格遵守schema：'.length));
+    assert.deepEqual(sentSchema,f.bundle.kb02PlanningSchema);
+    assert.deepEqual(sentSchema,oldSchema,'schema保持原样，不放宽接口');
+    const originalResponse=await readFile(path.join(archived,'response-246.json'),'utf8');
+    const oldPlan=JSON.parse(JSON.parse(originalResponse).text);
+    assert.deepEqual(validateSchema(oldPlan,sentSchema),[
+      '$.pages[0]: 存在未允许的字段 metrics',
+      '$.pages[0]: 存在未允许的字段 related_knowledge',
+    ]);
+    const checkpointBefore=await f.checkpoints.get(f.checkpoint.jobId);
+    const originalFacts=outcome.pages[0].source_facts;
+    // Draft stores locator identity/content/position; extraction-only occurrence counts are derived metadata.
+    const originalEvidence=outcome.pages[0].source_evidence.map(evidence=>({id:evidence.id,rawId:evidence.rawId,quote:evidence.quote,start:evidence.start,end:evidence.end,chunkIndex:evidence.chunkIndex}));
+    assert.equal(outcome.pages.length,1,'人工合规单页仅证明通道，不强制两型');
+    assert.deepEqual(originalFacts.map(fact=>fact.text),quotes.slice(0,5));
+    assert.deepEqual(outcome.pages[0].open_questions,[quotes[5]]);
+    const draft=await f.create(outcome),page=draft.pages[0],body=f.drafts.view(draft).pages[0].renderedBody;
+    assert.equal(page.templateFields!.exceptions,undefined,'question-only无需借用无关fact填栏目');
+    assert.equal(page.templateFields!.metrics,undefined);
+    assert.equal(page.templateFields!.systems,undefined);
+    for(const label of ['异常情况','相关指标','使用系统']) assert(body.includes(`## ${label}\n\n待确认。`));
+    assert(body.includes(`## 待确认问题\n\n- ${quotes[5]}`));
+    assert(body.includes('分析建议｜AI整理（待核对）'));
+    assert.deepEqual(page.source_facts,originalFacts);
+    assert.deepEqual(page.source_evidence,originalEvidence);
+    for(const evidence of page.source_evidence) assert.equal(f.body.slice(evidence.start!,evidence.end!),evidence.quote);
+    assert.deepEqual(await f.checkpoints.get(f.checkpoint.jobId),checkpointBefore);
+    assert.equal(await readFile(rawPath,'utf8'),rawBefore);
+    assert.equal(await readFile(path.join(archived,'response-246.json'),'utf8'),originalResponse);
+  } finally { await f.clean(); }
 });

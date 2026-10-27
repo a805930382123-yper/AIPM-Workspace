@@ -1,5 +1,11 @@
 # 项目总控记录
 
+## R16/R18最小提示工程闭环PASS（2026-10-27）
+
+用户批准已审方案施工/定向测试/独立验收且禁止真实调用。基线4c27037，0/2/2/1=5、B模式；实际Sol High `r1618_quality_prepare`两产品落点加一测试增量，Astra medium `r1618_quality_audit`核最终差异、三SHA与新增定向1/1（0.591秒）通过。[最终独立报告](reports/R1618-FIX-AUDIT-20261027-final.md)。不扩接口/校验器/存储，提示revision14沿既有检查点版本机制。施工首跑证据断言包含非Draft存储的occurrences，修正为六字段精确比较且保留fact/Raw/quote/checkpoint断言，经独立审查合理；失败记录保留。
+
+本轮提示工程PASS不等于真实遵从已修复，seq246 Q02 FAIL/Q03 NOT_RUN及整项/B09未通过保持。真实/config0，知识246/500、Prompt15/24，247不消费。下一建议B模式真实复验准备，需新版本/资料/实际预算及原稿独立验收；当前不自动推进。主Agent仅提交本轮文件，外部工作保留。
+
 ## R16/R18零调用诊断及方案审查完成（2026-10-27）
 
 用户批准仅诊断+最小方案+独立审查。基线c23b536，0/2/2/1=5、沿B模式，Sol High `r1618_quality_prepare`和Astra medium `r1618_quality_audit`完成并停写。[方案](reports/R1618-DIAG-20261027-plan.md)、[独立审查](reports/R1618-DIAG-AUDIT-20261027-plan.md)。两产品落点仅作为待启动建议：字段提示澄清与既有revision13→14；一项定向测试增量，原拒坏/未知问题正文/存储机制保持。方案审查可接受不等于真实修复，未施工产品；Q02 FAIL/Q03 NOT_RUN及整体未通过不变。
