@@ -1,5 +1,9 @@
 # 快消 AI 产品经理工作台：分批验收与监控规约
 
+## R16/R18真实固定样本验收（2026-10-27）
+
+**Q02真实原稿质量FAIL；Q03真实Draft/渲染NOT_RUN；Q01准备PASS保持。R16/R18整项、B09/全产品未通过。** 基线86c9c58，唯一真实流程2请求后exit1 `LLM_SCHEMA_INVALID`。独立核原响应：页面顶层metrics/related_knowledge违反schema；离线expand另拒绝Process中definition，异常负责人引用AI事实不支持且仅Process未覆盖Concept。见[独立真实验收及命令](reports/R1618-QUALITY-AUDIT-20261027-real.md)、[主Agent执行记录](reports/R1618-QUALITY-MAIN-20261027-real.md)。原稿未人工修订，无草稿/UI/正式提交；Raw SHA不变。授权最多3、实际2、失败计入后停，知识246/500、Prompt15/24，247未用，不自动复验或推进其他项。
+
 ## R16/R18真实质量验证准备（2026-10-27）
 
 **Q01零调用准备PASS；Q02真实原稿质量与Q03真实Draft/渲染尚未执行、待具体预算确认。R16/R18整项、B09及全产品仍未通过。** Sol High新增固定六句fixture和窄入口，Astra medium独立smoke一次exit0、0.782秒，覆盖未放行零调用、两fake请求出稿、已用会话拒绝；64项冻结漂移0。基线130e440加两入口文件，SHA与命令见[独立报告](reports/R1618-QUALITY-AUDIT-20261027-final.md)。真实/config0，知识244/500、Prompt15/24未变，无本轮UI或正式提交，历史F04仅复用。拟245–246两请求待确认，失败亦计且停止；fake不证明真实语义，R18历史失败保留。

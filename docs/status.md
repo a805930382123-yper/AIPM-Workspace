@@ -1,5 +1,17 @@
 # 工程状态
 
+## 最新结论：R16/R18固定样本真实验证未通过（2026-10-27）
+
+用户批准本轮最多3次，实际仅执行245抽取+246规划两请求；规划`LLM_SCHEMA_INVALID`后立即停止、未重试，247未用。**Q02真实质量FAIL，Q03真实Draft/渲染NOT_RUN；Q01准备PASS保持。R16/R18整项、B09及全产品仍未通过。** [独立验收](reports/R1618-QUALITY-AUDIT-20261027-real.md)、[主Agent实际命令/授权](reports/R1618-QUALITY-MAIN-20261027-real.md)、[结果证据](reports/R1618-QUALITY-20261027-real-evidence/result.json)。执行基线86c9c58，产品及入口未改。
+
+首阻断：规划页面顶层多出metrics/related_knowledge。独立离线展开另发现Process含Concept的definition；异常负责人字段引用AI未来/收益未知事实，来源不支持；仅Process原稿，两类型覆盖未达。245已返回5事实+1问题，246失败响应和检查点已保留，无草稿、无UI/正式提交，Raw SHA不变。真实/config读取2/1，知识246/500、Prompt15/24；未用余量不自动重试。
+
+下一建议B模式零调用基于原响应定位规划格式与字段来源的最小修复，再决定必要真实复验；本轮只验证并汇报，不自动施工、不推进R22/四链。外部AGENTS及AGENT-ROUTER报告排除，旧失败与工程通过证据保留。
+
+## 当前执行：R16/R18固定样本真实验证（2026-10-27）
+
+用户批准本轮最多3次真实请求、使用现有配置、失败计入并立即停止。[执行记录](reports/R1618-QUALITY-MAIN-20261027-real.md)。累计起244/500、授权最高247/500，实际仅安排既有入口245抽取+246规划，247不安排。基线86c9c58，64项冻结实查无漂移，未放行会话无消费；B模式、Astra独立oracle不变，不重复smoke、不改产品。Prompt15/24保持；实际调用与原稿质量等待本轮证据，不预签通过。
+
 ## 最新结论：R16/R18真实质量验证准备通过（2026-10-27）
 
 按用户启动指令完成B模式0/2/2/1=5的零调用准备，Sol High施工、Astra medium独立验收。仅新增固定六句虚构资料和prepare/run/smoke窄入口；独立smoke一次exit0（0.782秒）、3检查通过，64项冻结无漂移，未放行真实会话无release/attempt。**Q01准备PASS；Q02/Q03真实质量尚未执行，R16/R18整项、B09及全产品仍未通过。** [独立报告](reports/R1618-QUALITY-AUDIT-20261027-final.md)、[施工及执行路径](reports/R1618-QUALITY-20261027-builder.md)、[任务卡](handoffs/R1618-QUALITY-20261027-task.md)。基线130e440加入口/fixture差异，冻结见报告，交付提交由Git历史关联。

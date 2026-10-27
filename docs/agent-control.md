@@ -1,5 +1,11 @@
 # 项目总控记录
 
+## R16/R18固定资料真实验证FAIL（2026-10-27）
+
+用户新授权最多3次，主Agent只放行已审245/246两请求，247不安排；基线86c9c58、入口不变。245抽取后246规划schema失败，进程exit1立即停止，无重试。Astra medium `r1618_quality_audit`独立读取实际请求/原响应并离线复现：页面多余metrics/related_knowledge首阻断、Process含definition后续约束错误、异常负责人引用AI事实、未生成Concept。见[真实独立报告](reports/R1618-QUALITY-AUDIT-20261027-real.md)。Q02 FAIL/Q03 NOT_RUN，Q01准备PASS保持，整项/B09未通过。
+
+实耗2次、实际配置读取1，知识246/500、Prompt15/24，247未用。无产品修改、无草稿/正式化、Raw不变，原响应归档。下一建议暂B模式0/2/2/1=5，先按固定失败证据零调用定位格式与来源最小方案；未授权自动修复或再调用，不通过消耗余额重试。主Agent本轮收尾同步后停止。
+
 ## R16/R18质量准备独立验收通过（2026-10-27）
 
 本轮B模式Sol High `r1618_quality_prepare`完成fixture/窄入口，Astra medium `r1618_quality_audit`停写后独立核实物与一次smoke，exit0、0.782秒，64项冻结一致。[独立验收](reports/R1618-QUALITY-AUDIT-20261027-final.md)。Q01准备通过；Q02/Q03真实质量未执行，整项/B09未通过。真实/config0、知识244/500、Prompt15/24；未放行会话无attempt，不自动消费。下一步需明确本轮2次实际请求预算245–246，首失败停止，固定原稿独立审查；不复用旧SYN01额度。施工与验收均已停写，主Agent收尾同步，外部工作排除。
