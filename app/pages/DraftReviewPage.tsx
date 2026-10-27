@@ -99,7 +99,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     const next = { ...page.templateFields, [key]: { evidenceIds: [], ...page.templateFields?.[key], ...patch } };
     for (const fieldKey of Object.keys(next) as TemplateFieldKey[]) {
       const field = next[fieldKey]!;
-      if (!field.evidenceIds.length && !field.humanText?.trim()) delete next[fieldKey];
+      if (!field.evidenceIds.length && !field.humanText?.trim() && !field.aiContent) delete next[fieldKey];
     }
     updatePage(page.pageId, { templateFields: next });
   };
@@ -331,7 +331,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         <label className="field">一句话说明<input value={page.one_line_definition} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { one_line_definition: event.target.value })} maxLength={300} /></label>
         {templateSections(page.type).length > 0 && <section className="draft-block" aria-label={`${page.title}字段归位`}>
           <h4>字段归位</h4>
-          <p className="extract-note">选择本页来源摘录，另外填写人工说明。引用只说明出处，归位含义仍需逐页审查。带字段内容的合并、类型切换及旧 Wiki 更新本批不支持。</p>
+          <p className="extract-note">AI草稿与人工说明分别保存。可编辑或删除AI项，也可选择本页来源摘录并填写人工说明。引用只说明出处，内容与归位含义仍需逐页审查。带字段内容的合并、类型切换及旧 Wiki 更新本批不支持。</p>
           <button className="text-button danger" disabled={readOnly || busy !== '' || !hasTemplateFields(page.templateFields)} onClick={() => updatePage(page.pageId, { templateFields: {} })}>清空字段归位（删除当前内容）</button>
           <p className="extract-note">清空是删除。未保存可刷新撤回；保存后不提供恢复。</p>
           {((page.type === 'concept' || page.type === 'business_process' ? schema?.pageTemplates[page.type]?.sections : undefined) ?? templateSections(page.type)).filter(field => templateSections(page.type).some(item => item.key === field.key)).map(field => {
@@ -339,6 +339,13 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
             const value = page.templateFields?.[key] ?? { evidenceIds: [] };
             return <fieldset key={key} data-template-field={key} disabled={readOnly || busy !== ''}>
               <legend>{key === 'ai_opportunities' ? '可能的 AI 机会（分析建议）' : field.label}</legend>
+              {value.aiContent && <>
+                <label className="field">{key === 'ai_opportunities' ? '分析建议｜' : ''}{value.aiContent.humanEdited ? 'AI草稿经人工修改（待核对）' : 'AI整理（待核对）'}
+                  <textarea value={value.aiContent.text} rows={3} maxLength={4000} onChange={event => updateTemplateField(page, key, { aiContent: {...value.aiContent!, text:event.target.value} })} />
+                </label>
+                <p className="extract-note">AI归位来源（待核对）：原事实 {value.aiContent.factIds.join('、')}；证据 {value.aiContent.evidenceIds.join('、')}</p>
+                <button className="text-button danger" type="button" onClick={() => updateTemplateField(page, key, { aiContent:undefined })}>删除本字段AI项</button>
+              </>}
               <div>来源摘录（用户归位）</div>
               {page.source_evidence.map(evidence => <label key={evidence.id} className="draft-line">
                 <input type="checkbox" checked={value.evidenceIds.includes(evidence.id)} onChange={event => updateTemplateField(page, key, { evidenceIds: event.target.checked ? [...value.evidenceIds, evidence.id] : value.evidenceIds.filter(id => id !== evidence.id) })} />

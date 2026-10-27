@@ -16,11 +16,22 @@ export function renderPageBody(page: DraftPage, context: { sourceTitle: string; 
   const lines: string[] = [page.type === 'concept' ? active ? '## 原草稿一句话说明（未归位）' : '## 一句话解释' : '## 一句话说明', '', page.one_line_definition, ''];
   const sections = templateSections(page.type).filter(field => page.type !== 'concept' || active || field.key !== 'one_line_explanation');
   if (sections.length) {
-    lines.push('> 字段来源摘录由用户归位，人工说明独立标记；无来源支持的内容保持空或待确认。', '');
+    lines.push(Object.values(page.templateFields ?? {}).some(field => field.aiContent)
+      ? '> 字段中的AI草稿、AI归位来源与用户归位、人工说明分别标记，均需核对；无来源支持的内容保持空或待确认。'
+      : '> 字段来源摘录由用户归位，人工说明独立标记；无来源支持的内容保持空或待确认。', '');
     for (const { key, label } of sections) {
       lines.push(`## ${label}`, '');
       const field = page.templateFields?.[key];
-      if (!field?.evidenceIds.length && !field?.humanText?.trim()) lines.push('待确认。');
+      if (!field?.evidenceIds.length && !field?.humanText?.trim() && !field?.aiContent) lines.push('待确认。');
+      if (field?.aiContent) {
+        const ai = field.aiContent;
+        const label = ai.humanEdited ? 'AI草稿经人工修改（待核对）' : 'AI整理（待核对）';
+        lines.push(`- ${key === 'ai_opportunities' ? `分析建议｜${label}` : label}：${ai.text}（原事实 ${ai.factIds.join('、')}）`);
+        for (const id of ai.evidenceIds) {
+          const evidence = page.source_evidence.find(item => item.id === id);
+          if (evidence) lines.push(`- 来源摘录（AI归位，待核对）：${evidence.quote}（证据 ${id}）`);
+        }
+      }
       for (const id of field?.evidenceIds ?? []) {
         const evidence = page.source_evidence.find(item => item.id === id);
         if (evidence) lines.push(`- 来源摘录（用户归位）：${evidence.quote}（证据 ${id}）`);

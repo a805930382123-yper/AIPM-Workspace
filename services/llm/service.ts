@@ -9,6 +9,7 @@ import { buildEvidenceLocatorCatalog, locatorProviderSchema, resolveLocatorEvide
 import { assertNoKnownSecret, LlmError, describeUnparsable, sanitizeDeep, sanitizeProviderText, type LlmProvider } from './provider.ts';
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import type { ReviewBasis } from '../wiki/human-review.ts';
+import type { TemplateFields } from '../wiki/template-fields.ts';
 
 export type ExtractRawInput = {
   id: string; title: string; sourceType: string; sourceName: string;
@@ -18,6 +19,7 @@ export type ExtractStage = 'chunking' | 'extracting' | 'merging' | 'validating' 
 export type ExtractProgress = { stage: ExtractStage; chunksTotal: number; chunksDone: number; pagesFound: number };
 export type ExtractedFact = { text: string; evidenceIds: string[] };
 export type ExtractedPage = {
+  templateFields?: TemplateFields;
   title: string; type: string; category: string; one_line_definition: string;
   source_facts: ExtractedFact[]; ai_organized: string[]; ai_inferences: string[];
   related_pages: string[]; open_questions: string[];

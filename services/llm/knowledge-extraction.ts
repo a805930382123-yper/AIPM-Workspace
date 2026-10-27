@@ -1,4 +1,5 @@
-import { buildKnowledgePlanningInput, expandKnowledgePlan, projectKnowledgePlan, KNOWLEDGE_PLANNING_INSTRUCTION, type KnowledgeWirePlan } from './knowledge-planning.ts';
+import { buildKnowledgePlanningInput, expandKnowledgePlan, projectKnowledgePlan, KNOWLEDGE_PLANNING_INSTRUCTION, KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION, type KnowledgeWirePlan } from './knowledge-planning.ts';
+import type { TemplateFields, TemplateFieldKey } from '../wiki/template-fields.ts';
 import { buildKnowledgeAtoms, coverageDiagnostic, hasCoverageErrors } from './knowledge-atoms.ts';
 import { chunkText } from './chunk.ts';
 import { buildEvidenceLocatorCatalog } from './locators.ts';
@@ -115,8 +116,12 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
     if(Object.keys(current.plan.document).sort().join(',')!=='main_topic,summary,title')throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点文档结构不合法，已拒绝恢复。',409);
     // The stored plan keeps original IDs; it is not a v3 Provider response.
     const pagesSchema=bundle.kb02PlanningSchema.properties!.pages!, unitPage=pagesSchema.items!;
-    const {factUnitIds,questionUnitIds,...pageMetadata}=unitPage.properties!;
-    const storedSchema={...bundle.kb02PlanningSchema,properties:{...bundle.kb02PlanningSchema.properties,version:{type:'integer',enum:[2]},pages:{...pagesSchema,items:{...unitPage,required:unitPage.required!.map(key=>key==='factUnitIds'?'factIds':key==='questionUnitIds'?'questionIds':key),properties:{...pageMetadata,factIds:factUnitIds,questionIds:questionUnitIds}}}}};
+    const {factUnitIds,questionUnitIds,templateFields,...pageMetadata}=unitPage.properties!;
+    const storedFields={...templateFields,properties:Object.fromEntries(Object.entries(templateFields.properties!).map(([key, schema])=>{
+      const {factUnitIds:refs,...properties}=schema.properties!;
+      return [key,{...schema,required:['text','factIds'],properties:{...properties,factIds:refs}}];
+    }))};
+    const storedSchema={...bundle.kb02PlanningSchema,properties:{...bundle.kb02PlanningSchema.properties,version:{type:'integer',enum:[2]},pages:{...pagesSchema,items:{...unitPage,required:unitPage.required!.map(key=>key==='factUnitIds'?'factIds':key==='questionUnitIds'?'questionIds':key),properties:{...pageMetadata,factIds:factUnitIds,questionIds:questionUnitIds,templateFields:storedFields}}}}};
     try { exact({version:2,...current.plan,document:{title:current.plan.document.title,main_topic:current.plan.document.main_topic}},storedSchema,'检查点原ID规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点原ID规划不符合严格结构，已拒绝恢复。',409); }
     if (current.plan.document.summary !== sourceSummary(current.completedChunks.flatMap(part => part.facts.map(item => item.text)))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '规划摘要与原始事实不一致。', 409);
     const assignedFacts = current.plan.pages.flatMap(page => page.factIds); const assignedQuestions = current.plan.pages.flatMap(page => page.questionIds);
@@ -201,7 +206,7 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     const planningJson = JSON.stringify(planningPayload);
     if (Buffer.byteLength(planningJson, 'utf8') > 192 * 1024) throw new LlmError('LLM_PLANNING_TOO_LARGE', '整篇事实规划输入超过192KiB；检查点已保存，请缩短资料后显式重新生成。', 422);
     const plannerSchema = bundle.kb02PlanningSchema;
-    const planningSystem = `你是整篇知识主题规划器。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
+    const planningSystem = `你是整篇知识主题规划器。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n${KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
     assertNoKnownSecret(planningSystem, input.provider.secrets ?? []);
     current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: undefined });
     emit('planning', allFacts.length);
@@ -235,11 +240,16 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
   const evidenceById = new Map(current.completedChunks.flatMap(part => part.evidence).map(evidence => [evidence.id, evidence]));
   const pages = current.plan.pages.map(planned => {
     const pageFacts = planned.factIds.map(id => facts.find(item => item.id === id)!).filter(Boolean);
+    const templateFields: TemplateFields = {};
+    for (const [key, field] of Object.entries(planned.templateFields ?? {})) {
+      templateFields[key as TemplateFieldKey] = { evidenceIds: [], aiContent: {text:field.text, factIds:[...field.factIds], evidenceIds:[...new Set(field.factIds.flatMap(id=>pageFacts.find(fact=>fact.id===id)!.locatorIds))]} };
+    }
     const usedLocatorIds = [...new Set(pageFacts.flatMap(item => item.locatorIds))];
     const evidence = usedLocatorIds.map(id => evidenceById.get(id)!).filter(Boolean).map(item => ({ id: item.id, rawId: item.rawId, quote: item.quote, start: item.start, end: item.end, chunkIndex: item.chunkIndex, occurrences: 1 }));
     const questionsText = planned.questionIds.map(id => questions.find(item => item.id === id)?.text).filter((item): item is string => !!item);
     return {
       title: planned.title, type: planned.type, category: planned.category, one_line_definition: planned.title,
+      ...(planned.templateFields !== undefined ? {templateFields} : {}),
       source_facts: pageFacts.map(item => ({ text: item.text, evidenceIds: item.locatorIds })), ai_organized: [], ai_inferences: [], related_pages: [], open_questions: [...questionsText, ...pageFacts.filter(item => item.kind === 'ambiguous').map(item => '原文口径或边界待确认：' + item.text)],
       source_evidence: evidence, provenance: [...new Map(pageFacts.map(item => { const part = chunks[item.chunkIndex]!; return [item.chunkIndex, { chunkIndex: item.chunkIndex, start: part.start, end: part.end }]; })) .values()],
     };
@@ -248,7 +258,7 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
   const outcome: ExtractOutcome = {
     document: current.plan.document, pages, provider: { name: input.provider.name, model: input.provider.model }, rulesVersion: `${bundle.rulesVersion}-kb02-2`,
     callCount: current.attempts, chunkCount: chunks.length, chunkCoverage: chunks.map(({ index, start, end }) => ({ index, start, end })), usage: { promptTokens: 0, completionTokens: 0 },
-    warnings: ['本草稿由 kb02-2 精简事实与整篇规划程序组装；AI 整理和推断字段为空，未生成推断。'],
+    warnings: ['本草稿由 kb02-2 精简事实与整篇规划程序组装；模板字段中的AI整理/分析建议需逐页核对，来源事实与证据保持原文。'],
   };
   const basisInput=buildKnowledgePlanningInput(input.body,current.completedChunks,catalogByChunk);
   const unitPlan=projectKnowledgePlan(current.plan,basisInput);

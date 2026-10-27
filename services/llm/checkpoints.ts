@@ -6,6 +6,7 @@ import { LlmError } from './provider.ts';
 import { FROZEN_BUDGETS } from './rules.ts';
 import { validCoverageDiagnostic, type CoverageDiagnostic } from './knowledge-atoms.ts';
 import { MAX_EVIDENCE_LOCATORS_PER_CHUNK } from './locators.ts';
+import { templateSections, type TemplateFieldKey } from '../wiki/template-fields.ts';
 
 export const KB02_PIPELINE_VERSION = 'kb02-2';
 export const knowledgeCallLimit = (chunkCount: number) => Math.min(128, 2 * chunkCount + 4);
@@ -13,7 +14,8 @@ export type CheckpointFact = { id: string; text: string; locatorIds: string[]; c
 export type CheckpointQuestion = { id: string; text: string; locatorIds: string[]; chunkIndex: number; atomId?: string };
 export type CheckpointEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type CheckpointChunk = { index: number; start: number; end: number; facts: CheckpointFact[]; questions: CheckpointQuestion[]; evidence: CheckpointEvidence[]; sourceNotes?: Array<{ atomId: string; text: string; locatorIds: string[]; chunkIndex: number }> };
-export type KnowledgePlan = { document: { title: string; main_topic: string; summary: string }; pages: Array<{ title: string; type: string; category: string; factIds: string[]; questionIds: string[] }> };
+export type PlannedTemplateFields = Partial<Record<TemplateFieldKey, { text: string; factIds: string[] }>>;
+export type KnowledgePlan = { document: { title: string; main_topic: string; summary: string }; pages: Array<{ title: string; type: string; category: string; factIds: string[]; questionIds: string[]; templateFields?: PlannedTemplateFields }> };
 export type ExtractionCheckpoint = {
   version: 1; jobId: string; rawId: string; rawSha256: string; pipelineVersion: string; rulesVersion: string;
   providerIdentity: string; chunks: Array<{ index: number; start: number; end: number }>;
@@ -52,7 +54,10 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
   if (cp.plan !== undefined) {
     const plan = cp.plan;
     if (!hasKeys(plan, ['document','pages']) || !hasKeys(plan.document, ['title','main_topic','summary']) || !isText(plan.document.title, 300) || !isText(plan.document.main_topic, 300) || !isText(plan.document.summary, 4000) || !Array.isArray(plan.pages) || plan.pages.length < 1 || plan.pages.length > 50) return false;
-    for (const page of plan.pages) if (!hasKeys(page, ['title','type','category','factIds','questionIds']) || !isText(page.title, 200) || !isText(page.type, 64) || !isText(page.category, 64) || !Array.isArray(page.factIds) || page.factIds.length < 1 || page.factIds.length > 256 || page.factIds.some((v: unknown) => !isText(v, 64)) || !Array.isArray(page.questionIds) || page.questionIds.length > 128 || page.questionIds.some((v: unknown) => !isText(v, 64))) return false;
+    for (const page of plan.pages) {
+      if (!hasKeys(page, ['title','type','category','factIds','questionIds'], ['templateFields']) || !isText(page.title, 200) || !isText(page.type, 64) || !isText(page.category, 64) || !Array.isArray(page.factIds) || page.factIds.length < 1 || page.factIds.length > 256 || page.factIds.some((v: unknown) => !isText(v, 64)) || !Array.isArray(page.questionIds) || page.questionIds.length > 128 || page.questionIds.some((v: unknown) => !isText(v, 64))) return false;
+      if (page.templateFields !== undefined && (!isObject(page.templateFields) || Object.entries(page.templateFields).some(([key, field]) => !templateSections(page.type).some(section => section.key === key) || !isObject(field) || !hasKeys(field, ['text', 'factIds']) || !isText(field.text, 4000) || !Array.isArray(field.factIds) || !field.factIds.length || field.factIds.length > 256 || new Set(field.factIds).size !== field.factIds.length || field.factIds.some((id: unknown) => !isText(id, 64) || !page.factIds.includes(id))))) return false;
+    }
   }
   if (cp.plan !== undefined && (cp.completedChunks.length !== cp.chunks.length || cp.completedChunks.some((chunk: Record<string, unknown>, index: number) => chunk.index !== index))) return false;
   if ((cp.stage === 'assembling' || cp.stage === 'done') && cp.plan === undefined) return false;

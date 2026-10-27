@@ -159,6 +159,15 @@ export class DraftStore {
       page.source_facts=facts.flatMap(u=>u.records.map(r=>({text:r.text,evidenceIds:r.evidenceIds.map(id=>aliases.get(u.id)?.get(id)??id)})));
       page.open_questions=[...questions.flatMap(u=>u.records.map(r=>r.text)),...facts.filter(u=>u.factKind==='ambiguous').flatMap(u=>u.records.map(r=>'原文口径或边界待确认：'+r.text)),...facts.filter(u=>record.humanQuestionUnitIds?.includes(u.id)).map(u=>'人工标记待确认：'+u.text)];
       page.source_evidence=evidence;
+      for (const field of Object.values(page.templateFields ?? {})) {
+        const ai = field.aiContent;
+        if (!ai) continue;
+        const references = ai.factIds.map(id => {
+          const unit = facts.find(u => u.records.some(r => r.id === id));
+          return unit ? unit.records.find(r => r.id === id)!.evidenceIds.map(ref => aliases.get(unit.id)?.get(ref) ?? ref) : undefined;
+        });
+        if (references.every((ids): ids is string[] => ids !== undefined)) ai.evidenceIds = [...new Set(references.flat())];
+      }
     }
   }
   async reviewOperation(id:string,input:{baseRevision:number;action:'start'|'move'|'page'|'questions';unitIds?:string[];pageId?:string|null;reviewContentDigest?:string;confirmed?:boolean;marked?:boolean},context:{body:string;rulesDir:string}):Promise<DraftRecord> {
@@ -183,7 +192,7 @@ export class DraftStore {
         this.deriveReviewPages(next);
       }
       if(input.action==='move'){moveHumanUnits(next.humanReview,next.pages.map(p=>p.pageId),input.unitIds!,input.pageId!);this.deriveReviewPages(next);}
-      for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId));
+      for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId), next.humanReview);
       if((input.action==='questions'||(input.action==='move'&&next.humanQuestionUnitIds?.length))&&!next.source.bodyEditedByUser)next.source.body=renderSourceBody(next.source,next.rawMeta,next.pages.filter(p=>p.selected),next.pages.filter(p=>!p.selected));
       if(input.action==='page')confirmHumanPage(next.humanReview,next.pages.map(p=>p.pageId),{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(next));
       if(JSON.stringify(next)===JSON.stringify(current))return current;
@@ -194,7 +203,7 @@ export class DraftStore {
   /** Defensive load-time check: a draft whose evidence no longer matches its Raw is reported. */
   async assertEvidenceStillValid(draft: DraftRecord, body: string): Promise<void> {
     for (const page of draft.pages) {
-      this.validateTemplateReferences(page, draft.rawId);
+      this.validateTemplateReferences(page, draft.rawId, undefined, draft.humanReview);
       for (const evidence of page.source_evidence) {
         if (body.slice(evidence.start, evidence.end) !== evidence.quote) {
           throw new DraftError(
@@ -258,6 +267,7 @@ export class DraftStore {
         assertReviewSources(record.humanReview,[{id:input.raw.id,body:input.body,bodySha256:input.raw.bodySha256}]);
         this.deriveReviewPages(record);
       }
+      for (const page of record.pages) this.validateTemplateReferences(page, record.rawId, undefined, record.humanReview);
       if (!pages.length) record.warnings.push('Provider 未给出任何知识建议，请放弃该草稿并检查来源。');
       // F04-03: nothing is selected by default — the user must explicitly choose what to write.
       record.warnings.push('默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。');
@@ -271,6 +281,7 @@ export class DraftStore {
 
   private fromExtracted(page: ExtractedPage, rules: DraftRules): DraftPage {
     const draft: DraftPage = {
+      ...(page.templateFields !== undefined ? {templateFields: structuredClone(page.templateFields)} : {}),
       pageId: randomUUID(), title: page.title, type: page.type, category: page.category,
       one_line_definition: page.one_line_definition,
       source_facts: page.source_facts.map(fact => ({ text: fact.text, evidenceIds: [...fact.evidenceIds] })),
@@ -365,7 +376,7 @@ export class DraftStore {
         for(const unit of next.humanReview.units)if(next.humanReview.assignments[unit.id]!==null&&!next.pages.some(p=>p.pageId===next.humanReview!.assignments[unit.id]))next.humanReview.assignments[unit.id]=null;
         this.deriveReviewPages(next);
       }
-      for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId));
+      for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId), next.humanReview);
       // F04-05: the Source body and its Key Takeaways list exactly the pages that would be
       // created, unless the user has written their own body text.
       const takeawaysUnchanged = incomingTakeaways === undefined
@@ -433,7 +444,11 @@ export class DraftStore {
       const normalized: TemplateFields = {};
       for (const [key, field] of Object.entries(item.templateFields)) {
         const humanText = field.humanText?.trim();
-        if (field.evidenceIds.length || humanText) normalized[key as keyof TemplateFields] = { evidenceIds: [...field.evidenceIds], ...(humanText ? { humanText } : {}) };
+        const oldAi = page.templateFields?.[key as keyof TemplateFields]?.aiContent;
+        const ai = field.aiContent;
+        if (ai && (!oldAi || JSON.stringify(ai.factIds) !== JSON.stringify(oldAi.factIds) || JSON.stringify(ai.evidenceIds) !== JSON.stringify(oldAi.evidenceIds))) throw new DraftError('TEMPLATE_AI_REFERENCES_IMMUTABLE', 'AI字段的原事实引用只读；可修改AI草稿文字或删除该AI项。', 409);
+        const aiContent = ai && oldAi ? {text:ai.text.trim(),factIds:[...oldAi.factIds],evidenceIds:[...oldAi.evidenceIds],...(oldAi.humanEdited || ai.text.trim() !== oldAi.text ? {humanEdited:true as const} : {})} : undefined;
+        if (field.evidenceIds.length || humanText || aiContent) normalized[key as keyof TemplateFields] = { evidenceIds: [...field.evidenceIds], ...(humanText ? { humanText } : {}), ...(aiContent ? {aiContent} : {}) };
       }
       setField('templateFields', hasTemplateFields(normalized) ? normalized : undefined);
       if (page.templateFields === undefined) delete page.templateFields;
@@ -537,7 +552,7 @@ export class DraftStore {
     if(next.humanReview)for(const unit of next.humanReview.units)if(ids.includes(next.humanReview.assignments[unit.id]??''))next.humanReview.assignments[unit.id]=merged.pageId;
   }
 
-  private validateTemplateReferences(page: DraftPage, rawId: string, previous?: DraftPage): void {
+  private validateTemplateReferences(page: DraftPage, rawId: string, previous?: DraftPage, review?: HumanReview): void {
     if (page.templateFields === undefined) return;
     if (!validTemplateFields(page.templateFields, page.type)) throw new DraftError('INVALID_TEMPLATE_FIELDS', '字段归位格式或字段名称无效。', 422);
     const previousIds = new Set(Object.values(previous?.templateFields ?? {}).flatMap(field => field.evidenceIds));
@@ -548,6 +563,25 @@ export class DraftStore {
       if (old && (old.rawId !== evidence.rawId || old.quote !== evidence.quote || old.start !== evidence.start || old.end !== evidence.end)) {
         throw new DraftError('TEMPLATE_EVIDENCE_CHANGED', `来源移动会改变字段引用 ${id} 的原文，操作已停止，原字段已保留。`, 409);
       }
+    }
+    for (const field of Object.values(page.templateFields)) {
+      const ai = field.aiContent;
+      if (!ai) continue;
+      const units = review?.units.filter(unit => unit.kind === 'fact' && review.assignments[unit.id] === page.pageId) ?? [];
+      const expected: string[] = [];
+      for (const id of ai.factIds) {
+        const unit = units.find(item => item.records.some(record => record.id === id));
+        const fact = unit?.records.find(record => record.id === id);
+        if (!unit || !fact || unit.records.some(record => !ai.factIds.includes(record.id))) throw new DraftError('TEMPLATE_AI_FACT_UNKNOWN', `AI字段引用的完整原事实 ${id} 不属于当前页面；请先删除对应AI项再移动来源。`, 422);
+        for (const ref of fact.evidenceIds) {
+          const original = unit.evidence.find(evidence => evidence.id === ref);
+          const evidence = original && page.source_evidence.find(item => item.rawId === rawId && item.rawId === original.rawId && item.start === original.start && item.end === original.end && item.quote === original.quote);
+          if (!evidence) throw new DraftError('TEMPLATE_AI_EVIDENCE_UNKNOWN', 'AI字段的原事实证据无法对应当前页面，原草稿已保留。', 422);
+          expected.push(evidence.id);
+        }
+      }
+      const ids = [...new Set(expected)];
+      if (ids.length !== ai.evidenceIds.length || ai.evidenceIds.some(id => !ids.includes(id))) throw new DraftError('TEMPLATE_AI_EVIDENCE_UNKNOWN', 'AI字段未保留原事实的完整来源引用，原草稿已保留。', 422);
     }
   }
 
