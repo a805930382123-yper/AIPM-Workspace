@@ -2,6 +2,7 @@
 import express from 'express';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { get } from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { createServer } from 'vite';
@@ -75,7 +76,7 @@ app.use((error, _req, res, _next) => res.status(error.status ?? 500).json({ erro
 const apiServer = app.listen(0, '127.0.0.1'); await new Promise(resolve => apiServer.once('listening', resolve));
 const api = `http://127.0.0.1:${apiServer.address().port}`;
 // Avoid Vite's Windows realpath network-drive probe in the isolated sandbox.
-const vite = await createServer({ configFile: false, envDir: root, cacheDir: path.join(root, 'vite-cache'), root: process.cwd(), resolve: { preserveSymlinks: true }, optimizeDeps: { entries: ['tests/acceptance/R1618-FIELDS-20261026-browser.tsx'] }, plugins: [react()], appType: 'custom', server: { host: '127.0.0.1', port: 5176, strictPort: true, proxy: { '/api': api, '/lab': api } } });
+const vite = await createServer({ configFile: false, envDir: root, cacheDir: path.join(root, 'vite-cache'), root: process.cwd(), resolve: { preserveSymlinks: true }, optimizeDeps: { entries: ['tests/acceptance/R1618-FIELDS-20261026-browser.tsx'] }, plugins: [react()], appType: 'custom', server: { host: '127.0.0.1', port: 5176, strictPort: true, watch: { usePolling: true }, proxy: { '/api': api, '/lab': api } } });
 vite.middlewares.use('/r1618-fields', async (_req, res, next) => {
   try {
     const html = await vite.transformIndexHtml('/r1618-fields', '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>R16/R18 人工字段隔离验证</title></head><body><div id="root"></div><script type="module" src="/tests/acceptance/R1618-FIELDS-20261026-browser.tsx"></script></body></html>');
@@ -90,6 +91,34 @@ console.log(JSON.stringify(manifest));
 let stopping = false;
 const stop = async () => { if (stopping) return; stopping = true; await vite.close(); await new Promise((resolve, reject) => apiServer.close(e => e ? reject(e) : resolve())); console.log('R1618 fields lab stopped; isolated files retained.'); };
 process.on('SIGINT', () => { void stop(); }); process.on('SIGTERM', () => { void stop(); });
+if (process.argv.includes('--measure-startup')) {
+  // Measure HTTP bodies only; this does not establish browser readiness.
+  const timings = [];
+  for (const route of [url, 'http://127.0.0.1:5176/tests/acceptance/R1618-FIELDS-20261026-browser.tsx', 'http://127.0.0.1:5176/app/pages/DraftReviewPage.tsx', 'http://127.0.0.1:5176/app/pages/WikiPage.tsx']) {
+    const startedAt = new Date().toISOString(), started = performance.now();
+    console.log(JSON.stringify({ event: 'HTTP_BODY_START', route, startedAt }));
+    try {
+      const result = await new Promise((resolve, reject) => {
+        const request = get(route, { timeout: 0 }, response => {
+          let bytes = 0;
+          response.on('data', chunk => { bytes += chunk.length; });
+          response.on('end', () => resolve({ status: response.statusCode, bytes }));
+          response.on('error', reject);
+          response.on('aborted', () => reject(new Error('HTTP response aborted')));
+        });
+        request.on('error', reject);
+      });
+      timings.push({ route, startedAt, completedAt: new Date().toISOString(), elapsedMs: Math.round((performance.now() - started) * 100) / 100, ...result });
+      console.log(JSON.stringify({ event: 'HTTP_BODY_COMPLETE', ...timings.at(-1) }));
+      await writeFile(path.join(root, 'startup-timings.json'), JSON.stringify(timings, null, 2) + '\n');
+      if (result.status !== 200) throw new Error(`HTTP ${result.status}`);
+    } catch (error) {
+      console.error(`Startup measurement failed for ${route}: ${error.message}; service retained.`);
+      break;
+    }
+  }
+  console.log('HTTP body measurement finished; service retained for browser interaction, which remains NOT_RUN.');
+}
 if (process.argv.includes('--smoke')) {
   try {
     for (const route of [url, 'http://127.0.0.1:5176/tests/acceptance/R1618-FIELDS-20261026-browser.tsx', 'http://127.0.0.1:5176/app/pages/DraftReviewPage.tsx', `${api}/api/drafts/${meta.draftId}`, `${api}/api/wiki`, `${api}/api/wiki/schema`, `${api}/lab/export`]) {
