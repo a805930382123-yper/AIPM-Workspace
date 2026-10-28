@@ -92,6 +92,7 @@ export const KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION = [
   'templateFields只能选当前page.type目录中的键。完整schema列出的是多类型字段并集，不代表单页可混用；例如business_process不能输出definition。事实仍保留在本页factUnitIds中，不为套栏目改写或丢弃事实。',
   '每项只能包含text和factUnitIds。factUnitIds只引用本页factUnitIds中支持该字段的完整事实单元，允许同一事实为多个相关字段提供依据；字段引用不改变事实/问题的唯一页面归属。text是独立AI整理草稿，不是原事实、用户说明或用户归位。保持主体、条件、否定、未来及未知限定；不能把来源未知补成确定内容。没有足够依据时省略该字段，不能凭标题或关键词机械填充，不要用页标题充当概念解释。',
   '每项text的每个事实性断言，必须由该项所引factUnitIds支持。仅仅同属本页、同主题或上下文相邻不构成支持。原文明示未知若只在questionUnits中，将它归属本页questionUnitIds即可；没有相应支持事实时省略该栏目，程序会把原问题显示在待确认问题中。不得为填满栏目借用无关fact，也不得将question ID填入factUnitIds。资料没有给出指标等内容时省略相应栏目；ai_opportunities仍按既有分析建议边界处理。',
+  '各字段整理必须保留来源所述的动作阶段与结果口径：申请、计划、安排或待执行，不等于已经执行、完成、生效或取得效果。流程规则、预期产物与某次事件实际结果应保持区分，不得只因栏目名为outputs就把步骤改写成已实现结果。仅整理所引事实明确支持的产物或安排；没有足够依据时省略字段，不为填满栏目补写完成或交付。',
   '以下抽象正反例互相独立，不是资料答案或页数要求，示例ID不是当前输入ID，真实输出只能使用输入的unit.id：有来源支持的指标放page.templateFields.metrics={text,factUnitIds}，page.metrics={...}非法；无指标依据时省略metrics，不生成建议指标占位。Concept的definition仅可在Concept页，Process使用其目录中的steps等键；定义事实若属于流程背景仍保留在该页factUnitIds，不能跨型填definition或机械改名。若qu-Q是“某审批负责人未知”、fu-A是“某AI尚未实施”，合法为本页questionUnitIds:["qu-Q"]并省略无事实支持的exceptions；exceptions写负责人未知却引用["fu-A"]非法。',
   'concept的一句话解释应独立说明概念含义；流程字段应分别表达实际目标、角色、触发、输入、步骤、输出等对应含义。ai_opportunities.text只能是分析建议，必须保留未实施/效果未知等原文边界，引用相关事实作为分析背景，不能宣称建议已经发生或有效。原文明示未知继续归属questionUnitIds，或保留原ambiguous事实与待确认说明；不要为填满栏目编造内容。所有字段仍需用户逐页审查，缺项可以保持待确认。',
 ].join('\n');

@@ -219,7 +219,7 @@ test('R1618 FIX: 规划契约说明进入实际请求，question-only保持独�
     const rawPath=path.join(f.root,'knowledge/raw/notes',`${f.raw.id}.md`),rawBefore=await readFile(rawPath,'utf8');
     const archived='docs/reports/R1618-QUALITY-20261027-real-evidence';
     const oldCheckpoint=JSON.parse(await readFile(path.join(archived,'checkpoint.json'),'utf8'));
-    assert(f.bundle.rulesVersion.includes('kb02-atoms-planning-14-'));
+    assert(f.bundle.rulesVersion.includes('kb02-atoms-planning-15-'));
     assert(oldCheckpoint.rulesVersion.includes('kb02-atoms-planning-13-'));
     assert.notEqual(f.bundle.rulesVersion,oldCheckpoint.rulesVersion);
     const {outcome}=await f.run();
@@ -235,6 +235,9 @@ test('R1618 FIX: 规划契约说明进入实际请求，question-only保持独�
       '资料没有给出指标等内容时省略相应栏目',
       'page.templateFields.metrics={text,factUnitIds}',
       '不是资料答案或页数要求',
+      '申请、计划、安排或待执行，不等于已经执行、完成、生效或取得效果',
+      '流程规则、预期产物与某次事件实际结果应保持区分',
+      '不得只因栏目名为outputs就把步骤改写成已实现结果',
     ]) assert(system.includes(instruction),instruction);
     const sentSchema=JSON.parse(system.slice(system.lastIndexOf('严格遵守schema：')+'严格遵守schema：'.length));
     const oldRequest=JSON.parse(await readFile(path.join(archived,'request-246.json'),'utf8'));
