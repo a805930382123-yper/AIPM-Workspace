@@ -1,0 +1,506 @@
+Browser tab: 1, Title: "R16/R18 人工字段隔离验证", URL: "http://127.0.0.1:5176/r1618-fields?draftId=b27f1cfd-be27-4365-8962-5164f8241bd4".
+1 AXWebArea R16/R18 人工字段隔离验证, URL: 127.0.0.1:5176/r1618-fields?draftId=b27f1cfd-be27-4365-8962-5164f8241bd4
+	2 container
+		3 text R16/R18 隔离人工虚构夹具；真实 Provider 禁用，不读实际配置。此入口只验证人工编辑工程行为。
+		4 button 查看字段草稿
+		5 button 查看正式 Wiki
+		6 link Description: 读取本轮导出, Value: 127.0.0.1:5176/lab/export
+		7 text AI 知识整理预览 · 人工审核
+		8 heading 审核「门店补货知识页规划」, Value: 1
+			9 text 审核「 门店补货知识页规划 」
+		10 text 草稿版本 v 2  · 状态  pending_confirmation  · 提供方  openai-compatible / GLM-5.3-Flash  · 规则  b04-b04-1-locator-v2-kb02-atoms-planning-15-ebf82377a7b4-kb02-2  ·  1 段 / 2 次调用
+		11 button 返回 Raw
+		12 button 保存草稿
+		13 button 放弃草稿
+		14 button (disabled) 确认写入 Wiki（0）
+		15 container 主题与归属人工审查
+			16 heading 逐页确认主题与完整归属, Value: 2
+				17 text 逐页确认主题与完整归属
+			18 text 所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。
+			19 container
+				20 text 未解决  0  项 · 已审  1 / 1  页
+			21 text 来源事实
+			22 text fu-0-28-fact
+			23 text 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。
+			24 text 原记录：f-c1-1
+			25 container
+				26 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			27 container
+				28 text 完整 unit 归属
+				29 pop up button (collapsed, settable) Description: 归属 fu-0-28-fact, Value: 门店补货流程, Secondary Actions: Expand
+					30 menu
+						31 未解决
+						32 (selected) 门店补货流程
+			33 container
+				34 checkbox (settable, integer) Description: 同时列入待确认问题 fu-0-28-fact, Value: 0
+				35 text 同时列入待确认问题（人工标记）
+			36 text 来源事实
+			37 text fu-28-47-fact
+			38 text 【虚构】门店补货的目的是降低缺货风险。
+			39 text 原记录：f-c1-2
+			40 container
+				41 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			42 container
+				43 text 完整 unit 归属
+				44 pop up button (collapsed, settable) Description: 归属 fu-28-47-fact, Value: 门店补货流程, Secondary Actions: Expand
+					45 menu
+						46 未解决
+						47 (selected) 门店补货流程
+			48 container
+				49 checkbox (settable, integer) Description: 同时列入待确认问题 fu-28-47-fact, Value: 0
+				50 text 同时列入待确认问题（人工标记）
+			51 text 来源事实
+			52 text fu-47-74-fact
+			53 text 【虚构】当门店库存低于安全库存时，由店长发起补货申请。
+			54 text 原记录：f-c1-3
+			55 container
+				56 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			57 container
+				58 text 完整 unit 归属
+				59 pop up button (collapsed, settable) Description: 归属 fu-47-74-fact, Value: 门店补货流程, Secondary Actions: Expand
+					60 menu
+						61 未解决
+						62 (selected) 门店补货流程
+			63 container
+				64 checkbox (settable, integer) Description: 同时列入待确认问题 fu-47-74-fact, Value: 0
+				65 text 同时列入待确认问题（人工标记）
+			66 text 来源事实
+			67 text fu-74-100-fact
+			68 text 【虚构】店长提交补货单，库管核对可用库存后安排发货。
+			69 text 原记录：f-c1-4
+			70 container
+				71 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			72 container
+				73 text 完整 unit 归属
+				74 pop up button (collapsed, settable) Description: 归属 fu-74-100-fact, Value: 门店补货流程, Secondary Actions: Expand
+					75 menu
+						76 未解决
+						77 (selected) 门店补货流程
+			78 container
+				79 checkbox (settable, integer) Description: 同时列入待确认问题 fu-74-100-fact, Value: 0
+				80 text 同时列入待确认问题（人工标记）
+			81 text 来源事实
+			82 text fu-100-123-fact
+			83 text 【虚构】AI尚未上线，仅为未来建议，收益未知。
+			84 text 原记录：f-c1-5
+			85 container
+				86 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			87 container
+				88 text 完整 unit 归属
+				89 pop up button (collapsed, settable) Description: 归属 fu-100-123-fact, Value: 门店补货流程, Secondary Actions: Expand
+					90 menu
+						91 未解决
+						92 (selected) 门店补货流程
+			93 container
+				94 checkbox (settable, integer) Description: 同时列入待确认问题 fu-100-123-fact, Value: 0
+				95 text 同时列入待确认问题（人工标记）
+			96 text 来源事实
+			97 text fu-123-137-fact
+			98 text 【虚构】异常审批负责人未知。
+			99 text 原记录：f-c1-6
+			100 container
+				101 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			102 container
+				103 text 完整 unit 归属
+				104 pop up button (collapsed, settable) Description: 归属 fu-123-137-fact, Value: 门店补货流程, Secondary Actions: Expand
+					105 menu
+						106 未解决
+						107 (selected) 门店补货流程
+			108 container
+				109 checkbox (settable, integer) Description: 同时列入待确认问题 fu-123-137-fact, Value: 0
+				110 text 同时列入待确认问题（人工标记）
+			111 text 原文明示问题
+			112 text qu-123-137
+			113 text 【虚构】异常审批负责人未知。
+			114 text 原记录：q-c1-1
+			115 container
+				116 text 原文 [ 0 ,  137 )：“ 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 ”
+			117 container
+				118 text 完整 unit 归属
+				119 pop up button (collapsed, settable) Description: 归属 qu-123-137, Value: 门店补货流程, Secondary Actions: Expand
+					120 menu
+						121 未解决
+						122 (selected) 门店补货流程
+		123 text 默认没有选中任何知识建议：勾选要写入正式 Wiki 的条目后，确认按钮才可用。 本草稿由 kb02-2 精简事实与整篇规划程序组装；模板字段中的AI整理/分析建议需逐页核对，来源事实与证据保持原文。 默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。
+		124 heading 原始资料, Value: 2
+			125 text 原始资料
+		126 container
+			127 text 个人笔记  ·  人工合成隔离资料；用于验证真实模型，非真实业务
+		128 button 打开 Raw ›
+			129 text 打开 Raw 
+			130 text ›
+		131 heading R16/R18 虚构门店补货固定资料, Value: 3
+			132 text R16/R18 虚构门店补货固定资料
+		133 container
+			134 text 正文  137  字符 · 正文校验值  a64ef3745784ea68 …
+		443 text 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+		135 heading Source 预览（本次提交组成）, Value: 2
+			136 text Source 预览（本次提交组成）
+		137 text 将新建 1 个 Source 页面
+		138 container
+			139 text Source 标题
+			140 text field (settable) Source 标题, Value: 门店补货知识页规划
+		141 container
+			142 text Source 摘要
+			143 text entry area (settable) Source 摘要, Value: ## 来源信息
+
+- 来源类型：个人笔记（note）
+- 来源名称：人工合成隔离资料；用于验证真实模型，非真实业务
+- 作者：未提供（作者）
+- 原发布日期：未提供（原发布日期）
+- 原始链接：未提供（原始链接）
+- Raw：R16/R18 虚构门店补货固定资料（0fb6e144-3db7-43f0-a06a-16cb57b1c288）
+- 导入时间：2026-10-28T09:20:31.142Z
+- 来源等级（人工判断）：C
+
+## 摘要
+
+来源事实：
+【虚构】门店补货是根据门店库存与需求补充商品的业务活动。
+【虚构】门店补货的目的是降低缺货风险。
+【虚构】当门店库存低于安全库存时，由店长发起补货申请。
+【虚构】店长提交补货单，库管核对可用库存后安排发货。
+【虚构】AI尚未上线，仅为未来建议，收益未知。
+【虚构】异常审批负责人未知。
+
+## Key Takeaways
+
+- 暂无
+
+## 涉及概念
+
+- 暂无
+
+## 涉及实体
+
+- 暂无
+
+## 涉及业务流程
+
+- 暂无
+
+## 涉及指标
+
+- 暂无
+
+## 重要观点
+
+- 暂无
+
+## 待验证内容
+
+- 暂无
+
+## 本次未创建的建议（未选中，待处理）
+
+- 门店补货流程（business_process，未创建；需要时可在该 Raw 的草稿里重新选择）
+
+## Raw 来源
+
+- R16/R18 虚构门店补货固定资料（Raw 0fb6e144-3db7-43f0-a06a-16cb57b1c288）
+
+> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。
+
+		144 container
+			145 text 来源等级
+			146 pop up button (collapsed, settable) 来源等级, Value: C 级, Secondary Actions: Expand
+				147 menu
+					148 A 级
+					149 B 级
+					150 (selected) C 级
+					151 D 级
+		152 container
+			153 text 知识状态
+			154 pop up button (collapsed, settable) 知识状态, Value: source_supported, Secondary Actions: Expand
+				155 menu
+					156 verified
+					157 (selected) source_supported
+					158 ai_organized
+					159 inferred
+					160 needs_verification
+		161 container
+			162 text 可信度
+			163 pop up button (collapsed, settable) 可信度, Value: medium, Secondary Actions: Expand
+				164 menu
+					165 high
+					166 (selected) medium
+					167 low
+		168 text 保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。
+		169 heading 知识建议（1 条，已选 0 条）, Value: 2
+			170 text 知识建议（ 1  条，已选  0  条）
+		171 text 默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。
+		172 button 全选
+		173 button 全不选
+		174 button (disabled) 合并所选（0）
+		175 container
+			176 text 本页主题与完整归属已确认
+			177 button 确认本页主题与归属
+			178 button 撤销本页确认
+			179 checkbox (settable, integer) Description: 写入, Value: 0
+			180 text 写入
+			181 checkbox (settable, integer) Description: 合并, Value: 0
+			182 text 合并 # 1
+			183 text field (settable) Description: 建议标题, Value: 门店补货流程
+			184 button (disabled) 删除
+			185 text 类型
+			186 pop up button (collapsed, settable) 类型, Value: 业务流程, Secondary Actions: Expand
+				187 menu
+					188 概念
+					189 业务实体
+					190 (selected) 业务流程
+					191 业务指标
+			192 text 分类
+			193 pop up button (collapsed, settable) 分类, Value: 门店, Secondary Actions: Expand
+				194 menu
+					195 行业基础
+					196 品类
+					197 渠道
+					198 销售
+					199 (selected) 门店
+					200 经销商
+					201 供应链
+					202 商品
+					203 数据指标
+					204 AI应用
+					205 公司业务
+					206 客户
+					207 其他
+			208 text 来源等级
+			209 pop up button (collapsed, settable) 来源等级, Value: C 级, Secondary Actions: Expand
+				210 menu
+					211 A 级
+					212 B 级
+					213 (selected) C 级
+					214 D 级
+			215 text 知识状态
+			216 pop up button (collapsed, settable) 知识状态, Value: source_supported, Secondary Actions: Expand
+				217 menu
+					218 verified
+					219 (selected) source_supported
+					220 ai_organized
+					221 inferred
+					222 needs_verification
+			223 text 可信度
+			224 pop up button (collapsed, settable) 可信度, Value: medium, Secondary Actions: Expand
+				225 menu
+					226 high
+					227 (selected) medium
+					228 low
+			229 button 刷新重复候选
+			444 text 以下是启发式候选，供人工选择，不代表事实判定。 未发现候选。
+			445 button 暂不处理
+			230 text 一句话说明
+			231 text field (settable) 一句话说明, Value: 门店补货流程
+			232 container 门店补货流程字段归位
+				233 heading 字段归位, Value: 4
+					234 text 字段归位
+				235 text AI草稿与人工说明分别保存。可编辑或删除AI项，也可选择本页来源摘录并填写人工说明。引用只说明出处，内容与归位含义仍需逐页审查。带字段内容的合并、类型切换及旧 Wiki 更新本批不支持。
+				236 button 清空字段归位（删除当前内容）
+				237 text 清空是删除。未保存可刷新撤回；保存后不提供恢复。
+				238 container 业务目标
+					239 text 业务目标
+					240 container
+						241 text AI整理（待核对）
+						242 text entry area (settable) AI整理（待核对）, Value: 门店补货是根据门店库存与需求补充商品的业务活动，其目的是降低缺货风险。
+					243 container
+						244 text AI归位来源（待核对）：原事实  f-c1-1、f-c1-2 ；证据  c1-l001
+					245 button 删除本字段AI项
+					246 text 来源摘录（用户归位）
+					247 container
+						248 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						249 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					250 container
+						251 text 人工说明（待核对）
+						252 text entry area (settable) 人工说明（待核对）
+				253 container 涉及角色
+					254 text 涉及角色
+					255 container
+						256 text AI整理（待核对）
+						257 text entry area (settable) AI整理（待核对）, Value: 流程涉及店长和库管两个角色：店长发起并提交补货申请，库管核对可用库存并安排发货。
+					258 container
+						259 text AI归位来源（待核对）：原事实  f-c1-3、f-c1-4 ；证据  c1-l001
+					260 button 删除本字段AI项
+					261 text 来源摘录（用户归位）
+					262 container
+						263 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						264 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					265 container
+						266 text 人工说明（待核对）
+						267 text entry area (settable) 人工说明（待核对）
+				268 container 触发条件
+					269 text 触发条件
+					270 container
+						271 text AI整理（待核对）
+						272 text entry area (settable) AI整理（待核对）, Value: 当门店库存低于安全库存时，触发补货申请。
+					273 container
+						274 text AI归位来源（待核对）：原事实  f-c1-3 ；证据  c1-l001
+					275 button 删除本字段AI项
+					276 text 来源摘录（用户归位）
+					277 container
+						278 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						279 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					280 container
+						281 text 人工说明（待核对）
+						282 text entry area (settable) 人工说明（待核对）
+				283 container 输入
+					284 text 输入
+					285 text 来源摘录（用户归位）
+					286 container
+						287 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						288 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					289 container
+						290 text 人工说明（待核对）
+						291 text entry area (settable) 人工说明（待核对）
+				292 container 完整流程
+					293 text 完整流程
+					294 container
+						295 text AI整理（待核对）
+						296 text entry area (settable) AI整理（待核对）, Value: 1. 门店库存低于安全库存时，店长发起补货申请；2. 店长提交补货单；3. 库管核对可用库存后安排发货。
+					297 container
+						298 text AI归位来源（待核对）：原事实  f-c1-3、f-c1-4 ；证据  c1-l001
+					299 button 删除本字段AI项
+					300 text 来源摘录（用户归位）
+					301 container
+						302 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						303 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					304 container
+						305 text 人工说明（待核对）
+						306 text entry area (settable) 人工说明（待核对）
+				307 container 输出
+					308 text 输出
+					309 text 来源摘录（用户归位）
+					310 container
+						311 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						312 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					313 container
+						314 text 人工说明（待核对）
+						315 text entry area (settable) 人工说明（待核对）
+				316 container 使用系统
+					317 text 使用系统
+					318 text 来源摘录（用户归位）
+					319 container
+						320 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						321 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					322 container
+						323 text 人工说明（待核对）
+						324 text entry area (settable) 人工说明（待核对）
+				325 container 关键规则
+					326 text 关键规则
+					327 text 来源摘录（用户归位）
+					328 container
+						329 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						330 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					331 container
+						332 text 人工说明（待核对）
+						333 text entry area (settable) 人工说明（待核对）
+				334 container 人工判断点
+					335 text 人工判断点
+					336 text 来源摘录（用户归位）
+					337 container
+						338 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						339 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					340 container
+						341 text 人工说明（待核对）
+						342 text entry area (settable) 人工说明（待核对）
+				343 container 异常情况
+					344 text 异常情况
+					345 container
+						346 text AI整理（待核对）
+						347 text entry area (settable) AI整理（待核对）, Value: 原文说明异常审批负责人未知，具体审批归属待确认。
+					348 container
+						349 text AI归位来源（待核对）：原事实  f-c1-6 ；证据  c1-l001
+					350 button 删除本字段AI项
+					351 text 来源摘录（用户归位）
+					352 container
+						353 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						354 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					355 container
+						356 text 人工说明（待核对）
+						357 text entry area (settable) 人工说明（待核对）
+				358 container 痛点
+					359 text 痛点
+					360 container
+						361 text AI整理（待核对）
+						362 text entry area (settable) AI整理（待核对）, Value: 异常审批负责人尚不明确，且AI辅助补货尚未上线，收益未知。
+					363 container
+						364 text AI归位来源（待核对）：原事实  f-c1-6、f-c1-5 ；证据  c1-l001
+					365 button 删除本字段AI项
+					366 text 来源摘录（用户归位）
+					367 container
+						368 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						369 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					370 container
+						371 text 人工说明（待核对）
+						372 text entry area (settable) 人工说明（待核对）
+				373 container 可能的 AI 机会（分析建议）
+					374 text 可能的 AI 机会（分析建议）
+					375 container
+						376 text 分析建议｜ AI整理（待核对）
+						377 text entry area (settable) 分析建议｜AI整理（待核对）, Value: 原文提及AI补货仅为未来建议，尚未上线，收益未知；可作为后续分析方向，但不能认为已实施或已产生效果。
+					378 container
+						379 text AI归位来源（待核对）：原事实  f-c1-5 ；证据  c1-l001
+					380 button 删除本字段AI项
+					381 text 来源摘录（用户归位）
+					382 container
+						383 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						384 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					385 container
+						386 text 分析建议
+						387 text entry area (settable) 分析建议
+				388 container 相关指标
+					389 text 相关指标
+					390 text 来源摘录（用户归位）
+					391 container
+						392 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						393 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					394 container
+						395 text 人工说明（待核对）
+						396 text entry area (settable) 人工说明（待核对）
+				397 container 相关知识
+					398 text 相关知识
+					399 container
+						400 text AI整理（待核对）
+						401 text entry area (settable) AI整理（待核对）, Value: 本流程围绕门店库存、安全库存与缺货风险展开，涉及店长与库管的协作。
+					402 container
+						403 text AI归位来源（待核对）：原事实  f-c1-3、f-c1-2、f-c1-4 ；证据  c1-l001
+					404 button 删除本字段AI项
+					405 text 来源摘录（用户归位）
+					406 container
+						407 checkbox (settable, integer) Value: 0, Description: c1-l001：【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+						408 text c1-l001 ： 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。
+					409 container
+						410 text 人工说明（待核对）
+						411 text entry area (settable) 人工说明（待核对）
+			412 button (collapsed) 完整正文预览（已保存内容）, Secondary Actions: Expand
+				413 text 完整正文预览（已保存内容）
+			414 heading 来源事实（原文支持，逐条带证据）, Value: 4
+				415 text 来源事实（原文支持，逐条带证据）
+			416 text entry area 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。
+			417 text 证据  c1-l001
+			418 text entry area 【虚构】门店补货的目的是降低缺货风险。
+			419 text 证据  c1-l001
+			420 text entry area 【虚构】当门店库存低于安全库存时，由店长发起补货申请。
+			421 text 证据  c1-l001
+			422 text entry area 【虚构】店长提交补货单，库管核对可用库存后安排发货。
+			423 text 证据  c1-l001
+			424 text entry area 【虚构】AI尚未上线，仅为未来建议，收益未知。
+			425 text 证据  c1-l001
+			426 text entry area 【虚构】异常审批负责人未知。
+			427 text 证据  c1-l001
+			428 heading AI 整理 / 人工说明, Value: 4
+				429 text AI 整理 / 人工说明
+			430 button 添加人工整理说明
+			431 text 暂无
+			432 heading AI 推断, Value: 4
+				433 text AI 推断
+			434 text 暂无
+			435 heading 待确认问题, Value: 4
+				436 text 待确认问题
+			437 text entry area 【虚构】异常审批负责人未知。
+			438 heading 来源证据（全局位置已按完整 Raw 校验）, Value: 4
+				439 text 来源证据（全局位置已按完整 Raw 校验）
+			440 text c1-l001 【虚构】门店补货是根据门店库存与需求补充商品的业务活动。【虚构】门店补货的目的是降低缺货风险。【虚构】当门店库存低于安全库存时，由店长发起补货申请。【虚构】店长提交补货单，库管核对可用库存后安排发货。【虚构】AI尚未上线，仅为未来建议，收益未知。【虚构】异常审批负责人未知。 [ 0 ,  137 ) · 第  1  段
+			441 button 查看原文
+		442 text 预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。
+
+The focused UI element is 1 AXWebArea R16/R18 人工字段隔离验证, URL: 127.0.0.1:5176/r1618-fields?draftId=b27f1cfd-be27-4365-8962-5164f8241bd4

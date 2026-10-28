@@ -1,5 +1,13 @@
 # 项目总控记录
 
+## 最新结论：真实P人审闭环通过，批次整体未通过（2026-10-28）
+
+用户“继续”授权本机续接。沿Astra既有HUMAN方案，Sol High human_prepare准备、主Agent实际IAB操作、Astra medium human_audit独立验收，B评分0/2/2/1=5。**H01–H04 PASS：人工纠偏保存刷新、审批1→0→1、隔离正式确认及Source/Process回读完成。** 本轮无产品或测试代码修改，不等于自动质量缺陷已由代码修复；旧浏览器阻塞本机未复现。
+
+[准备](reports/R1618-HUMAN-RESUME-20261028-builder.md)、[实际操作](reports/R1618-HUMAN-RESUME-MAIN-20261028.md)、[独立验收](reports/R1618-HUMAN-RESUME-AUDIT-20261028-final.md)、[最终导出](reports/R1618-HUMAN-RESUME-20261028-evidence/final-export.json)。受测代码5ed727128b12e5bb5c004f1205a2cf4a69f532ed；原Raw/Draft摘要保持，6事实/1完整证据/7unit及归属不变，仅隔离草稿痛点人工改写，humanEdited=true。Source/Process各1页revision1。首次sandbox TEMP不共享导致准备/启动失败已保留，随后真实TEMP成功；本轮tab关闭，服务Ctrl+C后无5176/63988监听。
+
+**R16/R18、B09及全产品整体仍未通过。** 旧P自动FAIL、outputs自动改善未覆盖、question-only真实分支缺证保留。Wiki辅助Audit提示由lab未挂路由造成，本轮不签Audit链；正式Wiki unreviewed与草稿主题审批为不同元数据，不追认知识真实性审核。真实/config0，知识252/500、Prompt15/24保持。下一步单独收敛剩余覆盖及B09门槛，不自动追加模型调用、推进R22/四链。外部AGENTS/AGENT-ROUTER报告排除。
+
 ## 最新结论：HUMAN隔离准备完成，实际UI环境阻塞（2026-10-28）
 
 用户继续授权真实P草稿人审闭环。Astra规划、Sol准备、Astra独立核查，B评分0/2/2/1=5；无产品代码修改。TEMP副本Raw/Draft与原始字节完全一致，原归档未动。主Agent启动既有lab首次加载无准备上限，四HTTP均200，browser模块2.977秒；但Chrome导航两次超时留在about:blank，IAB webview连接超时且无可用tab。**H01–04实际UI NOT_RUN，本轮整体BLOCKED；不是已确认产品故障。**
