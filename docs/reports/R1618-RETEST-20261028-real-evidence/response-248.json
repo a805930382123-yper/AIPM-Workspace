@@ -1,0 +1,9 @@
+{
+  "text": "{\"version\":3,\"document\":{\"title\":\"门店补货知识页\",\"main_topic\":\"门店补货业务流程\"},\"pages\":[{\"title\":\"门店补货流程\",\"type\":\"business_process\",\"category\":\"store\",\"factUnitIds\":[\"fu-0-28-fact\",\"fu-28-47-fact\",\"fu-47-74-fact\",\"fu-74-100-fact\",\"fu-100-123-fact\",\"fu-123-137-fact\"],\"questionUnitIds\":[\"qu-123-137\"],\"templateFields\":{\"business_goal\":{\"text\":\"通过根据门店库存与需求补充商品，降低门店缺货风险。\",\"factUnitIds\":[\"fu-0-28-fact\",\"fu-28-47-fact\"]},\"roles\":{\"text\":\"店长负责发起补货申请并提交补货单；库管负责核对可用库存后安排发货。\",\"factUnitIds\":[\"fu-47-74-fact\",\"fu-74-100-fact\"]},\"trigger\":{\"text\":\"门店库存低于安全库存时触发补货申请。\",\"factUnitIds\":[\"fu-47-74-fact\"]},\"inputs\":{\"text\":\"门店库存情况与需求，以及安全库存水平。\",\"factUnitIds\":[\"fu-0-28-fact\",\"fu-47-74-fact\"]},\"steps\":{\"text\":\"1）门店库存低于安全库存时，店长发起补货申请；2）店长提交补货单；3）库管核对可用库存；4）库管安排发货。\",\"factUnitIds\":[\"fu-47-74-fact\",\"fu-74-100-fact\"]},\"outputs\":{\"text\":\"补货单及由库管安排发出的补货发货。\",\"factUnitIds\":[\"fu-74-100-fact\"]},\"exceptions\":{\"text\":\"流程异常情况下的审批负责人未知；同时异常审批负责人这一待确认问题尚未明确。\",\"factUnitIds\":[\"fu-123-137-fact\"]},\"ai_opportunities\":{\"text\":\"作为分析建议：可考虑在门店补货流程中引入AI辅助，但原文明确AI尚未上线，仅为未来建议，收益未知，需待验证。\",\"factUnitIds\":[\"fu-100-123-fact\"]},\"related_knowledge\":{\"text\":\"本流程与门店库存、安全库存管理及缺货风险管理相关，补货的目的是降低缺货风险。\",\"factUnitIds\":[\"fu-28-47-fact\",\"fu-47-74-fact\"]}}}]}",
+  "finishReason": "stop",
+  "bytes": 1812,
+  "usage": {
+    "promptTokens": 5222,
+    "completionTokens": 526
+  }
+}
