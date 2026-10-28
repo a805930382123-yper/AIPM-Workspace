@@ -13,9 +13,13 @@ import { assertNoKnownSecret } from '../../services/llm/provider.ts';
 
 export const FIXTURE = 'tests/acceptance/R1618-QUALITY-20261027-fixture.json';
 const SCRIPT = 'tests/acceptance/R1618-QUALITY-20261027-run.mjs';
-const CARD = 'docs/handoffs/R1618-RETEST-20261028-task.md';
-const PREFIX = '.scratch-R1618-RETEST-20261028-';
-const SEQUENCES = [247, 248];
+const CARD = 'docs/handoffs/R1618-COVER-20261028-task.md';
+const PLAN = 'docs/reports/R1618-COVER-20261028-plan.md';
+const PREFIX = '.scratch-R1618-COVER-20261028-';
+const PROFILES = {
+  concept: { fixture: 'tests/acceptance/R1618-COVER-20261028-concept-fixture.json', knowledgeBefore: 248, sequences: [249, 250] },
+  process: { fixture: FIXTURE, knowledgeBefore: 250, sequences: [251, 252] },
+};
 const sha = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const must = (ok, code) => { if (!ok) { const error = new Error(code); error.code = code; throw error; } };
@@ -35,28 +39,32 @@ async function freeze() {
   }
   // Includes the actual pipeline/store/render dependencies and runtime rule files.
   await walk('services'); await walk('rules');
-  for (const file of [SCRIPT, FIXTURE, CARD, 'package.json', 'package-lock.json']) files.push({ path: file, sha256: sha(await fs.readFile(file)) });
+  for (const file of [SCRIPT, ...Object.values(PROFILES).map(profile => profile.fixture), CARD, PLAN, 'package.json', 'package-lock.json']) files.push({ path: file, sha256: sha(await fs.readFile(file)) });
   files.sort((a, b) => a.path.localeCompare(b.path));
   return { files, sha256: sha(files) };
 }
-export async function prepare(mode = 'real') {
+export async function prepare(profile, mode = 'real') {
+  must(Object.hasOwn(PROFILES, profile), 'PROFILE_INVALID');
+  const config = PROFILES[profile];
   must(['real', 'fake'].includes(mode), 'MODE_INVALID');
-  const sample = await read(FIXTURE), body = sample.quotes.join(sample.joinWith);
+  const sample = await read(config.fixture), body = sample.quotes.join(sample.joinWith);
   must(sample.quotes.length === 6 && chunkText(body, { maxChunkChars: 8000, overlap: 400, maxRawChars: 500000 }).length === 1, 'SINGLE_FIXED_SAMPLE_REQUIRED');
   const root = await fs.mkdtemp(path.resolve(PREFIX)), raws = new RawStore(root); await raws.initialize();
   const raw = await raws.create({ title: sample.title, sourceType: sample.sourceType, sourceName: sample.sourceName, body, tags: ['虚构', 'R1618-quality'] });
   const rawPath = path.join(root, 'knowledge/raw/notes', raw.id + '.md');
   const frozen = await freeze(); await durable(path.join(root, 'freeze.json'), frozen);
-  const session = { id: randomUUID(), root, mode, rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: sha(await fs.readFile(rawPath)), fixtureSha256: sha(await fs.readFile(FIXTURE)), freezeSha256: frozen.sha256, knowledgeBefore: 246, sequences: SEQUENCES, maxCalls: 2, promptUsed: 15 };
+  const session = { id: randomUUID(), root, mode, profile, fixture: config.fixture, rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: sha(await fs.readFile(rawPath)), fixtureSha256: sha(await fs.readFile(config.fixture)), freezeSha256: frozen.sha256, knowledgeBefore: config.knowledgeBefore, sequences: config.sequences, maxCalls: 2, promptUsed: 15 };
   await durable(path.join(root, 'session.json'), session);
-  return { session, releaseTemplate: { released: false, budgetApproved: false, issuedBy: 'main', issuedAt: null, sessionId: session.id, mode, maxCalls: 2, sequences: SEQUENCES, rawId: raw.id, rawSha256: raw.bodySha256, fixtureSha256: session.fixtureSha256, freezeSha256: frozen.sha256 } };
+  return { session, releaseTemplate: { released: false, budgetApproved: false, issuedBy: 'main', issuedAt: null, sessionId: session.id, mode, profile, maxCalls: 2, sequences: config.sequences, rawId: raw.id, rawSha256: raw.bodySha256, fixtureSha256: session.fixtureSha256, freezeSha256: frozen.sha256 } };
 }
 async function sessionAt(root) {
   root = path.resolve(root);
   must(path.dirname(root) === process.cwd() && path.basename(root).startsWith(PREFIX), 'ISOLATED_ROOT_REQUIRED');
   must(!(await fs.lstat(root)).isSymbolicLink(), 'SYMLINK_ROOT_DENIED');
   const s = await read(path.join(root, 'session.json'));
-  must(s.root === root && ['real', 'fake'].includes(s.mode) && s.maxCalls === 2 && s.knowledgeBefore === 246 && s.promptUsed === 15 && JSON.stringify(s.sequences) === JSON.stringify(SEQUENCES), 'SESSION_INVALID');
+  must(Object.hasOwn(PROFILES, s.profile), 'PROFILE_INVALID');
+  const config = PROFILES[s.profile];
+  must(s.root === root && ['real', 'fake'].includes(s.mode) && s.fixture === config.fixture && s.maxCalls === 2 && s.knowledgeBefore === config.knowledgeBefore && s.promptUsed === 15 && JSON.stringify(s.sequences) === JSON.stringify(config.sequences), 'SESSION_INVALID');
   return s;
 }
 async function releaseFor(s, file, exactSha) {
@@ -64,8 +72,8 @@ async function releaseFor(s, file, exactSha) {
   const bytes = await fs.readFile(file); must(sha(bytes) === exactSha, 'RELEASE_SHA_DRIFT');
   const r = JSON.parse(bytes);
   must(r.released === true && r.budgetApproved === true && r.issuedBy === 'main' && Number.isFinite(Date.parse(r.issuedAt)), 'RELEASE_NOT_APPROVED');
-  for (const key of ['sessionId', 'mode', 'rawId', 'rawSha256', 'fixtureSha256', 'freezeSha256']) must(r[key] === (key === 'sessionId' ? s.id : s[key]), 'RELEASE_BINDING_DRIFT');
-  must(r.maxCalls === 2 && JSON.stringify(r.sequences) === JSON.stringify(SEQUENCES), 'RELEASE_BUDGET_INVALID');
+  for (const key of ['sessionId', 'mode', 'profile', 'rawId', 'rawSha256', 'fixtureSha256', 'freezeSha256']) must(r[key] === (key === 'sessionId' ? s.id : s[key]), 'RELEASE_BINDING_DRIFT');
+  must(r.maxCalls === 2 && JSON.stringify(r.sequences) === JSON.stringify(s.sequences), 'RELEASE_BUDGET_INVALID');
   must((await freeze()).sha256 === s.freezeSha256, 'SOURCE_FREEZE_DRIFT');
   return { releaseSha256: exactSha };
 }
@@ -73,7 +81,8 @@ function fakeReply(request) {
   const input = JSON.parse(request.user.split('\n').at(-1));
   if (!request.user.startsWith('请对下列全部已验证事实规划知识页')) return { text: JSON.stringify({ version: 2, facts: input.slice(0, 5).map(atom => ({ atomId: atom.id, kind: 'fact' })), questions: [{ atomId: input[5].id }], sourceNotes: [] }), bytes: 1, finishReason: 'stop' };
   const units = input.factUnits, field = (text, ...indices) => ({ text, factUnitIds: indices.map(index => units[index].id) });
-  // Deterministic smoke data only; never sent to a real model or used as a quality oracle.
+  // Mechanical smoke only, including concept profile: these replenishment answers are unrelated to C semantics.
+  // Never sent to a real model or used as a quality oracle.
   return { text: JSON.stringify({ version: 3, document: { title: '来源：虚构门店补货', main_topic: '补货' }, pages: [
     { title: '虚构门店补货概念', type: 'concept', category: 'supply_chain', factUnitIds: units.slice(0, 2).map(x => x.id), questionUnitIds: [], templateFields: { one_line_explanation: field('根据门店库存与需求补充商品的业务活动。', 0), why_important: field('以降低缺货风险为目标。', 1) } },
     { title: '虚构门店补货流程', type: 'business_process', category: 'supply_chain', factUnitIds: units.slice(2).map(x => x.id), questionUnitIds: input.questionUnits.map(x => x.id), templateFields: { trigger: field('当门店库存低于安全库存时，由店长发起补货申请。', 2), steps: field('店长提交补货单，库管核对可用库存后安排发货。', 3), ai_opportunities: field('AI尚未上线，仅为未来建议，收益未知。', 4) } },
@@ -82,10 +91,10 @@ function fakeReply(request) {
 export async function run(root, releaseFile, releaseSha256) {
   const s = await sessionAt(root); await releaseFor(s, releaseFile, releaseSha256);
   must(!(await present(path.join(s.root, 'run-started.json'))), 'SESSION_ALREADY_STARTED');
-  for (const seq of SEQUENCES) must(!(await present(path.join(s.root, `attempt-${seq}.json`))), 'ATTEMPT_ALREADY_RESERVED');
+  for (const seq of s.sequences) must(!(await present(path.join(s.root, `attempt-${seq}.json`))), 'ATTEMPT_ALREADY_RESERVED');
   const raws = new RawStore(s.root), drafts = new DraftStore(s.root), checkpoints = new ExtractionCheckpointStore(s.root);
   await Promise.all([raws.initialize(), drafts.initialize(), checkpoints.initialize()]);
-  const raw = await raws.get(s.rawId), sample = await read(FIXTURE), body = sample.quotes.join(sample.joinWith);
+  const raw = await raws.get(s.rawId), sample = await read(s.fixture), body = sample.quotes.join(sample.joinWith);
   must(raw && raw.body === body && raw.bodySha256 === s.rawSha256 && sha(body) === s.rawSha256, 'RAW_BINDING_DRIFT');
   const rawPath = path.join(s.root, 'knowledge/raw/notes', raw.id + '.md'); must(sha(await fs.readFile(rawPath)) === s.rawFileSha256, 'RAW_FILE_DRIFT');
   await durable(path.join(s.root, 'run-started.json'), { sessionId: s.id, at: new Date().toISOString(), releaseSha256 });
@@ -99,7 +108,7 @@ export async function run(root, releaseFile, releaseSha256) {
       const stage = request.user.startsWith('请对下列全部已验证事实规划知识页') ? 'planning' : 'extracting';
       must(stage === (reserved === 0 ? 'extracting' : 'planning'), 'REQUEST_ORDER_INVALID');
       await releaseFor(s, releaseFile, releaseSha256);
-      const sequence = SEQUENCES[reserved], safeRequest = { system: request.system, user: request.user, purpose: request.purpose, timeoutMs: request.timeoutMs, maxOutputBytes: request.maxOutputBytes };
+      const sequence = s.sequences[reserved], safeRequest = { system: request.system, user: request.user, purpose: request.purpose, timeoutMs: request.timeoutMs, maxOutputBytes: request.maxOutputBytes };
       await durable(path.join(s.root, `attempt-${sequence}.json`), { sequence, stage, sessionId: s.id, requestSha256: sha(safeRequest), releaseSha256, at: new Date().toISOString(), status: 'pending-counts-if-unknown' }); reserved++;
       let response;
       if (s.mode === 'real') {
@@ -132,37 +141,45 @@ export async function run(root, releaseFile, releaseSha256) {
     const evidence = { sessionId: s.id, mode: s.mode, raw, originalDraft: draft, preview: drafts.view(draft), outcome, checkpoint, rawUnchanged: sha(await fs.readFile(rawPath)) === s.rawFileSha256 };
     assertNoKnownSecret(evidence, secrets); must(evidence.rawUnchanged, 'RAW_CHANGED');
     await durable(path.join(s.root, 'candidate-original.json'), evidence);
-    const result = { status: 'captured-awaiting-independent-quality-review', root: s.root, draftId: draft.id, reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, fakeCalls: s.mode === 'fake' ? reserved : 0, knowledgeUsed: 246 + (s.mode === 'real' ? reserved : 0), promptUsed: 15 };
+    const result = { status: 'captured-awaiting-independent-quality-review', root: s.root, profile: s.profile, draftId: draft.id, reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, fakeCalls: s.mode === 'fake' ? reserved : 0, knowledgeUsed: s.knowledgeBefore + (s.mode === 'real' ? reserved : 0), promptUsed: 15 };
     await durable(path.join(s.root, 'result.json'), result); return result;
   } catch (error) {
-    await durable(path.join(s.root, 'result.json'), { status: 'failed-no-retry', code: error.code ?? 'LOCAL_RUN_FAILED', reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, knowledgeUsed: 246 + (s.mode === 'real' ? reserved : 0), promptUsed: 15 });
+    await durable(path.join(s.root, 'result.json'), { status: 'failed-no-retry', code: error.code ?? 'LOCAL_RUN_FAILED', profile: s.profile, reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, knowledgeUsed: s.knowledgeBefore + (s.mode === 'real' ? reserved : 0), promptUsed: 15 });
     throw error;
   }
 }
 export async function smoke() {
   const assert = (await import('node:assert/strict')).default;
-  const prepared = await prepare('fake'), root = prepared.session.root;
-  await assert.rejects(run(root), { code: 'RELEASE_REQUIRED' });
-  assert.equal(await present(path.join(root, 'run-started.json')), false);
-  assert.equal(await present(path.join(root, 'attempt-247.json')), false);
-  const release = { ...prepared.releaseTemplate, released: true, budgetApproved: true, issuedAt: new Date().toISOString() }, file = path.join(root, 'fake-release.json');
-  await durable(file, release); const hash = sha(await fs.readFile(file));
-  const result = await run(root, file, hash);
-  assert.equal(result.fakeCalls, 2); assert.equal(result.realCalls, 0); assert.equal(result.configReads, 0);
-  const original = await read(path.join(root, 'candidate-original.json'));
-  assert.equal(original.originalDraft.pages.length, 2); assert.equal(original.rawUnchanged, true);
-  assert(original.originalDraft.pages.every(page => Object.values(page.templateFields).some(field => field.aiContent?.factIds.length)));
-  assert(original.preview.pages.some(page => page.renderedBody.includes('分析建议｜AI整理（待核对）')));
-  assert.deepEqual(original.originalDraft.pages.flatMap(page => page.source_facts.map(f => f.text)), (await read(FIXTURE)).quotes.slice(0, 5));
-  await assert.rejects(run(root, file, hash), { code: 'SESSION_ALREADY_STARTED' });
-  assert.deepEqual((await fs.readdir(root)).filter(name => /^attempt-\d+\.json$/.test(name)).sort(), ['attempt-247.json', 'attempt-248.json']);
-  return { pass: true, checks: ['unreleased-zero-call', 'two-request-original-draft-capture', 'used-session-rejected'], ...result };
+  const results = [];
+  for (const [profile, config] of Object.entries(PROFILES)) {
+    const prepared = await prepare(profile, 'fake'), root = prepared.session.root;
+    assert.equal(prepared.session.profile, profile); assert.equal(prepared.session.fixture, config.fixture);
+    assert.equal(prepared.session.knowledgeBefore, config.knowledgeBefore); assert.deepEqual(prepared.session.sequences, config.sequences);
+    assert.equal(prepared.session.fixtureSha256, sha(await fs.readFile(config.fixture)));
+    await assert.rejects(run(root), { code: 'RELEASE_REQUIRED' });
+    assert.equal(await present(path.join(root, 'run-started.json')), false);
+    for (const seq of config.sequences) assert.equal(await present(path.join(root, `attempt-${seq}.json`)), false);
+    const release = { ...prepared.releaseTemplate, released: true, budgetApproved: true, issuedAt: new Date().toISOString() }, file = path.join(root, 'fake-release.json');
+    await durable(file, release); const hash = sha(await fs.readFile(file));
+    const result = await run(root, file, hash);
+    assert.equal(result.fakeCalls, 2); assert.equal(result.realCalls, 0); assert.equal(result.configReads, 0);
+    assert.equal(result.knowledgeUsed, config.knowledgeBefore); assert.equal(result.promptUsed, 15);
+    const original = await read(path.join(root, 'candidate-original.json'));
+    assert.equal(original.originalDraft.pages.length, 2); assert.equal(original.rawUnchanged, true);
+    assert(original.originalDraft.pages.every(page => Object.values(page.templateFields).some(field => field.aiContent?.factIds.length)));
+    assert(original.preview.pages.some(page => page.renderedBody.includes('分析建议｜AI整理（待核对）')));
+    assert.deepEqual(original.originalDraft.pages.flatMap(page => page.source_facts.map(f => f.text)), (await read(config.fixture)).quotes.slice(0, 5));
+    await assert.rejects(run(root, file, hash), { code: 'SESSION_ALREADY_STARTED' });
+    assert.deepEqual((await fs.readdir(root)).filter(name => /^attempt-\d+\.json$/.test(name)).sort(), config.sequences.map(seq => `attempt-${seq}.json`));
+    results.push(result);
+  }
+  return { pass: true, checks: ['profile-binding', 'unreleased-zero-call', 'two-request-original-draft-capture', 'used-session-rejected'], fakeCalls: 4, realCalls: 0, configReads: 0, results };
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [command, ...args] = process.argv.slice(2);
   try {
     let result;
-    if (command === 'prepare') result = await prepare(args[0] ?? 'real');
+    if (command === 'prepare') result = await prepare(...args);
     else if (command === 'run') result = await run(...args);
     else if (command === 'smoke') result = await smoke();
     else throw Object.assign(new Error('COMMAND_INVALID'), { code: 'COMMAND_INVALID' });
