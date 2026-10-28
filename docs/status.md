@@ -1,5 +1,11 @@
 # 工程状态
 
+## 最新结论：R16/R18修复后真实复验准备通过（2026-10-28）
+
+用户批准下一步工作；B模式0/2/2/1=5，Astra medium r1618_retest_plan规划及独立验收，Sol High r1618_retest_build施工。仅既有入口9行更新本轮任务/隔离目录/247–248序号与246起账，产品和固定六句资料不变。独立唯一fake smoke exit0、1.176秒、3检查通过；64项冻结无漂移，真实会话无release/attempt/run-started。P01–03零调用准备PASS；seq246真实质量FAIL、真实草稿未验及R16/R18/B09整体未通过保持。
+
+[本轮任务卡](handoffs/R1618-RETEST-20261028-task.md)、[施工报告](reports/R1618-RETEST-20261028-builder.md)、[独立验收](reports/R1618-RETEST-AUDIT-20261028-final.md)。基线eb93a30加入口差异，交付提交关联Git历史。真实/config0，知识246/500、Prompt15/24不变。建议下一步用当前配置唯一完整流程最多2次实际请求（247抽取、248规划，累计最高248）；失败也计且首失败停，不自动重试，具体预算待用户确认。旧余量不自动放行，不推进R22/四链。不重复tsc/旧矩阵/浏览器。AGENTS及AGENT-ROUTER报告排除。
+
 ## 最新结论：R16/R18提示工程修复独立验收通过（2026-10-27）
 
 用户批准的B模式最小工程已完成：Sol High修改规划字段提示及既有revision13→14，既有测试文件新增一项定向检查；Astra medium交接后核差异、前后三文件SHA并独立运行1/1通过（命令0.591秒）。**本轮提示工程PASS；真实语义修复未证，seq246 Q02 FAIL、Q03 NOT_RUN、Concept覆盖缺证及R16/R18/B09整体未通过保持。** [任务卡](handoffs/R1618-FIX-20261027-task.md)、[施工](reports/R1618-FIX-20261027-builder.md)、[独立验收](reports/R1618-FIX-AUDIT-20261027-final.md)。基线4c27037加三文件受测差异，冻结见报告，交付提交关联Git历史。

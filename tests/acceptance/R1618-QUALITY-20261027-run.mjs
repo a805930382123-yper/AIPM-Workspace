@@ -13,9 +13,9 @@ import { assertNoKnownSecret } from '../../services/llm/provider.ts';
 
 export const FIXTURE = 'tests/acceptance/R1618-QUALITY-20261027-fixture.json';
 const SCRIPT = 'tests/acceptance/R1618-QUALITY-20261027-run.mjs';
-const CARD = 'docs/handoffs/R1618-QUALITY-20261027-task.md';
-const PREFIX = '.scratch-R1618-QUALITY-20261027-';
-const SEQUENCES = [245, 246];
+const CARD = 'docs/handoffs/R1618-RETEST-20261028-task.md';
+const PREFIX = '.scratch-R1618-RETEST-20261028-';
+const SEQUENCES = [247, 248];
 const sha = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const must = (ok, code) => { if (!ok) { const error = new Error(code); error.code = code; throw error; } };
@@ -47,7 +47,7 @@ export async function prepare(mode = 'real') {
   const raw = await raws.create({ title: sample.title, sourceType: sample.sourceType, sourceName: sample.sourceName, body, tags: ['虚构', 'R1618-quality'] });
   const rawPath = path.join(root, 'knowledge/raw/notes', raw.id + '.md');
   const frozen = await freeze(); await durable(path.join(root, 'freeze.json'), frozen);
-  const session = { id: randomUUID(), root, mode, rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: sha(await fs.readFile(rawPath)), fixtureSha256: sha(await fs.readFile(FIXTURE)), freezeSha256: frozen.sha256, knowledgeBefore: 244, sequences: SEQUENCES, maxCalls: 2, promptUsed: 15 };
+  const session = { id: randomUUID(), root, mode, rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: sha(await fs.readFile(rawPath)), fixtureSha256: sha(await fs.readFile(FIXTURE)), freezeSha256: frozen.sha256, knowledgeBefore: 246, sequences: SEQUENCES, maxCalls: 2, promptUsed: 15 };
   await durable(path.join(root, 'session.json'), session);
   return { session, releaseTemplate: { released: false, budgetApproved: false, issuedBy: 'main', issuedAt: null, sessionId: session.id, mode, maxCalls: 2, sequences: SEQUENCES, rawId: raw.id, rawSha256: raw.bodySha256, fixtureSha256: session.fixtureSha256, freezeSha256: frozen.sha256 } };
 }
@@ -56,7 +56,7 @@ async function sessionAt(root) {
   must(path.dirname(root) === process.cwd() && path.basename(root).startsWith(PREFIX), 'ISOLATED_ROOT_REQUIRED');
   must(!(await fs.lstat(root)).isSymbolicLink(), 'SYMLINK_ROOT_DENIED');
   const s = await read(path.join(root, 'session.json'));
-  must(s.root === root && ['real', 'fake'].includes(s.mode) && s.maxCalls === 2 && s.knowledgeBefore === 244 && s.promptUsed === 15 && JSON.stringify(s.sequences) === JSON.stringify(SEQUENCES), 'SESSION_INVALID');
+  must(s.root === root && ['real', 'fake'].includes(s.mode) && s.maxCalls === 2 && s.knowledgeBefore === 246 && s.promptUsed === 15 && JSON.stringify(s.sequences) === JSON.stringify(SEQUENCES), 'SESSION_INVALID');
   return s;
 }
 async function releaseFor(s, file, exactSha) {
@@ -132,10 +132,10 @@ export async function run(root, releaseFile, releaseSha256) {
     const evidence = { sessionId: s.id, mode: s.mode, raw, originalDraft: draft, preview: drafts.view(draft), outcome, checkpoint, rawUnchanged: sha(await fs.readFile(rawPath)) === s.rawFileSha256 };
     assertNoKnownSecret(evidence, secrets); must(evidence.rawUnchanged, 'RAW_CHANGED');
     await durable(path.join(s.root, 'candidate-original.json'), evidence);
-    const result = { status: 'captured-awaiting-independent-quality-review', root: s.root, draftId: draft.id, reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, fakeCalls: s.mode === 'fake' ? reserved : 0, knowledgeUsed: 244 + (s.mode === 'real' ? reserved : 0), promptUsed: 15 };
+    const result = { status: 'captured-awaiting-independent-quality-review', root: s.root, draftId: draft.id, reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, fakeCalls: s.mode === 'fake' ? reserved : 0, knowledgeUsed: 246 + (s.mode === 'real' ? reserved : 0), promptUsed: 15 };
     await durable(path.join(s.root, 'result.json'), result); return result;
   } catch (error) {
-    await durable(path.join(s.root, 'result.json'), { status: 'failed-no-retry', code: error.code ?? 'LOCAL_RUN_FAILED', reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, knowledgeUsed: 244 + (s.mode === 'real' ? reserved : 0), promptUsed: 15 });
+    await durable(path.join(s.root, 'result.json'), { status: 'failed-no-retry', code: error.code ?? 'LOCAL_RUN_FAILED', reserved, sent, configReads, realCalls: s.mode === 'real' ? reserved : 0, knowledgeUsed: 246 + (s.mode === 'real' ? reserved : 0), promptUsed: 15 });
     throw error;
   }
 }
@@ -144,7 +144,7 @@ export async function smoke() {
   const prepared = await prepare('fake'), root = prepared.session.root;
   await assert.rejects(run(root), { code: 'RELEASE_REQUIRED' });
   assert.equal(await present(path.join(root, 'run-started.json')), false);
-  assert.equal(await present(path.join(root, 'attempt-245.json')), false);
+  assert.equal(await present(path.join(root, 'attempt-247.json')), false);
   const release = { ...prepared.releaseTemplate, released: true, budgetApproved: true, issuedAt: new Date().toISOString() }, file = path.join(root, 'fake-release.json');
   await durable(file, release); const hash = sha(await fs.readFile(file));
   const result = await run(root, file, hash);
@@ -155,7 +155,7 @@ export async function smoke() {
   assert(original.preview.pages.some(page => page.renderedBody.includes('分析建议｜AI整理（待核对）')));
   assert.deepEqual(original.originalDraft.pages.flatMap(page => page.source_facts.map(f => f.text)), (await read(FIXTURE)).quotes.slice(0, 5));
   await assert.rejects(run(root, file, hash), { code: 'SESSION_ALREADY_STARTED' });
-  assert.deepEqual((await fs.readdir(root)).filter(name => /^attempt-\d+\.json$/.test(name)).sort(), ['attempt-245.json', 'attempt-246.json']);
+  assert.deepEqual((await fs.readdir(root)).filter(name => /^attempt-\d+\.json$/.test(name)).sort(), ['attempt-247.json', 'attempt-248.json']);
   return { pass: true, checks: ['unreleased-zero-call', 'two-request-original-draft-capture', 'used-session-rejected'], ...result };
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

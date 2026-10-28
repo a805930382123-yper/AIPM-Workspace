@@ -1,5 +1,11 @@
 # 项目总控记录
 
+## 最新结论：R16/R18修复后真实复验准备通过（2026-10-28）
+
+用户批准下一步工作；B模式0/2/2/1=5，Astra medium r1618_retest_plan规划及独立验收，Sol High r1618_retest_build施工。仅既有入口9行更新本轮任务/隔离目录/247–248序号与246起账，产品和固定六句资料不变。独立唯一fake smoke exit0、1.176秒、3检查通过；64项冻结无漂移，真实会话无release/attempt/run-started。P01–03零调用准备PASS；seq246真实质量FAIL、真实草稿未验及R16/R18/B09整体未通过保持。
+
+[本轮任务卡](handoffs/R1618-RETEST-20261028-task.md)、[施工报告](reports/R1618-RETEST-20261028-builder.md)、[独立验收](reports/R1618-RETEST-AUDIT-20261028-final.md)。基线eb93a30加入口差异，交付提交关联Git历史。真实/config0，知识246/500、Prompt15/24不变。建议下一步用当前配置唯一完整流程最多2次实际请求（247抽取、248规划，累计最高248）；失败也计且首失败停，不自动重试，具体预算待用户确认。旧余量不自动放行，不推进R22/四链。不重复tsc/旧矩阵/浏览器。AGENTS及AGENT-ROUTER报告排除。
+
 ## 通用调度规则更新（2026-10-27）
 
 用户批准采用通用 Agent Router：按当前批次评分，A 模式分为 Luna High 轻量施工及 Terra High 标准施工，Sol 独立验收；B 模式 Sol 施工、Astra 独立验收，均由 Astra 规划标准。现行规则见 [coordination](coordination.md#通用-agent-router-现行规则2026-10-27) 和 [Skill](../.agents/skills/agent-router/SKILL.md)。本记录下方较早的固定 A 模式及旧调度为历史；任务进度、实际模型身份、预算和产品验收结论不变。本次仅更新规则，不启动产品任务。
