@@ -73,7 +73,7 @@ export function projectKnowledgePlan(plan:KnowledgePlan, input:KnowledgePlanning
     return [unit.id,owner] as const;
   }));
   const facts=owners(input.factUnits,'factIds'),questions=owners(input.questionUnits,'questionIds');
-  return {version:3,document:{title:plan.document.title,main_topic:plan.document.main_topic},pages:plan.pages.map((page,index)=>{
+  return {version:3,document:{title:plan.document.title,main_topic:plan.document.main_topic,...(plan.document.source_level ? {source_level:plan.document.source_level} : {})},pages:plan.pages.map((page,index)=>{
     const fields: NonNullable<KnowledgeWirePlan['pages'][number]['templateFields']> = {};
     for (const [key, field] of Object.entries(page.templateFields ?? {})) {
       if (!templateSections(page.type).some(section => section.key === key) || !field.factIds.length || new Set(field.factIds).size !== field.factIds.length || field.factIds.some(id => !page.factIds.includes(id))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', 'AI字段包含类型错误或跨页事实引用，已拒绝恢复。', 409);

@@ -302,6 +302,6 @@ function toKb02PlanReply(reply: FakeReply, original: FakeRequest, run: FakeRun):
   for(const unit of input.questionUnits){const question={...unit,id:unit.memberIds[0]};const key=`${Number(question.id.match(/^q-c(\d+)-/u)?.[1] ?? 1)}\0${question.text}`;const list=run.pageForQuestion.get(key)??[];const i=questionSeen.get(key)??0;questionSeen.set(key,i+1);const title=list[i]??list[0]??grouped.keys().next().value;if(title){const page=grouped.get(title);if(page)page.questionUnitIds.push(unit.id);}}
   if(!grouped.size&&input.facts.length){const page={title:'业务事实',type:'concept',category:'other',factUnitIds:input.factUnits.map(x=>x.id),questionUnitIds:[]};grouped.set(page.title,page);}
   const inferredTitle=input.facts.map(fact=>run.pageForFact.get(`${Number(fact.id.match(/^f-c(\d+)-/u)?.[1] ?? 1)}\0${fact.text}`)?.[0]?.documentTitle).find(Boolean)??'知识主题';
-  return {...reply,content:contentOf({version:3,document:{title:String(base.title&&!String(base.title).startsWith('合并资料-')?base.title:inferredTitle),main_topic:String(base.main_topic??'业务事实')},pages:[...grouped.values()]})};
+  return {...reply,content:contentOf({version:3,document:{source_level:'D',title:String(base.title&&!String(base.title).startsWith('合并资料-')?base.title:inferredTitle),main_topic:String(base.main_topic??'业务事实')},pages:[...grouped.values()]})};
 }
 

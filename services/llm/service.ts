@@ -28,7 +28,7 @@ export type ExtractedPage = {
   mergedFrom?: string[];
   notes?: string[];
 };
-export type ExtractDocument = { title: string; main_topic: string; summary: string };
+export type ExtractDocument = { title: string; main_topic: string; summary: string; source_level?: 'A' | 'B' | 'C' | 'D' };
 export type ExtractOutcome = {
   reviewBasis?: ReviewBasis;
   document: ExtractDocument; pages: ExtractedPage[];

@@ -21,8 +21,8 @@ const sha=(s:string|Buffer)=>createHash('sha256').update(s).digest('hex');
 const chunks=(body:string)=>chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000});
 const catalogs=(body:string)=>new Map(chunks(body).map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
 const data=(r:LlmCompletionRequest)=>JSON.parse(r.user.split('\n').at(-1)!);
-const projectOldFailure=(response:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:response.document,pages:response.pages.map((page:any)=>({title:page.title,type:page.type,category:page.category,factUnitIds:p.factUnits.filter(u=>u.memberIds.every(id=>page.factIds.includes(id))).map(u=>u.id),questionUnitIds:p.questionUnits.filter(u=>u.memberIds.every(id=>page.questionIds.includes(id))).map(u=>u.id)}))});
-const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:{title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factUnitIds:p.factUnits.map(i=>i.id),questionUnitIds:p.questionUnits.map(i=>i.id)}]});
+const projectOldFailure=(response:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:{...response.document,source_level:'D'},pages:response.pages.map((page:any)=>({title:page.title,type:page.type,category:page.category,factUnitIds:p.factUnits.filter(u=>u.memberIds.every(id=>page.factIds.includes(id))).map(u=>u.id),questionUnitIds:p.questionUnits.filter(u=>u.memberIds.every(id=>page.questionIds.includes(id))).map(u=>u.id)}))});
+const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document: { source_level: 'D',title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factUnitIds:p.factUnits.map(i=>i.id),questionUnitIds:p.questionUnits.map(i=>i.id)}]});
 // Recreate only each old response's omissions on an otherwise schema-valid v3 plan.
 // The original bad assignments remain tested verbatim as v2; tests never repair runtime output.
 const projectOldOmissions=(source:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>{
@@ -61,7 +61,7 @@ test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area pla
     assert(r.system.includes('不得按chunk分组建页'));assert(r.system.includes('不可二选一'));
     for(const s of p.sourceContexts){assert.equal(s.text,old.raw.body.slice(s.contextStart,s.contextEnd));assert.equal(s.id,`s-${s.start}-${s.end}`);assert.equal(old.raw.body.slice(s.start,s.end),p.facts.find(i=>i.sourceId===s.id)?.text??p.questions.find(i=>i.sourceId===s.id)?.text);}
     // Explicit fixture expectations are test labels, not runtime entity classification.
-    return {version:3,document:{title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factUnitIds:p.factUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id),questionUnitIds:p.questionUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id)};})};
+    return {version:3,document: { source_level: 'D',title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factUnitIds:p.factUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id),questionUnitIds:p.questionUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id)};})};
   });
   const done=await f.run(),payload=data(f.requests[0]);
   assert.equal(f.requests.length,1);assert.equal(f.cp.attempts,16);assert.deepEqual(f.cp.completedChunks,before);

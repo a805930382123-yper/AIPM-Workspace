@@ -33,7 +33,7 @@ async function fixture() {
   const rules = { types: bundle.fmcg.types.map(t => t.id), categories: bundle.fmcg.categories.map(c => c.id), knowledge_status: bundle.fmcg.enums.knowledge_status,
     confidence: bundle.fmcg.enums.confidence, source_level: bundle.fmcg.enums.source_level, review_status: bundle.fmcg.enums.review_status };
   const draft = await drafts.create({ raw, body, rules, jobId: randomUUID(), outcome: { pages: [page('concept', 0), page('business_process', 2)],
-    document: { title: '来源：虚构字段资料', main_topic: '补货', summary: quotes.join('') }, provider: { name: 'fixture', model: 'no-provider' }, rulesVersion: 'offline-fields',
+    document: { source_level: 'D', title: '来源：虚构字段资料', main_topic: '补货', summary: quotes.join('') }, provider: { name: 'fixture', model: 'no-provider' }, rulesVersion: 'offline-fields',
     callCount: 0, chunkCount: 1, chunkCoverage: [{ index: 0, start: 0, end: body.length }], usage: { promptTokens: 0, completionTokens: 0 }, warnings: [] } });
   const wiki = new WikiStore(root, raws); await wiki.initialize();
   const commits = new WikiCommitService({ root, rawStore: raws, rawStates, drafts, wikiStore: wiki }); await commits.initialize();

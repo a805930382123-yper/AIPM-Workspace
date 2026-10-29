@@ -18,7 +18,8 @@
       "additionalProperties": false,
       "required": [
         "title",
-        "main_topic"
+        "main_topic",
+        "source_level"
       ],
       "properties": {
         "title": {
@@ -30,6 +31,15 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 300
+        },
+        "source_level": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
         }
       }
     },

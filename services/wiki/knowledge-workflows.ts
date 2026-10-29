@@ -8,7 +8,7 @@ import { RawIntegrityError, type RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting, assertRawsNotMeeting } from '../meeting/source-policy.ts';
 import { assertNoKnownSecret, LlmError, sanitizeDeep, sanitizeProviderText, type LlmProvider } from '../llm/provider.ts';
 import { buildEvidenceLocatorCatalog } from '../llm/locators.ts';
-import { WikiError, type WikiInput, type WikiRecord, type WikiStore } from './store.ts';
+import { WikiError, type WikiInput, type WikiRecord, type WikiStore, type SourceLevel } from './store.ts';
 import { DraftStore } from './drafts.ts';
 import { assertHumanReviewed, assertReviewSources, assertReviewStructure, candidateContent, confirmHumanPage, moveHumanUnits, newHumanReview, reviewContentDigest, type HumanReview, type ReviewUnit } from './human-review.ts';
 
@@ -23,9 +23,10 @@ export type KnowledgeWorkflow = {
   inputDraft?: { draftId: string; pageId: string; revision: number; reviewContentDigest?: string };
   sections: {
     existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[];
-    inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{ id: string; title: string }>;
+    inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{ id: string; title: string; source_level?: SourceLevel; existingSourceId?: string }>;
   };
   title: string; category: string; sources: string[]; wikiInput?: WikiInput;
+  source_level?: SourceLevel;
   commitOperationId?: string; committedWikiId?: string;
   evidence?: Array<{ section: string; text: string; rawId: string; quote: string; start: number; end: number }>;
   lastCommitError?: string;
@@ -154,7 +155,7 @@ export class KnowledgeWorkflowStore {
       id: randomUUID(), kind: 'update', status: 'pending_confirmation', revision: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       provider: { name: args.provider.name, model: args.provider.model }, rawSnapshots: [{ id: args.raw.id, title: args.raw.title, bodySha256: args.raw.bodySha256 }],
       targetWikiId: args.target.id, baseRevision: args.target.revision, baseWiki: args.target, inputDraft: { draftId: args.draftId, pageId: args.pageId, revision: args.draft.revision,reviewContentDigest:inputDigest },
-      sections: { existing: args.target.body, newSource: args.raw.body, suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList: [{ id: args.raw.id, title: args.raw.title }] },
+      sections: { existing: args.target.body, newSource: args.raw.body, suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList: [{ id: args.raw.id, title: args.raw.title, source_level: stored.source.source_level as SourceLevel }] },
       evidence: [...output.suggestedAdditions.map((x: any) => ({ section: 'suggestedAdditions', ...x })), ...output.conflicts.map((x: any) => ({ section: 'conflicts', ...x })), ...output.agreement.map((x: any) => ({ section: 'agreement', ...x }))],
       title: args.target.title, category: args.target.category, sources: [...new Set([...args.target.sources, args.raw.id])],
     };
@@ -177,12 +178,21 @@ export class KnowledgeWorkflowStore {
       // Keep the shared catalog's default size/count limits and complete Raw coverage.
       const locators = buildEvidenceLocatorCatalog(raw.body, { index: 0, start: 0, end: raw.body.length, text: raw.body })
         .map(({ start, end, text }, index) => ({ id: `raw-${binding}-${index + 1}`, start, end, text }));
-      return { id: raw.id, title: raw.title, body: raw.body, bodySha256: raw.bodySha256, locators };
+      return { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, body: raw.body, bodySha256: raw.bodySha256, locators };
     });
-    const output = await this.call(args.provider, '你是多来源知识综合助手。只输出一个合法JSON对象，不输出代码围栏或前后说明。严格只含八个必填字段，空数组也必须出现：{"synthesis_format_version":1,"title":"综合标题","category":"请求提供的分类id","suggestedAdditions":[],"conflicts":[],"agreement":[],"inferences":[],"openQuestions":[]}。synthesis_format_version必须为数值1；category只能选输入categories中的id，不能写label或自行命名。suggestedAdditions/conflicts/agreement每项严格只含{text,rawId,locatorId}，text非空且最多4000字符，rawId与locatorId必须同时来自输入中同一Raw的当前locators，不得猜测、跨来源或沿用旧正文ID。不得返回或计算quote/start/end。只根据完整原文整理，每条只陈述所附来源支持的最小断言；定位目录只保证原文位置，不证明语义。共同观点需跨来源支持，并分别列出各来源的支持条目；冲突两方各自列证，分别保留各自数值、时间和统计口径，不静默覆盖、平均或调和。未知、未来建议、尚未上线与收益未知不得写成已证事实；推断和待确认问题分别写入inferences/openQuestions字符串数组。没有证据支持则不输出事实条目，不把未提及当作同意。请逐一检查所有输入来源的核心事实及与其含义相关的限制，不只提取显眼数字：否定、条件、适用范围、时间、未知或未证实状态、未来建议等重要限定，必须实际写入输出section的text或字符串正文，不能仅因quote包含原文就视为已表达，不能因为与主数字无关而静默略去。允许忠实概括、同义整理，不要求逐句抄写非实质文本。未来计划或建议、尚未实施、效果或收益未知须保留原限定：有跨来源支持时分别写入agreement，否则保留在对应单源suggestedAdditions；仍待确认的问题单列openQuestions，不把未知变成答案，不把可能原因变成事实。每条有证据text的每个断言都必须由本条所附Raw独立支持，另一条引用不能替本条补支持。通用正例：共同命题分别写“来源甲记载该规则适用于指定范围”“来源乙记载该规则适用于指定范围”，各自附本来源引用；冲突分别写“来源甲记载统计采用周口径”“来源乙记载统计采用月口径”，由分栏和并列体现冲突。反例：只引甲却写“乙也采用该规则”或“与乙的月口径不同”，即使另一条引用乙也不合格。输出前自检：重要限定是否实际进入语义正文；每条的每个断言是否有本条Raw支持；冲突双方是否分别保留；未知、待确认与推断是否分开。这是本次生成的自检要求，不是服务器已证明语义正确。', JSON.stringify({ synthesis_format_version: 1, categories: schema.categories.map(({ id, label }) => ({ id, label })), raws: input }), 'synthesis-locator-v1');
+    const output = await this.call(args.provider, '你是多来源知识综合助手。sourceLevels必须逐一包含每个输入Raw的rawId及source_level初判，按sourcePolicy和该Raw元数据判级，来源未知或无可判断身份为D。每个Raw恰好一次，禁止串ID或用其他来源身份抬高等级；URL、格式或自称权威不构成核验。等级可人工修改，不代表内容已核实。只输出一个合法JSON对象，不输出代码围栏或前后说明。严格只含九个必填字段，空数组也必须出现：{"sourceLevels":[{"rawId":"输入Raw ID","source_level":"A/B/C/D"}],"synthesis_format_version":1,"title":"综合标题","category":"请求提供的分类id","suggestedAdditions":[],"conflicts":[],"agreement":[],"inferences":[],"openQuestions":[]}。synthesis_format_version必须为数值1；category只能选输入categories中的id，不能写label或自行命名。suggestedAdditions/conflicts/agreement每项严格只含{text,rawId,locatorId}，text非空且最多4000字符，rawId与locatorId必须同时来自输入中同一Raw的当前locators，不得猜测、跨来源或沿用旧正文ID。不得返回或计算quote/start/end。只根据完整原文整理，每条只陈述所附来源支持的最小断言；定位目录只保证原文位置，不证明语义。共同观点需跨来源支持，并分别列出各来源的支持条目；冲突两方各自列证，分别保留各自数值、时间和统计口径，不静默覆盖、平均或调和。未知、未来建议、尚未上线与收益未知不得写成已证事实；推断和待确认问题分别写入inferences/openQuestions字符串数组。没有证据支持则不输出事实条目，不把未提及当作同意。请逐一检查所有输入来源的核心事实及与其含义相关的限制，不只提取显眼数字：否定、条件、适用范围、时间、未知或未证实状态、未来建议等重要限定，必须实际写入输出section的text或字符串正文，不能仅因quote包含原文就视为已表达，不能因为与主数字无关而静默略去。允许忠实概括、同义整理，不要求逐句抄写非实质文本。未来计划或建议、尚未实施、效果或收益未知须保留原限定：有跨来源支持时分别写入agreement，否则保留在对应单源suggestedAdditions；仍待确认的问题单列openQuestions，不把未知变成答案，不把可能原因变成事实。每条有证据text的每个断言都必须由本条所附Raw独立支持，另一条引用不能替本条补支持。通用正例：共同命题分别写“来源甲记载该规则适用于指定范围”“来源乙记载该规则适用于指定范围”，各自附本来源引用；冲突分别写“来源甲记载统计采用周口径”“来源乙记载统计采用月口径”，由分栏和并列体现冲突。反例：只引甲却写“乙也采用该规则”或“与乙的月口径不同”，即使另一条引用乙也不合格。输出前自检：重要限定是否实际进入语义正文；每条的每个断言是否有本条Raw支持；冲突双方是否分别保留；未知、待确认与推断是否分开。这是本次生成的自检要求，不是服务器已证明语义正确。', JSON.stringify({ sourcePolicy: schema.sourcePolicy, synthesis_format_version: 1, categories: schema.categories.map(({ id, label }) => ({ id, label })), raws: input }), 'synthesis-locator-v1');
     if (typeof output.title !== 'string' || !output.title.trim() || output.title.trim().length > 300 || /[\r\n]/u.test(output.title)
       || typeof output.category !== 'string' || !schema.categories.some(item => item.id === output.category)) {
       throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回的综合标题或分类不符合 Wiki Schema，未生成草稿。', 502);
+    }
+    if (output.sourceLevels.length !== ids.length || new Set(output.sourceLevels.map((item: { rawId: string }) => item.rawId)).size !== ids.length || output.sourceLevels.some((item: { rawId: string }) => !ids.includes(item.rawId))) throw new WikiError('LLM_SCHEMA_INVALID', '综合来源等级必须逐一对应本次Raw，未创建草稿。', 502);
+    const existing = await this.wiki.allRecords(), draftStore = new DraftStore(this.root), reviewedDrafts = (await draftStore.list()).sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
+    const sourceList: KnowledgeWorkflow['sections']['sourceList'] = [];
+    for (const raw of entries) {
+      const source = existing.find(page => page.type === 'source' && page.sources.length === 1 && page.sources[0] === raw.id);
+      const reviewed = reviewedDrafts.find(draft => draft.rawId === raw.id && draft.rawSha256 === raw.bodySha256 && draft.status !== 'discarded' && (draft.status === 'confirmed' || (draft.humanReview && draft.pages.every(page => draft.humanReview!.approvals.some(approval => approval.pageId === page.pageId && approval.digest === draftStore.contentDigest(draft))))));
+      if (reviewed?.humanReview) await draftStore.assertReviewed(reviewed, raw.body);
+      sourceList.push({ id: raw.id, title: raw.title, source_level: (source?.source_level ?? reviewed?.source.source_level ?? output.sourceLevels.find((item: { rawId: string }) => item.rawId === raw.id).source_level) as SourceLevel, ...(source ? { existingSourceId: source.id } : {}) });
     }
     const directories = new Map(input.map(raw => [raw.id, new Map(raw.locators.map(locator => [locator.id, locator]))]));
     for (const field of ['suggestedAdditions', 'conflicts', 'agreement']) output[field] = output[field].map((item: { text: string; rawId: string; locatorId: string }) => {
@@ -201,7 +211,8 @@ export class KnowledgeWorkflowStore {
       id: randomUUID(), kind: 'synthesis', status: 'pending_confirmation', revision: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       provider: { name: args.provider.name, model: args.provider.model }, rawSnapshots: entries.map(raw => ({ id: raw.id, title: raw.title, bodySha256: raw.bodySha256 })),
       title: output.title, category: output.category, sources: ids,
-      sections: { suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList: entries.map(raw => ({ id: raw.id, title: raw.title })) },
+      source_level: sourceList.reduce<SourceLevel>((level, source) => 'ABCD'.indexOf(source.source_level!) > 'ABCD'.indexOf(level) ? source.source_level! : level, 'A'),
+      sections: { suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList },
       evidence: [...output.suggestedAdditions.map((x: any) => ({ section: 'suggestedAdditions', ...x })), ...output.conflicts.map((x: any) => ({ section: 'conflicts', ...x })), ...output.agreement.map((x: any) => ({ section: 'agreement', ...x }))],
     };
     record.humanReview=this.workflowReview(record);
@@ -222,9 +233,10 @@ export class KnowledgeWorkflowStore {
     try { parsed = JSON.parse(result.text); } catch { throw new WikiError('LLM_INVALID_JSON', 'Provider 返回的内容不是合法 JSON，未创建草稿。', 502); }
     assertNoKnownSecret(parsed, provider.secrets);
     if (!object(parsed)) throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回结构无效，未创建草稿。', 502);
-    const allowedTopLevel = new Set(format === 'evidence-id' ? ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] : ['title', 'category', 'suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement', ...(format === 'synthesis-locator-v1' ? ['synthesis_format_version'] : [])]);
+    const allowedTopLevel = new Set(format === 'evidence-id' ? ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] : ['title', 'category', 'suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement', ...(format === 'synthesis-locator-v1' ? ['synthesis_format_version', 'sourceLevels'] : [])]);
     if (Object.keys(parsed).some(key => !allowedTopLevel.has(key))) throw new WikiError('LLM_SCHEMA_INVALID', 'Provider 返回了未定义字段，未创建草稿。', 502);
     if (format === 'synthesis-locator-v1' && (parsed.synthesis_format_version !== 1 || Object.keys(parsed).length !== allowedTopLevel.size)) throw new WikiError('LLM_SCHEMA_INVALID', '综合建议协议版本或必填字段无效，未创建草稿。', 502);
+    if (format === 'synthesis-locator-v1' && (!Array.isArray(parsed.sourceLevels) || parsed.sourceLevels.some(item => !object(item) || Object.keys(item).sort().join(',') !== 'rawId,source_level' || typeof item.rawId !== 'string' || (typeof item.source_level !== 'string' || !['A','B','C','D'].includes(item.source_level))))) throw new WikiError('LLM_SCHEMA_INVALID', '综合来源等级无效，未创建草稿。', 502);
     for (const key of ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement']) {
       const valid = Array.isArray(parsed[key]) && (parsed[key] as unknown[]).every(x => {
         if (['inferences', 'openQuestions'].includes(key)) return typeof x === 'string';
@@ -288,30 +300,36 @@ export class KnowledgeWorkflowStore {
     }
   }
 
-  async patch(id: string, baseRevision: number, sections: KnowledgeWorkflow['sections'], title?: string) {
-    return this.queue.run(()=>this.patchLocked(id,baseRevision,sections,title));
+  async patch(id: string, baseRevision: number, sections: KnowledgeWorkflow['sections'], title?: string, sourceLevel?: unknown) {
+    return this.queue.run(()=>this.patchLocked(id,baseRevision,sections,title,sourceLevel));
   }
-  private async patchLocked(id: string, baseRevision: number, sections: KnowledgeWorkflow['sections'], title?: string) {
+  private async patchLocked(id: string, baseRevision: number, sections: KnowledgeWorkflow['sections'], title?: string, sourceLevel?: unknown) {
     const workflow = await this.get(id);
     if (!workflow) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404);
     if (workflow.status !== 'pending_confirmation') throw new WikiError('WORKFLOW_NOT_EDITABLE', '知识草稿不在可编辑状态。', 409);
     if (workflow.revision !== baseRevision) throw new WikiError('WORKFLOW_REVISION_CONFLICT', '知识草稿已被修改，请刷新后再编辑。', 409, { currentRevision: workflow.revision });
-    if (JSON.stringify(sections.sourceList) !== JSON.stringify(workflow.sections.sourceList)
+    if (sections.sourceList.length !== workflow.sections.sourceList.length || sections.sourceList.some((source, index) => {
+      const previous = workflow.sections.sourceList[index];
+      return source.id !== previous.id || source.title !== previous.title || source.existingSourceId !== previous.existingSourceId || (previous.existingSourceId && source.source_level !== previous.source_level);
+    })
       || sections.existing !== workflow.sections.existing || sections.newSource !== workflow.sections.newSource) {
       throw new WikiError('WORKFLOW_SOURCE_IMMUTABLE', '来源清单、现有页快照和Raw正文不可在草稿编辑中更改。', 409);
     }
     const schema = await this.wiki.schema();
+    if (sourceLevel !== undefined && (typeof sourceLevel !== 'string' || !schema.enums.source_level.includes(sourceLevel) || workflow.kind !== 'synthesis')) throw new WikiError('INVALID_SOURCE_LEVEL', '综合页来源等级无效。');
+    if (sections.sourceList.some((source, index) => (workflow.sections.sourceList[index].source_level !== undefined || source.source_level !== undefined) && !schema.enums.source_level.includes(source.source_level!))) throw new WikiError('INVALID_SOURCE_LEVEL', '来源等级无效。');
     const nextTitle = title === undefined ? workflow.title : title;
     if (typeof nextTitle !== 'string' || !nextTitle.trim() || nextTitle.trim().length > 300 || /[\r\n]/u.test(nextTitle)) throw new WikiError('INVALID_TITLE', '标题不能为空、不能换行且最多300字符。');
     if (!schema.categories.some(item => item.id === workflow.category)) throw new WikiError('INVALID_CATEGORY', '草稿分类不符合 Wiki Schema。');
     for (const field of ['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'] as const) {
       if (!Array.isArray(sections[field]) || sections[field].some(value => typeof value !== 'string')) throw new WikiError('INVALID_WORKFLOW', `草稿字段 ${field} 必须为字符串列表。`);
     }
-    if(JSON.stringify(workflow.sections)===JSON.stringify(sections)&&workflow.title===nextTitle.trim())return workflow;
+    if(JSON.stringify(workflow.sections)===JSON.stringify(sections)&&workflow.title===nextTitle.trim()&&(sourceLevel===undefined||sourceLevel===workflow.source_level))return workflow;
     const fields=['suggestedAdditions','conflicts','inferences','openQuestions','agreement'] as const;
     workflow.humanEditedSections=[...new Set([...(workflow.humanEditedSections??[]),...fields.filter(f=>JSON.stringify(workflow.sections[f])!==JSON.stringify(sections[f]))])];
     if(workflow.humanReview)workflow.humanReview.approvals=[];
     workflow.sections = sections; workflow.title = nextTitle.trim();
+    if (sourceLevel !== undefined) workflow.source_level = sourceLevel as SourceLevel;
     workflow.revision++; workflow.updatedAt = new Date().toISOString(); return this.save(workflow);
   }
 
@@ -328,7 +346,7 @@ export class KnowledgeWorkflowStore {
   private async confirmLocked(id: string, baseRevision: number, idempotencyKey: string) {
     const workflow = await this.get(id);
     if (!workflow) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404);
-    const payloadDigest = sha(JSON.stringify({ kind: workflow.kind, title: workflow.title, sections: workflow.sections, evidence: workflow.evidence, targetWikiId: workflow.targetWikiId, baseRevision: workflow.baseRevision, sources: workflow.sources }));
+    const payloadDigest = sha(JSON.stringify({ kind: workflow.kind, title: workflow.title, sections: workflow.sections, evidence: workflow.evidence, targetWikiId: workflow.targetWikiId, baseRevision: workflow.baseRevision, sources: workflow.sources, source_level: workflow.source_level }));
     let priorManifest = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root).then(x=>x.records)).map(item => item.value).find(item => item.workflowId === workflow.id&&!item.supersededBy);
     let superseded:WorkflowManifest|undefined;
     if(priorManifest&&priorManifest.status!=='completed'&&!priorManifest.humanReviewDigest&&!(await this.verifiedTargets(priorManifest)).length){
@@ -387,7 +405,7 @@ export class KnowledgeWorkflowStore {
         const raw = await this.getRawSnapshot(workflow.rawSnapshots[0].id);
         if (!raw) throw new WikiError('RAW_MISSING', '更新来源 Raw 不存在。', 409);
         const now = new Date().toISOString();
-        records.unshift({ id: randomUUID(), title: raw.title, type: 'source', domain: 'fmcg', category: current.category, created: now, updated: now, sources: [raw.id], tags: raw.tags, knowledge_status: 'source_supported', confidence: 'medium', source_level: 'C', review_status: 'unreviewed', aliases: [], revision: 1, body: `来源 Raw：${raw.id}\n\n${raw.title}\n\n${raw.body.slice(0, 1200)}` });
+        records.unshift({ id: randomUUID(), title: raw.title, type: 'source', domain: 'fmcg', category: current.category, created: now, updated: now, sources: [raw.id], tags: raw.tags, knowledge_status: 'source_supported', confidence: 'medium', source_level: workflow.sections.sourceList.find(source => source.id === raw.id)?.source_level ?? 'D', review_status: 'unreviewed', aliases: [], revision: 1, body: `来源 Raw：${raw.id}\n\n${raw.title}\n\n${raw.body.slice(0, 1200)}` });
       }
       updateTargetId = current.id; targetBaseRevision = current.revision;
     } else {
@@ -398,7 +416,7 @@ export class KnowledgeWorkflowStore {
         if (existingSource) continue;
         const raw = await this.getRawSnapshot(rawId);
         if (!raw) throw new WikiError('RAW_MISSING', `来源 Raw ${rawId} 不存在。`, 409);
-        records.push({ id: randomUUID(), title: raw.title, type: 'source', domain: 'fmcg', category: workflow.category, created: now, updated: now, sources: [rawId], tags: raw.tags, knowledge_status: 'source_supported', confidence: 'medium', source_level: 'C', review_status: 'unreviewed', aliases: [], revision: 1, body: `来源 Raw：${rawId}\n\n${raw.title}\n\n${raw.body.slice(0, 1200)}` });
+        records.push({ id: randomUUID(), title: raw.title, type: 'source', domain: 'fmcg', category: workflow.category, created: now, updated: now, sources: [rawId], tags: raw.tags, knowledge_status: 'source_supported', confidence: 'medium', source_level: workflow.sections.sourceList.find(source => source.id === rawId)?.source_level ?? 'D', review_status: 'unreviewed', aliases: [], revision: 1, body: `来源 Raw：${rawId}\n\n${raw.title}\n\n${raw.body.slice(0, 1200)}` });
       }
       const cited = (section: string, edited: string[]) => edited.map((text, i) => {
         if(workflow.humanEditedSections?.includes(section))return `- 人工整理：${text}`;
@@ -406,7 +424,7 @@ export class KnowledgeWorkflowStore {
         return item ? `- ${text}（来源 Raw ${item.rawId}，原文 [${item.start}, ${item.end})：“${item.quote}”）` : `- ${text}（用户整理）`;
       });
       const body = ['## 主要来源', ...workflow.sections.sourceList.map(x => `- ${x.title}（Raw ${x.id}）`), '## 一致观点', ...cited('agreement', workflow.sections.agreement), '## 冲突', ...cited('conflicts', workflow.sections.conflicts), '## AI 推断', ...workflow.sections.inferences.map(x => `- ${x}`), '## 待确认问题', ...workflow.sections.openQuestions.map(x => `- ${x}`), '## 综合整理', ...cited('suggestedAdditions', workflow.sections.suggestedAdditions)].join('\n');
-      records.push({ id: randomUUID(), title: workflow.title, type: 'synthesis', domain: 'fmcg', category: workflow.category, created: now, updated: now, sources: workflow.sources, tags: [], knowledge_status: 'ai_organized', confidence: 'medium', source_level: 'C', review_status: 'unreviewed', aliases: [], revision: 1, body });
+      records.push({ id: randomUUID(), title: workflow.title, type: 'synthesis', domain: 'fmcg', category: workflow.category, created: now, updated: now, sources: workflow.sources, tags: [], knowledge_status: 'ai_organized', confidence: 'medium', source_level: workflow.source_level ?? 'D', review_status: 'unreviewed', aliases: [], revision: 1, body });
     }
     const operationId = randomUUID();
     let manifest: WorkflowManifest = {humanReviewDigest,humanReviewBasisDigest:workflow.humanReview!.basisDigest, operationId, workflowId: id, idempotencyKey, payloadDigest, status: 'prepared', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), records, updateTargetId, targetBaseRevision, rawSnapshots: workflow.rawSnapshots, writtenIds: [] };

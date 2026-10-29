@@ -3,6 +3,7 @@ import {synthesisFixture} from './acceptance/SYN01-FIX-20261026-fake.ts';
 import assert from 'node:assert/strict';
 import { appendFile, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
+import os from 'node:os';
 import test from 'node:test';
 import { RawStore } from '../services/raw/store.ts';
 import { WikiStore, type WikiInput } from '../services/wiki/store.ts';
@@ -13,7 +14,7 @@ import type { LlmProvider } from '../services/llm/provider.ts';
 const wikiInput = (title: string, overrides: Partial<WikiInput> = {}): WikiInput => ({ title, type: 'concept', category: 'industry_basics', sources: [], tags: [], aliases: [], knowledge_status: 'needs_verification', confidence: 'low', source_level: 'D', review_status: 'reviewed', body: '基础内容', ...overrides });
 
 test('B05 五维候选显示标题、别名、分类、标签和内容理由，分类单独命中权重低', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b05-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'r22-b05-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();
@@ -28,7 +29,7 @@ test('B05 五维候选显示标题、别名、分类、标签和内容理由，�
 });
 
 test('B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认幂等', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b05-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'r22-b05-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();
@@ -56,7 +57,7 @@ test('B05 synthesis 确认创建Source与综合页，按Raw去重并支持确认
 });
 
 test('B05 非法综合分类在保存草稿前拒绝', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b05-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'r22-b05-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();
@@ -71,7 +72,7 @@ test('B05 非法综合分类在保存草稿前拒绝', async () => {
 });
 
 test('B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b05-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'r22-b05-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();
@@ -91,7 +92,7 @@ test('B05 Raw正文与frontmatter哈希不一致时拒绝生成及确认', async
 });
 
 test('B05 重启恢复完成提交后收敛workflow，completed manifest不覆盖后续人工编辑', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b05-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'r22-b05-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();
@@ -123,7 +124,7 @@ test('B05 重启恢复完成提交后收敛workflow，completed manifest不覆�
 });
 
 test('B05 更新预览保留两套公式，Raw证据可定位，旧revision会拒绝覆盖', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b05-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'r22-b05-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();

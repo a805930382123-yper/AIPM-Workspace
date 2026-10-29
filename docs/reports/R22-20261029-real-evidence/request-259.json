@@ -1,0 +1,90 @@
+{
+  "system": "你是严格的原文陈述分类器。只选择给定atom ID并区分业务事实、歧义、原文明示未知与来源声明。保留否定和业务限制，不补维度，不改写原文。只返回JSON object。",
+  "user": "只选择原文atom ID；每条为一个机械原文切片，不得拼写、补写主体/维度/数值。分类顺序：先判断业务陈述或非业务来源声明，再判断业务陈述的完整性/歧义。fragment只是原文切片完整性标记，不决定业务相关性；非业务标题、排版或来源说明即使fragment=true也不能进入facts/questions，可选入sourceNotes或不选。仅对选入facts的业务陈述：跨主体、维度省略、条件不确定或fragment=true时kind必须ambiguous。业务否定、未知、未上线、AI仅用于未来建议是合法业务边界，不能归为来源声明。questions仅选择原文明示的业务未知，禁止自行提出问题或因非业务片段截断而生成问题。按实际内容判断，不能只凭标题形式、编号或“虚构/说明/未来”等词排除业务陈述。\n目录仅含非空候选；纯空白分隔符不可选入任何分栏。所选非空片段的首尾空白属于原文，必须原样保留。\natom是机械原文切片，可能包含多个相邻片段，不保证语义完整。截断的排版说明与下一标题拼接，或多个非业务片段相连，仍是非业务；即使fragment=false、语法混合、结尾缺失或无法补全，也不能因此成为ambiguous业务事实。业务歧义必须先存在业务陈述。不要猜测截断后可能出现的业务内容；按当前可见内容判定。相反，片段中实际陈述的经营数值、业务否定、未知、未上线或未来业务建议必须保留，不因邻接标题、排版或“说明/虚构”字样被丢弃。\n来源标题：OpenAI官方文档：Structured Outputs；类型：article；来源：OpenAI官方开发文档; Raw ID：c394e1a3-8b0d-4cbd-b943-1c60afa15a3d\n原文全局区间 [0,126)。定位目录覆盖此 chunk，atom只可选当前目录。\n完整输出契约与服务端严格校验使用同一JSON Schema：{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"version\",\"facts\",\"questions\",\"sourceNotes\"],\"properties\":{\"version\":{\"type\":\"integer\",\"enum\":[2]},\"facts\":{\"type\":\"array\",\"maxItems\":32,\"items\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"atomId\",\"kind\"],\"properties\":{\"atomId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":64},\"kind\":{\"type\":\"string\",\"enum\":[\"fact\",\"ambiguous\"]}}}},\"questions\":{\"type\":\"array\",\"maxItems\":16,\"items\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"atomId\"],\"properties\":{\"atomId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":64}}}},\"sourceNotes\":{\"type\":\"array\",\"maxItems\":32,\"items\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"atomId\"],\"properties\":{\"atomId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":64}}}}}}\n顶层仅含version、facts、questions、sourceNotes且全部必填。kind仅位于facts对象，枚举为[\"fact\",\"ambiguous\"]；歧义也是facts中的对象，不能新增顶层ambiguous。facts最多32条、questions最多16条、sourceNotes最多32条。所有对象禁止额外字段；questions/sourceNotes的每项只能是{atomId}对象，不能是字符串或带kind。\n合法非空结构示意（以下示意ID不是目录ID，禁止照抄；实际只选择下方当前目录的ID，不存在对应类别时使用空数组）：{\"version\":2,\"facts\":[{\"atomId\":\"示例事实ID\",\"kind\":\"fact\"},{\"atomId\":\"示例歧义ID\",\"kind\":\"ambiguous\"}],\"questions\":[{\"atomId\":\"示例未知ID\"}],\"sourceNotes\":[{\"atomId\":\"示例声明ID\"}]}\n分类优先级示例（示意ID不是目录ID，禁止照抄；只解释分类，不替代下方当前目录）：{\"atoms\":[{\"id\":\"示例标题片段\",\"text\":\"【资料附页，虚构】\\n\",\"fragment\":true},{\"id\":\"示例完整标题\",\"text\":\"【资料附页，虚构】\\n\",\"fragment\":false},{\"id\":\"示例排版截断\",\"text\":\"排版说明：此段仅用于阅读排版，不补充经营指\",\"fragment\":true},{\"id\":\"示例业务片段\",\"text\":\"在售门店20家，统计范围尚\",\"fragment\":true},{\"id\":\"示例业务边界\",\"text\":\"虚构区域尚未上线AI，仅用于未来分析建议。\",\"fragment\":false},{\"id\":\"示例业务未知\",\"text\":\"异常审批负责人未知。\",\"fragment\":false}],\"output\":{\"version\":2,\"facts\":[{\"atomId\":\"示例业务片段\",\"kind\":\"ambiguous\"},{\"atomId\":\"示例业务边界\",\"kind\":\"fact\"}],\"questions\":[{\"atomId\":\"示例业务未知\"}],\"sourceNotes\":[{\"atomId\":\"示例标题片段\"},{\"atomId\":\"示例完整标题\"},{\"atomId\":\"示例排版截断\"}]}}\n拼接成对示例（示意ID不是目录ID，禁止照抄；判断实际陈述，不使用编号、固定字词或fragment值作业务过滤条件）：{\"atoms\":[{\"id\":\"示例非业务拼接\",\"text\":\"排版说明：此页用于长文显示，不补充任何【补充资料，虚构】\\n\",\"fragment\":false},{\"id\":\"示例非业务拼接截断\",\"text\":\"阅读排版用途，不增加经营内容【下一节】\",\"fragment\":true},{\"id\":\"示例含数值拼接\",\"text\":\"说明：虚构渠道在售门店28家，统计口径尚【补充资料】\\n\",\"fragment\":true},{\"id\":\"示例含否定拼接\",\"text\":\"虚构业务说明：本渠道未开展促销【补充资料】\\n\",\"fragment\":false},{\"id\":\"示例含未来拼接\",\"text\":\"说明：本渠道AI未上线，仅建议未来用于补货分析【补充资料】\\n\",\"fragment\":false},{\"id\":\"示例含未知拼接\",\"text\":\"说明：本渠道异常审批负责人未知【补充资料】\\n\",\"fragment\":false}],\"output\":{\"version\":2,\"facts\":[{\"atomId\":\"示例含数值拼接\",\"kind\":\"ambiguous\"},{\"atomId\":\"示例含否定拼接\",\"kind\":\"fact\"},{\"atomId\":\"示例含未来拼接\",\"kind\":\"fact\"}],\"questions\":[{\"atomId\":\"示例含未知拼接\"}],\"sourceNotes\":[{\"atomId\":\"示例非业务拼接\"},{\"atomId\":\"示例非业务拼接截断\"}]}}\nsourceNotes仅可选虚构/验收免责声明、排版或来源说明等非业务声明，可为空；按需选择代表性声明即可，不要求穷举、重复列举全部排版说明，最多32条。未选择的声明不应转入facts/questions；选中的声明也不能同时归入facts/questions。来源声明仅存检查点元数据，不进入业务事实或整篇规划。每个分栏内atomId不得重复。\n输入 locator 目录（每项是精确连续原文，不要复述目录）：\n[{\"id\":\"c1-a0001\",\"text\":\"Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema\",\"fragment\":true}]",
+  "purpose": "knowledge",
+  "structuredOutput": {
+    "name": "kb02_facts",
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "facts",
+        "questions",
+        "sourceNotes"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "enum": [
+            2
+          ]
+        },
+        "facts": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "atomId",
+              "kind"
+            ],
+            "properties": {
+              "atomId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "fact",
+                  "ambiguous"
+                ]
+              }
+            }
+          }
+        },
+        "questions": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "atomId"
+            ],
+            "properties": {
+              "atomId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              }
+            }
+          }
+        },
+        "sourceNotes": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "atomId"
+            ],
+            "properties": {
+              "atomId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "timeoutMs": 60000,
+  "maxOutputBytes": 2097152
+}

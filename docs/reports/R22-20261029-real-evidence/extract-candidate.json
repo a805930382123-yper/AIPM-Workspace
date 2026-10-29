@@ -1,0 +1,634 @@
+{
+  "raw": {
+    "title": "OpenAI官方文档：Structured Outputs",
+    "sourceType": "article",
+    "sourceName": "OpenAI官方开发文档",
+    "author": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat",
+    "tags": [
+      "R22验收",
+      "公开原文摘录"
+    ],
+    "id": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+    "importedAt": "2026-10-29T08:53:55.131Z",
+    "status": "unprocessed",
+    "bodySha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773",
+    "body": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+  },
+  "draft": {
+    "id": "72bf8cbb-c209-49ba-9726-4eca9fc77c71",
+    "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+    "rawSha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773",
+    "rawTitle": "OpenAI官方文档：Structured Outputs",
+    "rawMeta": {
+      "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+      "title": "OpenAI官方文档：Structured Outputs",
+      "sourceType": "article",
+      "sourceName": "OpenAI官方开发文档",
+      "author": "OpenAI",
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat",
+      "importedAt": "2026-10-29T08:53:55.131Z"
+    },
+    "status": "pending_confirmation",
+    "revision": 1,
+    "createdAt": "2026-10-29T08:57:57.438Z",
+    "updatedAt": "2026-10-29T08:57:57.438Z",
+    "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-17-9c556300eb50-4991d5bf-kb02-2",
+    "provider": {
+      "name": "openai-compatible",
+      "model": "gpt-6.1-terra"
+    },
+    "jobId": "a560474e-4be7-4f7f-97b5-ffc3d50693a5",
+    "document": {
+      "title": "OpenAI官方文档：Structured Outputs",
+      "main_topic": "Structured Outputs 按所提供 JSON Schema 生成响应的功能",
+      "source_level": "A",
+      "summary": "来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+    },
+    "pages": [
+      {
+        "templateFields": {
+          "one_line_explanation": {
+            "evidenceIds": [],
+            "aiContent": {
+              "text": "Structured Outputs 是确保模型生成的响应始终遵循所提供 JSON Schema 的功能。",
+              "factIds": [
+                "f-c1-1"
+              ],
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          },
+          "definition": {
+            "evidenceIds": [],
+            "aiContent": {
+              "text": "Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。",
+              "factIds": [
+                "f-c1-1"
+              ],
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          }
+        },
+        "pageId": "7da476c3-7f38-46fd-bb4d-dbd47bd231b3",
+        "title": "Structured Outputs 结构化输出",
+        "type": "concept",
+        "category": "ai_application",
+        "one_line_definition": "Structured Outputs 结构化输出",
+        "source_facts": [
+          {
+            "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+            "evidenceIds": [
+              "c1-l001",
+              "c1-l002"
+            ]
+          }
+        ],
+        "ai_organized": [],
+        "ai_inferences": [],
+        "related_pages": [],
+        "open_questions": [
+          "原文口径或边界待确认：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+        ],
+        "source_evidence": [
+          {
+            "id": "c1-l001",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+            "start": 0,
+            "end": 120,
+            "chunkIndex": 0
+          },
+          {
+            "id": "c1-l002",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Schema",
+            "start": 120,
+            "end": 126,
+            "chunkIndex": 0
+          }
+        ],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "A",
+        "selected": false,
+        "provenance": [
+          {
+            "chunkIndex": 0,
+            "start": 0,
+            "end": 126
+          }
+        ]
+      }
+    ],
+    "source": {
+      "title": "OpenAI官方文档：Structured Outputs",
+      "category": "other",
+      "summary": "来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+      "key_takeaways": [],
+      "body": "## 来源信息\n\n- 来源类型：网页文章（article）\n- 来源名称：OpenAI官方开发文档\n- 作者：OpenAI\n- 原发布日期：未提供（原发布日期）\n- 原始链接：https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat\n- Raw：OpenAI官方文档：Structured Outputs（c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n- 导入时间：2026-10-29T08:53:55.131Z\n- 来源等级：A\n\n## 摘要\n\n来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- Structured Outputs 结构化输出（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- OpenAI官方文档：Structured Outputs（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "A"
+    },
+    "warnings": [
+      "本草稿由 kb02-2 精简事实与整篇规划程序组装；模板字段中的AI整理/分析建议需逐页核对，来源事实与证据保持原文。",
+      "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+    ],
+    "extraction": {
+      "callCount": 2,
+      "chunkCount": 1,
+      "pagesFound": 1
+    },
+    "humanReview": {
+      "version": 1,
+      "units": [
+        {
+          "id": "fu-0-126-ambiguous",
+          "kind": "fact",
+          "origin": "kb02",
+          "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+          "memberIds": [
+            "f-c1-1"
+          ],
+          "sourceId": "s-0-126",
+          "start": 0,
+          "end": 126,
+          "factKind": "ambiguous",
+          "records": [
+            {
+              "id": "f-c1-1",
+              "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+              "start": 0,
+              "end": 120,
+              "chunkIndex": 0
+            },
+            {
+              "id": "c1-l002",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Schema",
+              "start": 120,
+              "end": 126,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "basisDigest": "d18bb77dd90aec4a971a6b80379077b6351068e11977b16816612102a3925a11",
+      "assignments": {
+        "fu-0-126-ambiguous": "7da476c3-7f38-46fd-bb4d-dbd47bd231b3"
+      },
+      "approvals": []
+    }
+  },
+  "preview": {
+    "id": "72bf8cbb-c209-49ba-9726-4eca9fc77c71",
+    "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+    "rawSha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773",
+    "rawTitle": "OpenAI官方文档：Structured Outputs",
+    "rawMeta": {
+      "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+      "title": "OpenAI官方文档：Structured Outputs",
+      "sourceType": "article",
+      "sourceName": "OpenAI官方开发文档",
+      "author": "OpenAI",
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat",
+      "importedAt": "2026-10-29T08:53:55.131Z"
+    },
+    "status": "pending_confirmation",
+    "revision": 1,
+    "createdAt": "2026-10-29T08:57:57.438Z",
+    "updatedAt": "2026-10-29T08:57:57.438Z",
+    "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-17-9c556300eb50-4991d5bf-kb02-2",
+    "provider": {
+      "name": "openai-compatible",
+      "model": "gpt-6.1-terra"
+    },
+    "jobId": "a560474e-4be7-4f7f-97b5-ffc3d50693a5",
+    "document": {
+      "title": "OpenAI官方文档：Structured Outputs",
+      "main_topic": "Structured Outputs 按所提供 JSON Schema 生成响应的功能",
+      "source_level": "A",
+      "summary": "来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+    },
+    "pages": [
+      {
+        "templateFields": {
+          "one_line_explanation": {
+            "evidenceIds": [],
+            "aiContent": {
+              "text": "Structured Outputs 是确保模型生成的响应始终遵循所提供 JSON Schema 的功能。",
+              "factIds": [
+                "f-c1-1"
+              ],
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          },
+          "definition": {
+            "evidenceIds": [],
+            "aiContent": {
+              "text": "Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。",
+              "factIds": [
+                "f-c1-1"
+              ],
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          }
+        },
+        "pageId": "7da476c3-7f38-46fd-bb4d-dbd47bd231b3",
+        "title": "Structured Outputs 结构化输出",
+        "type": "concept",
+        "category": "ai_application",
+        "one_line_definition": "Structured Outputs 结构化输出",
+        "source_facts": [
+          {
+            "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+            "evidenceIds": [
+              "c1-l001",
+              "c1-l002"
+            ]
+          }
+        ],
+        "ai_organized": [],
+        "ai_inferences": [],
+        "related_pages": [],
+        "open_questions": [
+          "原文口径或边界待确认：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+        ],
+        "source_evidence": [
+          {
+            "id": "c1-l001",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+            "start": 0,
+            "end": 120,
+            "chunkIndex": 0
+          },
+          {
+            "id": "c1-l002",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Schema",
+            "start": 120,
+            "end": 126,
+            "chunkIndex": 0
+          }
+        ],
+        "knowledge_status": "source_supported",
+        "confidence": "medium",
+        "source_level": "A",
+        "selected": false,
+        "provenance": [
+          {
+            "chunkIndex": 0,
+            "start": 0,
+            "end": 126
+          }
+        ],
+        "renderedBody": "## 原草稿一句话说明（未归位）\n\nStructured Outputs 结构化输出\n\n> 字段中的AI草稿、AI归位来源与用户归位、人工说明分别标记，均需核对；无来源支持的内容保持空或待确认。\n\n## 一句话解释\n\n- AI整理（待核对）：Structured Outputs 是确保模型生成的响应始终遵循所提供 JSON Schema 的功能。（原事实 f-c1-1）\n- 来源摘录（AI归位，待核对）：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON （证据 c1-l001）\n- 来源摘录（AI归位，待核对）：Schema（证据 c1-l002）\n\n## 定义\n\n- AI整理（待核对）：Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。（原事实 f-c1-1）\n- 来源摘录（AI归位，待核对）：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON （证据 c1-l001）\n- 来源摘录（AI归位，待核对）：Schema（证据 c1-l002）\n\n## 为什么重要\n\n待确认。\n\n## 在业务中的位置\n\n待确认。\n\n## 关键特征\n\n待确认。\n\n## 常见分类\n\n待确认。\n\n## 与其他概念关系\n\n待确认。\n\n## 常见业务场景\n\n待确认。\n\n## 来源事实\n\n- Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema（证据 c1-l001、c1-l002）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 原文口径或边界待确认：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema\n\n## 来源证据\n\n- c1-l001｜原文 [0, 120)：Structured Outputs is a feature that ensures the model will always generate responses that…\n- c1-l002｜原文 [120, 126)：Schema\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[OpenAI官方文档：Structured Outputs]]（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n"
+      }
+    ],
+    "source": {
+      "title": "OpenAI官方文档：Structured Outputs",
+      "category": "other",
+      "summary": "来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+      "key_takeaways": [],
+      "body": "## 来源信息\n\n- 来源类型：网页文章（article）\n- 来源名称：OpenAI官方开发文档\n- 作者：OpenAI\n- 原发布日期：未提供（原发布日期）\n- 原始链接：https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat\n- Raw：OpenAI官方文档：Structured Outputs（c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n- 导入时间：2026-10-29T08:53:55.131Z\n- 来源等级：A\n\n## 摘要\n\n来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- Structured Outputs 结构化输出（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- OpenAI官方文档：Structured Outputs（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n",
+      "knowledge_status": "source_supported",
+      "confidence": "medium",
+      "source_level": "A"
+    },
+    "warnings": [
+      "本草稿由 kb02-2 精简事实与整篇规划程序组装；模板字段中的AI整理/分析建议需逐页核对，来源事实与证据保持原文。",
+      "默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。"
+    ],
+    "extraction": {
+      "callCount": 2,
+      "chunkCount": 1,
+      "pagesFound": 1
+    },
+    "humanReview": {
+      "version": 1,
+      "units": [
+        {
+          "id": "fu-0-126-ambiguous",
+          "kind": "fact",
+          "origin": "kb02",
+          "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+          "memberIds": [
+            "f-c1-1"
+          ],
+          "sourceId": "s-0-126",
+          "start": 0,
+          "end": 126,
+          "factKind": "ambiguous",
+          "records": [
+            {
+              "id": "f-c1-1",
+              "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+              "start": 0,
+              "end": 120,
+              "chunkIndex": 0
+            },
+            {
+              "id": "c1-l002",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Schema",
+              "start": 120,
+              "end": 126,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "basisDigest": "d18bb77dd90aec4a971a6b80379077b6351068e11977b16816612102a3925a11",
+      "assignments": {
+        "fu-0-126-ambiguous": "7da476c3-7f38-46fd-bb4d-dbd47bd231b3"
+      },
+      "approvals": []
+    },
+    "sourceRenderedBody": "## 来源信息\n\n- 来源类型：网页文章（article）\n- 来源名称：OpenAI官方开发文档\n- 作者：OpenAI\n- 原发布日期：未提供（原发布日期）\n- 原始链接：https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat\n- Raw：OpenAI官方文档：Structured Outputs（c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n- 导入时间：2026-10-29T08:53:55.131Z\n- 来源等级：A\n\n## 摘要\n\n来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema\n\n## Key Takeaways\n\n- 暂无\n\n## 涉及概念\n\n- 暂无\n\n## 涉及实体\n\n- 暂无\n\n## 涉及业务流程\n\n- 暂无\n\n## 涉及指标\n\n- 暂无\n\n## 重要观点\n\n- 暂无\n\n## 待验证内容\n\n- 暂无\n\n## 本次未创建的建议（未选中，待处理）\n\n- Structured Outputs 结构化输出（concept，未创建；需要时可在该 Raw 的草稿里重新选择）\n\n## Raw 来源\n\n- OpenAI官方文档：Structured Outputs（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n\n> 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。\n"
+  },
+  "outcome": {
+    "document": {
+      "title": "OpenAI官方文档：Structured Outputs",
+      "main_topic": "Structured Outputs 按所提供 JSON Schema 生成响应的功能",
+      "source_level": "A",
+      "summary": "来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+    },
+    "pages": [
+      {
+        "title": "Structured Outputs 结构化输出",
+        "type": "concept",
+        "category": "ai_application",
+        "one_line_definition": "Structured Outputs 结构化输出",
+        "templateFields": {
+          "one_line_explanation": {
+            "evidenceIds": [],
+            "aiContent": {
+              "text": "Structured Outputs 是确保模型生成的响应始终遵循所提供 JSON Schema 的功能。",
+              "factIds": [
+                "f-c1-1"
+              ],
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          },
+          "definition": {
+            "evidenceIds": [],
+            "aiContent": {
+              "text": "Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。",
+              "factIds": [
+                "f-c1-1"
+              ],
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          }
+        },
+        "source_facts": [
+          {
+            "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+            "evidenceIds": [
+              "c1-l001",
+              "c1-l002"
+            ]
+          }
+        ],
+        "ai_organized": [],
+        "ai_inferences": [],
+        "related_pages": [],
+        "open_questions": [
+          "原文口径或边界待确认：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+        ],
+        "source_evidence": [
+          {
+            "id": "c1-l001",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+            "start": 0,
+            "end": 120,
+            "chunkIndex": 0,
+            "occurrences": 1
+          },
+          {
+            "id": "c1-l002",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Schema",
+            "start": 120,
+            "end": 126,
+            "chunkIndex": 0,
+            "occurrences": 1
+          }
+        ],
+        "provenance": [
+          {
+            "chunkIndex": 0,
+            "start": 0,
+            "end": 126
+          }
+        ]
+      }
+    ],
+    "provider": {
+      "name": "openai-compatible",
+      "model": "gpt-6.1-terra"
+    },
+    "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-17-9c556300eb50-4991d5bf-kb02-2",
+    "callCount": 2,
+    "chunkCount": 1,
+    "chunkCoverage": [
+      {
+        "index": 0,
+        "start": 0,
+        "end": 126
+      }
+    ],
+    "usage": {
+      "promptTokens": 0,
+      "completionTokens": 0
+    },
+    "warnings": [
+      "本草稿由 kb02-2 精简事实与整篇规划程序组装；模板字段中的AI整理/分析建议需逐页核对，来源事实与证据保持原文。"
+    ],
+    "reviewBasis": {
+      "units": [
+        {
+          "id": "fu-0-126-ambiguous",
+          "kind": "fact",
+          "origin": "kb02",
+          "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+          "memberIds": [
+            "f-c1-1"
+          ],
+          "sourceId": "s-0-126",
+          "start": 0,
+          "end": 126,
+          "factKind": "ambiguous",
+          "records": [
+            {
+              "id": "f-c1-1",
+              "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+              "evidenceIds": [
+                "c1-l001",
+                "c1-l002"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "id": "c1-l001",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+              "start": 0,
+              "end": 120,
+              "chunkIndex": 0
+            },
+            {
+              "id": "c1-l002",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Schema",
+              "start": 120,
+              "end": 126,
+              "chunkIndex": 0
+            }
+          ]
+        }
+      ],
+      "pageUnitIds": [
+        [
+          "fu-0-126-ambiguous"
+        ]
+      ]
+    }
+  },
+  "checkpoint": {
+    "version": 1,
+    "jobId": "a560474e-4be7-4f7f-97b5-ffc3d50693a5",
+    "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+    "rawSha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773",
+    "pipelineVersion": "kb02-2",
+    "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-17-9c556300eb50-4991d5bf",
+    "providerIdentity": "r22-real-real",
+    "chunks": [
+      {
+        "index": 0,
+        "start": 0,
+        "end": 126
+      }
+    ],
+    "completedChunks": [
+      {
+        "index": 0,
+        "start": 0,
+        "end": 126,
+        "facts": [
+          {
+            "text": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+            "locatorIds": [
+              "c1-l001",
+              "c1-l002"
+            ],
+            "atomId": "c1-a0001",
+            "kind": "ambiguous",
+            "id": "f-c1-1",
+            "chunkIndex": 0
+          }
+        ],
+        "questions": [],
+        "sourceNotes": [],
+        "evidence": [
+          {
+            "id": "c1-l001",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+            "start": 0,
+            "end": 120,
+            "chunkIndex": 0
+          },
+          {
+            "id": "c1-l002",
+            "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+            "quote": "Schema",
+            "start": 120,
+            "end": 126,
+            "chunkIndex": 0
+          }
+        ]
+      }
+    ],
+    "attempts": 2,
+    "stage": "assembling",
+    "updatedAt": "2026-10-29T08:57:57.432Z",
+    "integrity": "6c3c01bc23876e786399a5031ec0a85479409c10ae724df10e05cc4ca99734f7",
+    "plan": {
+      "document": {
+        "title": "OpenAI官方文档：Structured Outputs",
+        "main_topic": "Structured Outputs 按所提供 JSON Schema 生成响应的功能",
+        "source_level": "A",
+        "summary": "来源事实：\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+      },
+      "pages": [
+        {
+          "title": "Structured Outputs 结构化输出",
+          "type": "concept",
+          "category": "ai_application",
+          "factIds": [
+            "f-c1-1"
+          ],
+          "questionIds": [],
+          "templateFields": {
+            "one_line_explanation": {
+              "text": "Structured Outputs 是确保模型生成的响应始终遵循所提供 JSON Schema 的功能。",
+              "factIds": [
+                "f-c1-1"
+              ]
+            },
+            "definition": {
+              "text": "Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。",
+              "factIds": [
+                "f-c1-1"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 export function synthesisFixture(request: { user: string }, authored: any) {
   const input = JSON.parse(request.user);
   assert.equal(input.synthesis_format_version, 1);
-  const output = { ...authored, synthesis_format_version: 1 };
+  const output = { ...authored, synthesis_format_version: 1, sourceLevels: input.raws.map((raw: {id: string}) => ({ rawId: raw.id, source_level: 'D' })) };
   for (const field of ['suggestedAdditions', 'conflicts', 'agreement']) {
     if (!Array.isArray(output[field])) continue;
     output[field] = output[field].map((item: any) => {

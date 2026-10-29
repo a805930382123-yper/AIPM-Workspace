@@ -24,6 +24,7 @@ export type FmcgSchema = {
   enums: Record<string, string[]>;
 };
 export type ExtractionRulesBundle = {
+  sourcePolicy: { levels: Array<{ id: string; label: string; description: string }>; guidance: string };
   schema: JsonSchemaNode; kb02FactsSchema: JsonSchemaNode; kb02PlanningSchema: JsonSchemaNode; kb02SemanticReviewSchema: JsonSchemaNode; rules: ExtractionRules; fmcg: FmcgSchema;
   rulesVersion: string; systemPrompt: string;
 };
@@ -31,7 +32,7 @@ export type ExtractionRulesBundle = {
 const TOP_LEVEL_RULE = 'JSON 顶层只有 document 与 suggested_pages 两个字段，不要增加其它字段。';
 const EVIDENCE_RULE = 'source_evidence 的 quote 必须是从资料中原样复制的连续片段（不要改写、不要拼接），并给出该片段的 id 与 rawId；同一页面内 id 唯一。';
 export const EXTRACTION_PROVIDER_FORMAT = 'locator-v2';
-export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-16';
+export const KB02_PROMPT_REVISION = 'kb02-atoms-planning-17';
 
 function extractEnums(schema: JsonSchemaNode): { types: unknown[]; categories: unknown[] } {
   const page = schema.properties?.suggested_pages?.items;
@@ -75,13 +76,14 @@ export function buildDocumentMergeSystemPrompt(rules: ExtractionRules, schema: J
 }
 
 export async function loadExtractionRules(rulesDir: string): Promise<ExtractionRulesBundle> {
-  const [schemaText, rulesText, fmcgText, kb02FactsText, kb02PlanningText, kb02SemanticReviewText] = await Promise.all([
+  const [schemaText, rulesText, fmcgText, kb02FactsText, kb02PlanningText, kb02SemanticReviewText, sourcePolicyText] = await Promise.all([
     readFile(path.join(rulesDir, 'wiki-extract.schema.json'), 'utf8'),
     readFile(path.join(rulesDir, 'extraction-rules.yaml'), 'utf8'),
     readFile(path.join(rulesDir, 'fmcg-schema.yaml'), 'utf8'),
     readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'),
     readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'),
     readFile(path.join(rulesDir, 'kb02-semantic-review.schema.json'), 'utf8'),
+    readFile(path.join(rulesDir, 'source-policy.yaml'), 'utf8'),
   ]);
   let schema: JsonSchemaNode; let kb02FactsSchema: JsonSchemaNode; let kb02PlanningSchema: JsonSchemaNode; let kb02SemanticReviewSchema: JsonSchemaNode;
   let rules: ExtractionRules;
@@ -94,6 +96,8 @@ export async function loadExtractionRules(rulesDir: string): Promise<ExtractionR
   catch { throw new LlmError('LLM_RULES_INVALID', 'rules/fmcg-schema.yaml 不是合法 YAML。', 500); }
 
   assertSupportedSchema(schema); assertSupportedSchema(kb02FactsSchema); assertSupportedSchema(kb02PlanningSchema); assertSupportedSchema(kb02SemanticReviewSchema);
+  const sourcePolicy = yaml.load(sourcePolicyText) as ExtractionRulesBundle['sourcePolicy'];
+  if (!sourcePolicy?.levels || sourcePolicy.levels.map(level => level.id).join('') !== 'ABCD' || sourcePolicy.levels.some(level => typeof level.description !== 'string') || typeof sourcePolicy.guidance !== 'string') throw new LlmError('LLM_RULES_INVALID', '来源等级政策无效。', 500);
   if (!rules?.role || !Array.isArray(rules.instructions) || !rules.instructions.length) {
     throw new LlmError('LLM_RULES_INVALID', 'rules/extraction-rules.yaml 缺少 role 或 instructions。', 500);
   }
@@ -116,6 +120,6 @@ export async function loadExtractionRules(rulesDir: string): Promise<ExtractionR
   const kb02Categories = kb02PlanningSchema.properties?.pages?.items?.properties?.category?.enum ?? [];
   if (JSON.stringify(kb02Types) !== JSON.stringify(allowedTypes) || JSON.stringify(kb02Categories) !== JSON.stringify(allowedCategories)) throw new LlmError('LLM_RULES_INVALID', 'KB02规划schema枚举与FMCG schema不一致。', 500);
   const rulesVersion = `b04-${rules.version ?? 'unknown'}-${EXTRACTION_PROVIDER_FORMAT}-${KB02_PROMPT_REVISION}-${createHash('sha256').update(`${schemaText}\n${rulesText}\n${EXTRACTION_PROVIDER_FORMAT}\n${KB02_PROMPT_REVISION}\n${kb02FactsText}\n${kb02PlanningText}\n${fmcgText}\n${kb02SemanticReviewText}\n${KNOWLEDGE_SEMANTIC_REVIEW_INSTRUCTION}`).digest('hex').slice(0, 12)}`;
-  return { schema, kb02FactsSchema, kb02PlanningSchema, kb02SemanticReviewSchema, rules, fmcg, rulesVersion, systemPrompt: buildSystemPrompt(rules, schema) };
+  return { schema, kb02FactsSchema, kb02PlanningSchema, kb02SemanticReviewSchema, rules, fmcg, sourcePolicy, rulesVersion: `${rulesVersion}-${createHash('sha256').update(sourcePolicyText).digest('hex').slice(0, 8)}`, systemPrompt: buildSystemPrompt(rules, schema) };
 }
 

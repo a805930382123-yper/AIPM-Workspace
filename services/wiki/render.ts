@@ -82,7 +82,7 @@ export function renderSourceBody(source: DraftSource, raw: DraftRawMeta, selecte
   lines.push(`- 原始链接：${orMissing(raw.url, '原始链接')}`);
   lines.push(`- Raw：${raw.title}（${raw.rawId}）`);
   if (raw.importedAt) lines.push(`- 导入时间：${raw.importedAt}`);
-  lines.push(`- 来源等级（人工判断）：${source.source_level}`);
+  lines.push(`- 来源等级：${source.source_level}`);
   lines.push('');
   lines.push('## 摘要', '', source.summary || '待补充：本条来源的摘要。', '');
   lines.push('## Key Takeaways', '');

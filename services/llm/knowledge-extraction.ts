@@ -5,7 +5,7 @@ import { chunkText } from './chunk.ts';
 import { buildEvidenceLocatorCatalog } from './locators.ts';
 import { loadExtractionRules, FROZEN_BUDGETS } from './rules.ts';
 import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } from './provider.ts';
-import { validateSchema } from './schema-validator.ts';
+import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
 import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
@@ -114,7 +114,8 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
     if (current.completedChunks.length !== chunks.length || current.completedChunks.some((part, index) => part.index !== index)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '已保存规划但未覆盖全部原文分块，已拒绝恢复。', 409);
     const factIds = current.completedChunks.flatMap(part => part.facts.map(item => item.id));
     const questionIds = current.completedChunks.flatMap(part => part.questions.map(item => item.id));
-    if(Object.keys(current.plan.document).sort().join(',')!=='main_topic,summary,title')throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点文档结构不合法，已拒绝恢复。',409);
+    const legacyDocument = !!completedDraft && current.plan.document.source_level === undefined;
+    if(Object.keys(current.plan.document).sort().join(',')!==(legacyDocument?'main_topic,summary,title':'main_topic,source_level,summary,title'))throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点文档结构不合法，已拒绝恢复。',409);
     // The stored plan keeps original IDs; it is not a v3 Provider response.
     const pagesSchema=bundle.kb02PlanningSchema.properties!.pages!, unitPage=pagesSchema.items!;
     const {factUnitIds,questionUnitIds,templateFields,...pageMetadata}=unitPage.properties!;
@@ -122,13 +123,16 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
       const {factUnitIds:refs,...properties}=schema.properties!;
       return [key,{...schema,required:['text','factIds'],properties:{...properties,factIds:refs}}];
     }))};
-    const storedSchema={...bundle.kb02PlanningSchema,properties:{...bundle.kb02PlanningSchema.properties,version:{type:'integer',enum:[2]},pages:{...pagesSchema,items:{...unitPage,required:unitPage.required!.map(key=>key==='factUnitIds'?'factIds':key==='questionUnitIds'?'questionIds':key),properties:{...pageMetadata,factIds:factUnitIds,questionIds:questionUnitIds,templateFields:storedFields}}}}};
-    try { exact({version:2,...current.plan,document:{title:current.plan.document.title,main_topic:current.plan.document.main_topic}},storedSchema,'检查点原ID规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点原ID规划不符合严格结构，已拒绝恢复。',409); }
+    const storedSchema: JsonSchemaNode={...bundle.kb02PlanningSchema,properties:{...bundle.kb02PlanningSchema.properties,version:{type:'integer',enum:[2]},pages:{...pagesSchema,items:{...unitPage,required:unitPage.required!.map(key=>key==='factUnitIds'?'factIds':key==='questionUnitIds'?'questionIds':key),properties:{...pageMetadata,factIds:factUnitIds,questionIds:questionUnitIds,templateFields:storedFields}}}}};
+    const documentSchema = storedSchema.properties!.document!;
+    if (legacyDocument) storedSchema.properties!.document = { ...documentSchema, required: documentSchema.required!.filter(key => key !== 'source_level') };
+    const { summary: _summary, ...document } = current.plan.document;
+    try { exact({version:2,...current.plan,document},storedSchema,'检查点原ID规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT','检查点原ID规划不符合严格结构，已拒绝恢复。',409); }
     if (current.plan.document.summary !== sourceSummary(current.completedChunks.flatMap(part => part.facts.map(item => item.text)))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '规划摘要与原始事实不一致。', 409);
     const assignedFacts = current.plan.pages.flatMap(page => page.factIds); const assignedQuestions = current.plan.pages.flatMap(page => page.questionIds);
     if (!current.plan.pages.length || current.plan.pages.length > 50 || current.plan.pages.some(page => !page.factIds.length) || new Set(current.plan.pages.map(page => normalizeText(page.title).toLowerCase())).size !== current.plan.pages.length || factIds.some(id => assignedFacts.filter(item => item === id).length !== 1) || assignedFacts.some(id => !factIds.includes(id)) || questionIds.some(id => assignedQuestions.filter(item => item === id).length !== 1) || assignedQuestions.some(id => !questionIds.includes(id))) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划引用或覆盖不完整，已拒绝恢复。', 409);
     const planningInput=buildKnowledgePlanningInput(input.body,current.completedChunks,catalogByChunk);
-    try { exact(projectKnowledgePlan(current.plan,planningInput), bundle.kb02PlanningSchema, '检查点整篇主题规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划结构或等价记录归属不合法，已拒绝恢复。', 409); }
+    try { exact(projectKnowledgePlan(current.plan,planningInput), legacyDocument ? { ...bundle.kb02PlanningSchema, properties: { ...bundle.kb02PlanningSchema.properties, document: storedSchema.properties!.document } } : bundle.kb02PlanningSchema, '检查点整篇主题规划'); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划结构或等价记录归属不合法，已拒绝恢复。', 409); }
     try { assertNoKnownSecret(current.plan, input.provider.secrets ?? []); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点规划包含当前已知秘密，已拒绝恢复。', 409); }
   }
   return { bundle, chunks, catalogByChunk };
@@ -204,12 +208,12 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     if (knowledgeCallLimit(chunks.length) - current.attempts < 1) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划；成功块已保留，请检查资料后显式重新生成。', 429);
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
-    const planningPayload = { ...planningInput, ...(feedback ? { coverageFeedback: feedback } : {}) };
+    const planningPayload = { ...planningInput, source: { id: input.raw.id, title: input.raw.title, sourceType: input.raw.sourceType, sourceName: input.raw.sourceName, author: input.raw.author, publishedAt: input.raw.publishedAt, url: input.raw.url, tags: input.raw.tags }, sourcePolicy: bundle.sourcePolicy, ...(feedback ? { coverageFeedback: feedback } : {}) };
     assertNoKnownSecret(planningPayload, input.provider.secrets ?? []);
     const planningJson = JSON.stringify(planningPayload);
     if (Buffer.byteLength(planningJson, 'utf8') > 192 * 1024) throw new LlmError('LLM_PLANNING_TOO_LARGE', '整篇事实规划输入超过192KiB；检查点已保存，请缩短资料后显式重新生成。', 422);
     const plannerSchema = bundle.kb02PlanningSchema;
-    const planningSystem = `你是整篇知识主题规划器。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n${KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
+    const planningSystem = `你是整篇知识主题规划器。document.source_level必须按source原始元数据与sourcePolicy给出A/B/C/D来源等级初判；来源未知或无可判断身份为D，不能把URL、文件类型或自称权威当作外部核验。初判可人工修改，不代表内容已核实。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n${KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
     assertNoKnownSecret(planningSystem, input.provider.secrets ?? []);
     current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: undefined });
     emit('planning', allFacts.length);

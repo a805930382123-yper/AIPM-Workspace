@@ -26,7 +26,7 @@ async function candidate(two=true) {
 }
 test('HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes',async()=>{
   const f=await candidate();try{
-    let d=f.draft;assert.equal(f.requests.length,2);assert(d.rulesVersion.includes('planning-13'));assert.equal(d.humanReview!.approvals.length,0);
+    let d=f.draft;assert.equal(f.requests.length,2);assert.equal(d.rulesVersion,(await loadExtractionRules('rules')).rulesVersion+'-kb02-2');assert.equal(d.humanReview!.approvals.length,0);
     const cp=(await f.checkpoint(f.job.id))!;assert.deepEqual(d.humanReview!.units.flatMap(u=>u.memberIds).sort(),cp.completedChunks.flatMap(c=>[...c.facts,...c.questions].map(x=>x.id)).sort());
     assert.equal(knowledgePlanCallMinimum({...cp,rulesVersion:'x-kb02-atoms-planning-12-x'}),3);assert.equal(knowledgePlanCallMinimum(cp),2);
     const input={...f.input(),baseRevision:d.revision,selectedPageIds:[d.pages[0].pageId]};
@@ -65,14 +65,14 @@ test('HUMAN HTTP strict protocol rejects direct confirm/forgery, page digests an
   }finally{await http.close();await f.clean();}
 });
 
-test('HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates, no third semantic request',async()=>{
+test('HUMAN historical fact/ID projections with synthetic current source grade publish only unreviewed candidates, no third semantic request',async()=>{
   const fixtures=JSON.parse(await readFile('docs/reports/KB02-SEMANTIC-AUDIT-20261023-fixtures.json','utf8')).fixtures;
   const traces=(await readFile('docs/reports/KB02-SEMANTIC-AUDIT-20261023-provider-trace.jsonl','utf8')).trim().split('\n').map(line=>JSON.parse(line));
   const bundle=await loadExtractionRules('rules');
   for(const [fixtureId,seq]of [['supplement-original',204],['independent-ai-positive',207]] as const){
     const sample=fixtures.find((f:any)=>f.id===fixtureId),body=sample.body,raw={id:randomUUID(),title:fixtureId,sourceType:'report',sourceName:'隔离历史',tags:[]};
     let cp:ExtractionCheckpoint={version:1,jobId:randomUUID(),rawId:raw.id,rawSha256:sample.sha256,pipelineVersion:'kb02-2',rulesVersion:bundle.rulesVersion,providerIdentity:'fake|historical',chunks:chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000}).map(({index,start,end})=>({index,start,end})),completedChunks:[],attempts:0,stage:'extracting',updatedAt:new Date().toISOString(),integrity:'memory'};
-    let calls=0;const result=await runKnowledgePipeline({raw,body,bodySha256:sample.sha256,rulesDir:'rules',checkpoint:cp,provider:{name:'fake',model:'historical',complete:async request=>{assert(!request.user.startsWith('请审核'));const sequence=seq+calls++;const response=traces.find((t:any)=>t.sequence===sequence)!.response;assert(calls<=2);return {text:response.content,bytes:Buffer.byteLength(response.content),finishReason:response.finishReason};}},beforeCall:async stage=>cp={...cp,stage,attempts:cp.attempts+1},saveCheckpoint:async value=>cp={...value,integrity:'memory'}});
+    let calls=0;const result=await runKnowledgePipeline({raw,body,bodySha256:sample.sha256,rulesDir:'rules',checkpoint:cp,provider:{name:'fake',model:'historical',complete:async request=>{assert(!request.user.startsWith('请审核'));const sequence=seq+calls++;const response=traces.find((t:any)=>t.sequence===sequence)!.response;assert(calls<=2);const projection=JSON.parse(response.content);if(request.user.startsWith('请对下列全部已验证事实规划知识页'))projection.document.source_level='D';const text=JSON.stringify(projection);return {text,bytes:Buffer.byteLength(text),finishReason:response.finishReason};}},beforeCall:async stage=>cp={...cp,stage,attempts:cp.attempts+1},saveCheckpoint:async value=>cp={...value,integrity:'memory'}});
     assert.equal(calls,2);assert(result.outcome.reviewBasis);assert(result.outcome.pages.some(p=>p.source_facts.some(f=>f.text.includes('AI'))));
     if(seq===204)assert(result.outcome.pages.some(p=>p.title.startsWith('AI异常提示')),'原错主题保留为未审候选，未被程序静默删去');
   }
@@ -80,7 +80,8 @@ test('HUMAN historical seq204/205 and 207/208 publish only unreviewed candidates
 test('HUMAN original 106400-char long plan keeps all original IDs and indivisible region units without calls',async()=>{
   let body='';for(let n=1;n<=14;n++){const region='虚构区域'+String(n).padStart(2,'0'),header=`【长文验收附录${n}，虚构】\n`,business=`${region}2026年9月有100家目标门店，${n+10}家在售，门店数铺货率${n+10}%。此区域与其它附录区域独立，不能混用。异常审批负责人未知，AI仅未来分析建议。`;let block=header+business+'\n',line=0;while(block.length<7600)block+=`附录${n}排版说明${++line}：这里用于验证中文长文保存和完整处理，不补充任何新经营指标、客户身份、AI上线事实或收益。\n`;body+=block.slice(0,7600);}
   const original=JSON.parse(await readFile('docs/reports/KB02-REGION-AUDIT-20261023-long-checkpoint.json','utf8')) as ExtractionCheckpoint,bundle=await loadExtractionRules('rules');assert.equal(body.length,106400);assert.equal(createHash('sha256').update(body).digest('hex'),original.rawSha256);
-  let cp={...original,rulesVersion:bundle.rulesVersion};const result=await runKnowledgePipeline({raw:{id:cp.rawId,title:'原长文回放',sourceType:'report',sourceName:'历史',tags:[]},body,bodySha256:cp.rawSha256,checkpoint:cp,rulesDir:'rules',provider:{name:'fake',model:'no-call',complete:async()=>{throw Error('No outbound');}},beforeCall:async()=>{throw Error('No calls');},saveCheckpoint:async value=>cp={...value,integrity:original.integrity}});
+  // Synthetic current-schema projection only; historical bytes remain unchanged.
+  let cp:ExtractionCheckpoint={...original,plan:{...original.plan!,document:{...original.plan!.document,source_level:'D' as const}},rulesVersion:bundle.rulesVersion};const result=await runKnowledgePipeline({raw:{id:cp.rawId,title:'原长文回放',sourceType:'report',sourceName:'历史',tags:[]},body,bodySha256:cp.rawSha256,checkpoint:cp,rulesDir:'rules',provider:{name:'fake',model:'no-call',complete:async()=>{throw Error('No outbound');}},beforeCall:async()=>{throw Error('No calls');},saveCheckpoint:async value=>cp={...value,integrity:original.integrity}});
   const units=result.outcome.reviewBasis!.units;assert.equal(units.length,55);assert.equal(units.flatMap(u=>u.memberIds).length,101);assert.deepEqual(units.flatMap(u=>u.memberIds).sort(),original.completedChunks.flatMap(c=>[...c.facts,...c.questions].map(r=>r.id)).sort());
   for(const unit of units){assert.equal(body.slice(unit.start,unit.end),unit.text);assert.equal(result.outcome.reviewBasis!.pageUnitIds.flat().filter(id=>id===unit.id).length,1);}
 });
@@ -148,7 +149,7 @@ for(const mode of ['zero','partial','conflict'] as const)test(`HUMAN synthesis $
  }finally{await f.clean();}
 });
 for(const count of [2,3])test(`HUMAN completed revision12 actual storage reconciliation enforces chunks+2 lower bound (${count} attempts)`,async()=>{
- const f=await candidate(false);try{const cp=(await f.checkpoint(f.job.id))!,oldRules=cp.rulesVersion.replace('planning-13-','planning-12-'),draft=structuredClone(f.draft);draft.rulesVersion=oldRules+'-kb02-2';draft.extraction.callCount=count;await writeFile(path.join(f.root,'drafts',draft.id+'.json'),JSON.stringify(draft));await new ExtractionCheckpointStore(f.root).save({...cp,rulesVersion:oldRules,attempts:count,stage:'assembling'});await f.jobs.update(f.job.id,{status:'running',stage:'assembling',callCount:count});const calls=f.requests.length,reboot=f.newRunner();await reboot.reconcile();const result=await reboot.readJob(f.job.id);if(count===2){assert.notEqual(result.job?.status,'completed');assert(result.recovery);}else{assert.equal(result.job?.status,'completed');assert.equal(result.recovery,undefined);}assert.equal(f.requests.length,calls);assert.equal((await f.checkpoint(f.job.id))!.attempts,count);
+ const f=await candidate(false);try{const cp=(await f.checkpoint(f.job.id))!,oldRules=cp.rulesVersion.replace(/planning-\d+-/u,'planning-12-'),draft=structuredClone(f.draft);draft.rulesVersion=oldRules+'-kb02-2';draft.extraction.callCount=count;await writeFile(path.join(f.root,'drafts',draft.id+'.json'),JSON.stringify(draft));await new ExtractionCheckpointStore(f.root).save({...cp,rulesVersion:oldRules,attempts:count,stage:'assembling'});await f.jobs.update(f.job.id,{status:'running',stage:'assembling',callCount:count});const calls=f.requests.length,reboot=f.newRunner();await reboot.reconcile();const result=await reboot.readJob(f.job.id);if(count===2){assert.notEqual(result.job?.status,'completed');assert(result.recovery);}else{assert.equal(result.job?.status,'completed');assert.equal(result.recovery,undefined);}assert.equal(f.requests.length,calls);assert.equal((await f.checkpoint(f.job.id))!.attempts,count);
  }finally{await f.clean();}
 });
 test('HUMAN legacy merge retains same text at different positions and colliding evidence IDs; deleting an occupied page keeps units unresolved',async()=>{

@@ -1,0 +1,316 @@
+{
+  "raws": [
+    {
+      "title": "OpenAI官方文档：Structured Outputs",
+      "sourceType": "article",
+      "sourceName": "OpenAI官方开发文档",
+      "author": "OpenAI",
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat",
+      "tags": [
+        "R22验收",
+        "公开原文摘录"
+      ],
+      "id": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+      "importedAt": "2026-10-29T08:53:55.131Z",
+      "status": "unprocessed",
+      "bodySha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773",
+      "body": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema"
+    },
+    {
+      "title": "Structured Outputs 本地业务影响待确认",
+      "sourceType": "note",
+      "sourceName": "来源未知",
+      "tags": [
+        "R22验收"
+      ],
+      "id": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+      "importedAt": "2026-10-29T08:53:55.141Z",
+      "status": "unprocessed",
+      "bodySha256": "82cec1034f72f09e493fa2425e39534fda9097a8350e2be64ef1ea6c94cfed9e",
+      "body": "该特性对本地业务的成本影响尚未确认。"
+    }
+  ],
+  "workflow": {
+    "reviewProtocolVersion": 1,
+    "id": "0c43e564-eb0e-43fa-b8c9-b177094415a0",
+    "kind": "synthesis",
+    "status": "pending_confirmation",
+    "revision": 1,
+    "createdAt": "2026-10-29T09:00:55.671Z",
+    "updatedAt": "2026-10-29T09:00:55.671Z",
+    "provider": {
+      "name": "openai-compatible",
+      "model": "gpt-6.1-terra"
+    },
+    "rawSnapshots": [
+      {
+        "id": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+        "title": "OpenAI官方文档：Structured Outputs",
+        "bodySha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773"
+      },
+      {
+        "id": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+        "title": "Structured Outputs 本地业务影响待确认",
+        "bodySha256": "82cec1034f72f09e493fa2425e39534fda9097a8350e2be64ef1ea6c94cfed9e"
+      }
+    ],
+    "title": "Structured Outputs 功能及本地业务成本影响",
+    "category": "ai_application",
+    "sources": [
+      "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+      "f021c715-6c0e-4b4a-8561-3b92ded31d39"
+    ],
+    "source_level": "D",
+    "sections": {
+      "suggestedAdditions": [
+        "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+        "该特性对本地业务的成本影响尚未确认。"
+      ],
+      "conflicts": [],
+      "inferences": [],
+      "openQuestions": [
+        "Structured Outputs 对本地业务的成本有何影响？"
+      ],
+      "agreement": [],
+      "sourceList": [
+        {
+          "id": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+          "title": "OpenAI官方文档：Structured Outputs",
+          "source_level": "A"
+        },
+        {
+          "id": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+          "title": "Structured Outputs 本地业务影响待确认",
+          "source_level": "D"
+        }
+      ]
+    },
+    "evidence": [
+      {
+        "section": "suggestedAdditions",
+        "text": "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+        "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+        "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+        "start": 0,
+        "end": 120
+      },
+      {
+        "section": "suggestedAdditions",
+        "text": "该特性对本地业务的成本影响尚未确认。",
+        "rawId": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+        "quote": "该特性对本地业务的成本影响尚未确认。",
+        "start": 0,
+        "end": 18
+      }
+    ],
+    "humanReview": {
+      "version": 1,
+      "units": [
+        {
+          "id": "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-1",
+          "kind": "proposal",
+          "origin": "model",
+          "text": "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+          "memberIds": [],
+          "records": [],
+          "section": "suggestedAdditions",
+          "evidence": [
+            {
+              "section": "suggestedAdditions",
+              "text": "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+              "start": 0,
+              "end": 120,
+              "id": "proposal-evidence-suggestedAdditions-1",
+              "chunkIndex": -1
+            }
+          ],
+          "sourceLabel": "模型整理（有原文定位，须人工核对）"
+        },
+        {
+          "id": "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-2",
+          "kind": "proposal",
+          "origin": "model",
+          "text": "该特性对本地业务的成本影响尚未确认。",
+          "memberIds": [],
+          "records": [],
+          "section": "suggestedAdditions",
+          "evidence": [
+            {
+              "section": "suggestedAdditions",
+              "text": "该特性对本地业务的成本影响尚未确认。",
+              "rawId": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+              "quote": "该特性对本地业务的成本影响尚未确认。",
+              "start": 0,
+              "end": 18,
+              "id": "proposal-evidence-suggestedAdditions-2",
+              "chunkIndex": -1
+            }
+          ],
+          "sourceLabel": "模型整理（有原文定位，须人工核对）"
+        },
+        {
+          "id": "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-openQuestions-1",
+          "kind": "proposal",
+          "origin": "model",
+          "text": "Structured Outputs 对本地业务的成本有何影响？",
+          "memberIds": [],
+          "records": [],
+          "section": "openQuestions",
+          "evidence": [],
+          "sourceLabel": "待确认问题"
+        }
+      ],
+      "basisDigest": "43bdb89d4bde42f8a650b9ce8b5b43d5faeff2fae5d64c4f8391ff51d8e7cc4e",
+      "assignments": {
+        "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-1": "0c43e564-eb0e-43fa-b8c9-b177094415a0",
+        "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-2": "0c43e564-eb0e-43fa-b8c9-b177094415a0",
+        "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-openQuestions-1": "0c43e564-eb0e-43fa-b8c9-b177094415a0"
+      },
+      "approvals": []
+    }
+  },
+  "view": {
+    "reviewProtocolVersion": 1,
+    "id": "0c43e564-eb0e-43fa-b8c9-b177094415a0",
+    "kind": "synthesis",
+    "status": "pending_confirmation",
+    "revision": 1,
+    "createdAt": "2026-10-29T09:00:55.671Z",
+    "updatedAt": "2026-10-29T09:00:55.671Z",
+    "provider": {
+      "name": "openai-compatible",
+      "model": "gpt-6.1-terra"
+    },
+    "rawSnapshots": [
+      {
+        "id": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+        "title": "OpenAI官方文档：Structured Outputs",
+        "bodySha256": "801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773"
+      },
+      {
+        "id": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+        "title": "Structured Outputs 本地业务影响待确认",
+        "bodySha256": "82cec1034f72f09e493fa2425e39534fda9097a8350e2be64ef1ea6c94cfed9e"
+      }
+    ],
+    "title": "Structured Outputs 功能及本地业务成本影响",
+    "category": "ai_application",
+    "sources": [
+      "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+      "f021c715-6c0e-4b4a-8561-3b92ded31d39"
+    ],
+    "source_level": "D",
+    "sections": {
+      "suggestedAdditions": [
+        "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+        "该特性对本地业务的成本影响尚未确认。"
+      ],
+      "conflicts": [],
+      "inferences": [],
+      "openQuestions": [
+        "Structured Outputs 对本地业务的成本有何影响？"
+      ],
+      "agreement": [],
+      "sourceList": [
+        {
+          "id": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+          "title": "OpenAI官方文档：Structured Outputs",
+          "source_level": "A"
+        },
+        {
+          "id": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+          "title": "Structured Outputs 本地业务影响待确认",
+          "source_level": "D"
+        }
+      ]
+    },
+    "evidence": [
+      {
+        "section": "suggestedAdditions",
+        "text": "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+        "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+        "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+        "start": 0,
+        "end": 120
+      },
+      {
+        "section": "suggestedAdditions",
+        "text": "该特性对本地业务的成本影响尚未确认。",
+        "rawId": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+        "quote": "该特性对本地业务的成本影响尚未确认。",
+        "start": 0,
+        "end": 18
+      }
+    ],
+    "humanReview": {
+      "version": 1,
+      "units": [
+        {
+          "id": "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-1",
+          "kind": "proposal",
+          "origin": "model",
+          "text": "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+          "memberIds": [],
+          "records": [],
+          "section": "suggestedAdditions",
+          "evidence": [
+            {
+              "section": "suggestedAdditions",
+              "text": "OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。",
+              "rawId": "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d",
+              "quote": "Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ",
+              "start": 0,
+              "end": 120,
+              "id": "proposal-evidence-suggestedAdditions-1",
+              "chunkIndex": -1
+            }
+          ],
+          "sourceLabel": "模型整理（有原文定位，须人工核对）"
+        },
+        {
+          "id": "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-2",
+          "kind": "proposal",
+          "origin": "model",
+          "text": "该特性对本地业务的成本影响尚未确认。",
+          "memberIds": [],
+          "records": [],
+          "section": "suggestedAdditions",
+          "evidence": [
+            {
+              "section": "suggestedAdditions",
+              "text": "该特性对本地业务的成本影响尚未确认。",
+              "rawId": "f021c715-6c0e-4b4a-8561-3b92ded31d39",
+              "quote": "该特性对本地业务的成本影响尚未确认。",
+              "start": 0,
+              "end": 18,
+              "id": "proposal-evidence-suggestedAdditions-2",
+              "chunkIndex": -1
+            }
+          ],
+          "sourceLabel": "模型整理（有原文定位，须人工核对）"
+        },
+        {
+          "id": "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-openQuestions-1",
+          "kind": "proposal",
+          "origin": "model",
+          "text": "Structured Outputs 对本地业务的成本有何影响？",
+          "memberIds": [],
+          "records": [],
+          "section": "openQuestions",
+          "evidence": [],
+          "sourceLabel": "待确认问题"
+        }
+      ],
+      "basisDigest": "43bdb89d4bde42f8a650b9ce8b5b43d5faeff2fae5d64c4f8391ff51d8e7cc4e",
+      "assignments": {
+        "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-1": "0c43e564-eb0e-43fa-b8c9-b177094415a0",
+        "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-suggestedAdditions-2": "0c43e564-eb0e-43fa-b8c9-b177094415a0",
+        "proposal-0c43e564-eb0e-43fa-b8c9-b177094415a0-openQuestions-1": "0c43e564-eb0e-43fa-b8c9-b177094415a0"
+      },
+      "approvals": []
+    },
+    "reviewContentDigest": "caff531cbb25541e19ecef96a9927b7b67234dc25dd13764b3a59a437d972825"
+  }
+}

@@ -52,7 +52,7 @@ export type DraftRecord = {
   id: string; rawId: string; rawSha256: string; rawTitle: string; rawMeta: DraftRawMeta;
   status: DraftStatus; revision: number; createdAt: string; updatedAt: string;
   rulesVersion: string; provider: { name: string; model: string }; jobId: string;
-  document: { title: string; main_topic: string; summary: string };
+  document: { title: string; main_topic: string; summary: string; source_level?: 'A' | 'B' | 'C' | 'D' };
   pages: DraftPage[]; source: DraftSource; warnings: string[];
   commitOperationId?: string; confirmedAt?: string; discardedAt?: string;
   extraction: { callCount: number; chunkCount: number; pagesFound: number };
@@ -242,7 +242,8 @@ export class DraftStore {
   }): Promise<DraftRecord> {
     return this.queue.run(async () => {
       const now = new Date().toISOString();
-      const pages: DraftPage[] = input.outcome.pages.map(page => this.fromExtracted(page, input.rules));
+      const level = input.outcome.document.source_level ?? 'D';
+      const pages: DraftPage[] = input.outcome.pages.map(page => ({ ...this.fromExtracted(page, input.rules), source_level: level }));
       const sourceTitle = input.outcome.document.title.trim().slice(0, 300) || input.raw.title;
       const rawMeta: DraftRawMeta = {
         rawId: input.raw.id, title: input.raw.title,
@@ -253,7 +254,7 @@ export class DraftStore {
         title: sourceTitle, category: 'other',
         summary: input.outcome.document.summary,
         key_takeaways: derivedTakeaways(pages.filter(page => page.selected)),
-        body: '', knowledge_status: 'source_supported', confidence: 'medium', source_level: 'C',
+        body: '', knowledge_status: 'source_supported', confidence: 'medium', source_level: level,
       };
       const record: DraftRecord = {
         id: randomUUID(), rawId: input.raw.id, rawSha256: input.raw.bodySha256, rawTitle: input.raw.title, rawMeta,
@@ -290,8 +291,7 @@ export class DraftStore {
       source_evidence: page.source_evidence.map(item => ({ id: item.id, rawId: item.rawId, quote: item.quote, start: item.start, end: item.end, chunkIndex: item.chunkIndex })),
       knowledge_status: defaultKnowledgeStatus(page),
       confidence: 'medium',
-      // A conservative default the user can raise: B04 never invents an A/B level for unknown material.
-      source_level: 'C',
+      source_level: 'D',
       // F04-03: new knowledge pages start unselected; the user decides what becomes formal.
       selected: false,
       provenance: page.provenance.map(item => ({ ...item })),

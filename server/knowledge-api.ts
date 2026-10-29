@@ -95,10 +95,11 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
   app.patch('/api/knowledge/workflows/:workflowId', async (req, res, next) => {
     try {
       await ready;
-      const { baseRevision, sections, title } = req.body ?? {};
+      const { baseRevision, sections, title, source_level } = req.body ?? {};
       if (!Number.isInteger(baseRevision) || !sections || !Array.isArray(sections.suggestedAdditions) || !Array.isArray(sections.conflicts) || !Array.isArray(sections.inferences) || !Array.isArray(sections.openQuestions) || !Array.isArray(sections.agreement) || !Array.isArray(sections.sourceList)) throw new WikiError('INVALID_WORKFLOW', '草稿更新内容不符合结构要求。');
-      if(Object.keys(req.body??{}).some(k=>!['baseRevision','sections','title'].includes(k)))throw new WikiError('INVALID_PATCH','工作流请求包含受保护或未知字段。');
-      res.json(workflows.view(await workflows.patch(req.params.workflowId, baseRevision, sections, title)));
+      if(Object.keys(req.body??{}).some(k=>!['baseRevision','sections','title','source_level'].includes(k)))throw new WikiError('INVALID_PATCH','工作流请求包含受保护或未知字段。');
+      if (sections.sourceList.some((source: unknown) => !source || typeof source !== 'object' || Array.isArray(source))) throw new WikiError('INVALID_WORKFLOW', '来源清单格式无效。');
+      res.json(workflows.view(await workflows.patch(req.params.workflowId, baseRevision, sections, title, source_level)));
     } catch (error) { next(error); }
   });
   for(const action of ['start','move','page'] as const){

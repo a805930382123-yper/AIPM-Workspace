@@ -11,4 +11,4 @@ levels:
   - id: D
     label: D 级
     description: 来源未知、营销软文或尚未核验的 AI 内容。
-guidance: 来源等级是人工可编辑的参考判断；保存来源不等于已核实内容。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。
+guidance: 根据原始来源身份和元数据进行 AI 初判，可由用户修改；未提供可判断的来源身份时为 D。来源类型、URL、文件格式或自称权威不构成外部核验，不能据此升为 A。来源等级不等于事实已核实；修改等级不自动提升 reviewed 或 verified。无 AI 初判的手工新记录缺省 D。verified 必须关联有效 Raw 来源并由用户标记 reviewed；source_supported 只要求关联有效 Raw 来源。

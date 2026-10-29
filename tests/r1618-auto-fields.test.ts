@@ -45,7 +45,7 @@ async function fixture(mutate?: (wire: KnowledgeWirePlan) => void) {
     if (!request.user.includes('请对下列全部已验证事实规划知识页')) return {text:JSON.stringify({version:2,facts:input.slice(0,5).map((atom:{id:string})=>({atomId:atom.id,kind:'fact'})),questions:[{atomId:input[5].id}],sourceNotes:[]}),bytes:1,finishReason:'stop'};
     const units = input.factUnits as Array<{id:string}>;
     const field = (text:string, ...indices:number[]) => ({text,factUnitIds:indices.map(index=>units[index].id)});
-    const wire: KnowledgeWirePlan = {version:3,document:{title:'来源：虚构门店补货',main_topic:'补货'},pages:[
+    const wire: KnowledgeWirePlan = {version:3,document: { source_level: 'D',title:'来源：虚构门店补货',main_topic:'补货'},pages:[
       {title:'虚构门店补货概念',type:'concept',category:'supply_chain',factUnitIds:units.slice(0,2).map(unit=>unit.id),questionUnitIds:[],templateFields:{
         one_line_explanation:field('门店补货是按门店库存与需求补充商品的业务活动。',0),definition:field('根据库存与需求补充门店商品。',0),why_important:field('以降低缺货风险为目标。',1),
       }},
@@ -194,7 +194,7 @@ test('R1618 AUTO: 旧无字段plan与草稿仍可恢复，不自动补写字段'
 
 test('R1618 AUTO: 字段unit展开与反投影保留全部等价原ID，重命名不影响引用',()=>{
   const input: KnowledgePlanningInput = {facts:[],questions:[],sourceContexts:[],factUnits:[{id:'fu-a',sourceId:'s-0-2',text:'原文',kind:'fact',memberIds:['f-c1-1','f-c2-1']}],questionUnits:[]};
-  const wire: KnowledgeWirePlan = {version:3,document:{title:'来源',main_topic:'主题'},pages:[{title:'概念',type:'concept',category:'other',factUnitIds:['fu-a'],questionUnitIds:[],templateFields:{definition:{text:'AI解释',factUnitIds:['fu-a']}}}]};
+  const wire: KnowledgeWirePlan = {version:3,document: { source_level: 'D',title:'来源',main_topic:'主题'},pages:[{title:'概念',type:'concept',category:'other',factUnitIds:['fu-a'],questionUnitIds:[],templateFields:{definition:{text:'AI解释',factUnitIds:['fu-a']}}}]};
   const pages = expandKnowledgePlan(wire,input);
   assert.deepEqual(pages[0].templateFields!.definition!.factIds,['f-c1-1','f-c2-1']);
   assert.deepEqual(projectKnowledgePlan({document:{...wire.document,summary:'原文'},pages},input),wire);
@@ -219,7 +219,7 @@ test('R1618 FIX: 规划契约说明进入实际请求，question-only保持独�
     const rawPath=path.join(f.root,'knowledge/raw/notes',`${f.raw.id}.md`),rawBefore=await readFile(rawPath,'utf8');
     const archived='docs/reports/R1618-QUALITY-20261027-real-evidence';
     const oldCheckpoint=JSON.parse(await readFile(path.join(archived,'checkpoint.json'),'utf8'));
-    assert(f.bundle.rulesVersion.includes('kb02-atoms-planning-15-'));
+    assert.equal(f.bundle.rulesVersion,(await loadExtractionRules('rules')).rulesVersion);
     assert(oldCheckpoint.rulesVersion.includes('kb02-atoms-planning-13-'));
     assert.notEqual(f.bundle.rulesVersion,oldCheckpoint.rulesVersion);
     const {outcome}=await f.run();
@@ -243,10 +243,14 @@ test('R1618 FIX: 规划契约说明进入实际请求，question-only保持独�
     const oldRequest=JSON.parse(await readFile(path.join(archived,'request-246.json'),'utf8'));
     const oldSchema=JSON.parse(oldRequest.system.slice(oldRequest.system.lastIndexOf('严格遵守schema：')+'严格遵守schema：'.length));
     assert.deepEqual(sentSchema,f.bundle.kb02PlanningSchema);
-    assert.deepEqual(sentSchema,oldSchema,'schema保持原样，不放宽接口');
+    const withoutSourceLevel=structuredClone(sentSchema);
+    delete withoutSourceLevel.properties!.document!.properties!.source_level;
+    withoutSourceLevel.properties!.document!.required=withoutSourceLevel.properties!.document!.required!.filter((key:string)=>key!=='source_level');
+    assert.deepEqual(withoutSourceLevel,oldSchema,'除R22新增必填来源等级外，原业务约束保持');
     const originalResponse=await readFile(path.join(archived,'response-246.json'),'utf8');
     const oldPlan=JSON.parse(JSON.parse(originalResponse).text);
     assert.deepEqual(validateSchema(oldPlan,sentSchema),[
+      '$.document: 缺少必需字段 source_level',
       '$.pages[0]: 存在未允许的字段 metrics',
       '$.pages[0]: 存在未允许的字段 related_knowledge',
     ]);

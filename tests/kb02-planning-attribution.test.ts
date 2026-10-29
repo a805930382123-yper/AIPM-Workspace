@@ -36,7 +36,7 @@ test('KB02 planning system contains the subject-first decisions and abstract con
     requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
     if(request.user.includes('请对下列全部已验证事实规划知识页')){
       const p=payload(request);
-      return {text:JSON.stringify({version:3,document:{title:'未知事项',main_topic:'未知事项'},pages:[{title:'泛化未知与未来建议',type:'concept',category:'ai_application',factUnitIds:p.factUnits.map((u:{id:string})=>u.id),questionUnitIds:p.questionUnits.map((u:{id:string})=>u.id)}]}),bytes:1,finishReason:'stop'};
+      return {text:JSON.stringify({version:3,document: { source_level: 'D',title:'未知事项',main_topic:'未知事项'},pages:[{title:'泛化未知与未来建议',type:'concept',category:'ai_application',factUnitIds:p.factUnits.map((u:{id:string})=>u.id),questionUnitIds:p.questionUnits.map((u:{id:string})=>u.id)}]}),bytes:1,finishReason:'stop'};
     }
     const atoms=JSON.parse(request.user.split('\n').at(-1)!);
     return {text:JSON.stringify({version:2,facts:atoms.map((atom:{id:string})=>({atomId:atom.id,kind:'fact'})),questions:[],sourceNotes:[]}),bytes:1,finishReason:'stop'};
@@ -61,7 +61,7 @@ test('a manually assigned abstract subject plan is representable while retaining
   const input=buildKnowledgePlanningInput(f.sample.body,f.checkpoint.completedChunks,catalogs);
   assert.equal(input.factUnits.length,5,'fixture contains two channel facts and boundaries plus one independent alert mechanism');
   const firstChannel=input.factUnits.slice(0,2).map(unit=>unit.id),secondChannel=input.factUnits.slice(2,4).map(unit=>unit.id),alertMechanism=input.factUnits.slice(4).map(unit=>unit.id);
-  const plan:KnowledgeWirePlan={version:3,document:{title:'渠道经营与告警机制',main_topic:'渠道门店指标及公司告警机制'},pages:[
+  const plan:KnowledgeWirePlan={version:3,document: { source_level: 'D',title:'渠道经营与告警机制',main_topic:'渠道门店指标及公司告警机制'},pages:[
     {title:'岚河渠道门店经营',type:'metric',category:'metric',factUnitIds:firstChannel,questionUnitIds:[]},
     {title:'栖岸渠道门店经营',type:'metric',category:'metric',factUnitIds:secondChannel,questionUnitIds:[]},
     {title:'公司告警机制',type:'business_process',category:'ai_application',factUnitIds:alertMechanism,questionUnitIds:[]}
@@ -78,7 +78,7 @@ test('a subject-preserving fake plan is accepted by the complete pipeline',async
     requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
     if(request.user.includes('请对下列全部已验证事实规划知识页')){
       const p=payload(request),first=p.factUnits.slice(0,2).map((unit:{id:string})=>unit.id),second=p.factUnits.slice(2,4).map((unit:{id:string})=>unit.id),alert=p.factUnits.slice(4).map((unit:{id:string})=>unit.id);
-      return {text:JSON.stringify({version:3,document:{title:'渠道经营与告警机制',main_topic:'渠道门店指标及公司告警机制'},pages:[
+      return {text:JSON.stringify({version:3,document: { source_level: 'D',title:'渠道经营与告警机制',main_topic:'渠道门店指标及公司告警机制'},pages:[
         {title:'岚河渠道门店经营',type:'metric',category:'metric',factUnitIds:first,questionUnitIds:[]},
         {title:'栖岸渠道门店经营',type:'metric',category:'metric',factUnitIds:second,questionUnitIds:[]},
         {title:'公司告警机制',type:'business_process',category:'ai_application',factUnitIds:alert,questionUnitIds:[]}

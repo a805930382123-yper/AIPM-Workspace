@@ -40,7 +40,7 @@ async function pipeline(t: any, change?: (value: any, stage: number) => void, fa
     if (failure === 'format') return new Response('not-json');
     let value = stage === 1
       ? { version: 2, facts: [{ atomId: input[0].id, kind: 'fact' }], questions: input.slice(1).map((atom: any) => ({ atomId: atom.id })), sourceNotes: [] }
-      : { version: 3, document: { title: '补货', main_topic: '补货' }, pages: [{ title: '补货流程', type: 'business_process', category: 'supply_chain', factUnitIds: input.factUnits.map((unit: any) => unit.id), questionUnitIds: input.questionUnits.map((unit: any) => unit.id), ...(fields ? { templateFields: { outputs: { text: '补货安排已编制但尚未发货。', factUnitIds: input.factUnits.map((unit: any) => unit.id) } } } : {}) }] };
+      : { version: 3, document: { source_level: 'D', title: '补货', main_topic: '补货' }, pages: [{ title: '补货流程', type: 'business_process', category: 'supply_chain', factUnitIds: input.factUnits.map((unit: any) => unit.id), questionUnitIds: input.questionUnits.map((unit: any) => unit.id), ...(fields ? { templateFields: { outputs: { text: '补货安排已编制但尚未发货。', factUnitIds: input.factUnits.map((unit: any) => unit.id) } } } : {}) }] };
     value = wireValue(value, sent.response_format.json_schema.schema); change?.(value, stage);
     const text = JSON.stringify(value); originalTexts.push(text);
     return new Response(JSON.stringify({ choices: [{ message: { content: text, ...(failure === 'refusal' ? { refusal: 'refused' } : {}) }, finish_reason: failure === 'length' ? 'length' : 'stop' }] }));
@@ -69,7 +69,7 @@ for (const fields of [false, true]) test(`strict fetch carries both loaded schem
   assert.equal((await f.drafts.list()).length, 1);
   assert.equal((await f.raws.get(f.raw.id))!.body, f.raw.body);
   assert(f.drafts.view(draft).pages[0].renderedBody.includes('审批负责人未知。'));
-  const old = { ...f.checkpoint, rulesVersion: f.bundle.rulesVersion.replace('planning-16-', 'planning-15-') };
+  const old = { ...f.checkpoint, rulesVersion: f.bundle.rulesVersion.replace(/planning-\d+-/u, 'planning-16-') };
   await assert.rejects(validateKnowledgeCheckpoint({ ...f.args, checkpoint: old }), { code: 'LLM_CHECKPOINT_INCOMPATIBLE' });
   // Completed records remain readable and reconciliation can validate under the current schema.
   await validateKnowledgeCheckpoint({ ...f.args, checkpoint: f.checkpoint }, { rulesVersion: old.rulesVersion, callCount: old.attempts });
