@@ -134,10 +134,13 @@ export function validStoredDraft(value:unknown,id:string):value is Draft {
     let total = 0;
     const used = pages.map(page => {
       const parts = page.body.split(/\n{2,}/u).map(p => p.trim()).filter(Boolean);
+      // Keep a standalone Markdown heading with the content it introduces.
+      for (let i = parts.length - 2; i >= 0; i--) {
+        if (/^(?:#{1,6}[ \t]+[^\n]+\n?)+$/u.test(parts[i])) parts.splice(i, 2, `${parts[i]}\n\n${parts[i + 1]}`);
+      }
       parts.sort((a, b) => score(b, terms) - score(a, terms));
       let excerpt = '';
       for (const part of parts) {
-        if (excerpt && score(part, terms) <= 0) continue;
         const separator = excerpt ? '\n\n' : '';
         const room = Math.min(BUDGETS.perWikiChars, BUDGETS.totalWikiChars - total) - excerpt.length - separator.length;
         if (room <= 0) break;

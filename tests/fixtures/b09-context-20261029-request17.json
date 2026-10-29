@@ -1,0 +1,62 @@
+{
+  "source": {
+    "sequence": 17,
+    "requestSha256": "c39220b77d446c09447521fd3aaf1260a2ccd8a897a9a6bb3754f99f406561a6",
+    "wikiExport": "docs/reports/B09-INTEGRATION-20261029-evidence/i03-failed-export.json",
+    "wikiExportSha256": "c12d2f51b0dd4d766943b171e6116f32e329d6940181a9d683bbfcd007894a4c",
+    "description": "Original failed Prompt17 Brief and selected Wiki snapshot; no provider response or configuration."
+  },
+  "brief": {
+    "taskName": "经销商订货流程需求访谈设计",
+    "taskType": "客户访谈",
+    "role": "虚构快消企业的产品经理",
+    "goal": "设计一次30分钟需求访谈，了解经销商的订货流程。",
+    "context": "访谈面向虚构快消企业的经销商；企业背景、经销商情况及现有订货流程待用户补充。",
+    "input": "用户提供的任务要求；所选Wiki的具体内容及其他访谈背景资料待用户补充。",
+    "tasks": "1. 明确访谈目标。\n2. 设计适合30分钟访谈的问题。\n3. 设计访谈记录表。\n4. 列出待确认事项。\n5. 结合所选Wiki，仅说明结构化输出概念。",
+    "constraints": "总访谈时长为30分钟；不得推断ROI或成本收益；不得虚构未知业务信息或Wiki内容，缺失信息标注待确认；访谈结束前保留3分钟由受访者核对记录。",
+    "output": "按访谈目标、访谈问题、记录表、待确认事项和结构化输出概念组织输出。"
+  },
+  "wiki": {
+    "title": "Structured Outputs 结构化输出",
+    "type": "concept",
+    "category": "ai_application",
+    "sources": [
+      "c394e1a3-8b0d-4cbd-b943-1c60afa15a3d"
+    ],
+    "tags": [
+      "R22验收",
+      "公开原文摘录"
+    ],
+    "knowledge_status": "source_supported",
+    "confidence": "medium",
+    "source_level": "A",
+    "review_status": "unreviewed",
+    "aliases": [],
+    "id": "869df8fc-8634-4a60-8ba4-c041aefd6562",
+    "domain": "fmcg",
+    "created": "2026-10-29T11:04:40.778Z",
+    "updated": "2026-10-29T11:17:27.578Z",
+    "revision": 2,
+    "body": "## 原草稿一句话说明（未归位）\n\nStructured Outputs：模型响应遵循给定 JSON Schema 的功能。\n\n> 字段中的AI草稿、AI归位来源与用户归位、人工说明分别标记，均需核对；无来源支持的内容保持空或待确认。\n\n## 一句话解释\n\n- AI草稿经人工修改（待核对）：Structured Outputs 是让模型响应遵循给定 JSON Schema 的功能。（原事实 f-c1-1）\n- 来源摘录（AI归位，待核对）：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON （证据 c1-l001）\n- 来源摘录（AI归位，待核对）：Schema（证据 c1-l002）\n\n## 定义\n\n- AI整理（待核对）：Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。（原事实 f-c1-1）\n- 来源摘录（AI归位，待核对）：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON （证据 c1-l001）\n- 来源摘录（AI归位，待核对）：Schema（证据 c1-l002）\n\n## 为什么重要\n\n待确认。\n\n## 在业务中的位置\n\n待确认。\n\n## 关键特征\n\n待确认。\n\n## 常见分类\n\n待确认。\n\n## 与其他概念关系\n\n待确认。\n\n## 常见业务场景\n\n待确认。\n\n## 来源事实\n\n- Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema（证据 c1-l001、c1-l002）\n\n## AI 整理\n\n- 暂无\n\n## AI 推断\n\n- 暂无\n\n## 待确认问题\n\n- 原文口径或边界待确认：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema\n\n## 来源证据\n\n- c1-l001｜原文 [0, 120)：Structured Outputs is a feature that ensures the model will always generate responses that…\n- c1-l002｜原文 [120, 126)：Schema\n\n## 关联\n\n- 暂无\n\n## 来源\n\n- [[OpenAI官方文档：Structured Outputs]]（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）\n"
+  },
+  "failedContext": [
+    {
+      "id": "869df8fc-8634-4a60-8ba4-c041aefd6562",
+      "title": "Structured Outputs 结构化输出",
+      "type": "concept",
+      "knowledgeStatus": "source_supported",
+      "excerpt": "## 原草稿一句话说明（未归位）",
+      "sourceChars": 1364,
+      "usedChars": 16,
+      "truncated": true
+    }
+  ],
+  "rawFiles": [
+    {
+      "path": "knowledge/raw/articles/c394e1a3-8b0d-4cbd-b943-1c60afa15a3d.md",
+      "text": "---\ntitle: OpenAI官方文档：Structured Outputs\nsourceType: article\nsourceName: OpenAI官方开发文档\nauthor: OpenAI\nurl: https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat\ntags:\n  - R22验收\n  - 公开原文摘录\nid: c394e1a3-8b0d-4cbd-b943-1c60afa15a3d\nimportedAt: '2026-10-29T08:53:55.131Z'\nstatus: unprocessed\nbodySha256: 801d022180ecc04dac73dd8ce49901d8b8ba3787b41997bf1af5bb547f32e773\n---\nStructured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema",
+      "sha256": "966dbe9185cdc94b97f335985ca1c20a36c09fbb3713d745225d36f97c2eb4dc"
+    }
+  ]
+}

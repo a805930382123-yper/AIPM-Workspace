@@ -523,3 +523,36 @@ test('B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍�
   } finally { await mounted.unmount(); }
 });
 
+for (const type of ['concept', 'business_process'] as const) test(`B09 template ${type}: update click reaches service, preserves fields and displays review rejection before navigation`, async () => {
+  const original = makeDraft(), targetWikiId = 'existing-template-target';
+  const templateFields = { [type === 'concept' ? 'definition' : 'steps']: { evidenceIds: ['e1'], humanText: '人工说明保持原样。' } };
+  const page = { ...original.pages[0], type, templateFields, reviewDecision: 'update' as const, updateTargetWikiId: targetWikiId };
+  const draft = makeDraft({ pages: [page] });
+  const stub = stubFetch({ draft }), stubbedFetch = globalThis.fetch;
+  const updateRequests: Array<Record<string, unknown>> = []; let allow = false, opened = '';
+  globalThis.fetch = (async (input, init) => {
+    if (String(input) === '/api/knowledge/updates') {
+      updateRequests.push(JSON.parse(String(init?.body)));
+      return allow ? reply({ id: 'reviewed-update-workflow' }, 201) : reply({ error: { code: 'HUMAN_REVIEW_INCOMPLETE', message: '必须先确认全部输入页。' } }, 409);
+    }
+    return stubbedFetch(input, init);
+  }) as typeof fetch;
+  const mounted = await mount(<DraftReviewPage draftId={draft.id} onBack={() => undefined} onCommitted={async () => undefined} onOpenRaw={() => undefined} onOpenWorkflow={id => { opened = id; }} />);
+  try {
+    await click(required(byText('刷新重复候选', mounted.container), '刷新候选按钮'));
+    assert.match(mounted.container.textContent ?? '', /旧 Wiki 更新会保留已审字段的来源整理快照/);
+    await click(required(byText('生成旧 Wiki 更新预览', mounted.container), '更新预览按钮'));
+    assert.equal(updateRequests.length, 1, '服务拒绝后没有自动重试');
+    assert.equal(opened, '');
+    assert.match(mounted.container.textContent ?? '', /必须先确认全部输入页/);
+    const saved = stub.calls.filter(call => call.method === 'PATCH' && call.url === `/api/drafts/${draft.id}`).at(-1)!;
+    assert.deepEqual(JSON.parse(saved.body!).pages[0].templateFields, templateFields);
+    assert.deepEqual(updateRequests[0], { draftId: draft.id, pageId: page.pageId, targetWikiId, baseRevision: draft.revision + 1 });
+    allow = true;
+    await click(required(byText('生成旧 Wiki 更新预览', mounted.container), '重新明确点击预览'));
+    assert.equal(updateRequests.length, 2);
+    assert.equal(opened, 'reviewed-update-workflow', '成功生成后打开独立审核页');
+    assert.equal(stub.calls.some(call => call.url.endsWith('/confirm')), false, '生成预览不正式写入');
+  } finally { await mounted.unmount(); globalThis.fetch = stubbedFetch; }
+});
+

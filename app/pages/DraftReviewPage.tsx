@@ -158,7 +158,6 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     setDuplicateViews(current => ({ ...current, [pageId]: { ...current[pageId], decision, targetWikiId: targetWikiId ?? null } }));
   });
   const makeUpdate = (pageId: string, targetWikiId: string) => run(`update:${pageId}`, async () => {
-    if (hasTemplateFields(pages.find(page => page.pageId === pageId)?.templateFields)) throw new Error('本批字段归位仅支持新建正式页，旧 Wiki 更新未执行，原草稿已保留。');
     const saved = await patchDraft(draftId, snapshot());
     applyView(saved);
     const workflow = await startUpdateWorkflow({ draftId, pageId, targetWikiId, baseRevision: saved.revision });
@@ -331,7 +330,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         <label className="field">一句话说明<input value={page.one_line_definition} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { one_line_definition: event.target.value })} maxLength={300} /></label>
         {templateSections(page.type).length > 0 && <section className="draft-block" aria-label={`${page.title}字段归位`}>
           <h4>字段归位</h4>
-          <p className="extract-note">AI草稿与人工说明分别保存。可编辑或删除AI项，也可选择本页来源摘录并填写人工说明。引用只说明出处，内容与归位含义仍需逐页审查。带字段内容的合并、类型切换及旧 Wiki 更新本批不支持。</p>
+          <p className="extract-note">AI草稿与人工说明分别保存。可编辑或删除AI项，也可选择本页来源摘录并填写人工说明。引用只说明出处，内容与归位含义仍需逐页审查。旧 Wiki 更新会保留已审字段的来源整理快照；带字段内容的合并与类型切换本批不支持。</p>
           <button className="text-button danger" disabled={readOnly || busy !== '' || !hasTemplateFields(page.templateFields)} onClick={() => updatePage(page.pageId, { templateFields: {} })}>清空字段归位（删除当前内容）</button>
           <p className="extract-note">清空是删除。未保存可刷新撤回；保存后不提供恢复。</p>
           {((page.type === 'concept' || page.type === 'business_process' ? schema?.pageTemplates[page.type]?.sections : undefined) ?? templateSections(page.type)).filter(field => templateSections(page.type).some(item => item.key === field.key)).map(field => {

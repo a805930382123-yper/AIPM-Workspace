@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readdir, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { RawStore } from '../services/raw/store.ts';
 import { WikiStore } from '../services/wiki/store.ts';
 import { PromptStore } from '../services/prompt/store.ts';
-import { PromptAiService } from '../services/prompt-ai/service.ts';
+import { BUDGETS, PromptAiService } from '../services/prompt-ai/service.ts';
 import type { LlmProvider } from '../services/llm/provider.ts';
 
 const preview = { name:'访谈分析', category:'customer', scenario:'经销商首次访谈', body:'还原订货流程。', inputRequirements:'访谈材料', outputRequirements:'流程与问题', relatedWikiIds:[], examples:'', tags:['访谈'], favorite:false };
@@ -55,6 +55,57 @@ test('B08 Wiki 多段摘录把段落分隔符计入每页与总预算',async()=>
     assert.ok(result.relatedWiki.every(page=>page.usedChars<=3_000));
     assert.ok(result.relatedWiki.reduce((sum,page)=>sum+page.usedChars,0)<=12_000);
     assert.equal(result.contextBudget.used,result.relatedWiki.reduce((sum,page)=>sum+page.usedChars,0));
+  }finally{await s.clean();}
+});
+
+test('B09 context C01: original Prompt17 Brief and Wiki send the definition beyond the first heading without another model stage',async()=>{
+  const s=await setup();try{
+    const fixture=JSON.parse(await readFile('tests/fixtures/b09-context-20261029-request17.json','utf8'));
+    for(const file of fixture.rawFiles){const target=path.join(s.root,file.path);await mkdir(path.dirname(target),{recursive:true});await writeFile(target,file.text);}
+    await s.wiki.writePageLocked(fixture.wiki);
+    s.setResponse(content);
+    const result=await s.ai.generate(fixture.brief,[fixture.wiki.id]),sent=JSON.parse(s.requests[0]);
+    assert.equal(s.requests.length,1);assert.deepEqual(sent.brief,fixture.brief);
+    assert.deepEqual(result.preview.relatedWikiIds,[fixture.wiki.id]);
+    assert.equal(sent.relatedWiki[0].id,fixture.failedContext[0].id);
+    assert.match(sent.relatedWiki[0].excerpt,/模型响应遵循给定 JSON Schema 的功能/u);
+    assert.match(sent.relatedWiki[0].excerpt,/## 定义\n\n- AI整理/u);
+    assert(sent.relatedWiki[0].usedChars>fixture.failedContext[0].usedChars);
+    assert.equal(sent.relatedWiki[0].sourceChars,fixture.wiki.body.length);
+    assert.equal(sent.relatedWiki[0].usedChars,sent.relatedWiki[0].excerpt.length);
+    assert.equal(sent.relatedWiki[0].truncated,sent.relatedWiki[0].excerpt.length<fixture.wiki.body.length);
+    assert.equal(await s.prompts.count(),0);
+  }finally{await s.clean();}
+});
+
+test('B09 context C02/03: no-match fallback includes body; matching sections keep headings and priority, excluding unselected Wiki',async()=>{
+  const s=await setup();try{
+    const body='## 名词\n\n这是实际可用的概念说明。\n\n## 边界\n\n未知范围仍需核验。';
+    const selected=await s.wiki.create({title:'选择的概念',type:'concept',category:'industry_basics',sources:[],tags:[],aliases:[],knowledge_status:'needs_verification',confidence:'low',source_level:'D',review_status:'unreviewed',body});
+    await s.wiki.create({title:'未选页面',type:'concept',category:'industry_basics',sources:[],tags:[],aliases:[],knowledge_status:'needs_verification',confidence:'low',source_level:'D',review_status:'unreviewed',body:'unselected-exclusive-context'});
+    s.setResponse(content);
+    const fallback=await s.ai.generate(brief,[selected.id]);
+    assert.equal(fallback.relatedWiki[0].excerpt,body);
+    assert.equal(fallback.relatedWiki[0].truncated,false);
+    const priorityBody='## 无关开头\n\n'+ '甲'.repeat(3500)+'\n\n## 对应定义\n\nneedle-definition：这是相关定义。\n\n## 补充\n\n相关限制待确认。';
+    await s.wiki.update(selected.id,selected.revision,{...selected,body:priorityBody});
+    const relevant=await s.ai.generate({...brief,taskName:'needle-definition',goal:'needle-definition',context:'needle-definition',tasks:'needle-definition'},[selected.id]);
+    assert(relevant.relatedWiki[0].excerpt.startsWith('## 对应定义\n\nneedle-definition：这是相关定义。'));
+    assert.equal(relevant.relatedWiki[0].usedChars,BUDGETS.perWikiChars);
+    assert.equal(relevant.relatedWiki[0].truncated,true);
+    for(const request of s.requests)assert.doesNotMatch(request,/unselected-exclusive-context/u);
+  }finally{await s.clean();}
+});
+
+test('B09 context C04: six no-match pages preserve strict 3000/12000 budgets and reject a seventh before calling Provider',async()=>{
+  const s=await setup();try{
+    const ids:string[]=[];
+    for(let i=0;i<7;i++)ids.push((await s.wiki.create({title:'概念'+i,type:'concept',category:'industry_basics',sources:[],tags:[],aliases:[],knowledge_status:'needs_verification',confidence:'low',source_level:'D',review_status:'unreviewed',body:'## 定义\n\n'+ '乙'.repeat(3500)+'\n\n## 限制\n\n不推断未知业务。'})).id);
+    s.setResponse(content);const result=await s.ai.generate(brief,ids.slice(0,6));
+    assert.equal(result.contextBudget.used,BUDGETS.totalWikiChars);
+    assert.deepEqual(result.relatedWiki.map(page=>page.usedChars),[3000,3000,3000,3000,0,0]);
+    for(const page of result.relatedWiki){assert.equal(page.usedChars,page.excerpt.length);assert(page.usedChars<=BUDGETS.perWikiChars);assert.equal(page.truncated,page.usedChars<page.sourceChars);}
+    await assert.rejects(s.ai.generate(brief,ids),{code:'INVALID_WIKI_SELECTION'});assert.equal(s.requests.length,1);
   }finally{await s.clean();}
 });
 test('B08 Optimizer 校验九维缺项，更新原 Prompt 只追加 ai_optimized 版本',async()=>{
