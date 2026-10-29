@@ -1,5 +1,5 @@
 import type { HumanReview } from '../services/wiki/human-review.ts';
-import type { TemplateFields } from '../services/wiki/template-fields';
+import type { TemplateFields, InputTemplateFields } from '../services/wiki/template-fields';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string; title: string; sourceType: SourceType; sourceName: string; author?: string; publishedAt?: string; url?: string;
@@ -128,7 +128,7 @@ export type DraftPage = {
 };
 
 export type DuplicateResult = { draftId: string; pageId: string; draftRevision: number; decision: 'update' | 'create' | 'defer' | null; targetWikiId: string | null; candidates: Array<{ wiki: Wiki; score: number; matches: Array<{ dimension: string; score: number; reason: string }> }> };
-export type KnowledgeWorkflow = { source_level?: string; humanReview?:HumanReview; reviewContentDigest?:string|null; humanEditedSections?:string[]; id: string; kind: 'update' | 'synthesis'; status: 'pending_confirmation' | 'confirmed' | 'discarded' | 'conflict'; revision: number; title: string; category: string; provider: { name: string; model: string }; rawSnapshots: Array<{ id: string; title: string; bodySha256: string }>; targetWikiId?: string; baseRevision?: number; lastCommitError?: string; commitOperationId?: string; sections: { existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[]; inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{id:string;title:string;source_level?:string;existingSourceId?:string}> }; evidence?: Array<{section:string;text:string;rawId:string;quote:string;start:number;end:number}>; sources: string[] };
+export type KnowledgeWorkflow = { inputTemplateFields?:InputTemplateFields; source_level?: string; humanReview?:HumanReview; reviewContentDigest?:string|null; humanEditedSections?:string[]; id: string; kind: 'update' | 'synthesis'; status: 'pending_confirmation' | 'confirmed' | 'discarded' | 'conflict'; revision: number; title: string; category: string; provider: { name: string; model: string }; rawSnapshots: Array<{ id: string; title: string; bodySha256: string }>; targetWikiId?: string; baseRevision?: number; lastCommitError?: string; commitOperationId?: string; sections: { existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[]; inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{id:string;title:string;source_level?:string;existingSourceId?:string}> }; evidence?: Array<{section:string;text:string;rawId:string;quote:string;start:number;end:number}>; sources: string[] };
 export type KnowledgeWorkflowSummary = { id:string;kind:'update'|'synthesis';status:KnowledgeWorkflow['status'];title:string;revision:number;createdAt:string;updatedAt:string;targetWikiId:string|null;lastCommitError:string|null;commitOperationId:string|null };
 export type DraftSource = {
   title: string; category: string; summary: string; key_takeaways: string[];

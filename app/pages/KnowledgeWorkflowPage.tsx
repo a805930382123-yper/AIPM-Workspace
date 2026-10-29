@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { KnowledgeWorkflow } from '../api';
 import { confirmKnowledgeWorkflow, discardKnowledgeWorkflow, knowledgeWorkflow, patchKnowledgeWorkflow, startWorkflowReview, moveWorkflowUnits, reviewWorkflowPage } from '../api';
+import { renderInputTemplateFields } from '../../services/wiki/template-fields';
 
 const fingerprint=(w:KnowledgeWorkflow)=>JSON.stringify({title:w.title,sections:w.sections,source_level:w.source_level});
 
@@ -40,6 +41,7 @@ export function KnowledgeWorkflowPage({ workflowId, onBack, onDone }: { workflow
       {workflow.sections.sourceList.map((source, index) => <label className="field" key={source.id}>{source.existingSourceId ? '已有 Source 来源等级' : '新建 Source 来源等级'} · {source.title}<select aria-label={`Source 来源等级 ${source.id}`} disabled={!editable || busy || !!source.existingSourceId} value={source.source_level ?? 'D'} onChange={event => update('sourceList', workflow.sections.sourceList.map((item, at) => at === index ? { ...item, source_level: event.target.value } : item))}>{['A','B','C','D'].map(level => <option key={level} value={level}>{level} 级</option>)}</select>{source.existingSourceId && <small>已有 Source 保持原等级，纠偏请前往 Wiki 编辑。</small>}</label>)}
       {workflow.sections.existing && <label className="field">现有内容<textarea rows={8} value={workflow.sections.existing} readOnly /></label>}
       {workflow.sections.newSource && <label className="field">新来源正文<textarea rows={8} value={workflow.sections.newSource} readOnly /></label>}
+      {workflow.inputTemplateFields && <label className="field">本次来源整理（已审输入快照，只读）<textarea aria-label="本次来源整理只读快照" rows={16} value={renderInputTemplateFields(workflow.inputTemplateFields)} readOnly /><small>修改原字段请返回输入草稿编辑、重新审查并生成更新；输入已审不能替代本预览审查。</small></label>}
       {list('一致观点', 'agreement')}{list('建议增加', 'suggestedAdditions')}{list('冲突（保留双方）', 'conflicts')}{list('AI 推断', 'inferences')}{list('待确认问题', 'openQuestions')}
       {workflow.evidence?.length ? <div><h3>原文证据定位</h3>{workflow.evidence.map((item, index) => <p key={`${item.rawId}-${index}`}>{item.section} · Raw {item.rawId} [{item.start}, {item.end})：“{item.quote}”</p>)}</div> : null}
     </section>

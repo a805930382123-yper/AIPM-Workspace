@@ -51,3 +51,9 @@ I08 更新既有启动/交付说明：npm run dev:proxy的当前作用、普通�
 ## 文件与交接
 
 规划仅本卡。未来Sol只拥有本批隔离准备脚本/fixture、必要范围内修复及builder报告；具体修复文件在复现后冻结，不与仍在施工R22并写。主线程拥有实际浏览器操作、status/控制/当前109行报告/交付说明与Git；独立验收实例只写audit。每阶段交接实际命令/操作、版本SHA、原子ID/截图、调用计数和限制。服务测试必须以明确隔离根证明，不接触用户现有4 Raw/7Wiki/2草稿/2Prompt。无新需求审批关卡；缺环境先做独立部分，事实不符则保留失败而不提前签PASS。
+
+## 执行接口核对（R22通过后，2026-10-29）
+
+R22已通过并同步e04231e9440082c9a3f57e8da446040778c2740e；当前知识261/500、Prompt15/24，本阶段知识最多2至263、Prompt最多4至19，不增加全局24上限。复用R22真实候选，不再提取。
+
+独立只读核 `app/pages/PromptAiWorkbench.tsx:29–32`、`server/prompt-ai-api.ts`、`services/prompt-ai/service.ts`：UI的Brief、generate、optimize/check、drafts/:id/rewrite分四次操作，各阶段一次Provider complete。必须按这四个实际UI阶段执行；兼容 `/api/prompt-ai/optimize` 内部直接check+rewrite两次，不用于代签中间检查UI。confirm/get/list不是模型调用；其读取Provider信息用于秘密检查不等于外发请求。trace按Provider实际调用而非HTTP数记账，Prompt序号16–19，知识按261起账；阶段间独立放行，首失败停。保存原始响应与阶段输入摘要/关联ID，不添加自动重试，不改变产品语义。

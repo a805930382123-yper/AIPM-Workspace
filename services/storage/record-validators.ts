@@ -1,5 +1,5 @@
 import {validHumanReview} from '../wiki/human-review.ts';
-import {validTemplateFields} from '../wiki/template-fields.ts';
+import {validTemplateFields, validInputTemplateFields} from '../wiki/template-fields.ts';
 const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const str=(v:unknown):v is string=>typeof v==='string';
 const strings=(v:unknown):v is string[]=>Array.isArray(v)&&v.every(str);
@@ -36,6 +36,7 @@ export function isCommitManifest(v:unknown,id?:string):boolean {
  if(v.writtenWikiIds.some(writtenId=>!records.some(record=>record.id===writtenId))||pageRecords.length!==s.selectedPageIds.length)return false;if(v.status==='completed'&&v.writtenWikiIds.length!==records.length)return false;return true;
 }/** Validate stored workflows before any edit, confirmation or recovery action. */
 export function isWorkflow(v:unknown,id?:string):boolean {
+ if(obj(v)&&v.inputTemplateFields!==undefined&&(!validInputTemplateFields(v.inputTemplateFields)||v.kind!=='update'||!obj(v.inputDraft)||v.inputTemplateFields.pageId!==v.inputDraft.pageId||!Array.isArray(v.rawSnapshots)||v.rawSnapshots.length!==1||!obj(v.rawSnapshots[0])||v.inputTemplateFields.rawId!==v.rawSnapshots[0].id))return false;
  if(obj(v)&&v.source_level!==undefined&&(!str(v.source_level)||!['A','B','C','D'].includes(v.source_level)))return false;
  if(obj(v)&&v.humanReview!==undefined&&!validHumanReview(v.humanReview))return false;
  if(obj(v)&&((v.reviewProtocolVersion!==undefined&&v.reviewProtocolVersion!==1)||(v.legacyStandaloneInput!==undefined&&(!obj(v.legacyStandaloneInput)||v.reviewProtocolVersion!==1||v.legacyStandaloneInput.version!==1||v.legacyStandaloneInput.source!=='stored_workflow'||!Array.isArray(v.legacyStandaloneInput.rawSnapshots)||!v.legacyStandaloneInput.rawSnapshots.every(r=>obj(r)&&isUuid(r.id)&&str(r.title)&&digest(r.bodySha256))||!isUuid(v.legacyStandaloneInput.targetWikiId)||!Number.isInteger(v.legacyStandaloneInput.targetBaseRevision)||Number(v.legacyStandaloneInput.targetBaseRevision)<1||!digest(v.legacyStandaloneInput.snapshotDigest)))))return false;

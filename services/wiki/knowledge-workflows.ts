@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { hasTemplateFields } from './template-fields.ts';
+import { hasTemplateFields, validInputTemplateFields, renderInputTemplateFields, type InputTemplateFields } from './template-fields.ts';
 import path from 'node:path';
 import {isWorkflow,isWorkflowManifest} from '../storage/record-validators.ts';
 import { mkdir } from 'node:fs/promises';
@@ -9,7 +9,7 @@ import { assertRawNotMeeting, assertRawsNotMeeting } from '../meeting/source-pol
 import { assertNoKnownSecret, LlmError, sanitizeDeep, sanitizeProviderText, type LlmProvider } from '../llm/provider.ts';
 import { buildEvidenceLocatorCatalog } from '../llm/locators.ts';
 import { WikiError, type WikiInput, type WikiRecord, type WikiStore, type SourceLevel } from './store.ts';
-import { DraftStore } from './drafts.ts';
+import { DraftStore, type DraftRecord, type DraftPage } from './drafts.ts';
 import { assertHumanReviewed, assertReviewSources, assertReviewStructure, candidateContent, confirmHumanPage, moveHumanUnits, newHumanReview, reviewContentDigest, type HumanReview, type ReviewUnit } from './human-review.ts';
 
 export type KnowledgeWorkflow = {
@@ -21,6 +21,7 @@ export type KnowledgeWorkflow = {
   rawSnapshots: Array<{ id: string; title: string; bodySha256: string }>;
   targetWikiId?: string; baseRevision?: number; baseWiki?: WikiRecord;
   inputDraft?: { draftId: string; pageId: string; revision: number; reviewContentDigest?: string };
+  inputTemplateFields?: InputTemplateFields;
   sections: {
     existing?: string; newSource?: string; suggestedAdditions: string[]; conflicts: string[];
     inferences: string[]; openQuestions: string[]; agreement: string[]; sourceList: Array<{ id: string; title: string; source_level?: SourceLevel; existingSourceId?: string }>;
@@ -75,6 +76,20 @@ export class KnowledgeWorkflowStore {
     const store=new DraftStore(this.root),draft=await store.get(record.inputDraft.draftId);
     const raw=draft?await this.raws.get(draft.rawId):undefined;
     if(!draft||!raw||draft.revision!==record.inputDraft.revision||await store.assertReviewed(draft,raw.body)!==record.inputDraft.reviewContentDigest||!draft.pages.some(p=>p.pageId===record.inputDraft!.pageId))throw new WikiError('INPUT_REVIEW_CHANGED','更新输入的完整草稿已变化或撤销审查；请重新生成预览。',409);
+    const snapshot = this.templateSnapshot(draft, draft.pages.find(page => page.pageId === record.inputDraft!.pageId)!);
+    if (JSON.stringify(snapshot) !== JSON.stringify(record.inputTemplateFields)) throw new WikiError('INPUT_REVIEW_CHANGED', '更新字段快照与已审输入不一致，请重新生成预览。', 409);
+  }
+  private templateSnapshot(draft: DraftRecord, page: DraftPage): InputTemplateFields | undefined {
+    if (!hasTemplateFields(page.templateFields)) return undefined;
+    const facts = draft.humanReview!.units.filter(unit => unit.kind === 'fact' && draft.humanReview!.assignments[unit.id] === page.pageId).flatMap(unit => unit.records.map(record => ({
+      ...record, evidenceIds: record.evidenceIds.map(id => {
+        const original = unit.evidence.find(item => item.id === id)!;
+        return page.source_evidence.find(item => item.rawId === original.rawId && item.start === original.start && item.end === original.end && item.quote === original.quote)!.id;
+      }),
+    })));
+    const snapshot: InputTemplateFields = { version: 1, pageId: page.pageId, pageType: page.type, rawId: draft.rawId, fields: structuredClone(page.templateFields!), facts, evidence: page.source_evidence.map(({ id, rawId, quote, start, end, chunkIndex }) => ({ id, rawId, quote, start, end, chunkIndex })) };
+    if (!validInputTemplateFields(snapshot)) throw new WikiError('TEMPLATE_INPUT_INVALID', '字段快照引用不属于选中页的事实和证据，未生成更新。', 409);
+    return snapshot;
   }
   private async assertReviewed(record:KnowledgeWorkflow):Promise<string> {
     assertReviewStructure(record.humanReview,[record.id]);
@@ -130,16 +145,16 @@ export class KnowledgeWorkflowStore {
     if (!args.raw || this.actualRawSha(args.raw) !== args.raw.bodySha256 || args.raw.bodySha256 !== args.draft.rawSha256) throw new WikiError('RAW_CHANGED', '原文已变化或校验值与实际正文不一致，不能生成更新预览。', 409);
     const page = args.draft.pages.find((item: any) => item.pageId === args.pageId);
     if (!page) throw new WikiError('PAGE_NOT_FOUND', '提取草稿中没有这条建议。', 404);
-    if (hasTemplateFields(page.templateFields)) throw new WikiError('TEMPLATE_UPDATE_UNSUPPORTED', '本批字段归位仅支持新建正式页，不能生成旧 Wiki 更新预览；原草稿已保留。', 409);
     const evidenceDirectory = this.updateEvidenceDirectory(page, args.raw);
     const drafts=new DraftStore(this.root),stored=await drafts.get(args.draftId);
     if(!stored||stored.revision!==args.baseRevision||JSON.stringify(stored)!==JSON.stringify(args.draft))throw new WikiError('INPUT_REVIEW_CHANGED','更新输入必须是当前持久化草稿。',409);
     const inputDigest=await drafts.assertReviewed(stored,args.raw.body);
+    const inputTemplateFields = this.templateSnapshot(stored, page);
     await this.assertUpdateTarget(args.target);
     const existingLocators = this.updateExistingLocators(args.target);
     assertNoKnownSecret({ page, evidenceDirectory, existingLocators }, args.provider.secrets);
-    const user = JSON.stringify({ existing: { wikiId: args.target.id, title: args.target.title, type: args.target.type, category: args.target.category, body: args.target.body, revision: args.target.revision, sources: args.target.sources, locators: existingLocators }, newSource: { rawId: args.raw.id, rawTitle: args.raw.title, body: args.raw.body, facts: page.source_facts, evidence: evidenceDirectory, organized: page.ai_organized, inferences: page.ai_inferences, questions: page.open_questions } });
-    const output = await this.call(args.provider, '你是知识更新建议器。只输出一个合法 JSON 对象，不输出 Markdown、代码围栏或前后说明。输出字段严格为 suggestedAdditions、conflicts、inferences、openQuestions、agreement；五个字段都必须出现且为数组。结构示例：{"suggestedAdditions":[],"conflicts":[],"inferences":[],"openQuestions":[],"agreement":[]}。每个 suggestedAdditions/conflicts 元素严格只包含 text、evidenceId 两个字段；每个 agreement 元素严格只包含 text、evidenceId、existingLocatorId 三个字段。evidenceId只能选newSource.evidence中已经校验且属于选中建议的id；existingLocatorId只能选existing.locators中绑定本次旧Wiki及revision的id，两侧ID不可互换。不得猜测、补造或沿用其他目标/旧版本的ID。只围绕被选中的知识建议与指定旧 Wiki 进行更新，不从其他主题补充内容。不得返回或计算quote/rawId/start/end。没有支持证据则不生成事实建议。newSource.facts 中没有可支持的建议时，suggestedAdditions 可为空数组。agreement仅表达两侧都支持的最小共同命题：逐断言判断，复合句中每项断言均须两侧支持，不能因共同支持一部分便把其余部分也称共同观点。新来源未提及不等于新来源同意。旧侧独有内容保留existing，不生成agreement；新侧独有且有证据的内容进入suggestedAdditions。无法证明一致则agreement为空，可记录待确认问题，不用“均/双方/两侧”等措辞扩大支持。正反例：旧侧“目标门店100家”和新侧“目标门店总数为100家”可得共同命题“目标门店100家”；旧侧还说“门店数不等于销量”而新侧未提及，则不能写“双方均强调门店数不等于销量”，也不能附在共同的门店数或计算公式后面；旧20%与新30%必须列conflicts，保留两种数值及口径；“不知道/未上线/将来建议”不能改为肯定事实。选中双侧原文只是定位约束，仍必须核对每个断言的语义支持。保留旧 Wiki 原内容，不把未确认推断写成事实。遇到两侧不一致，分别保留各自陈述、数值和时间/统计口径；口径或可比性未确认时明确标为待确认，不判定一致、不自行计算或调和。推断与待确认问题用字符串数组表达。', user, 'evidence-id');
+    const user = JSON.stringify({ existing: { wikiId: args.target.id, title: args.target.title, type: args.target.type, category: args.target.category, body: args.target.body, revision: args.target.revision, sources: args.target.sources, locators: existingLocators }, newSource: { rawId: args.raw.id, rawTitle: args.raw.title, body: args.raw.body, facts: page.source_facts, evidence: evidenceDirectory, organized: page.ai_organized, inferences: page.ai_inferences, questions: page.open_questions, ...(inputTemplateFields ? { templateFields: inputTemplateFields, templateFieldsPreview: renderInputTemplateFields(inputTemplateFields) } : {}) } });
+    const output = await this.call(args.provider, '你是知识更新建议器。newSource.templateFields若存在，是已审候选的来源整理快照：人工归位摘录、人工说明与AI整理各自保留标签和出处。它们不是新增原始事实；不得仅凭人工说明或AI整理生成事实建议，事实建议仍须由newSource.facts及其evidence支持。快照在确认后独立保留，不要求模型合并或覆盖旧模板字段。只输出一个合法 JSON 对象，不输出 Markdown、代码围栏或前后说明。输出字段严格为 suggestedAdditions、conflicts、inferences、openQuestions、agreement；五个字段都必须出现且为数组。结构示例：{"suggestedAdditions":[],"conflicts":[],"inferences":[],"openQuestions":[],"agreement":[]}。每个 suggestedAdditions/conflicts 元素严格只包含 text、evidenceId 两个字段；每个 agreement 元素严格只包含 text、evidenceId、existingLocatorId 三个字段。evidenceId只能选newSource.evidence中已经校验且属于选中建议的id；existingLocatorId只能选existing.locators中绑定本次旧Wiki及revision的id，两侧ID不可互换。不得猜测、补造或沿用其他目标/旧版本的ID。只围绕被选中的知识建议与指定旧 Wiki 进行更新，不从其他主题补充内容。不得返回或计算quote/rawId/start/end。没有支持证据则不生成事实建议。newSource.facts 中没有可支持的建议时，suggestedAdditions 可为空数组。agreement仅表达两侧都支持的最小共同命题：逐断言判断，复合句中每项断言均须两侧支持，不能因共同支持一部分便把其余部分也称共同观点。新来源未提及不等于新来源同意。旧侧独有内容保留existing，不生成agreement；新侧独有且有证据的内容进入suggestedAdditions。无法证明一致则agreement为空，可记录待确认问题，不用“均/双方/两侧”等措辞扩大支持。正反例：旧侧“目标门店100家”和新侧“目标门店总数为100家”可得共同命题“目标门店100家”；旧侧还说“门店数不等于销量”而新侧未提及，则不能写“双方均强调门店数不等于销量”，也不能附在共同的门店数或计算公式后面；旧20%与新30%必须列conflicts，保留两种数值及口径；“不知道/未上线/将来建议”不能改为肯定事实。选中双侧原文只是定位约束，仍必须核对每个断言的语义支持。保留旧 Wiki 原内容，不把未确认推断写成事实。遇到两侧不一致，分别保留各自陈述、数值和时间/统计口径；口径或可比性未确认时明确标为待确认，不判定一致、不自行计算或调和。推断与待确认问题用字符串数组表达。', user, 'evidence-id');
     for (const field of ['suggestedAdditions','conflicts','agreement']) output[field] = output[field].map((item: { text: string; evidenceId: string; existingLocatorId?: string }) => {
       const evidence = evidenceDirectory.find(entry => entry.id === item.evidenceId);
       if (!evidence) throw new WikiError('EVIDENCE_INVALID', '更新建议选择未知或非本条建议的证据ID。', 502);
@@ -155,6 +170,7 @@ export class KnowledgeWorkflowStore {
       id: randomUUID(), kind: 'update', status: 'pending_confirmation', revision: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
       provider: { name: args.provider.name, model: args.provider.model }, rawSnapshots: [{ id: args.raw.id, title: args.raw.title, bodySha256: args.raw.bodySha256 }],
       targetWikiId: args.target.id, baseRevision: args.target.revision, baseWiki: args.target, inputDraft: { draftId: args.draftId, pageId: args.pageId, revision: args.draft.revision,reviewContentDigest:inputDigest },
+      ...(inputTemplateFields ? { inputTemplateFields } : {}),
       sections: { existing: args.target.body, newSource: args.raw.body, suggestedAdditions: output.suggestedAdditions.map((x: any) => x.text), conflicts: output.conflicts.map((x: any) => x.text), inferences: output.inferences, openQuestions: output.openQuestions, agreement: output.agreement.map((x: any) => x.text), sourceList: [{ id: args.raw.id, title: args.raw.title, source_level: stored.source.source_level as SourceLevel }] },
       evidence: [...output.suggestedAdditions.map((x: any) => ({ section: 'suggestedAdditions', ...x })), ...output.conflicts.map((x: any) => ({ section: 'conflicts', ...x })), ...output.agreement.map((x: any) => ({ section: 'agreement', ...x }))],
       title: args.target.title, category: args.target.category, sources: [...new Set([...args.target.sources, args.raw.id])],
@@ -346,7 +362,7 @@ export class KnowledgeWorkflowStore {
   private async confirmLocked(id: string, baseRevision: number, idempotencyKey: string) {
     const workflow = await this.get(id);
     if (!workflow) throw new WikiError('WORKFLOW_NOT_FOUND', '没有找到这份知识草稿。', 404);
-    const payloadDigest = sha(JSON.stringify({ kind: workflow.kind, title: workflow.title, sections: workflow.sections, evidence: workflow.evidence, targetWikiId: workflow.targetWikiId, baseRevision: workflow.baseRevision, sources: workflow.sources, source_level: workflow.source_level }));
+    const payloadDigest = sha(JSON.stringify({ kind: workflow.kind, title: workflow.title, sections: workflow.sections, evidence: workflow.evidence, targetWikiId: workflow.targetWikiId, baseRevision: workflow.baseRevision, sources: workflow.sources, source_level: workflow.source_level, ...(workflow.inputTemplateFields ? { inputTemplateFields: workflow.inputTemplateFields } : {}) }));
     let priorManifest = (await scanJsonRecords<WorkflowManifest>(this.operationsDir(),(v,file):v is WorkflowManifest=>isWorkflowManifest(v,path.basename(file,'.json')),this.root).then(x=>x.records)).map(item => item.value).find(item => item.workflowId === workflow.id&&!item.supersededBy);
     let superseded:WorkflowManifest|undefined;
     if(priorManifest&&priorManifest.status!=='completed'&&!priorManifest.humanReviewDigest&&!(await this.verifiedTargets(priorManifest)).length){
@@ -391,7 +407,7 @@ export class KnowledgeWorkflowStore {
         const item = (workflow.evidence ?? []).filter(value => value.section === section)[i];
         return item ? `- ${text}（来源 Raw ${item.rawId}，原文 [${item.start}, ${item.end})：“${item.quote}”）` : `- ${text}（用户整理）`;
       });
-      const body = [current.body, '## 本次更新审核', '### 一致观点', ...evidenceLines('agreement', workflow.sections.agreement), '### 建议增加', ...evidenceLines('suggestedAdditions', workflow.sections.suggestedAdditions), '### 来源冲突（均保留）', ...evidenceLines('conflicts', workflow.sections.conflicts), '### AI 推断', ...workflow.sections.inferences.map(x => `- ${x}`), '### 待确认问题', ...workflow.sections.openQuestions.map(x => `- ${x}`), `来源：${workflow.sections.sourceList.map(x => `[${x.title}](${x.id})`).join('、')}`].filter(Boolean).join('\n\n');
+      const body = [current.body, ...(workflow.inputTemplateFields ? [renderInputTemplateFields(workflow.inputTemplateFields)] : []), '## 本次更新审核', '### 一致观点', ...evidenceLines('agreement', workflow.sections.agreement), '### 建议增加', ...evidenceLines('suggestedAdditions', workflow.sections.suggestedAdditions), '### 来源冲突（均保留）', ...evidenceLines('conflicts', workflow.sections.conflicts), '### AI 推断', ...workflow.sections.inferences.map(x => `- ${x}`), '### 待确认问题', ...workflow.sections.openQuestions.map(x => `- ${x}`), `来源：${workflow.sections.sourceList.map(x => `[${x.title}](${x.id})`).join('、')}`].filter(Boolean).join('\n\n');
       const title = workflow.title.trim();
       const normalizeTitle = (value: string) => value.normalize('NFKC').toLocaleLowerCase('zh-CN').replace(/[\s\p{P}\p{S}]+/gu, '');
       const titleKey = normalizeTitle(title);

@@ -122,7 +122,7 @@ test('FIELDS F03: 引用移走或同ID换引文均原子拒绝，未引用unit�
   } finally { await f.close(); }
 });
 
-test('FIELDS F03: 带字段合并/切型/旧Wiki更新原子拒绝，原草稿与审批目录保留', async () => {
+test('FIELDS F03: 带字段合并/切型原子拒绝，更新保全字段后Provider失败仍保留原稿', async () => {
   const f = await fixture();
   try {
     let draft = await f.patch([{ pageId: f.draft.pages[0].pageId, templateFields: { definition: { evidenceIds: ['concept-e1'], humanText: '应保留的人工说明。' } } }]);
@@ -134,8 +134,8 @@ test('FIELDS F03: 带字段合并/切型/旧Wiki更新原子拒绝，原草稿�
     const target = await f.wiki.create({ title: '旧页', type: 'concept', category: 'other', body: '旧内容。', sources: [f.raw.id], tags: [], aliases: [], confidence: 'low', knowledge_status: 'source_supported', source_level: 'D', review_status: 'unreviewed' });
     let calls = 0;
     await assert.rejects(workflows.createUpdate({ draftId: draft.id, pageId: draft.pages[0].pageId, baseRevision: draft.revision, targetWikiId: target.id, draft, raw: f.raw, target,
-      provider: { name: 'disabled', model: 'no-provider', complete: async () => { calls++; throw new Error('Provider disabled'); } } }), { code: 'TEMPLATE_UPDATE_UNSUPPORTED' });
-    assert.equal(calls, 0); assert.equal(await readFile(f.file, 'utf8'), before);
+      provider: { name: 'disabled', model: 'no-provider', complete: async request => { calls++; assert(JSON.parse(request.user).newSource.templateFields); throw new Error('Provider disabled'); } } }), { code: 'LLM_PROVIDER_ERROR' });
+    assert.equal(calls, 1); assert.equal(await readFile(f.file, 'utf8'), before);
   } finally { await f.close(); }
 });
 
