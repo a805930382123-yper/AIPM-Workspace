@@ -1,5 +1,14 @@
 # 工程状态
 
+## 最新结论：O结构失败零调用诊断通过（2026-10-29）
+
+用户批准下一建议，Sol High诊断、Astra medium独立验收；本轮文档诊断评分0/1/0/1=2。原253/254均为合法JSON，254 pages含object/string/string，实际schema拒绝pages[1]/[2]字符串，LLM_SCHEMA_INVALID正确。上轮预期INVALID_JSON是人工阅读误判，非产品解析或原证据不一致。本轮不改产品/原报告，补充澄清。
+
+[诊断](reports/R1618-OQ-DIAG-20261029.md)、[独立验收](reports/R1618-OQ-DIAG-AUDIT-20261029.md)。受测基线33e95f9247297cb992accb8f579c5afa8c580da4；完整pipeline离线重放exit0精确捕获预期失败，独立最小解析/validator核验一致，66项冻结/11份公开证据SHA一致。真实/config/network0，知识254/500、Prompt15/24不变。诊断PASS不等于产品修复或O通过；O失败、Q未执行、R16/R18/B09整体未通过保持。
+
+下一建议零调用核对结构化输出契约和必要定向回归；只在发现明确契约遗漏后提出最小修复，无遗漏则停止自动修复，不重复抽样、不放宽schema。上一提交33e95f9已实时核本地与远端一致。外部AGENTS/AGENT-ROUTER报告排除。
+
+
 ## 最新结论：O/Q准备通过，O真实验证失败即停（2026-10-29）
 
 用户授权最多4请求。Astra规划与独立准备审查、Sol High施工，B评分0/2/2/2=6。收敛文档经Sol独立审查通过；入口与两fixture准备通过，同版唯一smoke 4fake/0real。主线程随后执行O253–254，exit1、LLM_SCHEMA_INVALID；实际2请求、配置读取1，知识254/500、Prompt15/24。触发首失败停，Q255–256未放行、不重试。
