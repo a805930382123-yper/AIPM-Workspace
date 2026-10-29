@@ -1,5 +1,13 @@
 # 工程状态
 
+## 最新结论：OpenAI严格结构适配及O/Q真实验证通过（2026-10-29）
+
+用户明确授权补齐B09遗留验收与修复。B评分0/2/2/2=6，Astra规划/独立验收，Sol High施工。KB02抽取/规划在精确官方OpenAI Terra路径传strict schema，仅原可选null按契约省略，原业务校验保留；revision16阻止旧未完成检查点混用。独立45/45、同版build通过，S01–05 PASS。旧纯问题Q准备缺陷已在任何真实请求前改为独立事实＋原两问题，新fixture单列，历史原文未改。
+
+主线程经代理入口实际O255–256、独立通过后Q257–258；O安排单已编制未发货、Q两未知question-only及草稿渲染保真均独立PASS。实际4请求/config2，知识258/500、Prompt15/24，历史连接1单列；本轮请求额度用满，无重试。[任务卡](handoffs/OPENAI-STRUCTURED-20261029-task.md)、[施工](reports/OPENAI-STRUCTURED-20261029-builder.md)、[准备验收](reports/OPENAI-STRUCTURED-AUDIT-20261029-prepare.md)、[真实验收](reports/OPENAI-STRUCTURED-AUDIT-20261029-real.md)、[主线程](reports/B09-RESUME-20261029-main.md)、[B09缺口](reports/B09-RESUME-20261029-gap-map.md)。基线2fe5318e70e188cf28c15af7867aacf460213d66加报告SHA对应差异，提交关联Git历史。
+
+本轮工程与两个质量目标通过；旧P自动FAIL和历史O失败保留，HUMAN人工纠偏通过可复用，R16/R18不能仅凭本轮自动联签，B09整体仍未通过。剩余R22来源等级政策实现、完整App四链、恢复及证据版本收口；按本轮用户授权继续推进。最新工作台首页实际可用，用户原始库未作为本轮测试数据。外部AGENTS/AGENT-ROUTER报告不提交。
+
 ## 最新结论：OpenAI Terra本机接入两项修复通过（2026-10-29）
 
 用户批准代理入口及temperature兼容修复，Astra规划/独立验收，Sol High施工；B评分0/2/2/1=5。精确api.openai.com+gpt-6.1-terra省略temperature，新增npm run dev:proxy读取已有环境/Windows手动代理并检查Node原生代理能力。普通入口及其它Provider保持；无密钥/本机端口提交。

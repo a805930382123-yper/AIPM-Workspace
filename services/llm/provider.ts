@@ -2,6 +2,7 @@
 // Nothing here is provider-specific beyond the documented wire format, and no key or full
 // provider response is ever put into an error message, cause or log line.
 import { containsKnownSecret, safeBaseUrl, validateApiKey, validateModel, type LlmConfig } from './config.ts';
+import type { StructuredOutput } from './openai-structured.ts';
 
 export class LlmError extends Error {
   constructor(public code: string, message: string, public status = 502, public details?: unknown) { super(message); }
@@ -9,9 +10,12 @@ export class LlmError extends Error {
 
 export type LlmCompletionRequest = {
   system: string; user: string; timeoutMs: number; maxOutputBytes: number; signal?: AbortSignal; purpose?: 'knowledge' | 'prompt';
+  structuredOutput?: StructuredOutput;
 };
 export type LlmCompletion = {
   text: string; finishReason: string | null; bytes: number;
+  /** text remains the original response; the caller owns wire decoding. */
+  structuredOutputApplied?: true;
   usage?: { promptTokens?: number; completionTokens?: number };
 };
 export interface LlmProvider {
@@ -171,6 +175,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     }
     const host = new URL(baseUrl).hostname.toLowerCase();
     const defaultTemperature = host === 'api.openai.com' && model === 'gpt-6.1-terra';
+    const structured = defaultTemperature && request.purpose === 'knowledge' && request.structuredOutput;
     const constrainedFlash = (request.purpose === 'knowledge' || request.purpose === 'prompt')
       && ['open.bigmodel.cn', 'api.z.ai'].includes(host)
       && model.trim().toLowerCase() === 'glm-5.3-flash';    const url = baseUrl + "/chat/completions";
@@ -187,13 +192,14 @@ export class OpenAiCompatibleProvider implements LlmProvider {
           model, stream: false, ...(defaultTemperature ? {} : { temperature: 0 }),
           messages: [{ role: 'system', content: request.system }, { role: 'user', content: request.user }],
           ...(constrainedFlash ? { reasoning_effort: 'low', response_format: { type: 'json_object' } } : {}),
+          ...(structured ? { response_format: { type: 'json_schema', json_schema: { ...structured, strict: true } } } : {}),
         }),
         signal: controller.signal,
       });
       if (!response.ok) throw await this.httpError(response, request.maxOutputBytes);
       const text = await readCapped(response, request.maxOutputBytes);
       let payload: {
-        choices?: Array<{ message?: { content?: unknown }; finish_reason?: unknown }>;
+        choices?: Array<{ message?: { content?: unknown; refusal?: unknown }; finish_reason?: unknown }>;
         usage?: { prompt_tokens?: unknown; completion_tokens?: unknown };
         error?: { message?: unknown };
       };
@@ -208,13 +214,15 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         completionTokens: typeof payload.usage?.completion_tokens === 'number' && Number.isFinite(payload.usage.completion_tokens) && payload.usage.completion_tokens >= 0 ? payload.usage.completion_tokens : undefined,
       };
       const responseDetails={category:'response_invalid',finishReason,bytes:typeof content==='string'?Buffer.byteLength(content,'utf8'):0,usage};
+      if (structured && choice?.message?.refusal != null) throw new LlmError('LLM_REFUSAL', 'Provider 拒绝本次结构化输出，未产生草稿。', 502, responseDetails);
+      if (structured && finishReason !== 'stop' && finishReason !== 'length') throw new LlmError('LLM_PROVIDER_ERROR', 'Provider 未正常完成结构化输出，未产生草稿。', 502, responseDetails);
       if (finishReason === 'length') {
         throw new LlmError('LLM_OUTPUT_TRUNCATED', 'Provider 输出被截断（finish_reason=length），已拒绝当作完整结果。', 502,responseDetails);
       }
       if (typeof content !== 'string' || !content.trim()) {
         throw new LlmError('LLM_EMPTY_RESULT', 'Provider 返回了空结果，未产生任何知识建议。', 502,responseDetails);
       }
-      return { text: content, finishReason, bytes: Buffer.byteLength(content, 'utf8'), usage };
+      return { text: content, finishReason, bytes: Buffer.byteLength(content, 'utf8'), usage, ...(structured ? { structuredOutputApplied: true as const } : {}) };
     } catch (error) {
       if (error instanceof LlmError) throw error;
       if (controller.signal.aborted) {

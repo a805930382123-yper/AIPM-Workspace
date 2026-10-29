@@ -6,6 +6,7 @@ import { buildEvidenceLocatorCatalog } from './locators.ts';
 import { loadExtractionRules, FROZEN_BUDGETS } from './rules.ts';
 import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } from './provider.ts';
 import { validateSchema } from './schema-validator.ts';
+import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
 import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
 
@@ -161,10 +162,12 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
         `sourceNotes仅可选虚构/验收免责声明、排版或来源说明等非业务声明，可为空；按需选择代表性声明即可，不要求穷举、重复列举全部排版说明，最多${fields.sourceNotes.maxItems}条。未选择的声明不应转入facts/questions；选中的声明也不能同时归入facts/questions。来源声明仅存检查点元数据，不进入业务事实或整篇规划。每个分栏内atomId不得重复。`,
         '输入 locator 目录（每项是精确连续原文，不要复述目录）：', JSON.stringify(atoms.filter(atom => atom.text.trim().length > 0).map(({ id, text, fragment }) => ({ id, text, fragment }))),
       ].join('\n');
-      const completion = await input.provider.complete({ system: '你是严格的原文陈述分类器。只选择给定atom ID并区分业务事实、歧义、原文明示未知与来源声明。保留否定和业务限制，不补维度，不改写原文。只返回JSON object。', user: prompt, purpose: 'knowledge', timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())), maxOutputBytes: FROZEN_BUDGETS.maxOutputBytesPerCall, signal: input.signal });
+      const factsOutput = kb02StructuredOutput('kb02_facts', bundle.kb02FactsSchema);
+      const completion = await input.provider.complete({ structuredOutput: factsOutput, system: '你是严格的原文陈述分类器。只选择给定atom ID并区分业务事实、歧义、原文明示未知与来源声明。保留否定和业务限制，不补维度，不改写原文。只返回JSON object。', user: prompt, purpose: 'knowledge', timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())), maxOutputBytes: FROZEN_BUDGETS.maxOutputBytesPerCall, signal: input.signal });
       guard();
       if (completion.finishReason === 'length') throw new LlmError('LLM_OUTPUT_TRUNCATED', `第${chunk.index + 1}段精简事实响应被截断，未保存该段。`, 502);
-      const parsed = parse(completion.text, input.provider, `第${chunk.index + 1}段精简事实`);
+      const original = parse(completion.text, input.provider, `第${chunk.index + 1}段精简事实`);
+      const parsed = completion.structuredOutputApplied ? decodeKb02StructuredOutput(original, bundle.kb02FactsSchema, factsOutput) : original;
       exact(parsed, bundle.kb02FactsSchema, `第${chunk.index + 1}段精简事实`);
       const value = parsed as { facts: Array<{ atomId: string; kind: 'fact' | 'ambiguous' }>; questions: Array<{ atomId: string }>; sourceNotes: Array<{ atomId: string }> };
       const byAtom = new Map(atoms.map(atom => [atom.id, atom]));
@@ -211,10 +214,12 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: undefined });
     emit('planning', allFacts.length);
     current = await input.beforeCall('planning');
-    const result = await input.provider.complete({ system: planningSystem, user: `请对下列全部已验证事实规划知识页，只输出JSON。\n${planningJson}`, purpose: 'knowledge', timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())), maxOutputBytes: FROZEN_BUDGETS.maxOutputBytesPerCall, signal: input.signal });
+    const planningOutput = kb02StructuredOutput('kb02_planning', plannerSchema);
+    const result = await input.provider.complete({ structuredOutput: planningOutput, system: planningSystem, user: `请对下列全部已验证事实规划知识页，只输出JSON。\n${planningJson}`, purpose: 'knowledge', timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())), maxOutputBytes: FROZEN_BUDGETS.maxOutputBytesPerCall, signal: input.signal });
     guard();
     if (result.finishReason === 'length') throw new LlmError('LLM_OUTPUT_TRUNCATED', '整篇主题规划响应被截断，未保存规划。', 502);
-    const parsed = parse(result.text, input.provider, '整篇主题规划');
+    const original = parse(result.text, input.provider, '整篇主题规划');
+    const parsed = result.structuredOutputApplied ? decodeKb02StructuredOutput(original, plannerSchema, planningOutput) : original;
     exact(parsed, plannerSchema, '整篇主题规划');
     const wirePlan = parsed as KnowledgeWirePlan;
     const factIds = allFacts.map(item => item.id); const questionIds = allQuestions.map(item => item.id);

@@ -8,17 +8,19 @@ import { DraftStore } from '../../services/wiki/drafts.ts';
 import { ExtractionCheckpointStore } from '../../services/llm/checkpoints.ts';
 import { runKnowledgePipeline } from '../../services/llm/knowledge-extraction.ts';
 import { chunkText } from '../../services/llm/chunk.ts';
+import { buildEvidenceLocatorCatalog } from '../../services/llm/locators.ts';
+import { buildKnowledgeAtoms } from '../../services/llm/knowledge-atoms.ts';
 import { loadExtractionRules } from '../../services/llm/rules.ts';
 import { assertNoKnownSecret } from '../../services/llm/provider.ts';
 
 export const FIXTURE = 'tests/acceptance/R1618-QUALITY-20261027-fixture.json';
 const SCRIPT = 'tests/acceptance/R1618-QUALITY-20261027-run.mjs';
-const CARD = 'docs/handoffs/R1618-OQ-20261029-task.md';
+const CARD = 'docs/handoffs/OPENAI-STRUCTURED-20261029-task.md';
 const PLAN = 'docs/reports/R1618-CLOSURE-20261029-plan.md';
-const PREFIX = '.scratch-R1618-OQ-20261029-';
+const PREFIX = '.scratch-OPENAI-STRUCTURED-20261029-';
 const PROFILES = {
-  output: { fixture: 'tests/acceptance/R1618-OQ-20261029-output-fixture.json', knowledgeBefore: 252, sequences: [253, 254] },
-  question: { fixture: 'tests/acceptance/R1618-OQ-20261029-question-fixture.json', knowledgeBefore: 254, sequences: [255, 256] },
+  output: { fixture: 'tests/acceptance/R1618-OQ-20261029-output-fixture.json', knowledgeBefore: 254, sequences: [255, 256] },
+  question: { fixture: 'tests/acceptance/OPENAI-STRUCTURED-20261029-question-fixture.json', knowledgeBefore: 256, sequences: [257, 258] },
 };
 const sha = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
@@ -28,6 +30,12 @@ async function durable(file, value) {
   try { await handle.writeFile(JSON.stringify(value, null, 2) + '\n'); await handle.sync(); } finally { await handle.close(); }
 }
 async function present(file) { try { await fs.access(file); return true; } catch (error) { if (error.code === 'ENOENT') return false; throw error; } }
+function questionTargets(body, sample) {
+  const [chunk] = chunkText(body, { maxChunkChars: 8000, overlap: 400, maxRawChars: 500000 });
+  const atoms = buildKnowledgeAtoms(body, buildEvidenceLocatorCatalog(body, chunk));
+  must(atoms.length === 3 && atoms.every((atom, index) => atom.text === sample.quotes[index] && !atom.fragment), 'QUESTION_ATOMS_NOT_INDEPENDENT');
+  return { fact: atoms[0], questions: atoms.slice(1) };
+}
 async function freeze() {
   const files = [];
   async function walk(dir) {
@@ -53,6 +61,7 @@ export async function prepare(profile, mode = 'real') {
   const raw = await raws.create({ title: sample.title, sourceType: sample.sourceType, sourceName: sample.sourceName, body, tags: ['虚构', 'R1618-quality'] });
   const rawPath = path.join(root, 'knowledge/raw/notes', raw.id + '.md');
   const frozen = await freeze(); await durable(path.join(root, 'freeze.json'), frozen);
+  if (profile === 'question') await durable(path.join(root, 'question-atom-targets.json'), questionTargets(body, sample));
   const session = { id: randomUUID(), root, mode, profile, fixture: config.fixture, rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: sha(await fs.readFile(rawPath)), fixtureSha256: sha(await fs.readFile(config.fixture)), freezeSha256: frozen.sha256, knowledgeBefore: config.knowledgeBefore, sequences: config.sequences, maxCalls: 2, promptUsed: 15 };
   await durable(path.join(root, 'session.json'), session);
   return { session, releaseTemplate: { released: false, budgetApproved: false, issuedBy: 'main', issuedAt: null, sessionId: session.id, mode, profile, maxCalls: 2, sequences: config.sequences, rawId: raw.id, rawSha256: raw.bodySha256, fixtureSha256: session.fixtureSha256, freezeSha256: frozen.sha256 } };
@@ -79,15 +88,16 @@ async function releaseFor(s, file, exactSha) {
 }
 function fakeReply(request, profile) {
   const input = JSON.parse(request.user.split('\n').at(-1));
-  // Mechanical capture only: Q deliberately keeps one fact so the unchanged
-  // pipeline can reach planning; these classifications are not a quality oracle.
+  // Mechanical capture only: new Q has one independent business fact and two
+  // separate unknown atoms. These classifications are not a real quality oracle.
   if (!request.user.startsWith('请对下列全部已验证事实规划知识页')) return { text: JSON.stringify({ version: 2, facts: (profile === 'question' ? input.slice(0, 1) : input).map(atom => ({ atomId: atom.id, kind: 'fact' })), questions: (profile === 'question' ? input.slice(1) : []).map(atom => ({ atomId: atom.id })), sourceNotes: [] }), bytes: 1, finishReason: 'stop' };
   return { text: JSON.stringify({ version: 3, document: { title: '来源：虚构门店补货', main_topic: '补货' }, pages: [
     { title: '虚构门店补货流程', type: 'business_process', category: 'supply_chain', factUnitIds: input.factUnits.map(x => x.id), questionUnitIds: input.questionUnits.map(x => x.id) },
   ] }), bytes: 1, finishReason: 'stop' };
 }
-export async function run(root, releaseFile, releaseSha256) {
+export async function run(root, releaseFile, releaseSha256, fakeFailureStage) {
   const s = await sessionAt(root); await releaseFor(s, releaseFile, releaseSha256);
+  must(fakeFailureStage === undefined || (s.mode === 'fake' && ['extracting', 'question-missing-second', 'question-dual-track'].includes(fakeFailureStage)), 'FAKE_FAILURE_MODE_INVALID');
   must(!(await present(path.join(s.root, 'run-started.json'))), 'SESSION_ALREADY_STARTED');
   for (const seq of s.sequences) must(!(await present(path.join(s.root, `attempt-${seq}.json`))), 'ATTEMPT_ALREADY_RESERVED');
   const raws = new RawStore(s.root), drafts = new DraftStore(s.root), checkpoints = new ExtractionCheckpointStore(s.root);
@@ -108,11 +118,17 @@ export async function run(root, releaseFile, releaseSha256) {
       await releaseFor(s, releaseFile, releaseSha256);
       if (s.profile === 'question' && stage === 'planning') {
         const input = JSON.parse(request.user.split('\n').at(-1));
-        const questionOnly = input.questionUnits.filter(unit => !input.factUnits.some(fact => fact.sourceId === unit.sourceId));
-        await durable(path.join(s.root, 'question-only-gate.json'), { questionOnlyUnitIds: questionOnly.map(unit => unit.id), factUnitIds: input.factUnits.map(unit => unit.id), questionUnitIds: input.questionUnits.map(unit => unit.id) });
-        must(questionOnly.length > 0, 'QUESTION_ONLY_TARGET_NOT_OBSERVED');
+        const targets = questionTargets(body, sample), sourceId = atom => `s-${atom.start}-${atom.end}`;
+        const factObserved = input.factUnits.some(unit => unit.sourceId === sourceId(targets.fact) && unit.text === targets.fact.text);
+        const questions = targets.questions.map(atom => {
+          const units = input.questionUnits.filter(unit => unit.sourceId === sourceId(atom) && unit.text === atom.text);
+          return { atomId: atom.id, text: atom.text, unitIds: units.map(unit => unit.id), questionOnly: units.length === 1 && !input.factUnits.some(unit => unit.sourceId === sourceId(atom)) };
+        });
+        const passed = factObserved && questions.every(question => question.questionOnly);
+        await durable(path.join(s.root, 'question-only-gate.json'), { passed, factObserved, questions, questionOnlyUnitIds: questions.filter(question => question.questionOnly).flatMap(question => question.unitIds), factUnitIds: input.factUnits.map(unit => unit.id), questionUnitIds: input.questionUnits.map(unit => unit.id) });
+        must(passed, 'QUESTION_ONLY_TARGET_NOT_OBSERVED');
       }
-      const sequence = s.sequences[reserved], safeRequest = { system: request.system, user: request.user, purpose: request.purpose, timeoutMs: request.timeoutMs, maxOutputBytes: request.maxOutputBytes };
+      const sequence = s.sequences[reserved], safeRequest = { system: request.system, user: request.user, purpose: request.purpose, structuredOutput: request.structuredOutput, timeoutMs: request.timeoutMs, maxOutputBytes: request.maxOutputBytes };
       await durable(path.join(s.root, `attempt-${sequence}.json`), { sequence, stage, sessionId: s.id, requestSha256: sha(safeRequest), releaseSha256, at: new Date().toISOString(), status: 'pending-counts-if-unknown' }); reserved++;
       let response;
       if (s.mode === 'real') {
@@ -127,7 +143,15 @@ export async function run(root, releaseFile, releaseSha256) {
         sent++; response = await actual.complete(request);
       } else {
         await durable(path.join(s.root, `request-${sequence}.json`), safeRequest);
-        sent++; response = fakeReply(request, s.profile);
+        sent++;
+        if (stage === fakeFailureStage) throw Object.assign(new Error('SMOKE_FIRST_FAILURE'), { code: 'SMOKE_FIRST_FAILURE' });
+        response = fakeReply(request, s.profile);
+        if (stage === 'extracting' && fakeFailureStage?.startsWith('question-')) {
+          const value = JSON.parse(response.text);
+          if (fakeFailureStage === 'question-missing-second') value.questions.pop();
+          else value.facts.push({ atomId: value.questions[0].atomId, kind: 'fact' });
+          response = { ...response, text: JSON.stringify(value) };
+        }
       }
       // Private original is retained even if a subsequent secret scan blocks export.
       await durable(path.join(s.root, `response-${sequence}.private.json`), response);
@@ -173,12 +197,38 @@ export async function smoke() {
     const page = original.originalDraft.pages[0];
     assert.equal([...page.source_facts.map(f => f.text), ...page.open_questions].join(''), original.raw.body);
     assert([...page.source_facts.map(f => f.text), ...page.open_questions].every(text => original.preview.pages[0].renderedBody.includes(text)));
-    if (profile === 'question') assert((await read(path.join(root, 'question-only-gate.json'))).questionOnlyUnitIds.length > 0);
+    if (profile === 'question') {
+      const targets = await read(path.join(root, 'question-atom-targets.json')), gate = await read(path.join(root, 'question-only-gate.json'));
+      assert.equal(gate.passed, true); assert.equal(gate.factObserved, true); assert.equal(gate.questionOnlyUnitIds.length, 2);
+      assert.deepEqual(page.open_questions, targets.questions.map(atom => atom.text));
+      assert.deepEqual(page.source_facts.map(fact => fact.text), [targets.fact.text]);
+      assert(targets.questions.every(atom => original.preview.pages[0].renderedBody.includes(atom.text)));
+    }
     await assert.rejects(run(root, file, hash), { code: 'SESSION_ALREADY_STARTED' });
     assert.deepEqual((await fs.readdir(root)).filter(name => /^attempt-\d+\.json$/.test(name)).sort(), config.sequences.map(seq => `attempt-${seq}.json`));
     results.push(result);
   }
-  return { pass: true, checks: ['profile-binding', 'unreleased-zero-call', 'two-request-original-draft-capture', 'used-session-rejected'], fakeCalls: 4, realCalls: 0, configReads: 0, results };
+  const failed = await prepare('output', 'fake'), failedRoot = failed.session.root;
+  const failedRelease = { ...failed.releaseTemplate, released: true, budgetApproved: true, issuedAt: new Date().toISOString() }, failedFile = path.join(failedRoot, 'fake-release.json');
+  await durable(failedFile, failedRelease);
+  await assert.rejects(run(failedRoot, failedFile, sha(await fs.readFile(failedFile)), 'extracting'), { code: 'SMOKE_FIRST_FAILURE' });
+  const failedResult = await read(path.join(failedRoot, 'result.json'));
+  assert.equal(failedResult.reserved, 1); assert.equal(failedResult.sent, 1); assert.equal(failedResult.configReads, 0); assert.equal(failedResult.realCalls, 0);
+  assert.equal(await present(path.join(failedRoot, 'attempt-256.json')), false);
+  assert.equal(await present(path.join(failedRoot, 'candidate-original.json')), false);
+  results.push(failedResult);
+  for (const failure of ['question-missing-second', 'question-dual-track']) {
+    const prepared = await prepare('question', 'fake'), root = prepared.session.root;
+    const file = path.join(root, 'fake-release.json');
+    await durable(file, { ...prepared.releaseTemplate, released: true, budgetApproved: true, issuedAt: new Date().toISOString() });
+    await assert.rejects(run(root, file, sha(await fs.readFile(file)), failure), { code: 'QUESTION_ONLY_TARGET_NOT_OBSERVED' });
+    const result = await read(path.join(root, 'result.json')), gate = await read(path.join(root, 'question-only-gate.json'));
+    assert.equal(result.reserved, 1); assert.equal(result.sent, 1); assert.equal(result.configReads, 0); assert.equal(result.realCalls, 0); assert.equal(gate.passed, false);
+    assert.equal(await present(path.join(root, 'attempt-258.json')), false);
+    assert.equal(await present(path.join(root, 'candidate-original.json')), false);
+    results.push({ ...result, root, failure });
+  }
+  return { pass: true, checks: ['profile-binding', 'unreleased-zero-call', 'two-request-original-draft-capture', 'used-session-rejected', 'first-failure-stops-before-second-request', 'three-independent-question-sample-atoms', 'both-complete-question-only-units', 'missing-question-and-dual-track-stop-before-planning'], fakeCalls: 7, realCalls: 0, configReads: 0, results };
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [command, ...args] = process.argv.slice(2);

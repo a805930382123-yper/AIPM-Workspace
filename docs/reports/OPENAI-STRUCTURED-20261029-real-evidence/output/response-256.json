@@ -1,0 +1,10 @@
+{
+  "text": "{\"version\":3,\"document\":{\"title\":\"门店补货流程（虚构）\",\"main_topic\":\"门店补货安排的编制及本次仓库发货状态\"},\"pages\":[{\"title\":\"门店补货流程（虚构）\",\"type\":\"business_process\",\"category\":\"supply_chain\",\"factUnitIds\":[\"fu-0-27-fact\",\"fu-27-57-fact\",\"fu-57-75-fact\",\"fu-75-91-fact\",\"fu-91-113-fact\"],\"templateFields\":{\"one_line_explanation\":null,\"definition\":null,\"why_important\":null,\"business_context\":null,\"characteristics\":null,\"common_categories\":null,\"relationships\":null,\"scenarios\":null,\"business_goal\":{\"text\":\"形成待仓库执行的补货安排。\",\"factUnitIds\":[\"fu-0-27-fact\"]},\"roles\":{\"text\":\"门店提交补货申请，计划员核对库存并编制安排单；补货安排待仓库执行。\",\"factUnitIds\":[\"fu-27-57-fact\",\"fu-0-27-fact\"]},\"trigger\":{\"text\":\"门店提交补货申请后，计划员开展库存核对和安排单编制。\",\"factUnitIds\":[\"fu-27-57-fact\"]},\"inputs\":{\"text\":\"门店提交的补货申请。\",\"factUnitIds\":[\"fu-27-57-fact\"]},\"steps\":{\"text\":\"门店提交补货申请后，计划员核对库存并编制补货安排单。\",\"factUnitIds\":[\"fu-27-57-fact\"]},\"outputs\":{\"text\":\"本次流程输出补货安排单；安排单已编制，仓库发货尚未执行。\",\"factUnitIds\":[\"fu-57-75-fact\",\"fu-75-91-fact\"]},\"systems\":null,\"rules\":{\"text\":\"补货安排单不表示货物已经发出或交付完成。\",\"factUnitIds\":[\"fu-91-113-fact\"]},\"human_judgement\":null,\"exceptions\":null,\"pain_points\":null,\"ai_opportunities\":null,\"metrics\":null,\"related_knowledge\":null},\"questionUnitIds\":[]}]}",
+  "finishReason": "stop",
+  "bytes": 1570,
+  "usage": {
+    "promptTokens": 6358,
+    "completionTokens": 473
+  },
+  "structuredOutputApplied": true
+}

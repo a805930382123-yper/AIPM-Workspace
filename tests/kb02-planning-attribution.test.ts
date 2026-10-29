@@ -96,7 +96,7 @@ test('a subject-preserving fake plan is accepted by the complete pipeline',async
 });
 
 test('revision10 unfinished checkpoint is rejected before Provider calls and retained chunks stay byte-identical',async()=>{
-  const f=await source(),before=JSON.stringify(f.checkpoint.completedChunks),old={...f.checkpoint,rulesVersion:f.bundle.rulesVersion.replace('kb02-atoms-planning-13-','kb02-atoms-planning-10-')};
+  const f=await source(),before=JSON.stringify(f.checkpoint.completedChunks),old={...f.checkpoint,rulesVersion:f.bundle.rulesVersion.replace(/kb02-atoms-planning-\d+-/u,'kb02-atoms-planning-10-')};
   let calls=0;const provider:LlmProvider={name:'offline',model:'must-not-run',complete:async()=>{calls++;throw new Error('unexpected Provider call');}};
   await assert.rejects(validateKnowledgeCheckpoint({raw:f.raw,body:f.sample.body,bodySha256:sha(f.sample.body),provider,rulesDir:'rules',checkpoint:old}),
     (error:unknown)=>error instanceof LlmError&&error.code==='LLM_CHECKPOINT_INCOMPATIBLE'&&error.status===409);
