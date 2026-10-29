@@ -1,5 +1,14 @@
 # 项目总控记录
 
+## 最新结论：结构化输出契约检查通过，无明确遗漏（2026-10-29）
+
+用户授权下一步零调用检查，Sol High诊断、Astra medium独立审查；本批0/1/0/1=2。指定官方host/model/purpose路径已有json_object，规划提示含完整schema并在返回后严格验证；既有契约未承诺wire strict schema。未找到明确配置遗漏，停止自动修复和重复诊断，不过滤非法页、不追加抽样。
+
+[检查报告](reports/R1618-CONTRACT-20261029.md)、[独立审查](reports/R1618-CONTRACT-AUDIT-20261029.md)。基线f496ef7c1f11f69f5d3b1d4f53321380db510287；既有adapter请求定向测试2/2 exit0，复用同版原254严格拒绝证据。历史request254非HTTP抓包，未读真实配置，不能断言当时host/model或JSON模式。真实/config/network0，知识254/500、Prompt15/24不变；产品未改，O失败/Q未执行及R16/R18/B09整体未通过保持。
+
+后续需用户选择Provider方向：保留当前及失败状态、更换已支持Provider，或另行评估外部strict schema能力。没有本批可执行的已证遗漏修复；不自动推进真实验证或R22/四链。外部AGENTS/AGENT-ROUTER报告排除。
+
+
 ## 最新结论：O结构失败零调用诊断通过（2026-10-29）
 
 用户批准下一建议，Sol High诊断、Astra medium独立验收；本轮文档诊断评分0/1/0/1=2。原253/254均为合法JSON，254 pages含object/string/string，实际schema拒绝pages[1]/[2]字符串，LLM_SCHEMA_INVALID正确。上轮预期INVALID_JSON是人工阅读误判，非产品解析或原证据不一致。本轮不改产品/原报告，补充澄清。
