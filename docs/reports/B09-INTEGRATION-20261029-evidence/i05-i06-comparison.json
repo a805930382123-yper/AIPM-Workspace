@@ -1,0 +1,78 @@
+{
+  "pass": true,
+  "files": 23,
+  "identical": "before restart / after restart / restored new empty root",
+  "sourceRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\b09-integration-20261029-oZSBMc",
+  "restoredRoot": "C:\\Users\\80593\\AppData\\Local\\Temp\\b09-integration-20261029-ofqyDv",
+  "callsBefore": [
+    {
+      "stage": "check",
+      "purpose": "prompt",
+      "sequence": 19,
+      "mode": "real",
+      "requestSha256": "1d671dd56a3c944c691a81f51b80db967aaba2319cc52e47281b999bfcd708ae",
+      "startedAt": "2026-10-29T11:34:35.958Z",
+      "status": "provider-returned",
+      "httpSent": 1,
+      "finishedAt": "2026-10-29T11:34:44.435Z"
+    },
+    {
+      "stage": "generate",
+      "purpose": "prompt",
+      "sequence": 18,
+      "mode": "real",
+      "requestSha256": "f9a795917e013bb4e395ecf2e6f532e0b3b0bee1978c019072ca3212620d167c",
+      "startedAt": "2026-10-29T11:32:21.402Z",
+      "status": "provider-returned",
+      "httpSent": 1,
+      "finishedAt": "2026-10-29T11:32:38.338Z"
+    },
+    {
+      "stage": "rewrite",
+      "purpose": "prompt",
+      "sequence": 20,
+      "mode": "real",
+      "requestSha256": "2e723d1a2a9f68c379a47f7f89d33f99bfbaf4f920bdcbe3b863328adfa31558",
+      "startedAt": "2026-10-29T11:36:14.215Z",
+      "status": "provider-returned",
+      "httpSent": 1,
+      "finishedAt": "2026-10-29T11:36:29.294Z"
+    }
+  ],
+  "callsAfterRestart": [
+    {
+      "stage": "check",
+      "purpose": "prompt",
+      "sequence": 19,
+      "mode": "real",
+      "requestSha256": "1d671dd56a3c944c691a81f51b80db967aaba2319cc52e47281b999bfcd708ae",
+      "startedAt": "2026-10-29T11:34:35.958Z",
+      "status": "provider-returned",
+      "httpSent": 1,
+      "finishedAt": "2026-10-29T11:34:44.435Z"
+    },
+    {
+      "stage": "generate",
+      "purpose": "prompt",
+      "sequence": 18,
+      "mode": "real",
+      "requestSha256": "f9a795917e013bb4e395ecf2e6f532e0b3b0bee1978c019072ca3212620d167c",
+      "startedAt": "2026-10-29T11:32:21.402Z",
+      "status": "provider-returned",
+      "httpSent": 1,
+      "finishedAt": "2026-10-29T11:32:38.338Z"
+    },
+    {
+      "stage": "rewrite",
+      "purpose": "prompt",
+      "sequence": 20,
+      "mode": "real",
+      "requestSha256": "2e723d1a2a9f68c379a47f7f89d33f99bfbaf4f920bdcbe3b863328adfa31558",
+      "startedAt": "2026-10-29T11:36:14.215Z",
+      "status": "provider-returned",
+      "httpSent": 1,
+      "finishedAt": "2026-10-29T11:36:29.294Z"
+    }
+  ],
+  "callsRestored": []
+}

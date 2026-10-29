@@ -1,0 +1,79 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / Prompt 工作台
+  - generic: 本地工作区
+  - navigation "Prompt 工作台功能":
+    - button "Library"
+    - button "Generator"
+    - button "Optimizer"
+  - paragraph: Prompt Generator · 预览草稿
+  - heading "从任务生成 Prompt" [level=2]
+  - button "返回 Library"
+  - text: 名称
+  - textbox "名称": 经销商订货流程需求访谈设计
+  - text: 分类
+  - combobox "分类":
+    - option "行业学习"
+    - option "业务分析"
+    - option "客户" [selected]
+    - option "产品"
+    - option "AI"
+    - option "日常办公"
+  - text: 场景
+  - textbox "场景": 虚构快消企业的产品经理需要设计一次面向经销商的30分钟需求访谈，了解其订货流程。企业背景、经销商情况、现有流程及所选Wiki的具体内容均待用户补充。
+  - text: 正文
+  - textbox "正文": "## 角色与目标 你是一名虚构快消企业的产品经理。请设计一次30分钟的经销商需求访谈，了解受访者实际的订货流程、参与人员、使用工具、关键决策、遇到的问题及需求。以探索和核实为目的，不预设现有流程或解决方案。 ## 访谈设计任务 1. 明确本次访谈目标，区分已知任务要求与待了解的信息。 2. 设计适合30分钟的开放式访谈问题，按环节安排时间，并提供必要的追问。问题应帮助受访者结合近期实际经历描述流程，避免诱导性提问。 3. 设计可在访谈中填写的记录表，覆盖流程步骤、参与角色、工具或渠道、关键决策、问题与原话、待核实信息等。未知内容留空或标记“待确认”。 4. 列出访谈前、访谈中或访谈后需要确认的事项。 5. 结合用户实际提供的Wiki内容，仅说明结构化输出的概念；如果没有足够的Wiki正文，明确标记“Wiki内容待用户补充”，不得声称相关说明来自该Wiki。 ## 时间与访谈方式 总时长严格为30分钟，其中前27分钟用于开场、了解背景、梳理订货经历和探索问题及需求，最后3分钟留给受访者核对访谈记录。列出各环节的起止时间或时长，确保合计30分钟。问题数量和追问应与时间相匹配；追问可按回答情况择要使用，不要求全部问完。 ## 事实与边界 不得虚构企业背景、经销商情况、现有订货流程或Wiki内容。对缺失信息标记“待确认”或“待用户补充”；将访谈问题作为探索项，而非已知事实。不得推断ROI或成本收益。区分受访者陈述、访谈者整理与待确认事项；访谈设计阶段不预填虚构答案。 ## 输出结构 按以下顺序输出： 1. 访谈目标：列出本次访谈希望了解的内容。 2. 访谈问题：按时间段列出环节、时长、主问题和可选追问，并单列最后3分钟的记录核对安排。 3. 访谈记录表：提供可直接填写的表格，并包含受访者核对结果及需修正的内容。 4. 待确认事项：列出缺失背景及需进一步核实的信息。 5. 结构化输出概念：简要解释按预定义字段或结构组织信息的概念；仅在用户提供足够Wiki内容时结合该内容说明，不扩展到实施细节或声称Wiki支持未提供的内容。"
+  - text: 输入要求
+  - textbox "输入要求": 已有任务要求包括访谈对象、目标、30分钟时长及最后3分钟核对记录。请用户补充企业背景、经销商情况、现有订货流程、访谈背景资料及所选Wiki的具体内容；缺失资料不阻碍先生成可用的访谈框架。
+  - text: 输出要求
+  - textbox "输出要求": 输出中文访谈方案，按访谈目标、访谈问题、记录表、待确认事项和结构化输出概念组织。时间合计30分钟，最后3分钟用于受访者核对记录。未知信息标记待确认或待用户补充，不虚构业务或Wiki内容，不推断ROI或成本收益。
+  - text: 相关 Wiki
+  - listbox "相关 Wiki 按住 Ctrl 多选。只显示标题与分类，关联不会写入 Wiki。":
+    - option "Structured Outputs 结构化输出 · concept" [selected]
+    - option "Structured Outputs 功能及本地业务成本影响 · synthesis"
+    - option "Structured Outputs 本地业务影响待确认 · source"
+    - option "OpenAI官方文档：Structured Outputs · source"
+  - generic: 按住 Ctrl 多选。只显示标题与分类，关联不会写入 Wiki。
+  - text: 标签
+  - textbox "标签": 客户访谈，经销商，订货流程，需求调研，访谈记录
+  - text: 示例
+  - textbox "示例"
+  - text: 收藏
+  - combobox "收藏":
+    - option "不收藏" [selected]
+    - option "收藏"
+  - heading "已选择 Wiki 背景" [level=3]
+  - text: Structured Outputs 结构化输出
+  - heading "识别到的变量" [level=3]
+  - paragraph: 没有变量
+  - heading "实际采用的 Wiki 背景 · 16/12000 字符" [level=3]
+  - paragraph: Structured Outputs 结构化输出：采用 16/1364 字符（已截取）
+  - button "重新编辑Brief"
+  - button "重新生成"
+  - button "复制正文"
+  - button "保存为新 Prompt"

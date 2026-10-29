@@ -1,0 +1,52 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / Prompt 工作台
+  - generic: 本地工作区
+  - navigation "Prompt 工作台功能":
+    - button "Library"
+    - button "Generator"
+    - button "Optimizer"
+  - paragraph: Prompt Generator · 预览草稿
+  - heading "从任务生成 Prompt" [level=2]
+  - button "返回 Library"
+  - alert: 此隔离实例已明确禁用Provider；手工知识和Prompt仍可使用。
+  - text: 你想让 AI 帮你完成什么工作？
+  - textbox "你想让 AI 帮你完成什么工作？":
+    - /placeholder: 例如：第一次访谈经销商，了解订货流程并判断可能适合 AI 的环节
+    - text: 整理隔离测试主题的待确认问题
+  - text: 场景模板
+  - combobox "场景模板":
+    - option "行业学习"
+    - option "业务流程分析"
+    - option "客户访谈" [selected]
+    - option "需求分析"
+    - option "AI方案设计"
+    - option "会议资料整理"
+    - option "自定义任务"
+  - button "生成 Brief"
+  - button "手动填写 Brief"

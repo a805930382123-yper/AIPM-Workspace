@@ -1,0 +1,103 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / 首页
+  - generic: 本地工作区
+  - paragraph: 个人知识工作台
+  - heading "早上好，开始积累业务知识" [level=1]
+  - paragraph: 把原始资料交给 AI 整理成知识草稿，再由你审核确认。
+  - button "＋ 手动创建 Wiki":
+    - generic: ＋
+    - text: 手动创建 Wiki
+  - button "＋ 导入并整理 Raw":
+    - generic: ＋
+    - text: 导入并整理 Raw
+  - region "知识库统计":
+    - button "Raw 原始资料 2 持续积累的来源材料":
+      - generic: Raw 原始资料
+      - strong: "2"
+      - generic: 持续积累的来源材料
+    - button "Wiki 知识 0 经过确认的知识页面":
+      - generic: Wiki 知识
+      - strong: "0"
+      - generic: 经过确认的知识页面
+    - button "本周新增 2 Raw 与 Wiki 新建 · 周一开始" [disabled]:
+      - generic: 本周新增
+      - strong: "2"
+      - generic: Raw 与 Wiki 新建 · 周一开始
+    - button "待审核 0 AI 知识草稿等待你审核":
+      - generic: 待审核
+      - strong: "0"
+      - generic: AI 知识草稿等待你审核
+    - button "Open Audit 0 尚未处理的知识纠错" [disabled]:
+      - generic: Open Audit
+      - strong: "0"
+      - generic: 尚未处理的知识纠错
+    - button "Prompt 0 Library 中的有效模板":
+      - generic: Prompt
+      - strong: "0"
+      - generic: Library 中的有效模板
+  - heading "最近导入" [level=2]
+  - paragraph: 你保存的原始材料
+  - button "查看全部 ›"
+  - button "文 Markdown上传验收 网页文章 · 虚构本机验收 2026年10月29日 19:30":
+    - generic: 文
+    - generic: Markdown上传验收
+    - generic: 网页文章 · 虚构本机验收
+    - time: 2026年10月29日 19:30
+  - button "文 无模型粘贴验收 网页文章 · 虚构本机验收 2026年10月29日 19:29":
+    - generic: 文
+    - generic: 无模型粘贴验收
+    - generic: 网页文章 · 虚构本机验收
+    - time: 2026年10月29日 19:29
+  - heading "最近知识变更" [level=2]
+  - paragraph: 从正式知识操作日志读取
+  - button "查看知识库 ›"
+  - generic: 暂无知识变更记录
+  - generic: 创建或修订 Wiki 后，最近操作会显示在这里。
+  - heading "工作流程" [level=2]
+  - paragraph: 从原始材料到业务 Wiki
+  - generic: "1"
+  - generic: 保存 Raw 来源
+  - generic: 原文完整保留，可随时查阅
+  - generic: 可用
+  - generic: "2"
+  - generic: AI 生成或更新知识草稿
+  - generic: 明确选择后发送给已配置的 Provider
+  - generic: "3"
+  - generic: 审核并确认写入
+  - generic: 检查来源、建议与冲突后再保存 Wiki
+  - generic: 可用
+  - generic: 保存 Raw 不会自动发送资料。仅在你选择生成草稿时，所选正文才会发送给配置的 Provider。
+  - heading "快捷入口" [level=2]
+  - paragraph: 直接打开对应操作
+  - button "从 Raw 生成 Wiki 草稿"
+  - button "仅保存 Raw"
+  - button "手动创建 Wiki"
+  - button "生成 Prompt"
+  - button "新建 Prompt"
+  - button "检查知识库"

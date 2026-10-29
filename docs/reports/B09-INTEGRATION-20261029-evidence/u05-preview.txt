@@ -1,0 +1,103 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / AI 知识整理预览
+  - generic: 本地工作区
+  - paragraph: 旧 Wiki 更新预览
+  - heading "审阅更新建议" [level=1]
+  - paragraph: 草稿 bf23201b-74cd-49ac-a5f9-c43592fe2110 · v1 · openai-compatible/gpt-6.1-terra · pending_confirmation
+  - button "返回"
+  - button "保存草稿"
+  - button "放弃"
+  - button "确认写入"
+  - region "完整知识预览审查":
+    - heading "本页主题与完整归属审查" [level=2]
+    - paragraph: 这是新的单页候选，输入草稿的确认不能替代本页审查。
+    - paragraph: 本页尚未完成审查 · 未解决 0 项
+    - strong: 不可变来源事实
+    - paragraph: Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema
+    - generic: 审查身份：fu-0-126-ambiguous · 原记录 f-c1-1
+    - paragraph: Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [0, 120)：“Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ”
+    - paragraph: Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [120, 126)：“Schema”
+    - text: 归属
+    - combobox "归属 fu-0-126-ambiguous":
+      - option "未解决"
+      - option "本页" [selected]
+    - strong: 待确认问题
+    - paragraph: Structured Outputs 功能的适用口径和边界是什么？
+    - generic: 审查身份：proposal-bf23201b-74cd-49ac-a5f9-c43592fe2110-openQuestions-1
+    - paragraph: 此条无原文定位，按整理或问题审查
+    - text: 归属
+    - combobox "归属 proposal-bf23201b-74cd-49ac-a5f9-c43592fe2110-openQuestions-1":
+      - option "未解决"
+      - option "本页" [selected]
+    - strong: 待确认问题
+    - paragraph: Structured Outputs 对本地业务的成本有何影响？
+    - generic: 审查身份：proposal-bf23201b-74cd-49ac-a5f9-c43592fe2110-openQuestions-2
+    - paragraph: 此条无原文定位，按整理或问题审查
+    - text: 归属
+    - combobox "归属 proposal-bf23201b-74cd-49ac-a5f9-c43592fe2110-openQuestions-2":
+      - option "未解决"
+      - option "本页" [selected]
+    - strong: 模型整理（有原文定位，须人工核对）
+    - paragraph: Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。
+    - generic: 审查身份：proposal-bf23201b-74cd-49ac-a5f9-c43592fe2110-agreement-1
+    - paragraph: Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [0, 120)：“Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ”
+    - text: 归属
+    - combobox "归属 proposal-bf23201b-74cd-49ac-a5f9-c43592fe2110-agreement-1":
+      - option "未解决"
+      - option "本页" [selected]
+    - button "确认本页主题与完整归属"
+    - button "撤销本页确认"
+  - text: 标题
+  - textbox "标题": Structured Outputs 功能及本地业务成本影响
+  - paragraph: 来源：OpenAI官方文档：Structured Outputs（c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）
+  - text: 新建 Source 来源等级 · OpenAI官方文档：Structured Outputs
+  - combobox "Source 来源等级 c394e1a3-8b0d-4cbd-b943-1c60afa15a3d":
+    - option "A 级" [selected]
+    - option "B 级"
+    - option "C 级"
+    - option "D 级"
+  - text: 现有内容
+  - textbox "现有内容": "## 主要来源 - OpenAI官方文档：Structured Outputs（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d） - Structured Outputs 本地业务影响待确认（Raw f021c715-6c0e-4b4a-8561-3b92ded31d39） ## 一致观点 ## 冲突 ## AI 推断 ## 待确认问题 - Structured Outputs 对本地业务的成本有何影响？ ## 综合整理 - OpenAI文档称，Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。（来源 Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d，原文 [0, 120)：“Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ”） - 该特性对本地业务的成本影响尚未确认。（来源 Raw f021c715-6c0e-4b4a-8561-3b92ded31d39，原文 [0, 18)：“该特性对本地业务的成本影响尚未确认。”）"
+  - text: 新来源正文
+  - textbox "新来源正文": Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema
+  - text: 本次来源整理（已审输入快照，只读）
+  - textbox "本次来源整理只读快照": "## 本次来源整理 以下为已审输入草稿的字段快照；整理及人工说明不等于原始来源事实，不自动覆盖原栏目。 Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d · 输入页 7da476c3-7f38-46fd-bb4d-dbd47bd231b3 · 类型 concept ### 一句话解释 #### 人工说明 人工说明：此处仅解释官方功能，不推断本地业务成本。 #### AI整理 Structured Outputs 是确保模型生成的响应始终遵循所提供 JSON Schema 的功能。 - 支持事实 f-c1-1：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema - 证据 c1-l001 · Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [0, 120) Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON - 证据 c1-l002 · Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [120, 126) Schema ### 定义 #### AI整理 Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。 - 支持事实 f-c1-1：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema - 证据 c1-l001 · Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [0, 120) Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON - 证据 c1-l002 · Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [120, 126) Schema"
+  - generic: 修改原字段请返回输入草稿编辑、重新审查并生成更新；输入已审不能替代本预览审查。
+  - text: 一致观点
+  - textbox "一致观点": Structured Outputs 确保模型生成的响应遵循用户提供的 JSON Schema。
+  - text: 建议增加
+  - textbox "建议增加"
+  - text: 冲突（保留双方）
+  - textbox "冲突（保留双方）"
+  - text: AI 推断
+  - textbox "AI 推断"
+  - text: 待确认问题
+  - textbox "待确认问题": Structured Outputs 功能的适用口径和边界是什么？ Structured Outputs 对本地业务的成本有何影响？
+  - heading "原文证据定位" [level=3]
+  - paragraph: agreement · Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d [0, 120)：“Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON ”

@@ -1,0 +1,149 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / 知识库
+  - generic: 本地工作区
+  - paragraph: 个人业务知识 · Markdown
+  - heading "知识库" [level=1]
+  - paragraph: 按类型整理知识，保留来源、关联和可独立读取的 Markdown 文件。
+  - button "从 Raw 生成 Wiki 草稿"
+  - button "检查知识库"
+  - button "＋ 手动创建 Wiki":
+    - generic: ＋
+    - text: 手动创建 Wiki
+  - heading "学习地图" [level=2]
+  - text: 按业务主题浏览
+  - generic: 2 页
+  - button "全部 2":
+    - text: 全部
+    - generic: "2"
+  - button "行业基础 0":
+    - text: 行业基础
+    - generic: "0"
+  - button "品类 0":
+    - text: 品类
+    - generic: "0"
+  - button "渠道 0":
+    - text: 渠道
+    - generic: "0"
+  - button "销售 0":
+    - text: 销售
+    - generic: "0"
+  - button "门店 0":
+    - text: 门店
+    - generic: "0"
+  - button "经销商 0":
+    - text: 经销商
+    - generic: "0"
+  - button "供应链 0":
+    - text: 供应链
+    - generic: "0"
+  - button "商品 0":
+    - text: 商品
+    - generic: "0"
+  - button "数据指标 0":
+    - text: 数据指标
+    - generic: "0"
+  - button "AI应用 1":
+    - text: AI应用
+    - generic: "1"
+  - button "公司业务 0":
+    - text: 公司业务
+    - generic: "0"
+  - button "客户 0":
+    - text: 客户
+    - generic: "0"
+  - button "其他 1":
+    - text: 其他
+    - generic: "1"
+  - generic: ⌕
+  - textbox "搜索 Wiki":
+    - /placeholder: 搜索标题、别名、标签、正文或分类
+    - text: 结构化输出
+  - button "清空搜索": ×
+  - generic: 2 页
+  - button "来 OpenAI官方文档：Structured Outputs 来源摘要 · 其他 有来源支持":
+    - generic: 来
+    - generic: OpenAI官方文档：Structured Outputs
+    - generic: 来源摘要 · 其他
+    - generic: 有来源支持
+  - button "概 Structured Outputs 结构化输出 概念 · AI应用 有来源支持" [active]:
+    - generic: 概
+    - generic: Structured Outputs 结构化输出
+    - generic: 概念 · AI应用
+    - generic: 有来源支持
+  - article:
+    - generic: 概念
+    - generic: AI应用
+    - generic: 有来源支持
+    - link "导出 Markdown":
+      - /url: /api/wiki/869df8fc-8634-4a60-8ba4-c041aefd6562/export
+    - button "编辑"
+    - button "删除"
+    - heading "Structured Outputs 结构化输出" [level=2]
+    - generic: 第 1 版 · 更新于 2026年10月29日 19:04
+    - generic: 知识状态
+    - generic: 有来源支持
+    - generic: 人工审核
+    - generic: 未审核
+    - generic: 可信度
+    - generic: medium
+    - generic: 来源等级
+    - generic: A
+    - generic: R22验收
+    - generic: 公开原文摘录
+    - heading "来源 Raw · 1" [level=3]
+    - button "原 OpenAI官方文档：Structured Outputs 网页文章 · OpenAI官方开发文档 · OpenAI 发布于 日期未提供 · 导入于 2026年10月29日 16:53 · https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat 打开 Raw ›":
+      - generic: 原
+      - generic: OpenAI官方文档：Structured Outputs
+      - generic: 网页文章 · OpenAI官方开发文档 · OpenAI
+      - generic: 发布于 日期未提供 · 导入于 2026年10月29日 16:53 · https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat
+      - strong: 打开 Raw ›
+    - heading "知识内容" [level=3]
+    - generic: 选中段落后可提交纠错
+    - generic: "## 原草稿一句话说明（未归位） Structured Outputs 结构化输出 > 字段中的AI草稿、AI归位来源与用户归位、人工说明分别标记，均需核对；无来源支持的内容保持空或待确认。 ## 一句话解释 - AI草稿经人工修改（待核对）：Structured Outputs 是让模型响应遵循给定 JSON Schema 的功能。（原事实 f-c1-1） - 来源摘录（AI归位，待核对）：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON （证据 c1-l001） - 来源摘录（AI归位，待核对）：Schema（证据 c1-l002） ## 定义 - AI整理（待核对）：Structured Outputs 是一项功能，用于确保模型始终生成符合用户所提供 JSON Schema 的响应。（原事实 f-c1-1） - 来源摘录（AI归位，待核对）：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON （证据 c1-l001） - 来源摘录（AI归位，待核对）：Schema（证据 c1-l002） ## 为什么重要 待确认。 ## 在业务中的位置 待确认。 ## 关键特征 待确认。 ## 常见分类 待确认。 ## 与其他概念关系 待确认。 ## 常见业务场景 待确认。 ## 来源事实 - Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema（证据 c1-l001、c1-l002） ## AI 整理 - 暂无 ## AI 推断 - 暂无 ## 待确认问题 - 原文口径或边界待确认：Structured Outputs is a feature that ensures the model will always generate responses that adhere to your supplied JSON Schema ## 来源证据 - c1-l001｜原文 [0, 120)：Structured Outputs is a feature that ensures the model will always generate responses that… - c1-l002｜原文 [120, 126)：Schema ## 关联 - 暂无 ## 来源 - [[OpenAI官方文档：Structured Outputs]]（Raw c394e1a3-8b0d-4cbd-b943-1c60afa15a3d）"
+    - heading "Wiki 关联 · 1" [level=3]
+    - code: "[[OpenAI官方文档：Structured Outputs]]"
+    - button "OpenAI官方文档：Structured Outputs ›"
+    - heading "Audit 纠错 · 0 条待处理" [level=3]
+    - button "提交整页纠错"
+    - text: 严重度
+    - combobox "严重度":
+      - option "错误"
+      - option "警告"
+      - option "建议" [selected]
+      - option "补充"
+    - text: 反馈
+    - textbox "反馈":
+      - /placeholder: 说明哪处需要修正以及原因
+    - button "提交整页 Audit" [disabled]
+  - heading "待审核更新与综合 · 1" [level=2]
+  - paragraph: 包括旧 Wiki 更新与多来源综合草稿。
+  - button "综 Structured Outputs 功能及本地业务成本影响 多来源综合 · 待确认 · v1":
+    - generic: 综
+    - generic: Structured Outputs 功能及本地业务成本影响
+    - generic: 多来源综合 · 待确认 · v1

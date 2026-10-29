@@ -1,0 +1,99 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / 知识库
+  - generic: 本地工作区
+  - paragraph: 个人业务知识 · Markdown
+  - heading "知识库" [level=1]
+  - paragraph: 按类型整理知识，保留来源、关联和可独立读取的 Markdown 文件。
+  - button "从 Raw 生成 Wiki 草稿"
+  - button "检查知识库"
+  - button "＋ 手动创建 Wiki":
+    - generic: ＋
+    - text: 手动创建 Wiki
+  - status:
+    - generic: Lint 检查完成 · 0 个问题
+    - generic: 没有发现问题。
+    - button "关闭"
+  - heading "学习地图" [level=2]
+  - text: 按业务主题浏览
+  - generic: 0 页
+  - button "全部 0":
+    - text: 全部
+    - generic: "0"
+  - button "行业基础 0":
+    - text: 行业基础
+    - generic: "0"
+  - button "品类 0":
+    - text: 品类
+    - generic: "0"
+  - button "渠道 0":
+    - text: 渠道
+    - generic: "0"
+  - button "销售 0":
+    - text: 销售
+    - generic: "0"
+  - button "门店 0":
+    - text: 门店
+    - generic: "0"
+  - button "经销商 0":
+    - text: 经销商
+    - generic: "0"
+  - button "供应链 0":
+    - text: 供应链
+    - generic: "0"
+  - button "商品 0":
+    - text: 商品
+    - generic: "0"
+  - button "数据指标 0":
+    - text: 数据指标
+    - generic: "0"
+  - button "AI应用 0":
+    - text: AI应用
+    - generic: "0"
+  - button "公司业务 0":
+    - text: 公司业务
+    - generic: "0"
+  - button "客户 0":
+    - text: 客户
+    - generic: "0"
+  - button "其他 0":
+    - text: 其他
+    - generic: "0"
+  - generic: ⌕
+  - textbox "搜索 Wiki":
+    - /placeholder: 搜索标题、别名、标签、正文或分类
+  - generic: 0 页
+  - generic: ▤
+  - generic: 没有匹配的知识页
+  - generic: 换个关键词，或为当前主题创建一页。
+  - button "新建 Wiki"
+  - generic: ▤
+  - generic: 从学习地图开始整理知识
+  - generic: 创建六类 Wiki 页面，并关联保存过的 Raw 来源。
+  - button "从 Raw 生成 Wiki 草稿"
+  - button "手动创建 Wiki"

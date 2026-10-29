@@ -1,0 +1,18 @@
+{
+  "url": "https://api.openai.com/v1/chat/completions",
+  "method": "POST",
+  "body": {
+    "model": "gpt-6.1-terra",
+    "stream": false,
+    "messages": [
+      {
+        "role": "system",
+        "content": "将用户任务整理为结构化 Prompt Brief。只输出严格 JSON，字段契约与合法示例如下：{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"taskName\",\"taskType\",\"role\",\"goal\",\"context\",\"input\",\"tasks\",\"constraints\",\"output\"],\"maxTotalCharacters\":30000,\"properties\":{\"taskName\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"taskType\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"role\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"goal\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"context\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"input\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"tasks\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"constraints\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"},\"output\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":10000,\"pattern\":\"\\\\S\"}},\"unknownInformation\":\"明确写待用户补充；禁止推测或虚构。\",\"example\":{\"taskName\":\"经销商访谈准备\",\"taskType\":\"客户访谈\",\"role\":\"快消产品经理\",\"goal\":\"梳理订货与补货流程\",\"context\":\"企业、区域和现有流程未知，待用户补充\",\"input\":\"待用户提供访谈背景和已有资料\",\"tasks\":\"1. 列出访谈问题\\n2. 标记需要确认的信息\",\"constraints\":\"区分事实、整理和推断；不得编造\",\"output\":\"按主题分组的问题清单\"}}。未知业务信息写“待用户补充”，不得虚构。"
+      },
+      {
+        "role": "user",
+        "content": "{\"task\":\"为虚构快消企业的产品经理设计一次30分钟需求访谈，了解经销商订货流程；结合所选Wiki仅说明结构化输出概念，不推断ROI或成本收益。输出访谈目标、问题、记录表和待确认事项。\",\"template\":\"customer_interview\",\"templates\":[{\"id\":\"industry_learning\",\"label\":\"行业学习\"},{\"id\":\"business_process\",\"label\":\"业务流程分析\"},{\"id\":\"customer_interview\",\"label\":\"客户访谈\"},{\"id\":\"requirements\",\"label\":\"需求分析\"},{\"id\":\"ai_solution\",\"label\":\"AI方案设计\"},{\"id\":\"meeting_notes\",\"label\":\"会议资料整理\"},{\"id\":\"custom\",\"label\":\"自定义任务\"}]}"
+      }
+    ]
+  }
+}

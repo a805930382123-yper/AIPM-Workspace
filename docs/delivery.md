@@ -1,5 +1,7 @@
 # 项目交付说明
 
+当前记录（2026-10-29）：本轮模板更新UI与Prompt必要上下文修复提交 c6474fe98c63440d7b9cbdb7fe15e98eb8b6aba8；四链真实样本、同根重启与新空根恢复已独立通过，23文件逐SHA一致。R13带字段候选合并仍未满足，B09整体未通过。当前运行方式/Provider范围见[README](../README.md)，当前逐项裁决见[109项矩阵](reports/B09-RESUME-20261029-matrix.md)，实测/复用边界见[独立集成报告](reports/B09-INTEGRATION-AUDIT-20261029-stages.md)。以下2026-10-14及更早条目为历史时间点，不代表今天仍未运行真实Provider。
+
 当前记录（2026-10-14）：CFG01本机通用Provider配置入口PASS，同GPT-6 Luna Max施工、主Agent独立两轴验收。保存/保留/替换Key、明确测试/确认清除、env只读与请求快照隔离完成。HTTP27、edges9、R2三组、组件4、安全100、实际桌面/窄屏浏览器13全部通过；最终build及字节相同可写副本完整215/215。原workspace继承ACL导致rename EPERM未通过，未改ACL或断言，详见[报告/校准](reports/CFG01-20261014-acceptance.md)。正式数据/实际.env.local及1296历史文件未变，自有服务关闭。当前Windows/Node v24.20.0；未真实Provider/部署，36项仍BLOCKED。下面早期记录为历史。
 
 当前记录（2026-10-13）：S-03/S-04安全返修已由Luna施工、主Agent独立复验关闭，本批PASS。六条AI输出链统一检查已知长/短/多凭证、解析后JSON键/值及转义；错误脱敏和失败资产保护实测通过。build及204/204完整测试、有效HTTP98/98、Audit2组、多凭证服务113/113、知识回归11/11、两轴审查与历史/正式数据保护通过。[本批报告](reports/SEC-20261013-acceptance.md)、[当前109项矩阵](delivery-matrix.md)。M01–M05会议本机阶段PASS，备份现包含meetings；新会议来源仍local_only。全项目仍未签PASS，36项真实Provider成功/质量仍BLOCKED；未部署、未配置真实Provider、未新签浏览器。下文2026-10-10及B09描述均为历史交付范围。

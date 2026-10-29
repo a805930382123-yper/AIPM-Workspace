@@ -1,0 +1,69 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / Prompt 工作台
+  - generic: 本地工作区
+  - navigation "Prompt 工作台功能":
+    - button "Library"
+    - button "Generator"
+    - button "Optimizer"
+  - paragraph: Prompt Generator · 预览草稿
+  - heading "从任务生成 Prompt" [level=2]
+  - button "返回 Library"
+  - text: 任务名称
+  - textbox "任务名称": 经销商订货流程需求访谈设计
+  - text: 任务类型
+  - textbox "任务类型": 客户访谈
+  - text: 角色
+  - textbox "角色": 虚构快消企业的产品经理
+  - text: 目标
+  - textbox "目标": 设计一次30分钟需求访谈，了解经销商的订货流程。
+  - text: 业务背景
+  - textbox "业务背景": 访谈面向虚构快消企业的经销商；企业背景、经销商情况及现有订货流程待用户补充。
+  - text: 输入资料
+  - textbox "输入资料": 用户提供的任务要求；所选Wiki的具体内容及其他访谈背景资料待用户补充。
+  - text: 执行步骤
+  - textbox "执行步骤": 1. 明确访谈目标。 2. 设计适合30分钟访谈的问题。 3. 设计访谈记录表。 4. 列出待确认事项。 5. 结合所选Wiki，仅说明结构化输出概念。
+  - text: 约束条件
+  - textbox "约束条件": 总访谈时长为30分钟；不得推断ROI或成本收益；不得虚构未知业务信息或Wiki内容，缺失信息标注待确认；访谈结束前保留3分钟由受访者核对记录。
+  - text: 输出格式
+  - textbox "输出格式": 按访谈目标、访谈问题、记录表、待确认事项和结构化输出概念组织输出。
+  - heading "相关 Wiki · 默认不选择 · 可选最多 6 页" [level=3]
+  - checkbox "Structured Outputs 结构化输出 concept · source_supported" [checked] [active]
+  - generic: Structured Outputs 结构化输出
+  - generic: concept · source_supported
+  - checkbox "Structured Outputs 功能及本地业务成本影响 synthesis · ai_organized"
+  - generic: Structured Outputs 功能及本地业务成本影响
+  - generic: synthesis · ai_organized
+  - checkbox "Structured Outputs 本地业务影响待确认 source · source_supported"
+  - generic: Structured Outputs 本地业务影响待确认
+  - generic: source · source_supported
+  - checkbox "OpenAI官方文档：Structured Outputs source · source_supported"
+  - generic: OpenAI官方文档：Structured Outputs
+  - generic: source · source_supported
+  - button "返回修改任务"
+  - button "生成 Prompt"

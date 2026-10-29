@@ -1,0 +1,121 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台" [active]:
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / Prompt 工作台
+  - generic: 本地工作区
+  - paragraph: 可复用工作方法 · 手动 Library
+  - heading "Prompt 工作台" [level=1]
+  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。
+  - button "AI 生成 Prompt"
+  - button "优化 Prompt"
+  - button "＋ 新建 Prompt":
+    - generic: ＋
+    - text: 新建 Prompt
+  - navigation "Prompt 工作台功能":
+    - generic: Library
+    - button "Generator"
+    - button "Optimizer"
+  - heading "分类" [level=2]
+  - text: 六个默认分类，点击筛选
+  - generic: 1 条
+  - button "全部 1":
+    - text: 全部
+    - generic: "1"
+  - button "行业学习 1":
+    - text: 行业学习
+    - generic: "1"
+  - button "业务分析 0":
+    - text: 业务分析
+    - generic: "0"
+  - button "客户 0":
+    - text: 客户
+    - generic: "0"
+  - button "产品 0":
+    - text: 产品
+    - generic: "0"
+  - button "AI 0":
+    - text: AI
+    - generic: "0"
+  - button "日常办公 0":
+    - text: 日常办公
+    - generic: "0"
+  - generic: ⌕
+  - textbox "搜索 Prompt":
+    - /placeholder: 搜索名称、标签或正文
+  - text: 标签
+  - textbox "标签":
+    - /placeholder: 按标签筛选
+  - checkbox "只看收藏"
+  - text: 只看收藏
+  - generic: 1 条
+  - button "✳ 无模型手工验收Prompt 行业学习 · 第 2 版 手动创建":
+    - generic: ✳
+    - generic: 无模型手工验收Prompt
+    - generic: 行业学习 · 第 2 版
+    - generic: 手动创建
+  - article:
+    - generic: 行业学习
+    - generic: 手动创建
+    - link "导出 Markdown":
+      - /url: /api/prompts/2ebaefaa-bb62-477e-89b0-37e0bb65fda5/export
+    - button "收藏"
+    - button "编辑"
+    - button "删除"
+    - heading "无模型手工验收Prompt" [level=2]
+    - generic: 分类
+    - generic: 行业学习
+    - generic: 版本
+    - generic: 第 2 版
+    - generic: 创建时间
+    - generic: 2026年10月29日 19:10
+    - generic: 最近修改
+    - generic: 2026年10月29日 19:10
+    - heading "相关 Wiki · 1" [level=3]
+    - code: 无模型手工验收知识
+    - button "打开 Wiki ›"
+    - heading "正文模板" [level=3]
+    - generic: 原样保存 · 不会因为填写变量而改变
+    - generic: "请将{{主题}}整理为三条待确认问题，并注明所需证据；不补造事实。"
+    - heading "填写变量并复制" [level=3]
+    - generic: 1 个变量
+    - generic: 主题
+    - textbox "主题 未填写":
+      - /placeholder: 填写 主题
+    - emphasis: 未填写
+    - status: 还缺少：主题（只填空格也算未填写）。
+    - button "生成最终正文"
+    - button "复制最终正文" [disabled]
+    - heading "版本历史 · 2" [level=3]
+    - generic: 每次有效保存都会追加完整快照
+    - button "第 2 版 2026年10月29日 19:10 人工保存 · 33 字符":
+      - generic: 第 2 版
+      - generic: 2026年10月29日 19:10
+      - generic: 人工保存 · 33 字符
+    - button "第 1 版 2026年10月29日 19:10 人工保存 · 25 字符":
+      - generic: 第 1 版
+      - generic: 2026年10月29日 19:10
+      - generic: 人工保存 · 25 字符

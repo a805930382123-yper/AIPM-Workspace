@@ -1,0 +1,131 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台" [active]:
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / Prompt 工作台
+  - generic: 本地工作区
+  - paragraph: 可复用工作方法 · 手动 Library
+  - heading "Prompt 工作台" [level=1]
+  - paragraph: 把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。
+  - button "AI 生成 Prompt"
+  - button "优化 Prompt"
+  - button "＋ 新建 Prompt":
+    - generic: ＋
+    - text: 新建 Prompt
+  - navigation "Prompt 工作台功能":
+    - generic: Library
+    - button "Generator"
+    - button "Optimizer"
+  - heading "分类" [level=2]
+  - text: 六个默认分类，点击筛选
+  - generic: 1 条
+  - button "全部 1":
+    - text: 全部
+    - generic: "1"
+  - button "行业学习 0":
+    - text: 行业学习
+    - generic: "0"
+  - button "业务分析 0":
+    - text: 业务分析
+    - generic: "0"
+  - button "客户 1":
+    - text: 客户
+    - generic: "1"
+  - button "产品 0":
+    - text: 产品
+    - generic: "0"
+  - button "AI 0":
+    - text: AI
+    - generic: "0"
+  - button "日常办公 0":
+    - text: 日常办公
+    - generic: "0"
+  - generic: ⌕
+  - textbox "搜索 Prompt":
+    - /placeholder: 搜索名称、标签或正文
+  - text: 标签
+  - textbox "标签":
+    - /placeholder: 按标签筛选
+  - checkbox "只看收藏"
+  - text: 只看收藏
+  - generic: 1 条
+  - button "✳ 经销商访谈·B09已审模板 客户 · 第 2 版 标签：经销商访谈、需求调研、订货流程、访谈记录":
+    - generic: ✳
+    - generic: 经销商访谈·B09已审模板
+    - generic: 客户 · 第 2 版
+    - generic: 标签：经销商访谈、需求调研、订货流程、访谈记录
+  - article:
+    - generic: 客户
+    - generic: AI 生成
+    - link "导出 Markdown":
+      - /url: /api/prompts/ce473ac4-3902-4eeb-a6c2-13a4c7fbb000/export
+    - button "收藏"
+    - button "编辑"
+    - button "删除"
+    - heading "经销商访谈·B09已审模板" [level=2]
+    - generic: 分类
+    - generic: 客户
+    - generic: 版本
+    - generic: 第 2 版
+    - generic: 创建时间
+    - generic: 2026年10月29日 19:33
+    - generic: 最近修改
+    - generic: 2026年10月29日 19:41
+    - generic: 经销商访谈
+    - generic: 需求调研
+    - generic: 订货流程
+    - generic: 访谈记录
+    - heading "场景" [level=3]
+    - paragraph: 虚构快消企业的产品经理设计一场面向经销商的30分钟需求访谈，了解真实订货流程及需求。
+    - heading "输入要求" [level=3]
+    - paragraph: "提供访谈对象：{{访谈对象}}；如有企业背景、经销商情况或其他访谈背景资料，可一并提供。未提供的信息标注为“待确认”。"
+    - heading "输出要求" [level=3]
+    - paragraph: 使用中文，按访谈目标、访谈问题、记录表、待确认事项、结构化输出概念的顺序输出。访谈总时长严格为30分钟，最后3分钟用于受访者核对记录。记录表中的空白使用“待填写”；不虚构事实或回答，不推断或计算 ROI、成本收益。
+    - heading "相关 Wiki · 1" [level=3]
+    - code: Structured Outputs 结构化输出
+    - button "打开 Wiki ›"
+    - heading "正文模板" [level=3]
+    - generic: 原样保存 · 不会因为填写变量而改变
+    - generic: "## 角色与目标 你是一名虚构快消企业的产品经理。请根据用户提供的任务要求和访谈背景资料，设计一场面向经销商的30分钟需求访谈，了解其实际订货流程、相关人员、使用工具、信息流转、异常处理、痛点及需求。访谈方案应便于执行和记录，不预设经销商已有特定流程或系统。 ## 输入与事实边界 访谈对象：{{访谈对象}}。 企业背景、经销商情况及现有订货流程尚待补充。使用用户提供的信息；缺失或受访者尚未提供的信息标注为“待确认”，不要编造。未知环节通过提问了解，不将问题或假设写成已证实的业务事实。 可使用的已选知识摘录：Structured Outputs 是使模型响应遵循用户提供的 JSON Schema 的功能。该摘录的原文口径或边界仍待核对。除此之外，不补充未经提供的 Wiki 内容。 即使背景资料不完整，也基于现有信息完成访谈设计，并列出待确认事项。 ## 访谈设计要求 1. 明确访谈目标，将目标转化为开放、中立的问题，邀请受访者结合真实经历描述；避免诱导、预设答案或特定业务流程。 2. 覆盖订货触发、流程步骤、参与人员、使用工具、信息流转、异常处理、痛点和需求。主问题聚焦关键主题，追问按回答情况选用，确保可在规定时间内执行。 3. 按阶段分配时间，总计严格为30分钟，最后3分钟专用于受访者核对记录。可采用：开场与背景3分钟、订货流程8分钟、信息与异常7分钟、痛点与需求6分钟、总结补充3分钟、受访者核对记录3分钟。明确展示各阶段时长和总时长；最后3分钟请受访者核对记录、指出遗漏或错误，并记录其更正。 4. 设计可直接填写的 Markdown 访谈记录表，至少包含访谈环节、问题或主题、受访者回答或原话、整理备注、待确认事项。尚未填写的记录使用“待填写”，不生成虚构回答。 5. 区分访谈前或访谈后需要补充的背景资料，与需要受访者在访谈中或访谈后核实的内容；可注明建议确认时机。 6. 不推断或计算 ROI、成本收益，不编造缺项。 ## 输出格式 按以下顺序输出： 1. 访谈目标：列出本次访谈需要了解的内容。 2. 访谈问题：按时间顺序列出各阶段、时长、主问题和必要的可选追问；说明最后3分钟如何请受访者核对记录，并展示总时长为30分钟。 3. 记录表：提供可直接填写的 Markdown 表格，不预填业务事实。 4. 待确认事项：区分缺失的背景资料与需要受访者核实的内容。 5. 结构化输出概念：简要说明 Structured Outputs 是使模型响应遵循用户提供的 JSON Schema 的功能，并注明该摘录的原文口径或边界待核对；仅说明概念，不延伸未经提供的特性、业务价值或实现细节。"
+    - heading "填写变量并复制" [level=3]
+    - generic: 1 个变量
+    - generic: 访谈对象
+    - textbox "访谈对象 未填写":
+      - /placeholder: 填写 访谈对象
+    - emphasis: 未填写
+    - status: 还缺少：访谈对象（只填空格也算未填写）。
+    - button "生成最终正文"
+    - button "复制最终正文" [disabled]
+    - heading "版本历史 · 2" [level=3]
+    - generic: 每次有效保存都会追加完整快照
+    - button "第 2 版 2026年10月29日 19:41 AI 优化保存 · 1116 字符":
+      - generic: 第 2 版
+      - generic: 2026年10月29日 19:41
+      - generic: AI 优化保存 · 1116 字符
+    - button "第 1 版 2026年10月29日 19:33 AI 生成 · 1020 字符":
+      - generic: 第 1 版
+      - generic: 2026年10月29日 19:33
+      - generic: AI 生成 · 1020 字符

@@ -2,13 +2,15 @@
 
 项目仓库：[GitHub · AIPM-Workspace](https://github.com/a805930382123-yper/AIPM-Workspace)。每次任务修改完成后提交并同步；本机已启用提交后自动推送，其他电脑按 [GitHub 同步说明](docs/github-sync.md) 配置。
 
-B01 提供本机工作台骨架、Raw 原始资料粘贴导入与首页统计；B02 增加手动 Wiki、规则模板、来源回跳、关联与 Markdown 搜索/导出；B03 增加 Markdown/TXT/DOCX/PDF 导入和原件保留；B04–06 增加知识草稿、更新/综合、Audit 与 Lint；B07 提供手动 Prompt Library；B08 增加 Generator 与 Optimizer 工作流；B09 增加首页快捷闭环、显式教学数据和离线备份恢复。真实Provider已配置；2026-10-14 FULL3审查整体FAIL，连接和单例Audit成功，但Brief格式契约失败、提取/综合/生成/优化超时。109项78PASS/3FAIL/28BLOCKED，详见[当前验收](docs/reports/FULL3-20261014-acceptance.md)。本机配置/会议/安全阶段PASS保留。
+B01 提供本机工作台骨架、Raw 原始资料粘贴导入与首页统计；B02 增加手动 Wiki、规则模板、来源回跳、关联与 Markdown 搜索/导出；B03 增加 Markdown/TXT/DOCX/PDF 导入和原件保留；B04–06 增加知识草稿、更新/综合、Audit 与 Lint；B07 提供手动 Prompt Library；B08 增加 Generator 与 Optimizer 工作流；B09 增加首页快捷闭环、显式教学数据和离线备份恢复。
+
+截至2026-10-29，本轮模板更新界面与Prompt必要Wiki上下文缺陷已修复，完整App的知识审核/更新、Audit、Prompt生成、Prompt优化四条流程及重启/备份恢复已完成独立验收。带模板字段的候选仍不支持合并，R13未满足，**B09整体尚未通过**。逐项证据见[当前矩阵](docs/reports/B09-RESUME-20261029-matrix.md)和[工程状态](docs/status.md)；旧模型质量失败与第17次Prompt上下文失败保留，不用新正例删除历史。
 
 Meeting Hub M01–M05本机建设已完成并通过独立阶段验收。「会议档案」支持会议管理、目录/标签、搜索筛选、HTTPS来源、独立策略、UTF-8 `.md`/粘贴纪要、不可改写原件/工作副本/历史，以及Public/Internal明确授权的本机Raw登记。默认Sensitive云索引，Restricted只登记最少信息；Internal/Sensitive本地归档还需单独授权。原件最大2MiB/500000字符，工作副本500000字符，会议JSON32MiB。新Meeting来源始终禁止AI/Wiki/Prompt背景使用，解除或删除档案不解除Raw限制；普通无新origin的旧meeting资料兼容。M05补齐无需reload的Raw/首页同步和真实ID阅读；缺失目标、重连、迟到请求及后台任务刷新保持当前选择。跨文件部分成功按真实Raw计数，可同请求恢复。见[M05报告](docs/reports/M05-20261012-acceptance.md)、[48项映射](docs/reports/M05-20261012-spec-matrix.md)、[接口](docs/meeting-hub/M05-interface.md)、[使用说明](docs/meeting-hub/M05-usage.md)。会议AI仍禁用，原S-03/S-04及真实Provider阻塞以[工程状态](docs/status.md)为准；历史FAIL证据保留，本机阶段PASS不等于全产品PASS。
 
 ## 运行
 
-需要 Node.js 22.13 或更高版本（**下限由锁定的 `pdfjs-dist 6.4.299` 的 `engines.node`（`>=22.13.0 || >=24`）决定**，其余依赖要求更低；`package.json` 的 `engines` 与此一致）。本批实际验证环境为 **Node v25.2.1 / Windows**；Node 22.13–24 未在本机实测，不声称已通过。仅开发测试用的 `jsdom` 声明 22.13.x 或 ≥24（Node 23.x 会打印一条 engines 警告，不影响运行）。在项目目录运行：
+需要 Node.js 22.13 或更高版本（**下限由锁定的 `pdfjs-dist 6.4.299` 的 `engines.node`（`>=22.13.0 || >=24`）决定**，其余依赖要求更低；`package.json` 的 `engines` 与此一致）。历史完整文件解析与早期B09验收环境为 **Node v25.2.1 / Windows**；2026-10-29使用 **Node v24.18.0 / Windows** 验证本轮工程与报告所列样本。最低支持版本未在本机实测，不声称所有Node版本均已通过。仅开发测试用的 `jsdom` 声明 22.13.x 或 ≥24（Node 23.x 会打印一条 engines 警告，不影响运行）。在项目目录运行：
 
 ```powershell
 npm install
@@ -26,6 +28,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_with_proxy.ps1
 ```
 
 官方 `api.openai.com` 的 `gpt-6.1-terra` 请求使用模型默认 temperature 和默认推理设置；其他模型和兼容端点保留原请求参数。真实连接仍需显式点击设置页的「测试连接」，或运行另行授权的连接探针。
+
+该精确端点与模型的知识提取/规划路径使用严格 JSON Schema 输出；这不代表 Audit、Prompt 或其他供应商全部使用相同模式，也不保证草稿语义正确。AI内容先进入草稿，须逐页人工审查；编辑会使原审批失效。带模板字段的更新预览保留人工说明、AI整理和引用，确认后以“本次来源整理”附录写入已有Wiki，保留原正文。Prompt生成已修复仅取独立标题而遗漏正文的问题，选定Wiki按相关性取段并保留标题与正文，单页3000/总计12000字符、最多6页限制保持。2026-10-29本轮工程验证使用 Node v24.18.0 / Windows；实际界面验收使用用户TEMP中的独立目录，默认用户数据仍在 `workspace/`。四链23文件重启/恢复逐SHA一致；无Provider手工Wiki与Prompt创建、编辑及恢复也已验证。
 
 PowerShell 可通过环境变量修改数据目录或 API 端口：
 
@@ -73,7 +77,7 @@ node --import tsx scripts/wiki_lint.ts [data-root]
 
 `audit_review.ts` 参数正确时退出码 0（错误用法为 2）；`wiki_lint.ts` 有发现时退出码 1、无发现退出码 0。Lint 冻结 11 个 code：`BROKEN_WIKI_LINK`、`ORPHAN_WIKI`、`INDEX_MISSING`、`FRONTMATTER_MISSING`、`SOURCE_MISSING`、`KNOWLEDGE_STATUS_MISSING`、`CONFIDENCE_MISSING`、`SOURCE_LEVEL_MISSING`、`UNSOURCED_FACT`、`OPEN_AUDIT`、`DUPLICATE_TITLE`。缺失/失效的 Raw 来源由 `SOURCE_MISSING` 表示；独立的 `UNSOURCED_FACT` 检查 `verified/source_supported` 页缺少有效 Raw，以及「来源事实」节内每条陈述是否有可从有效 Raw 定位的证据，支持 B04 的 `（证据 id）` + `来源证据` offsets 格式及 B05 的 Raw offset 格式。
 
-B06 施工结果、上游核验边界、完整接口/schema 与测试记录见 [docs/reports/B06-build.md](docs/reports/B06-build.md)，四项返修及复验记录见 [docs/reports/B06-repair-build.md](docs/reports/B06-repair-build.md)；真实 Provider 的配置与调用未实测，不计作真实 AI 验收。
+B06 施工结果、上游核验边界、完整接口/schema 与测试记录见 [docs/reports/B06-build.md](docs/reports/B06-build.md)，四项返修及复验记录见 [docs/reports/B06-repair-build.md](docs/reports/B06-repair-build.md)；这些B06历史报告当时未实测真实Provider。本轮真实Audit及独立裁决见[集成报告](docs/reports/B09-INTEGRATION-AUDIT-20261029-stages.md)。
 
 ## B07 Prompt Library
 
@@ -229,7 +233,7 @@ node --import tsx scripts/backup_workspace.ts restore --input D:\FMCG-Backups\wo
 
 ## Wiki
 
-Wiki 页面以 `knowledge/wiki/` 中的 Markdown 文件为事实源，规则与六类页面模板从 `rules/` 读取；Index 和变更 Log 是可重建的派生文件。页面支持 Source、Concept、Entity、Business Process、Metric、Synthesis 六种类型，13 个学习分类、标题/别名 Wikilink、中文五字段搜索、Raw 来源回跳、入链查看和 Markdown 下载。删除的 Wiki 移入 `knowledge/recycle/wiki/`。Wiki 可手动创建和编辑；配置产品 Provider 后，Raw 整理、更新预览、多来源综合和 Audit 可生成待审核建议，只有用户明确确认才写入 Wiki。Prompt 的手动 Library 见上文 B07 章节，Generator 与 Optimizer 见 B08；无 Provider 时 AI 请求明确失败，真实 Provider 成功与质量仍待验收。
+Wiki 页面以 `knowledge/wiki/` 中的 Markdown 文件为事实源，规则与六类页面模板从 `rules/` 读取；Index 和变更 Log 是可重建的派生文件。页面支持 Source、Concept、Entity、Business Process、Metric、Synthesis 六种类型，13 个学习分类、标题/别名 Wikilink、中文五字段搜索、Raw 来源回跳、入链查看和 Markdown 下载。删除的 Wiki 移入 `knowledge/recycle/wiki/`。Wiki 可手动创建和编辑；配置产品 Provider 后，Raw 整理、更新预览、多来源综合和 Audit 可生成待审核建议，只有用户明确确认才写入 Wiki。Prompt 的手动 Library 见上文 B07 章节，Generator 与 Optimizer 见 B08；无 Provider 时 AI 请求明确失败，本轮四链真实样本已独立验证，结论限于报告所列输入，不保证所有输入的模型质量。带字段候选合并/类型切换仍被明确拒绝，以避免丢失字段；R13合并要求尚未满足。
 
 ## 本批接口
 
