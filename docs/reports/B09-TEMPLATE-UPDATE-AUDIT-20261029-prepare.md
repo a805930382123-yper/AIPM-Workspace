@@ -28,3 +28,5 @@ Get-FileHash services/wiki/template-fields.ts,services/wiki/knowledge-workflows.
 7个SHA逐项与builder冻结一致，故复用其受影响旧update/HUMAN/R22 14/14及最终build exit0，不重跑R22全矩阵。首次13/13与后续14/14/6/6是不同运行，不合并冒称新总数。源码/报告读取命令Get-Content、rg、git diff均只读。
 
 本审查无真实模型API/实际配置读取，知识261/500、Prompt15/24不变。U05仍占原集成update1请求，不新增提取或额度。下一步等待CUA可用后当前完整App操作；无工程返修建议，不以环境阻塞重开产品修复。
+
+主线程提交关联：受测产品及测试已提交为 59b94ca（fix: preserve reviewed template fields in wiki updates），没有后续产品改动。

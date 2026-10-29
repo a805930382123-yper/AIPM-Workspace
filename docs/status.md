@@ -1,5 +1,14 @@
 # 工程状态
 
+## 最新结论：模板草稿更新工程通过，真实工作台验收待恢复（2026-10-29）
+
+用户继续授权补齐B09遗留。按[任务卡](handoffs/B09-TEMPLATE-UPDATE-20261029-task.md)评分0/2/2/1=5，B模式，Sol High施工、Astra独立验收。已审模板草稿现可更新旧Wiki，保留人工编辑、AI整理标签和原引用，原正文保持，输入修改使旧审批失效。
+
+U01–U04工程PASS，代码提交59b94ca。独立6/6，7文件SHA一致，复用同版定向回归14/14与build exit0。见[施工](reports/B09-TEMPLATE-UPDATE-20261029-builder.md)、[独立验收](reports/B09-TEMPLATE-UPDATE-AUDIT-20261029-prepare.md)。
+
+U05与B09整体仍未通过：E盘已恢复，但CUA初始化及reset后重试均kernel退出，诊断为windows sandbox helper_unknown_error/setup refresh。普通shell经授权升级可执行，浏览器工具无此入口；不以HTTP代签UI。真实/config0，知识261/500、Prompt15/24不变。待工具恢复后按[集成卡](handoffs/B09-INTEGRATION-20261029-task.md)继续当前R22候选更新、Audit、Prompt两链、重启/备份及109项收口，不重抽已保存候选。外部AGENTS与AGENT-ROUTER报告排除。
+
+
 ## 最新结论：R22来源等级工程、界面及真实验证通过（2026-10-29）
 
 用户授权B09遗留验收修复持续推进。R22按0/2/2/0=4、确认完整性门禁采用B，Astra规划/独立验收、Sol High施工。AI来源初判进入planning与综合，未知默认D；用户显选等级保存确认，改级使审批失效；已有Source与旧资产保持。独立发现数组等级String强转缺陷后最小返修关闭。工程E01–04 PASS；主线程完整App隔离实际E05经独立核验PASS；新版公开官方短原文+未知来源E06真实259–261全部独立PASS。
