@@ -2,7 +2,7 @@
 // Facts, organized notes, inferences, questions and evidence keep their own sections so the
 // boundary between "原文支持" and "模型推断" survives into the正式文件.
 import type { DraftPage, DraftRawMeta, DraftSource } from './drafts.ts';
-import { hasTemplateFields, templateSections } from './template-fields.ts';
+import { hasTemplateFields, templateSections, renderMergedTemplateFields } from './template-fields.ts';
 
 const quoted = (value: string, limit = 90) => value.length > limit ? `${value.slice(0, limit)}…` : value;
 const orMissing = (value: string | undefined | null, label: string) => (value && String(value).trim()) ? String(value) : `未提供（${label}）`;
@@ -40,6 +40,7 @@ export function renderPageBody(page: DraftPage, context: { sourceTitle: string; 
       lines.push('');
     }
   }
+  for(const group of page.mergedTemplateFields??[])lines.push(renderMergedTemplateFields(group),'');
   lines.push('## 来源事实', '');
   for (const fact of page.source_facts) {
     lines.push(`- ${fact.text}（证据 ${fact.evidenceIds.join('、')}）`);
@@ -104,6 +105,7 @@ export function renderSourceBody(source: DraftSource, raw: DraftRawMeta, selecte
   const questions = selectedPages.flatMap(page => page.open_questions).slice(0, 12);
   if (questions.length) for (const item of questions) lines.push(`- ${item}`);
   else lines.push('- 暂无');
+  for(const page of selectedPages)for(const group of page.mergedTemplateFields??[])lines.push('',renderMergedTemplateFields(group),'');
   // F04-05: suggestions the user did not select are listed as plain text, never as Wikilinks.
   if (skippedPages.length) {
     lines.push('', '## 本次未创建的建议（未选中，待处理）', '');

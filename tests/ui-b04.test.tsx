@@ -540,7 +540,7 @@ for (const type of ['concept', 'business_process'] as const) test(`B09 template 
   const mounted = await mount(<DraftReviewPage draftId={draft.id} onBack={() => undefined} onCommitted={async () => undefined} onOpenRaw={() => undefined} onOpenWorkflow={id => { opened = id; }} />);
   try {
     await click(required(byText('刷新重复候选', mounted.container), '刷新候选按钮'));
-    assert.match(mounted.container.textContent ?? '', /旧 Wiki 更新会保留已审字段的来源整理快照/);
+    assert.match(mounted.container.textContent ?? '', /旧 Wiki 更新保留已审字段快照/);
     await click(required(byText('生成旧 Wiki 更新预览', mounted.container), '更新预览按钮'));
     assert.equal(updateRequests.length, 1, '服务拒绝后没有自动重试');
     assert.equal(opened, '');

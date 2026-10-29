@@ -1,5 +1,5 @@
 import {validHumanReview} from '../wiki/human-review.ts';
-import {validTemplateFields, validInputTemplateFields} from '../wiki/template-fields.ts';
+import {validTemplateFields, validInputTemplateFields,validMergedTemplateFields,mergedFieldsMatchReview} from '../wiki/template-fields.ts';
 const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const str=(v:unknown):v is string=>typeof v==='string';
 const strings=(v:unknown):v is string[]=>Array.isArray(v)&&v.every(str);
@@ -17,6 +17,7 @@ export function isExtractionDraft(v:unknown,id?:string):boolean {
  const s=v.source;if(!['title','category','summary','body','knowledge_status','confidence','source_level'].every(k=>str(s[k]))||!strings(s.key_takeaways)||(s.reuseWikiId!==undefined&&!isUuid(s.reuseWikiId))||(s.editedByUser!==undefined&&typeof s.editedByUser!=='boolean')||(s.bodyEditedByUser!==undefined&&typeof s.bodyEditedByUser!=='boolean'))return false;
  const ids=new Set<string>();for(const p of v.pages){
   if(obj(p)&&p.templateFields!==undefined&&(!str(p.type)||!validTemplateFields(p.templateFields,p.type)))return false;
+  if(obj(p)&&p.mergedTemplateFields!==undefined&&(!validMergedTemplateFields(p.mergedTemplateFields)||!str(p.pageId)||!validHumanReview(v.humanReview)||!mergedFieldsMatchReview(p.mergedTemplateFields,p.pageId,v.rawId as string,v.humanReview)))return false;
   if(!obj(p)||!isUuid(p.pageId)||ids.has(p.pageId)||!['title','type','category','one_line_definition','knowledge_status','confidence','source_level'].every(k=>str(p[k]))||!['ai_organized','ai_inferences','related_pages','open_questions'].every(k=>strings(p[k]))||typeof p.selected!=='boolean'||!Array.isArray(p.source_facts)||!p.source_facts.every(f=>obj(f)&&str(f.text)&&strings(f.evidenceIds))||!Array.isArray(p.source_evidence)||!p.source_evidence.every(e=>obj(e)&&str(e.id)&&e.rawId===v.rawId&&str(e.quote)&&nonnegative(e.start)&&nonnegative(e.end)&&Number(e.end)>=Number(e.start)&&(Number.isInteger(e.chunkIndex)&&Number(e.chunkIndex)>=-1))||!Array.isArray(p.provenance)||!p.provenance.every(e=>obj(e)&&nonnegative(e.chunkIndex)&&nonnegative(e.start)&&nonnegative(e.end)&&Number(e.end)>=Number(e.start))||(p.reviewDecision!==undefined&&!['update','create','defer'].includes(String(p.reviewDecision)))||(p.updateTargetWikiId!==undefined&&!isUuid(p.updateTargetWikiId)))return false;
   ids.add(p.pageId);
  }

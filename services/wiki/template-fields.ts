@@ -19,11 +19,13 @@ export type TemplateFieldKey = (typeof TEMPLATE_SECTIONS)[keyof typeof TEMPLATE_
 export type AiFieldContent = { text: string; factIds: string[]; evidenceIds: string[]; humanEdited?: true };
 export type TemplateFieldContent = { evidenceIds: string[]; humanText?: string; aiContent?: AiFieldContent };
 export type TemplateFields = Partial<Record<TemplateFieldKey, TemplateFieldContent>>;
-export type InputTemplateFields = {
+export type TemplateFieldSnapshot = {
   version: 1; pageId: string; pageType: string; rawId: string; fields: TemplateFields;
   facts: Array<{ id: string; text: string; evidenceIds: string[] }>;
   evidence: Array<{ id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number }>;
 };
+export type MergedTemplateFields = TemplateFieldSnapshot & { title: string };
+export type InputTemplateFields = TemplateFieldSnapshot & { mergedTemplateFields?: MergedTemplateFields[] };
 export function templateSections(type: string): ReadonlyArray<{ key: TemplateFieldKey; label: string }> {
   return type === 'concept' ? TEMPLATE_SECTIONS.concept : type === 'business_process' ? TEMPLATE_SECTIONS.business_process : [];
 }
@@ -53,7 +55,8 @@ export function validTemplateFields(value: unknown, type: string): value is Temp
 export function validInputTemplateFields(value: unknown): value is InputTemplateFields {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const snapshot = value as InputTemplateFields;
-  if (Object.keys(snapshot).sort().join(',') !== 'evidence,facts,fields,pageId,pageType,rawId,version' || snapshot.version !== 1 || typeof snapshot.pageId !== 'string' || !snapshot.pageId || typeof snapshot.rawId !== 'string' || !snapshot.rawId || !['concept','business_process'].includes(snapshot.pageType) || !validTemplateFields(snapshot.fields, snapshot.pageType) || !Array.isArray(snapshot.facts) || !snapshot.facts.length || !Array.isArray(snapshot.evidence) || !snapshot.evidence.length) return false;
+  if (Object.keys(snapshot).sort().join(',') !== (snapshot.mergedTemplateFields === undefined ? 'evidence,facts,fields,pageId,pageType,rawId,version' : 'evidence,facts,fields,mergedTemplateFields,pageId,pageType,rawId,version') || snapshot.version !== 1 || typeof snapshot.pageId !== 'string' || !snapshot.pageId || typeof snapshot.rawId !== 'string' || !snapshot.rawId || !['source','concept','entity','business_process','metric','synthesis'].includes(snapshot.pageType) || !validTemplateFields(snapshot.fields, snapshot.pageType) || !Array.isArray(snapshot.facts) || !Array.isArray(snapshot.evidence)) return false;
+  if (snapshot.mergedTemplateFields !== undefined && !validMergedTemplateFields(snapshot.mergedTemplateFields)) return false;
   if (snapshot.evidence.some(item => !item || Object.keys(item).sort().join(',') !== 'chunkIndex,end,id,quote,rawId,start' || typeof item.id !== 'string' || !item.id || item.rawId !== snapshot.rawId || typeof item.quote !== 'string' || !item.quote || !Number.isSafeInteger(item.start) || item.start < 0 || !Number.isSafeInteger(item.end) || item.end - item.start !== item.quote.length || !Number.isInteger(item.chunkIndex)) || new Set(snapshot.evidence.map(item => item.id)).size !== snapshot.evidence.length) return false;
   const evidenceIds = new Set(snapshot.evidence.map(item => item.id));
   if (snapshot.facts.some(item => !item || Object.keys(item).sort().join(',') !== 'evidenceIds,id,text' || typeof item.id !== 'string' || !item.id || typeof item.text !== 'string' || !item.text || !Array.isArray(item.evidenceIds) || !item.evidenceIds.length || new Set(item.evidenceIds).size !== item.evidenceIds.length || item.evidenceIds.some(id => !evidenceIds.has(id))) || new Set(snapshot.facts.map(item => item.id)).size !== snapshot.facts.length) return false;
@@ -68,9 +71,48 @@ export function validInputTemplateFields(value: unknown): value is InputTemplate
   return true;
 }
 
+export function validMergedTemplateFields(value: unknown): value is MergedTemplateFields[] {
+  if (!Array.isArray(value) || new Set(value.map(group => group?.pageId)).size !== value.length) return false;
+  return value.every(group => {
+    if (!group || typeof group !== 'object' || Array.isArray(group) || typeof group.title !== 'string' || !group.title.trim() || !['concept','business_process'].includes(group.pageType) || Object.hasOwn(group,'mergedTemplateFields')) return false;
+    const { title: _title, ...snapshot } = group;
+    return validInputTemplateFields(snapshot);
+  });
+}
+
+import type { HumanReview } from './human-review.ts';
+/** A group's private evidence names are resolved by immutable Raw ranges, never another page's IDs. */
+export function mergedFieldsMatchReview(groups: MergedTemplateFields[], pageId: string, rawId: string, review?: HumanReview): boolean {
+  if (!review) return false;
+  const units=review.units.filter(unit=>review.assignments[unit.id]===pageId);
+  return groups.every(group=>group.rawId===rawId
+    && group.evidence.every(e=>units.some(unit=>unit.evidence.some(original=>original.rawId===e.rawId&&original.start===e.start&&original.end===e.end&&original.quote===e.quote&&original.chunkIndex===e.chunkIndex)))
+    && group.facts.every(fact=>units.some(unit=>unit.kind==='fact'&&unit.records.some(original=>original.id===fact.id&&original.text===fact.text&&original.evidenceIds.length===fact.evidenceIds.length&&original.evidenceIds.every(id=>{
+      const e=unit.evidence.find(item=>item.id===id);return e&&fact.evidenceIds.some(ref=>group.evidence.some(item=>item.id===ref&&item.rawId===e.rawId&&item.start===e.start&&item.end===e.end&&item.quote===e.quote));
+    })))));
+}
+
+export function captureTemplateFields(page: {pageId:string;type:string;templateFields?:TemplateFields;mergedTemplateFields?:MergedTemplateFields[];source_evidence:TemplateFieldSnapshot['evidence']}, rawId:string, review:HumanReview):InputTemplateFields|undefined {
+  if(!hasTemplateFields(page.templateFields)&&!page.mergedTemplateFields?.length)return undefined;
+  const facts=review.units.filter(unit=>unit.kind==='fact'&&review.assignments[unit.id]===page.pageId).flatMap(unit=>unit.records.map(record=>({...record,evidenceIds:record.evidenceIds.map(id=>{
+    const original=unit.evidence.find(item=>item.id===id)!;
+    return page.source_evidence.find(item=>item.rawId===original.rawId&&item.start===original.start&&item.end===original.end&&item.quote===original.quote)!.id;
+  })})));
+  return {version:1,pageId:page.pageId,pageType:page.type,rawId,fields:structuredClone(page.templateFields??{}),facts,evidence:page.source_evidence.map(({id,rawId,quote,start,end,chunkIndex})=>({id,rawId,quote,start,end,chunkIndex})),...(page.mergedTemplateFields?.length?{mergedTemplateFields:structuredClone(page.mergedTemplateFields)}:{})};
+}
+
 /** Read-only preview and committed appendix use this exact text. */
 export function renderInputTemplateFields(snapshot: InputTemplateFields): string {
   const lines = ['## 本次来源整理', '以下为已审输入草稿的字段快照；整理及人工说明不等于原始来源事实，不自动覆盖原栏目。', `Raw ${snapshot.rawId} · 输入页 ${snapshot.pageId} · 类型 ${snapshot.pageType}`];
+  lines.push(renderTemplateSnapshot(snapshot));
+  for(const group of snapshot.mergedTemplateFields??[])lines.push(renderMergedTemplateFields(group));
+  return lines.join('\n\n');
+}
+export function renderMergedTemplateFields(group:MergedTemplateFields):string {
+  return [`## 合并前字段组：${group.title}（${group.pageType}）`,`原页 ${group.pageId} · Raw ${group.rawId}；以下引用ID仅属于本原页字段组。`,renderTemplateSnapshot(group)].join('\n\n');
+}
+function renderTemplateSnapshot(snapshot:TemplateFieldSnapshot):string {
+  const lines:string[]=[];
   const evidence = (references: string[]) => references.flatMap(id => {
     const item = snapshot.evidence.find(entry => entry.id === id)!;
     return [`- 证据 ${id} · Raw ${item.rawId} [${item.start}, ${item.end})`, item.quote];

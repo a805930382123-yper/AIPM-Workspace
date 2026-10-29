@@ -122,13 +122,12 @@ test('FIELDS F03: 引用移走或同ID换引文均原子拒绝，未引用unit�
   } finally { await f.close(); }
 });
 
-test('FIELDS F03: 带字段合并/切型原子拒绝，更新保全字段后Provider失败仍保留原稿', async () => {
+test('FIELDS F03: 带字段切型仍原子拒绝，更新保全字段后Provider失败仍保留原稿', async () => {
   const f = await fixture();
   try {
     let draft = await f.patch([{ pageId: f.draft.pages[0].pageId, templateFields: { definition: { evidenceIds: ['concept-e1'], humanText: '应保留的人工说明。' } } }]);
     draft = await approveDraft(f.drafts, draft.id, f.body);
     const before = await readFile(f.file, 'utf8');
-    await assert.rejects(f.drafts.patch(draft.id, { baseRevision: draft.revision, merge: { pageIds: draft.pages.map(p => p.pageId) }, pages: [{ pageId: draft.pages[0].pageId, templateFields: {} }] }, { body: f.body, rules: f.rules }), { code: 'TEMPLATE_MERGE_UNSUPPORTED' });
     await assert.rejects(f.patch([{ pageId: draft.pages[0].pageId, type: 'metric', templateFields: {} }]), { code: 'TEMPLATE_TYPE_CHANGE_UNSUPPORTED' });
     const workflows = new KnowledgeWorkflowStore(f.root, f.wiki, f.raws);
     const target = await f.wiki.create({ title: '旧页', type: 'concept', category: 'other', body: '旧内容。', sources: [f.raw.id], tags: [], aliases: [], confidence: 'low', knowledge_status: 'source_supported', source_level: 'D', review_status: 'unreviewed' });

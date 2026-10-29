@@ -14,7 +14,7 @@ import { assertHumanReviewed, assertReviewSources, assertReviewStructure, candid
 import { ExtractionCheckpointStore } from '../llm/checkpoints.ts';
 import { runKnowledgePipeline, validateKnowledgeCheckpoint } from '../llm/knowledge-extraction.ts';
 import { loadExtractionRules } from '../llm/rules.ts';
-import { hasTemplateFields, validTemplateFields, type TemplateFields } from './template-fields.ts';
+import { captureTemplateFields, hasTemplateFields, validTemplateFields, validMergedTemplateFields, mergedFieldsMatchReview, type TemplateFields, type MergedTemplateFields } from './template-fields.ts';
 
 export const DRAFT_STATUSES = ['pending_confirmation', 'committing', 'confirmed', 'discarded'] as const;
 export type DraftStatus = typeof DRAFT_STATUSES[number];
@@ -23,6 +23,7 @@ export type DraftEvidence = { id: string; rawId: string; quote: string; start: n
 export type DraftFact = { text: string; evidenceIds: string[] };
 export type DraftPage = {
   templateFields?: TemplateFields;
+  mergedTemplateFields?: MergedTemplateFields[];
   pageId: string; title: string; type: string; category: string; one_line_definition: string;
   source_facts: DraftFact[]; ai_organized: string[]; ai_inferences: string[]; related_pages: string[]; open_questions: string[];
   source_evidence: DraftEvidence[];
@@ -64,6 +65,7 @@ export class DraftError extends Error {
 
 export type DraftPagePatch = {
   templateFields?: TemplateFields;
+  mergedTemplateFields?: MergedTemplateFields[];
   pageId: string; selected?: boolean; reviewDecision?: 'update' | 'create' | 'defer'; updateTargetWikiId?: string; title?: string; type?: string; category?: string; one_line_definition?: string;
   source_facts?: DraftFact[]; ai_organized?: string[]; ai_inferences?: string[]; related_pages?: string[]; open_questions?: string[];
   source_evidence?: Array<{ id: string; rawId?: string; quote: string; start?: number; end?: number }>;
@@ -144,7 +146,26 @@ export class DraftStore {
     }
     return this.legacyReview(record);
   }
-  private deriveReviewPages(record:DraftRecord) {
+  private normalizedFields(fields:TemplateFields,previous?:TemplateFields):TemplateFields {
+    const normalized:TemplateFields={};
+    for(const [key,field]of Object.entries(fields)){
+      const humanText=field.humanText?.trim(),oldAi=previous?.[key as keyof TemplateFields]?.aiContent,ai=field.aiContent;
+      if(ai&&(!oldAi||JSON.stringify(ai.factIds)!==JSON.stringify(oldAi.factIds)||JSON.stringify(ai.evidenceIds)!==JSON.stringify(oldAi.evidenceIds)))throw new DraftError('TEMPLATE_AI_REFERENCES_IMMUTABLE','AI字段的原事实引用只读；可修改AI草稿文字或删除该AI项。',409);
+      const aiContent=ai&&oldAi?{text:ai.text.trim(),factIds:[...oldAi.factIds],evidenceIds:[...oldAi.evidenceIds],...(oldAi.humanEdited||ai.text.trim()!==oldAi.text?{humanEdited:true as const}:{})}:undefined;
+      if(field.evidenceIds.length||humanText||aiContent)normalized[key as keyof TemplateFields]={evidenceIds:[...field.evidenceIds],...(humanText?{humanText}:{}),...(aiContent?{aiContent}:{})};
+    }
+    return normalized;
+  }
+  private assertRoundtripSize(record:DraftRecord):void {
+    if(!record.pages.some(page=>page.mergedTemplateFields?.length))return;
+    // Exactly the editable snapshot sent by DraftReviewPage, including repeated evidence and Source text.
+    const payload={baseRevision:record.revision,document:{title:record.document.title,main_topic:record.document.main_topic,summary:record.document.summary},source:Object.fromEntries(['title','summary','body','category','knowledge_status','confidence','source_level','key_takeaways'].map(key=>[key,record.source[key as keyof DraftSource]])),pages:record.pages.map(page=>({
+      ...Object.fromEntries(['pageId','selected','title','type','category','one_line_definition','source_facts','ai_organized','ai_inferences','related_pages','open_questions','templateFields','mergedTemplateFields','knowledge_status','confidence','source_level'].map(key=>[key,page[key as keyof DraftPage]])),
+      source_evidence:page.source_evidence.map(({id,rawId,quote,start,end})=>({id,rawId,quote,start,end})),
+    }))};
+    if(Buffer.byteLength(JSON.stringify(payload),'utf8')>3*1024*1024)throw new DraftError('DRAFT_PATCH_TOO_LARGE','合并后的完整保存内容超过现有3MiB请求上限；原草稿及审批保持。',413);
+  }
+  private deriveReviewPages(record:DraftRecord,rebindFields=false) {
     if(!record.humanReview)return;
     assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));
     for(const page of record.pages){
@@ -153,13 +174,15 @@ export class DraftStore {
       const evidence:DraftEvidence[]=[],aliases=new Map<string,Map<string,string>>();
       for(const unit of units){const map=new Map<string,string>();for(const item of unit.evidence){
         let id=item.id;const old=evidence.find(e=>e.id===id);
-        if(old&&(old.rawId!==item.rawId||old.start!==item.start||old.end!==item.end||old.quote!==item.quote))id+=`-review-${createHash('sha256').update(JSON.stringify([item.rawId,item.start,item.end,item.quote])).digest('hex').slice(0,12)}`;
+        if(old&&(old.rawId!==item.rawId||old.start!==item.start||old.end!==item.end||old.quote!==item.quote))id=`${id.slice(0,44)}-review-${createHash('sha256').update(JSON.stringify([item.rawId,item.start,item.end,item.quote])).digest('hex').slice(0,12)}`;
         map.set(item.id,id);if(!evidence.some(e=>e.id===id))evidence.push({...item,id});
       }aliases.set(unit.id,map);}
       page.source_facts=facts.flatMap(u=>u.records.map(r=>({text:r.text,evidenceIds:r.evidenceIds.map(id=>aliases.get(u.id)?.get(id)??id)})));
       page.open_questions=[...questions.flatMap(u=>u.records.map(r=>r.text)),...facts.filter(u=>u.factKind==='ambiguous').flatMap(u=>u.records.map(r=>'原文口径或边界待确认：'+r.text)),...facts.filter(u=>record.humanQuestionUnitIds?.includes(u.id)).map(u=>'人工标记待确认：'+u.text)];
+      const previousEvidence=page.source_evidence;
       page.source_evidence=evidence;
       for (const field of Object.values(page.templateFields ?? {})) {
+        if(rebindFields)field.evidenceIds=field.evidenceIds.map(id=>{const old=previousEvidence.find(e=>e.id===id);return old?evidence.find(e=>e.rawId===old.rawId&&e.start===old.start&&e.end===old.end&&e.quote===old.quote)?.id??id:id;});
         const ai = field.aiContent;
         if (!ai) continue;
         const references = ai.factIds.map(id => {
@@ -196,7 +219,7 @@ export class DraftStore {
       if((input.action==='questions'||(input.action==='move'&&next.humanQuestionUnitIds?.length))&&!next.source.bodyEditedByUser)next.source.body=renderSourceBody(next.source,next.rawMeta,next.pages.filter(p=>p.selected),next.pages.filter(p=>!p.selected));
       if(input.action==='page')confirmHumanPage(next.humanReview,next.pages.map(p=>p.pageId),{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(next));
       if(JSON.stringify(next)===JSON.stringify(current))return current;
-      next.revision++;next.updatedAt=new Date().toISOString();await writeJsonAtomic(this.fileFor(id),next);return next;
+      next.revision++;next.updatedAt=new Date().toISOString();this.assertRoundtripSize(next);await writeJsonAtomic(this.fileFor(id),next);return next;
     });
   }
 
@@ -316,7 +339,6 @@ export class DraftStore {
       }
       const next: DraftRecord = JSON.parse(JSON.stringify(current)) as DraftRecord;
       if(!next.humanReview&&(patch.merge||patch.deletePageIds?.length))throw new DraftError('HUMAN_REVIEW_REQUIRED','请先开始审查以保存不可变来源目录，再合并或删除页面。',409);
-      if (patch.merge && current.pages.some(page => patch.merge!.pageIds.includes(page.pageId) && hasTemplateFields(page.templateFields))) throw new DraftError('TEMPLATE_MERGE_UNSUPPORTED', '本批不支持带字段归位的合并，原字段及人工说明已保留。', 409);
       // Source records are read-only even for an old draft before migration.
       for(const item of patch.pages??[]) {
         if(Object.keys(item).some(k=>['humanReview','reviewBasis','reviewContentDigest','reviewView'].includes(k)))throw new DraftError('INVALID_PATCH','不能通过页面编辑写入审查字段。');
@@ -371,11 +393,11 @@ export class DraftStore {
         this.applyPagePatch(page, item, context, next.rawId);
       }
       if(patch.merge)this.applyMerge(next,patch.merge);
-      for (const page of next.pages) this.validatePage(page, context.rules);
       if(next.humanReview) {
         for(const unit of next.humanReview.units)if(next.humanReview.assignments[unit.id]!==null&&!next.pages.some(p=>p.pageId===next.humanReview!.assignments[unit.id]))next.humanReview.assignments[unit.id]=null;
-        this.deriveReviewPages(next);
+        this.deriveReviewPages(next,!!patch.merge);
       }
+      for (const page of next.pages) this.validatePage(page, context.rules);
       for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId), next.humanReview);
       // F04-05: the Source body and its Key Takeaways list exactly the pages that would be
       // created, unless the user has written their own body text.
@@ -389,6 +411,7 @@ export class DraftStore {
       if(next.humanReview)next.humanReview.approvals=[];
       next.revision = current.revision + 1;
       next.updatedAt = new Date().toISOString();
+      this.assertRoundtripSize(next);
       await writeJsonAtomic(this.fileFor(next.id), next);
       return next;
     });
@@ -418,7 +441,7 @@ export class DraftStore {
 
   private applyPagePatch(page: DraftPage, item: DraftPagePatch, context: { body: string; rules: DraftRules }, rawId: string): void {
     const edited = new Set(page.editedFields ?? []);
-    const candidateBasis = new Set(['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized', 'templateFields']);
+    const candidateBasis = new Set(['title', 'type', 'category', 'one_line_definition', 'source_facts', 'ai_organized', 'templateFields','mergedTemplateFields']);
     const setField = (key: keyof DraftPage, value: unknown) => {
       const name = key as string;
       if(JSON.stringify((page as Record<string,unknown>)[name])===JSON.stringify(value))return;
@@ -436,22 +459,23 @@ export class DraftStore {
     if (item.title !== undefined) { if (!item.title.trim()) throw new DraftError('INVALID_FIELD', '标题不能为空。', 400); setField('title', item.title.trim()); }
     if (item.type !== undefined) {
       if (!context.rules.types.includes(item.type)) throw new DraftError('INVALID_TYPE', '知识类型无效。', 400);
-      if (item.type !== page.type && hasTemplateFields(page.templateFields)) throw new DraftError('TEMPLATE_TYPE_CHANGE_UNSUPPORTED', '本批不支持带字段归位的类型切换，原内容已保留。', 409);
+      if (item.type !== page.type && (hasTemplateFields(page.templateFields)||page.mergedTemplateFields?.length)) throw new DraftError('TEMPLATE_TYPE_CHANGE_UNSUPPORTED', '本批不支持带字段归位的类型切换，原内容已保留。', 409);
       setField('type', item.type);
     }
     if (item.templateFields !== undefined) {
       if (!validTemplateFields(item.templateFields, page.type)) throw new DraftError('INVALID_TEMPLATE_FIELDS', '字段归位格式或字段名称无效。', 400);
-      const normalized: TemplateFields = {};
-      for (const [key, field] of Object.entries(item.templateFields)) {
-        const humanText = field.humanText?.trim();
-        const oldAi = page.templateFields?.[key as keyof TemplateFields]?.aiContent;
-        const ai = field.aiContent;
-        if (ai && (!oldAi || JSON.stringify(ai.factIds) !== JSON.stringify(oldAi.factIds) || JSON.stringify(ai.evidenceIds) !== JSON.stringify(oldAi.evidenceIds))) throw new DraftError('TEMPLATE_AI_REFERENCES_IMMUTABLE', 'AI字段的原事实引用只读；可修改AI草稿文字或删除该AI项。', 409);
-        const aiContent = ai && oldAi ? {text:ai.text.trim(),factIds:[...oldAi.factIds],evidenceIds:[...oldAi.evidenceIds],...(oldAi.humanEdited || ai.text.trim() !== oldAi.text ? {humanEdited:true as const} : {})} : undefined;
-        if (field.evidenceIds.length || humanText || aiContent) normalized[key as keyof TemplateFields] = { evidenceIds: [...field.evidenceIds], ...(humanText ? { humanText } : {}), ...(aiContent ? {aiContent} : {}) };
-      }
+      const normalized=this.normalizedFields(item.templateFields,page.templateFields);
       setField('templateFields', hasTemplateFields(normalized) ? normalized : undefined);
       if (page.templateFields === undefined) delete page.templateFields;
+    }
+    if(item.mergedTemplateFields!==undefined){
+      if(!validMergedTemplateFields(item.mergedTemplateFields)||item.mergedTemplateFields.length!==page.mergedTemplateFields?.length)throw new DraftError('MERGED_FIELDS_IMMUTABLE','合并字段组身份与原目录只读；只能编辑组内字段。',409);
+      const groups=item.mergedTemplateFields.map((group,i)=>{
+        const old=page.mergedTemplateFields![i],{fields:_oldFields,...identity}=old,{fields,...incoming}=group;
+        if(JSON.stringify(identity)!==JSON.stringify(incoming))throw new DraftError('MERGED_FIELDS_IMMUTABLE','合并字段组身份、顺序与原事实/证据目录只读。',409);
+        return {...old,fields:this.normalizedFields(fields,old.fields)};
+      });
+      setField('mergedTemplateFields',groups);
     }
     if (item.category !== undefined) { if (!context.rules.categories.includes(item.category)) throw new DraftError('INVALID_CATEGORY', '分类无效。', 400); setField('category', item.category); }
     if (item.one_line_definition !== undefined) { if (!item.one_line_definition.trim()) throw new DraftError('INVALID_FIELD', '一句话定义不能为空。', 400); setField('one_line_definition', item.one_line_definition.trim()); }
@@ -501,9 +525,17 @@ export class DraftStore {
     const targets = ids.map(id => next.pages.find(page => page.pageId === id));
     if (targets.some(page => !page)) throw new DraftError('NOT_FOUND', '合并目标里有不存在的建议。', 404);
     const pages = targets as DraftPage[];
-    if (pages.some(page => hasTemplateFields(page.templateFields))) throw new DraftError('TEMPLATE_MERGE_UNSUPPORTED', '本批不支持带字段归位的合并，原字段及人工说明已保留。', 409);
     const [first, ...rest] = pages;
     const merged: DraftPage = JSON.parse(JSON.stringify(first)) as DraftPage;
+    const groups=[...(first.mergedTemplateFields??[])];
+    for(const page of rest){
+      if(hasTemplateFields(page.templateFields)){
+        const {mergedTemplateFields:_groups,...snapshot}=captureTemplateFields(page,next.rawId,next.humanReview!)!;
+        groups.push({...snapshot,title:page.title});
+      }
+      groups.push(...(page.mergedTemplateFields??[]));
+    }
+    if(groups.length)merged.mergedTemplateFields=structuredClone([...new Map(groups.map(group=>[group.pageId,group])).values()]);
     merged.selected = pages.some(page => page.selected);
     merged.title = merge.title?.trim() || first.title;
     merged.mergedFrom = [...new Set([...(first.mergedFrom ?? [first.title]), ...pages.slice(1).flatMap(page => page.mergedFrom ?? [page.title])])];
@@ -512,6 +544,7 @@ export class DraftStore {
       if (!merged.provenance.some(current => current.chunkIndex === entry.chunkIndex && current.start === entry.start)) merged.provenance.push({ ...entry });
     }
     const evidenceSeen = new Map<string, DraftEvidence>();
+    const firstEvidence=structuredClone(first.source_evidence);
     merged.source_evidence = [];
     // F04-07: rebuild the fact list from every merged page. Facts keep their identity as facts
     // (never moved into inferences); equal facts are deduplicated and their evidence combined.
@@ -548,11 +581,14 @@ export class DraftStore {
     merged.editedFields = [...new Set([...(merged.editedFields ?? []), 'merge'])];
     merged.knowledge_status = pages.some(page => page.knowledge_status === 'ai_organized') ? 'ai_organized' : first.knowledge_status;
     merged.confidence = pages.some(page => page.confidence === 'low') ? 'low' : first.confidence;
+    // Human review below rebuilds canonical aliases; preserve the first page's old namespace for its fields.
+    merged.source_evidence=firstEvidence;
     next.pages = [...next.pages.filter(page => !ids.includes(page.pageId)), merged];
-    if(next.humanReview)for(const unit of next.humanReview.units)if(ids.includes(next.humanReview.assignments[unit.id]??''))next.humanReview.assignments[unit.id]=merged.pageId;
+    if(next.humanReview){next.humanReview.approvals=[];for(const unit of next.humanReview.units)if(ids.includes(next.humanReview.assignments[unit.id]??''))next.humanReview.assignments[unit.id]=merged.pageId;}
   }
 
   private validateTemplateReferences(page: DraftPage, rawId: string, previous?: DraftPage, review?: HumanReview): void {
+    if(page.mergedTemplateFields!==undefined&&(!validMergedTemplateFields(page.mergedTemplateFields)||!mergedFieldsMatchReview(page.mergedTemplateFields,page.pageId,rawId,review)))throw new DraftError('MERGED_FIELDS_INVALID','合并字段组的事实或原文引用不属于当前归属目录。',422);
     if (page.templateFields === undefined) return;
     if (!validTemplateFields(page.templateFields, page.type)) throw new DraftError('INVALID_TEMPLATE_FIELDS', '字段归位格式或字段名称无效。', 422);
     const previousIds = new Set(Object.values(previous?.templateFields ?? {}).flatMap(field => field.evidenceIds));

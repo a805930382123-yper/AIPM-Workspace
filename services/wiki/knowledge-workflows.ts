@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { hasTemplateFields, validInputTemplateFields, renderInputTemplateFields, type InputTemplateFields } from './template-fields.ts';
+import { captureTemplateFields, validInputTemplateFields, renderInputTemplateFields, type InputTemplateFields } from './template-fields.ts';
 import path from 'node:path';
 import {isWorkflow,isWorkflowManifest} from '../storage/record-validators.ts';
 import { mkdir } from 'node:fs/promises';
@@ -80,14 +80,8 @@ export class KnowledgeWorkflowStore {
     if (JSON.stringify(snapshot) !== JSON.stringify(record.inputTemplateFields)) throw new WikiError('INPUT_REVIEW_CHANGED', '更新字段快照与已审输入不一致，请重新生成预览。', 409);
   }
   private templateSnapshot(draft: DraftRecord, page: DraftPage): InputTemplateFields | undefined {
-    if (!hasTemplateFields(page.templateFields)) return undefined;
-    const facts = draft.humanReview!.units.filter(unit => unit.kind === 'fact' && draft.humanReview!.assignments[unit.id] === page.pageId).flatMap(unit => unit.records.map(record => ({
-      ...record, evidenceIds: record.evidenceIds.map(id => {
-        const original = unit.evidence.find(item => item.id === id)!;
-        return page.source_evidence.find(item => item.rawId === original.rawId && item.start === original.start && item.end === original.end && item.quote === original.quote)!.id;
-      }),
-    })));
-    const snapshot: InputTemplateFields = { version: 1, pageId: page.pageId, pageType: page.type, rawId: draft.rawId, fields: structuredClone(page.templateFields!), facts, evidence: page.source_evidence.map(({ id, rawId, quote, start, end, chunkIndex }) => ({ id, rawId, quote, start, end, chunkIndex })) };
+    const snapshot=captureTemplateFields(page,draft.rawId,draft.humanReview!);
+    if(!snapshot)return undefined;
     if (!validInputTemplateFields(snapshot)) throw new WikiError('TEMPLATE_INPUT_INVALID', '字段快照引用不属于选中页的事实和证据，未生成更新。', 409);
     return snapshot;
   }
