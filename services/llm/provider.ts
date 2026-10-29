@@ -170,6 +170,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       throw new LlmError('LLM_CONFIGURATION_INVALID', 'Provider 地址或模型包含 API Key，已拒绝请求。', 400);
     }
     const host = new URL(baseUrl).hostname.toLowerCase();
+    const defaultTemperature = host === 'api.openai.com' && model === 'gpt-6.1-terra';
     const constrainedFlash = (request.purpose === 'knowledge' || request.purpose === 'prompt')
       && ['open.bigmodel.cn', 'api.z.ai'].includes(host)
       && model.trim().toLowerCase() === 'glm-5.3-flash';    const url = baseUrl + "/chat/completions";
@@ -183,7 +184,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${this.config.apiKey}` },
         body: JSON.stringify({
-          model, stream: false, temperature: 0,
+          model, stream: false, ...(defaultTemperature ? {} : { temperature: 0 }),
           messages: [{ role: 'system', content: request.system }, { role: 'user', content: request.user }],
           ...(constrainedFlash ? { reasoning_effort: 'low', response_format: { type: 'json_object' } } : {}),
         }),

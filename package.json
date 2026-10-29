@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "concurrently -k -n api,ui -c blue,green \"npm:dev:api\" \"npm:dev:ui\"",
+    "dev:proxy": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_with_proxy.ps1",
     "dev:api": "tsx watch server/index.ts",
     "dev:ui": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",

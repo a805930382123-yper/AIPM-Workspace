@@ -45,6 +45,35 @@ test('no reasoning hint for spoofed hosts, other models, or calls without knowle
   }
 });
 
+test('exact official OpenAI Terra uses default temperature for every purpose', async () => {
+  for (const host of ['api.openai.com', 'API.OPENAI.COM']) {
+    for (const purpose of ['knowledge', 'prompt', undefined] as const) {
+      const body = await wire(`https://${host}/v1`, 'gpt-6.1-terra', purpose);
+      assert.equal('temperature' in body, false);
+      assert.equal('reasoning_effort' in body, false);
+      assert.equal('response_format' in body, false);
+      assert.equal(body.stream, false);
+    }
+  }
+});
+
+test('OpenAI temperature exception does not extend to other hosts or model IDs', async () => {
+  for (const [baseUrl, model] of [
+    ['https://api.openai.com.attacker.example/v1', 'gpt-6.1-terra'],
+    ['https://evil.api.openai.com/v1', 'gpt-6.1-terra'],
+    ['https://compatible.example/v1', 'gpt-6.1-terra'],
+    ['https://api.openai.com/v1', 'gpt-6.1-terra-preview'],
+    ['https://api.openai.com/v1', 'GPT-6.1-TERRA'],
+    ['https://api.openai.com/v1', 'gpt-4.1'],
+  ]) {
+    for (const purpose of ['knowledge', 'prompt', undefined] as const) {
+      const body = await wire(baseUrl, model, purpose);
+      assert.equal(body.temperature, 0, `${baseUrl} / ${model} / ${purpose}`);
+      assert.equal('reasoning_effort' in body, false);
+    }
+  }
+});
+
 test('knowledge purpose does not extend the configured timeout budget', async () => {
   const prior = globalThis.fetch;
   let aborted = false;

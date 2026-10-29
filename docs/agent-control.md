@@ -1,5 +1,14 @@
 # 项目总控记录
 
+## 最新结论：OpenAI Terra本机接入两项修复通过（2026-10-29）
+
+用户批准代理入口及temperature兼容修复，Astra规划/独立验收，Sol High施工；B评分0/2/2/1=5。精确api.openai.com+gpt-6.1-terra省略temperature，新增npm run dev:proxy读取已有环境/Windows手动代理并检查Node原生代理能力。普通入口及其它Provider保持；无密钥/本机端口提交。
+
+[任务卡](handoffs/OPENAI-CONNECT-20261029-task.md)、[施工](reports/OPENAI-CONNECT-20261029-builder.md)、[主线程真实记录](reports/OPENAI-CONNECT-20261029-main.md)、[独立验收](reports/OPENAI-CONNECT-AUDIT-20261029.md)。C01–04 PASS：定向7/7、build exit0，六文件SHA一致；主线程经交付入口+Provider一次真实连接返回OK，26输入/4输出token、约4.8秒。真实连接1/config1单列，知识254/500、Prompt15/24不变。基线5f135a62689cc70e5529409c7c83fc1c3db51814加六文件差异，提交关联Git历史。
+
+两项接入缺陷已关闭，不等于严格结构输出或业务验收通过；O失败/Q未执行、R16/R18/B09整体仍未通过。无参dev/UI及旧Node实机未测，未重启既有服务；用户应以npm run dev:proxy重启获得代理环境。下一步另批适配严格结构输出并限定业务验证预算。外部AGENTS/AGENT-ROUTER报告排除。
+
+
 ## 最新结论：结构化输出契约检查通过，无明确遗漏（2026-10-29）
 
 用户授权下一步零调用检查，Sol High诊断、Astra medium独立审查；本批0/1/0/1=2。指定官方host/model/purpose路径已有json_object，规划提示含完整schema并在返回后严格验证；既有契约未承诺wire strict schema。未找到明确配置遗漏，停止自动修复和重复诊断，不过滤非法页、不追加抽样。

@@ -17,6 +17,16 @@ npm run dev
 
 在浏览器打开 <http://127.0.0.1:5173/>。开发服务器会同时启动 UI 和本地 API；默认 API 地址为 `http://127.0.0.1:4317`。仅监听本机回环地址。
 
+Windows 需要通过已有 HTTP 代理访问 Provider 时，使用 `npm run dev:proxy`。该入口优先使用当前进程的 `HTTP_PROXY` / `HTTPS_PROXY`（保留 `NO_PROXY`）；两者都没有时读取 Windows 已启用的手动系统代理，支持单一地址及 `http=...;https=...`。不读取 PAC，不修改系统设置或保存代理配置。脚本通过 Node 原生 `--use-env-proxy` 启动并传给子进程；需要支持该标志的 Node（24.5+ 或 22.21+，见 [Node 官方文档](https://nodejs.org/api/cli.html#--use-env-proxy)），能力不足时会提示升级。普通 `npm run dev` 的 Node 下限保持不变。
+
+也可通过同一入口执行 Node 脚本，例如离线检查（不会访问 Provider）：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_with_proxy.ps1 --import tsx -e "console.log(process.version)"
+```
+
+官方 `api.openai.com` 的 `gpt-6.1-terra` 请求使用模型默认 temperature 和默认推理设置；其他模型和兼容端点保留原请求参数。真实连接仍需显式点击设置页的「测试连接」，或运行另行授权的连接探针。
+
 PowerShell 可通过环境变量修改数据目录或 API 端口：
 
 ```powershell
