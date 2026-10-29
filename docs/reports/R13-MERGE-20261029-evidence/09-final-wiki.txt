@@ -1,0 +1,140 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库" [active]:
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / 知识库
+  - generic: 本地工作区
+  - paragraph: 个人业务知识 · Markdown
+  - heading "知识库" [level=1]
+  - paragraph: 按类型整理知识，保留来源、关联和可独立读取的 Markdown 文件。
+  - button "从 Raw 生成 Wiki 草稿"
+  - button "检查知识库"
+  - button "＋ 手动创建 Wiki":
+    - generic: ＋
+    - text: 手动创建 Wiki
+  - heading "学习地图" [level=2]
+  - text: 按业务主题浏览
+  - generic: 2 页
+  - button "全部 2":
+    - text: 全部
+    - generic: "2"
+  - button "行业基础 0":
+    - text: 行业基础
+    - generic: "0"
+  - button "品类 0":
+    - text: 品类
+    - generic: "0"
+  - button "渠道 0":
+    - text: 渠道
+    - generic: "0"
+  - button "销售 0":
+    - text: 销售
+    - generic: "0"
+  - button "门店 0":
+    - text: 门店
+    - generic: "0"
+  - button "经销商 0":
+    - text: 经销商
+    - generic: "0"
+  - button "供应链 1":
+    - text: 供应链
+    - generic: "1"
+  - button "商品 0":
+    - text: 商品
+    - generic: "0"
+  - button "数据指标 0":
+    - text: 数据指标
+    - generic: "0"
+  - button "AI应用 0":
+    - text: AI应用
+    - generic: "0"
+  - button "公司业务 0":
+    - text: 公司业务
+    - generic: "0"
+  - button "客户 0":
+    - text: 客户
+    - generic: "0"
+  - button "其他 1":
+    - text: 其他
+    - generic: "1"
+  - generic: ⌕
+  - textbox "搜索 Wiki":
+    - /placeholder: 搜索标题、别名、标签、正文或分类
+  - generic: 2 页
+  - button "概 补货概念1 概念 · 供应链 有来源支持":
+    - generic: 概
+    - generic: 补货概念1
+    - generic: 概念 · 供应链
+    - generic: 有来源支持
+  - button "来 R13离线来源 来源摘要 · 其他 有来源支持":
+    - generic: 来
+    - generic: R13离线来源
+    - generic: 来源摘要 · 其他
+    - generic: 有来源支持
+  - article:
+    - generic: 概念
+    - generic: 供应链
+    - generic: 有来源支持
+    - link "导出 Markdown":
+      - /url: /api/wiki/ca3a2f8f-ed8d-4db5-90be-695eab23a420/export
+    - button "编辑"
+    - button "删除"
+    - heading "补货概念1" [level=2]
+    - generic: 第 1 版 · 更新于 2026年10月29日 20:15
+    - generic: 知识状态
+    - generic: 有来源支持
+    - generic: 人工审核
+    - generic: 未审核
+    - generic: 可信度
+    - generic: medium
+    - generic: 来源等级
+    - generic: D
+    - generic: 离线夹具
+    - heading "来源 Raw · 1" [level=3]
+    - button "原 R13离线合并验收资料 个人笔记 · 明确离线工程夹具，不代表真实企业 发布于 日期未提供 · 导入于 2026年10月29日 20:12 打开 Raw ›":
+      - generic: 原
+      - generic: R13离线合并验收资料
+      - generic: 个人笔记 · 明确离线工程夹具，不代表真实企业
+      - generic: 发布于 日期未提供 · 导入于 2026年10月29日 20:12
+      - strong: 打开 Raw ›
+    - heading "知识内容" [level=3]
+    - generic: 选中段落后可提交纠错
+    - generic: "## 原草稿一句话说明（未归位） 第1条原始说明 > 字段中的AI草稿、AI归位来源与用户归位、人工说明分别标记，均需核对；无来源支持的内容保持空或待确认。 ## 一句话解释 待确认。 ## 定义 - AI整理（待核对）：第1条AI整理：【离线虚构】补货是按需求补充库存。（原事实 fact-1） - 来源摘录（AI归位，待核对）：【离线虚构】补货是按需求补充库存。（证据 shared） - 来源摘录（用户归位）：【离线虚构】补货是按需求补充库存。（证据 shared） - 人工说明（待核对）：原页1人工说明。 ## 为什么重要 待确认。 ## 在业务中的位置 待确认。 ## 关键特征 待确认。 ## 常见分类 待确认。 ## 与其他概念关系 待确认。 ## 常见业务场景 待确认。 ## 合并前字段组：补货概念2（concept） 原页 c9d3b701-fd4f-4ee6-9727-2ad6960bbf7b · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123；以下引用ID仅属于本原页字段组。 ### 定义 #### 来源摘录（人工归位） - 证据 shared · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123 [36, 53) 【离线虚构】补货是按需求补充库存。 #### 人工说明 原页2人工说明。 #### AI整理（人工修改） 第2条AI整理：【离线虚构】补货是按需求补充库存。 - 支持事实 fact-2：【离线虚构】补货是按需求补充库存。 - 证据 shared · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123 [36, 53) 【离线虚构】补货是按需求补充库存。 ## 合并前字段组：补货流程3（business_process） 原页 01782a12-0b3a-4011-b749-9b0a1c6c1724 · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123；以下引用ID仅属于本原页字段组。 ### 完整流程 #### 来源摘录（人工归位） - 证据 shared · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123 [63, 93) 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。 #### 人工说明 原页3人工说明。人工补充：安排单已形成，尚未发货；成本影响待确认。 #### AI整理（人工修改） 第3条AI整理经人工核对：店长提交补货单，库管审核后形成安排单，尚未发货。 - 支持事实 fact-3：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。 - 证据 shared · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123 [63, 93) 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。 ## 来源事实 - 【离线虚构】补货是按需求补充库存。（证据 shared） - 【离线虚构】补货是按需求补充库存。（证据 shared-review-8ff8e8dfe105） - 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。（证据 shared-review-15f51fbbf980） ## AI 整理 - 暂无 ## AI 推断 - 暂无 ## 待确认问题 - 暂无 ## 来源证据 - shared｜原文 [9, 26)：【离线虚构】补货是按需求补充库存。 - shared-review-8ff8e8dfe105｜原文 [36, 53)：【离线虚构】补货是按需求补充库存。 - shared-review-15f51fbbf980｜原文 [63, 93)：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。 ## 关联 - 暂无 ## 来源 - [[R13离线来源]]（Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123）"
+    - heading "Wiki 关联 · 1" [level=3]
+    - code: "[[R13离线来源]]"
+    - button "R13离线来源 ›"
+    - heading "Audit 纠错 · 0 条待处理" [level=3]
+    - button "提交整页纠错"
+    - text: 严重度
+    - combobox "严重度":
+      - option "错误"
+      - option "警告"
+      - option "建议" [selected]
+      - option "补充"
+    - text: 反馈
+    - textbox "反馈":
+      - /placeholder: 说明哪处需要修正以及原因
+    - button "提交整页 Audit" [disabled]

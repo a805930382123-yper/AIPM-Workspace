@@ -1,6 +1,8 @@
 # 项目交付说明
 
-当前记录（2026-10-29）：本轮模板更新UI与Prompt必要上下文修复提交 c6474fe98c63440d7b9cbdb7fe15e98eb8b6aba8；四链真实样本、同根重启与新空根恢复已独立通过，23文件逐SHA一致。R13带字段候选合并仍未满足，B09整体未通过。当前运行方式/Provider范围见[README](../README.md)，当前逐项裁决见[109项矩阵](reports/B09-RESUME-20261029-matrix.md)，实测/复用边界见[独立集成报告](reports/B09-INTEGRATION-AUDIT-20261029-stages.md)。以下2026-10-14及更早条目为历史时间点，不代表今天仍未运行真实Provider。
+当前记录（2026-10-29，R13修复完成）：R13独立M01–M06 PASS，当前109项全部通过。合并保留原页字段组、原类型与来源，编辑/合并后重新审批；真实API新增0，原四链与恢复按版本复用。产品提交 53c16918a9c284a1c18fd7e47f468d9b960a1c89；详见[R13独立验收](reports/R13-MERGE-AUDIT-20261029.md)、[矩阵](reports/B09-RESUME-20261029-matrix.md)及[README](../README.md)。本结论限现行B09标准，不表示部署、跨平台或所有模型输出质量已保证。
+
+前轮记录（2026-10-29，R13修复前）：本轮模板更新UI与Prompt必要上下文修复提交 c6474fe98c63440d7b9cbdb7fe15e98eb8b6aba8；四链真实样本、同根重启与新空根恢复已独立通过，23文件逐SHA一致。R13带字段候选合并仍未满足，B09整体未通过。当前运行方式/Provider范围见[README](../README.md)，当前逐项裁决见[109项矩阵](reports/B09-RESUME-20261029-matrix.md)，实测/复用边界见[独立集成报告](reports/B09-INTEGRATION-AUDIT-20261029-stages.md)。以下2026-10-14及更早条目为历史时间点，不代表今天仍未运行真实Provider。
 
 当前记录（2026-10-14）：CFG01本机通用Provider配置入口PASS，同GPT-6 Luna Max施工、主Agent独立两轴验收。保存/保留/替换Key、明确测试/确认清除、env只读与请求快照隔离完成。HTTP27、edges9、R2三组、组件4、安全100、实际桌面/窄屏浏览器13全部通过；最终build及字节相同可写副本完整215/215。原workspace继承ACL导致rename EPERM未通过，未改ACL或断言，详见[报告/校准](reports/CFG01-20261014-acceptance.md)。正式数据/实际.env.local及1296历史文件未变，自有服务关闭。当前Windows/Node v24.20.0；未真实Provider/部署，36项仍BLOCKED。下面早期记录为历史。
 

@@ -1,0 +1,464 @@
+- complementary:
+  - generic: F
+  - text: 快消 AI 工作台
+  - generic: FMCG PM WORKSPACE
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "⌂ 首页":
+      - generic: ⌂
+      - text: 首页
+    - button "▤ 知识库":
+      - generic: ▤
+      - text: 知识库
+    - button "▧ Raw 原始资料":
+      - generic: ▧
+      - text: Raw 原始资料
+    - button "▣ 会议档案":
+      - generic: ▣
+      - text: 会议档案
+    - button "✳ Prompt 工作台":
+      - generic: ✳
+      - text: Prompt 工作台
+  - generic: 偏好
+  - button "⚙ 设置":
+    - generic: ⚙
+    - text: 设置
+  - generic: 数据保存在本机
+- main:
+  - generic: 工作空间 / AI 知识整理预览
+  - generic: 本地工作区
+  - paragraph: AI 知识整理预览 · 人工审核
+  - heading "审核「R13离线来源」" [level=1]
+  - paragraph: 草稿版本 v8 · 状态 pending_confirmation · 提供方 offline-fixture/no-provider · 规则 r13-local-v1 · 1 段 / 0 次调用
+  - button "返回 Raw"
+  - button "保存草稿"
+  - button "放弃草稿"
+  - button "确认写入 Wiki（0）" [disabled]
+  - region "主题与归属人工审查":
+    - heading "逐页确认主题与完整归属" [level=2]
+    - paragraph: 所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。
+    - paragraph: 未解决 0 项 · 已审 0/1 页
+    - strong: 来源事实
+    - code: unit-1
+    - paragraph: 【离线虚构】补货是按需求补充库存。
+    - text: 明确离线夹具原文
+    - paragraph: 原文 [9, 26)：“【离线虚构】补货是按需求补充库存。”
+    - text: 完整 unit 归属
+    - combobox "归属 unit-1":
+      - option "未解决"
+      - option "补货概念1" [selected]
+    - checkbox "同时列入待确认问题 unit-1"
+    - text: 同时列入待确认问题（人工标记）
+    - strong: 来源事实
+    - code: unit-2
+    - paragraph: 【离线虚构】补货是按需求补充库存。
+    - text: 明确离线夹具原文
+    - paragraph: 原文 [36, 53)：“【离线虚构】补货是按需求补充库存。”
+    - text: 完整 unit 归属
+    - combobox "归属 unit-2":
+      - option "未解决"
+      - option "补货概念1" [selected]
+    - checkbox "同时列入待确认问题 unit-2"
+    - text: 同时列入待确认问题（人工标记）
+    - strong: 来源事实
+    - code: unit-3
+    - paragraph: 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+    - text: 明确离线夹具原文
+    - paragraph: 原文 [63, 93)：“【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。”
+    - text: 完整 unit 归属
+    - combobox "归属 unit-3":
+      - option "未解决"
+      - option "补货概念1" [selected]
+    - checkbox "同时列入待确认问题 unit-3"
+    - text: 同时列入待确认问题（人工标记）
+  - generic: 默认没有选中任何知识建议：勾选要写入正式 Wiki 的条目后，确认按钮才可用。
+  - paragraph: 明确离线工程夹具；未调用真实模型。
+  - paragraph: 默认未选择任何知识建议；只有勾选的条目会在确认后写入正式 Wiki。
+  - heading "原始资料" [level=2]
+  - paragraph: 个人笔记 · 明确离线工程夹具，不代表真实企业
+  - button "打开 Raw ›"
+  - heading "R13离线合并验收资料" [level=3]
+  - paragraph:
+    - text: 正文 94 字符 · 正文校验值
+    - code: 26a030f6db406584…
+  - generic: 第1条离线夹具： 【离线虚构】补货是按需求补充库存。 第2条离线夹具： 【离线虚构】补货是按需求补充库存。 第3条离线夹具： 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+  - heading "Source 预览（本次提交组成）" [level=2]
+  - paragraph: 将新建 1 个 Source 页面
+  - text: Source 标题
+  - textbox "Source 标题": R13离线来源
+  - text: Source 摘要
+  - textbox "Source 摘要": "## 来源信息 - 来源类型：个人笔记（note） - 来源名称：明确离线工程夹具，不代表真实企业 - 作者：未提供（作者） - 原发布日期：未提供（原发布日期） - 原始链接：未提供（原始链接） - Raw：R13离线合并验收资料（d7baedd6-2bf3-49aa-9f57-fe28d1364123） - 导入时间：2026-10-29T12:12:47.433Z - 来源等级：D ## 摘要 明确离线夹具，仅核合并保全。 ## Key Takeaways - 暂无 ## 涉及概念 - 暂无 ## 涉及实体 - 暂无 ## 涉及业务流程 - 暂无 ## 涉及指标 - 暂无 ## 重要观点 - 暂无 ## 待验证内容 - 暂无 ## 本次未创建的建议（未选中，待处理） - 补货概念1（concept，未创建；需要时可在该 Raw 的草稿里重新选择） ## Raw 来源 - R13离线合并验收资料（Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123） > 本页是来源摘要，原文以对应 Raw 为准；只有本次确认为正式页面的知识条目才会建立 Wikilink。"
+  - text: 来源等级
+  - combobox "来源等级":
+    - option "A 级"
+    - option "B 级"
+    - option "C 级"
+    - option "D 级" [selected]
+  - text: 知识状态
+  - combobox "知识状态":
+    - option "verified"
+    - option "source_supported" [selected]
+    - option "ai_organized"
+    - option "inferred"
+    - option "needs_verification"
+  - text: 可信度
+  - combobox "可信度":
+    - option "high"
+    - option "medium" [selected]
+    - option "low"
+  - paragraph: 保存草稿会把 Source 的编辑一起持久化；verified 只能由你明确标记，AI 不会自动设置。
+  - heading "知识建议（1 条，已选 0 条）" [level=2]
+  - paragraph: 默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。
+  - button "全选"
+  - button "全不选"
+  - button "合并所选（0）" [disabled]
+  - article:
+    - paragraph: 本页主题与完整归属尚未确认
+    - button "确认本页主题与归属"
+    - button "撤销本页确认"
+    - checkbox "写入"
+    - generic: 写入
+    - checkbox "合并"
+    - generic: 合并
+    - generic: "#1"
+    - textbox "建议标题": 补货概念1
+    - button "删除" [disabled]
+    - text: 类型
+    - combobox "类型":
+      - option "概念" [selected]
+      - option "业务实体"
+      - option "业务流程"
+      - option "业务指标"
+    - text: 分类
+    - combobox "分类":
+      - option "行业基础"
+      - option "品类"
+      - option "渠道"
+      - option "销售"
+      - option "门店"
+      - option "经销商"
+      - option "供应链" [selected]
+      - option "商品"
+      - option "数据指标"
+      - option "AI应用"
+      - option "公司业务"
+      - option "客户"
+      - option "其他"
+    - text: 来源等级
+    - combobox "来源等级":
+      - option "A 级"
+      - option "B 级"
+      - option "C 级"
+      - option "D 级" [selected]
+    - text: 知识状态
+    - combobox "知识状态":
+      - option "verified"
+      - option "source_supported" [selected]
+      - option "ai_organized"
+      - option "inferred"
+      - option "needs_verification"
+    - text: 可信度
+    - combobox "可信度":
+      - option "high"
+      - option "medium" [selected]
+      - option "low"
+    - button "刷新重复候选"
+    - paragraph: 以下是启发式候选，供人工选择，不代表事实判定。
+    - text: 未发现候选。
+    - button "暂不处理"
+    - text: 一句话说明
+    - textbox "一句话说明": 第1条原始说明
+    - region "补货概念1字段归位":
+      - heading "字段归位" [level=4]
+      - paragraph: AI草稿与人工说明分别保存，均需逐页审查。合并会保留各原页的字段组和原类型栏目；旧 Wiki 更新保留已审字段快照。带字段内容的类型切换仍不支持。
+      - button "清空字段归位（删除当前内容）"
+      - paragraph: 清空是删除。未保存可刷新撤回；保存后不提供恢复。
+      - group "一句话解释":
+        - generic: 一句话解释
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+      - group "定义":
+        - generic: 定义
+        - text: AI整理（待核对）
+        - textbox "AI整理（待核对）": 第1条AI整理：【离线虚构】补货是按需求补充库存。
+        - paragraph: AI归位来源（待核对）：原事实 fact-1；证据 shared
+        - button "删除本字段AI项"
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。" [checked]
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）": 原页1人工说明。
+      - group "为什么重要":
+        - generic: 为什么重要
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+      - group "在业务中的位置":
+        - generic: 在业务中的位置
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+      - group "关键特征":
+        - generic: 关键特征
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+      - group "常见分类":
+        - generic: 常见分类
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+      - group "与其他概念关系":
+        - generic: 与其他概念关系
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+      - group "常见业务场景":
+        - generic: 常见业务场景
+        - generic: 来源摘录（用户归位）
+        - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+        - generic: shared：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。"
+        - generic: shared-review-8ff8e8dfe105：【离线虚构】补货是按需求补充库存。
+        - checkbox "shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+        - generic: shared-review-15f51fbbf980：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+        - text: 人工说明（待核对）
+        - textbox "人工说明（待核对）"
+    - heading "合并前字段组：补货概念2（concept）" [level=4]
+    - paragraph: 原页 c9d3b701-fd4f-4ee6-9727-2ad6960bbf7b · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123；下列引用ID仅属于本原页字段组。原身份和目录只读，内容可明确编辑或删除。
+    - group "一句话解释":
+      - generic: 一句话解释
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "定义":
+      - generic: 定义
+      - text: AI草稿经人工修改（待核对）
+      - textbox "AI草稿经人工修改（待核对）": 第2条AI整理：【离线虚构】补货是按需求补充库存。
+      - paragraph: AI归位来源（待核对）：原事实 fact-2；证据 shared
+      - button "删除本字段AI项"
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。" [checked]
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）": 原页2人工说明。
+    - group "为什么重要":
+      - generic: 为什么重要
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "在业务中的位置":
+      - generic: 在业务中的位置
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "关键特征":
+      - generic: 关键特征
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "常见分类":
+      - generic: 常见分类
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "与其他概念关系":
+      - generic: 与其他概念关系
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "常见业务场景":
+      - generic: 常见业务场景
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】补货是按需求补充库存。"
+      - generic: shared：【离线虚构】补货是按需求补充库存。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - heading "合并前字段组：补货流程3（business_process）" [level=4]
+    - paragraph: 原页 01782a12-0b3a-4011-b749-9b0a1c6c1724 · Raw d7baedd6-2bf3-49aa-9f57-fe28d1364123；下列引用ID仅属于本原页字段组。原身份和目录只读，内容可明确编辑或删除。
+    - group "业务目标":
+      - generic: 业务目标
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "涉及角色":
+      - generic: 涉及角色
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "触发条件":
+      - generic: 触发条件
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "输入":
+      - generic: 输入
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "完整流程":
+      - generic: 完整流程
+      - text: AI整理（待核对）
+      - textbox "AI整理（待核对）": 第3条AI整理：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - paragraph: AI归位来源（待核对）：原事实 fact-3；证据 shared
+      - button "删除本字段AI项"
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。" [checked]
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）": 原页3人工说明。
+    - group "输出":
+      - generic: 输出
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "使用系统":
+      - generic: 使用系统
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "关键规则":
+      - generic: 关键规则
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "人工判断点":
+      - generic: 人工判断点
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "异常情况":
+      - generic: 异常情况
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "痛点":
+      - generic: 痛点
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "可能的 AI 机会（分析建议）":
+      - generic: 可能的 AI 机会（分析建议）
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 分析建议
+      - textbox "分析建议"
+    - group "相关指标":
+      - generic: 相关指标
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - group "相关知识":
+      - generic: 相关知识
+      - generic: 来源摘录（用户归位）
+      - checkbox "shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。"
+      - generic: shared：【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+      - text: 人工说明（待核对）
+      - textbox "人工说明（待核对）"
+    - generic "完整正文预览（已保存内容）"
+    - heading "来源事实（原文支持，逐条带证据）" [level=4]
+    - textbox: 【离线虚构】补货是按需求补充库存。
+    - generic: 证据 shared
+    - textbox: 【离线虚构】补货是按需求补充库存。
+    - generic: 证据 shared-review-8ff8e8dfe105
+    - textbox: 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+    - generic: 证据 shared-review-15f51fbbf980
+    - heading "AI 整理 / 人工说明" [level=4]
+    - button "添加人工整理说明"
+    - paragraph: 暂无
+    - heading "AI 推断" [level=4]
+    - paragraph: 暂无
+    - heading "待确认问题" [level=4]
+    - paragraph: 暂无
+    - heading "来源证据（全局位置已按完整 Raw 校验）" [level=4]
+    - code: shared
+    - generic: 【离线虚构】补货是按需求补充库存。
+    - generic: "[9, 26) · 第 1 段"
+    - button "查看原文"
+    - code: shared-review-8ff8e8dfe105
+    - generic: 【离线虚构】补货是按需求补充库存。
+    - generic: "[36, 53) · 第 1 段"
+    - button "查看原文"
+    - code: shared-review-15f51fbbf980
+    - generic: 【离线虚构】店长提交补货单，库管审核后形成安排单，尚未发货。
+    - generic: "[63, 93) · 第 1 段"
+    - button "查看原文"
+    - paragraph: 由用户合并 2 条建议（补货概念1、补货概念2）。由用户合并 2 条建议（补货概念1、补货流程3）。
+    - paragraph: 由合并生成：补货概念1、补货概念2、补货流程3
+  - paragraph: 预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。
