@@ -1,5 +1,12 @@
 # 项目总控记录
 
+## 最新结论：O/Q准备通过，O真实验证失败即停（2026-10-29）
+
+用户授权最多4请求。Astra规划与独立准备审查、Sol High施工，B评分0/2/2/2=6。收敛文档经Sol独立审查通过；入口与两fixture准备通过，同版唯一smoke 4fake/0real。主线程随后执行O253–254，exit1、LLM_SCHEMA_INVALID；实际2请求、配置读取1，知识254/500、Prompt15/24。触发首失败停，Q255–256未放行、不重试。
+
+[收敛方案](reports/R1618-CLOSURE-20261029-plan.md)、[收敛审查](reports/R1618-CLOSURE-AUDIT-20261029-final.md)、[任务卡](handoffs/R1618-OQ-20261029-task.md)、[施工](reports/R1618-OQ-20261029-builder.md)、[准备验收](reports/R1618-OQ-AUDIT-20261029-prepare.md)、[真实独立验收](reports/R1618-OQ-AUDIT-20261029-real.md)。基线c5456428ca870a4ab3cf9a7b087aeddd642a61a6加本轮入口/fixture，产品revision15未改。准备PASS不等于真实缺陷关闭；R16/R18、B09及全产品整体仍未通过，历史FAIL及HUMAN PASS保留。下一步建议基于原响应零调用诊断schema失败，不追加抽样或提示特例。外部AGENTS与AGENT-ROUTER报告排除。
+
+
 ## 最新结论：真实P人审闭环通过，批次整体未通过（2026-10-28）
 
 用户“继续”授权本机续接。沿Astra既有HUMAN方案，Sol High human_prepare准备、主Agent实际IAB操作、Astra medium human_audit独立验收，B评分0/2/2/1=5。**H01–H04 PASS：人工纠偏保存刷新、审批1→0→1、隔离正式确认及Source/Process回读完成。** 本轮无产品或测试代码修改，不等于自动质量缺陷已由代码修复；旧浏览器阻塞本机未复现。

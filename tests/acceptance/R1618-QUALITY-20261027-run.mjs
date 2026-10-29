@@ -13,12 +13,12 @@ import { assertNoKnownSecret } from '../../services/llm/provider.ts';
 
 export const FIXTURE = 'tests/acceptance/R1618-QUALITY-20261027-fixture.json';
 const SCRIPT = 'tests/acceptance/R1618-QUALITY-20261027-run.mjs';
-const CARD = 'docs/handoffs/R1618-COVER-20261028-task.md';
-const PLAN = 'docs/reports/R1618-COVER-20261028-plan.md';
-const PREFIX = '.scratch-R1618-COVER-20261028-';
+const CARD = 'docs/handoffs/R1618-OQ-20261029-task.md';
+const PLAN = 'docs/reports/R1618-CLOSURE-20261029-plan.md';
+const PREFIX = '.scratch-R1618-OQ-20261029-';
 const PROFILES = {
-  concept: { fixture: 'tests/acceptance/R1618-COVER-20261028-concept-fixture.json', knowledgeBefore: 248, sequences: [249, 250] },
-  process: { fixture: FIXTURE, knowledgeBefore: 250, sequences: [251, 252] },
+  output: { fixture: 'tests/acceptance/R1618-OQ-20261029-output-fixture.json', knowledgeBefore: 252, sequences: [253, 254] },
+  question: { fixture: 'tests/acceptance/R1618-OQ-20261029-question-fixture.json', knowledgeBefore: 254, sequences: [255, 256] },
 };
 const sha = value => createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
 const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
@@ -48,7 +48,7 @@ export async function prepare(profile, mode = 'real') {
   const config = PROFILES[profile];
   must(['real', 'fake'].includes(mode), 'MODE_INVALID');
   const sample = await read(config.fixture), body = sample.quotes.join(sample.joinWith);
-  must(sample.quotes.length === 6 && chunkText(body, { maxChunkChars: 8000, overlap: 400, maxRawChars: 500000 }).length === 1, 'SINGLE_FIXED_SAMPLE_REQUIRED');
+  must(sample.quotes.length > 0 && chunkText(body, { maxChunkChars: 8000, overlap: 400, maxRawChars: 500000 }).length === 1, 'SINGLE_FIXED_SAMPLE_REQUIRED');
   const root = await fs.mkdtemp(path.resolve(PREFIX)), raws = new RawStore(root); await raws.initialize();
   const raw = await raws.create({ title: sample.title, sourceType: sample.sourceType, sourceName: sample.sourceName, body, tags: ['虚构', 'R1618-quality'] });
   const rawPath = path.join(root, 'knowledge/raw/notes', raw.id + '.md');
@@ -77,15 +77,13 @@ async function releaseFor(s, file, exactSha) {
   must((await freeze()).sha256 === s.freezeSha256, 'SOURCE_FREEZE_DRIFT');
   return { releaseSha256: exactSha };
 }
-function fakeReply(request) {
+function fakeReply(request, profile) {
   const input = JSON.parse(request.user.split('\n').at(-1));
-  if (!request.user.startsWith('请对下列全部已验证事实规划知识页')) return { text: JSON.stringify({ version: 2, facts: input.slice(0, 5).map(atom => ({ atomId: atom.id, kind: 'fact' })), questions: [{ atomId: input[5].id }], sourceNotes: [] }), bytes: 1, finishReason: 'stop' };
-  const units = input.factUnits, field = (text, ...indices) => ({ text, factUnitIds: indices.map(index => units[index].id) });
-  // Mechanical smoke only, including concept profile: these replenishment answers are unrelated to C semantics.
-  // Never sent to a real model or used as a quality oracle.
+  // Mechanical capture only: Q deliberately keeps one fact so the unchanged
+  // pipeline can reach planning; these classifications are not a quality oracle.
+  if (!request.user.startsWith('请对下列全部已验证事实规划知识页')) return { text: JSON.stringify({ version: 2, facts: (profile === 'question' ? input.slice(0, 1) : input).map(atom => ({ atomId: atom.id, kind: 'fact' })), questions: (profile === 'question' ? input.slice(1) : []).map(atom => ({ atomId: atom.id })), sourceNotes: [] }), bytes: 1, finishReason: 'stop' };
   return { text: JSON.stringify({ version: 3, document: { title: '来源：虚构门店补货', main_topic: '补货' }, pages: [
-    { title: '虚构门店补货概念', type: 'concept', category: 'supply_chain', factUnitIds: units.slice(0, 2).map(x => x.id), questionUnitIds: [], templateFields: { one_line_explanation: field('根据门店库存与需求补充商品的业务活动。', 0), why_important: field('以降低缺货风险为目标。', 1) } },
-    { title: '虚构门店补货流程', type: 'business_process', category: 'supply_chain', factUnitIds: units.slice(2).map(x => x.id), questionUnitIds: input.questionUnits.map(x => x.id), templateFields: { trigger: field('当门店库存低于安全库存时，由店长发起补货申请。', 2), steps: field('店长提交补货单，库管核对可用库存后安排发货。', 3), ai_opportunities: field('AI尚未上线，仅为未来建议，收益未知。', 4) } },
+    { title: '虚构门店补货流程', type: 'business_process', category: 'supply_chain', factUnitIds: input.factUnits.map(x => x.id), questionUnitIds: input.questionUnits.map(x => x.id) },
   ] }), bytes: 1, finishReason: 'stop' };
 }
 export async function run(root, releaseFile, releaseSha256) {
@@ -108,6 +106,12 @@ export async function run(root, releaseFile, releaseSha256) {
       const stage = request.user.startsWith('请对下列全部已验证事实规划知识页') ? 'planning' : 'extracting';
       must(stage === (reserved === 0 ? 'extracting' : 'planning'), 'REQUEST_ORDER_INVALID');
       await releaseFor(s, releaseFile, releaseSha256);
+      if (s.profile === 'question' && stage === 'planning') {
+        const input = JSON.parse(request.user.split('\n').at(-1));
+        const questionOnly = input.questionUnits.filter(unit => !input.factUnits.some(fact => fact.sourceId === unit.sourceId));
+        await durable(path.join(s.root, 'question-only-gate.json'), { questionOnlyUnitIds: questionOnly.map(unit => unit.id), factUnitIds: input.factUnits.map(unit => unit.id), questionUnitIds: input.questionUnits.map(unit => unit.id) });
+        must(questionOnly.length > 0, 'QUESTION_ONLY_TARGET_NOT_OBSERVED');
+      }
       const sequence = s.sequences[reserved], safeRequest = { system: request.system, user: request.user, purpose: request.purpose, timeoutMs: request.timeoutMs, maxOutputBytes: request.maxOutputBytes };
       await durable(path.join(s.root, `attempt-${sequence}.json`), { sequence, stage, sessionId: s.id, requestSha256: sha(safeRequest), releaseSha256, at: new Date().toISOString(), status: 'pending-counts-if-unknown' }); reserved++;
       let response;
@@ -123,7 +127,7 @@ export async function run(root, releaseFile, releaseSha256) {
         sent++; response = await actual.complete(request);
       } else {
         await durable(path.join(s.root, `request-${sequence}.json`), safeRequest);
-        sent++; response = fakeReply(request);
+        sent++; response = fakeReply(request, s.profile);
       }
       // Private original is retained even if a subsequent secret scan blocks export.
       await durable(path.join(s.root, `response-${sequence}.private.json`), response);
@@ -165,10 +169,11 @@ export async function smoke() {
     assert.equal(result.fakeCalls, 2); assert.equal(result.realCalls, 0); assert.equal(result.configReads, 0);
     assert.equal(result.knowledgeUsed, config.knowledgeBefore); assert.equal(result.promptUsed, 15);
     const original = await read(path.join(root, 'candidate-original.json'));
-    assert.equal(original.originalDraft.pages.length, 2); assert.equal(original.rawUnchanged, true);
-    assert(original.originalDraft.pages.every(page => Object.values(page.templateFields).some(field => field.aiContent?.factIds.length)));
-    assert(original.preview.pages.some(page => page.renderedBody.includes('分析建议｜AI整理（待核对）')));
-    assert.deepEqual(original.originalDraft.pages.flatMap(page => page.source_facts.map(f => f.text)), (await read(config.fixture)).quotes.slice(0, 5));
+    assert.equal(original.originalDraft.pages.length, 1); assert.equal(original.rawUnchanged, true);
+    const page = original.originalDraft.pages[0];
+    assert.equal([...page.source_facts.map(f => f.text), ...page.open_questions].join(''), original.raw.body);
+    assert([...page.source_facts.map(f => f.text), ...page.open_questions].every(text => original.preview.pages[0].renderedBody.includes(text)));
+    if (profile === 'question') assert((await read(path.join(root, 'question-only-gate.json'))).questionOnlyUnitIds.length > 0);
     await assert.rejects(run(root, file, hash), { code: 'SESSION_ALREADY_STARTED' });
     assert.deepEqual((await fs.readdir(root)).filter(name => /^attempt-\d+\.json$/.test(name)).sort(), config.sequences.map(seq => `attempt-${seq}.json`));
     results.push(result);
