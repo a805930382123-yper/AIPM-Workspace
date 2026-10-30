@@ -5,12 +5,13 @@ import { createHash } from 'node:crypto';
 import { MeetingError } from '../services/meeting/errors.ts';
 import { MeetingStore } from '../services/meeting/store.ts';
 import { capabilities } from '../services/meeting/policy.ts';
+import { detectFileFormat, extractBody, fileExtension, ParseError } from '../services/raw/parse.ts';
 import type { MeetingRawBridge } from '../services/meeting/raw-bridge.ts';
 
 function expose(meeting: Awaited<ReturnType<MeetingStore['get']>>) {
   if (!meeting) return undefined;
   const { creation: _creation, ...publicRecord } = meeting;
-  return { ...publicRecord, capabilities: capabilities(meeting) };
+  return { ...publicRecord, imports: publicRecord.imports.map(({file_base64: _file, ...item}) => item), capabilities: capabilities(meeting) };
 }
 function wrap(work: (req: Request, res: Response) => Promise<void>) {
   return async (req: Request, res: Response, next: NextFunction) => { try { await work(req, res); } catch (error) { next(error); } };
@@ -44,13 +45,11 @@ export function registerMeetingRoutes(app: Express, store: MeetingStore, bridge?
   if (bridge) {
     app.post('/api/meetings/:id/raw-links', wrap(async (req, res) => {
       const result = await bridge.register(req.params.id, req.body);
-      const { creation: _creation, ...record } = result.meeting;
-      res.status(result.reused ? 200 : 201).json({ ...record, capabilities: capabilities(result.meeting), raw_id: result.rawId, reused: result.reused });
+      res.status(result.reused ? 200 : 201).json({ ...expose(result.meeting), raw_id: result.rawId, reused: result.reused });
     }));
     app.delete('/api/meetings/:id/raw-links/:rawId', wrap(async (req, res) => {
       const meeting = await bridge.unlink(req.params.id, req.params.rawId, req.body);
-      const { creation: _creation, ...record } = meeting;
-      res.json({ ...record, capabilities: capabilities(meeting) });
+      res.json(expose(meeting));
     }));
   }
 }
@@ -85,26 +84,38 @@ function minutesRoute(store: MeetingStore) {
       payload = body;
     } else if (req.is('multipart/form-data')) {
       const file = req.file;
-      if (!file) throw new MeetingError('MISSING_FILE', '请上传一个字段名为 file 的 .md 文件。');
-      if (!/\.md$/i.test(file.originalname)) throw new MeetingError('UNSUPPORTED_FILE', '仅支持 .md Markdown 文件。', 415);
+      if (!file) throw new MeetingError('MISSING_FILE', '请上传一个字段名为 file 的 DOCX、PDF、MD 或 TXT 文件。');
+      const ext = fileExtension(file.originalname);
+      if (!['.md','.txt','.docx','.pdf'].includes(ext)) throw new MeetingError('UNSUPPORTED_FILE', '支持 DOCX、PDF、MD、TXT；旧版 DOC 请先另存为 DOCX。', 415);
+      const detection = detectFileFormat(file.buffer, ext);
+      if ('failure' in detection) throw new MeetingError(detection.failure.code, detection.failure.message.replaceAll('未创建 Raw', '未保存纪要'), detection.failure.status);
       let text: string;
-      try { text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(file.buffer); }
-      catch { throw new MeetingError('INVALID_UTF8', '文件不是有效 UTF-8 编码，未保存。', 415); }
+      try { text = detection.format === 'markdown' || detection.format === 'txt' ? new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(file.buffer) : (await extractBody(file.buffer, detection.format)).body; }
+      catch (error) { if (error instanceof ParseError) throw new MeetingError(error.code, error.message.replaceAll('未创建 Raw', '未保存纪要'), error.status); throw error; }
       const allowed = ['baseRevision','requestId','confirmReimport'];
       if (Object.keys(req.body ?? {}).some(key => !allowed.includes(key))) throw new MeetingError('UNKNOWN_FIELD', '上传请求包含不支持的字段。');
       payload = { ...req.body, confirmReimport: parseBooleanField(req.body?.confirmReimport, 'confirmReimport'), text,
-        original_filename: file.originalname, file_sha256: createHash('sha256').update(file.buffer).digest('hex') };
+        original_filename: file.originalname, file_base64: file.buffer.toString('base64'), file_format: detection.format, file_sha256: createHash('sha256').update(file.buffer).digest('hex') };
       if (typeof payload.baseRevision === 'string' && /^\d+$/.test(payload.baseRevision)) payload.baseRevision = Number(payload.baseRevision);
     } else {
-      throw new MeetingError('UNSUPPORTED_CONTENT_TYPE', '请使用 JSON 粘贴纪要或 multipart/form-data 上传 .md 文件。', 415);
+      throw new MeetingError('UNSUPPORTED_CONTENT_TYPE', '请使用 JSON 粘贴纪要或 multipart/form-data 上传 DOCX、PDF、MD 或 TXT 文件。', 415);
     }
     const result = await store.importMinutes(req.params.id, payload);
     const { creation: _creation, minute_requests: _requests, ...publicRecord } = result.meeting;
-    res.status(result.reused ? 200 : 201).json({ ...publicRecord, capabilities: capabilities(result.meeting), imported: result.imported, reused: result.reused });
+    const { file_base64: _file, ...imported } = result.imported;
+    res.status(result.reused ? 200 : 201).json({ ...publicRecord, imports: publicRecord.imports.map(({file_base64: _bytes, ...item}) => item), capabilities: capabilities(result.meeting), imported, reused: result.reused });
   });
 }
 export function registerMeetingMinutesRoutes(app: Express, store: MeetingStore): void {
   const preflight = preflightImport(store);
+  app.get('/api/meetings/:id/minutes/:importId/file', wrap(async (req, res) => {
+    const meeting = await store.get(req.params.id);
+    const item = meeting?.imports.find(version => version.import_id === req.params.importId);
+    if (!item?.file_base64 || !item.original_filename) throw new MeetingError('NOT_FOUND', '该版本没有可下载的原文件。', 404);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(item.original_filename)}`);
+    res.send(Buffer.from(item.file_base64, 'base64'));
+  }));
   app.post('/api/meetings/:id/minutes/import', preflight, (req, res, next) => {
     if (req.is('application/json')) { express.json({ limit: '3mb', strict: true })(req, res, error => error ? next(error) : minutesRoute(store)(req, res, next)); return; }
     if (req.is('multipart/form-data')) { minutesUpload.single('file')(req, res, error => {
@@ -113,12 +124,12 @@ export function registerMeetingMinutesRoutes(app: Express, store: MeetingStore):
       if (error) { next(error); return; }
       void minutesRoute(store)(req, res, next);
     }); return; }
-    next(new MeetingError('UNSUPPORTED_CONTENT_TYPE', '请使用 JSON 粘贴纪要或 multipart/form-data 上传 .md 文件。', 415));
+    next(new MeetingError('UNSUPPORTED_CONTENT_TYPE', '请使用 JSON 粘贴纪要或 multipart/form-data 上传 DOCX、PDF、MD 或 TXT 文件。', 415));
   });
   app.patch('/api/meetings/:id/minutes/:importId', preflight, (req,res,next)=>express.json({limit:'3mb',strict:true})(req,res,error=>error?next(error):wrap(async (innerReq,innerRes)=>{
     const result = await store.updateEditableMinutes(innerReq.params.id, innerReq.params.importId, innerReq.body);
     const { creation: _creation, minute_requests: _requests, ...publicRecord } = result;
-    innerRes.json({ ...publicRecord, capabilities: capabilities(result) });
+    innerRes.json({ ...publicRecord, imports: publicRecord.imports.map(({file_base64: _file, ...item}) => item), capabilities: capabilities(result) });
   })(req,res,next)));
   app.delete('/api/meetings/:id/minutes', (req,res,next)=>express.json({limit:'32kb',strict:true})(req,res,error=>error?next(error):wrap(async (innerReq,innerRes)=>{
     const result = await store.clearMinutes(innerReq.params.id, innerReq.body);

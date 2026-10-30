@@ -1,5 +1,14 @@
 # 工程状态
 
+## 会议备注与文件上传：工程验证通过，完整UI验收待验证（2026-10-30）
+
+用户授权修复多行备注并新增Word/PDF/MD/TXT本地纪要上传。评分0/2/2/0=4，A标准，Astra Medium规划、Sol High先审、Terra High施工、独立Sol High验收。备注正常LF/CRLF/TAB可保存和读回；新建提供保存后上传入口，支持DOCX、文字层PDF、UTF-8 MD/TXT（2MiB），原文件与正文同版本保存、下载及备份恢复，策略授权保持。基线d3d3caa，本轮代码及报告随本次提交关联。
+
+工程已覆盖项通过：独立40/40、返修定点1/1、负面文件及32MiB上限、DOCX/PDF进程重启和恢复下载字节一致，施工build通过；Raw关联响应附件字段遗漏已修复独立关闭。主线程实际UI完成三行备注新建、同会议独立本地授权和上传格式入口；Chrome扩展文件权限阻止选择文件，CUA回退因无法确定URL停止。MI02/MI03实际DOCX/PDF上传及失败重试未测，因此本轮整体BLOCKED待UI验证，不能标完整PASS。B09旧109 PASS仅历史结论，不覆盖新增行为。
+
+证据：[任务卡](handoffs/MEETING-INPUT-20261030-task.md)、[施工](reports/MEETING-INPUT-20261030-builder.md)、[独立验收](reports/MEETING-INPUT-20261030-review.md)、[使用说明](meeting-hub/M05-usage.md)。真实API0，预算不变，正式workspace未用于验收；隔离服务已关闭，隔离数据保留。下一步仅补齐实际浏览器上传及失败重试证据。
+
+
 ## 本机试用交接独立通过（2026-10-30）
 
 用户授权按预检建议完成本机试用交接。评分0/1/1/0=2，A标准；Astra Medium确认计划、Terra High施工、独立Sol High验收。本轮仅更新交付说明和隔离验证脚本，没有产品代码修改。产品基线53c1691，验收HEAD648872f；最终文档指纹见[独立报告](reports/LOCAL-HANDOVER-20261030-review.md)。

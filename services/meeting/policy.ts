@@ -27,7 +27,7 @@ function text(value: unknown, field: string, label: string, max: number, require
   const normalized = value.trim();
   if (required && !normalized) throw new MeetingError('REQUIRED_FIELD', `${label}不能为空。`, 400, { field });
   if (normalized.length > max) throw new MeetingError('FIELD_TOO_LARGE', `${label}超过 ${max} 字符上限。`, 400, { field, limit: max });
-  if (/[\u0000-\u001f\u007f]/.test(normalized)) throw new MeetingError('INVALID_FIELD', `${label}包含控制字符。`, 400, { field });
+  if ((field === 'description' ? /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/ : /[\u0000-\u001f\u007f]/).test(normalized)) throw new MeetingError('INVALID_FIELD', `${label}包含控制字符。`, 400, { field });
   return normalized || null;
 }
 function url(value: unknown, field: string, label: string): string | null {

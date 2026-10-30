@@ -1,5 +1,10 @@
 # 项目总控记录
 
+## 会议备注与文件上传（2026-10-30）
+
+用户明确授权多行备注修复及DOCX/PDF/MD/TXT上传。A标准4分（0/2/2/0），实际Astra Medium规划、Sol High先审、Terra High施工、Sol High独立验收。基线d3d3caa。工程覆盖项通过，Raw响应附件遗漏已返修关闭；独立40/40及定点1/1、负面/容量/重启恢复通过，施工build通过。主线程UI验证备注创建与本地授权，但浏览器文件选择受工具权限限制、CUA回退被停止；MI02/MI03实际上传和失败重试未测。本轮整体BLOCKED待UI验证，B09既有109 PASS单列。真实API0、预算不变、隔离服务已关闭。详见[独立报告](reports/MEETING-INPUT-20261030-review.md)及[任务卡](handoffs/MEETING-INPUT-20261030-task.md)。后续仅补上述UI证据，不重复已通过工程检查。
+
+
 ## 本机试用交接独立通过（2026-10-30）
 
 用户授权本机试用交接；评分0/1/1/0=2，A标准，实际Astra Medium确认计划、Terra High施工、Sol High独立验收。仅文档与隔离脚本；产品53c1691、验收HEAD648872f。独立两次运行exit0，正文/引用、同根重启及6文件SHA备份新根恢复通过；备份路径文档缺陷已返修独立关闭。本轮交接PASS，B09整体沿用历史109 PASS；UI未测、真实API0，原预算不变，不触及正式workspace或部署。证据及最终指纹见[独立报告](reports/LOCAL-HANDOVER-20261030-review.md)，运行入口见[交付说明](delivery.md)。本轮止于交接，后续功能范围待用户指定。

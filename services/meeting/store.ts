@@ -51,15 +51,17 @@ function validMinute(value: unknown): value is MeetingMinuteVersion {
   const x = value as MeetingMinuteVersion;
   const keys = ['import_id','imported_at','imported_minutes','editable_minutes','original_filename','original_sha256'];
   if (x.file_sha256 !== undefined) keys.push('file_sha256');
+  if (x.file_base64 !== undefined) keys.push('file_base64', 'file_format');
   return exactKeys(x as unknown as Record<string, unknown>, keys)
     && typeof x.import_id === 'string' && UUID_PATTERN.test(x.import_id) && x.import_id === x.import_id.toLowerCase()
     && validTimestamp(x.imported_at)
     && typeof x.imported_minutes === 'string' && x.imported_minutes.length > 0 && x.imported_minutes.length <= MAX_MINUTE_CHARS && !!x.imported_minutes.trim() && !x.imported_minutes.includes('\0') && validUnicodeText(x.imported_minutes)
     && Buffer.byteLength(x.imported_minutes, 'utf8') <= MAX_MINUTE_BYTES
     && typeof x.editable_minutes === 'string' && x.editable_minutes.length > 0 && x.editable_minutes.length <= MAX_MINUTE_CHARS && !!x.editable_minutes.trim() && !x.editable_minutes.includes('\0') && validUnicodeText(x.editable_minutes)
-    && (x.original_filename === null || (typeof x.original_filename === 'string' && x.original_filename.length > 0 && x.original_filename.length <= 255 && /\.md$/i.test(x.original_filename) && validUnicodeText(x.original_filename) && !/[\\/\u0000-\u001f\u007f]/.test(x.original_filename)))
+    && (x.original_filename === null || (typeof x.original_filename === 'string' && x.original_filename.length > 0 && x.original_filename.length <= 255 && /\.(md|txt|docx|pdf)$/i.test(x.original_filename) && validUnicodeText(x.original_filename) && !/[\\/\u0000-\u001f\u007f]/.test(x.original_filename)))
     && typeof x.original_sha256 === 'string' && /^[0-9a-f]{64}$/.test(x.original_sha256) && x.original_sha256 === createHash('sha256').update(x.imported_minutes, 'utf8').digest('hex')
-    && (x.file_sha256 === undefined || (typeof x.file_sha256 === 'string' && /^[0-9a-f]{64}$/.test(x.file_sha256) && x.file_sha256 === x.original_sha256));
+    && (x.file_sha256 === undefined || (typeof x.file_sha256 === 'string' && /^[0-9a-f]{64}$/.test(x.file_sha256) && (x.file_base64 !== undefined || x.file_sha256 === x.original_sha256)))
+    && (x.file_base64 === undefined || (typeof x.file_base64 === 'string' && x.file_base64.length > 0 && Buffer.from(x.file_base64, 'base64').toString('base64') === x.file_base64 && Buffer.from(x.file_base64, 'base64').length <= MAX_MINUTE_BYTES && createHash('sha256').update(Buffer.from(x.file_base64, 'base64')).digest('hex') === x.file_sha256 && ['markdown','txt','docx','pdf'].includes(x.file_format!)));
 }
 function validMinuteRequest(value: unknown): value is MinuteRequest {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -122,7 +124,7 @@ function validMeeting(value: unknown, id: string): value is Meeting {
   const dateValid = typeof x.meeting_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.meeting_date) && !Number.isNaN(Date.parse(`${x.meeting_date}T00:00:00Z`)) && new Date(`${x.meeting_date}T00:00:00Z`).toISOString().slice(0, 10) === x.meeting_date;
   const timeValid = x.meeting_time === null || (typeof x.meeting_time === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(x.meeting_time));
   const tagsValid = Array.isArray(x.tags) && x.tags.length <= 100 && x.tags.every(tag => typeof tag === 'string' && UUID_PATTERN.test(tag) && tag === tag.toLowerCase()) && new Set(x.tags).size === x.tags.length;
-  const nullableText = validOptionalText(x.customer, 200) && validOptionalText(x.project, 200) && validOptionalText(x.description, 2000);
+  const nullableText = validOptionalText(x.customer, 200) && validOptionalText(x.project, 200) && (x.description === null || (typeof x.description === 'string' && x.description === x.description.trim() && x.description.length > 0 && x.description.length <= 2000 && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(x.description)));
   const policyConsistent = x.external_ai_authorized === false && !(x.confidentiality === 'Restricted' && (x.storage_mode !== 'cloud_index' || x.local_storage_authorized || x.raw_transfer_authorized || x.tags.length || x.customer || x.project || x.description || x.recording_url || x.minutes_url))
     && !((x.confidentiality === 'Internal' || x.confidentiality === 'Sensitive') && x.storage_mode === 'local_archive' && !x.local_storage_authorized)
     && !(x.storage_mode === 'cloud_index' && x.raw_transfer_authorized)
@@ -278,7 +280,7 @@ export class MeetingStore {
   async importMinutes(id: unknown, value: unknown): Promise<{ meeting: Meeting; imported: MeetingMinuteVersion; reused: boolean }> {
     return this.serialized(async () => {
       const source = value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-      const allowed = ['baseRevision','requestId','text','confirmReimport','original_filename','file_sha256'];
+      const allowed = ['baseRevision','requestId','text','confirmReimport','original_filename','file_sha256','file_base64','file_format'];
       if (Object.keys(source).some(key => !allowed.includes(key))) throw new MeetingError('UNKNOWN_FIELD', '导入请求包含不支持的字段。');
       if (!Number.isSafeInteger(source.baseRevision) || (source.baseRevision as number) < 1) throw new MeetingError('INVALID_REVISION', 'baseRevision 必须是大于 0 的整数。', 400, { field: 'baseRevision' });
       const requestId = requireUuid(source.requestId, 'requestId');
@@ -290,11 +292,11 @@ export class MeetingStore {
       if (!text.length || !text.trim() || text.includes('\0') || !validUnicodeText(text)) throw new MeetingError('INVALID_MINUTES', '纪要正文不能为空、不能全为空白或包含不支持的字符。', 400, { field: 'text' });
       if (source.confirmReimport !== undefined && typeof source.confirmReimport !== 'boolean') throw new MeetingError('INVALID_FIELD', 'confirmReimport 必须是布尔值。', 400, { field: 'confirmReimport' });
       const filename = source.original_filename === undefined ? null : source.original_filename;
-      if (filename !== null && (typeof filename !== 'string' || !filename || filename.length > 255 || /[\\/\u0000-\u001f\u007f]/.test(filename) || !/\.md$/i.test(filename))) throw new MeetingError('INVALID_FILENAME', '只支持有效的 .md 文件名。', 415, { field: 'file' });
+      if (filename !== null && (typeof filename !== 'string' || !filename || filename.length > 255 || /[\\/\u0000-\u001f\u007f]/.test(filename) || !/\.(md|txt|docx|pdf)$/i.test(filename))) throw new MeetingError('INVALID_FILENAME', '文件名无效或格式不支持。', 415, { field: 'file' });
       if (filename !== null && source.file_sha256 !== undefined && (typeof source.file_sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(source.file_sha256))) throw new MeetingError('INVALID_FILE_DIGEST', '上传文件摘要格式无效。');
       if (filename === null && source.file_sha256 !== undefined) throw new MeetingError('INVALID_FILE_DIGEST', '粘贴纪要不接受上传文件摘要。');
       const textSha256 = createHash('sha256').update(text, 'utf8').digest('hex');
-      if (filename !== null && source.file_sha256 !== undefined && source.file_sha256 !== textSha256) throw new MeetingError('INVALID_FILE_DIGEST', '上传文件字节摘要与原文不一致。');
+      if (filename !== null && source.file_base64 === undefined && source.file_sha256 !== undefined && source.file_sha256 !== textSha256) throw new MeetingError('INVALID_FILE_DIGEST', '上传文件字节摘要与原文不一致。');
       const fileSha = filename === null ? null : source.file_sha256;
       const inputSha256 = digest({ text, original_filename: filename, file_sha256: fileSha });
       const current = await this.read(id); if (!current) throw new MeetingError('NOT_FOUND', '没有找到这条会议记录。', 404);
@@ -315,7 +317,7 @@ export class MeetingStore {
       if (current.imports.length && source.confirmReimport !== true) throw new MeetingError('REIMPORT_CONFIRMATION_REQUIRED', '已有纪要版本；确认后才会新增版本并切换工作副本。', 409, { versionCount: current.imports.length });
       const now = new Date().toISOString();
       const imported: MeetingMinuteVersion = { import_id: randomUUID(), imported_at: now, imported_minutes: text, editable_minutes: text, original_filename: filename,
-        original_sha256: textSha256, ...(filename !== null && source.file_sha256 !== undefined ? { file_sha256: source.file_sha256 as string } : {}) };
+        original_sha256: textSha256, ...(source.file_base64 !== undefined ? { file_base64: source.file_base64 as string, file_format: source.file_format as MeetingMinuteVersion['file_format'] } : {}), ...(filename !== null && source.file_sha256 !== undefined ? { file_sha256: source.file_sha256 as string } : {}) };
       const next: Meeting = { ...current, imports: [...current.imports, imported], active_import_id: imported.import_id,
         raw_source_id: current.raw_links.find(item => item.status === 'linked' && item.import_id === imported.import_id)?.raw_id ?? null,
         minute_requests: [...ledger, { requestId, inputSha256, importId: imported.import_id, deleted: false }],

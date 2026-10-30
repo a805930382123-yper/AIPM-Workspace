@@ -352,7 +352,13 @@ test('meeting registration HTTP contract enforces exact fields and stable errors
     const address = server.address();
     assert.ok(address && typeof address !== 'string');
     const base = `http://127.0.0.1:${address.port}`;
-    const meeting = await prepareMeeting(stores, 'Public');
+    let meeting = await prepareMeeting(stores, 'Public');
+    const bytes = Buffer.from('上传的原件');
+    meeting = (await stores.meetings.importMinutes(meeting.meeting_id, {
+      baseRevision: meeting.revision, requestId: randomUUID(), text: bytes.toString(), confirmReimport: true,
+      original_filename: 'minutes.txt', file_sha256: createHash('sha256').update(bytes).digest('hex'),
+      file_base64: bytes.toString('base64'), file_format: 'txt',
+    })).meeting;
     const forged = await fetch(`${base}/api/meetings/${meeting.meeting_id}/raw-links`, {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ baseRevision: meeting.revision, requestId: randomUUID(), import_id: meeting.active_import_id, confirm: true, origin: { kind: 'meeting' } }),
@@ -364,10 +370,18 @@ test('meeting registration HTTP contract enforces exact fields and stable errors
       body: JSON.stringify({ baseRevision: meeting.revision, requestId: randomUUID(), import_id: meeting.active_import_id, confirm: true }),
     });
     assert.equal(response.status, 201);
-    const detail = await response.json() as { raw_id: string; reused: boolean; raw_links: Array<{ status: string }> };
+    const detail = await response.json() as { revision: number; raw_id: string; reused: boolean; imports: Array<{file_base64?: string}>; raw_links: Array<{ status: string }> };
     assert.equal(detail.reused, false);
     assert.equal(detail.raw_links[0]?.status, 'linked');
     assert.ok(await stores.raws.get(detail.raw_id));
+    assert.ok(detail.imports.every(item => !('file_base64' in item)));
+    const unlink = await fetch(`${base}/api/meetings/${meeting.meeting_id}/raw-links/${detail.raw_id}`, {
+      method: 'DELETE', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ baseRevision: detail.revision, confirm: true }),
+    });
+    assert.equal(unlink.status, 200);
+    const unlinked = await unlink.json() as { imports: Array<{file_base64?: string}> };
+    assert.ok(unlinked.imports.every(item => !('file_base64' in item)));
   } finally {
     await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
   }

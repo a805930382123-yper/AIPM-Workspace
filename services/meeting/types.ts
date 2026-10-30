@@ -17,6 +17,8 @@ export type MeetingMinuteVersion = {
   original_filename: string | null;
   original_sha256: string;
   file_sha256?: string;
+  file_base64?: string;
+  file_format?: 'markdown' | 'txt' | 'docx' | 'pdf';
 };
 export type MinuteRequest = { requestId: string; inputSha256: string; importId: string; deleted: boolean };
 export type MeetingRawLinkError = { code: string; at: string };

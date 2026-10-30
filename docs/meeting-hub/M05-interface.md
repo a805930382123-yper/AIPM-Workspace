@@ -19,3 +19,6 @@ RawPage在明确ID不存在时展示可读缺失状态；无明确ID才采用真
 实际本机使用说明见[M05-usage](M05-usage.md)。默认workspace或FMCG_DATA_DIR；meetings目录、纪要JSON、Raw原件及现有备份白名单未变。完整本地场景已纳入独立HTTP、原件SHA、实际重启、CLI导出恢复、删除及受限入口验证；浏览器覆盖桌面与390×844基本窄屏。
 
 本批不新增模型、会议AI、播放器、云部署或会议演示灌入，不改正式数据，不修旧S-03/S-04，不补签真实Provider36项。MH36/MH37的本机机械兼容与旧安全FAIL/真实AI BLOCKED分列；Meeting Hub本地阶段结论不能替代全产品验收。
+## 2026-10-30 本地纪要文件接口
+
+`POST /api/meetings/:id/minutes/import` 的 multipart `file` 支持 DOCX、带文字层 PDF、严格 UTF-8 MD/TXT，最大 2 MiB；旧 DOC 需另存 DOCX。策略预检与提交时复核沿用原约束。MD/TXT 保留 BOM 和换行；DOCX/PDF 的提取正文与文件字节分开存储，`original_sha256` 为正文摘要、`file_sha256` 为原文件摘要。新文件原件与版本一并保存在会议 JSON；旧版本无附件字段仍可读取。响应不包含原文件 Base64；`GET /api/meetings/:id/minutes/:importId/file` 以附件下载原文件，旧版本无原文件返回 404。上传不会自动登记 Raw 或调用 AI。
