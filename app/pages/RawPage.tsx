@@ -27,6 +27,8 @@ export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitt
   const [deletingItem, setDeletingItem] = useState<Raw | null>(null);
   const [aiError, setAiError] = useState('');
   const [aiBusy, setAiBusy] = useState(false);
+  const startGeneration=useRef(0);
+  useEffect(()=>{startGeneration.current++;setAiBusy(false);setAiError('');},[selected?.id]);
   const [synthesisOpen, setSynthesisOpen] = useState(false);
   const [synthesisIds, setSynthesisIds] = useState<string[]>([]);
   const [synthesisSourceIds, setSynthesisSourceIds] = useState<string[]>([]);
@@ -44,26 +46,27 @@ export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitt
   // the server confirms it, so every exit path (关闭 / 右上角关闭 / 继续导入) stays in sync.
   const openCommitted = (raw: Raw) => { onSelected(raw.id); closeDialogs(); };
   const handleDeleted = async (id: string) => { setDeletingItem(null); await onDeleted(id); };
-  const startAi = async (rawId: string, restart = false, planningRetry = false) => {
+  const startAi = async (rawId: string, restart = false, planningRetry = false, mode: 'standard'|'deep' = 'standard') => {
+    const generation=startGeneration.current;
     const requestedPageGeneration = navigationGeneration; const requestedSelectionGeneration = selectionGeneration;
     setAiError(''); setAiBusy(true);
     try {
-      const started = await startExtract(rawId, restart ? { restart: true } : planningRetry ? { planningRetry: true } : {});
+      const started = await startExtract(rawId, restart ? { restart: true,mode } : planningRetry ? { planningRetry: true,mode } : {mode});
       onJobStarted(started, requestedPageGeneration, requestedSelectionGeneration);
       await onRefresh();
     } catch (error) {
-      setAiError(error instanceof Error ? error.message : '无法启动 AI 整理。');
+      if(generation===startGeneration.current)setAiError(error instanceof Error ? error.message : '无法启动 AI 整理。');
       const jobId = error instanceof ApiError ? (error.details as { jobId?: string } | undefined)?.jobId : undefined;
       if (jobId) {
         try { onJobStarted(await extractionJob(jobId), requestedPageGeneration, requestedSelectionGeneration); await onRefresh(); } catch { /* The original safe error remains visible. */ }
       }
     }
-    finally { setAiBusy(false); }
+    finally { if(generation===startGeneration.current)setAiBusy(false); }
   };
   const selectedState = selected ? processing[selected.id] : undefined;
   const generateImported = async (raw: Raw) => {
     const requestedPageGeneration = navigationGeneration; const requestedSelectionGeneration = selectionGeneration;
-    const started = await startExtract(raw.id);
+    const started = await startExtract(raw.id,{mode:raw.body.length<=30000?'deep':'standard'});
     onJobStarted(started, requestedPageGeneration, requestedSelectionGeneration);
     await onRefresh();
   };
@@ -75,7 +78,7 @@ export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitt
         const state = processing[item.id];
         return <button key={item.id} className={`raw-list-item ${selected?.id === item.id ? 'selected' : ''}`} onClick={() => onSelected(item.id)}><span className="file-icon">文</span><span className="recent-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{sourceLabels[item.sourceType]} · {item.sourceName}{item.origin ? ' · 本机专用' : ''}</small><small>{dateText(item.importedAt)}{state && state.status !== 'unprocessed' ? ` · ${rawStatusLabels[state.status]}` : ''}</small></span></button>;
       })}</div> : <div className="list-empty"><div className="empty-symbol">▧</div><b>还没有原始资料</b><span>导入第一份文章或业务记录。</span><button className="secondary-button" onClick={onOpenImport}>导入资料</button></div>}</section>
-      <section className="panel raw-detail-panel">{selected ? <RawDetail item={selected} state={selectedState} job={job} onStorageReconciled={value => { onJobStarted(value, navigationGeneration, selectionGeneration); void onRefresh(); }} busy={aiBusy} error={aiError} onStartAi={(restart, planningRetry) => void startAi(selected.id, restart, planningRetry)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
+      <section className="panel raw-detail-panel">{selected ? <RawDetail key={selected.id} item={selected} state={selectedState} job={job} onStorageReconciled={value => { onJobStarted(value, navigationGeneration, selectionGeneration); void onRefresh(); }} busy={aiBusy} error={aiError} onStartAi={(restart, planningRetry,mode) => void startAi(selected.id, restart, planningRetry,mode)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
     </div>
     {dialogOpen && <ImportDialog prefill={reimport} onClose={closeDialogs} onCommitted={onCommitted} onOpen={openCommitted} onGenerate={generateImported} />}
     {deletingItem && <DeleteDialog item={deletingItem} onClose={() => setDeletingItem(null)} onDeleted={handleDeleted} />}
@@ -85,9 +88,10 @@ export function RawPage({ items, selectedId, onSelected, onOpenImport, onCommitt
 
 function RawDetail({ item, state, job, busy, error, onStartAi, onReimport, onDelete, onOpenDraft, onStorageReconciled }: {
   item: Raw; state?: RawProcessingState; job: ExtractionJob | null; busy: boolean; error: string; onStorageReconciled: (job: ExtractionJob) => void;
-  onStartAi: (restart?: boolean, planningRetry?: boolean) => void; onReimport: () => void; onDelete: () => void; onOpenDraft: (draftId: string) => void;
+  onStartAi: (restart?: boolean, planningRetry?: boolean,mode?:'standard'|'deep') => void; onReimport: () => void; onDelete: () => void; onOpenDraft: (draftId: string) => void;
 }) {
   const status = state?.status ?? 'unprocessed';
+  const [mode,setMode]=useState<'standard'|'deep'>(()=>item.body.length<=30000?'deep':'standard');
   const [savingState, setSavingState] = useState(false);
   const [savingError, setSavingError] = useState('');
   const recoveryGeneration = useRef(0);
@@ -110,27 +114,28 @@ function RawDetail({ item, state, job, busy, error, onStartAi, onReimport, onDel
     finally { if (generation === recoveryGeneration.current) setSavingState(false); }
   };
   const progressText = status === 'processing' && activeJob
-    ? `${jobStageLabels[activeJob.stage]} · 已验证 ${activeJob.checkpoint?.validatedChunks ?? activeJob.progress.chunksDone}/${activeJob.checkpoint?.totalChunks ?? (activeJob.progress.chunksTotal || '?')} 段 · ${activeJob.checkpoint ? `累计 ${activeJob.checkpoint.attempts} 次调用，复用 ${activeJob.checkpoint.reusedChunks} 段` : `已有 ${activeJob.progress.pagesFound} 条建议`}`
+    ? `${activeJob.mode==='deep'?({extracting:'提取',planning:'知识页规划',outline:'大纲',writing:'写作',quality:'质量检查',ready:'完成'} as Record<string,string>)[activeJob.checkpoint?.deepStage??activeJob.stage]??jobStageLabels[activeJob.stage]:jobStageLabels[activeJob.stage]} · 已验证 ${activeJob.checkpoint?.validatedChunks ?? activeJob.progress.chunksDone}/${activeJob.checkpoint?.totalChunks ?? (activeJob.progress.chunksTotal || '?')} 段 · ${activeJob.checkpoint ? `累计 ${activeJob.checkpoint.attempts} 次调用，复用 ${activeJob.checkpoint.reusedChunks} 段` : `已有 ${activeJob.progress.pagesFound} 条建议`}`
     : '';
   return <article className="raw-detail">
     <div className="detail-actions">
       <span className={`status ai-status ${status}`}><i />{rawStatusLabels[status]}</span>
       <span className="detail-type">{sourceLabels[item.sourceType]}</span>{meetingOnly && <span className="detail-type meeting-local-badge">本机专用</span>}
       <div className="action-group">
-        {!meetingOnly && (status === 'unprocessed' || status === 'failed' || status === 'generated') && <button className="text-button ai-action" disabled={busy || storageBlocked} onClick={() => onStartAi()}>{busy ? '正在启动…' : status === 'failed' && activeJob?.pipelineVersion?.startsWith('kb02-') ? '继续提取' : status === 'failed' ? '重试 AI 整理' : 'AI 整理知识'}</button>}
+        {!meetingOnly && (status === 'unprocessed' || status === 'failed' || status === 'generated') && <button className="text-button ai-action" disabled={busy || storageBlocked} onClick={() => onStartAi(false,false,status==='failed'&&activeJob?(activeJob.mode??'standard'):mode)}>{busy ? '正在启动…' : status === 'failed' && activeJob?.pipelineVersion ? '显式继续提取' : status === 'failed' ? '重试 AI 整理' : 'AI 整理知识'}</button>}
         {!meetingOnly && status === 'processing' && activeJob && activeJob.execution !== 'settled' && !storageBlocked && <button className="text-button" onClick={async () => { await api(`/api/extraction-jobs/${encodeURIComponent(activeJob.jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) }); }}>取消整理</button>}
         {!meetingOnly && status === 'pending_confirmation' && state?.draftId && !storageBlocked && <button className="text-button ai-action" onClick={() => onOpenDraft(state.draftId as string)}>继续审核</button>}
         {!meetingOnly && <button className="text-button" onClick={onReimport}>重新导入</button>}
         <button className="text-button danger" onClick={onDelete}>删除</button>
       </div>
     </div>
+    {!meetingOnly&&<label className="field raw-extraction-mode">整理模式<select aria-label="整理模式" value={mode} disabled={busy||status==='processing'} onChange={e=>setMode(e.target.value as 'standard'|'deep')}><option value="deep" disabled={item.body.length>30000}>深度整理</option><option value="standard">标准整理</option></select><small>{item.body.length>30000?'正文超过30000字符，深度整理不可选；标准整理保留全文。':'深度整理生成结构化阅读笔记，可显式选择标准整理。'}{status==='failed'&&activeJob?` 显式继续将沿用原任务${activeJob.mode==='deep'?'深度':'标准'}模式；明确重新生成使用当前选择。`:''}</small></label>}
     {storageBlocked && <section className="notice-warn" role="alert"><b>{activeJob?.execution === 'running' ? '任务正在停止，状态保存失败' : '任务已停止，状态保存失败'}</b><p>{activeJob?.recovery?.message}（{activeJob?.recovery?.phase}）</p><p>重试保存只对账本机状态，不会重新调用模型。</p><button className="secondary-button" disabled={savingState || activeJob?.execution !== 'settled'} onClick={() => void retryStorage()}>{savingState ? '正在保存状态…' : '重试保存状态'}</button>{savingError && <p className="form-error">{savingError}</p>}</section>}
     {progressText && <p className="ai-progress">{progressText}</p>}
     {meetingOnly && <p className="notice-warn">Meeting来源仅限本机保存：禁止外部 AI、Wiki沉淀与Prompt背景使用。</p>}
     {status === 'failed' && state?.lastError && <p className="notice-warn">{state.lastError.code}：{state.lastError.message}{state.lastError.retryable ? '（可以重试）' : '（需要先处理配置或资料问题）'}</p>}
-    {status === 'failed' && activeJob?.error?.code === 'LLM_PLAN_COVERAGE_INVALID' && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(false, true)}>仅重新规划（带覆盖诊断）</button>}
+    {status === 'failed' && activeJob?.mode!=='deep' && activeJob?.error?.code === 'LLM_PLAN_COVERAGE_INVALID' && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(false, true,'standard')}>仅重新规划（带覆盖诊断）</button>}
     {status === 'failed' && activeJob?.checkpoint && <p className="extract-note">检查点已验证 {activeJob.checkpoint.validatedChunks}/{activeJob.checkpoint.totalChunks} 段，累计 {activeJob.checkpoint.attempts} 次调用。</p>}
-    {status === 'failed' && activeJob?.pipelineVersion?.startsWith('kb02-') && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(true)}>明确重新生成</button>}
+    {status === 'failed' && activeJob?.pipelineVersion && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(true,false,mode)}>明确重新生成</button>}
     {status === 'generated' && (state?.generatedWikiIds?.length ?? 0) > 0 && <p className="extract-note">已生成知识页：<code className="mono">{state?.generatedWikiIds?.join('、')}</code></p>}
     {error && <p className="form-error" role="alert">{error}</p>}
     <h2>{item.title}</h2>

@@ -15,6 +15,19 @@ export type NoteBlock =
   | { type: 'path_diagram'; title: string; nodes: (NoteText & { id: string })[]; edges: (NoteAttribution & { from: string; to: string; text: string })[] }
   | (NoteText & { type: 'callout'; title: string });
 export type StructuredNote = { version: 1; orientation: string; sections: { id: string; title: string; question: string; blocks: NoteBlock[] }[] };
+export type NoteExclusion = {kind:'fact'|'question';id:string;reason:string};
+export type NoteReviewMetadata = {version:1;generatedNoteDigest:string;generatedSections:{id:string;blockCount:number}[];contentDigest:string;exclusions:NoteExclusion[];questionIds:string[];humanQuestions:string[]};
+export const noteReviewContent = (note:StructuredNote,exclusions:NoteExclusion[],questionIds:string[],humanQuestions:string[])=>({note,exclusions,questionIds,humanQuestions});
+export function noteFactIds(note:StructuredNote):string[]{return note.sections.flatMap(s=>s.blocks.flatMap(b=>b.type==='list'?b.items.flatMap(i=>i.factIds):b.type==='table'?b.rows.flatMap(r=>r.factIds):b.type==='path_diagram'?[...b.nodes,...b.edges].flatMap(v=>v.factIds):b.factIds));}
+export function noteCoverage(note:StructuredNote,facts:string[],questions:string[],exclusions:NoteExclusion[]=[],questionIds:string[]=[]){
+  const used=new Set(noteFactIds(note));return [...facts.map(id=>({kind:'fact' as const,id})),...questions.map(id=>({kind:'question' as const,id}))].map(item=>({...item,status:(item.kind==='fact'?used.has(item.id):questionIds.includes(item.id))?'referenced' as const:exclusions.some(e=>e.kind===item.kind&&e.id===item.id&&!!e.reason.trim())?'excluded' as const:'uncovered' as const}));
+}
+export function validNoteReview(v:unknown):v is NoteReviewMetadata {
+  if(!object(v)||!keys(v,['version','generatedNoteDigest','generatedSections','contentDigest','exclusions','questionIds','humanQuestions'])||v.version!==1||![v.generatedNoteDigest,v.contentDigest].every(x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x)))return false;
+  if(!array(v.generatedSections,32)||!v.generatedSections.every(s=>object(s)&&keys(s,['id','blockCount'])&&id(s.id)&&Number.isInteger(s.blockCount)&&Number(s.blockCount)>0&&Number(s.blockCount)<=128)||new Set(v.generatedSections.map(s=>(s as {id:string}).id)).size!==v.generatedSections.length)return false;
+  if(!array(v.exclusions,384,0)||!v.exclusions.every(e=>object(e)&&keys(e,['kind','id','reason'])&&['fact','question'].includes(String(e.kind))&&id(e.id)&&text(e.reason,2000))||new Set(v.exclusions.map(e=>{const x=e as NoteExclusion;return x.kind+':'+x.id;})).size!==v.exclusions.length)return false;
+  return array(v.questionIds,128,0)&&v.questionIds.every(id)&&new Set(v.questionIds).size===v.questionIds.length&&array(v.humanQuestions,128,0)&&v.humanQuestions.every(q=>text(q,2000));
+}
 export class StructuredNoteError extends Error {
   code = 'STRUCTURED_NOTE_INVALID';
   status = 400;

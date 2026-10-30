@@ -13,6 +13,8 @@ import type { RawStore } from '../services/raw/store.ts';
 import type { WikiStore } from '../services/wiki/store.ts';
 import { InputError } from './validation.ts';
 import { validateConfirm, validateDiscard, validateDraftPatch, validateHumanReview, validateDraftQuestionReview } from './llm-validation.ts';
+import {noteCoverage} from '../services/wiki/structured-note.ts';
+import {inspectEditedNote} from '../services/llm/knowledge-deep.ts';
 
 export type B04Deps = {
   root: string;
@@ -151,6 +153,7 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     const reuseTitle = previewValue?.sourceReuse?.title;
     return {
       ...deps.drafts.view(draft, { sourceTitle: reuseTitle ?? draft.source.title }),
+      ...(draft.structuredNote?{noteQualityStatus:draft.noteReview?'historical':'generated',noteCoverage:noteCoverage(draft.structuredNote,draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)),draft.humanReview!.units.filter(u=>u.kind==='question').flatMap(u=>u.records.map(r=>r.id)),draft.noteReview?.exclusions,draft.noteReview?.questionIds),noteWarnings:inspectEditedNote(draft.structuredNote,new Map(draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>[r.id,r.text] as const))))}:{}),
       reviewContentDigest: draft.humanReview ? deps.drafts.contentDigest(draft) : null,
       preview: previewValue,
       raw: raw ? { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author ?? null, publishedAt: raw.publishedAt ?? null, url: raw.url ?? null, importedAt: raw.importedAt, bodySha256: raw.bodySha256 } : null,
@@ -176,6 +179,11 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
       res.json(await draftPayload(updated));
     } catch (error) { next(error); }
   });
+  app.patch('/api/drafts/:draftId/structured-note',async(req,res,next)=>{try{
+    const current=await deps.drafts.get(req.params.draftId);if(!current)throw new InputError('DRAFT_NOT_FOUND','没有找到草稿。',404);
+    const raw=await deps.rawStore.get(current.rawId);if(!raw)throw new InputError('RAW_MISSING','原文不存在，不能保存笔记。',409);
+    res.json(await draftPayload(await deps.drafts.editStructuredNote(current.id,req.body,raw.body)));
+  }catch(error){next(error);}});
 
   app.post('/api/drafts/:draftId/review/questions',async(req,res,next)=>{try{
     const input=validateDraftQuestionReview(req.body);

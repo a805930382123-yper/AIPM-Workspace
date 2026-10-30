@@ -38,10 +38,13 @@ export function validDeepOutline(v: unknown, cp: ExtractionCheckpoint): v is Dee
   });
 }
 export function validDeepQuality(v: unknown, note: StructuredNote): v is DeepQualityReport {
-  return keys(v,['version','deterministic','model','findings'])&&v.version===1&&v.deterministic==='passed'&&['passed','warning'].includes(v.model)&&validFindings(v.findings,note)&&v.model===(v.findings.length?'warning':'passed');
+  return validDeepQualityLocations(v,note.sections.map(s=>({id:s.id,blockCount:s.blocks.length})));
 }
-function validFindings(v: unknown, note: StructuredNote): v is Finding[] {
-  return Array.isArray(v)&&v.length<=128&&v.every(f=>keys(f,['severity','category','sectionId','blockIndex','reason'])&&['warning','error'].includes(f.severity)&&['semantic','numeric','coverage','supplementary','structure'].includes(f.category)&&text(f.reason,2000)&&(f.sectionId===null||note.sections.some(s=>s.id===f.sectionId))&&(f.blockIndex===null||(Number.isInteger(f.blockIndex)&&f.blockIndex>=0&&note.sections.some(s=>s.id===f.sectionId&&f.blockIndex<s.blocks.length))));
+export function validDeepQualityLocations(v:unknown,sections:{id:string;blockCount:number}[]):v is DeepQualityReport {
+  return keys(v,['version','deterministic','model','findings'])&&v.version===1&&v.deterministic==='passed'&&['passed','warning'].includes(v.model)&&validFindings(v.findings,sections)&&v.model===(v.findings.length?'warning':'passed');
+}
+function validFindings(v: unknown, sections:{id:string;blockCount:number}[]): v is Finding[] {
+  return Array.isArray(v)&&v.length<=128&&v.every(f=>keys(f,['severity','category','sectionId','blockIndex','reason'])&&['warning','error'].includes(f.severity)&&['semantic','numeric','coverage','supplementary','structure'].includes(f.category)&&text(f.reason,2000)&&(f.sectionId===null||sections.some(s=>s.id===f.sectionId))&&(f.blockIndex===null||(Number.isInteger(f.blockIndex)&&f.blockIndex>=0&&sections.some(s=>s.id===f.sectionId&&f.blockIndex<s.blockCount))));
 }
 /** Leaves own their source role; containers never claim independent evidence. */
 export function deepLeaves(note: StructuredNote) {
@@ -51,6 +54,12 @@ export function deepLeaves(note: StructuredNote) {
   }));
 }
 const numbers = (v:string) => v.match(/[+-]?\d+(?:[.,]\d+)*(?:%|％|万元|亿元|万家|千克|公斤|毫升|家|元|吨|箱|件|个|人|天|月|年|日|小时|分钟|米|升|克)?/g)??[];
+export function inspectEditedNote(note:StructuredNote,facts:Map<string,string>):string[]{
+  const warnings:string[]=[];const leaves=deepLeaves(note);
+  for(const leaf of leaves){if(leaf.role==='source_supported'||leaf.role==='reorganized'){const allowed=new Set(leaf.factIds.flatMap(id=>numbers(facts.get(id)??'')));if(numbers(leaf.prose).some(n=>!allowed.has(n)))warnings.push(`${leaf.sectionId} 第${leaf.blockIndex+1}块：数值或单位不受所选事实支持，人工修改待核对。`);}}
+  if(leaves.filter(l=>l.role==='supplementary').length>leaves.length*.2)warnings.push('补充知识比例超过20%，人工修改待核对。');
+  return warnings;
+}
 export function checkDeepNote(note: StructuredNote, outline: DeepOutline, cp: ExtractionCheckpoint): void {
   if(JSON.stringify(note.sections.map(s=>s.id))!==JSON.stringify(outline.sections.map(s=>s.id)))fail('LLM_DEEP_WRITING_INVALID','笔记章节ID或顺序不符合大纲。');
   const leaves=deepLeaves(note), used=new Set<string>(),facts=new Map(cp.completedChunks.flatMap(c=>c.facts.map(f=>[f.id,f.text] as const)));
@@ -115,7 +124,7 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
   checkDeepNote(cp.deep!.note!,cp.deep!.outline!,cp);
   if(!cp.deep!.qualityReport){
     const output=await call('quality',{note:cp.deep!.note,outline:cp.deep!.outline,facts,questions},'只读检查，禁止改正文。逐断言对照事实检查主体、条件、数值/单位、未知/否定、覆盖及补充边界。输出{version:1,findings:[{severity:"warning|error",category:"semantic|numeric|coverage|supplementary|structure",sectionId:章节ID或null,blockIndex:从0开始或null,reason:非空文本}]}。无发现findings=[]。');
-    if(!keys(output,['version','findings'])||output.version!==1||!validFindings(output.findings,cp.deep!.note!))fail('LLM_DEEP_QUALITY_INVALID','模型质量报告无效，检查未完成。');
+    if(!keys(output,['version','findings'])||output.version!==1||!validFindings(output.findings,cp.deep!.note!.sections.map(s=>({id:s.id,blockCount:s.blocks.length}))))fail('LLM_DEEP_QUALITY_INVALID','模型质量报告无效，检查未完成。');
     await save({...cp.deep!,qualityReport:{version:1,deterministic:'passed',model:output.findings.length?'warning':'passed',findings:output.findings}});
   }
   return {outcome:{...base.outcome,callCount:cp.attempts,rulesVersion:`${cp.rulesVersion}-${DEEP_VERSION}`,warnings:[...base.outcome.warnings,'深度笔记尚未开放正式确认；数值检查及模型只读报告不替代逐页人工核对主体、条件、未知和否定。']},checkpoint:cp};

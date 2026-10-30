@@ -156,7 +156,9 @@ export class ExtractionRunner {
       const bundle=await loadExtractionRules(this.deps.rulesDir);
       if(cp.mode!==job.mode||cp.rulesVersion!==bundle.rulesVersion)this.conflict();
       await validateDeepCheckpoint({raw,body:raw.body,bodySha256:cp.rawSha256,rulesDir:this.deps.rulesDir,checkpoint:cp,provider:{...job.provider,complete:async()=>{throw Error('Reconciliation cannot send');}}});
-      if(draft&&(!draft.structuredNote||draft.extractionMode!=='deep'||JSON.stringify(draft.structuredNote)!==JSON.stringify(cp.deep!.note)||JSON.stringify(draft.qualityReport)!==JSON.stringify(cp.deep!.qualityReport)))this.conflict();
+      if(draft&&(!draft.structuredNote||draft.extractionMode!=='deep'||JSON.stringify(draft.qualityReport)!==JSON.stringify(cp.deep!.qualityReport)))this.conflict();
+      if(draft?.noteReview){if(draft.noteReview.generatedNoteDigest!==fingerprint(cp.deep!.note)||JSON.stringify(draft.noteReview.generatedSections)!==JSON.stringify(cp.deep!.note!.sections.map(s=>({id:s.id,blockCount:s.blocks.length}))))this.conflict();}
+      else if(draft&&JSON.stringify(draft.structuredNote)!==JSON.stringify(cp.deep!.note))this.conflict();
     }
     if (cp?.pipelineVersion === KB02_PIPELINE_VERSION) {
       const bundle = await loadExtractionRules(this.deps.rulesDir);

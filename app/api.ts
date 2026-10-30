@@ -1,3 +1,5 @@
+import type {StructuredNote,NoteReviewMetadata,NoteExclusion} from '../services/wiki/structured-note';
+import type {DeepQualityReport} from '../services/llm/knowledge-deep';
 import type { HumanReview } from '../services/wiki/human-review.ts';
 import type { TemplateFields, InputTemplateFields, MergedTemplateFields } from '../services/wiki/template-fields';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
@@ -104,6 +106,7 @@ export type RawProcessingState = {
   generatedWikiIds?: string[]; confirmedOperationId?: string;
 };
 export type ExtractionJob = {
+  mode?: 'standard'|'deep';
   execution?: 'running' | 'settled';
   recovery?: { code: string; message: string; persisted: false; phase: string; action: 'reconcile-storage'; details?: unknown } | null;
   jobId: string; rawId: string; status: 'running' | 'completed' | 'failed' | 'cancelled';
@@ -111,7 +114,7 @@ export type ExtractionJob = {
   progress: { chunksTotal: number; chunksDone: number; pagesFound: number };
   draftId: string | null; error: { code: string; message: string; retryable?: boolean } | null;
   provider: { name: string; model: string }; callCount: number; startedAt: string; finishedAt: string | null;
-  cancelRequested: boolean; reused?: boolean; pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number };
+  cancelRequested: boolean; reused?: boolean; pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number; deepStage?:string };
 };
 export type DraftEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type DraftFact = { text: string; evidenceIds: string[] };
@@ -144,6 +147,7 @@ export type DraftPreview = {
   batchDuplicateTitles: string[];
 };
 export type DraftView = {
+  structuredNote?:StructuredNote;noteReview?:NoteReviewMetadata;qualityReport?:DeepQualityReport;noteQualityStatus?:'historical'|'generated';noteWarnings?:string[];
   humanReview?:HumanReview; humanQuestionUnitIds?:string[]; reviewContentDigest?:string|null;
   id: string; rawId: string; rawTitle: string; status: 'pending_confirmation' | 'committing' | 'confirmed' | 'discarded';
   revision: number; createdAt: string; updatedAt: string; rulesVersion: string;
@@ -183,7 +187,7 @@ export const clearLlmConfig = (config: LlmConfigSummary) => configRequest<LlmCon
 export const testLlmConfig = (config: LlmConfigSummary) => configRequest<{ ok: boolean; message: string; elapsedMs: number }>('/api/llm/config/test', config, 'POST', { revision: config.revision, confirm: true });
 export const rawProcessing = () => api<{ items: RawProcessingState[] }>('/api/raw-processing').then(value => value.items);
 export const extractionJob = (jobId: string) => api<ExtractionJob>(`/api/extraction-jobs/${encodeURIComponent(jobId)}`);
-export const startExtract = (rawId: string, options: { restart?: boolean; planningRetry?: boolean } = {}) => api<ExtractionJob>(`/api/raw/${encodeURIComponent(rawId)}/extract`, { method: 'POST', body: JSON.stringify(options) });
+export const startExtract = (rawId: string, options: { restart?: boolean; planningRetry?: boolean;mode?:'standard'|'deep' } = {}) => api<ExtractionJob>(`/api/raw/${encodeURIComponent(rawId)}/extract`, { method: 'POST', body: JSON.stringify(options) });
 export const cancelExtract = (jobId: string) => api<ExtractionJob & { cancelled: boolean }>(`/api/extraction-jobs/${encodeURIComponent(jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) });
 export const reconcileExtractionStorage = (jobId: string) => api<ExtractionJob>(`/api/extraction-jobs/${encodeURIComponent(jobId)}/reconcile-storage`, { method: 'POST', body: JSON.stringify({}) });
 export const drafts = (query: { rawId?: string; status?: string } = {}) => {
@@ -291,3 +295,5 @@ export const jobStageLabels: Record<ExtractionJob['stage'], string> = {
 
 /** totalIssues counts known issues; partial scans only establish a lower bound. */
 export type RecoveryScan = { scanned:boolean;partial?:boolean;overflow:boolean;truncated?:boolean;totalIssues?:number;hiddenIssues?:number;scannedFiles?:number;scannedBytes?:number;items:Array<{id:string;kind:string;reason:string}> };
+
+export const editStructuredNote=(id:string,baseRevision:number,structuredNote:StructuredNote,exclusions:NoteExclusion[],questionIds:string[],humanQuestions:string[])=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/structured-note`,{method:'PATCH',body:JSON.stringify({baseRevision,structuredNote,exclusions,questionIds,humanQuestions})});

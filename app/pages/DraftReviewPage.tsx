@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import {StructuredNoteEditor} from '../components/StructuredNoteEditor';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import type { DraftPatch, DraftPage, DraftView, Raw, WikiCommitStatus, WikiSchema, DuplicateResult } from '../api';
 import { hasTemplateFields, templateSections, type TemplateFieldKey, type TemplateFieldContent, type TemplateFields } from '../../services/wiki/template-fields';
 import { ApiError, api, confirmDraft, discardDraft, draftView, patchDraft, sourceLabels, wikiCommit, duplicateCandidates, savePageDecision, startUpdateWorkflow, startDraftReview, moveDraftUnits, reviewDraftPage, markDraftQuestions } from '../api';
@@ -40,6 +41,8 @@ function TemplateFieldsEditor({type,fields,evidence,disabled,onChange}:{type:str
 export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpenWorkflow }: {
   draftId: string; onBack: () => void; onCommitted: () => Promise<void>; onOpenRaw: (id: string) => void; onOpenWorkflow?: (id: string) => void;
 }) {
+  const [noteDirty,setNoteDirty]=useState(false),[showCards,setShowCards]=useState(false);
+  const loadGeneration=useRef(0);
   const [view, setView] = useState<DraftView | null>(null);
   const [pages, setPages] = useState<PageDraft[]>([]);
   const [body, setBody] = useState('');
@@ -56,17 +59,18 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const [savedFingerprint,setSavedFingerprint]=useState('');
 
   const load = async () => {
-    setError('');
+    const generation=++loadGeneration.current;setError('');
     try {
       const next = await draftView(draftId);
+      if(generation!==loadGeneration.current)return;
       setView(next);
       setSavedFingerprint(reviewFingerprint(next));
       setPages(next.pages.map(page => ({ ...page })));
       const raw = await api<Raw>(`/api/raw/${encodeURIComponent(next.rawId)}`).catch(() => null);
-      setBody(raw?.body ?? '');
-    } catch (problem) { setError(problem instanceof Error ? problem.message : '无法读取这份草稿。'); }
+      if(generation===loadGeneration.current)setBody(raw?.body ?? '');
+    } catch (problem) { if(generation===loadGeneration.current)setError(problem instanceof Error ? problem.message : '无法读取这份草稿。'); }
   };
-  useEffect(() => { void load(); }, [draftId]);
+  useEffect(() => {setView(null);setBody('');setShowCards(false);setNoteDirty(false);void load();return()=>{loadGeneration.current++;};}, [draftId]);
   useEffect(() => {
     let active = true;
     api<WikiSchema>('/api/wiki/schema').then(value => { if (active) setSchema(value); }).catch(() => undefined);
@@ -77,7 +81,8 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const selectedIds = pages.filter(page => page.selected).map(page => page.pageId);
   const conflicts = view ? conflictText(view) : [];
   const readOnly = view ? view.status !== 'pending_confirmation' : true;
-  const dirty=!!view&&reviewFingerprint(view,pages)!==savedFingerprint;
+  const legacyDirty=!!view&&reviewFingerprint(view,pages)!==savedFingerprint;
+  const dirty=legacyDirty||noteDirty;
   const reviewComplete=!!view?.humanReview&&Object.values(view.humanReview.assignments).every(id=>id!==null)&&pages.every(p=>view.humanReview!.approvals.some(a=>a.pageId===p.pageId&&a.digest===view.reviewContentDigest));
 
   useEffect(() => {
@@ -115,6 +120,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   };
   const updateMergedField=(page:PageDraft,index:number,key:TemplateFieldKey,patch:Partial<TemplateFieldContent>)=>updatePage(page.pageId,{mergedTemplateFields:page.mergedTemplateFields!.map((group,i)=>i===index?{...group,fields:editedTemplateFields(group.fields,key,patch)}:group)});
   const run = async (label: string, work: () => Promise<void>) => {
+    if(noteDirty){setError('请先保存笔记编辑，再操作知识卡片。');return;}
     setBusy(label); setError('');
     try { await work(); }
     catch (problem) {
@@ -170,6 +176,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     setDuplicateViews(current => ({ ...current, [pageId]: { ...current[pageId], decision, targetWikiId: targetWikiId ?? null } }));
   });
   const makeUpdate = (pageId: string, targetWikiId: string) => run(`update:${pageId}`, async () => {
+    if(view?.structuredNote)throw new Error('深度笔记当前仅支持草稿审核，暂不支持正式写入/更新。');
     const saved = await patchDraft(draftId, snapshot());
     applyView(saved);
     const workflow = await startUpdateWorkflow({ draftId, pageId, targetWikiId, baseRevision: saved.revision });
@@ -232,13 +239,15 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
       </div>
       <div className="heading-actions">
         <button className="secondary-button" onClick={onBack}>返回 Raw</button>
-        <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => void saveEdits()}>{busy === 'save' ? '正在保存…' : '保存草稿'}</button>
+        <button className="secondary-button" disabled={readOnly || busy !== ''||noteDirty} onClick={() => void saveEdits()}>{busy === 'save' ? '正在保存…' : '保存草稿'}</button>
         <button className="secondary-button danger-quiet" disabled={readOnly || busy !== ''} onClick={() => setConfirmingDiscard(true)}>放弃草稿</button>
-        <button className="primary-button" disabled={readOnly || busy !== '' || selectedIds.length === 0 || dirty || !reviewComplete} onClick={() => void confirm()}>{busy === 'confirm' ? '正在保存并提交…' : `确认写入 Wiki（${selectedIds.length}）`}</button>
+        <button className="primary-button" disabled={!!view.structuredNote||readOnly || busy !== '' || selectedIds.length === 0 || dirty || !reviewComplete} onClick={() => void confirm()}>{busy === 'confirm' ? '正在保存并提交…' : `确认写入 Wiki（${selectedIds.length}）`}</button>
       </div>
     </div>
 
     {error && <div className="form-error" role="alert"><p>{error}</p></div>}
+    {view.structuredNote&&<><StructuredNoteEditor key={view.id} view={view} body={body} disabled={readOnly||busy!==''||legacyDirty} onSaved={applyView} onDirty={setNoteDirty}/><button className="secondary-button" onClick={()=>setShowCards(!showCards)}>{showCards?'收起知识卡片与人审':'知识卡片与主题归属审查'}</button><p className="notice-warn">深度笔记当前仅支持草稿审核，暂不支持正式写入/更新。</p></>}
+    <fieldset className="note-legacy-shell" disabled={noteDirty} hidden={!!view.structuredNote&&!showCards}>
     {!readOnly&&<section className="panel draft-card-body" aria-label="主题与归属人工审查">
       <h2>逐页确认主题与完整归属</h2><p>所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。</p>
       {dirty&&<p className="notice-warn">当前有未保存编辑。保存后全部页需重新审查。</p>}
@@ -252,8 +261,8 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         </div>)}
       </>}
     </section>}
-    {!readOnly && selectedIds.length === 0 && <div className="notice-warn">默认没有选中任何知识建议：勾选要写入正式 Wiki 的条目后，确认按钮才可用。</div>}
-    {view.warnings.length > 0 && <div className="notice-warn">{view.warnings.map(warning => <p key={warning}>{warning}</p>)}</div>}
+    {!readOnly && selectedIds.length === 0 && <div className="notice-warn">{view.structuredNote?'深度笔记当前仅支持草稿审核，勾选知识卡片也不会开放正式写入/更新。':'默认没有选中任何知识建议：勾选要写入正式 Wiki 的条目后，确认按钮才可用。'}</div>}
+    {view.warnings.length > 0 && <div className="notice-warn">{view.warnings.map(warning => <p key={warning}>{view.structuredNote&&warning.includes('只有勾选')?'深度笔记当前仅支持草稿审核，暂不支持正式写入/更新。':warning}</p>)}</div>}
     {conflicts.length > 0 && <div className="notice-warn conflict-warn">{conflicts.map(line => <p key={line}>{line}</p>)}</div>}
 
     {result && <section className="result-panel partial">
@@ -284,7 +293,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
       </section>
 
       <section className="panel draft-source-summary">
-        <div className="panel-heading"><div><h2>Source 预览（本次提交组成）</h2><p>{view.preview?.sourceReuse ? `将复用既有 Source：${view.preview.sourceReuse.title}` : '将新建 1 个 Source 页面'}</p></div></div>
+        <div className="panel-heading"><div><h2>{view.structuredNote?'Source 摘要（草稿预览）':'Source 预览（本次提交组成）'}</h2><p>{view.structuredNote?'当前仅支持草稿审核，暂不创建或更新正式 Source。':view.preview?.sourceReuse ? `将复用既有 Source：${view.preview.sourceReuse.title}` : '将新建 1 个 Source 页面'}</p></div></div>
         <div className="draft-card-body">
           <label className="field">Source 标题<input value={view.source.title} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, title: event.target.value } })} maxLength={300} /></label>
           <label className="field">Source 摘要<textarea value={view.source.body} disabled={readOnly || busy !== ''} onChange={event => setView({ ...view, source: { ...view.source, body: event.target.value } })} rows={8} /></label>
@@ -300,7 +309,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
 
     <section className="panel draft-pages-panel">
       <div className="panel-heading">
-        <div><h2>知识建议（{pages.length} 条，已选 {selectedIds.length} 条）</h2><p>默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。</p></div>
+        <div><h2>知识建议（{pages.length} 条，已选 {selectedIds.length} 条）</h2><p>{view.structuredNote?'当前仅支持知识卡片草稿审核，勾选不会创建正式 Wiki。':'默认全部未选中的建议不会被写入；只有勾选的条目会创建为正式 Wiki。'}</p></div>
         <div className="action-group">
           <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => setPages(current => current.map(page => ({ ...page, selected: true })))}>全选</button>
           <button className="secondary-button" disabled={readOnly || busy !== ''} onClick={() => setPages(current => current.map(page => ({ ...page, selected: false })))}>全不选</button>
@@ -331,11 +340,11 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
             {duplicateViews[page.pageId].candidates.length === 0 ? <span>未发现候选。</span> : duplicateViews[page.pageId].candidates.map(candidate => <div className="duplicate-candidate" key={candidate.wiki.id}>
               <strong>{candidate.wiki.title}</strong><small>Wiki {candidate.wiki.id} · 来源 Raw：{candidate.wiki.sources.join('、') || '无'}</small><span>建议相似度 {(candidate.score * 100).toFixed(0)}%</span>
               <p>{candidate.matches.map(match => `${duplicateDimension[match.dimension] ?? match.dimension}：${match.reason}`).join('；')}</p>
-              <button className="text-button" disabled={readOnly || busy !== ''} onClick={() => void decide(page.pageId, 'update', candidate.wiki.id)}>选择更新</button>
+              <button className="text-button" disabled={!!view.structuredNote||readOnly || busy !== ''} onClick={() => {if(!view.structuredNote)void decide(page.pageId, 'update', candidate.wiki.id);}}>选择更新</button>
               <button className="text-button" disabled={readOnly || busy !== ''} onClick={() => void decide(page.pageId, 'create')}>仍创建新页</button>
             </div>)}
             <button className="text-button" disabled={readOnly || busy !== ''} onClick={() => void decide(page.pageId, 'defer')}>暂不处理</button>
-            {page.reviewDecision === 'update' && page.updateTargetWikiId && <button className="text-button" disabled={busy !== ''} onClick={() => void makeUpdate(page.pageId, page.updateTargetWikiId!)}>生成旧 Wiki 更新预览</button>}
+            {page.reviewDecision === 'update' && page.updateTargetWikiId && <button className="text-button" disabled={!!view.structuredNote||busy !== ''} onClick={() => void makeUpdate(page.pageId, page.updateTargetWikiId!)}>生成旧 Wiki 更新预览</button>}
           </div>}
         </div>
         <label className="field">一句话说明<input value={page.one_line_definition} disabled={readOnly || busy !== ''} onChange={event => updatePage(page.pageId, { one_line_definition: event.target.value })} maxLength={300} /></label>
@@ -397,6 +406,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         {(page.mergedFrom?.length ?? 0) > 0 && <p className="extract-note">由合并生成：{page.mergedFrom?.join('、')}</p>}
       </article>)}
     </section>
-    <p className="extract-note">预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。</p>
+    <p className="extract-note">{view.structuredNote?'深度笔记与知识卡片仅保存为待审核草稿，暂不支持正式写入/更新。Raw 正文不会被改写。':'预览中的「来源事实 / AI 整理 / AI 推断 / 待确认问题 / 来源证据」会按同一分节写入正式 Markdown；未选中的建议不会落盘。Raw 正文不会被改写。'}</p>
+    </fieldset>
   </div>;
 }

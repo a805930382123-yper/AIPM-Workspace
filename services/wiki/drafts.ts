@@ -2,7 +2,7 @@
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
 import { createHash, randomUUID } from 'node:crypto';
-import { validStructuredNote, type StructuredNote } from './structured-note.ts';
+import { validStructuredNote, validNoteReview, noteReviewContent, noteFactIds, type NoteReviewMetadata, type NoteExclusion, type StructuredNote } from './structured-note.ts';
 import {validDeepQuality, type DeepQualityReport} from '../llm/knowledge-deep.ts';
 import path from 'node:path';
 import type { LlmError } from '../llm/provider.ts';
@@ -51,6 +51,7 @@ export type DraftSource = {
 export type DraftRecord = {
   structuredNote?: StructuredNote;
   extractionMode?: 'deep'; qualityReport?: DeepQualityReport;
+  noteReview?: NoteReviewMetadata;
   humanReview?: HumanReview;
   /** Explicit user references; original source units and classifications stay immutable. */
   humanQuestionUnitIds?: string[];
@@ -249,6 +250,30 @@ export class DraftStore {
     return readJsonRecord<DraftRecord>(this.root,this.fileFor(id),(value):value is DraftRecord=>isExtractionDraft(value,id));
   }
 
+  async editStructuredNote(id:string,input:unknown,body:string):Promise<DraftRecord>{
+    return this.queue.run(async()=>{
+      if(!input||typeof input!=='object'||Array.isArray(input))throw new DraftError('INVALID_NOTE_PATCH','结构化笔记编辑格式无效。');
+      const patch=input as Record<string,unknown>;
+      if(Object.keys(patch).some(k=>!['baseRevision','structuredNote','exclusions','questionIds','humanQuestions'].includes(k)))throw new DraftError('INVALID_NOTE_PATCH','不能写入审批、模型报告或原始来源字段。');
+      const current=await this.get(id);if(!current?.structuredNote||!current.humanReview)throw new DraftError('NOTE_NOT_FOUND','草稿没有结构化笔记。',404);
+      if(current.status!=='pending_confirmation'||current.revision!==patch.baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿已变化或不可编辑，请刷新后重试。',409);
+      assertReviewSources(current.humanReview,[{id:current.rawId,body,bodySha256:current.rawSha256}]);
+      await this.assertEvidenceStillValid(current,body);
+      const facts=new Set(current.humanReview.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id))),questions=new Set(current.humanReview.units.filter(u=>u.kind==='question').flatMap(u=>u.records.map(r=>r.id)));
+      if(!validStructuredNote(patch.structuredNote,facts))throw new DraftError('STRUCTURED_NOTE_INVALID','笔记结构、角色或事实引用无效。');
+      const note=patch.structuredNote,generatedNoteDigest=current.noteReview?.generatedNoteDigest??createHash('sha256').update(JSON.stringify(current.structuredNote)).digest('hex');
+      const content=noteReviewContent(note,(patch.exclusions??current.noteReview?.exclusions??[]) as NoteExclusion[],(patch.questionIds??current.noteReview?.questionIds??[]) as string[],(patch.humanQuestions??current.noteReview?.humanQuestions??[]) as string[]);
+      const metadata={version:1 as const,generatedNoteDigest,generatedSections:current.noteReview?.generatedSections??current.structuredNote.sections.map(s=>({id:s.id,blockCount:s.blocks.length})),contentDigest:createHash('sha256').update(JSON.stringify(content)).digest('hex'),exclusions:content.exclusions,questionIds:content.questionIds,humanQuestions:content.humanQuestions};
+      if(!validNoteReview(metadata)||metadata.questionIds.some(id=>!questions.has(id))||metadata.exclusions.some(e=>!(e.kind==='fact'?facts:questions).has(e.id)))throw new DraftError('NOTE_COVERAGE_INVALID','排除需真实来源ID及非空理由；问题选择必须来自原目录。');
+      const referenced=new Set(noteFactIds(note));
+      if(metadata.exclusions.some(e=>e.kind==='fact'?referenced.has(e.id):metadata.questionIds.includes(e.id)))throw new DraftError('NOTE_COVERAGE_INVALID','已引用项不能同时排除。');
+      const previous=noteReviewContent(current.structuredNote,current.noteReview?.exclusions??[],current.noteReview?.questionIds??[],current.noteReview?.humanQuestions??[]);
+      if(JSON.stringify(previous)===JSON.stringify(content))return current;
+      const next={...current,structuredNote:structuredClone(note),noteReview:metadata,revision:current.revision+1,updatedAt:new Date().toISOString(),humanReview:{...current.humanReview,approvals:[]}};
+      await writeJsonAtomic(this.fileFor(id),next);return next;
+    });
+  }
+
   async list(): Promise<DraftRecord[]> {
     const scan = await scanJsonRecords<DraftRecord>(this.directory(),(value,file):value is DraftRecord=>isExtractionDraft(value,path.basename(file,'.json')),this.root);
     return scan.records.map(record => record.value)
@@ -269,7 +294,7 @@ export class DraftStore {
     outcome: ExtractOutcome; jobId: string; body: string; rules: DraftRules;
   }, deep?: {note: StructuredNote; qualityReport: DeepQualityReport}): Promise<DraftRecord> {
     return this.queue.run(async () => {
-      if([input,input.outcome].some(v=>['structuredNote','qualityReport','extractionMode'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
+      if([input,input.outcome].some(v=>['structuredNote','qualityReport','extractionMode','noteReview'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
       const now = new Date().toISOString();
       const level = input.outcome.document.source_level ?? 'D';
       const pages: DraftPage[] = input.outcome.pages.map(page => ({ ...this.fromExtracted(page, input.rules), source_level: level }));
@@ -340,7 +365,7 @@ export class DraftStore {
   /** Applies a user review patch: whole-record validation, server-anchored evidence and ids. */
   async patch(id: string, patch: DraftPatch, context: { body: string; rules: DraftRules }): Promise<DraftRecord> {
     return this.queue.run(async () => {
-      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&['structuredNote','qualityReport','extractionMode'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
+      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&['structuredNote','qualityReport','extractionMode','noteReview'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
       if (Object.keys(patch).some(k=>!['baseRevision','document','source','pages','deletePageIds','merge'].includes(k))) throw new DraftError('INVALID_PATCH','不能通过普通编辑修改审查目录或确认记录。');
       const current = await this.get(id);
       if (!current) throw new DraftError('NOT_FOUND', '没有找到这份草稿。', 404);
