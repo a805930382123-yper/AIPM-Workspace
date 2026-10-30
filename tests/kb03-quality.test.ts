@@ -6,7 +6,7 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 // The acceptance CLI deliberately remains directly runnable ESM; its fake path loads no config.
 // @ts-expect-error acceptance ESM support has no declaration file
-import { COUNTER, sha, durable, json, fakeCase, ledgerEntries, reserve } from './support/kb03-quality-runner.mjs';
+import { COUNTER, BUDGET_POLICY, REAL_LEDGER_ROOT, sha, durable, json, fakeCase, ledgerEntries, reserve } from './support/kb03-quality-runner.mjs';
 // @ts-expect-error acceptance ESM entry has no declaration file
 import { freeze, validateRelease, TOOL, FIXED_SHA } from './acceptance/KB03-R5-20261030-real.mjs';
 
@@ -50,17 +50,17 @@ test('R5 escaped credential candidate is rejected and no credential reaches dura
   assert.equal(receipt.text, '[redacted: credential-bearing candidate omitted]');
 });
 
-test('R5 durable pre-reservation retains pending across actual child exit and spends 1..12 globally', async () => {
+test('R5 durable pre-reservation retains pending across actual child exit and keeps pending and reaches the approved 12+7 single-sample caps', async () => {
   const root = await temp(), modulePath = path.resolve('tests/support/kb03-quality-runner.mjs');
   const child = spawnSync(process.execPath, ['--import', 'tsx', '--input-type=module', '-e', `import {reserve} from ${JSON.stringify(new URL('file:///' + modulePath.replaceAll('\\', '/')).href)};await reserve(${JSON.stringify(root)},{sample:'fixed',sampleSha:'frozen',session:'A',freeze:'v1',stage:'extracting'},5,5);process.exit(17);`], { windowsHide: true, encoding: 'utf8' });
   assert.equal(child.status, 17, child.stderr);
   const pending = await ledgerEntries(root); assert.equal(pending.length, 1); assert.equal(pending[0].state, 'pending');
   // A changed process/session/version cannot erase the occupied slot.
   await reserve(root, { sample: 'fixed', sampleSha: 'frozen', session: 'B', freeze: 'v2', stage: 'extracting' }, 5, 5);
-  await assert.rejects(reserve(root, { sample: 'fixed' }, 5, 6), /budget/);
-  for (let i = 2; i < 12; i++) await reserve(root, { sample: i < 6 ? 'fixed' : 'counter' }, 1, 0);
-  assert.equal((await ledgerEntries(root)).length, 12);
-  await assert.rejects(reserve(root, { sample: 'counter' }, 1, 0), /budget/);
+  await assert.rejects(reserve(root, { sample: 'fixed' }, 5, 14), /budget/);
+  for (let i = 2; i < 19; i++) await reserve(root, { sample: i < 12 ? 'fixed' : 'counter' }, 1, 0);
+  assert.equal((await ledgerEntries(root)).length, 19);
+  await assert.rejects(reserve(root, { sample: 'counter' }, 1, 0), /cap/);
   assert.equal((await ledgerEntries(root))[0].session, 'A');
 });
 
@@ -72,14 +72,16 @@ test('R5 failed ledger write refuses before adapter/network and immutable record
   assert.equal(sha(COUNTER).length, 64);
 });
 
-test('R5 release SHA, explicit approval, freeze drift, 5+5+2 and exact TEMP root fail offline before config', async () => {
+test('R5 release SHA, explicit approval, freeze drift, 20/12/7 policy and exact TEMP root fail offline before config', async () => {
   const root = await temp(), version = await freeze();
-  const ledgerRoot = path.join(os.tmpdir(), `KB03-R5-20261030-${sha(path.resolve('.').toLowerCase()).slice(0, 12)}-real-ledger`);
-  const manifest = { tool: TOOL, session: 'offline-test', root, ledgerRoot, freeze: version.digest, samples: { fixed: { dataRoot: path.join(root, 'real', 'fixed'), sha: FIXED_SHA }, counter: { dataRoot: path.join(root, 'real', 'counter'), sha: sha(COUNTER) } } };
+  const ledgerRoot = REAL_LEDGER_ROOT;
+  const manifest = { tool: TOOL, session: 'offline-test', root, ledgerRoot, freeze: version.digest, policy: BUDGET_POLICY, samples: { fixed: { dataRoot: path.join(root, 'real', 'fixed'), sha: FIXED_SHA }, counter: { dataRoot: path.join(root, 'real', 'counter'), sha: sha(COUNTER) } } };
   await durable(path.join(root, 'manifest.json'), manifest);
-  const release = { approved: true, tool: TOOL, session: manifest.session, freeze: version.digest, ledgerRoot, manifestSha: sha(await fs.readFile(path.join(root, 'manifest.json'))), authorization: 'offline fixture only; never actual run', expectedModel: 'fake', expectedEndpointSha: sha('fake'), configFile: path.join(root, 'MUST-NOT-BE-READ.env'), budget: { total: 12, fixed: 5, counter: 5, diagnostic: 2 } };
+  await durable(path.join(root, 'freeze.json'), version);
+  const release = { approved: true, root, tool: TOOL, session: manifest.session, freeze: version.digest, ledgerRoot, manifestSha: sha(await fs.readFile(path.join(root, 'manifest.json'))), sampleShas: {fixed:FIXED_SHA,counter:sha(COUNTER)}, authorization: 'offline fixture only; never actual run', expectedModel: 'fake', expectedEndpointSha: sha('fake'), configFile: path.join(root, 'MUST-NOT-BE-READ.env'), policy: BUDGET_POLICY };
   for (const [index, mutation, expected] of [
-    [0, { approved: false }, /binding/], [1, { freeze: 'changed' }, /binding/], [2, { budget: { total: 13 } }, /5\+5\+2/],
+    [0, { approved: false }, /binding/], [1, { freeze: 'changed' }, /binding/], [2, { policy: { total: 21 } }, /total20/],
+    [3, {policy:{...BUDGET_POLICY,sampleCaps:{fixed:12,counter:12}}}, /total20/], [4, {tool:'KB03-R5-20261030-v1'}, /binding/], [5, {sampleShas:{fixed:'changed',counter:sha(COUNTER)}}, /sample SHA/], [6, {ledgerRoot:path.join(root,'replacement-ledger')}, /binding/],
   ] as const) {
     const file = path.join(root, `release-${index}.json`); await durable(file, { ...release, ...mutation });
     await assert.rejects(validateRelease(root, file, 'wrong'), /SHA/);
@@ -89,5 +91,9 @@ test('R5 release SHA, explicit approval, freeze drift, 5+5+2 and exact TEMP root
   const manifestFile = path.join(root, 'manifest.json'); await fs.writeFile(manifestFile, JSON.stringify(moved));
   const file = path.join(root, 'outside-root-release.json'); await durable(file, { ...release, manifestSha: sha(await fs.readFile(manifestFile)) });
   await assert.rejects(validateRelease(root, file, sha(await fs.readFile(file))), /exact isolated/);
+  await fs.writeFile(manifestFile, JSON.stringify(manifest));
+  const frozenFile = path.join(root, 'freeze.json'); await fs.writeFile(frozenFile, JSON.stringify({ ...version, files: [] }));
+  const changedFreeze = path.join(root, 'changed-freeze-release.json'); await durable(changedFreeze, { ...release, manifestSha: sha(await fs.readFile(manifestFile)) });
+  await assert.rejects(validateRelease(root, changedFreeze, sha(await fs.readFile(changedFreeze))), /Frozen file inventory/);
   await assert.rejects(fs.stat(release.configFile), { code: 'ENOENT' });
 });

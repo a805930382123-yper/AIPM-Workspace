@@ -1,5 +1,21 @@
 # 项目总控记录
 
+## KB03 R7：离线工程独立通过，原机资料待恢复（2026-10-30）
+
+用户在状态检查后明确继续，并确认原始资料未迁移、仍在另一台电脑。本轮完成已授权R7离线工具，实际Sol High `/root/r7_builder` 施工、Astra Medium `/root/r7_reviewer` 规划确认与独立验收，沿B评分0/2/2/2=6。工具v2统一total20/fixed12/counter7/minimum5，固定原真实账本路径、保留旧收据与任务摘要，补齐freeze清单校验；无产品/UI/Provider参数修改。
+
+本轮离线工程独立PASS，无待返修项：施工与独立定向各17/17，独立实际run入口8负例全部config0/network0；4文件SHA一致，freeze为b851f9a7aea2b59c52abab7b1e4f2611c66a884cfbb56024d2d6d9cf39de35ad（116文件）。同版复用施工tsc通过和CLI fake两例各5次、含合成旧4次共14/fixed9/counter5。未重跑全量/build/UI，fake不代表真实迁移或质量。
+
+真实prepare、原件核验、approved release和真实复验均未执行：卡内DAVID旧root与ledger本机均不存在，用户确认留在原机。新增真实请求/config读取0、正式workspace未用；历史已用4/20、知识267/500、Prompt20/24保持记录值，本机未重新核账。R5真实FAIL、质量NOT_EVALUATED及KB03整体未通过保持，会议上传UI遗留另列不变。
+
+下一步优先原机保全两完整目录并沿原路径继续；恢复旧输入、manifest/freeze/job及attempt01–04全部收据后先完成真实R7-01核验，再绑定最终版本的新release并按fixed→counter复验。不得重建账本或改旧manifest规避路径绑定；跨机路径适配需明确实际映射。总预算无需重批，正常两例最低新增10次；完成后单例限制下诊断余量最多5。
+
+证据：[任务卡](handoffs/KB03-R7-20261030-task.md)、[施工](reports/KB03-R7-20261030-builder.md)、[独立验收](reports/KB03-R7-20261030-review.md)。交付提交标识见独立报告的主线程提交绑定。下方为历史时间点。
+
+## KB03 R7：已授权扩大预算并准备真实复验（2026-10-30）
+
+用户明确将KB03总预算调整至20次、固定样例累计上限调整至12次；已用4次仍计入，当前余16，知识累计267/500、Prompt20/24。反例原有单例上限7保持。沿B模式Astra Medium规划/独立验收、Sol High施工，先迁移版本释放与预算门禁，保留旧账本全部收据，按revision18新任务运行两例。当前尚未新增真实请求，R6工程PASS和R5真实FAIL/KB03整体未通过保持。
+
 ## KB03 R6：上下文去重工程独立通过，真实待复验（2026-10-30）
 
 用户授权下一步范围内返修，实际Astra Medium规划/独立验收、Sol High施工，B评分0/2/2/2=6。产品提交 39c57690f15712e12f0db3af7658f2d0f732deb7。仅在planning发送边界合并重复原文，保留32个原窗口及全部事实/问题/单元/原文位置，内部证据及人审结构不变。固定样例HTTP正文93093→61039字节，减少34.43%；逐窗口无损恢复。60秒限时、Provider参数及严格输出schema保持。

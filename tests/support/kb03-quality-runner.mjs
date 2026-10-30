@@ -15,6 +15,14 @@ import { containsKnownSecret } from '../../services/llm/config.ts';
 import { deepReply } from './kb03-deep-fixture.ts';
 
 export const sha = value => createHash('sha256').update(value).digest('hex');
+export const BUDGET_POLICY = Object.freeze({ total:20, sampleCaps:Object.freeze({fixed:12,counter:7}), minimumCalls:5 });
+// The historical ledger belongs to the original machine; changing TEMP/repo must never reset it.
+export const REAL_LEDGER_ROOT=path.resolve('C:/Users/DAVID~1.CHE/AppData/Local/Temp/KB03-R5-20261030-f66b274a66d2-real-ledger');
+export async function assertOfflineTarget(root) {
+  const inside=(base,target)=>{const relative=path.relative(base,target);return !relative||(!relative.startsWith('..')&&!path.isAbsolute(relative));};
+  const physical=async p=>fs.realpath(p).catch(e=>{if(e.code==='ENOENT')return path.resolve(p);throw e;});
+  if(inside(path.resolve(REAL_LEDGER_ROOT),path.resolve(root))||inside(await physical(REAL_LEDGER_ROOT),await physical(root)))throw Error('Offline preparation/fake must never write the real ledger');
+}
 export const COUNTER = '以下均为虚构测试数据，不代表真实企业。甲区域2025年目标门店100家，其中在售20家，门店铺货率20%；仅统计直营渠道，不含线上。乙区域2024年目标门店120家，其中在售36家，门店铺货率30%；仅统计经销渠道。金额预算为100万元，不是门店数量。异常审批负责人未知。AI分析只是后续建议，尚未上线，也没有收益验证。原文提到示意图，但未提供图片。';
 export async function durable(file, value) {
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -30,11 +38,23 @@ export function temporary(root) {
   return path.resolve(root);
 }
 export async function ledgerEntries(root) {
-  await fs.mkdir(root, { recursive: true });
-  const names = (await fs.readdir(root)).filter(n => /^attempt-\d{2}\.json$/.test(n)).sort();
+  const names = (await fs.readdir(root).catch(e=>{if(e.code==='ENOENT')return [];throw e;})).filter(n => /^attempt-\d{2}\.json$/.test(n)).sort();
   const rows = await Promise.all(names.map(n => json(path.join(root, n))));
-  if (rows.length > 12 || rows.some((r, i) => r.sequence !== i + 1 || !['fixed', 'counter'].includes(r.sample) || r.state !== 'pending')) throw Error('Ledger is inconsistent; retain it for manual reconciliation');
+  if (rows.length > BUDGET_POLICY.total || rows.some((r, i) => r.sequence !== i + 1 || !['fixed', 'counter'].includes(r.sample) || r.state !== 'pending')) throw Error('Ledger is inconsistent; retain it for manual reconciliation');
   return rows;
+}
+export function checkBudget(rows,sample,remaining,otherRemaining) {
+  if(!Object.hasOwn(BUDGET_POLICY.sampleCaps,sample))throw Error('Unknown sample');
+  if(BUDGET_POLICY.total-rows.length<remaining+otherRemaining)throw Error('20-call budget cannot complete both frozen samples');
+  const other=sample==='fixed'?'counter':'fixed';
+  if(BUDGET_POLICY.sampleCaps[sample]-rows.filter(r=>r.sample===sample).length<remaining)throw Error('Current sample cap cannot complete its remaining stages');
+  if(BUDGET_POLICY.sampleCaps[other]-rows.filter(r=>r.sample===other).length<otherRemaining)throw Error('Other sample cap cannot complete its remaining stages');
+}
+export function checkLedgerBinding(rows,binding) {
+  if(!binding.tool)return;
+  const owned=rows.filter(r=>r.tool===binding.tool);
+  if(owned.some(r=>r.session!==binding.session||r.freeze!==binding.freeze))throw Error('Sample already belongs to another v2 preparation; no fresh-root reset');
+  if(owned.some(r=>r.sample===binding.sample&&(r.rawId!==binding.rawId||r.jobId!==binding.jobId)))throw Error('Sample job identity changed; no fresh job or root reset');
 }
 export async function reserve(root, binding, remaining, otherRemaining) {
   // The lock covers only the durable reservation, never the network wait.
@@ -42,8 +62,8 @@ export async function reserve(root, binding, remaining, otherRemaining) {
   const lock = await fs.open(path.join(root, 'reservation.lock'), 'wx');
   try {
     const rows = await ledgerEntries(root);
-    if (12 - rows.length < remaining + otherRemaining) throw Error('12-call budget cannot complete both frozen samples');
-    if (rows.filter(r => r.sample === binding.sample).length >= 7) throw Error('Sample exhausted its 5 calls plus two diagnostic slots');
+    checkBudget(rows,binding.sample,remaining,otherRemaining);
+    checkLedgerBinding(rows,binding);
     const row = { ...binding, sequence: rows.length + 1, state: 'pending', at: new Date().toISOString() };
     await durable(path.join(root, `attempt-${String(row.sequence).padStart(2, '0')}.json`), row);
     return row;
@@ -71,14 +91,15 @@ export async function executeCase({ root, rawId, provider, ledger, binding, othe
   const before = await caseState(root);
   if (before.job && before.job.status !== 'completed' && !continueExplicit) throw Error('Existing failed/interrupted case requires --continue; pending calls may already have reached Provider');
   const rows = await ledgerEntries(ledger);
-  if (12 - rows.length < before.remaining + otherRemaining) throw Error('Insufficient complete-stage budget; no request sent');
+  checkBudget(rows,binding.sample,before.remaining,otherRemaining);
+  checkLedgerBinding(rows,{...binding,rawId,jobId:before.job?.id});
   const raw = await before.state.rawStore.get(rawId);
   if (!raw || sha(raw.body) !== binding.sampleSha) throw Error('Raw SHA mismatch');
   const original = provider.complete.bind(provider);
   let ownCalls = 0;
   const wrapped = { name: provider.name, model: provider.model, cacheIdentity: provider.cacheIdentity, secrets: provider.secrets, complete: async request => {
     const current = await caseState(root);
-    const attempt = await reserve(ledger, { ...binding, stage: stageOf(request), jobId: current.cp?.jobId }, current.remaining, otherRemaining);
+    const attempt = await reserve(ledger, { ...binding, rawId, stage: stageOf(request), jobId: current.cp?.jobId }, current.remaining, otherRemaining);
     ownCalls++;
     const prefix = path.join(ledger, `attempt-${String(attempt.sequence).padStart(2, '0')}`);
     // Inputs are exactly the product request: no reference notes or independent oracle.
@@ -122,7 +143,8 @@ export function fakeWireReply(wire) {
   if (wire.response_format?.type === 'json_schema') value = fillWire(value, wire.response_format.json_schema.schema);
   return { stage, value };
 }
-export async function fakeCase(root, body, { fault, continueExplicit = false, ledger = path.join(root, 'ledger') } = {}) {
+export async function fakeCase(root, body, { fault, continueExplicit = false, ledger = path.join(root, 'ledger'), sample='fixed', otherRemaining=0, session='fake', freeze='fake', tool } = {}) {
+  await assertOfflineTarget(ledger);
   temporary(root); const state = await stores(root);
   let raw = (await state.rawStore.list())[0];
   if (!raw) raw = await state.rawStore.create({ title: '虚构工程样例', sourceType: 'article', sourceName: '仅fake', tags: [], body });
@@ -134,6 +156,6 @@ export async function fakeCase(root, body, { fault, continueExplicit = false, le
     const text = fault ? fault(reply.stage, reply.value, wires.length) : JSON.stringify(reply.value);
     return new Response(JSON.stringify({ choices: [{ message: { content: text }, finish_reason: 'stop' }] }), { status: 200, headers: { 'content-type': 'application/json' } });
   };
-  try { return { ...(await executeCase({ root, rawId: raw.id, provider, ledger, binding: { sample: 'fixed', sampleSha: sha(body), freeze: 'fake', session: 'fake' }, otherRemaining: 0, continueExplicit })), wires, configReads: 0, realRequests: 0 }; }
+  try { return { ...(await executeCase({ root, rawId: raw.id, provider, ledger, binding: { sample, sampleSha: sha(body), freeze, session, ...(tool?{tool}:{}) }, otherRemaining, continueExplicit })), wires, configReads: 0, realRequests: 0 }; }
   finally { globalThis.fetch = prior; }
 }
