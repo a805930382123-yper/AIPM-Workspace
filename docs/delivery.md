@@ -1,14 +1,20 @@
 # 项目交付说明
 
+## 本机试用（2026-10-30）
+
+本机 Windows 的 Node 为 v24.18.0，npm 为 11.16.0。在项目根运行 `npm install`（依赖已安装可跳过）和 `npm run dev`，打开 <http://127.0.0.1:5173/>。默认数据目录为项目 `workspace/`；试用可先运行 `$env:FMCG_DATA_DIR = "D:\FMCG-Trial"` 使用独立目录。停止服务后按下方备份命令导出并恢复至新空目录。手动 Raw、Wiki、Prompt 不需 Provider；真实 AI 功能需用户自行配置并主动发起。
+
+本轮隔离 HTTP 验证手工创建、读取、重启持久化和备份恢复后读取，UI 首页 HTTP 可访问；未操作浏览器界面，也未调用真实 API。见[施工记录](reports/LOCAL-HANDOVER-20261030-builder.md)。下方旧条目的 Provider 阻塞是当时结论，当前 B09 以顶部记录及[矩阵](reports/B09-RESUME-20261029-matrix.md)为准。
+
 当前记录（2026-10-29，R13修复完成）：R13独立M01–M06 PASS，当前109项全部通过。合并保留原页字段组、原类型与来源，编辑/合并后重新审批；真实API新增0，原四链与恢复按版本复用。产品提交 53c16918a9c284a1c18fd7e47f468d9b960a1c89；详见[R13独立验收](reports/R13-MERGE-AUDIT-20261029.md)、[矩阵](reports/B09-RESUME-20261029-matrix.md)及[README](../README.md)。本结论限现行B09标准，不表示部署、跨平台或所有模型输出质量已保证。
 
 前轮记录（2026-10-29，R13修复前）：本轮模板更新UI与Prompt必要上下文修复提交 c6474fe98c63440d7b9cbdb7fe15e98eb8b6aba8；四链真实样本、同根重启与新空根恢复已独立通过，23文件逐SHA一致。R13带字段候选合并仍未满足，B09整体未通过。当前运行方式/Provider范围见[README](../README.md)，当前逐项裁决见[109项矩阵](reports/B09-RESUME-20261029-matrix.md)，实测/复用边界见[独立集成报告](reports/B09-INTEGRATION-AUDIT-20261029-stages.md)。以下2026-10-14及更早条目为历史时间点，不代表今天仍未运行真实Provider。
 
-当前记录（2026-10-14）：CFG01本机通用Provider配置入口PASS，同GPT-6 Luna Max施工、主Agent独立两轴验收。保存/保留/替换Key、明确测试/确认清除、env只读与请求快照隔离完成。HTTP27、edges9、R2三组、组件4、安全100、实际桌面/窄屏浏览器13全部通过；最终build及字节相同可写副本完整215/215。原workspace继承ACL导致rename EPERM未通过，未改ACL或断言，详见[报告/校准](reports/CFG01-20261014-acceptance.md)。正式数据/实际.env.local及1296历史文件未变，自有服务关闭。当前Windows/Node v24.20.0；未真实Provider/部署，36项仍BLOCKED。下面早期记录为历史。
+历史记录（2026-10-14）：CFG01本机通用Provider配置入口PASS，同GPT-6 Luna Max施工、主Agent独立两轴验收。保存/保留/替换Key、明确测试/确认清除、env只读与请求快照隔离完成。HTTP27、edges9、R2三组、组件4、安全100、实际桌面/窄屏浏览器13全部通过；最终build及字节相同可写副本完整215/215。原workspace继承ACL导致rename EPERM未通过，未改ACL或断言，详见[报告/校准](reports/CFG01-20261014-acceptance.md)。正式数据/实际.env.local及1296历史文件未变，自有服务关闭。当前Windows/Node v24.20.0；未真实Provider/部署，36项仍BLOCKED。下面早期记录为历史。
 
-当前记录（2026-10-13）：S-03/S-04安全返修已由Luna施工、主Agent独立复验关闭，本批PASS。六条AI输出链统一检查已知长/短/多凭证、解析后JSON键/值及转义；错误脱敏和失败资产保护实测通过。build及204/204完整测试、有效HTTP98/98、Audit2组、多凭证服务113/113、知识回归11/11、两轴审查与历史/正式数据保护通过。[本批报告](reports/SEC-20261013-acceptance.md)、[当前109项矩阵](delivery-matrix.md)。M01–M05会议本机阶段PASS，备份现包含meetings；新会议来源仍local_only。全项目仍未签PASS，36项真实Provider成功/质量仍BLOCKED；未部署、未配置真实Provider、未新签浏览器。下文2026-10-10及B09描述均为历史交付范围。
+历史记录（2026-10-13）：S-03/S-04安全返修已由Luna施工、主Agent独立复验关闭，本批PASS。六条AI输出链统一检查已知长/短/多凭证、解析后JSON键/值及转义；错误脱敏和失败资产保护实测通过。build及204/204完整测试、有效HTTP98/98、Audit2组、多凭证服务113/113、知识回归11/11、两轴审查与历史/正式数据保护通过。[本批报告](reports/SEC-20261013-acceptance.md)、[当前109项矩阵](delivery-matrix.md)。M01–M05会议本机阶段PASS，备份现包含meetings；新会议来源仍local_only。全项目仍未签PASS，36项真实Provider成功/质量仍BLOCKED；未部署、未配置真实Provider、未新签浏览器。下文2026-10-10及B09描述均为历史交付范围。
 
-当前记录（2026-10-10）：全项目审查发现的 S-01/S-02 与 D-01/02 已返修并独立复验关闭。Audit 凭证回显在草稿保存前拒绝；Raw 正文摘要不符、缺失或非法时明确返回 `RAW_INTEGRITY_ERROR` / HTTP 409，不消费该正文、不自动修正。更新/综合/Audit 的来源冲突与恢复机制保持。build、155项测试和64项专项/关联场景通过，正式数据和历史证据未变。详情见 [本轮独立报告](reports/FULL-20261010-repair-acceptance.md) 与 [当前109项矩阵](delivery-matrix.md)。真实 Provider 仍未配置，36项真实成功/质量门禁保持 BLOCKED；本次没有新的实际浏览器验收。
+历史记录（2026-10-10）：全项目审查发现的 S-01/S-02 与 D-01/02 已返修并独立复验关闭。Audit 凭证回显在草稿保存前拒绝；Raw 正文摘要不符、缺失或非法时明确返回 `RAW_INTEGRITY_ERROR` / HTTP 409，不消费该正文、不自动修正。更新/综合/Audit 的来源冲突与恢复机制保持。build、155项测试和64项专项/关联场景通过，正式数据和历史证据未变。详情见 [本轮独立报告](reports/FULL-20261010-repair-acceptance.md) 与 [当前109项矩阵](delivery-matrix.md)。真实 Provider 仍未配置，36项真实成功/质量门禁保持 BLOCKED；本次没有新的实际浏览器验收。
 
 ## B09 交付记录（2026-10-08，历史）
 
@@ -32,14 +38,14 @@ npm run dev
 
 浏览器打开 `http://127.0.0.1:5173/`；API 默认在 `http://127.0.0.1:4317/`。默认数据根为项目 `workspace/`。通过 PowerShell 的 `FMCG_DATA_DIR` 指定其它根，通过 `FMCG_PORT` 指定 API 端口。产品可在无 Provider 时启动，手动 Raw、Wiki、搜索、Prompt 和 Lint 仍可使用。
 
-LLM 配置来自服务端 `FMCG_LLM_BASE_URL`、`FMCG_LLM_MODEL`、`FMCG_LLM_API_KEY` 或被忽略的 `.env.local`。客户端只读取掩码状态。当前项目状态记录 Provider 未配置；因此真实模型成功、结果质量、真实模型调用下的 Raw 不变均为 BLOCKED。开发 Agent 的模型凭证不属于产品配置。
+LLM 配置来自服务端 `FMCG_LLM_BASE_URL`、`FMCG_LLM_MODEL`、`FMCG_LLM_API_KEY` 或被忽略的 `.env.local`。客户端只读取掩码状态。此段为 2026-10-08 历史配置状态；此后真实样本验证结果见顶部当前记录。开发 Agent 的模型凭证不属于产品配置。
 
 ## 离线备份与恢复
 
-导出前先关闭本地服务，确保没有并发写入：
+导出前先关闭本地服务，确保没有并发写入。`--data-root` 必须指向实际使用的数据根；以下示例对应上面的 `D:\FMCG-Trial`，若使用默认目录则改为 `.\workspace`：
 
 ```powershell
-node --import tsx scripts/backup_workspace.ts export --data-root .\workspace --output D:\FMCG-Backups\workspace.json
+node --import tsx scripts/backup_workspace.ts export --data-root D:\FMCG-Trial --output D:\FMCG-Backups\workspace.json
 ```
 
 恢复到空的新数据根：

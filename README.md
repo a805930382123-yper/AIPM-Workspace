@@ -6,9 +6,11 @@ B01 提供本机工作台骨架、Raw 原始资料粘贴导入与首页统计；
 
 截至2026-10-29，R13带模板字段候选合并已修复并通过独立验收，B09当前109项均PASS。四条完整App流程及重启/备份恢复的既有证据已核适用，本轮补验同型、跨型及再次合并、编辑失审、正式写入和后续更新保全。逐项实测与历史复用见[当前矩阵](docs/reports/B09-RESUME-20261029-matrix.md)和[R13独立报告](docs/reports/R13-MERGE-AUDIT-20261029.md)；历史模型质量失败保留，验收通过不保证每次AI草稿语义正确。
 
-Meeting Hub M01–M05本机建设已完成并通过独立阶段验收。「会议档案」支持会议管理、目录/标签、搜索筛选、HTTPS来源、独立策略、UTF-8 `.md`/粘贴纪要、不可改写原件/工作副本/历史，以及Public/Internal明确授权的本机Raw登记。默认Sensitive云索引，Restricted只登记最少信息；Internal/Sensitive本地归档还需单独授权。原件最大2MiB/500000字符，工作副本500000字符，会议JSON32MiB。新Meeting来源始终禁止AI/Wiki/Prompt背景使用，解除或删除档案不解除Raw限制；普通无新origin的旧meeting资料兼容。M05补齐无需reload的Raw/首页同步和真实ID阅读；缺失目标、重连、迟到请求及后台任务刷新保持当前选择。跨文件部分成功按真实Raw计数，可同请求恢复。见[M05报告](docs/reports/M05-20261012-acceptance.md)、[48项映射](docs/reports/M05-20261012-spec-matrix.md)、[接口](docs/meeting-hub/M05-interface.md)、[使用说明](docs/meeting-hub/M05-usage.md)。会议AI仍禁用，原S-03/S-04及真实Provider阻塞以[工程状态](docs/status.md)为准；历史FAIL证据保留，本机阶段PASS不等于全产品PASS。
+Meeting Hub M01–M05本机建设已完成并通过独立阶段验收。「会议档案」支持会议管理、目录/标签、搜索筛选、HTTPS来源、独立策略、UTF-8 `.md`/粘贴纪要、不可改写原件/工作副本/历史，以及Public/Internal明确授权的本机Raw登记。默认Sensitive云索引，Restricted只登记最少信息；Internal/Sensitive本地归档还需单独授权。原件最大2MiB/500000字符，工作副本500000字符，会议JSON32MiB。新Meeting来源始终禁止AI/Wiki/Prompt背景使用，解除或删除档案不解除Raw限制；普通无新origin的旧meeting资料兼容。M05补齐无需reload的Raw/首页同步和真实ID阅读；缺失目标、重连、迟到请求及后台任务刷新保持当前选择。跨文件部分成功按真实Raw计数，可同请求恢复。见[M05报告](docs/reports/M05-20261012-acceptance.md)、[48项映射](docs/reports/M05-20261012-spec-matrix.md)、[接口](docs/meeting-hub/M05-interface.md)、[使用说明](docs/meeting-hub/M05-usage.md)。会议AI仍禁用，原S-03/S-04及真实Provider历史记录以[工程状态](docs/status.md)为准；历史FAIL证据保留，本机阶段PASS不等于全产品PASS。
 
 ## 运行
+
+本机试用交接及隔离验证见[交付说明](docs/delivery.md)和[施工记录](docs/reports/LOCAL-HANDOVER-20261030-builder.md)。
 
 需要 Node.js 22.13 或更高版本（**下限由锁定的 `pdfjs-dist 6.4.299` 的 `engines.node`（`>=22.13.0 || >=24`）决定**，其余依赖要求更低；`package.json` 的 `engines` 与此一致）。历史完整文件解析与早期B09验收环境为 **Node v25.2.1 / Windows**；2026-10-29前轮集成使用 **Node v24.18.0 / Windows**，R13修复使用 **Node v25.2.1 / Windows**，各自验证范围见对应报告。最低支持版本未在本机实测，不声称所有Node版本均已通过。仅开发测试用的 `jsdom` 声明 22.13.x 或 ≥24（Node 23.x 会打印一条 engines 警告，不影响运行）。在项目目录运行：
 
@@ -167,7 +169,7 @@ node tests/acceptance/b03-http.mjs
 
 ## Generator 与 Optimizer（B08）
 
-Generator 从自然语言任务生成可编辑 Brief，允许选择 Wiki 背景后请求预览；Optimizer 检查现有 Prompt 并返回可编辑建议。预览本身不进入 Library；只有用户显式选择“保存新 Prompt”或“追加版本”才写入版本化 Prompt 记录。无 Provider 时返回明确错误，手动 Library 与知识库仍可使用。真实 Provider 的成功与输出质量尚未验收。
+Generator 从自然语言任务生成可编辑 Brief，允许选择 Wiki 背景后请求预览；Optimizer 检查现有 Prompt 并返回可编辑建议。预览本身不进入 Library；只有用户显式选择“保存新 Prompt”或“追加版本”才写入版本化 Prompt 记录。无 Provider 时返回明确错误，手动 Library 与知识库仍可使用。真实 Provider 样本验证结论限于报告所列输入；历史失败及质量限制保留，见[当前矩阵](docs/reports/B09-RESUME-20261029-matrix.md)。
 
 ## 首页、教学数据与备份（B09）
 
