@@ -1,5 +1,13 @@
 # 工程状态
 
+## KB03 第一轮：契约与渲染独立通过（2026-10-30）
+
+用户确认五轮方案并明确启动第一轮。范围为结构化笔记契约、五类 block / 四类内容角色、草稿兼容与确定性渲染。实际 Astra Medium `/root/kb03_r1_planner` 规划/独立验收，Sol High `/root/kb03_r1_builder` 施工；评分0/1/2/0=3，完整性边界及用户确认沿用B。R1-01–06独立PASS，本轮无待返修项；KB03整体未完成，第二轮未启动。
+
+产品提交 `200f8b039586f0bd303d5f1b68077d7908c53b9b`。独立43/43（KB03 24、HUMAN19），八文件SHA匹配；复用同版隔离envDir构建通过。主线程实际Chrome静态视觉经独立核截图与HTML同SHA通过，表格为列名值列表；产品UI和真实流水线未做。带笔记正式确认明确拒绝，旧链兼容。证据：[任务卡](handoffs/KB03-R1-20261030-task.md)、[施工](reports/KB03-R1-20261030-builder.md)、[独立验收](reports/KB03-R1-20261030-review.md)、[视觉](reports/KB03-R1-20261030-main-visual.md)。自有静态服务/标签已关闭，下一步为另行授权第二轮。
+
+基线 b932f5760e1c214086b91026154b32489e5352ea；既有 AGENTS.md 修改及 AGENT-ROUTER 包装报告排除。KB03 真实调用 0，历史独立 12 次预算保持，知识263/500、Prompt20/24不变。B09 历史109 PASS与会议上传 UI BLOCKED分别保留，不以本轮替代。见[提案](batches/KB03-proposal.md)。
+
 ## 会议备注与文件上传：工程验证通过，完整UI验收待验证（2026-10-30）
 
 用户授权修复多行备注并新增Word/PDF/MD/TXT本地纪要上传。评分0/2/2/0=4，A标准，Astra Medium规划、Sol High先审、Terra High施工、独立Sol High验收。备注正常LF/CRLF/TAB可保存和读回；新建提供保存后上传入口，支持DOCX、文字层PDF、UTF-8 MD/TXT（2MiB），原文件与正文同版本保存、下载及备份恢复，策略授权保持。基线d3d3caa，本轮代码及报告随本次提交关联。
