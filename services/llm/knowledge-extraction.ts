@@ -8,7 +8,7 @@ import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } f
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
-import { knowledgeCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
+import { checkpointCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -77,13 +77,13 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
   // cache metadata is not AI output (e.g. a one-character key must not match "kb02-2").
   const aiCheckpointValues = [...current.completedChunks, ...(current.plan ? [current.plan] : []), ...(current.lastError ? [current.lastError] : [])];
   try { assertNoKnownSecret(aiCheckpointValues, input.provider.secrets ?? []); } catch { throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点包含当前已知秘密，已拒绝恢复。', 409); }
-  if (current.rawId !== input.raw.id || current.rawSha256 !== input.bodySha256 || current.pipelineVersion !== 'kb02-2' || current.rulesVersion !== bundle.rulesVersion || JSON.stringify(current.chunks) !== JSON.stringify(descriptors)) throw new LlmError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则或分块版本已变化；检查点保留，请明确重新生成。', 409);
+  if (current.rawId !== input.raw.id || current.rawSha256 !== input.bodySha256 || !['kb02-2','kb03-1'].includes(current.pipelineVersion) || current.rulesVersion !== bundle.rulesVersion || JSON.stringify(current.chunks) !== JSON.stringify(descriptors)) throw new LlmError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则或分块版本已变化；检查点保留，请明确重新生成。', 409);
   const catalogByChunk = new Map<number, ReturnType<typeof buildEvidenceLocatorCatalog>>();
   for (const chunk of chunks) catalogByChunk.set(chunk.index, buildEvidenceLocatorCatalog(input.body, chunk));
   // Only storage reconciliation with an already-associated completed draft may use its
   // original revision's call floor. Pipeline/resume callers never pass this argument.
   const countRulesVersion = completedDraft && completedDraft.callCount === current.attempts ? completedDraft.rulesVersion : current.rulesVersion;
-  if (current.attempts < knowledgePlanCallMinimum({ ...current, rulesVersion: countRulesVersion }) || current.completedChunks.reduce((sum, part) => sum + part.facts.length, 0) > 256 || current.completedChunks.reduce((sum, part) => sum + part.questions.length, 0) > 128 || current.attempts > knowledgeCallLimit(chunks.length)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点事实/问题或调用计数超出任务上限，已拒绝恢复。', 409);
+  if (current.attempts < knowledgePlanCallMinimum({ ...current, rulesVersion: countRulesVersion }) || current.completedChunks.reduce((sum, part) => sum + part.facts.length, 0) > 256 || current.completedChunks.reduce((sum, part) => sum + part.questions.length, 0) > 128 || current.attempts > checkpointCallLimit(current)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点事实/问题或调用计数超出任务上限，已拒绝恢复。', 409);
   const validatedChunkIds = new Set<number>();
   const factIdsSeen = new Set<string>(); const questionIdsSeen = new Set<string>();
   for (const saved of current.completedChunks) {
@@ -205,7 +205,7 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     const allQuestions = current.completedChunks.flatMap(part => part.questions);
     if (!allFacts.length) throw new LlmError('LLM_EMPTY_RESULT', '整篇没有可规划的已验证事实（EMPTY_RESULT）。', 422);
     guard();
-    if (knowledgeCallLimit(chunks.length) - current.attempts < 1) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划；成功块已保留，请检查资料后显式重新生成。', 429);
+    if (checkpointCallLimit(current) - current.attempts < 1) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划；成功块已保留，请检查资料后显式重新生成。', 429);
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
     const planningPayload = { ...planningInput, source: { id: input.raw.id, title: input.raw.title, sourceType: input.raw.sourceType, sourceName: input.raw.sourceName, author: input.raw.author, publishedAt: input.raw.publishedAt, url: input.raw.url, tags: input.raw.tags }, sourcePolicy: bundle.sourcePolicy, ...(feedback ? { coverageFeedback: feedback } : {}) };
@@ -265,7 +265,7 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
   });
   if (!pages.length || pages.some(page => !page.source_facts.length)) throw new LlmError('LLM_PLAN_COVERAGE_INVALID', '组装主题缺少来源事实，未生成草稿。', 502);
   const outcome: ExtractOutcome = {
-    document: current.plan.document, pages, provider: { name: input.provider.name, model: input.provider.model }, rulesVersion: `${bundle.rulesVersion}-kb02-2`,
+    document: current.plan.document, pages, provider: { name: input.provider.name, model: input.provider.model }, rulesVersion: `${bundle.rulesVersion}-${checkpoint.pipelineVersion}`,
     callCount: current.attempts, chunkCount: chunks.length, chunkCoverage: chunks.map(({ index, start, end }) => ({ index, start, end })), usage: { promptTokens: 0, completionTokens: 0 },
     warnings: ['本草稿由 kb02-2 精简事实与整篇规划程序组装；模板字段中的AI整理/分析建议需逐页核对，来源事实与证据保持原文。'],
   };

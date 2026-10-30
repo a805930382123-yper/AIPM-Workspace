@@ -28,8 +28,8 @@ export type B04Deps = {
   wikiStore: WikiStore;
 };
 
-const jobView = (job: { id: string; rawId: string; status: string; stage: string; chunksTotal: number; chunksDone: number; pagesFound: number; draftId?: string; error?: unknown; provider: { name: string; model: string }; callCount: number; startedAt: string; finishedAt?: string; cancelRequested: boolean; pipelineVersion?: string; checkpoint?: unknown }) => ({
-  jobId: job.id, rawId: job.rawId, status: job.status, stage: job.stage,
+const jobView = (job: { id: string; rawId: string; status: string; stage: string; chunksTotal: number; chunksDone: number; pagesFound: number; draftId?: string; error?: unknown; provider: { name: string; model: string }; callCount: number; startedAt: string; finishedAt?: string; cancelRequested: boolean; pipelineVersion?: string; checkpoint?: unknown; mode?: string }) => ({
+  jobId: job.id, mode:job.mode??'standard', rawId: job.rawId, status: job.status, stage: job.stage,
   progress: { chunksTotal: job.chunksTotal, chunksDone: job.chunksDone, pagesFound: job.pagesFound },
   draftId: job.draftId ?? null, error: job.error ?? null, provider: job.provider,
   callCount: job.callCount, startedAt: job.startedAt, finishedAt: job.finishedAt ?? null, cancelRequested: job.cancelRequested, pipelineVersion: job.pipelineVersion, checkpoint: job.checkpoint,
@@ -59,10 +59,10 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
 
   app.post('/api/raw/:id/extract', async (req, res, next) => {
     try {
-      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) || Object.keys(req.body).some(key => !['restart','planningRetry'].includes(key)) || (['restart','planningRetry'].some(key => key in req.body && typeof req.body[key] !== 'boolean')) || (req.body.restart === true && req.body.planningRetry === true)) throw new InputError('EXTRACT_REQUEST_INVALID', '提取请求只接受可选boolean restart/planningRetry，且不能同时启用。', 400);
+      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) || Object.keys(req.body).some(key => !['restart','planningRetry','mode'].includes(key)) || (['restart','planningRetry'].some(key => key in req.body && typeof req.body[key] !== 'boolean')) || (req.body.restart === true && req.body.planningRetry === true) || (req.body.mode!==undefined&&!['standard','deep'].includes(req.body.mode)) || (req.body.mode==='deep'&&req.body.planningRetry===true)) throw new InputError('EXTRACT_REQUEST_INVALID', '提取请求只接受mode standard/deep及boolean restart/planningRetry；deep不接受planningRetry。', 400);
       // F04-08: starting an extraction takes the same resource lock as deleting the Raw, so the
       // two can never interleave into a draft for a deleted Raw.
-      const result = await deps.wikiStore.withLock(() => deps.runner.start(req.params.id, { newJobId: randomUUID(), now: new Date().toISOString(), restart: req.body?.restart === true, planningRetry: req.body?.planningRetry === true }));
+      const result = await deps.wikiStore.withLock(() => deps.runner.start(req.params.id, { newJobId: randomUUID(), now: new Date().toISOString(), restart: req.body?.restart === true, planningRetry: req.body?.planningRetry === true, mode:req.body?.mode }));
       const runtime = await deps.runner.readJob(result.job.id);
       res.status(result.reused ? 200 : 202).json({ ...jobView(result.job), execution: runtime.execution, recovery: runtime.recovery ?? null, reused: result.reused });
     } catch (error) { next(error); }

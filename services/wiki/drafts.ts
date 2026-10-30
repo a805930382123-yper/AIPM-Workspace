@@ -2,7 +2,8 @@
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
 import { createHash, randomUUID } from 'node:crypto';
-import type { StructuredNote } from './structured-note.ts';
+import { validStructuredNote, type StructuredNote } from './structured-note.ts';
+import {validDeepQuality, type DeepQualityReport} from '../llm/knowledge-deep.ts';
 import path from 'node:path';
 import type { LlmError } from '../llm/provider.ts';
 import { locateEvidenceInBody } from '../llm/evidence.ts';
@@ -49,6 +50,7 @@ export type DraftSource = {
 };
 export type DraftRecord = {
   structuredNote?: StructuredNote;
+  extractionMode?: 'deep'; qualityReport?: DeepQualityReport;
   humanReview?: HumanReview;
   /** Explicit user references; original source units and classifications stay immutable. */
   humanQuestionUnitIds?: string[];
@@ -265,9 +267,9 @@ export class DraftStore {
   async create(input: {
     raw: { id: string; title: string; bodySha256: string; sourceType?: string; sourceName?: string; author?: string; publishedAt?: string; url?: string; importedAt?: string };
     outcome: ExtractOutcome; jobId: string; body: string; rules: DraftRules;
-  }): Promise<DraftRecord> {
+  }, deep?: {note: StructuredNote; qualityReport: DeepQualityReport}): Promise<DraftRecord> {
     return this.queue.run(async () => {
-      if(Object.hasOwn(input,'structuredNote')||Object.hasOwn(input.outcome,'structuredNote'))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
+      if([input,input.outcome].some(v=>['structuredNote','qualityReport','extractionMode'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
       const now = new Date().toISOString();
       const level = input.outcome.document.source_level ?? 'D';
       const pages: DraftPage[] = input.outcome.pages.map(page => ({ ...this.fromExtracted(page, input.rules), source_level: level }));
@@ -294,6 +296,11 @@ export class DraftStore {
         record.humanReview=this.reviewFromBasis(record,input.outcome.reviewBasis);
         assertReviewSources(record.humanReview,[{id:input.raw.id,body:input.body,bodySha256:input.raw.bodySha256}]);
         this.deriveReviewPages(record);
+      }
+      if(deep){
+        const ids=new Set(record.humanReview?.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)));
+        if(!record.humanReview||!validStructuredNote(deep.note,ids)||!validDeepQuality(deep.qualityReport,deep.note))throw new DraftError('STRUCTURED_NOTE_INVALID','内部深度草稿契约无效。');
+        record.structuredNote=structuredClone(deep.note);record.qualityReport=structuredClone(deep.qualityReport);record.extractionMode='deep';
       }
       for (const page of record.pages) this.validateTemplateReferences(page, record.rawId, undefined, record.humanReview);
       if (!pages.length) record.warnings.push('Provider 未给出任何知识建议，请放弃该草稿并检查来源。');
@@ -333,7 +340,7 @@ export class DraftStore {
   /** Applies a user review patch: whole-record validation, server-anchored evidence and ids. */
   async patch(id: string, patch: DraftPatch, context: { body: string; rules: DraftRules }): Promise<DraftRecord> {
     return this.queue.run(async () => {
-      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&Object.hasOwn(v,'structuredNote')))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
+      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&['structuredNote','qualityReport','extractionMode'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
       if (Object.keys(patch).some(k=>!['baseRevision','document','source','pages','deletePageIds','merge'].includes(k))) throw new DraftError('INVALID_PATCH','不能通过普通编辑修改审查目录或确认记录。');
       const current = await this.get(id);
       if (!current) throw new DraftError('NOT_FOUND', '没有找到这份草稿。', 404);

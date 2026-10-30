@@ -16,12 +16,14 @@ import { createHash } from 'node:crypto';
 import { chunkText } from './chunk.ts';
 import { loadExtractionRules } from './rules.ts';
 import { knowledgePlanCallMinimum, runKnowledgePipeline, validateKnowledgeCheckpoint } from './knowledge-extraction.ts';
-import { ExtractionCheckpointStore, KB02_PIPELINE_VERSION, knowledgeCallLimit, type ExtractionCheckpoint } from './checkpoints.ts';
+import { DEEP_VERSION, deepRemaining, deepMinimum, scanDeepStructure, runDeepPipeline, validateDeepCheckpoint } from './knowledge-deep.ts';
+import { ExtractionCheckpointStore, KB02_PIPELINE_VERSION, checkpointCallLimit, type ExtractionCheckpoint } from './checkpoints.ts';
 
 export const JOB_STATUSES = ['running', 'completed', 'failed', 'cancelled'] as const;
 export type JobStatus = typeof JOB_STATUSES[number];
 export type JobStage = ExtractProgress['stage'] | 'done';
 export type ExtractionJob = {
+  mode?: 'standard'|'deep';
   id: string; rawId: string; status: JobStatus; stage: JobStage;
   chunksTotal: number; chunksDone: number; pagesFound: number;
   provider: { name: string; model: string };
@@ -30,7 +32,7 @@ export type ExtractionJob = {
   startedAt: string; finishedAt?: string; updatedAt: string;
   /** Persisted before binding the Raw, so an interrupted new-job start is verifiable after restart. */
   startStateHash?: string;
-  pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number };
+  pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number; deepStage?: string };
 };
 
 const NON_RETRYABLE = new Set(['LLM_NOT_CONFIGURED', 'LLM_AUTH_FAILED', 'LLM_RAW_TOO_LARGE', 'LLM_TOO_MANY_PAGES', 'LLM_OUTPUT_CONTAINS_SECRET']);
@@ -38,6 +40,8 @@ const NON_RETRYABLE = new Set(['LLM_NOT_CONFIGURED', 'LLM_AUTH_FAILED', 'LLM_RAW
 function validStoredJob(value: unknown, id?: string): value is ExtractionJob {
   if (!isJob(value, id)) return false;
   const job = value as ExtractionJob;
+  if(job.mode!==undefined&&!['standard','deep'].includes(job.mode))return false;
+  if(job.pipelineVersion===DEEP_VERSION?job.mode!=='deep':job.mode==='deep')return false;
   return job.startStateHash === undefined || (typeof job.startStateHash === 'string' && /^[0-9a-f]{64}$/u.test(job.startStateHash));
 }
 
@@ -140,14 +144,20 @@ export class ExtractionRunner {
     const cp = pending.checkpoint;
     // kb02-2 always saves its checkpoint before the job. Absence is damage, not a
     // legacy job without a checkpoint, and must not produce a fresh attempt ledger.
-    if (job.pipelineVersion === KB02_PIPELINE_VERSION && !cp) this.conflict();
+    if ([KB02_PIPELINE_VERSION,DEEP_VERSION].includes(job.pipelineVersion??'') && !cp) this.conflict();
     if (state.jobId !== job.id && job.startStateHash !== undefined) {
       // Only an untouched, zero-call new start can still own its exact prior Raw
       // state. A changed binding/history or an already-executed task fails closed.
       if (job.status !== 'running' || job.callCount !== 0 || !cp || cp.attempts !== 0 || cp.stage !== 'extracting' || cp.completedChunks.length || cp.plan || cp.draftId || pending.draftId || fingerprint(state) !== job.startStateHash) this.conflict();
     } else if (state.jobId && state.jobId !== job.id) this.conflict();
-    if (cp && (cp.jobId !== job.id || cp.rawId !== job.rawId || cp.rawSha256 !== createHash('sha256').update(raw.body).digest('hex') || cp.attempts < job.callCount || cp.attempts > knowledgeCallLimit(cp.chunks.length) || cp.attempts < knowledgePlanCallMinimum(cp) || (job.pipelineVersion && cp.pipelineVersion !== job.pipelineVersion))) this.conflict();
+    if (cp && (cp.jobId !== job.id || cp.rawId !== job.rawId || cp.rawSha256 !== createHash('sha256').update(raw.body).digest('hex') || cp.attempts < job.callCount || cp.attempts > checkpointCallLimit(cp) || cp.attempts < (cp.pipelineVersion===DEEP_VERSION?deepMinimum(cp):knowledgePlanCallMinimum(cp)) || (job.pipelineVersion && cp.pipelineVersion !== job.pipelineVersion))) this.conflict();
     const draft = pending.draftId ? await this.deps.drafts.get(pending.draftId) : undefined;
+    if(cp?.pipelineVersion===DEEP_VERSION){
+      const bundle=await loadExtractionRules(this.deps.rulesDir);
+      if(cp.mode!==job.mode||cp.rulesVersion!==bundle.rulesVersion)this.conflict();
+      await validateDeepCheckpoint({raw,body:raw.body,bodySha256:cp.rawSha256,rulesDir:this.deps.rulesDir,checkpoint:cp,provider:{...job.provider,complete:async()=>{throw Error('Reconciliation cannot send');}}});
+      if(draft&&(!draft.structuredNote||draft.extractionMode!=='deep'||JSON.stringify(draft.structuredNote)!==JSON.stringify(cp.deep!.note)||JSON.stringify(draft.qualityReport)!==JSON.stringify(cp.deep!.qualityReport)))this.conflict();
+    }
     if (cp?.pipelineVersion === KB02_PIPELINE_VERSION) {
       const bundle = await loadExtractionRules(this.deps.rulesDir);
       const currentProvider = this.deps.provider();
@@ -166,10 +176,18 @@ export class ExtractionRunner {
   }
 
   private async persistSettlement(id: string, pending: PendingSettlement): Promise<void> {
-    const statusAtEntry = pending.status;
+    let statusAtEntry = pending.status;
     const job = await this.deps.jobs.get(id);
     if (!job) this.conflict();
-    const draft = await this.validateSettlement(job, pending);
+    await this.validateSettlement(job,pending);
+    if(pending.checkpoint?.pipelineVersion===DEEP_VERSION&&pending.checkpoint.deep?.qualityReport&&!pending.draftId&&pending.status!=='cancelled'){
+      const raw=(await this.deps.rawStore.get(job.rawId))!;
+      const result=await runDeepPipeline({raw,body:raw.body,bodySha256:raw.bodySha256,rulesDir:this.deps.rulesDir,checkpoint:pending.checkpoint,provider:{...job.provider,complete:async()=>{throw Error('Saving cannot send');}},beforeCall:async()=>{throw Error('Saving cannot send');},saveCheckpoint:async value=>new ExtractionCheckpointStore(this.deps.root).prepare(value)});
+      const draft=await this.deps.drafts.create({raw:{...raw,bodySha256:raw.bodySha256},body:raw.body,outcome:result.outcome,jobId:job.id,rules:await this.deps.draftRules()},{note:pending.checkpoint.deep.note!,qualityReport:pending.checkpoint.deep.qualityReport});
+      pending.draftId=draft.id;pending.status='completed';pending.checkpoint=new ExtractionCheckpointStore(this.deps.root).prepare({...pending.checkpoint,draftId:draft.id,stage:'done'});
+    }
+    const draft=pending.draftId?await this.deps.drafts.get(pending.draftId):undefined;
+    statusAtEntry=pending.status;
     let phase = 'checkpoint';
     try {
       const store = new ExtractionCheckpointStore(this.deps.root);
@@ -186,7 +204,7 @@ export class ExtractionRunner {
       if (pending.status !== statusAtEntry) return this.persistSettlement(id, pending);
       phase = pending.status + '-job';
       const cp = pending.checkpoint;
-      await this.deps.jobs.update(id, { status: pending.status, stage: pending.status === 'cancelled' ? 'done' : cp?.stage ?? job.stage, ...(pending.status === 'completed' ? { draftId: draft!.id, pagesFound: draft!.pages.length } : {}), cancelRequested: pending.status === 'cancelled' || job.cancelRequested, callCount: Math.max(job.callCount, cp?.attempts ?? draft?.extraction.callCount ?? 0), chunksDone: cp?.completedChunks.length ?? job.chunksDone, ...(cp ? { checkpoint: { stage: cp.stage, validatedChunks: cp.completedChunks.length, totalChunks: cp.chunks.length, resumable: pending.status === 'failed', attempts: cp.attempts, reusedChunks: job.checkpoint?.reusedChunks ?? 0, reason: pending.failure?.message } } : {}), error: pending.status === 'failed' ? pending.failure : undefined, finishedAt: new Date().toISOString() });
+      await this.deps.jobs.update(id, { status: pending.status, stage: pending.status === 'cancelled' ? 'done' : cp?.stage ?? job.stage, ...(pending.status === 'completed' ? { draftId: draft!.id, pagesFound: draft!.pages.length } : {}), cancelRequested: pending.status === 'cancelled' || job.cancelRequested, callCount: Math.max(job.callCount, cp?.attempts ?? draft?.extraction.callCount ?? 0), chunksDone: cp?.completedChunks.length ?? job.chunksDone, ...(cp ? { checkpoint: { stage: cp.stage, validatedChunks: cp.completedChunks.length, totalChunks: cp.chunks.length, resumable: pending.status === 'failed', attempts: cp.attempts, reusedChunks: job.checkpoint?.reusedChunks ?? 0, ...(cp.deep?{deepStage:cp.deep.qualityReport?'ready':cp.deep.note?'quality':cp.deep.outline?'writing':cp.plan?'outline':cp.stage}:{}), reason: pending.failure?.message } } : {}), error: pending.status === 'failed' ? pending.failure : undefined, finishedAt: new Date().toISOString() });
       if (pending.status !== statusAtEntry) return this.persistSettlement(id, pending);
       this.pending.delete(id);
     } catch (error) { await this.retain(id, pending, error, phase); throw storageFailure(error) ?? error; }
@@ -197,7 +215,7 @@ export class ExtractionRunner {
       if (this.tasks.has(id)) throw new JobError('LLM_JOB_ALREADY_RUNNING', '任务仍在运行或收尾。', 409);
       const job = await this.deps.jobs.get(id);
       if (!job) throw new JobError('JOB_NOT_FOUND', '没有找到这个提取任务。', 404);
-      if (job.pipelineVersion === KB02_PIPELINE_VERSION && !await new ExtractionCheckpointStore(this.deps.root).get(id)) this.conflict();
+      if ([KB02_PIPELINE_VERSION,DEEP_VERSION].includes(job.pipelineVersion??'') && !await new ExtractionCheckpointStore(this.deps.root).get(id)) this.conflict();
       let pending = this.pending.get(id);
       if (!pending && job.status === 'running') {
         if (this.pending.size >= EXTRACTION_RECOVERY_CAPACITY) throw new JobError('STORAGE_RECOVERY_CAPACITY', '待保存任务已达容量，请先保存已登记的任务。', 503);
@@ -227,12 +245,15 @@ export class ExtractionRunner {
   }) {}
 
   /** Starts an extraction, or returns the existing active job/draft for the same Raw. */
-  async start(rawId: string, options: { newJobId: string; now: string; restart?: boolean; planningRetry?: boolean }): Promise<{ job: ExtractionJob; reused: boolean }> {
+  async start(rawId: string, options: { newJobId: string; now: string; restart?: boolean; planningRetry?: boolean; mode?: 'standard'|'deep' }): Promise<{ job: ExtractionJob; reused: boolean }> {
     return this.startQueue.run(async () => { try { return await this.startOnce(rawId, options); } catch (error) { throw storageFailure(error) ?? error; } });
   }
 
-  private async startOnce(rawId: string, options: { newJobId: string; now: string; restart?: boolean; planningRetry?: boolean }): Promise<{ job: ExtractionJob; reused: boolean }> {
+  private async startOnce(rawId: string, options: { newJobId: string; now: string; restart?: boolean; planningRetry?: boolean; mode?: 'standard'|'deep' }): Promise<{ job: ExtractionJob; reused: boolean }> {
+    const mode=options.mode??'standard';
+    if(!['standard','deep'].includes(mode)||(mode==='deep'&&options.planningRetry))throw new JobError('EXTRACT_REQUEST_INVALID','无效mode或deep planningRetry。');
     const raw = await this.deps.rawStore.get(rawId);
+    if(mode==='deep'&&raw&&raw.body.length>30000)throw new JobError('LLM_RAW_TOO_LARGE','深度整理最多30000字符，原文未截断。',413);
     assertRawNotMeeting(raw);
     if (!raw) throw new JobError('NOT_FOUND', '没有找到这条原始资料。', 404);
     const state = await this.deps.rawStates.get(rawId);
@@ -245,10 +266,11 @@ export class ExtractionRunner {
     const existingDraft = await this.deps.drafts.findActiveForRaw(rawId);
     if (state.status === 'processing' && state.jobId) {
       const job = await this.deps.jobs.get(state.jobId);
-      if (job && job.status === 'running' && this.tasks.has(job.id)) return { job, reused: true };
+      if(job&&job.status==='running'&&this.tasks.has(job.id)){if((job.mode??'standard')!==mode)throw new JobError('LLM_MODE_CONFLICT','同Raw有其他模式运行任务。',409);return {job,reused:true};}
       if (job && job.status === 'running' && !existingDraft) throw new JobError('STORAGE_RECONCILE_REQUIRED', '发现已停止的任务，请先恢复本机状态。', 409);
     }
-    if (existingDraft) {
+    if(existingDraft&&(existingDraft.extractionMode??'standard')!==mode&&!options.restart)throw new JobError('LLM_MODE_CONFLICT','已有草稿模式不同，请明确restart。',409);
+    if (existingDraft && !(options.restart&&(mode==='deep'||existingDraft.extractionMode==='deep'))) {
       if (options.planningRetry) throw new JobError('LLM_PLANNING_RETRY_UNAVAILABLE', '已有完整草稿，不可仅重新规划。', 409);
       const job = await this.deps.jobs.get(existingDraft.jobId);
       if (!job) this.conflict();
@@ -264,8 +286,8 @@ export class ExtractionRunner {
       return { job: (await this.deps.jobs.get(job.id))!, reused: true };
     }
     const prior = !options.restart && state.jobId ? await this.deps.jobs.get(state.jobId) : undefined;
-    const savedCheckpoint = prior && prior.status !== 'completed' ? await checkpoints.get(prior.id) : undefined;
-    if (prior?.pipelineVersion === KB02_PIPELINE_VERSION && prior.status !== 'completed' && !savedCheckpoint) throw new JobError('LLM_CHECKPOINT_MISSING', '此任务的检查点缺失，不能继续或重置累计次数；请恢复原检查点，或显式重新生成。', 409);
+    const savedCheckpoint = prior && (prior.status !== 'completed'||prior.mode==='deep') ? await checkpoints.get(prior.id) : undefined;
+    if (prior&&[KB02_PIPELINE_VERSION,DEEP_VERSION].includes(prior.pipelineVersion??'') && (prior.status !== 'completed'||prior.mode==='deep') && !savedCheckpoint) throw new JobError('LLM_CHECKPOINT_MISSING', '此任务的检查点缺失，不能继续或重置累计次数；请恢复原检查点，或显式重新生成。', 409);
     const provider = this.deps.provider();
     if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法执行 AI 整理。', 400);
     const providerIdentity = `${provider.cacheIdentity ?? provider.name}|${provider.model}`;
@@ -275,27 +297,30 @@ export class ExtractionRunner {
       const priorCheckpoint = savedCheckpoint;
       if (priorCheckpoint) {
         if (prior?.status === 'running') throw new JobError('LLM_JOB_ALREADY_RUNNING', '此 Raw 已有运行中的提取任务。', 409);
-        if (priorCheckpoint.stage !== 'done') {
-          if (prior && (priorCheckpoint.attempts < prior.callCount || priorCheckpoint.attempts < knowledgePlanCallMinimum(priorCheckpoint))) throw new JobError('LLM_CHECKPOINT_CORRUPT', '检查点累计调用次数低于已持久化作业记录，已拒绝恢复。', 409);
+        if((priorCheckpoint.mode??'standard')!==mode)throw new JobError('LLM_CHECKPOINT_INCOMPATIBLE','不能跨mode恢复。',409);
+        if(priorCheckpoint.stage==='done')this.conflict();
+        {
+          if (prior && (priorCheckpoint.attempts < prior.callCount || priorCheckpoint.attempts < (mode==='deep'?deepMinimum(priorCheckpoint):knowledgePlanCallMinimum(priorCheckpoint)))) throw new JobError('LLM_CHECKPOINT_CORRUPT', '检查点累计调用次数低于已持久化作业记录，已拒绝恢复。', 409);
           const bundle = await loadExtractionRules(this.deps.rulesDir);
           const chunks = chunkText(raw.body, { maxChunkChars: bundle.rules.budgets.maxChunkChars, overlap: bundle.rules.budgets.chunkOverlap, maxRawChars: bundle.rules.budgets.maxRawChars }).map(({ index, start, end }) => ({ index, start, end }));
           const actualSha = createHash('sha256').update(raw.body).digest('hex');
-          if (priorCheckpoint.rawId !== raw.id || priorCheckpoint.rawSha256 !== actualSha || priorCheckpoint.rulesVersion !== bundle.rulesVersion || priorCheckpoint.pipelineVersion !== KB02_PIPELINE_VERSION || priorCheckpoint.providerIdentity !== providerIdentity || JSON.stringify(priorCheckpoint.chunks) !== JSON.stringify(chunks)) throw new JobError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则、Provider或pipeline已变化；检查点保留，请显式重新生成。', 409);
-          await validateKnowledgeCheckpoint({ raw: { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, tags: raw.tags ?? [] }, body: raw.body, bodySha256: actualSha, provider, rulesDir: this.deps.rulesDir, checkpoint: priorCheckpoint });
+          if (priorCheckpoint.rawId !== raw.id || priorCheckpoint.rawSha256 !== actualSha || priorCheckpoint.rulesVersion !== bundle.rulesVersion || priorCheckpoint.pipelineVersion !== (mode==='deep'?DEEP_VERSION:KB02_PIPELINE_VERSION) || priorCheckpoint.providerIdentity !== providerIdentity || JSON.stringify(priorCheckpoint.chunks) !== JSON.stringify(chunks)) throw new JobError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则、Provider或pipeline已变化；检查点保留，请显式重新生成。', 409);
+          await (mode==='deep'?validateDeepCheckpoint:validateKnowledgeCheckpoint)({ raw: { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, tags: raw.tags ?? [] }, body: raw.body, bodySha256: actualSha, provider, rulesDir: this.deps.rulesDir, checkpoint: priorCheckpoint });
           resume = priorCheckpoint;
           jobId = state.jobId;
         }
       }
     }
+    if(resume&&mode==='deep'&&checkpointCallLimit(resume)-resume.attempts<deepRemaining(resume))throw new JobError('LLM_ATTEMPT_LIMIT','剩余预算不足以完成全部深度阶段。',409);
     if (options.planningRetry && (options.restart || !resume || resume.plan || resume.completedChunks.length !== resume.chunks.length || resume.lastError?.code !== 'LLM_PLAN_COVERAGE_INVALID' || !resume.lastError.diagnostic)) throw new JobError('LLM_PLANNING_RETRY_UNAVAILABLE', '仅重新规划需要兼容的完整提取检查点及覆盖失败诊断。', 409);
-    if (resume && !resume.plan && resume.completedChunks.length === resume.chunks.length && knowledgeCallLimit(resume.chunks.length) - resume.attempts < 1) throw new JobError('LLM_ATTEMPT_LIMIT', `剩余预算不足以完成规划（累计 ${knowledgeCallLimit(resume.chunks.length)} 次调用上限）；请检查资料后显式重新生成。`, 409);
+    if (resume && !resume.plan && resume.completedChunks.length === resume.chunks.length && checkpointCallLimit(resume) - resume.attempts < 1) throw new JobError('LLM_ATTEMPT_LIMIT', `剩余预算不足以完成规划（累计 ${checkpointCallLimit(resume)} 次调用上限）；请检查资料后显式重新生成。`, 409);
     if (this.pending.size >= EXTRACTION_RECOVERY_CAPACITY) throw new JobError('STORAGE_RECOVERY_CAPACITY', '本进程待保存及运行中任务已达上限，请先保存状态。', 503);
     const revertStatus = state.status === 'unprocessed' || state.status === 'generated' ? state.status : (state.revertStatus ?? 'unprocessed');
     const bundle = await loadExtractionRules(this.deps.rulesDir);
     const chunks = chunkText(raw.body, { maxChunkChars: bundle.rules.budgets.maxChunkChars, overlap: bundle.rules.budgets.chunkOverlap, maxRawChars: bundle.rules.budgets.maxRawChars }).map(({ index, start, end }) => ({ index, start, end }));
     const actualSha = createHash('sha256').update(raw.body).digest('hex');
-    const checkpoint = resume ?? await checkpoints.save({ version: 1, jobId, rawId, rawSha256: actualSha, pipelineVersion: KB02_PIPELINE_VERSION, rulesVersion: bundle.rulesVersion, providerIdentity, chunks, completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: options.now });
-    const job: ExtractionJob = { id: jobId, rawId, status: 'running', stage: checkpoint.stage, chunksTotal: chunks.length, chunksDone: checkpoint.completedChunks.length, pagesFound: checkpoint.completedChunks.reduce((sum, item) => sum + item.facts.length, 0), provider: { name: provider.name, model: provider.model }, cancelRequested: false, callCount: checkpoint.attempts, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: chunks.length, resumable: !!resume, reason: checkpoint.lastError?.message, attempts: checkpoint.attempts, reusedChunks: resume?.completedChunks.length ?? 0 }, startedAt: resume ? (await this.deps.jobs.get(jobId))?.startedAt ?? options.now : options.now, updatedAt: options.now };
+    const checkpoint = resume ?? await checkpoints.save({ version: 1, jobId, rawId, rawSha256: actualSha, pipelineVersion: mode==='deep'?DEEP_VERSION:KB02_PIPELINE_VERSION, mode, ...(mode==='deep'?{deep:{version:1 as const,scan:scanDeepStructure(raw.body)}}:{}), rulesVersion: bundle.rulesVersion, providerIdentity, chunks, completedChunks: [], attempts: 0, stage: 'extracting', updatedAt: options.now });
+    const job: ExtractionJob = { id: jobId, rawId, status: 'running', stage: checkpoint.stage, chunksTotal: chunks.length, chunksDone: checkpoint.completedChunks.length, pagesFound: checkpoint.completedChunks.reduce((sum, item) => sum + item.facts.length, 0), provider: { name: provider.name, model: provider.model }, cancelRequested: false, callCount: checkpoint.attempts, pipelineVersion: checkpoint.pipelineVersion, mode, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: chunks.length, resumable: !!resume, reason: checkpoint.lastError?.message, attempts: checkpoint.attempts, reusedChunks: resume?.completedChunks.length ?? 0 }, startedAt: resume ? (await this.deps.jobs.get(jobId))?.startedAt ?? options.now : options.now, updatedAt: options.now };
     if (!resume) job.startStateHash = fingerprint(state);
     const pending: PendingSettlement = { rawId, checkpoint, status: 'failed' };
     this.pending.set(jobId, pending);
@@ -328,23 +353,24 @@ export class ExtractionRunner {
     let phase = 'pipeline';
     const progressWrites: Promise<void>[] = [];
     const saveCheckpoint = async (value: Omit<ExtractionCheckpoint, 'integrity'>) => {
-      assertNoKnownSecret([...value.completedChunks, ...(value.plan ? [value.plan] : []), ...(value.lastError ? [value.lastError] : [])], secrets);
+      assertNoKnownSecret([...value.completedChunks, ...(value.plan ? [value.plan] : []), ...(value.lastError ? [value.lastError] : []), ...(value.deep?[value.deep]:[])], secrets);
       pending.checkpoint = checkpoints.prepare(value);
       phase = value.stage === 'done' ? 'done-checkpoint' : value.lastError?.diagnostic ? 'coverage-checkpoint' : 'checkpoint';
       try { checkpoint = await checkpoints.save(value); pending.checkpoint = checkpoint; return checkpoint; }
       catch (error) { throw storageFailure(error) ?? error; }
     };
     try {
-      const { outcome } = await runKnowledgePipeline({
+      const { outcome } = await (job.mode==='deep'?runDeepPipeline:runKnowledgePipeline)({
         raw: { id: raw.id, title: raw.title, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url, tags: raw.tags ?? [] },
         body: raw.body, bodySha256: createHash('sha256').update(raw.body).digest('hex'), provider, rulesDir: this.deps.rulesDir, checkpoint, signal: controller.signal, saveCheckpoint, planningRetry,
         beforeCall: async stage => {
           if (controller.signal.aborted) throw new LlmError('LLM_CANCELLED', '提取已被取消。', 409);
-          const maxCalls = knowledgeCallLimit(checkpoint.chunks.length);
+          const maxCalls = checkpointCallLimit(checkpoint);
+          if(job.mode==='deep'&&maxCalls-checkpoint.attempts<deepRemaining(checkpoint))throw new LlmError('LLM_ATTEMPT_LIMIT','剩余预算不足全部阶段。',429);
           if (checkpoint.attempts >= maxCalls) throw new LlmError('LLM_ATTEMPT_LIMIT', '已达到此任务累计 ' + maxCalls + ' 次调用上限，请检查资料后显式重新生成。', 429);
           checkpoint = await saveCheckpoint({ ...checkpoint, attempts: checkpoint.attempts + 1, stage, lastError: undefined });
           phase = 'call-count-job';
-          try { await this.deps.jobs.update(job.id, { callCount: checkpoint.attempts, stage, chunksDone: checkpoint.completedChunks.length, pipelineVersion: KB02_PIPELINE_VERSION, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, attempts: checkpoint.attempts, reusedChunks: initial.completedChunks.length } }); }
+          try { await this.deps.jobs.update(job.id, { callCount: checkpoint.attempts, stage, chunksDone: checkpoint.completedChunks.length, pipelineVersion: checkpoint.pipelineVersion, checkpoint: { stage: checkpoint.stage, validatedChunks: checkpoint.completedChunks.length, totalChunks: checkpoint.chunks.length, resumable: true, attempts: checkpoint.attempts, reusedChunks: initial.completedChunks.length, ...(checkpoint.deep?{deepStage:checkpoint.deep.qualityReport?'ready':checkpoint.deep.note?'quality':checkpoint.deep.outline?'writing':checkpoint.plan?'outline':checkpoint.stage}:{}) } }); }
           catch (error) { throw storageFailure(error) ?? error; }
           return checkpoint;
         },
@@ -361,7 +387,7 @@ export class ExtractionRunner {
         phase = 'draft';
         const rules = await this.deps.draftRules();
         if (controller.signal.aborted) { await this.finishCancelled(job, pending); return; }
-        const draft = await this.deps.drafts.create({ raw: { id: raw.id, title: raw.title, bodySha256: raw.bodySha256, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url }, outcome, jobId: job.id, body: raw.body, rules });
+        const draft = await this.deps.drafts.create({ raw: { id: raw.id, title: raw.title, bodySha256: raw.bodySha256, sourceType: raw.sourceType, sourceName: raw.sourceName, author: raw.author, publishedAt: raw.publishedAt, url: raw.url }, outcome, jobId: job.id, body: raw.body, rules },job.mode==='deep'?{note:checkpoint.deep!.note!,qualityReport:checkpoint.deep!.qualityReport!}:undefined);
         pending.draftId = draft.id;
         pending.status = controller.signal.aborted ? 'cancelled' : 'completed';
         checkpoint = await saveCheckpoint({ ...checkpoint, draftId: draft.id, stage: 'done', lastError: undefined });
@@ -426,7 +452,7 @@ export class ExtractionRunner {
     await this.validateSettlement(job, pending);
     if (draft && !job.cancelRequested && cp) pending.checkpoint = new ExtractionCheckpointStore(this.deps.root).prepare({ ...cp, draftId: draft.id, stage: 'done', lastError: undefined });
     const prior = cp?.lastError;
-    if (!draft) pending.failure = prior ? { code: prior.code, message: prior.message, at: prior.at, retryable: true, ...(prior.diagnostic ? { details: prior.diagnostic } : {}) } : { code: 'LLM_INTERRUPTED', message: '上一轮任务中断，未发现完整草稿；未保存的诊断无法恢复。继续操作前请检查状态。', at: new Date().toISOString(), retryable: true };
+    if (!draft) pending.failure = prior ? { code: prior.code, message: prior.message, at: prior.at, retryable: true, ...(prior.diagnostic ? { details: prior.diagnostic } : {}) } : { code: 'LLM_INTERRUPTED', message: '上一轮任务中断，未发现完整草稿；未保存的诊断无法恢复。已发送但响应未落盘的请求完成情况不确定，显式继续可能重复请求并新增累计次数；初始化不会重发。', at: new Date().toISOString(), retryable: true };
     return pending;
   }
 

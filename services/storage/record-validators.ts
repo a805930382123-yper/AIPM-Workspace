@@ -1,5 +1,6 @@
 import {validHumanReview} from '../wiki/human-review.ts';
-import {validStructuredNote} from '../wiki/structured-note.ts';
+import {validStructuredNote, type StructuredNote} from '../wiki/structured-note.ts';
+import {validDeepQuality} from '../llm/knowledge-deep.ts';
 import {validTemplateFields, validInputTemplateFields,validMergedTemplateFields,mergedFieldsMatchReview} from '../wiki/template-fields.ts';
 const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const str=(v:unknown):v is string=>typeof v==='string';
@@ -13,6 +14,7 @@ export function isExtractionDraft(v:unknown,id?:string):boolean {
  if(obj(v)&&Object.hasOwn(v,'structuredNote')){
   if(!validHumanReview(v.humanReview)||!validStructuredNote(v.structuredNote,new Set(v.humanReview.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)))))return false;
  }
+ if(obj(v)&&(v.qualityReport!==undefined||v.extractionMode!==undefined)){if(v.extractionMode!=='deep'||v.structuredNote===undefined||!validDeepQuality(v.qualityReport,v.structuredNote as StructuredNote))return false;}
  if(obj(v)&&v.humanQuestionUnitIds!==undefined){
   if(!strings(v.humanQuestionUnitIds)||!validHumanReview(v.humanReview)||new Set(v.humanQuestionUnitIds).size!==v.humanQuestionUnitIds.length)return false;
   const review=v.humanReview;if(v.humanQuestionUnitIds.some(id=>!review.units.some(u=>u.id===id&&u.kind==='fact')))return false;

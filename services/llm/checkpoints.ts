@@ -7,6 +7,7 @@ import { FROZEN_BUDGETS } from './rules.ts';
 import { validCoverageDiagnostic, type CoverageDiagnostic } from './knowledge-atoms.ts';
 import { MAX_EVIDENCE_LOCATORS_PER_CHUNK } from './locators.ts';
 import { templateSections, type TemplateFieldKey } from '../wiki/template-fields.ts';
+import { validDeepState, deepCallLimit, type DeepState } from './knowledge-deep.ts';
 
 export const KB02_PIPELINE_VERSION = 'kb02-2';
 export const knowledgeCallLimit = (chunkCount: number) => Math.min(128, 2 * chunkCount + 4);
@@ -16,7 +17,9 @@ export type CheckpointEvidence = { id: string; rawId: string; quote: string; sta
 export type CheckpointChunk = { index: number; start: number; end: number; facts: CheckpointFact[]; questions: CheckpointQuestion[]; evidence: CheckpointEvidence[]; sourceNotes?: Array<{ atomId: string; text: string; locatorIds: string[]; chunkIndex: number }> };
 export type PlannedTemplateFields = Partial<Record<TemplateFieldKey, { text: string; factIds: string[] }>>;
 export type KnowledgePlan = { document: { title: string; main_topic: string; summary: string; source_level?: 'A' | 'B' | 'C' | 'D' }; pages: Array<{ title: string; type: string; category: string; factIds: string[]; questionIds: string[]; templateFields?: PlannedTemplateFields }> };
+export const checkpointCallLimit = (cp: Pick<ExtractionCheckpoint,'pipelineVersion'|'chunks'>) => cp.pipelineVersion==='kb03-1'?deepCallLimit(cp.chunks.length):knowledgeCallLimit(cp.chunks.length);
 export type ExtractionCheckpoint = {
+  mode?: 'standard'|'deep'; deep?: DeepState;
   version: 1; jobId: string; rawId: string; rawSha256: string; pipelineVersion: string; rulesVersion: string;
   providerIdentity: string; chunks: Array<{ index: number; start: number; end: number }>;
   completedChunks: CheckpointChunk[]; plan?: KnowledgePlan; draftId?: string;
@@ -31,10 +34,10 @@ const isObject = (value: unknown): value is Record<string, unknown> => !!value &
 const hasKeys = (value: unknown, required: string[], optional: string[] = []) => isObject(value) && required.every(key => Object.hasOwn(value, key)) && Object.keys(value).every(key => required.includes(key) || optional.includes(key));
 const isText = (value: unknown, max: number, nonempty = true): value is string => typeof value === 'string' && value.length <= max && (!nonempty || value.trim().length > 0);
 const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpoint => {
-  if (!hasKeys(value, ['version','jobId','rawId','rawSha256','pipelineVersion','rulesVersion','providerIdentity','chunks','completedChunks','attempts','stage','updatedAt','integrity'], ['plan','draftId','lastError'])) return false;
+  if (!hasKeys(value, ['version','jobId','rawId','rawSha256','pipelineVersion','rulesVersion','providerIdentity','chunks','completedChunks','attempts','stage','updatedAt','integrity'], ['plan','draftId','lastError','mode','deep'])) return false;
   const cp = value as Record<string, any>;
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
-  if (cp.version !== 1 || cp.jobId !== id || !isText(cp.rawId, 64) || !uuid.test(cp.rawId) || !/^[0-9a-f]{64}$/iu.test(String(cp.rawSha256)) || !['kb02-1', KB02_PIPELINE_VERSION].includes(cp.pipelineVersion) || !isText(cp.rulesVersion, 256) || !isText(cp.providerIdentity, 512) || !Number.isSafeInteger(cp.attempts) || (cp.attempts as number) < 0 || !['extracting','planning','assembling','done'].includes(String(cp.stage)) || !isText(cp.updatedAt, 40) || !/^[0-9a-f]{64}$/iu.test(String(cp.integrity))) return false;
+  if (cp.version !== 1 || cp.jobId !== id || !isText(cp.rawId, 64) || !uuid.test(cp.rawId) || !/^[0-9a-f]{64}$/iu.test(String(cp.rawSha256)) || !['kb02-1', KB02_PIPELINE_VERSION,'kb03-1'].includes(cp.pipelineVersion) || !isText(cp.rulesVersion, 256) || !isText(cp.providerIdentity, 512) || !Number.isSafeInteger(cp.attempts) || (cp.attempts as number) < 0 || !['extracting','planning','assembling','done'].includes(String(cp.stage)) || !isText(cp.updatedAt, 40) || !/^[0-9a-f]{64}$/iu.test(String(cp.integrity))) return false;
   if (!Array.isArray(cp.chunks) || cp.chunks.length < 1 || cp.chunks.length > MAX_CHUNKS || cp.chunks.some((chunk, i) => !hasKeys(chunk, ['index','start','end']) || chunk.index !== i || !Number.isSafeInteger(chunk.start) || !Number.isSafeInteger(chunk.end) || (chunk.start as number) < 0 || (chunk.end as number) <= (chunk.start as number))) return false;
   if (!Array.isArray(cp.completedChunks) || cp.completedChunks.length > cp.chunks.length) return false;
   let factCount = 0; let questionCount = 0; let evidenceCount = 0; const seen = new Set<number>();
@@ -45,7 +48,7 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
     seen.add(chunk.index as number); factCount += chunk.facts.length; questionCount += chunk.questions.length; evidenceCount += chunk.evidence.length;
     for (const fact of chunk.facts) if (!hasKeys(fact, ['id','text','locatorIds','chunkIndex'], ['atomId','kind']) || !/^f-c\d+-\d+$/u.test(String(fact.id)) || !isText(fact.text, 2000) || !Array.isArray(fact.locatorIds) || fact.locatorIds.length < 1 || fact.locatorIds.length > 256 || fact.locatorIds.some((v: unknown) => !isText(v, 64)) || fact.chunkIndex !== chunk.index) return false;
     for (const question of chunk.questions) if (!hasKeys(question, ['id','text','locatorIds','chunkIndex'], ['atomId']) || !/^q-c\d+-\d+$/u.test(String(question.id)) || !isText(question.text, 1000) || !Array.isArray(question.locatorIds) || question.locatorIds.length < 1 || question.locatorIds.length > 256 || question.locatorIds.some((v: unknown) => !isText(v, 64)) || question.chunkIndex !== chunk.index) return false;
-    if (cp.pipelineVersion === KB02_PIPELINE_VERSION && (!Array.isArray(chunk.sourceNotes) || chunk.sourceNotes.length > 32 || chunk.sourceNotes.some((note: any) => !hasKeys(note, ['atomId','text','locatorIds','chunkIndex']) || !isText(note.atomId, 64) || !isText(note.text, 2000) || !Array.isArray(note.locatorIds) || note.locatorIds.length < 1 || note.locatorIds.some((id: unknown) => !isText(id, 64)) || note.chunkIndex !== chunk.index) || chunk.facts.some((fact: any) => !isText(fact.atomId, 64) || !['fact','ambiguous'].includes(fact.kind)) || chunk.questions.some((question: any) => !isText(question.atomId, 64)))) return false;
+    if (['kb03-1',KB02_PIPELINE_VERSION].includes(cp.pipelineVersion) && (!Array.isArray(chunk.sourceNotes) || chunk.sourceNotes.length > 32 || chunk.sourceNotes.some((note: any) => !hasKeys(note, ['atomId','text','locatorIds','chunkIndex']) || !isText(note.atomId, 64) || !isText(note.text, 2000) || !Array.isArray(note.locatorIds) || note.locatorIds.length < 1 || note.locatorIds.some((id: unknown) => !isText(id, 64)) || note.chunkIndex !== chunk.index) || chunk.facts.some((fact: any) => !isText(fact.atomId, 64) || !['fact','ambiguous'].includes(fact.kind)) || chunk.questions.some((question: any) => !isText(question.atomId, 64)))) return false;
     for (const evidence of chunk.evidence) if (!hasKeys(evidence, ['id','rawId','quote','start','end','chunkIndex']) || !/^c\d+-l\d+$/u.test(String(evidence.id)) || evidence.rawId !== cp.rawId || !isText(evidence.quote, 512) || !Number.isSafeInteger(evidence.start) || !Number.isSafeInteger(evidence.end) || (evidence.start as number) < (chunk.start as number) || (evidence.end as number) > (chunk.end as number) || (evidence.end as number) <= (evidence.start as number) || evidence.chunkIndex !== chunk.index) return false;
   }
   if (factCount > 256 || questionCount > 128 || evidenceCount > MAX_CHUNKS * MAX_EVIDENCE_LOCATORS_PER_CHUNK) return false;
@@ -62,6 +65,8 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
   if (cp.plan !== undefined && (cp.completedChunks.length !== cp.chunks.length || cp.completedChunks.some((chunk: Record<string, unknown>, index: number) => chunk.index !== index))) return false;
   if ((cp.stage === 'assembling' || cp.stage === 'done') && cp.plan === undefined) return false;
   if (cp.stage === 'done' && cp.draftId === undefined) return false;
+  if(cp.pipelineVersion==='kb03-1'?(cp.mode!=='deep'||!validDeepState(cp.deep,cp as ExtractionCheckpoint)):(cp.deep!==undefined||(cp.mode!==undefined&&cp.mode!=='standard')))return false;
+  if(cp.pipelineVersion==='kb03-1'&&cp.stage==='done'&&!cp.deep?.qualityReport)return false;
   return true;
 };
 export class ExtractionCheckpointStore {
