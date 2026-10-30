@@ -1,3 +1,4 @@
+import os from 'node:os';
 // B04 contract tests: chunking, rules integrity, schema validation, evidence location,
 // configuration masking. No provider is called here — the fake HTTP provider lives in tests/support.
 import assert from 'node:assert/strict';
@@ -10,7 +11,7 @@ import { loadLlmConfig, llmConfigSummary, readLocalEnvFile, KEY_MASK, LLM_ENV } 
 import { locateEvidence, locateEvidenceInBody, validateEvidenceReferences } from '../services/llm/evidence.ts';
 import { buildEvidenceLocatorCatalog } from '../services/llm/locators.ts';
 import { LLMService } from '../services/llm/service.ts';
-import { buildSystemPrompt, FROZEN_BUDGETS, loadExtractionRules } from '../services/llm/rules.ts';
+import { buildSystemPrompt, FROZEN_BUDGETS, KB02_PROMPT_REVISION, loadExtractionRules } from '../services/llm/rules.ts';
 import { validateSchema } from '../services/llm/schema-validator.ts';
 import { LlmError, OpenAiCompatibleProvider } from '../services/llm/provider.ts';
 import { startFakeProvider } from './support/fake-llm.ts';
@@ -286,7 +287,7 @@ test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致
   assert.equal(bundle.schema.additionalProperties, false);
   assert.equal(bundle.schema.properties?.suggested_pages?.items?.additionalProperties, false);
   assert.deepEqual(bundle.rules.budgets, FROZEN_BUDGETS);
-  assert.match(bundle.rulesVersion, /^b04-b04-1-locator-v2-kb02-atoms-planning-13-[0-9a-f]{12}$/);
+  assert.match(bundle.rulesVersion, new RegExp(`^b04-b04-1-locator-v2-${KB02_PROMPT_REVISION}-[0-9a-f]{12}-[0-9a-f]{8}$`));
   const prompt = buildSystemPrompt(bundle.rules, bundle.schema);
   assert.match(prompt, /只输出一个 JSON 对象/);
   assert.match(prompt, /一个条目只解决一个明确的知识问题/);
@@ -295,7 +296,7 @@ test('规则：schema 与 fmcg-schema 枚举一致、预算与冻结契约一致
 });
 
 test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败', async () => {
-  const temporary = await mkdtemp(path.join(process.cwd(), '.test-b04-rules-'));
+  const temporary = await mkdtemp(path.join(os.tmpdir(), '.test-b04-rules-'));
   try {
     await writeFile(path.join(temporary, 'fmcg-schema.yaml'), 'domain: fmcg\ntypes: []\ncategories: []\nenums: {}\n', 'utf8');
     await writeFile(path.join(temporary, 'wiki-extract.schema.json'), JSON.stringify({ type: 'object', properties: { suggested_pages: { items: { properties: { type: { enum: ['concept'] }, category: { enum: ['x'] } } } } } }), 'utf8');
@@ -303,11 +304,12 @@ test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败'
     await writeFile(path.join(temporary, 'kb02-facts.schema.json'), await readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(temporary, 'kb02-semantic-review.schema.json'), await readFile(path.join(rulesDir, 'kb02-semantic-review.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(temporary, 'kb02-planning.schema.json'), await readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'), 'utf8');
+    await writeFile(path.join(temporary, 'source-policy.yaml'), await readFile(path.join(rulesDir, 'source-policy.yaml'), 'utf8'), 'utf8');
     const mismatch = await rejection(loadExtractionRules(temporary));
     assert.equal(mismatch.code, 'LLM_RULES_INVALID');
   } finally { await rm(temporary, { recursive: true, force: true }); }
 
-  const drifted = await mkdtemp(path.join(process.cwd(), '.test-b04-rules-'));
+  const drifted = await mkdtemp(path.join(os.tmpdir(), '.test-b04-rules-'));
   try {
     await writeFile(path.join(drifted, 'fmcg-schema.yaml'), await readFile(path.join(rulesDir, 'fmcg-schema.yaml'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'wiki-extract.schema.json'), await readFile(path.join(rulesDir, 'wiki-extract.schema.json'), 'utf8'), 'utf8');
@@ -315,6 +317,7 @@ test('规则：schema 与 fmcg 枚举不一致或预算漂移时启动即失败'
     await writeFile(path.join(drifted, 'kb02-facts.schema.json'), await readFile(path.join(rulesDir, 'kb02-facts.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'kb02-semantic-review.schema.json'), await readFile(path.join(rulesDir, 'kb02-semantic-review.schema.json'), 'utf8'), 'utf8');
     await writeFile(path.join(drifted, 'kb02-planning.schema.json'), await readFile(path.join(rulesDir, 'kb02-planning.schema.json'), 'utf8'), 'utf8');
+    await writeFile(path.join(drifted, 'source-policy.yaml'), await readFile(path.join(rulesDir, 'source-policy.yaml'), 'utf8'), 'utf8');
     const driftedError = await rejection(loadExtractionRules(drifted));
     assert.equal(driftedError.code, 'LLM_RULES_INVALID');
   } finally { await rm(drifted, { recursive: true, force: true }); }
@@ -395,7 +398,7 @@ test('证据引用：重复 id 与未知引用被拒绝', () => {
 });
 
 test('配置：环境变量优先于本地文件、摘要只给掩码与主机', async () => {
-  const temporary = await mkdtemp(path.join(process.cwd(), '.test-b04-config-'));
+  const temporary = await mkdtemp(path.join(os.tmpdir(), '.test-b04-config-'));
   const file = path.join(temporary, '.env.local');
   try {
     await writeFile(file, [

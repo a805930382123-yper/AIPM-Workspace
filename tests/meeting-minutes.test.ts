@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -8,7 +9,7 @@ import { MeetingError } from '../services/meeting/errors.ts';
 import { MeetingStore } from '../services/meeting/store.ts';
 import { meetingErrorMiddleware, registerMeetingMinutesRoutes, registerMeetingRoutes } from '../server/meeting-api.ts';
 
-async function fixture<T>(work:(root:string,store:MeetingStore)=>Promise<T>){const root=await mkdtemp(path.join(process.cwd(),'.meeting-minutes-test-'));try{const store=new MeetingStore(root);await store.initialize();return await work(root,store);}finally{await rm(root,{recursive:true,force:true});}}
+async function fixture<T>(work:(root:string,store:MeetingStore)=>Promise<T>){const root=await mkdtemp(path.join(os.tmpdir(),'.meeting-minutes-test-'));try{const store=new MeetingStore(root);await store.initialize();return await work(root,store);}finally{await rm(root,{recursive:true,force:true});}}
 const ids=['89b5f66a-2460-4f1f-8ad3-404850a5b604','79b5f66a-2460-4f1f-8ad3-404850a5b604','69b5f66a-2460-4f1f-8ad3-404850a5b604','59b5f66a-2460-4f1f-8ad3-404850a5b604'];
 async function publicLocal(store:MeetingStore){const c=await store.getCatalog();const {meeting}=await store.create({requestId:ids[0],title:'会议',meeting_date:'2026-10-11',meeting_type:c.types[0].id,confidentiality:'Public'});return await store.updatePolicy(meeting.meeting_id,{baseRevision:1,storage_mode:'local_archive'});}
 async function code(work:()=>Promise<unknown>,expected:string){await assert.rejects(work,(e:unknown)=>e instanceof MeetingError&&e.code===expected);}

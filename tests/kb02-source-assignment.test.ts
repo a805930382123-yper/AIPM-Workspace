@@ -19,7 +19,7 @@ const parts=(body:string)=>chunkText(body,{maxChunkChars:8000,overlap:400,maxRaw
 const catalogs=(body:string)=>new Map(parts(body).map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
 const payload=(r:LlmCompletionRequest):KnowledgePlanningInput=>JSON.parse(r.user.split('\n').at(-1)!);
 const page=(title:string,factUnitIds:string[],questionUnitIds:string[]=[])=>({title,type:'metric',category:'metric',factUnitIds,questionUnitIds});
-const plan=(p:KnowledgePlanningInput):KnowledgeWirePlan=>({version:3,document:{title:'隔离主题',main_topic:'业务'},pages:[page('隔离主题',p.factUnits.map(u=>u.id),p.questionUnits.map(u=>u.id))]});
+const plan=(p:KnowledgePlanningInput):KnowledgeWirePlan=>({version:3,document: { source_level: 'D', title:'隔离主题',main_topic:'业务'},pages:[page('隔离主题',p.factUnits.map(u=>u.id),p.questionUnits.map(u=>u.id))]});
 async function run(source:{raw:any;checkpoint:ExtractionCheckpoint},reply:(p:KnowledgePlanningInput)=>unknown=plan,secrets:string[]=[]) {
  const root=await mkdtemp(path.join(os.tmpdir(),'kb02-source-')),store=new ExtractionCheckpointStore(root);await store.initialize();
  let cp=await store.save({...structuredClone(source.checkpoint),rulesVersion:(await loadExtractionRules('rules')).rulesVersion,plan:undefined,draftId:undefined,stage:'planning',lastError:undefined});
@@ -87,7 +87,7 @@ test('SOURCE old revision7 unfinished checkpoint fails preflight with no call/wr
 
 for(const extra of [0,1])test('SOURCE complete unit/context/feedback payload at 192KiB '+(extra?'plus one byte rejects before call':'is accepted'),async()=>{
  const source=await synthetic('选中事实。',()=>true),f=await run(source);try{
- const input=buildKnowledgePlanningInput(source.raw.body,f.cp.completedChunks,catalogs(source.raw.body)),diagnostic=coverageDiagnostic([],[],[]);
+ const input={...buildKnowledgePlanningInput(source.raw.body,f.cp.completedChunks,catalogs(source.raw.body)),source:{id:source.raw.id,title:source.raw.title,sourceType:source.raw.sourceType,sourceName:source.raw.sourceName,tags:source.raw.tags},sourcePolicy:(await loadExtractionRules('rules')).sourcePolicy},diagnostic=coverageDiagnostic([],[],[]);
  const target=192*1024+extra,base=Buffer.byteLength(JSON.stringify({...input,coverageFeedback:diagnostic}),'utf8'),needed=target-base,count=Math.ceil((needed+1)/67);
  diagnostic.facts.unknown=Array.from({length:count},(_,i)=>('u'+String(i).padStart(4,'0')).padEnd(64,'x'));
  let excess=Buffer.byteLength(JSON.stringify({...input,coverageFeedback:diagnostic}),'utf8')-target;

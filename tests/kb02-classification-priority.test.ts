@@ -39,7 +39,7 @@ async function fixture(body = text) {
     requests.push(r); { const review = semanticReviewReply(r); if (review) return review; }
     const planning=r.user.includes('请对下列全部已验证事实规划知识页');
     const d=planning?JSON.parse(r.user.split('\n').at(-1)!):undefined;
-    return {text:JSON.stringify(planning?{version:3,document:{title:'虚构业务边界',main_topic:'业务边界'},pages:[{title:'虚构业务边界',type:'metric',category:'metric',factUnitIds:d.factUnits.map((x:{id:string})=>x.id),questionUnitIds:d.questionUnits.map((x:{id:string})=>x.id)}]}:respond(r)),bytes:1,finishReason:'stop'};
+    return {text:JSON.stringify(planning?{version:3,document: { source_level: 'D', title:'虚构业务边界',main_topic:'业务边界'},pages:[{title:'虚构业务边界',type:'metric',category:'metric',factUnitIds:d.factUnits.map((x:{id:string})=>x.id),questionUnitIds:d.questionUnits.map((x:{id:string})=>x.id)}]}:respond(r)),bytes:1,finishReason:'stop'};
   }};
   const args={raw,body,bodySha256:sha(body),provider,rulesDir:path.resolve('rules'),beforeCall:async(stage:'extracting'|'planning')=>checkpoint=await store.save({...checkpoint,stage,attempts:checkpoint.attempts+1}),saveCheckpoint:async(value:Omit<ExtractionCheckpoint,'integrity'>)=>checkpoint=await store.save(value)};
   return {root,store,bundle,args,requests,get checkpoint(){return checkpoint;},reply:(fn:typeof respond)=>{respond=fn;},run:()=>runKnowledgePipeline({...args,checkpoint}),clean:()=>rm(root,{recursive:true,force:true})};
@@ -123,7 +123,7 @@ test('KB02 Q02 full seq62 original response and exact original atom catalog stil
 
 test('KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes',async()=>{
   const originalBytes=await readFile(originalPath),old=JSON.parse(originalBytes.toString()),f=await fixture(old.body);try{
-    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-13');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
+    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-17');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
     assert.equal(old.oldCheckpoint.completedChunks.length,6);assert.equal(old.oldCheckpoint.completedChunks.flatMap((c:{facts:Array<{text:string}>})=>c.facts).filter((x:{text:string})=>/排版说明|长文验收附录/u.test(x.text)).length,11);
     const checkpoint=await f.store.save(old.oldCheckpoint),file=path.join(f.root,'state/extraction-checkpoints',checkpoint.jobId+'.json'),bytes=await readFile(file);
     const args={...f.args,raw:old.raw,checkpoint};

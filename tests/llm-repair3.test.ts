@@ -1,3 +1,4 @@
+import os from 'node:os';
 import {addLegacyReviewPrecondition} from './support/human-review.ts';
 ﻿// B04 第三次返修专项测试（B04-recheck2-fix-card 的 F04-11 残留）：
 // 聚合不得与各分块快照共享可变状态；真实额外汇总请求必须对每条事实引用给出
@@ -24,7 +25,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rulesDir = path.join(root, 'rules');
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const MARKERS = ['返修三-甲', '返修三-乙', '返修三-丙', '返修三-丁'];
-const MERGE_EVIDENCE = path.join(root, 'docs', 'reports', 'KB02-R1-20261015-builder-merge.json');
+const MERGE_EVIDENCE = path.join(os.tmpdir(), `KB02-R1-builder-merge-${process.pid}.json`);
 
 /** Records the real merge payload the product sent (test data only — never a key). */
 async function recordMergeEvidence(label: string, payload: unknown, summary: Record<string, unknown>) {
@@ -36,7 +37,7 @@ async function recordMergeEvidence(label: string, payload: unknown, summary: Rec
 }
 
 async function setup(configure: (fake: FakeProvider) => void = () => undefined) {
-  const dataRoot = await mkdtemp(path.join(process.cwd(), '.test-b04-repair3-'));
+  const dataRoot = await mkdtemp(path.join(os.tmpdir(), '.test-b04-repair3-'));
   const rawStore = new RawStore(dataRoot);
   await rawStore.initialize();
   const wikiStore = new WikiStore(dataRoot, rawStore, rulesDir);

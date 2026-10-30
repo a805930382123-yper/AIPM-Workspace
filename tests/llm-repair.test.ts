@@ -1,3 +1,4 @@
+import os from 'node:os';
 import {addLegacyReviewPrecondition} from './support/human-review.ts';
 // B04 返修专项测试（F04-01…F04-11 的服务端复现）。每个场景复刻返修卡/独立验收的失败断言：
 // 修复前必须失败，修复后必须通过。Provider 是真实 HTTP fake（tests/support/fake-llm.ts），
@@ -28,7 +29,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const LEAK_KEY = 'test-key-9f2b7c41d8a37e65b4c9021f';
 
 async function setup(configure: (fake: FakeProvider) => void = () => undefined, apiKey = 'test-key') {
-  const dataRoot = await mkdtemp(path.join(process.cwd(), '.test-b04-repair-'));
+  const dataRoot = await mkdtemp(path.join(os.tmpdir(), '.test-b04-repair-'));
   const rawStore = new RawStore(dataRoot);
   await rawStore.initialize();
   const wikiStore = new WikiStore(dataRoot, rawStore, rulesDir);

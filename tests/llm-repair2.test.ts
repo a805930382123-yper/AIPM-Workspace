@@ -1,3 +1,4 @@
+import os from 'node:os';
 import {addLegacyReviewPrecondition} from './support/human-review.ts';
 // B04 第二次返修专项测试（B04-recheck-fix-card 的三项残留 F04-04 / F04-05 / F04-11）。
 // 每个用例复刻独立复验报告里的"最小实际复现"，修复前必须失败。
@@ -25,7 +26,7 @@ const rulesDir = path.join(root, 'rules');
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function setup(configure: (fake: FakeProvider) => void = () => undefined) {
-  const dataRoot = await mkdtemp(path.join(process.cwd(), '.test-b04-repair2-'));
+  const dataRoot = await mkdtemp(path.join(os.tmpdir(), '.test-b04-repair2-'));
   const rawStore = new RawStore(dataRoot);
   await rawStore.initialize();
   const wikiStore = new WikiStore(dataRoot, rawStore, rulesDir);

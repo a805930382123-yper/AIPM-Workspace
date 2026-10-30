@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import express from 'express';
@@ -24,7 +25,7 @@ type Stores = {
 };
 
 async function fixture<T>(work: (root: string, stores: Stores) => Promise<T>): Promise<T> {
-  const root = await mkdtemp(path.join(process.cwd(), '.m04-raw-test-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.m04-raw-test-'));
   const meetings = new MeetingStore(root);
   const raws = new RawStore(root);
   const wiki = new WikiStore(root, raws);

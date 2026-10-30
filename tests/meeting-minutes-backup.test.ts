@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
@@ -6,7 +7,7 @@ import test from 'node:test';
 import { exportWorkspace, restoreWorkspace } from '../scripts/backup_workspace.ts';
 
 const meetingId = 'abc12345-6789-4abc-8def-1234567890ab';
-async function fixture<T>(work:(base:string)=>Promise<T>){const base=await mkdtemp(path.join(process.cwd(),'.meeting-minutes-backup-test-'));try{return await work(base);}finally{await rm(base,{recursive:true,force:true});}}
+async function fixture<T>(work:(base:string)=>Promise<T>){const base=await mkdtemp(path.join(os.tmpdir(),'.meeting-minutes-backup-test-'));try{return await work(base);}finally{await rm(base,{recursive:true,force:true});}}
 
 test('large meeting record exports as canonical base64 without regex stack overflow',async()=>fixture(async base=>{
  const source=path.join(base,'source');const records=path.join(source,'meetings');await mkdir(records,{recursive:true});

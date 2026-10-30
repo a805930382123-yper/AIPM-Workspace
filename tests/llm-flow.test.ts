@@ -1,3 +1,4 @@
+import os from 'node:os';
 import {addLegacyReviewPrecondition} from './support/human-review.ts';
 // B04 service-level closed loop: extraction → draft → review edits → confirmed commit, plus
 // failure, cancel, idempotency and recovery behaviour. The provider is a real HTTP server
@@ -33,7 +34,7 @@ const TOPICS = [
 ];
 
 async function setup(configure: (fake: FakeProvider) => void = () => undefined) {
-  const dataRoot = await mkdtemp(path.join(process.cwd(), '.test-b04-flow-'));
+  const dataRoot = await mkdtemp(path.join(os.tmpdir(), '.test-b04-flow-'));
   const rawStore = new RawStore(dataRoot);
   await rawStore.initialize();
   const wikiStore = new WikiStore(dataRoot, rawStore, rulesDir);

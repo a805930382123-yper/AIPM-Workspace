@@ -33,7 +33,7 @@ async function setup(text=body){
  const provider:LlmProvider={name:'fake',model:'final',complete:async r=>{
   requests.push(r); { const review = semanticReviewReply(r); if (review) return review; }const data=JSON.parse(r.user.split('\n').at(-1)!);
   // Explicit fixture labels test plumbing only, never model quality or a product classifier.
-  const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:3,document:{title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factUnitIds:data.factUnits.map((a:{id:string})=>a.id),questionUnitIds:data.questionUnits.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
+  const output=r.user.includes('请对下列全部已验证事实规划知识页')?{version:3,document: { source_level: 'D', title:'虚构业务',main_topic:'业务'},pages:[{title:'虚构业务',type:'metric',category:'metric',factUnitIds:data.factUnits.map((a:{id:string})=>a.id),questionUnitIds:data.questionUnits.map((a:{id:string})=>a.id)}]}:{version:2,facts:data.filter((a:Atom)=>business.includes(a.text)||fragment.includes(a.text)&&!!a.text.trim()).map((a:Atom)=>({atomId:a.id,kind:a.fragment?'ambiguous':'fact'})),questions:data.filter((a:Atom)=>a.text===unknown).map((a:Atom)=>({atomId:a.id})),sourceNotes:data.filter((a:Atom)=>notes.includes(a.text)).map((a:Atom)=>({atomId:a.id}))};
   return {text:JSON.stringify(output),bytes:1,finishReason:'stop'};
  }};
  const args={raw,body:text,bodySha256:sha(text),provider,rulesDir:path.resolve('rules'),beforeCall:async(stage:'extracting'|'planning')=>cp=await store.save({...cp,stage,attempts:cp.attempts+1}),saveCheckpoint:async(value:Omit<ExtractionCheckpoint,'integrity'>)=>cp=await store.save(value)};
@@ -97,7 +97,7 @@ test('FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero 
   let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});
   const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restartId=r.json.jobId;assert.notEqual(restartId,cp.jobId);
   for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);
-  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-13-/u);
+  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-17-/u);
   await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
  }finally{release();if(restartId)await f.runner.waitForSettlement(restartId);await h.close();await f.clean();}
 });

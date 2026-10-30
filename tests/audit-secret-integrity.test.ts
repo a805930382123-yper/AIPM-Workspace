@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -10,7 +11,7 @@ import type { LlmProvider } from '../services/llm/provider.ts';
 const snapshot = async (dir: string) => Object.fromEntries(await Promise.all((await readdir(dir)).sort().map(async name => [name, await readFile(path.join(dir, name))])));
 
 test('Audit rejects parsed Provider secrets in every output field without changing pending state, then clean retry succeeds', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-audit-secret-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-audit-secret-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const raw = await raws.create({ title: 'Evidence', sourceType: 'report', sourceName: 'fixture', tags: [], body: '原文证据句。' });

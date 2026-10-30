@@ -30,7 +30,7 @@ async function fixture(pair = { type: 'concept', category: 'ai_application' }, s
       return { text: JSON.stringify({ version: 2, facts: atoms.map(atom => ({ atomId: atom.id, kind: 'fact' })), questions: [], sourceNotes: [] }), bytes: 1, finishReason: 'stop' };
     }
     const input = JSON.parse(request.user.split('\n').at(-1)!) as { factUnits: Array<{ id: string }>; questionUnits: Array<{ id: string }> };
-    return { text: JSON.stringify({ version: 3, document: { title: '渠道门店', main_topic: '销售额' }, pages: [{ title: '渠道门店销售额', ...pair, factUnitIds: input.factUnits.map(unit => unit.id), questionUnitIds: input.questionUnits.map(unit => unit.id) }] }), bytes: 1, finishReason: 'stop' };
+    return { text: JSON.stringify({ version: 3, document: { source_level: 'D', title: '渠道门店', main_topic: '销售额' }, pages: [{ title: '渠道门店销售额', ...pair, factUnitIds: input.factUnits.map(unit => unit.id), questionUnitIds: input.questionUnits.map(unit => unit.id) }] }), bytes: 1, finishReason: 'stop' };
   } };
   const args = {
     raw, body, bodySha256: sha(body), provider, rulesDir: path.resolve('rules'),
@@ -43,7 +43,7 @@ async function fixture(pair = { type: 'concept', category: 'ai_application' }, s
 test('KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs', async () => {
   const f = await fixture();
   try {
-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-13');
+    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-17');
     const { outcome } = await f.run();
     const system = f.requests[1].system;
     assert.match(system, /type表示知识页的知识形态，category表示该页涉及的快消业务主题/u);

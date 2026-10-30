@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -8,7 +9,7 @@ import { WikiError, WikiStore, type WikiInput, type WikiType } from '../services
 import { getStats } from '../services/stats/index.ts';
 
 async function setup() {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-data-wiki-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-data-wiki-'));
   const rawStore = new RawStore(root);
   await rawStore.initialize();
   const wikiStore = new WikiStore(root, rawStore);

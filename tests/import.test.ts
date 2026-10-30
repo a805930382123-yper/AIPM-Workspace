@@ -1,3 +1,4 @@
+import os from 'node:os';
 // B03: file import behaviour and data invariants (real fixtures, real parsers).
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -19,7 +20,7 @@ const fixture = (name: string) => readFile(path.join(fixtureDir, name));
 const sha256 = (value: Buffer) => createHash('sha256').update(value).digest('hex');
 
 async function setup() {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-data-b03-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-data-b03-'));
   const store = new RawStore(root);
   const assets = new AssetStore(root);
   await store.initialize();

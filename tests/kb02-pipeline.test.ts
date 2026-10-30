@@ -1,3 +1,4 @@
+import os from 'node:os';
 import { semanticReviewReply } from './support/semantic-review.ts';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -15,7 +16,7 @@ const rulesDir = fileURLToPath(new URL('../rules', import.meta.url));
 const raw = { id: '123e4567-e89b-42d3-a456-426614174000', title: '虚构销售简报', sourceType: 'report', sourceName: '测试资料', tags: [] as string[] };
 
 test('KB02 facts/planning builds existing draft outcome and preserves fact/question evidence coverage', async () => {
-  const dir = await mkdtemp(path.join(process.cwd(), '.test-kb02-'));
+  const dir = await mkdtemp(path.join(os.tmpdir(), '.test-kb02-'));
   try {
     const body = '华东区域2026年一季度销售额为120万元。是否为含税口径？';
     const bundle = await loadExtractionRules(rulesDir);
@@ -42,7 +43,7 @@ test('KB02 facts/planning builds existing draft outcome and preserves fact/quest
 });
 
 test('KB02 resume reuses validated chunks and counts failed outbound attempts', async () => {
-  const dir = await mkdtemp(path.join(process.cwd(), '.test-kb02-resume-'));
+  const dir = await mkdtemp(path.join(os.tmpdir(), '.test-kb02-resume-'));
   try {
     const body = '事实句。'.repeat(2200);
     const bundle = await loadExtractionRules(rulesDir); const chunks = chunkText(body, { maxChunkChars: 8000, overlap: 400, maxRawChars: 500000 });
@@ -70,7 +71,7 @@ test('KB02 resume reuses validated chunks and counts failed outbound attempts', 
 });
 
 test('KB02 corrupted checkpoint integrity fails closed', async () => {
-  const dir = await mkdtemp(path.join(process.cwd(), '.test-kb02-corrupt-'));
+  const dir = await mkdtemp(path.join(os.tmpdir(), '.test-kb02-corrupt-'));
   try {
     const store = new ExtractionCheckpointStore(dir); await store.initialize();
     const id = '123e4567-e89b-42d3-a456-426614174003';

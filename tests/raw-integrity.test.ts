@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -6,7 +7,7 @@ import { RawIntegrityError, RawStore } from '../services/raw/store.ts';
 import { ExtractionRunner } from '../services/llm/jobs.ts';
 
 test('Raw get/list reject missing, malformed, or mismatched bodySha256; restored bytes remain readable', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-raw-integrity-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-raw-integrity-'));
   try {
     const store = new RawStore(root); await store.initialize();
     const body = '  原文🙂\r\n第二行\n---\n尾部空格  ';

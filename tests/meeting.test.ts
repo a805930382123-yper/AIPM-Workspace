@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rename, rm, symlink, unlink, writeFile } from 'node:fs/promises';
 import express from 'express';
@@ -10,7 +11,7 @@ import { registerMeetingRoutes, meetingErrorMiddleware } from '../server/meeting
 import { exportWorkspace, restoreWorkspace } from '../scripts/backup_workspace.ts';
 
 async function fixture<T>(work: (root: string, store: MeetingStore) => Promise<T>): Promise<T> {
-  const root = await mkdtemp(path.join(process.cwd(), '.meeting-test-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.meeting-test-'));
   try { const store = new MeetingStore(root); await store.initialize(); return await work(root, store); }
   finally { await rm(root, { recursive: true, force: true }); }
 }

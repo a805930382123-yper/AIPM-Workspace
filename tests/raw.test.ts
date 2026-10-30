@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -7,7 +8,7 @@ import { getStats } from '../services/stats/index.ts';
 import { InputError, validateRaw } from '../server/validation.ts';
 
 async function temporaryStore() {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-data-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-data-'));
   const store = new RawStore(root);
   await store.initialize();
   return { root, store, clean: () => rm(root, { recursive: true, force: true }) };

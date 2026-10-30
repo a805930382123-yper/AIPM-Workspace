@@ -107,9 +107,9 @@ test('KB03 old draft compatible; new field strict read/preserve, digest binding 
       assert.deepEqual((await f.drafts.get(old.id))!.structuredNote,note);
     }
     const commitInput={draftId:old.id,baseRevision:old.revision,selectedPageIds:[old.pages[0].pageId],idempotencyKey:randomUUID(),operationId:randomUUID(),now:new Date().toISOString()};
-    await assert.rejects(wiki.withLock(()=>commits.confirm(commitInput)),{code:'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE',message:'结构化笔记尚未开放确认'});
+    await assert.rejects(wiki.withLock(()=>commits.confirm(commitInput)),{code:'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE',message:'请先明确核对深度笔记、引用、覆盖与待确认问题。'});
     await assert.rejects(f.drafts.prepareReviewedCommit(old.id,old.revision,oldDigest,f.raw.body,randomUUID(),async()=>assert.fail('must not prepare')),{code:'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE'});
-    const formalHttp=await http.request(`/api/drafts/${old.id}/confirm`,commitInput);assert.equal(formalHttp.status,409);assert.equal(formalHttp.json.error.message,'结构化笔记尚未开放确认');
+    const formalHttp=await http.request(`/api/drafts/${old.id}/confirm`,commitInput);assert.equal(formalHttp.status,409);assert.equal(formalHttp.json.error.message,'请先明确核对深度笔记、引用、覆盖与待确认问题。');
     await assert.rejects(workflows.createUpdate({draftId:old.id,pageId:old.pages[0].pageId,baseRevision:old.revision,targetWikiId:randomUUID(),draft:next,raw:f.raw,target:{} as any,provider:f.provider}),{code:'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE'});
     assert.equal((await wiki.allRecords()).length,0);assert.equal(f.requests.length,2);
     // A harmless old-path edit preserves the note and invalidates the former approvals.
@@ -125,7 +125,7 @@ test('KB03 old draft compatible; new field strict read/preserve, digest binding 
     await assert.rejects(wiki.withLock(()=>commits.confirm(commitInput)));wiki.writePageLocked=write;
     const interrupted=(await f.drafts.get(old.id))!;await writeFile(file,JSON.stringify({...interrupted,structuredNote:note}));
     const recovery=await commits.reconcile();assert.equal(recovery.resumed.length,0);
-    assert.equal(recovery.conflicts[0].code,'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE');assert.equal((await wiki.allRecords()).length,0);
+    assert.equal(recovery.conflicts[0].code,'NOTE_REVIEW_REQUIRED');assert.equal((await wiki.allRecords()).length,0);
     await writeFile(file,JSON.stringify(interrupted));
     const result=await wiki.withLock(()=>commits.confirm(commitInput));assert.equal(result.manifest.status,'completed');
     const hashes=await Promise.all((await wiki.allRecords()).map(r=>createHash('sha256').update(r.body).digest('hex')));

@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, readdir, rm, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -23,7 +24,7 @@ test('B06 Anchor supports context after line movement and rejects duplicate/miss
 });
 
 test('B06 four decisions preserve history, only accepted/partial write, and accepted retry is idempotent', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b06-audit-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-b06-audit-'));
   try {
     const raws = new RawStore(root); await raws.initialize(); const raw = await raws.create({title:'Evidence',sourceType:'report',sourceName:'Fixture',tags:[],body:'门店铺货率为72%，来自实测样本。'});
     const wiki = new WikiStore(root, raws); await wiki.initialize();
@@ -48,7 +49,7 @@ test('B06 four decisions preserve history, only accepted/partial write, and acce
 });
 
 test('B06 failed Audit log leaves open operation evidence and restart reconciles it', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b06-recover-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-b06-recover-'));
   try {
     const raws = new RawStore(root); await raws.initialize(); const raw = await raws.create({title:'Evidence',sourceType:'report',sourceName:'Fixture',tags:[],body:'来源句子存在于Raw。'});
     const wiki = new WikiStore(root,raws); await wiki.initialize(); const page = await wiki.create(baseInput('恢复页',[raw.id],'开头。原始目标段。结尾。'));
@@ -66,7 +67,7 @@ test('B06 failed Audit log leaves open operation evidence and restart reconciles
 
 test('B06 recovery preserves conflict manifests and does not resolve against changed Wiki or Raw bytes', async () => {
   for (const mutation of ['wiki-body', 'wiki-revision', 'raw-body'] as const) {
-    const root = await mkdtemp(path.join(process.cwd(), `.test-b06-${mutation}-`));
+    const root = await mkdtemp(path.join(os.tmpdir(), `.test-b06-${mutation}-`));
     try {
       const raws = new RawStore(root); await raws.initialize(); const raw = await raws.create({title:'Evidence',sourceType:'report',sourceName:'Fixture',tags:[],body:'恢复时必须仍然一致的原文。'});
       const wiki = new WikiStore(root,raws); await wiki.initialize(); const page = await wiki.create(baseInput(`冲突恢复 ${mutation}`,[raw.id],'开头。要替换的目标段。结尾。'));
@@ -96,7 +97,7 @@ test('B06 recovery preserves conflict manifests and does not resolve against cha
 });
 
 test('B06 a slow Provider cannot save or revive a suggestion after a human resolves the Audit', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b06-race-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-b06-race-'));
   try {
     const raws = new RawStore(root); await raws.initialize(); const raw=await raws.create({title:'race raw',sourceType:'report',sourceName:'Fixture',tags:[],body:'可核验的原句。'});
     const wiki=new WikiStore(root,raws); await wiki.initialize(); const page=await wiki.create(baseInput('race page',[raw.id],'开头。待确认的目标段。结尾。'));
@@ -113,7 +114,7 @@ test('B06 a slow Provider cannot save or revive a suggestion after a human resol
 });
 
 test('B06 Wiki Lint reads disk directly and reports all 11 frozen codes without repairing files', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-b06-lint-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-b06-lint-'));
   try {
     const raws = new RawStore(root); await raws.initialize(); const raw = await raws.create({title:'Raw evidence',sourceType:'report',sourceName:'Fixture',tags:[],body:'原文证据定位到这里。'});
     const wiki = new WikiStore(root,raws); await wiki.initialize();

@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -13,7 +14,7 @@ const content = {version:1,name:preview.name,category:preview.category,scenario:
 const brief = { taskName:'经销商访谈', taskType:'客户访谈', role:'快消产品经理', goal:'还原订货流程', context:'首次访谈，现状未知', input:'访谈材料', tasks:'1. 询问流程\n2. 识别痛点', constraints:'不虚构事实', output:'流程与待确认问题' };
 const checks = [['goal','present'],['role','present'],['context','missing'],['input','present'],['tasks','present'],['constraints','missing'],['output','missing'],['fact_inference','missing'],['anti_fabrication','missing']].map(([id,status])=>({id,status,evidence:'检查证据'}));
 async function setup() {
-  const root=await mkdtemp(path.join(process.cwd(),'.test-data-prompt-ai-'));
+  const root=await mkdtemp(path.join(os.tmpdir(),'.test-data-prompt-ai-'));
   const raw=new RawStore(root);await raw.initialize();const wiki=new WikiStore(root,raw);await wiki.initialize();const prompts=new PromptStore(root,wiki);await prompts.initialize();
   let response:unknown=brief;let rawResponse:string|undefined;const queue:unknown[]=[];const requests:string[]=[];
   const provider:LlmProvider={name:'test-provider',model:'test-model',async complete(request){requests.push(request.user);const output=rawResponse??JSON.stringify(queue.length?queue.shift():response);return {text:output,finishReason:'stop',bytes:Buffer.byteLength(output)};}};

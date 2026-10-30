@@ -141,9 +141,9 @@ test('F-SR01-01 React refresh selects new recovery id over old failed job and sa
     root = createRoot(w.document.getElementById('root')!); await act(async () => { root!.render(createElement(Harness)); });
     await tick(() => !!button('重试保存状态') && !button('重试保存状态')!.disabled, 'old-bound restart recovery');
     assert.ok(routes.includes(`/api/extraction-jobs/${id}`)); assert.equal(routes.includes(`/api/extraction-jobs/${old.id}`), false);
-    assert.equal(button('继续提取')?.disabled, true); assert.equal(button('明确重新生成')?.disabled, true);
+    assert.equal(button('显式继续提取')?.disabled, true); assert.equal(button('明确重新生成')?.disabled, true);
     fault.release(); await click(button('重试保存状态'));
-    await tick(() => refreshed && !button('重试保存状态') && !button('正在保存状态…') && button('继续提取')?.disabled === false, 'storage settled');
+    await tick(() => refreshed && !button('重试保存状态') && !button('正在保存状态…') && button('显式继续提取')?.disabled === false, 'storage settled');
     assert.equal((await f.jobs.get(id))?.status, 'failed'); assert.equal((await f.rawStates.get(f.raw.id)).jobId, id);
     assert.equal(f.requests.length, calls); assert.equal((await f.drafts.list()).length, 0);
     assert.equal(routes.filter(route => route.endsWith('/reconcile-storage')).length, 1); assert.equal(routes.filter(route => route.endsWith('/extract')).length, 0);

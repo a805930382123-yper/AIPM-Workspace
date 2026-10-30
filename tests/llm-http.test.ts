@@ -1,3 +1,4 @@
+import os from 'node:os';
 ﻿// B04 public HTTP self-check: real server processes + a real (fake-backed) HTTP provider.
 // Covers configuration, the extract → review → confirm loop over the public API, failure
 // injections, cancel, restart recovery, the delete guard and the key-leak probe.
@@ -16,7 +17,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const TEST_KEY = 'test-key-b04-should-never-leak';
-const EVIDENCE_FILE = path.join(root, 'docs', 'reports', 'B04-http-evidence.json');
+const EVIDENCE_FILE = path.join(os.tmpdir(), `B04-http-evidence-${process.pid}.json`);
 const evidence: { startedAt: string; node: string; scenarios: Record<string, unknown> } = { startedAt: new Date().toISOString(), node: process.version, scenarios: {} };
 async function writeEvidence() {
   const content = `${JSON.stringify(evidence, null, 2)}\n`;
@@ -35,9 +36,12 @@ async function freePort(): Promise<number> {
 type Service = { child: ChildProcess; base: string; dir: string; logs: string };
 async function startServer(dir: string, env: Record<string, string>): Promise<Service> {
   const port = await freePort();
+  const configFile = path.join(dir, 'empty-provider.env');
+  await writeFile(configFile, '', 'utf8');
+  const isolatedEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('FMCG_LLM_')));
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
     cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(port), ...env },
+    env: { ...isolatedEnv, FMCG_DATA_DIR: dir, FMCG_PORT: String(port), ...env, FMCG_LLM_CONFIG_FILE: configFile },
   });
   const service: Service = { child, base: `http://127.0.0.1:${port}`, dir, logs: '' };
   child.stdout?.on('data', chunk => { service.logs += chunk; });
@@ -97,7 +101,7 @@ type Shape = { [key: string]: any; error?: { code?: string; message?: string; de
 const shape = (reply: Reply): Shape => reply.json as Shape;
 
 async function setupHarness(providerEnv: Record<string, string> | null, configure: (fake: FakeProvider) => void = () => undefined) {
-  const dataRoot = await mkdtemp(path.join(process.cwd(), '.test-b04-http-'));
+  const dataRoot = await mkdtemp(path.join(os.tmpdir(), '.test-b04-http-'));
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [

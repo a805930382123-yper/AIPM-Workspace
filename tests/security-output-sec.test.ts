@@ -1,3 +1,4 @@
+import os from 'node:os';
 import assert from 'node:assert/strict';
 import { mkdtemp, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -28,7 +29,7 @@ test('SEC output gate checks nonempty short and long credentials in nested JSON 
 });
 
 test('SEC Brief, Prompt generation, and optimization reject tainted output before saving drafts', async () => {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-security-output-sec-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-security-output-sec-'));
   try {
     const raws = new RawStore(root); await raws.initialize();
     const wiki = new WikiStore(root, raws); await wiki.initialize();

@@ -1,3 +1,4 @@
+import os from 'node:os';
 // B07: unit coverage for the Prompt Library services (variables, validation, store, stats wiring).
 // The HTTP/UI behaviour is covered by tests/b07-prompt-http.mjs and tests/prompt-ui.test.tsx.
 import assert from 'node:assert/strict';
@@ -18,7 +19,7 @@ import { extractVariables, renderTemplate, scanPlaceholders } from '../services/
 const CATEGORIES = ['industry_learning', 'business_analysis', 'customer', 'product', 'ai', 'office'];
 
 async function setup() {
-  const root = await mkdtemp(path.join(process.cwd(), '.test-data-prompt-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-data-prompt-'));
   const rawStore = new RawStore(root);
   await rawStore.initialize();
   const wikiStore = new WikiStore(root, rawStore);
