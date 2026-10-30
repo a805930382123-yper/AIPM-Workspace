@@ -81,7 +81,7 @@ test('R5 release SHA, explicit approval, freeze drift, 20/12/7 policy and exact 
   const release = { approved: true, root, tool: TOOL, session: manifest.session, freeze: version.digest, ledgerRoot, manifestSha: sha(await fs.readFile(path.join(root, 'manifest.json'))), sampleShas: {fixed:FIXED_SHA,counter:sha(COUNTER)}, authorization: 'offline fixture only; never actual run', expectedModel: 'fake', expectedEndpointSha: sha('fake'), configFile: path.join(root, 'MUST-NOT-BE-READ.env'), policy: BUDGET_POLICY };
   for (const [index, mutation, expected] of [
     [0, { approved: false }, /binding/], [1, { freeze: 'changed' }, /binding/], [2, { policy: { total: 21 } }, /total20/],
-    [3, {policy:{...BUDGET_POLICY,sampleCaps:{fixed:12,counter:12}}}, /total20/], [4, {tool:'KB03-R5-20261030-v1'}, /binding/], [5, {sampleShas:{fixed:'changed',counter:sha(COUNTER)}}, /sample SHA/], [6, {ledgerRoot:path.join(root,'replacement-ledger')}, /binding/],
+    [3, {policy:{...BUDGET_POLICY,sampleCaps:{fixed:12,counter:12}}}, /total20/], [4, {tool:'KB03-R5-20261030-v1'}, /binding/], [5, {sampleShas:{fixed:'changed',counter:sha(COUNTER)}}, /sample SHA/], [6, {ledgerRoot:path.join(root,'replacement-ledger')}, /binding/], [7, {tool:'KB03-R5-20261030-v2'}, /binding/], [8, {historyUsage:{total:0}}, /Historical consumption authorization/],
   ] as const) {
     const file = path.join(root, `release-${index}.json`); await durable(file, { ...release, ...mutation });
     await assert.rejects(validateRelease(root, file, 'wrong'), /SHA/);

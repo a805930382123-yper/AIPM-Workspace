@@ -1,4 +1,4 @@
-// Builder invokes prepare/fake only. Independent acceptance owns release and actual run.
+// Builder invokes fake only. Independent acceptance owns prepare, release and actual run.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -7,12 +7,13 @@ import { randomUUID } from 'node:crypto';
 import { RawStore } from '../../services/raw/store.ts';
 import { chunkText } from '../../services/llm/chunk.ts';
 import { FROZEN_BUDGETS } from '../../services/llm/rules.ts';
-import { sha, COUNTER, BUDGET_POLICY, REAL_LEDGER_ROOT, assertOfflineTarget, durable, json, exists, temporary, stores, caseState, executeCase, ledgerEntries, checkBudget, checkLedgerBinding, fakeCase } from '../support/kb03-quality-runner.mjs';
+import { sha, COUNTER, BUDGET_POLICY, HISTORY_USAGE, REAL_LEDGER_ROOT, assertOfflineTarget, durable, json, exists, temporary, stores, caseState, executeCase, ledgerEntries, readLedger, checkBudget, checkLedgerBinding, fakeCase } from '../support/kb03-quality-runner.mjs';
 
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
-export const TOOL='KB03-R5-20261030-v2';
+export const TOOL='KB03-R5-20261030-v3';
 export const FIXED_SHA='fe78a0c389fb6937950596086ee3ca3974b3a156acf9da345013a87f3593bc41';
-const task='docs/handoffs/KB03-R7-20261030-task.md';
+export const FIXED_RAW_ID='daf6fde4-98e0-478d-8abe-f3abce1031ad';
+const task='docs/handoffs/KB03-R8-20261030-task.md';
 export async function freeze(){
   const entries=[];
   async function walk(dir){for(const item of(await fs.readdir(path.join(repo,dir),{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){const relative=path.posix.join(dir,item.name);if(item.isDirectory())await walk(relative);else if(item.isFile())entries.push([relative,sha(await fs.readFile(path.join(repo,relative)))]);}}
@@ -41,28 +42,33 @@ export async function verifyMigration(baseline){
   const rows=await ledgerEntries(baseline.ledgerRoot);if(rows.length<4||rows.slice(0,4).some(r=>r.sample!=='fixed'))throw Error('Historical four attempts lost');
 }
 function rawInput(input){return Object.fromEntries(['title','sourceType','sourceName','tags','author','publishedAt','url','body','assetId','assetFileName','assetFormat','assetByteSize','assetSha256','extractionParser','extractionNote'].filter(k=>input[k]!==undefined).map(k=>[k,input[k]]));}
-export async function prepare(root,sourceRoot){
-  if(!sourceRoot)throw Error('prepare requires --from-existing TEMP-root; no formal workspace fallback');
-  sourceRoot=temporary(sourceRoot);root=root?temporary(root):await fs.mkdtemp(path.join(os.tmpdir(),'kb03-r7-real-'));
+// SOURCE DEFINITION ONLY: the independent acceptance agent executes this after
+// builder handoff. Builder tests invoke fake, never prepare or real run.
+export async function prepare(root){
+  if(await exists(REAL_LEDGER_ROOT))throw Error('Local ledger already exists; no reseed, replacement session or root reset');
+  root=root?temporary(root):await fs.mkdtemp(path.join(os.tmpdir(),'kb03-r8-real-'));
   await assertOfflineTarget(root);
-  if(root===sourceRoot||path.relative(sourceRoot,root).startsWith('..')===false)throw Error('New preparation must be outside the read-only old root');
   if(await exists(path.join(root,'manifest.json')))throw Error('Existing preparation is immutable; no reseed');
-  const old=await json(path.join(sourceRoot,'manifest.json'));
-  if(old.tool!=='KB03-R5-20261030-v1'||old.ledgerRoot!==REAL_LEDGER_ROOT)throw Error('Expected the original v1 preparation and unchanged real ledger');
-  const baseline=await captureMigration(sourceRoot,REAL_LEDGER_ROOT),version=await freeze(),session=randomUUID(),samples={};
+  const version=await freeze(),session=randomUUID(),samples={};
+  // No list(), reference, asset or oracle reads.
+  const fixed=await new RawStore(path.join(repo,'workspace')).get(FIXED_RAW_ID);
+  if(!fixed)throw Error('The one authorized fixed Raw is missing');
   for(const name of ['fixed','counter']){
-    const bytes=await fs.readFile(path.join(sourceRoot,'inputs',name+'.json')),input=JSON.parse(bytes),expected=name==='fixed'?FIXED_SHA:sha(COUNTER);
-    if(sha(input.body)!==expected||(name==='fixed'&&input.body.length!==2434))throw Error('Frozen authorized input SHA mismatch');
+    const input=name==='fixed'?fixed:{title:'虚构边界反例',sourceType:'article',sourceName:'仅虚构反例',tags:[],body:COUNTER};
+    const bytes=Buffer.from(JSON.stringify(input,null,2)+'\n'),expected=name==='fixed'?FIXED_SHA:sha(COUNTER);
+    if(sha(input.body)!==expected||input.body.length!==(name==='fixed'?2434:175)||Buffer.byteLength(input.body)!==(name==='fixed'?6992:467))throw Error('Frozen authorized input SHA/size mismatch');
     const chunks=chunkText(input.body,{maxChunkChars:FROZEN_BUDGETS.maxChunkChars,overlap:FROZEN_BUDGETS.chunkOverlap,maxRawChars:FROZEN_BUDGETS.maxRawChars});
     if(chunks.length!==1)throw Error('Each exact input must remain single chunk/minimum five calls');
     const dataRoot=path.join(root,'real',name),state=await stores(dataRoot),raw=await state.rawStore.create(rawInput(input));
     await fs.mkdir(path.join(root,'inputs'),{recursive:true});const copy=await fs.open(path.join(root,'inputs',name+'.json'),'wx',0o600);try{await copy.writeFile(bytes);await copy.sync();}finally{await copy.close();}
     samples[name]={sha:expected,inputFileSha:sha(bytes),chars:input.body.length,utf8Bytes:Buffer.byteLength(input.body),chunks:1,minimumCalls:BUDGET_POLICY.minimumCalls,rawId:raw.id,dataRoot};
   }
-  await verifyMigration(baseline);await durable(path.join(root,'migration-baseline.json'),baseline);
-  const manifest={tool:TOOL,session,root,ledgerRoot:REAL_LEDGER_ROOT,freeze:version.digest,policy:BUDGET_POLICY,migrationSha:sha(await fs.readFile(path.join(root,'migration-baseline.json'))),samples,configReads:0,realRequests:0};
+  const history={...HISTORY_USAGE,tool:TOOL,session,root,freeze:version.digest,ledgerRoot:REAL_LEDGER_ROOT};
+  await fs.mkdir(path.dirname(REAL_LEDGER_ROOT),{recursive:true});await fs.mkdir(REAL_LEDGER_ROOT);
+  await durable(path.join(REAL_LEDGER_ROOT,'history-summary.json'),history);
+  const manifest={tool:TOOL,session,root,ledgerRoot:REAL_LEDGER_ROOT,freeze:version.digest,policy:BUDGET_POLICY,historySha:sha(await fs.readFile(path.join(REAL_LEDGER_ROOT,'history-summary.json'))),historyUsage:HISTORY_USAGE,samples,configReads:0,realRequests:0};
   await durable(path.join(root,'freeze.json'),version);await durable(path.join(root,'manifest.json'),manifest);
-  await durable(path.join(root,'release-template.json'),{approved:false,tool:TOOL,session,root,freeze:version.digest,manifestSha:sha(await fs.readFile(path.join(root,'manifest.json'))),migrationSha:manifest.migrationSha,ledgerRoot:REAL_LEDGER_ROOT,policy:BUDGET_POLICY,sampleShas:Object.fromEntries(Object.entries(samples).map(([k,v])=>[k,v.sha])),configFile:path.join(repo,'.env.local'),expectedModel:'',expectedEndpointSha:'',authorization:''});
+  await durable(path.join(root,'release-template.json'),{approved:false,tool:TOOL,session,root,freeze:version.digest,manifestSha:sha(await fs.readFile(path.join(root,'manifest.json'))),historySha:manifest.historySha,historyUsage:HISTORY_USAGE,ledgerRoot:REAL_LEDGER_ROOT,policy:BUDGET_POLICY,sampleShas:Object.fromEntries(Object.entries(samples).map(([k,v])=>[k,v.sha])),configFile:path.join(repo,'.env.local'),expectedModel:'',expectedEndpointSha:'',authorization:''});
   return manifest;
 }
 export async function validateRelease(root,releaseFile,releaseSha){
@@ -74,9 +80,11 @@ export async function validateRelease(root,releaseFile,releaseSha){
   if(JSON.stringify(release.policy)!==JSON.stringify(BUDGET_POLICY)||JSON.stringify(manifest.policy)!==JSON.stringify(BUDGET_POLICY))throw Error('Policy must remain total20/fixed12/counter7/minimum5');
   for(const name of ['fixed','counter'])if(manifest.samples[name].dataRoot!==path.join(root,'real',name))throw Error('Input data root must be the exact isolated case root');
   for(const name of ['fixed','counter']){const expected=name==='fixed'?FIXED_SHA:sha(COUNTER);if(manifest.samples[name].sha!==expected||release.sampleShas?.[name]!==expected)throw Error('Input sample SHA binding mismatch');}
-  const migrationBytes=await fs.readFile(path.join(root,'migration-baseline.json'));
-  if(sha(migrationBytes)!==manifest.migrationSha||release.migrationSha!==manifest.migrationSha)throw Error('Migration baseline SHA mismatch');
-  const baseline=JSON.parse(migrationBytes);if(baseline.ledgerRoot!==REAL_LEDGER_ROOT)throw Error('Historical ledger root changed');await verifyMigration(baseline);
+  if(JSON.stringify(manifest.historyUsage)!==JSON.stringify(HISTORY_USAGE)||JSON.stringify(release.historyUsage)!==JSON.stringify(HISTORY_USAGE))throw Error('Historical consumption authorization must retain 4/fixed4/counter0 and the original receipt gap');
+  const historyBytes=await fs.readFile(path.join(REAL_LEDGER_ROOT,'history-summary.json'));
+  if(sha(historyBytes)!==manifest.historySha||release.historySha!==manifest.historySha)throw Error('Historical consumption summary SHA mismatch');
+  const {history}=await readLedger(REAL_LEDGER_ROOT);
+  if(history.tool!==TOOL||history.session!==manifest.session||history.root!==root||history.freeze!==manifest.freeze||history.ledgerRoot!==REAL_LEDGER_ROOT)throw Error('Historical summary/session/root binding mismatch');
   for(const name of ['fixed','counter']){
     const sample=manifest.samples[name];if(sample.dataRoot!==path.join(root,'real',name))throw Error('Input data root must be the exact isolated case root');
     const raw=await new RawStore(sample.dataRoot).get(sample.rawId),inputBytes=await fs.readFile(path.join(root,'inputs',name+'.json')),input=JSON.parse(inputBytes),expected=name==='fixed'?FIXED_SHA:sha(COUNTER);
@@ -87,10 +95,10 @@ export async function validateRelease(root,releaseFile,releaseSha){
 export async function readyToRun(root,name,releaseFile,releaseSha,continueExplicit){
   if(!['fixed','counter'].includes(name))throw Error('Sample must be fixed or counter');
   const checked=await validateRelease(root,releaseFile,releaseSha),{manifest}=checked,sample=manifest.samples[name],other=manifest.samples[name==='fixed'?'counter':'fixed'];
-  const current=await caseState(sample.dataRoot),otherState=await caseState(other.dataRoot),rows=await ledgerEntries(REAL_LEDGER_ROOT);
+  const current=await caseState(sample.dataRoot),otherState=await caseState(other.dataRoot),{rows,counts,history}=await readLedger(REAL_LEDGER_ROOT);
   if(name==='counter'&&otherState.job?.status!=='completed')throw Error('Fresh fixed must complete successfully before counter');
   if(current.job&&current.job.status!=='completed'&&!continueExplicit)throw Error('Explicit --continue required; unknown/pending requests remain charged');
-  checkBudget(rows,name,current.remaining,otherState.remaining);checkLedgerBinding(rows,{sample:name,tool:TOOL,session:manifest.session,freeze:manifest.freeze,rawId:sample.rawId,jobId:current.job?.id});
+  checkBudget(counts,name,current.remaining,otherState.remaining);checkLedgerBinding(rows,{sample:name,tool:TOOL,session:manifest.session,freeze:manifest.freeze,root:sample.dataRoot,rawId:sample.rawId,jobId:current.job?.id},history);
   return {...checked,sample,otherRemaining:otherState.remaining};
 }
 export async function run(root,name,releaseFile,releaseSha,continueExplicit){
@@ -102,24 +110,28 @@ export async function run(root,name,releaseFile,releaseSha,continueExplicit){
   await durable(path.join(root,`run-${name}-${Date.now()}-${randomUUID()}.json`),{configReads:1,model:config.model,endpointSha:sha(config.baseUrl),...result});return {configReads:1,model:config.model,endpointSha:sha(config.baseUrl),...result};
 }
 export async function fake(root){
-  root=root?temporary(root):await fs.mkdtemp(path.join(os.tmpdir(),'kb03-r7-fake-'));
+  root=root?temporary(root):await fs.mkdtemp(path.join(os.tmpdir(),'kb03-r8-fake-'));
   await assertOfflineTarget(root);
   const prepared=await exists(path.join(root,'manifest.json')),ledger=path.join(root,'fake','ledger');
-  if(!(await ledgerEntries(ledger)).length)for(let n=1;n<=4;n++)await durable(path.join(ledger,`attempt-${String(n).padStart(2,'0')}.json`),{sequence:n,sample:'fixed',state:'pending',tool:'KB03-R5-20261030-v1',session:'synthetic-old',freeze:'synthetic-old',stage:'planning'});
+  if(!await exists(path.join(ledger,'history-summary.json'))){
+    if((await ledgerEntries(ledger)).length)throw Error('Existing fake receipts cannot be reseeded');
+    await durable(path.join(ledger,'history-summary.json'),{...HISTORY_USAGE,tool:TOOL,session:'fake-v3',freeze:'fake-v3',root:path.join(root,'fake'),ledgerRoot:ledger});
+  }
   const rows=[];
   for(const name of ['fixed','counter']){
     const body=prepared?(await json(path.join(root,'inputs',name+'.json'))).body:name==='fixed'?'虚构工程样例：门店目标100家，在售20家。负责人未知。':COUNTER;
-    const otherRemaining=(await caseState(path.join(root,'fake',name==='fixed'?'counter':'fixed'))).remaining;
-    const result=await fakeCase(path.join(root,'fake',name),body,{ledger,sample:name,otherRemaining,session:'fake-v2',freeze:'fake-v2',tool:TOOL});
+    const otherRemaining=(await caseState(path.join(root,'fake','real',name==='fixed'?'counter':'fixed'))).remaining;
+    const result=await fakeCase(path.join(root,'fake','real',name),body,{ledger,sample:name,otherRemaining,session:'fake-v3',freeze:'fake-v3',tool:TOOL});
     rows.push({sample:name,status:result.job?.status,callCount:result.ownCalls,wires:result.wires});
     if(result.job?.status!=='completed'||![0,5].includes(result.ownCalls))throw Error('Fake N+4 failed: '+JSON.stringify(rows.at(-1)));
   }
-  const ledgerRows=await ledgerEntries(ledger),counts={total:ledgerRows.length,fixed:ledgerRows.filter(r=>r.sample==='fixed').length,counter:ledgerRows.filter(r=>r.sample==='counter').length};
+  const {counts}=await readLedger(ledger);
   await durable(path.join(root,`fake-summary-${Date.now()}.json`),{root,preparedInputs:prepared,configReads:0,realRequests:0,policy:BUDGET_POLICY,counts,rows,qualityVerdict:'NOT_SCORED: fake engineering only'});
   return {root,configReads:0,realRequests:0,counts,rows};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const[mode,root,...args]=process.argv.slice(2);
-  const result=mode==='prepare'?await prepare(root==='-'?undefined:root,args[0]==='--from-existing'?args[1]:undefined):mode==='fake'?await fake(root):mode==='run'?await run(root,args[0],args[1],args[2],args[3]==='--continue'):(()=>{throw Error('Use prepare <new-TEMP-root|-> --from-existing <old-TEMP-root> | fake [TEMP-root] | run TEMP-root fixed|counter release.json releaseSHA [--continue]');})();
+  if(mode==='prepare'&&args.length)throw Error('prepare reads only the fixed authorized Raw; no source-root override');
+  const result=mode==='prepare'?await prepare(root==='-'?undefined:root):mode==='fake'?await fake(root):mode==='run'?await run(root,args[0],args[1],args[2],args[3]==='--continue'):(()=>{throw Error('Use prepare <new-TEMP-root|-> | fake [TEMP-root] | run TEMP-root fixed|counter release.json releaseSHA [--continue]');})();
   console.log(JSON.stringify(result,null,2));if(mode==='run'&&result.job?.status!=='completed')process.exitCode=1;
 }

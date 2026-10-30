@@ -6,26 +6,33 @@ import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 // @ts-expect-error Acceptance ESM support deliberately has no declaration file.
-import { BUDGET_POLICY, REAL_LEDGER_ROOT, COUNTER, durable, ledgerEntries, reserve, checkBudget, fakeCase, assertOfflineTarget } from './support/kb03-quality-runner.mjs';
+import { BUDGET_POLICY, REAL_LEDGER_ROOT, LEGACY_LEDGER_ROOT, HISTORY_USAGE, COUNTER, durable, ledgerEntries, readLedger, reserve, checkBudget, fakeCase, assertOfflineTarget } from './support/kb03-quality-runner.mjs';
 // @ts-expect-error Acceptance ESM entry deliberately has no declaration file.
-import { TOOL, fake, captureMigration, verifyMigration, prepare } from './acceptance/KB03-R5-20261030-real.mjs';
+import { TOOL, fake, captureMigration, verifyMigration } from './acceptance/KB03-R5-20261030-real.mjs';
 
 const temp=()=>fs.mkdtemp(path.join(os.tmpdir(),'kb03-r7-test-'));
+const LEGACY_TOOL='KB03-R5-20261030-v2';
 async function seed(ledger:string,samples:string[]=['fixed','fixed','fixed','fixed']) {
   for(let i=0;i<samples.length;i++)await durable(path.join(ledger,`attempt-${String(i+1).padStart(2,'0')}.json`),{sequence:i+1,sample:samples[i],state:'pending',tool:'KB03-R5-20261030-v1',session:'old',freeze:'old',stage:i===0?'extracting':'planning'});
 }
+async function history(root:string,ledger:string) {
+  const summary={...HISTORY_USAGE,tool:TOOL,session:'v3-session',freeze:'v3-freeze',root,ledgerRoot:ledger};
+  await durable(path.join(ledger,'history-summary.json'),summary);return summary;
+}
 
-test('R7 isolated v1 four receipts migrate to actual fake 5+5 = total14/fixed9/counter5, preserve history and restart at zero calls',async()=>{
-  const root=await temp(),old=path.join(root,'old'),ledger=path.join(root,'fake','ledger');
+test('R8 independent missing-receipt summary4 plus actual fake5+5 = total14/fixed9/counter5; no fabricated attempts01-04, restart zero',async()=>{
+  const root=await temp(),old=path.join(root,'old'),oldLedger=path.join(root,'old-ledger'),ledger=path.join(root,'fake','ledger');
   await durable(path.join(old,'manifest.json'),{tool:'v1'});await durable(path.join(old,'freeze.json'),{freeze:'v1'});await durable(path.join(old,'state/extraction-jobs/failed.json'),{status:'failed',callCount:4});
-  await seed(ledger);await durable(path.join(ledger,'attempt-01.error.json'),{code:'LLM_NETWORK_ERROR'});await durable(path.join(ledger,'attempt-02.result.json'),{state:'received',text:'synthetic'});await durable(path.join(ledger,'attempt-03.error.json'),{code:'LLM_TIMEOUT'});
-  const baseline=await captureMigration(old,ledger);await verifyMigration(baseline);
+  await seed(oldLedger);await durable(path.join(oldLedger,'attempt-01.error.json'),{code:'LLM_NETWORK_ERROR'});await durable(path.join(oldLedger,'attempt-02.result.json'),{state:'received',text:'synthetic'});await durable(path.join(oldLedger,'attempt-03.error.json'),{code:'LLM_TIMEOUT'});
+  const baseline=await captureMigration(old,oldLedger);await verifyMigration(baseline);
   const result=await fake(root);assert.deepEqual(result.counts,{total:14,fixed:9,counter:5});assert.deepEqual(result.rows.map((r:any)=>r.callCount),[5,5]);assert.equal(result.configReads,0);assert.equal(result.realRequests,0);await verifyMigration(baseline);
   const replay=await fake(root);assert.deepEqual(replay.rows.map((r:any)=>r.callCount),[0,0]);assert.deepEqual(replay.counts,result.counts);
   const moduleURL=pathToFileURL(path.resolve('tests/acceptance/KB03-R5-20261030-real.mjs')).href;
   const child=spawnSync(process.execPath,['--import','tsx','--input-type=module','-e',`import {fake} from ${JSON.stringify(moduleURL)};const r=await fake(${JSON.stringify(root)});console.log(JSON.stringify({calls:r.rows.map(x=>x.callCount),counts:r.counts}));`],{windowsHide:true,encoding:'utf8'});
   assert.equal(child.status,0,child.stderr);assert.deepEqual(JSON.parse(child.stdout),{calls:[0,0],counts:result.counts});await verifyMigration(baseline);
-  const attempts=await ledgerEntries(ledger);assert.deepEqual(attempts.map((r:any)=>r.sequence),Array.from({length:14},(_,i)=>i+1));assert.equal(attempts[4].tool,TOOL);
+  const attempts=await ledgerEntries(ledger);assert.deepEqual(attempts.map((r:any)=>r.sequence),Array.from({length:10},(_,i)=>i+5));assert.equal(attempts[0].tool,TOOL);
+  const state=await readLedger(ledger);assert.equal(state.history.receiptsAvailable,false);assert.equal(state.history.proof,'summary-only; not per-request evidence');assert.equal(state.history.total,4);assert.equal(state.rows.length,10);
+  for(let n=1;n<=4;n++)await assert.rejects(fs.stat(path.join(ledger,`attempt-0${n}.json`)),{code:'ENOENT'});
 });
 
 test('R7 fixed13/counter8 reject; controlled global21 rejects without claiming twenty legal calls',async()=>{
@@ -42,13 +49,13 @@ test('R7 fixed13/counter8 reject; controlled global21 rejects without claiming t
 test('R7 global and each sample must afford all remaining stages before any adapter call',async()=>{
   const root=await temp(),ledger=path.join(root,'ledger');await seed(ledger,Array(8).fill('fixed'));const before=await ledgerEntries(ledger);
   await assert.rejects(fakeCase(path.join(root,'case'),COUNTER,{ledger,sample:'fixed',otherRemaining:5}),/Current sample cap/);assert.deepEqual(await ledgerEntries(ledger),before);
-  assert.throws(()=>checkBudget(Array(3).fill({sample:'counter'}),'fixed',5,5),/Other sample cap/);
-  assert.throws(()=>checkBudget([...Array(7).fill({sample:'fixed'}),...Array(7).fill({sample:'counter'})],'fixed',5,5),/20-call budget/);
+  assert.throws(()=>checkBudget({total:3,fixed:0,counter:3},'fixed',5,5),/Other sample cap/);
+  assert.throws(()=>checkBudget({total:14,fixed:7,counter:7},'fixed',5,5),/20-call budget/);
 });
 
 test('R7 actual child reserves pending05 then exits; restart retains charge and next explicit reservation is06',async()=>{
   const root=await temp();await seed(root);const moduleURL=pathToFileURL(path.resolve('tests/support/kb03-quality-runner.mjs')).href;
-  const binding={sample:'fixed',tool:TOOL,session:'v2',freeze:'v2',rawId:'raw-v2',jobId:'job-v2'};
+  const binding={sample:'fixed',tool:LEGACY_TOOL,session:'v2',freeze:'v2',rawId:'raw-v2',jobId:'job-v2'};
   const child=spawnSync(process.execPath,['--import','tsx','--input-type=module','-e',`import {reserve}from ${JSON.stringify(moduleURL)};await reserve(${JSON.stringify(root)},${JSON.stringify(binding)},5,5);process.exit(17);`],{windowsHide:true,encoding:'utf8'});
   assert.equal(child.status,17,child.stderr);const pending=await ledgerEntries(root);assert.equal(pending.length,5);assert.equal(pending[4].sequence,5);assert.equal(pending[4].state,'pending');
   const next=await reserve(root,binding,5,5);assert.equal(next.sequence,6);assert.equal((await ledgerEntries(root)).length,6);
@@ -56,12 +63,12 @@ test('R7 actual child reserves pending05 then exits; restart retains charge and 
 
 test('R7 new root/session cannot reset a v2 sample or its failed same-job cumulative calls',async()=>{
   const root=await temp(),ledger=path.join(root,'ledger');await seed(ledger);
-  const failed=await fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:TOOL,fault:(stage:string,value:any)=>stage==='planning'?'{invalid':JSON.stringify(value)});
+  const failed=await fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL,fault:(stage:string,value:any)=>stage==='planning'?'{invalid':JSON.stringify(value)});
   assert.equal(failed.job.status,'failed');assert.equal(failed.totalCalls,6);const before=await ledgerEntries(ledger);
-  await assert.rejects(fakeCase(path.join(root,'replacement'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'replacement',freeze:'v2-freeze',tool:TOOL}),/another v2 preparation|cap/);assert.deepEqual(await ledgerEntries(ledger),before);
-  await assert.rejects(fakeCase(path.join(root,'same-session-new-root'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:TOOL}),/job identity/);assert.deepEqual(await ledgerEntries(ledger),before);
-  await assert.rejects(fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:TOOL}),/requires --continue/);
-  const done=await fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:TOOL,continueExplicit:true});assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,6);assert.equal(done.totalCalls,10);assert.equal(done.ownCalls,4);
+  await assert.rejects(fakeCase(path.join(root,'replacement'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'replacement',freeze:'v2-freeze',tool:LEGACY_TOOL}),/another preparation|cap/);assert.deepEqual(await ledgerEntries(ledger),before);
+  await assert.rejects(fakeCase(path.join(root,'same-session-new-root'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL}),/job identity/);assert.deepEqual(await ledgerEntries(ledger),before);
+  await assert.rejects(fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL}),/requires --continue/);
+  const done=await fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL,continueExplicit:true});assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,6);assert.equal(done.totalCalls,10);assert.equal(done.ownCalls,4);
 });
 
 test('R7 old trace/job/manifest changes fail baseline validation and pending reservation remains append-only under concurrency',async()=>{
@@ -74,11 +81,42 @@ test('R7 old trace/job/manifest changes fail baseline validation and pending res
   const outcomes=await Promise.allSettled([reserve(ledger,{sample:'fixed'},1,5),reserve(ledger,{sample:'fixed'},1,5)]);const successes=outcomes.filter(o=>o.status==='fulfilled').length;assert(successes>=1);for(const o of outcomes)if(o.status==='rejected')assert.equal(o.reason.code,'EEXIST');const rows=await ledgerEntries(ledger);assert.equal(rows.length,4+successes);assert.deepEqual(rows.map((r:any)=>r.sequence),Array.from({length:rows.length},(_,i)=>i+1));await verifyMigration(baseline);
 });
 
-test('R7 prepare requires explicit existing TEMP input; fake refuses actual ledger before writes',async()=>{
-  assert.equal(REAL_LEDGER_ROOT,path.resolve('C:/Users/DAVID~1.CHE/AppData/Local/Temp/KB03-R5-20261030-f66b274a66d2-real-ledger'));
-  await assert.rejects(prepare(undefined,undefined),/from-existing/);
+test('R8 fake refuses fixed local and original real ledgers before writes',async()=>{
+  assert.equal(REAL_LEDGER_ROOT,path.resolve('C:/Users/80593/AppData/Local/AIPM-Workspace/acceptance/KB03-R8-20261030/ledger'));
   const root=await temp();await assert.rejects(fakeCase(path.join(root,'case'),COUNTER,{ledger:REAL_LEDGER_ROOT}),/never write the real ledger/);await assert.rejects(fs.stat(path.join(root,'case')),{code:'ENOENT'});
   const empty=path.join(root,'absent');assert.deepEqual(await ledgerEntries(empty),[]);await assert.rejects(fs.stat(empty),{code:'ENOENT'});
   await assert.rejects(assertOfflineTarget(REAL_LEDGER_ROOT),/never write the real ledger/);
   await assert.rejects(assertOfflineTarget(path.join(REAL_LEDGER_ROOT,'fake','ledger')),/never write the real ledger/);
+  await assert.rejects(assertOfflineTarget(LEGACY_LEDGER_ROOT),/never write the real ledger/);
+});
+
+test('R8 v3 pending05 survives actual process exit; history is counted once and restart appends06',async()=>{
+  const root=await temp(),ledger=path.join(root,'ledger');await history(root,ledger);
+  const moduleURL=pathToFileURL(path.resolve('tests/support/kb03-quality-runner.mjs')).href;
+  const binding={sample:'fixed',tool:TOOL,session:'v3-session',freeze:'v3-freeze',root:path.join(root,'real','fixed'),rawId:'raw-v3',jobId:'job-v3'};
+  const child=spawnSync(process.execPath,['--import','tsx','--input-type=module','-e',`import {reserve} from ${JSON.stringify(moduleURL)};await reserve(${JSON.stringify(ledger)},${JSON.stringify(binding)},5,5);process.exit(17);`],{windowsHide:true,encoding:'utf8'});
+  assert.equal(child.status,17,child.stderr);const before=await readLedger(ledger);assert.deepEqual(before.counts,{total:5,fixed:5,counter:0});assert.equal(before.rows.length,1);assert.equal(before.rows[0].sequence,5);
+  const next=await reserve(ledger,binding,5,5);assert.equal(next.sequence,6);assert.deepEqual((await readLedger(ledger)).counts,{total:6,fixed:6,counter:0});
+  await assert.rejects(durable(path.join(ledger,'history-summary.json'),HISTORY_USAGE),{code:'EEXIST'});
+});
+
+test('R8 v3 summary tamper/loss, another ledger/session/root and a fresh job reject without adapter calls; explicit same-job continue works',async()=>{
+  const root=await temp(),ledger=path.join(root,'ledger'),summary=await history(root,ledger),caseRoot=path.join(root,'real','fixed');
+  const options={ledger,sample:'fixed',otherRemaining:5,session:'v3-session',freeze:'v3-freeze',tool:TOOL};
+  const failed=await fakeCase(caseRoot,COUNTER,{...options,fault:(stage:string,value:any)=>stage==='planning'?'{invalid':JSON.stringify(value)});
+  assert.equal(failed.job.status,'failed');assert.equal(failed.ownCalls,2);assert.equal(failed.totalCalls,6);assert.equal(failed.historicalCalls,4);
+  const file=path.join(ledger,'history-summary.json'),saved=await fs.readFile(file);let attempted=0;
+  const counted={...options,fault:(_stage:string,value:any)=>{attempted++;return JSON.stringify(value);}};
+  for(const changed of [{...summary,total:0},{...summary,sampleCounts:{fixed:0,counter:0}},{...summary,session:'changed'},{...summary,ledgerRoot:path.join(root,'replacement-ledger')}]){
+    await fs.writeFile(file,JSON.stringify(changed));await assert.rejects(fakeCase(caseRoot,COUNTER,{...counted,continueExplicit:true}),/summary|receipts/i);assert.equal(attempted,0);
+  }
+  await fs.unlink(file);await assert.rejects(fakeCase(caseRoot,COUNTER,{...counted,continueExplicit:true}),/inconsistent/);assert.equal(attempted,0);await fs.writeFile(file,saved);
+  await assert.rejects(fakeCase(caseRoot,COUNTER,{...counted,session:'replacement',continueExplicit:true}),/summary.*binding/i);assert.equal(attempted,0);
+  await assert.rejects(fakeCase(path.join(root,'replacement','real','fixed'),COUNTER,counted),/summary.*binding/i);assert.equal(attempted,0);
+  await assert.rejects(fakeCase(path.join(root,'new-ledger-case'),COUNTER,{...counted,ledger:path.join(root,'empty-ledger')}),/summary.*binding/i);assert.equal(attempted,0);
+  const failedJob=path.join(caseRoot,'state','extraction-jobs',failed.job.id+'.json');
+  // Removing the persisted job cannot authorize a replacement job over charged receipts.
+  const jobBytes=await fs.readFile(failedJob);await fs.unlink(failedJob);await assert.rejects(fakeCase(caseRoot,COUNTER,{...counted,continueExplicit:true}),/job identity/);assert.equal(attempted,0);await fs.writeFile(failedJob,jobBytes);
+  await assert.rejects(fakeCase(caseRoot,COUNTER,options),/requires --continue/);
+  const done=await fakeCase(caseRoot,COUNTER,{...options,continueExplicit:true});assert.equal(done.job.status,'completed');assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,6);assert.equal(done.ownCalls,4);assert.deepEqual(done.counts,{total:10,fixed:10,counter:0});
 });
