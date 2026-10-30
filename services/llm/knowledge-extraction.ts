@@ -1,4 +1,4 @@
-import { buildKnowledgePlanningInput, expandKnowledgePlan, projectKnowledgePlan, KNOWLEDGE_PLANNING_INSTRUCTION, KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION, type KnowledgeWirePlan } from './knowledge-planning.ts';
+import { buildKnowledgePlanningInput, buildKnowledgePlanningWire, KNOWLEDGE_PLANNING_CONTEXT_INSTRUCTION, expandKnowledgePlan, projectKnowledgePlan, KNOWLEDGE_PLANNING_INSTRUCTION, KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION, type KnowledgeWirePlan } from './knowledge-planning.ts';
 import type { TemplateFields, TemplateFieldKey } from '../wiki/template-fields.ts';
 import { buildKnowledgeAtoms, coverageDiagnostic, hasCoverageErrors } from './knowledge-atoms.ts';
 import { chunkText } from './chunk.ts';
@@ -208,12 +208,12 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
     if (checkpointCallLimit(current) - current.attempts < 1) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划；成功块已保留，请检查资料后显式重新生成。', 429);
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
-    const planningPayload = { ...planningInput, source: { id: input.raw.id, title: input.raw.title, sourceType: input.raw.sourceType, sourceName: input.raw.sourceName, author: input.raw.author, publishedAt: input.raw.publishedAt, url: input.raw.url, tags: input.raw.tags }, sourcePolicy: bundle.sourcePolicy, ...(feedback ? { coverageFeedback: feedback } : {}) };
+    const planningPayload = { ...buildKnowledgePlanningWire(input.body, planningInput), source: { id: input.raw.id, title: input.raw.title, sourceType: input.raw.sourceType, sourceName: input.raw.sourceName, author: input.raw.author, publishedAt: input.raw.publishedAt, url: input.raw.url, tags: input.raw.tags }, sourcePolicy: bundle.sourcePolicy, ...(feedback ? { coverageFeedback: feedback } : {}) };
     assertNoKnownSecret(planningPayload, input.provider.secrets ?? []);
     const planningJson = JSON.stringify(planningPayload);
     if (Buffer.byteLength(planningJson, 'utf8') > 192 * 1024) throw new LlmError('LLM_PLANNING_TOO_LARGE', '整篇事实规划输入超过192KiB；检查点已保存，请缩短资料后显式重新生成。', 422);
     const plannerSchema = bundle.kb02PlanningSchema;
-    const planningSystem = `你是整篇知识主题规划器。document.source_level必须按source原始元数据与sourcePolicy给出A/B/C/D来源等级初判；来源未知或无可判断身份为D，不能把URL、文件类型或自称权威当作外部核验。初判可人工修改，不代表内容已核实。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n${KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
+    const planningSystem = `你是整篇知识主题规划器。document.source_level必须按source原始元数据与sourcePolicy给出A/B/C/D来源等级初判；来源未知或无可判断身份为D，不能把URL、文件类型或自称权威当作外部核验。初判可人工修改，不代表内容已核实。仅为有业务价值的事实主题建立知识页；不得因排版说明、目录、页眉页脚、免责声明或泛化待确认问题创建页面。相同业务主题跨chunk合并；保留不同主体、时间、条件和口径。输入的全部事实和问题必须分别且恰好归属一个页面；不得遗漏、重复、添加未知ID，不能只挑选部分事实。待确认问题只能来自输入中的原文明示未知，不得新写。不得新写事实或问题。文档主题概述只能总结事实。${planningFieldInstruction(bundle)}\n${KNOWLEDGE_PLANNING_INSTRUCTION}\n${KNOWLEDGE_PLANNING_CONTEXT_INSTRUCTION}\n${KNOWLEDGE_TEMPLATE_FIELD_INSTRUCTION}\n严格遵守schema：${JSON.stringify(plannerSchema)}`;
     assertNoKnownSecret(planningSystem, input.provider.secrets ?? []);
     current = await input.saveCheckpoint({ ...current, stage: 'planning', lastError: undefined });
     emit('planning', allFacts.length);

@@ -7,7 +7,7 @@ import test from 'node:test';
 import { chunkText } from '../services/llm/chunk.ts';
 import { buildKnowledgeAtoms, coverageDiagnostic } from '../services/llm/knowledge-atoms.ts';
 import { buildEvidenceLocatorCatalog } from '../services/llm/locators.ts';
-import { buildKnowledgePlanningInput } from '../services/llm/knowledge-planning.ts';
+import { buildKnowledgePlanningInput, buildKnowledgePlanningWire } from '../services/llm/knowledge-planning.ts';
 import { runKnowledgePipeline } from '../services/llm/knowledge-extraction.ts';
 import { ExtractionCheckpointStore, type ExtractionCheckpoint, type CheckpointChunk } from '../services/llm/checkpoints.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
@@ -21,6 +21,8 @@ const sha=(s:string|Buffer)=>createHash('sha256').update(s).digest('hex');
 const chunks=(body:string)=>chunkText(body,{maxChunkChars:8000,overlap:400,maxRawChars:500000});
 const catalogs=(body:string)=>new Map(chunks(body).map(c=>[c.index,buildEvidenceLocatorCatalog(body,c)]));
 const data=(r:LlmCompletionRequest)=>JSON.parse(r.user.split('\n').at(-1)!);
+type PlanningWire=ReturnType<typeof buildKnowledgePlanningWire>;
+const contextText=(p:PlanningWire,c:PlanningWire['sourceContexts'][number])=>{assert(!('text'in c));const passage=p.passages.find(p=>p.id===c.passageId)!;return passage.text.slice(c.contextStart-passage.start,c.contextEnd-passage.start);};
 const projectOldFailure=(response:any,p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document:{...response.document,source_level:'D'},pages:response.pages.map((page:any)=>({title:page.title,type:page.type,category:page.category,factUnitIds:p.factUnits.filter(u=>u.memberIds.every(id=>page.factIds.includes(id))).map(u=>u.id),questionUnitIds:p.questionUnits.filter(u=>u.memberIds.every(id=>page.questionIds.includes(id))).map(u=>u.id)}))});
 const validPlan=(p:ReturnType<typeof buildKnowledgePlanningInput>)=>({version:3,document: { source_level: 'D',title:'虚构主题',main_topic:'业务'},pages:[{title:'虚构主题',type:'metric',category:'metric',factUnitIds:p.factUnits.map(i=>i.id),questionUnitIds:p.questionUnits.map(i=>i.id)}]});
 // Recreate only each old response's omissions on an otherwise schema-valid v3 plan.
@@ -56,10 +58,10 @@ async function synthetic(body:string,pick:(text:string)=>boolean=()=>true) {
 test('PLAN-03/04 all original 106 IDs gain exact context; controlled 14-area plan crosses chunks without moving source facts',async()=>{
   const old=(await fixture()).cases[0],before=structuredClone(old.checkpoint.completedChunks);
   const f=await runFixture(old,r=>{
-    const p=data(r) as ReturnType<typeof buildKnowledgePlanningInput>;
+    const p=data(r) as PlanningWire;
     assert.equal(p.facts.length,81);assert.equal(p.questions.length,25);assert.equal(p.sourceContexts.length,42);
     assert(r.system.includes('不得按chunk分组建页'));assert(r.system.includes('不可二选一'));
-    for(const s of p.sourceContexts){assert.equal(s.text,old.raw.body.slice(s.contextStart,s.contextEnd));assert.equal(s.id,`s-${s.start}-${s.end}`);assert.equal(old.raw.body.slice(s.start,s.end),p.facts.find(i=>i.sourceId===s.id)?.text??p.questions.find(i=>i.sourceId===s.id)?.text);}
+    for(const s of p.sourceContexts){assert.equal(contextText(p,s),old.raw.body.slice(s.contextStart,s.contextEnd));assert.equal(s.id,`s-${s.start}-${s.end}`);assert.equal(old.raw.body.slice(s.start,s.end),p.facts.find(i=>i.sourceId===s.id)?.text??p.questions.find(i=>i.sourceId===s.id)?.text);}
     // Explicit fixture expectations are test labels, not runtime entity classification.
     return {version:3,document: { source_level: 'D',title:'虚构区域统计',main_topic:'各区口径'},pages:Array.from({length:14},(_,n)=>{const area=String(n+1).padStart(2,'0');return {title:'虚构区域'+area,type:'metric',category:'metric',factUnitIds:p.factUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id),questionUnitIds:p.questionUnits.filter(i=>old.expectedAreas[i.memberIds[0]]===area).map(i=>i.id)};})};
   });
@@ -89,13 +91,13 @@ test('PLAN-04 fresh extraction through planning uses context only for attributio
   const source=await synthetic('【资料说明】\n甲桥区域在售门店30家。未选择的来源说明。',t=>t==='甲桥区域在售门店30家。');
   source.checkpoint.completedChunks=[];source.checkpoint.attempts=0;
   const f=await runFixture(source,r=>r.user.includes('请对下列全部已验证事实规划知识页')?validPlan(data(r)):{version:2,facts:data(r).filter((a:any)=>a.text==='甲桥区域在售门店30家。').map((a:any)=>({atomId:a.id,kind:'fact'})),questions:[],sourceNotes:[]});
-  const done=await f.run();assert.equal(f.requests.length,2);assert.equal(f.cp.attempts,2);assert(data(f.requests[1]).sourceContexts[0].text.includes('未选择的来源说明'));
+  const done=await f.run();assert.equal(f.requests.length,2);assert.equal(f.cp.attempts,2);const planning=data(f.requests[1]);assert(contextText(planning,planning.sourceContexts[0]).includes('未选择的来源说明'));
   assert.deepEqual(done.outcome.pages[0].source_facts.map(i=>i.text),['甲桥区域在售门店30家。']);assert(!done.outcome.document.summary.includes('未选择'));assert.deepEqual(done.outcome.pages[0].ai_organized,[]);assert.deepEqual(done.outcome.pages[0].ai_inferences,[]);
 });
 
 test('PLAN-04 exact context windows remain UTF16-safe on both boundaries',async()=>{
   const prefix='😀'+'字'.repeat(254)+'。',suffix='字'.repeat(127)+'😀'+'。',body=prefix+'选中事实。'+suffix,source=await synthetic(body,t=>t==='选中事实。'),f=await runFixture(source);
-  await f.run();const s=data(f.requests[0]).sourceContexts[0];assert.equal(s.start,257);assert.equal(s.contextStart,0);assert.equal(s.contextEnd,s.end+129);assert.equal(s.text,body.slice(s.contextStart,s.contextEnd));assert(!/^[\uDC00-\uDFFF]/u.test(s.text));assert(!/[\uD800-\uDBFF]$/u.test(s.text));
+  await f.run();const planning=data(f.requests[0]),s=planning.sourceContexts[0],text=contextText(planning,s);assert.equal(s.start,257);assert.equal(s.contextStart,0);assert.equal(s.contextEnd,s.end+129);assert.equal(text,body.slice(s.contextStart,s.contextEnd));assert(!/^[\uDC00-\uDFFF]/u.test(text));assert(!/[\uD800-\uDBFF]$/u.test(text));
 });
 
 test('PLAN-04 selected record with unresolved atom position fails before planning callbacks',async()=>{

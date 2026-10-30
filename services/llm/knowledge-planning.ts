@@ -45,6 +45,23 @@ export function buildKnowledgePlanningInput(body: string, completedChunks: Check
 
 export type PlanningUnit = { id:string; sourceId:string; text:string; kind?:'fact'|'ambiguous'; memberIds:string[] };
 export type KnowledgePlanningInput = ReturnType<typeof buildKnowledgePlanningInput>;
+
+/** Transport projection only. Internal review/persistence keeps every original context text. */
+export function buildKnowledgePlanningWire(body: string, input: KnowledgePlanningInput) {
+  const ranges: { start:number; end:number }[] = [];
+  for (const context of [...input.sourceContexts].sort((a,b)=>a.contextStart-b.contextStart||a.contextEnd-b.contextEnd)) {
+    const previous = ranges.at(-1);
+    if (previous && context.contextStart <= previous.end) previous.end = Math.max(previous.end, context.contextEnd);
+    else ranges.push({ start:context.contextStart, end:context.contextEnd });
+  }
+  const passages = ranges.map(({start,end})=>({id:`p-${start}-${end}`,start,end,text:body.slice(start,end)}));
+  return { ...input, sourceContexts:input.sourceContexts.map(({text: _text,...context})=>({
+    ...context, passageId:passages.find(p=>p.start<=context.contextStart&&p.end>=context.contextEnd)!.id,
+  })), passages };
+}
+
+export const KNOWLEDGE_PLANNING_CONTEXT_INSTRUCTION = 'sourceContexts按id与unit.sourceId对应，保留atom的绝对start/end和原窗口的绝对contextStart/contextEnd。窗口文字不再重复携带：先按passageId找到passages中的原文片段，再取passage.text.slice(contextStart-passage.start,contextEnd-passage.start)无损恢复该unit原有的有界上下文；所有offset均为原文UTF-16位置。passages只去重传输重叠或相邻文字，不扩大任何unit的原窗口和证据；仅以原精确陈述及恢复的原窗口判断主体、年份、条件、单位、否定与未知，不能把整passage内其它陈述归给每个unit，不能引用原窗口外文字补充事实。';
+
 export type KnowledgeWirePlan = { version:3; document:Omit<KnowledgePlan['document'],'summary'>; pages:Array<{ title:string; type:string; category:string; factUnitIds:string[]; questionUnitIds:string[]; templateFields?: Partial<Record<TemplateFieldKey, { text: string; factUnitIds: string[] }>> }> };
 
 /** Called only after strict schema and unit coverage validation; never repairs missing references. */

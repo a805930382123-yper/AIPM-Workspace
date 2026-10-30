@@ -56,8 +56,8 @@ test('KB02 Q01 sends the complete loaded schema and valid nonempty examples; dec
     assert.equal(saved.sourceNotes?.[0].text, '虚构验收免责声明。');
     assert.equal(saved.sourceNotes?.length, 1); // Additional layout atom may be omitted.
     const planning = JSON.parse(f.requests[1].user.split('\n').at(-1)!);
-    assert.deepEqual(Object.keys(planning).sort(), ['factUnits', 'facts', 'questionUnits', 'questions', 'source', 'sourceContexts', 'sourcePolicy']);
-    for (const context of planning.sourceContexts) assert.equal(context.text, text.slice(context.contextStart, context.contextEnd));
+    assert.deepEqual(Object.keys(planning).sort(), ['factUnits', 'facts', 'passages', 'questionUnits', 'questions', 'source', 'sourceContexts', 'sourcePolicy']);
+    for (const context of planning.sourceContexts) { assert(!('text' in context)); const passage=planning.passages.find((p:any)=>p.id===context.passageId)!; assert.equal(passage.text.slice(context.contextStart-passage.start,context.contextEnd-passage.start),text.slice(context.contextStart,context.contextEnd)); }
     assert(f.requests[1].system.includes('附近其它陈述只帮助定位，不能作为新增事实'));
     assert.deepEqual(planning.facts.map((x: { text: string }) => x.text), ['在售20家。', '旧资料20家未注明维度。']);
     const planningRecords = JSON.stringify({ facts: planning.facts, questions: planning.questions });
@@ -129,7 +129,7 @@ test('KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkp
     const [schema, rules, facts, planning] = await Promise.all(['wiki-extract.schema.json', 'extraction-rules.yaml', 'kb02-facts.schema.json', 'kb02-planning.schema.json'].map(name => readFile(path.join('rules', name), 'utf8')));
     const revision = 'kb02-atoms-planning-3', format = 'locator-v2';
     const oldVersion = `b04-${f.bundle.rules.version}-${format}-${revision}-${sha(`${schema}\n${rules}\n${format}\n${revision}\n${facts}\n${planning}`).slice(0, 12)}`;
-    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-17'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
+    assert.equal(KB02_PROMPT_REVISION, 'kb02-atoms-planning-18'); assert.notEqual(f.bundle.rulesVersion, oldVersion);
     const old = await f.store.save({ ...f.checkpoint, rulesVersion: oldVersion });
     const file = path.join(f.root, 'state/extraction-checkpoints', old.jobId + '.json'), bytes = await readFile(file);
     await assert.rejects(validateKnowledgeCheckpoint({ ...f.args, checkpoint: old }), (e: unknown) => e instanceof LlmError && e.code === 'LLM_CHECKPOINT_INCOMPATIBLE' && e.status === 409);

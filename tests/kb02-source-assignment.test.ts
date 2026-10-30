@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { buildKnowledgeAtoms, coverageDiagnostic, hasCoverageErrors } from '../services/llm/knowledge-atoms.ts';
-import { buildKnowledgePlanningInput, type KnowledgePlanningInput, type KnowledgeWirePlan } from '../services/llm/knowledge-planning.ts';
+import { buildKnowledgePlanningInput, buildKnowledgePlanningWire, type KnowledgePlanningInput, type KnowledgeWirePlan } from '../services/llm/knowledge-planning.ts';
 import { buildEvidenceLocatorCatalog } from '../services/llm/locators.ts';
 import { chunkText } from '../services/llm/chunk.ts';
 import { ExtractionCheckpointStore, type CheckpointChunk, type ExtractionCheckpoint } from '../services/llm/checkpoints.ts';
@@ -87,7 +87,7 @@ test('SOURCE old revision7 unfinished checkpoint fails preflight with no call/wr
 
 for(const extra of [0,1])test('SOURCE complete unit/context/feedback payload at 192KiB '+(extra?'plus one byte rejects before call':'is accepted'),async()=>{
  const source=await synthetic('选中事实。',()=>true),f=await run(source);try{
- const input={...buildKnowledgePlanningInput(source.raw.body,f.cp.completedChunks,catalogs(source.raw.body)),source:{id:source.raw.id,title:source.raw.title,sourceType:source.raw.sourceType,sourceName:source.raw.sourceName,tags:source.raw.tags},sourcePolicy:(await loadExtractionRules('rules')).sourcePolicy},diagnostic=coverageDiagnostic([],[],[]);
+ const input={...buildKnowledgePlanningWire(source.raw.body,buildKnowledgePlanningInput(source.raw.body,f.cp.completedChunks,catalogs(source.raw.body))),source:{id:source.raw.id,title:source.raw.title,sourceType:source.raw.sourceType,sourceName:source.raw.sourceName,tags:source.raw.tags},sourcePolicy:(await loadExtractionRules('rules')).sourcePolicy},diagnostic=coverageDiagnostic([],[],[]);
  const target=192*1024+extra,base=Buffer.byteLength(JSON.stringify({...input,coverageFeedback:diagnostic}),'utf8'),needed=target-base,count=Math.ceil((needed+1)/67);
  diagnostic.facts.unknown=Array.from({length:count},(_,i)=>('u'+String(i).padStart(4,'0')).padEnd(64,'x'));
  let excess=Buffer.byteLength(JSON.stringify({...input,coverageFeedback:diagnostic}),'utf8')-target;

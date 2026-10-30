@@ -92,7 +92,7 @@ for(const [name,result,code] of [
 
 test('SEMANTIC schema fingerprint changes; production rejects old revision and undercount before calls or writes',async()=>{
   const f=await storageFixture();try{
-    f.succeed();const job=await f.wait((await f.start()).job.id),valid=(await f.checkpoint(job.id))!;assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-17');
+    f.succeed();const job=await f.wait((await f.start()).job.id),valid=(await f.checkpoint(job.id))!;assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-18');
     const calls=f.requests.length,hashes=await f.hashes(job.id);
     const run=(checkpoint:typeof valid)=>runKnowledgePipeline({raw:f.raw,body:f.raw.body,bodySha256:valid.rawSha256,provider:f.provider,rulesDir:'rules',checkpoint,beforeCall:async()=>{assert.fail('invalid checkpoint must not account');},saveCheckpoint:async()=>{assert.fail('invalid checkpoint must not write');}});
     await assert.rejects(run({...valid,attempts:valid.completedChunks.length}),{code:'LLM_CHECKPOINT_CORRUPT'});

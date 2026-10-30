@@ -75,7 +75,7 @@ test('KB02 Q02 controlled correct classifications keep both title fragment forms
     assert.deepEqual(planning.facts.map((x:{text:string})=>x.text),part.facts.map(x=>x.text));
     const business=JSON.stringify({planning:{facts:planning.facts,questions:planning.questions},document:outcome.document,pages:outcome.pages.map(({source_facts,open_questions})=>({source_facts,open_questions}))});
     for(const note of [title,layout])assert(!business.includes(JSON.stringify(note).slice(1,-1)));
-    for(const context of planning.sourceContexts)assert.equal(context.text,text.slice(context.contextStart,context.contextEnd));
+    for(const context of planning.sourceContexts){assert(!('text'in context));const passage=planning.passages.find((p:any)=>p.id===context.passageId)!;assert.equal(passage.text.slice(context.contextStart-passage.start,context.contextEnd-passage.start),text.slice(context.contextStart,context.contextEnd));}
     assert(f.requests[1].system.includes('附近其它陈述只帮助定位，不能作为新增事实'));
     assert(outcome.pages[0].open_questions.some(q=>q.includes('原文口径或边界待确认：在售20家')));
     const noteIds=new Set(part.sourceNotes!.map(n=>n.atomId));
@@ -123,7 +123,7 @@ test('KB02 Q02 full seq62 original response and exact original atom catalog stil
 
 test('KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes',async()=>{
   const originalBytes=await readFile(originalPath),old=JSON.parse(originalBytes.toString()),f=await fixture(old.body);try{
-    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-17');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
+    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-18');assert.match(old.oldCheckpoint.rulesVersion,/kb02-atoms-planning-4-/u);
     assert.equal(old.oldCheckpoint.completedChunks.length,6);assert.equal(old.oldCheckpoint.completedChunks.flatMap((c:{facts:Array<{text:string}>})=>c.facts).filter((x:{text:string})=>/排版说明|长文验收附录/u.test(x.text)).length,11);
     const checkpoint=await f.store.save(old.oldCheckpoint),file=path.join(f.root,'state/extraction-checkpoints',checkpoint.jobId+'.json'),bytes=await readFile(file);
     const args={...f.args,raw:old.raw,checkpoint};
