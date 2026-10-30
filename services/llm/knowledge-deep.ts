@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { LlmError, assertNoKnownSecret, describeUnparsable } from './provider.ts';
 import { runKnowledgePipeline, validateKnowledgeCheckpoint, type KnowledgeRunInput } from './knowledge-extraction.ts';
 import type { ExtractionCheckpoint } from './checkpoints.ts';
-import { validStructuredNote, type StructuredNote, type NoteAttribution } from '../wiki/structured-note.ts';
+import { validStructuredNote, STRUCTURED_NOTE_LIMITS, type StructuredNote, type NoteAttribution, type NoteText } from '../wiki/structured-note.ts';
 
 export const DEEP_VERSION = 'kb03-1';
 export const deepCallLimit = (n: number) => 2 * n + 8;
@@ -60,6 +60,24 @@ export function inspectEditedNote(note:StructuredNote,facts:Map<string,string>):
   if(leaves.filter(l=>l.role==='supplementary').length>leaves.length*.2)warnings.push('补充知识比例超过20%，人工修改待核对。');
   return warnings;
 }
+/** Keep selected source boundaries visible without turning them into business facts. */
+export function preserveDeepBoundaries(note:StructuredNote,outline:DeepOutline,cp:ExtractionCheckpoint):StructuredNote {
+  const preserved=structuredClone(note),first=outline.sections[0].id;
+  const required=cp.completedChunks.flatMap(chunk=>[
+    ...(chunk.sourceNotes??[]).map(item=>({sectionId:first,item:{role:'needs_verification' as const,factIds:[],text:item.text,reason:`来源或材料说明，尚未独立核验；原句保留，不作为业务事实。atom ${item.atomId}；locator ${item.locatorIds.join('、')}`} })),
+    ...chunk.facts.filter(f=>f.kind==='ambiguous').map(item=>{
+      const section=outline.sections.find(s=>s.factIds.includes(item.id));
+      return {sectionId:section?.id??first,item:{role:'needs_verification' as const,factIds:section?[item.id]:[],text:item.text,reason:`原文存在歧义或转录疑点，保留原句待核，不据此补写或纠正事实${section?'':'；此项虽未纳入大纲正文，疑点仍需核对'}。fact ${item.id}；atom ${item.atomId}；locator ${item.locatorIds.join('、')}`}};
+    }),
+  ]);
+  const leaves=deepLeaves(note);
+  for(const section of preserved.sections){
+    const missing:NoteText[]=required.filter(r=>r.sectionId===section.id&&!leaves.some(l=>l.sectionId===r.sectionId&&l.role===r.item.role&&l.prose===r.item.text&&l.reason===r.item.reason&&JSON.stringify(l.factIds)===JSON.stringify(r.item.factIds))).map(r=>r.item);
+    for(let i=0;i<missing.length;i+=STRUCTURED_NOTE_LIMITS.items)section.blocks.push({type:'list',items:missing.slice(i,i+STRUCTURED_NOTE_LIMITS.items)});
+  }
+  if(!validStructuredNote(preserved,new Set(cp.completedChunks.flatMap(c=>c.facts.map(f=>f.id)))))fail('LLM_DEEP_BOUNDARY_CAPACITY','来源或歧义待核说明超出笔记现有容量，未截断或丢弃，未保存笔记。');
+  return preserved;
+}
 export function checkDeepNote(note: StructuredNote, outline: DeepOutline, cp: ExtractionCheckpoint): void {
   if(JSON.stringify(note.sections.map(s=>s.id))!==JSON.stringify(outline.sections.map(s=>s.id)))fail('LLM_DEEP_WRITING_INVALID','笔记章节ID或顺序不符合大纲。');
   const leaves=deepLeaves(note), used=new Set<string>(),facts=new Map(cp.completedChunks.flatMap(c=>c.facts.map(f=>[f.id,f.text] as const)));
@@ -76,6 +94,7 @@ export function checkDeepNote(note: StructuredNote, outline: DeepOutline, cp: Ex
   }
   if(leaves.filter(l=>l.role==='supplementary').length>leaves.length*.2)fail('LLM_DEEP_SUPPLEMENT_INVALID','补充知识叶项比例超过20%。');
   if(outline.sections.flatMap(s=>s.factIds).some(id=>!used.has(id)))fail('LLM_DEEP_WRITING_INVALID','正文遗漏大纲included事实引用。');
+  if(JSON.stringify(preserveDeepBoundaries(note,outline,cp))!==JSON.stringify(note))fail('LLM_DEEP_BOUNDARY_MISSING','笔记遗漏已选来源说明或已识别歧义的可见待核原句，检查未通过。');
 }
 /** Strict persistence check, repeated semantic checks at the Raw boundary on resume. */
 export function validDeepState(v: unknown, cp: ExtractionCheckpoint): v is DeepState {
@@ -111,19 +130,23 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
     assertNoKnownSecret(parsed,input.provider.secrets);return parsed;
   };
   const facts=cp.completedChunks.flatMap(c=>c.facts),questions=cp.completedChunks.flatMap(c=>c.questions);
+  const {id,title,sourceType,sourceName,author,publishedAt,url,tags}=input.raw;
+  const context={source:{id,title,sourceType,sourceName,author,publishedAt,url,tags},sourceNotes:cp.completedChunks.flatMap(c=>c.sourceNotes??[]),evidence:cp.completedChunks.flatMap(c=>c.evidence)};
+  const boundaryInstruction='source只含用户登记线索，作者、日期和链接并非外部核验结果，不能把摘录或拼接材料说成已核实单一作者全文。sourceNotes是独立非业务说明，禁止转成业务事实或创造业务页面；其中缺失图表、转载/摘录来源等重要限制应在笔记正文用needs_verification及reason保留，不能只在质量报告提及。事实中的疑似错字、语句不通、转录含糊或kind=ambiguous须保留原句并标待核，禁止凭常识静默纠正；不编造未提供的图表内容、作者或来源结论。';
   if(!cp.deep!.outline){
-    const outline=await call('outline',{facts,questions,scan:cp.deep!.scan},'输出{version:1,sections:[{id,title,question,factIds,questionIds}],excluded:[{kind:"fact|question",id,reason}]}。全部事实和问题各唯一归属章节或有理由排除；章节ID和标题唯一。');
+    const outline=await call('outline',{facts,questions,scan:cp.deep!.scan,...context},'输出{version:1,sections:[{id,title,question,factIds,questionIds}],excluded:[{kind:"fact|question",id,reason}]}。全部事实和问题各唯一归属章节或有理由排除；章节ID和标题唯一。'+boundaryInstruction);
     if(!validDeepOutline(outline,cp))fail('LLM_DEEP_OUTLINE_INVALID','深度大纲遗漏、重复、未知ID或结构非法。');
     await save({...cp.deep!,outline});
   }
   if(!cp.deep!.note){
-    const note=await call('writing',{outline:cp.deep!.outline,facts,questions,evidence:cp.completedChunks.flatMap(c=>c.evidence)},'输出唯一R1笔记{version:1,orientation,sections:[{id,title,question,blocks}]}。block五类paragraph(text/role/factIds)、list(items各text/role/factIds)、table(title/headings/rows各cells/role/factIds)、path_diagram(title/nodes各id/text/role/factIds、edges各from/to/text/role/factIds)、callout(title/text/role/factIds)。角色source_supported/reorganized必须有所属章节factIds；supplementary为空factIds且仅独立补充概念，不含具体公司/数据/日期/排名/预测，最多20%叶项；needs_verification需非空reason。所有included事实至少引用一次，excluded不引用。章节ID/顺序一致，不改变主体、条件、数值、日期或单位，未上线/未知保持。');
-    if(!validStructuredNote(note,new Set(facts.map(f=>f.id))))fail('LLM_DEEP_WRITING_INVALID','笔记结构或事实引用非法。');
+    const output=await call('writing',{outline:cp.deep!.outline,facts,questions,...context},'输出唯一R1笔记{version:1,orientation,sections:[{id,title,question,blocks}]}。block五类paragraph(text/role/factIds)、list(items各text/role/factIds)、table(title/headings/rows各cells/role/factIds)、path_diagram(title/nodes各id/text/role/factIds、edges各from/to/text/role/factIds)、callout(title/text/role/factIds)。角色source_supported/reorganized必须有所属章节factIds；supplementary为空factIds且仅独立补充概念，不含具体公司/数据/日期/排名/预测，最多20%叶项；needs_verification需非空reason。所有included事实至少引用一次，excluded不引用。章节ID/顺序一致，不改变主体、条件、数值、日期或单位，未上线/未知保持。'+boundaryInstruction);
+    if(!validStructuredNote(output,new Set(facts.map(f=>f.id))))fail('LLM_DEEP_WRITING_INVALID','笔记结构或事实引用非法。');
+    const note=preserveDeepBoundaries(output,cp.deep!.outline!,cp);
     checkDeepNote(note,cp.deep!.outline!,cp);await save({...cp.deep!,note});
   }
   checkDeepNote(cp.deep!.note!,cp.deep!.outline!,cp);
   if(!cp.deep!.qualityReport){
-    const output=await call('quality',{note:cp.deep!.note,outline:cp.deep!.outline,facts,questions},'只读检查，禁止改正文。逐断言对照事实检查主体、条件、数值/单位、未知/否定、覆盖及补充边界。输出{version:1,findings:[{severity:"warning|error",category:"semantic|numeric|coverage|supplementary|structure",sectionId:章节ID或null,blockIndex:从0开始或null,reason:非空文本}]}。无发现findings=[]。');
+    const output=await call('quality',{note:cp.deep!.note,outline:cp.deep!.outline,facts,questions,...context},'只读检查，禁止改正文。逐断言对照事实检查主体、条件、数值/单位、未知/否定、覆盖及补充边界。逐项核对sourceNotes的重要材料限制、缺图/缺表、摘录拼接声明是否实际进入笔记正文，疑似转录或ambiguous是否保留原句并待核，来源登记线索是否被误称为已核验。被大纲排除也不能掩盖已识别歧义；不能只因引用/evidence含原句就算正文已表达。遗漏或边界误表须给coverage/semantic发现，定位受影响sectionId/blockIndex；此自检不等于独立质量通过。输出{version:1,findings:[{severity:"warning|error",category:"semantic|numeric|coverage|supplementary|structure",sectionId:章节ID或null,blockIndex:从0开始或null,reason:非空文本}]}。无发现findings=[]。'+boundaryInstruction);
     if(!keys(output,['version','findings'])||output.version!==1||!validFindings(output.findings,cp.deep!.note!.sections.map(s=>({id:s.id,blockCount:s.blocks.length}))))fail('LLM_DEEP_QUALITY_INVALID','模型质量报告无效，检查未完成。');
     await save({...cp.deep!,qualityReport:{version:1,deterministic:'passed',model:output.findings.length?'warning':'passed',findings:output.findings}});
   }

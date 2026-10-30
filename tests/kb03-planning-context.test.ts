@@ -89,7 +89,7 @@ for(const mode of ['standard','deep'] as const)test(`R6 actual adapter ${mode} s
     assert(f.requests[1].system.includes('不能把整passage内其它陈述归给每个unit'));
     assert(f.requests[1].system.includes('passage.text.slice(contextStart-passage.start,contextEnd-passage.start)'));
     assert.deepEqual(f.wires[1].response_format.json_schema,{...f.requests[1].structuredOutput,strict:true});
-    assert.equal(FROZEN_BUDGETS.totalDeadlineMs,600000);assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-18');
+    assert.equal(FROZEN_BUDGETS.totalDeadlineMs,600000);assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-19');
     assert.deepEqual(f.requests.map(r=>r.timeoutMs),mode==='deep'?[60000,60000,120000,120000,120000]:[60000,60000]);
     for(const w of f.wires){assert.equal(w.model,'gpt-6.1-terra');assert.equal(w.stream,false);assert(!('temperature'in w));assert(!('reasoning_effort'in w));assert(!('max_tokens'in w));}
     const draft=await f.state.drafts.get(job.draftId);assert.equal(draft.humanReview.approvals.length,0);
@@ -141,10 +141,10 @@ test('R6 new-version failed planning explicitly resumes same job and reuses chun
   }finally{await old.clean();}
 });
 
-for(const mode of ['standard','deep'] as const)test(`R6 completed revision17 ${mode} draft remains readable, HUMAN reviewed and explicitly confirmable`,async()=>{
+for(const revision of ['17','18'])for(const mode of ['standard','deep'] as const)test(`R9 completed revision${revision} ${mode} draft remains readable, HUMAN reviewed and explicitly confirmable`,async()=>{
   const f=await fixture(mode);try{
-    const job=await f.start(),cp=(await f.checkpoints.get(job.id))!;await f.checkpoints.save({...cp,rulesVersion:cp.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-17')});
-    const file=path.join(f.root,'drafts',job.draftId+'.json'),draft=JSON.parse(await fs.readFile(file,'utf8'));draft.rulesVersion=draft.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-17');await fs.writeFile(file,JSON.stringify(draft));
+    const job=await f.start(),cp=(await f.checkpoints.get(job.id))!;await f.checkpoints.save({...cp,rulesVersion:cp.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-'+revision)});
+    const file=path.join(f.root,'drafts',job.draftId+'.json'),draft=JSON.parse(await fs.readFile(file,'utf8'));draft.rulesVersion=draft.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-'+revision);await fs.writeFile(file,JSON.stringify(draft));
     assert.equal((await f.state.drafts.get(draft.id)).id,draft.id);
     if(mode==='standard'){const reused=await f.start();assert.equal(reused.id,job.id);}else await assert.rejects(f.start(),{code:'STORAGE_RECONCILE_CONFLICT'});
     const used=f.requests.length,wiki=new WikiStore(f.root,f.state.rawStore);await wiki.initialize();

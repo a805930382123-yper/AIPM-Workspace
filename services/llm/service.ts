@@ -214,8 +214,9 @@ export class LLMService {
       `- 标题：${raw.title}`,
       `- 来源类型：${raw.sourceType} / 来源名称：${raw.sourceName}`,
       raw.author ? `- 作者：${raw.author}` : null,
-      raw.publishedAt ? `- 原发布日期：${raw.publishedAt}` : null,
-      raw.url ? `- 链接：${raw.url}` : null,
+      raw.publishedAt ? `- 登记日期：${raw.publishedAt}` : null,
+      raw.url ? `- 登记链接：${raw.url}` : null,
+      '- 作者、日期和链接仅为登记线索，未经外部核验，不能据此声称已核实作者或全文来源。',
       raw.tags.length ? `- 标签：${raw.tags.join('、')}` : null,
     ].filter(Boolean).join('\n');
     const catalog = buildEvidenceLocatorCatalog(body, chunk);

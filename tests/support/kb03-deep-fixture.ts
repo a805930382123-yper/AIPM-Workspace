@@ -27,7 +27,12 @@ export async function deepFixture(body?:string) {
   f.provider.complete=async request=>{
     requests.push(request);const deep=request.system.startsWith('KB03 '),stage=deep?JSON.parse(request.user).stage:request.user.includes('请对下列全部已验证事实规划知识页')?'planning':'extracting';
     await hook?.(stage,request);
-    if(!deep)return original(request);
+    if(!deep){
+      const response=await original(request);
+      if(!mutate)return response;
+      const value=JSON.parse(response.text),changed=mutate(stage,value,JSON.parse(request.user.split('\n').at(-1)!));
+      return {...response,text:typeof changed==='string'?changed:JSON.stringify(changed)};
+    }
     const value=deepReply(request),changed=mutate?mutate(stage,value,JSON.parse(request.user)):value;
     return {text:typeof changed==='string'?changed:JSON.stringify(changed),bytes:1,finishReason:'stop'};
   };

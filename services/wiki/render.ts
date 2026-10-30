@@ -92,8 +92,9 @@ export function renderSourceBody(source: DraftSource, raw: DraftRawMeta, selecte
   lines.push(`- 来源类型：${sourceTypeLabels[raw.sourceType] ?? raw.sourceType}（${raw.sourceType}）`);
   lines.push(`- 来源名称：${orMissing(raw.sourceName, '来源名称')}`);
   lines.push(`- 作者：${orMissing(raw.author, '作者')}`);
-  lines.push(`- 原发布日期：${orMissing(raw.publishedAt, '原发布日期')}`);
-  lines.push(`- 原始链接：${orMissing(raw.url, '原始链接')}`);
+  lines.push(`- 登记日期：${orMissing(raw.publishedAt, '登记日期')}`);
+  lines.push(`- 登记链接：${orMissing(raw.url, '登记链接')}`);
+  lines.push('- 以上作者、日期和链接为登记线索，未经外部核验，不代表已核实单一作者全文。');
   lines.push(`- Raw：${raw.title}（${raw.rawId}）`);
   if (raw.importedAt) lines.push(`- 导入时间：${raw.importedAt}`);
   lines.push(`- 来源等级：${source.source_level}`);

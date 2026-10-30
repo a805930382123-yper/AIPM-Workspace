@@ -494,22 +494,22 @@ test('F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，
     assert.match(draft.source.body, /来源类型：行业报告（report）/);
     assert.match(draft.source.body, /来源名称：某咨询公司 2026 报告/);
     assert.match(draft.source.body, /作者：张三/);
-    assert.match(draft.source.body, /原发布日期：2026-09-01/);
-    assert.match(draft.source.body, /原始链接：https:\/\/example\.com\/report-2026/);
+    assert.match(draft.source.body, /登记日期：2026-09-01/);
+    assert.match(draft.source.body, /登记链接：https:\/\/example\.com\/report-2026/);
     assert.match(draft.source.body, /Raw：带完整元数据的报告/);
     const outcome = await context.confirm(draft.id, [draft.pages[0].pageId], 'metadata-key');
     const source = await context.wikiStore.get(outcome.manifest.snapshot.sourceRecord?.id as string);
     assert.ok(source);
     // 正式 Source 快照必须保留同样的真实元数据（而不是只有标题和 ID）。
-    for (const fragment of ['来源类型：行业报告（report）', '来源名称：某咨询公司 2026 报告', '作者：张三', '原发布日期：2026-09-01', '原始链接：https://example.com/report-2026']) {
+    for (const fragment of ['来源类型：行业报告（report）', '来源名称：某咨询公司 2026 报告', '作者：张三', '登记日期：2026-09-01', '登记链接：https://example.com/report-2026']) {
       assert.ok(source?.body.includes(fragment), `正式 Source 必须包含「${fragment}」`);
     }
     // 缺失字段明确写"未提供"，不能伪造。
     const bare = await context.createRaw('另一份资料正文。', '缺元数据资料');
     const bareDraft = await context.draftFor(bare.id);
     assert.match(bareDraft.source.body, /作者：未提供（作者）/);
-    assert.match(bareDraft.source.body, /原发布日期：未提供（原发布日期）/);
-    assert.match(bareDraft.source.body, /原始链接：未提供（原始链接）/);
+    assert.match(bareDraft.source.body, /登记日期：未提供（登记日期）/);
+    assert.match(bareDraft.source.body, /登记链接：未提供（登记链接）/);
     // 用户编辑 Source 后仍保留真实元数据（正文由用户接管）。
     const edited = await context.drafts.patch(bareDraft.id, {
       baseRevision: bareDraft.revision, source: { body: '## 人工正文\n\n只写我自己的内容。\n' },

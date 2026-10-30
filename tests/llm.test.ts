@@ -518,8 +518,8 @@ test('渲染：事实/整理/推断/问题/证据分节，Source 是摘要而非
   assert.match(source, /来源类型：行业报告（report）/);
   assert.match(source, /来源名称：某行业报告/);
   assert.match(source, /作者：张三/);
-  assert.match(source, /原发布日期：2026-09-01/);
-  assert.match(source, /原始链接：https:\/\/example\.com\/r1/);
+  assert.match(source, /登记日期：2026-09-01/);
+  assert.match(source, /登记链接：https:\/\/example\.com\/r1/);
   assert.match(source, /## 摘要/);
   assert.match(source, /## Key Takeaways/);
   assert.match(source, /## 涉及指标[\s\S]*\[\[动销率\]\]/);

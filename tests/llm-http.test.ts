@@ -457,7 +457,7 @@ test('F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标
     const firstResult = shape(firstConfirm) as unknown as { sourceId: string; wikiIds: string[] };
     const sourceRead = shape(await client.request(`/api/wiki/${firstResult.sourceId}`)) as unknown as { body: string; revision: number; title: string };
     // F04-06: 正式 Source 保留真实来源元数据。
-    for (const fragment of ['来源类型：行业报告（report）', '来源名称：某咨询公司报告', '作者：张三', '原发布日期：2026-09-01', '原始链接：https://example.com/report']) {
+    for (const fragment of ['来源类型：行业报告（report）', '来源名称：某咨询公司报告', '作者：张三', '登记日期：2026-09-01', '登记链接：https://example.com/report']) {
       assert.ok(sourceRead.body.includes(fragment), `正式 Source 必须包含「${fragment}」`);
     }
     const sourceRecord = shape(await client.request(`/api/wiki/${firstResult.sourceId}`)) as unknown as Record<string, unknown>;
