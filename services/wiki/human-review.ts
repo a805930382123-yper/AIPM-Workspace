@@ -66,7 +66,7 @@ export function moveHumanUnits(review: HumanReview, pageIds: string[], ids: stri
 /** Exclude only lifecycle and approval metadata. Every writable candidate field is bound. */
 export function candidateContent(record: object): unknown {
   const copy=structuredClone(record) as Record<string,unknown>;
-  for(const key of ['humanReview','reviewView','reviewContentDigest','revision','createdAt','updatedAt','status','commitOperationId','confirmedAt','discardedAt','lastCommitError','committedWikiId','warnings'])delete copy[key];
+  for(const key of ['humanReview','reviewView','reviewContentDigest','noteApproval','revision','createdAt','updatedAt','status','commitOperationId','confirmedAt','discardedAt','lastCommitError','committedWikiId','warnings'])delete copy[key];
   return copy;
 }
 export function assertReviewSources(review: HumanReview, raws: Array<{id:string;body:string;bodySha256:string}>) {

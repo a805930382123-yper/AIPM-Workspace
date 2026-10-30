@@ -17,6 +17,8 @@ export type NoteBlock =
 export type StructuredNote = { version: 1; orientation: string; sections: { id: string; title: string; question: string; blocks: NoteBlock[] }[] };
 export type NoteExclusion = {kind:'fact'|'question';id:string;reason:string};
 export type NoteReviewMetadata = {version:1;generatedNoteDigest:string;generatedSections:{id:string;blockCount:number}[];contentDigest:string;exclusions:NoteExclusion[];questionIds:string[];humanQuestions:string[]};
+export type NoteApproval = {version:1;digest:string;at:string;warningsAcknowledged:true;historicalReportAcknowledged:true};
+export function validNoteApproval(v:unknown):v is NoteApproval{return object(v)&&keys(v,['version','digest','at','warningsAcknowledged','historicalReportAcknowledged'])&&v.version===1&&typeof v.digest==='string'&&/^[a-f0-9]{64}$/.test(v.digest)&&typeof v.at==='string'&&v.at.length<=40&&Number.isFinite(Date.parse(v.at))&&v.warningsAcknowledged===true&&v.historicalReportAcknowledged===true;}
 export const noteReviewContent = (note:StructuredNote,exclusions:NoteExclusion[],questionIds:string[],humanQuestions:string[])=>({note,exclusions,questionIds,humanQuestions});
 export function noteFactIds(note:StructuredNote):string[]{return note.sections.flatMap(s=>s.blocks.flatMap(b=>b.type==='list'?b.items.flatMap(i=>i.factIds):b.type==='table'?b.rows.flatMap(r=>r.factIds):b.type==='path_diagram'?[...b.nodes,...b.edges].flatMap(v=>v.factIds):b.factIds));}
 export function noteCoverage(note:StructuredNote,facts:string[],questions:string[],exclusions:NoteExclusion[]=[],questionIds:string[]=[]){
@@ -94,7 +96,7 @@ function attribution(value: NoteAttribution): string {
   return `【${labels[value.role]}】${value.factIds.length ? ` 事实引用：${value.factIds.map(plain).join('、')}` : ''}${value.role === 'needs_verification' ? `；原因：${plain(value.reason!)}` : ''}`;
 }
 /** Pure, deterministic CommonMark. Tables deliberately use column-labelled row lists. */
-export function renderStructuredNote(note: StructuredNote): string {
+export function renderStructuredNote(note: StructuredNote, gridTables=false): string {
   const out = ['# 结构化笔记', '', `知识定位：${plain(note.orientation)}`];
   for (const section of note.sections) {
     out.push('', `## ${plain(section.title)}`, '', `阅读问题：${plain(section.question)}`);
@@ -106,6 +108,12 @@ export function renderStructuredNote(note: StructuredNote): string {
         case 'list': for (const item of block.items) out.push(`- ${attribution(item)} ${plain(item.text)}`); break;
         case 'table':
           out.push(`### ${plain(block.title)}`, '');
+          if(gridTables){
+            const cell=(v:string)=>plain(v).replace(/\\\|/g,'&#124;');
+            out.push('| '+[...block.headings.map(cell),'内容角色与证据'].join(' | ')+' |','| '+[...block.headings,'角色'].map(()=>'---').join(' | ')+' |');
+            for(const row of block.rows)out.push('| '+[...row.cells.map(cell),attribution(row).replace(/\\\|/g,'&#124;')].join(' | ')+' |');
+            break;
+          }
           block.rows.forEach((row, i) => {
             out.push(`- 第 ${i + 1} 行 ${attribution(row)}`);
             row.cells.forEach((cell, j) => out.push(`  - ${plain(block.headings[j])}：${plain(cell)}`));
@@ -122,3 +130,13 @@ export function renderStructuredNote(note: StructuredNote): string {
   }
   return out.join('\n') + '\n';
 }
+/** Paired with the restricted writer above; unrecognised input stays Markdown text. */
+export function parseNoteGrid(lines:string[],start:number):{headings:string[];rows:string[][];end:number}|undefined{
+  const split=(line:string)=>line.startsWith('| ')&&line.endsWith(' |')?line.slice(2,-2).split(' | '):undefined;
+  const headings=split(lines[start]??''),separator=split(lines[start+1]??'');
+  if(!headings||headings.length<2||headings.length>17||!separator||separator.length!==headings.length||separator.some(c=>c!=='---'))return;
+  const rows:string[][]=[];let end=start+2;
+  while(end<lines.length&&lines[end].startsWith('| ')){const row=split(lines[end]);if(!row||row.length!==headings.length)return;rows.push(row);end++;}
+  return rows.length?{headings,rows,end}:undefined;
+}
+export const escapeNoteText=plain;

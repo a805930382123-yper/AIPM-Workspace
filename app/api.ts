@@ -1,4 +1,4 @@
-import type {StructuredNote,NoteReviewMetadata,NoteExclusion} from '../services/wiki/structured-note';
+import type {StructuredNote,NoteReviewMetadata,NoteExclusion,NoteApproval} from '../services/wiki/structured-note';
 import type {DeepQualityReport} from '../services/llm/knowledge-deep';
 import type { HumanReview } from '../services/wiki/human-review.ts';
 import type { TemplateFields, InputTemplateFields, MergedTemplateFields } from '../services/wiki/template-fields';
@@ -147,6 +147,7 @@ export type DraftPreview = {
   batchDuplicateTitles: string[];
 };
 export type DraftView = {
+  noteApproval?:NoteApproval;
   structuredNote?:StructuredNote;noteReview?:NoteReviewMetadata;qualityReport?:DeepQualityReport;noteQualityStatus?:'historical'|'generated';noteWarnings?:string[];
   humanReview?:HumanReview; humanQuestionUnitIds?:string[]; reviewContentDigest?:string|null;
   id: string; rawId: string; rawTitle: string; status: 'pending_confirmation' | 'committing' | 'confirmed' | 'discarded';
@@ -297,3 +298,4 @@ export const jobStageLabels: Record<ExtractionJob['stage'], string> = {
 export type RecoveryScan = { scanned:boolean;partial?:boolean;overflow:boolean;truncated?:boolean;totalIssues?:number;hiddenIssues?:number;scannedFiles?:number;scannedBytes?:number;items:Array<{id:string;kind:string;reason:string}> };
 
 export const editStructuredNote=(id:string,baseRevision:number,structuredNote:StructuredNote,exclusions:NoteExclusion[],questionIds:string[],humanQuestions:string[])=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/structured-note`,{method:'PATCH',body:JSON.stringify({baseRevision,structuredNote,exclusions,questionIds,humanQuestions})});
+export const reviewStructuredNote=(id:string,baseRevision:number,reviewContentDigest:string,warningsAcknowledged:boolean,historicalReportAcknowledged:boolean)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/structured-note`,{method:'POST',body:JSON.stringify({baseRevision,reviewContentDigest,warningsAcknowledged,historicalReportAcknowledged})});

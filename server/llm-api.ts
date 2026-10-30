@@ -185,6 +185,10 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     res.json(await draftPayload(await deps.drafts.editStructuredNote(current.id,req.body,raw.body)));
   }catch(error){next(error);}});
 
+  app.post('/api/drafts/:draftId/review/structured-note',async(req,res,next)=>{try{
+    const draft=await deps.drafts.get(req.params.draftId);if(!draft)throw new InputError('DRAFT_NOT_FOUND','没有草稿。',404);const raw=await deps.rawStore.get(draft.rawId);if(!raw)throw new InputError('RAW_MISSING','原文不存在。',409);
+    res.json(await draftPayload(await deps.drafts.reviewStructuredNote(draft.id,req.body,raw.body)));
+  }catch(error){next(error);}});
   app.post('/api/drafts/:draftId/review/questions',async(req,res,next)=>{try{
     const input=validateDraftQuestionReview(req.body);
     const draft=await deps.drafts.get(String(req.params.draftId));if(!draft)throw new InputError('DRAFT_NOT_FOUND','草稿不存在。',404);
@@ -216,7 +220,8 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
 
   app.post('/api/drafts/:draftId/confirm', async (req, res, next) => {
     try {
-      const input = validateConfirm(req.body);
+      const stored=await deps.drafts.get(req.params.draftId);
+      const input = validateConfirm(req.body,!!stored?.structuredNote);
       // Confirmation never calls the model: it only writes the frozen, user-confirmed snapshot.
       const result = await deps.wikiStore.withLock(() => deps.commits.confirm({
         draftId: req.params.draftId, baseRevision: input.baseRevision, selectedPageIds: input.selectedPageIds,

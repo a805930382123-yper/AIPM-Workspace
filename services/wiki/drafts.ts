@@ -2,7 +2,7 @@
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
 import { createHash, randomUUID } from 'node:crypto';
-import { validStructuredNote, validNoteReview, noteReviewContent, noteFactIds, type NoteReviewMetadata, type NoteExclusion, type StructuredNote } from './structured-note.ts';
+import { validStructuredNote, validNoteReview, validNoteApproval, noteCoverage, noteReviewContent, noteFactIds, type NoteApproval, type NoteReviewMetadata, type NoteExclusion, type StructuredNote } from './structured-note.ts';
 import {validDeepQuality, type DeepQualityReport} from '../llm/knowledge-deep.ts';
 import path from 'node:path';
 import type { LlmError } from '../llm/provider.ts';
@@ -51,7 +51,7 @@ export type DraftSource = {
 export type DraftRecord = {
   structuredNote?: StructuredNote;
   extractionMode?: 'deep'; qualityReport?: DeepQualityReport;
-  noteReview?: NoteReviewMetadata;
+  noteReview?: NoteReviewMetadata; noteApproval?:NoteApproval;
   humanReview?: HumanReview;
   /** Explicit user references; original source units and classifications stay immutable. */
   humanQuestionUnitIds?: string[];
@@ -112,11 +112,31 @@ export class DraftStore {
     return reviewContentDigest({draftId:record.id,rawId:record.rawId,rawSha256:record.rawSha256},candidateContent(record),record.humanReview);
   }
   async assertReviewed(record: DraftRecord, body: string): Promise<string> {
-    if(record.structuredNote!==undefined)throw new DraftError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
+
     assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));
     assertReviewSources(record.humanReview,[{id:record.rawId,body,bodySha256:record.rawSha256}]);
     await this.assertEvidenceStillValid(record,body);
-    const digest=this.contentDigest(record);assertHumanReviewed(record.humanReview,record.pages.map(p=>p.pageId),digest);return digest;
+    const digest=this.contentDigest(record);if(record.structuredNote)this.assertNoteReviewed(record,digest);assertHumanReviewed(record.humanReview,record.pages.map(p=>p.pageId),digest);return digest;
+  }
+  private assertNoteReviewed(record:DraftRecord,digest:string):void{
+    if(!validNoteApproval(record.noteApproval)||record.noteApproval.digest!==digest)throw new DraftError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','请先明确核对深度笔记、引用、覆盖与待确认问题。',409);
+    const review=record.humanReview!;
+    const facts=review.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)),questions=review.units.filter(u=>u.kind==='question').flatMap(u=>u.records.map(r=>r.id));
+    if(!validStructuredNote(record.structuredNote,new Set(facts))||noteCoverage(record.structuredNote,facts,questions,record.noteReview?.exclusions,record.noteReview?.questionIds).some(c=>c.status==='uncovered'))throw new DraftError('NOTE_COVERAGE_INCOMPLETE','笔记引用或覆盖未完成，请处理全部来源事实和问题。',409);
+
+  }
+  async reviewStructuredNote(id:string,input:unknown,body:string):Promise<DraftRecord>{
+    return this.queue.run(async()=>{
+      if(!input||typeof input!=='object'||Array.isArray(input))throw new DraftError('INVALID_NOTE_REVIEW','笔记审核格式无效。');const value=input as Record<string,unknown>;
+      if(Object.keys(value).sort().join(',')!=='baseRevision,historicalReportAcknowledged,reviewContentDigest,warningsAcknowledged'||value.warningsAcknowledged!==true||value.historicalReportAcknowledged!==true)throw new DraftError('INVALID_NOTE_REVIEW','请明确确认已看到确定性警告和模型报告状态，不能伪造审批字段。');
+      const record=await this.get(id);if(!record?.structuredNote)throw new DraftError('NOTE_NOT_FOUND','没有结构化笔记。',404);
+      if(record.status!=='pending_confirmation'||record.revision!==value.baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿已变化，请刷新后重新核对。',409);
+      assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));assertReviewSources(record.humanReview,[{id:record.rawId,body,bodySha256:record.rawSha256}]);await this.assertEvidenceStillValid(record,body);
+      const digest=this.contentDigest(record);if(value.reviewContentDigest!==digest)throw new DraftError('REVIEW_CONTENT_CHANGED','笔记内容摘要已变化。',409);
+      assertHumanReviewed(record.humanReview,record.pages.map(p=>p.pageId),digest);
+      const approval:NoteApproval={version:1,digest,at:new Date().toISOString(),warningsAcknowledged:true,historicalReportAcknowledged:true};this.assertNoteReviewed({...record,noteApproval:approval},digest);
+      const next={...record,noteApproval:approval,revision:record.revision+1,updatedAt:new Date().toISOString()};await writeJsonAtomic(this.fileFor(id),next);return next;
+    });
   }
   async prepareReviewedCommit(id:string,revision:number,digest:string,body:string,operationId:string,prepare:()=>Promise<void>):Promise<void> {
     await this.queue.run(async()=>{
@@ -217,13 +237,14 @@ export class DraftStore {
         const ordered=next.humanReview.units.filter(u=>marked.has(u.id)).map(u=>u.id);
         if(JSON.stringify(ordered)===JSON.stringify(next.humanQuestionUnitIds??[]))return current;
         if(ordered.length)next.humanQuestionUnitIds=ordered;else delete next.humanQuestionUnitIds;
-        next.humanReview.approvals=[];
+        next.humanReview.approvals=[];delete next.noteApproval;
         this.deriveReviewPages(next);
       }
       if(input.action==='move'){moveHumanUnits(next.humanReview,next.pages.map(p=>p.pageId),input.unitIds!,input.pageId!);this.deriveReviewPages(next);}
       for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId), next.humanReview);
       if((input.action==='questions'||(input.action==='move'&&next.humanQuestionUnitIds?.length))&&!next.source.bodyEditedByUser)next.source.body=renderSourceBody(next.source,next.rawMeta,next.pages.filter(p=>p.selected),next.pages.filter(p=>!p.selected));
       if(input.action==='page')confirmHumanPage(next.humanReview,next.pages.map(p=>p.pageId),{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(next));
+      if(next.structuredNote&&this.contentDigest(next)!==this.contentDigest(current))delete next.noteApproval;
       if(JSON.stringify(next)===JSON.stringify(current))return current;
       next.revision++;next.updatedAt=new Date().toISOString();this.assertRoundtripSize(next);await writeJsonAtomic(this.fileFor(id),next);return next;
     });
@@ -269,7 +290,7 @@ export class DraftStore {
       if(metadata.exclusions.some(e=>e.kind==='fact'?referenced.has(e.id):metadata.questionIds.includes(e.id)))throw new DraftError('NOTE_COVERAGE_INVALID','已引用项不能同时排除。');
       const previous=noteReviewContent(current.structuredNote,current.noteReview?.exclusions??[],current.noteReview?.questionIds??[],current.noteReview?.humanQuestions??[]);
       if(JSON.stringify(previous)===JSON.stringify(content))return current;
-      const next={...current,structuredNote:structuredClone(note),noteReview:metadata,revision:current.revision+1,updatedAt:new Date().toISOString(),humanReview:{...current.humanReview,approvals:[]}};
+      const next={...current,noteApproval:undefined,structuredNote:structuredClone(note),noteReview:metadata,revision:current.revision+1,updatedAt:new Date().toISOString(),humanReview:{...current.humanReview,approvals:[]}};
       await writeJsonAtomic(this.fileFor(id),next);return next;
     });
   }
@@ -294,7 +315,7 @@ export class DraftStore {
     outcome: ExtractOutcome; jobId: string; body: string; rules: DraftRules;
   }, deep?: {note: StructuredNote; qualityReport: DeepQualityReport}): Promise<DraftRecord> {
     return this.queue.run(async () => {
-      if([input,input.outcome].some(v=>['structuredNote','qualityReport','extractionMode','noteReview'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
+      if([input,input.outcome].some(v=>['structuredNote','qualityReport','extractionMode','noteReview','noteApproval'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
       const now = new Date().toISOString();
       const level = input.outcome.document.source_level ?? 'D';
       const pages: DraftPage[] = input.outcome.pages.map(page => ({ ...this.fromExtracted(page, input.rules), source_level: level }));
@@ -365,7 +386,7 @@ export class DraftStore {
   /** Applies a user review patch: whole-record validation, server-anchored evidence and ids. */
   async patch(id: string, patch: DraftPatch, context: { body: string; rules: DraftRules }): Promise<DraftRecord> {
     return this.queue.run(async () => {
-      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&['structuredNote','qualityReport','extractionMode','noteReview'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
+      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&['structuredNote','qualityReport','extractionMode','noteReview','noteApproval'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
       if (Object.keys(patch).some(k=>!['baseRevision','document','source','pages','deletePageIds','merge'].includes(k))) throw new DraftError('INVALID_PATCH','不能通过普通编辑修改审查目录或确认记录。');
       const current = await this.get(id);
       if (!current) throw new DraftError('NOT_FOUND', '没有找到这份草稿。', 404);
@@ -445,7 +466,7 @@ export class DraftStore {
         next.source.body = renderSourceBody(next.source, next.rawMeta, next.pages.filter(page => page.selected), next.pages.filter(page => !page.selected));
       }
       if (JSON.stringify(candidateContent(next)) === JSON.stringify(candidateContent(current))) return current;
-      if(next.humanReview)next.humanReview.approvals=[];
+      if(next.humanReview)next.humanReview.approvals=[];delete next.noteApproval;
       next.revision = current.revision + 1;
       next.updatedAt = new Date().toISOString();
       this.assertRoundtripSize(next);
@@ -469,7 +490,7 @@ export class DraftStore {
       if (input.decision === 'defer' || input.decision === 'update') page.selected = false;
       if (input.decision === 'create') page.selected = true;
       if(JSON.stringify(candidateContent(next))===JSON.stringify(candidateContent(current)))return current;
-      if(next.humanReview)next.humanReview.approvals=[];
+      if(next.humanReview)next.humanReview.approvals=[];delete next.noteApproval;
       next.revision++; next.updatedAt = new Date().toISOString();
       await writeJsonAtomic(this.fileFor(id), next);
       return next;
@@ -621,7 +642,7 @@ export class DraftStore {
     // Human review below rebuilds canonical aliases; preserve the first page's old namespace for its fields.
     merged.source_evidence=firstEvidence;
     next.pages = [...next.pages.filter(page => !ids.includes(page.pageId)), merged];
-    if(next.humanReview){next.humanReview.approvals=[];for(const unit of next.humanReview.units)if(ids.includes(next.humanReview.assignments[unit.id]??''))next.humanReview.assignments[unit.id]=merged.pageId;}
+    if(next.humanReview){next.humanReview.approvals=[];delete next.noteApproval;for(const unit of next.humanReview.units)if(ids.includes(next.humanReview.assignments[unit.id]??''))next.humanReview.assignments[unit.id]=merged.pageId;}
   }
 
   private validateTemplateReferences(page: DraftPage, rawId: string, previous?: DraftPage, review?: HumanReview): void {

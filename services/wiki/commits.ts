@@ -7,9 +7,12 @@ import path from 'node:path';
 import {isCommitManifest} from '../storage/record-validators.ts';
 import { SerialQueue, StorageError, scanJsonRecords, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
 import { derivedTakeaways, type DraftRecord, type DraftStore } from './drafts.ts';
-import { renderPageBody, renderSourceBody } from './render.ts';
+import { renderPageBody, renderSourceBody, renderConfirmedNote } from './render.ts';
 import { WikiError, WikiStore, type WikiRecord } from './store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
+import type {NoteApproval,StructuredNote,NoteReviewMetadata} from './structured-note.ts';
+import {escapeNoteText} from './structured-note.ts';
+import type {HumanReview} from './human-review.ts';
 import type { RawStateStore } from '../raw/state.ts';
 import { findDuplicateCandidates } from '../search/duplicates.ts';
 
@@ -18,6 +21,7 @@ export type CommitPhase = { name: CommitPhaseName; status: 'pending' | 'done' | 
 export type CommitStatus = 'prepared' | 'committing' | 'completed' | 'failed';
 
 export type CommitSnapshot = {
+  deepNote?:{note:StructuredNote;metadata?:NoteReviewMetadata;approval:NoteApproval;humanReview:HumanReview;reviewDigest:string};
   capturedRevision: number;
   document: { title: string; main_topic: string; summary: string };
   selectedPageIds: string[];
@@ -99,6 +103,13 @@ export class WikiCommitService {
   /** The Source body written on confirm: the user's own text, or the body re-rendered from the
    * actual selection (F04-05) using the real Raw metadata (F04-06). */
   private sourceBodyFor(draft: DraftRecord, selectedPages: DraftRecord['pages']): string {
+    if(draft.structuredNote){
+      const selectedIds=new Set(selectedPages.map(p=>p.pageId));
+      let body=draft.source.bodyEditedByUser?draft.source.body:renderSourceBody({...draft.source,key_takeaways:draft.source.key_takeaways},draft.rawMeta,selectedPages,draft.pages.filter(p=>!selectedIds.has(p.pageId)));
+      if(/^## 深度整理笔记\s*$/m.test(body))throw new CommitError('SOURCE_NOTE_SECTION_CONFLICT','Source摘要已含深度笔记标题，请先移除重复章节再审核。',409);
+      const created=new Set(selectedPages.map(p=>p.title));body=body.replace(/\[\[([^\]]+)\]\]/g,(link,title:string)=>created.has(title.trim())?link:escapeNoteText(link));
+      return body.trimEnd()+'\n\n'+renderConfirmedNote(draft);
+    }
     if (draft.source.bodyEditedByUser) return draft.source.body;
     // F04-05: every derived section (links, takeaways, 「本次未创建的建议」) follows the confirmed
     // selection, which the public confirm API receives independently of the draft's flags.
@@ -111,12 +122,12 @@ export class WikiCommitService {
   async confirm(input: { draftId: string; baseRevision: number; selectedPageIds: string[]; idempotencyKey: string; operationId: string; now: string }): Promise<{ manifest: CommitManifest; reused: boolean; sourceReused: boolean }> {
     let draft = await this.deps.drafts.get(input.draftId);
     if (!draft) throw new CommitError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
-    if(draft.structuredNote!==undefined)throw new CommitError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
+
     // F04-04: the same business rule applies to the first confirm and to a retry — every incoming
     // page id must exist before anything is compared. A different request is never silently
     // reduced to the stored one and then reported as a successful reuse.
     const requested = [...new Set(input.selectedPageIds)];
-    if (!requested.length) throw new CommitError('NO_SELECTION', '至少选择一条知识建议才能确认写入。', 400);
+    if (!requested.length&&!draft.structuredNote) throw new CommitError('NO_SELECTION', '至少选择一条知识建议才能确认写入。', 400);
     for (const id of requested) {
       if (!draft.pages.some(page => page.pageId === id)) {
         throw new CommitError('UNKNOWN_PAGE', `选择中包含草稿里不存在的建议 ${id}。`, 400, { unknownPageId: id, knownPageIds: draft.pages.map(page => page.pageId) });
@@ -148,7 +159,8 @@ export class WikiCommitService {
         ? this.payloadDigest(draft, candidatePages, existing.snapshot.reuseSourceTitle ?? draft.source.title, existing.snapshot.reuseSourceId)
         : undefined;
       const samePayload = Boolean(existing.payloadDigest) && candidateDigest === existing.payloadDigest
-        && existing.snapshot.selectedPageIds.length === requested.length;
+        && existing.snapshot.selectedPageIds.length === requested.length
+        && (!existing.snapshot.deepNote||existing.snapshot.deepNote.reviewDigest===this.deps.drafts.contentDigest(draft));
       if (!samePayload) {
         throw new CommitError(
           existing.idempotencyKey === input.idempotencyKey ? 'IDEMPOTENCY_KEY_MISMATCH' : 'CONFIRM_PAYLOAD_CHANGED',
@@ -171,6 +183,7 @@ export class WikiCommitService {
     if (!raw) throw new CommitError('RAW_MISSING', '对应的原始资料不存在（可能已被删除），不能确认写入。', 409);
     if (raw.bodySha256 !== draft.rawSha256) throw new CommitError('RAW_CHANGED', '原始正文的校验值与整理时不一致，已停止写入以避免产生坏来源。', 409);
     const humanReviewDigest=await this.deps.drafts.assertReviewed(draft,raw.body);
+    if(draft.structuredNote&&JSON.stringify(draft.pages.filter(p=>p.selected).map(p=>p.pageId).sort())!==JSON.stringify([...requested].sort()))throw new CommitError('REVIEW_SELECTION_CHANGED','请先保存当前选卡，再重新审核笔记。',409);
 
     const selectedIds = requested;
     const selectedPages = draft.pages.filter(page => selectedIds.includes(page.pageId));
@@ -243,6 +256,7 @@ export class WikiCommitService {
       for (const alias of page.aliases) if (!byTitle.has(normalize(alias))) byTitle.set(normalize(alias), page);
     }
     const boundSources = existing.filter(page => page.type === 'source' && page.sources.length === 1 && page.sources[0] === draft.rawId);
+    if(draft.structuredNote&&boundSources.length)throw new CommitError('DEEP_SOURCE_EXISTS','同一Raw已有Source，本轮不能覆盖或丢弃新笔记，请保留草稿处理。',409);
     if (boundSources.length > 1) {
       throw new CommitError('SOURCE_AMBIGUOUS', `这条 Raw 已有 ${boundSources.length} 个 Source 页面，归属不明；本批不自动合并或更新旧 Source，请人工处理后再确认。`, 409, { sources: boundSources.map(page => ({ id: page.id, title: page.title })) });
     }
@@ -303,6 +317,7 @@ export class WikiCommitService {
       digests[record.id] = sha256(this.deps.wikiStore.pageContent(record));
     }
     return {
+      ...(draft.structuredNote?{deepNote:{note:structuredClone(draft.structuredNote),...(draft.noteReview?{metadata:structuredClone(draft.noteReview)}:{}),approval:structuredClone(draft.noteApproval!),humanReview:structuredClone(draft.humanReview!),reviewDigest:this.deps.drafts.contentDigest(draft)}}:{}),
       capturedRevision: draft.revision, document: draft.document, selectedPageIds: selectedPages.map(page => page.pageId),
       ...(sourceRecord ? { sourceRecord } : {}), ...(reuseSourceId ? { reuseSourceId } : {}),
       ...(reuseSourceTitle ? { reuseSourceTitle } : {}), pageRecords, digests, warnings,
@@ -314,12 +329,15 @@ export class WikiCommitService {
     return this.queue.run(async () => {
       let manifest = { ...input };
       const currentDraft=await this.deps.drafts.get(input.draftId);
-      if(currentDraft?.structuredNote!==undefined)throw new CommitError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
+      if((currentDraft?.structuredNote||input.snapshot.sourceRecord?.body.includes('## 深度整理笔记\n'))&&!input.snapshot.deepNote)throw new CommitError('NOTE_REVIEW_REQUIRED','旧事务没有冻结的笔记审批，不能恢复写入。',409);
       if(input.supersededBy)throw new CommitError('HUMAN_REVIEW_SUPERSEDED','旧事务已由重新审查事务替代。',409);
       const raw=await this.deps.rawStore.get(input.rawId);assertRawNotMeeting(raw);
       if(!raw||raw.bodySha256!==input.rawSha256||sha256(raw.body)!==input.rawSha256)throw new CommitError('RAW_CHANGED','提交来源已变化。',409);
       const actual=await this.verifiedTargets(input);
-      if(!input.humanReviewDigest){
+      if(input.snapshot.deepNote){
+        if(input.snapshot.deepNote.reviewDigest!==input.humanReviewDigest||input.snapshot.deepNote.approval.digest!==input.humanReviewDigest)throw new CommitError('NOTE_REVIEW_REQUIRED','冻结的笔记审批不匹配。',409);
+        if(!actual.length&&(!currentDraft||await this.deps.drafts.assertReviewed(currentDraft,raw.body)!==input.humanReviewDigest))throw new CommitError('REVIEW_CONTENT_CHANGED','零写入事务需当前有效的全部审核。',409);
+      }else if(!input.humanReviewDigest){
         if(!actual.length){
           manifest.awaitingHumanReview=true;await writeJsonAtomic(this.fileFor(manifest.operationId),manifest);
           await this.deps.drafts.resetToPending(input.draftId,'旧零写入事务需逐页人工审查');

@@ -1,7 +1,9 @@
 // B04: rendering of review data into the formal Markdown that will be written on confirm.
 // Facts, organized notes, inferences, questions and evidence keep their own sections so the
 // boundary between "原文支持" and "模型推断" survives into the正式文件.
-import type { DraftPage, DraftRawMeta, DraftSource } from './drafts.ts';
+import type { DraftPage, DraftRawMeta, DraftSource, DraftRecord } from './drafts.ts';
+import {renderStructuredNote,escapeNoteText} from './structured-note.ts';
+import {inspectEditedNote} from '../llm/knowledge-deep.ts';
 import { hasTemplateFields, templateSections, renderMergedTemplateFields } from './template-fields.ts';
 
 const quoted = (value: string, limit = 90) => value.length > limit ? `${value.slice(0, limit)}…` : value;
@@ -10,6 +12,17 @@ const sourceTypeLabels: Record<string, string> = {
   wechat: '微信公众号', article: '网页文章', report: '行业报告', company: '公司资料',
   customer: '客户资料', meeting: '会议纪要', note: '个人笔记', other: '其他',
 };
+export function renderConfirmedNote(draft:DraftRecord):string{
+  const lines=['## 深度整理笔记','','> '+(draft.noteReview?'人工修改，已人工核对':'深度笔记，已人工核对'),'',renderStructuredNote(draft.structuredNote!,true)];
+  lines.push('',draft.noteReview?'> 历史模型报告，编辑后未复核；本次人工已明确查看报告状态与确定性警告。':'> 生成时模型报告仅供参考；本次人工已明确查看报告状态与确定性警告。');
+  for(const warning of inspectEditedNote(draft.structuredNote!,new Map(draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>[r.id,r.text] as const)))))lines.push(`- 确定性警告（人工已知悉）：${escapeNoteText(warning)}`);
+  for(const finding of draft.qualityReport?.findings??[])lines.push(`- 模型历史发现（${finding.severity}）：${escapeNoteText(finding.reason)}`);
+  if(draft.noteReview?.exclusions.length){lines.push('','### 明确排除与理由','');for(const e of draft.noteReview.exclusions)lines.push(`- ${e.kind==='fact'?'事实':'原文问题'} ${escapeNoteText(e.id)}：${escapeNoteText(e.reason)}`);}
+  lines.push('','### 待确认问题','');
+  for(const id of draft.noteReview?.questionIds??[]){const r=draft.humanReview!.units.filter(u=>u.kind==='question').flatMap(u=>u.records).find(r=>r.id===id)!;lines.push(`- 原文明示问题 ${escapeNoteText(id)}：${escapeNoteText(r.text)}`);}
+  for(const q of draft.noteReview?.humanQuestions??[])lines.push(`- 人工补充待确认：${escapeNoteText(q)}`);
+  return lines.join('\n')+'\n';
+}
 
 export function renderPageBody(page: DraftPage, context: { sourceTitle: string; rawId: string; createdTitles: Set<string> }): string {
   const active = hasTemplateFields(page.templateFields);
