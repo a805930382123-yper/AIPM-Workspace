@@ -2,6 +2,7 @@
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
 import { createHash, randomUUID } from 'node:crypto';
+import type { StructuredNote } from './structured-note.ts';
 import path from 'node:path';
 import type { LlmError } from '../llm/provider.ts';
 import { locateEvidenceInBody } from '../llm/evidence.ts';
@@ -47,6 +48,7 @@ export type DraftSource = {
   reuseWikiId?: string; editedByUser?: boolean; bodyEditedByUser?: boolean;
 };
 export type DraftRecord = {
+  structuredNote?: StructuredNote;
   humanReview?: HumanReview;
   /** Explicit user references; original source units and classifications stay immutable. */
   humanQuestionUnitIds?: string[];
@@ -107,6 +109,7 @@ export class DraftStore {
     return reviewContentDigest({draftId:record.id,rawId:record.rawId,rawSha256:record.rawSha256},candidateContent(record),record.humanReview);
   }
   async assertReviewed(record: DraftRecord, body: string): Promise<string> {
+    if(record.structuredNote!==undefined)throw new DraftError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
     assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));
     assertReviewSources(record.humanReview,[{id:record.rawId,body,bodySha256:record.rawSha256}]);
     await this.assertEvidenceStillValid(record,body);
@@ -264,6 +267,7 @@ export class DraftStore {
     outcome: ExtractOutcome; jobId: string; body: string; rules: DraftRules;
   }): Promise<DraftRecord> {
     return this.queue.run(async () => {
+      if(Object.hasOwn(input,'structuredNote')||Object.hasOwn(input.outcome,'structuredNote'))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
       const now = new Date().toISOString();
       const level = input.outcome.document.source_level ?? 'D';
       const pages: DraftPage[] = input.outcome.pages.map(page => ({ ...this.fromExtracted(page, input.rules), source_level: level }));
@@ -329,6 +333,7 @@ export class DraftStore {
   /** Applies a user review patch: whole-record validation, server-anchored evidence and ids. */
   async patch(id: string, patch: DraftPatch, context: { body: string; rules: DraftRules }): Promise<DraftRecord> {
     return this.queue.run(async () => {
+      if([patch,patch.document,patch.source,...(patch.pages??[])].some(v=>v&&Object.hasOwn(v,'structuredNote')))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放编辑入口。');
       if (Object.keys(patch).some(k=>!['baseRevision','document','source','pages','deletePageIds','merge'].includes(k))) throw new DraftError('INVALID_PATCH','不能通过普通编辑修改审查目录或确认记录。');
       const current = await this.get(id);
       if (!current) throw new DraftError('NOT_FOUND', '没有找到这份草稿。', 404);

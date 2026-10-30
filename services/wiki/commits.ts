@@ -111,6 +111,7 @@ export class WikiCommitService {
   async confirm(input: { draftId: string; baseRevision: number; selectedPageIds: string[]; idempotencyKey: string; operationId: string; now: string }): Promise<{ manifest: CommitManifest; reused: boolean; sourceReused: boolean }> {
     let draft = await this.deps.drafts.get(input.draftId);
     if (!draft) throw new CommitError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
+    if(draft.structuredNote!==undefined)throw new CommitError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
     // F04-04: the same business rule applies to the first confirm and to a retry — every incoming
     // page id must exist before anything is compared. A different request is never silently
     // reduced to the stored one and then reported as a successful reuse.
@@ -312,6 +313,8 @@ export class WikiCommitService {
   private async execute(input: CommitManifest): Promise<CommitManifest> {
     return this.queue.run(async () => {
       let manifest = { ...input };
+      const currentDraft=await this.deps.drafts.get(input.draftId);
+      if(currentDraft?.structuredNote!==undefined)throw new CommitError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
       if(input.supersededBy)throw new CommitError('HUMAN_REVIEW_SUPERSEDED','旧事务已由重新审查事务替代。',409);
       const raw=await this.deps.rawStore.get(input.rawId);assertRawNotMeeting(raw);
       if(!raw||raw.bodySha256!==input.rawSha256||sha256(raw.body)!==input.rawSha256)throw new CommitError('RAW_CHANGED','提交来源已变化。',409);

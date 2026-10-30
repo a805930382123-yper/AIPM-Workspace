@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "orientation": "虚构青禾饮品：理解目标门店、在售门店与铺货率的关系。数值均为隔离演示。",
+  "sections": [{
+    "id": "distribution", "title": "铺货率与渠道路径", "question": "100家目标门店中20家在售，应如何理解20%？",
+    "blocks": [
+      {"type":"paragraph","role":"source_supported","factIds":["fact-1"],"text":"虚构区域有100家目标门店，在售20家；门店数铺货率为20%。"},
+      {"type":"list","items":[
+        {"role":"reorganized","factIds":["fact-1"],"text":"先明确门店范围，再看在售数量，保留100家、20家、20%的原始口径。"},
+        {"role":"supplementary","factIds":[],"text":"SKU可作为理解商品规格的补充术语，本文原文没有提供SKU清单。"}
+      ]},
+      {"type":"table","title":"门店口径逐行对照","headings":["指标名称","数值与单位","口径及业务边界"],"rows":[
+        {"role":"source_supported","factIds":["fact-1"],"cells":["目标门店","100家","虚构青禾饮品在本区域定义的目标门店总数；这是本段的统计范围，不能与其他区域混用，也不能当作已成交客户数或商品销量。"]},
+        {"role":"reorganized","factIds":["fact-1"],"cells":["在售门店 / 铺货率","20家 / 20%","仅整理原文的数量与比率，保持范围、时间和单位，不自行推算销量或收入。"]}
+      ]},
+      {"type":"path_diagram","title":"阅读与判断路径","nodes":[
+        {"id":"scope","text":"目标范围100家","role":"source_supported","factIds":["fact-1"]},
+        {"id":"active","text":"在售20家","role":"reorganized","factIds":["fact-1"]},
+        {"id":"owner","text":"异常审批负责人","role":"needs_verification","factIds":[],"reason":"原文没有说明负责人，须向业务方确认。"}
+      ],"edges":[
+        {"from":"scope","to":"active","text":"按同一门店范围对照数量","role":"reorganized","factIds":["fact-1"]},
+        {"from":"active","to":"owner","text":"后续问题处理路径建议","role":"supplementary","factIds":[]}
+      ]},
+      {"type":"callout","title":"保持未知状态","text":"不能把未来AI分析建议写成已经上线的经营事实。","role":"needs_verification","factIds":[],"reason":"隔离演示没有上线记录或收益证据。"}
+    ]
+  }]
+}

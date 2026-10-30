@@ -1,4 +1,5 @@
 import {validHumanReview} from '../wiki/human-review.ts';
+import {validStructuredNote} from '../wiki/structured-note.ts';
 import {validTemplateFields, validInputTemplateFields,validMergedTemplateFields,mergedFieldsMatchReview} from '../wiki/template-fields.ts';
 const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const str=(v:unknown):v is string=>typeof v==='string';
@@ -9,6 +10,9 @@ const digest=(v:unknown)=>str(v)&&/^[0-9a-f]{64}$/i.test(v);
 export function isExtractionDraft(v:unknown,id?:string):boolean {
  if(obj(v)&&obj(v.document)&&v.document.source_level!==undefined&&(!str(v.document.source_level)||!['A','B','C','D'].includes(v.document.source_level)))return false;
  if(obj(v)&&v.humanReview!==undefined&&!validHumanReview(v.humanReview))return false;
+ if(obj(v)&&Object.hasOwn(v,'structuredNote')){
+  if(!validHumanReview(v.humanReview)||!validStructuredNote(v.structuredNote,new Set(v.humanReview.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)))))return false;
+ }
  if(obj(v)&&v.humanQuestionUnitIds!==undefined){
   if(!strings(v.humanQuestionUnitIds)||!validHumanReview(v.humanReview)||new Set(v.humanQuestionUnitIds).size!==v.humanQuestionUnitIds.length)return false;
   const review=v.humanReview;if(v.humanQuestionUnitIds.some(id=>!review.units.some(u=>u.id===id&&u.kind==='fact')))return false;

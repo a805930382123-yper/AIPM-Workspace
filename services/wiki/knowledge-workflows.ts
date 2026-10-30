@@ -132,6 +132,7 @@ export class KnowledgeWorkflowStore {
   }
 
   async createUpdate(args: { draftId: string; pageId: string; baseRevision: number; targetWikiId: string; draft: any; raw: any; target: WikiRecord; provider: LlmProvider }) {
+    if(args.draft.structuredNote!==undefined)throw new WikiError('STRUCTURED_NOTE_CONFIRM_UNAVAILABLE','结构化笔记尚未开放确认',409);
     assertRawNotMeeting(args.raw);
     for (const id of args.target.sources) assertRawNotMeeting(await this.raws.get(id));
     if (args.draft.id !== args.draftId || args.draft.rawId !== args.raw?.id || args.target.id !== args.targetWikiId) throw new WikiError('EVIDENCE_INVALID', '更新来源、草稿或目标绑定不一致。', 409);
