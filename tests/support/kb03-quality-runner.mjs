@@ -15,7 +15,10 @@ import { containsKnownSecret } from '../../services/llm/config.ts';
 import { deepReply } from './kb03-deep-fixture.ts';
 
 export const sha = value => createHash('sha256').update(value).digest('hex');
-export const BUDGET_POLICY = Object.freeze({ total:20, sampleCaps:Object.freeze({fixed:12,counter:7}), minimumCalls:5 });
+export const BUDGET_POLICY = Object.freeze({ total:30, sampleCaps:Object.freeze({fixed:20,counter:15}), minimumCalls:5 });
+export const R10_TOOL='KB03-R5-20261030-v4';
+export const R10_SESSION_FILE='r10-session.json',R10_STOP_FILE='r10-stop.json';
+export const R8_ROOT=path.resolve('C:/Users/80593/AppData/Local/Temp/kb03-r8-real-gxZA0S');
 export const LEGACY_LEDGER_ROOT=path.resolve('C:/Users/DAVID~1.CHE/AppData/Local/Temp/KB03-R5-20261030-f66b274a66d2-real-ledger');
 // The authorized local ledger is independent of TEMP, repo and session.
 export const REAL_LEDGER_ROOT=path.resolve('C:/Users/80593/AppData/Local/AIPM-Workspace/acceptance/KB03-R8-20261030/ledger');
@@ -23,7 +26,7 @@ export const HISTORY_USAGE=Object.freeze({total:4,sampleCounts:Object.freeze({fi
 export async function assertOfflineTarget(root) {
   const inside=(base,target)=>{const relative=path.relative(base,target);return !relative||(!relative.startsWith('..')&&!path.isAbsolute(relative));};
   const physical=async p=>fs.realpath(p).catch(e=>{if(e.code==='ENOENT')return path.resolve(p);throw e;});
-  for(const protectedRoot of [REAL_LEDGER_ROOT,LEGACY_LEDGER_ROOT])if(inside(protectedRoot,path.resolve(root))||inside(await physical(protectedRoot),await physical(root)))throw Error('Offline preparation/fake must never write the real ledger');
+  for(const protectedRoot of [REAL_LEDGER_ROOT,LEGACY_LEDGER_ROOT,R8_ROOT])if(inside(protectedRoot,path.resolve(root))||inside(await physical(protectedRoot),await physical(root)))throw Error('Offline preparation/fake must never write the real ledger or R8 source root');
 }
 export const COUNTER = '以下均为虚构测试数据，不代表真实企业。甲区域2025年目标门店100家，其中在售20家，门店铺货率20%；仅统计直营渠道，不含线上。乙区域2024年目标门店120家，其中在售36家，门店铺货率30%；仅统计经销渠道。金额预算为100万元，不是门店数量。异常审批负责人未知。AI分析只是后续建议，尚未上线，也没有收益验证。原文提到示意图，但未提供图片。';
 export async function durable(file, value) {
@@ -34,6 +37,27 @@ export async function durable(file, value) {
 }
 export async function json(file) { return JSON.parse(await fs.readFile(file, 'utf8')); }
 export async function exists(file) { return fs.stat(file).then(() => true, e => { if (e.code === 'ENOENT') return false; throw e; }); }
+export async function treeHashes(root){
+  const files={};
+  async function walk(relative){for(const item of(await fs.readdir(path.join(root,relative),{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){const file=path.posix.join(relative,item.name);if(item.isDirectory())await walk(file);else if(item.isFile())files[file]=sha(await fs.readFile(path.join(root,file)));}}
+  await walk('');return files;
+}
+// Only independent prepare executes this against the real ledger; fake uses isolated copies.
+export async function startR10Session({root,ledger,sourceRoot,freeze,session}){
+  if(await exists(path.join(ledger,R10_SESSION_FILE)))throw Error('R10 session already exists; no new root/session or reseed');
+  const before=await readLedger(ledger);
+  if(JSON.stringify(before.counts)!==JSON.stringify({total:14,fixed:9,counter:5})||!before.history||before.rows.length!==10)throw Error('R10 requires the unchanged R8 history4 plus ten original receipts');
+  const ledgerFiles=await treeHashes(ledger);
+  if(Object.keys(ledgerFiles).length!==31)throw Error('Expected all original 31 history/pending/request/result files');
+  const round={tool:R10_TOOL,session,root,freeze,ledgerRoot:ledger,policy:BUDGET_POLICY,priorCounts:before.counts,firstSequence:15,historySha:ledgerFiles['history-summary.json'],sourceRoot,sourceFiles:await treeHashes(sourceRoot),ledgerFiles};
+  await durable(path.join(ledger,R10_SESSION_FILE),round);return round;
+}
+export async function stopR10Round(ledger,{code,reason}){
+  const round=await json(path.join(ledger,R10_SESSION_FILE)),file=path.join(ledger,R10_STOP_FILE);
+  if(await exists(file))return json(file);
+  const stopped={tool:R10_TOOL,session:round.session,root:round.root,code,reason,at:new Date().toISOString()};
+  await durable(file,stopped);return stopped;
+}
 export function temporary(root) {
   const relative = path.relative(os.tmpdir(), path.resolve(root));
   if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) throw Error('Only a child of system TEMP is allowed');
@@ -49,21 +73,37 @@ export async function readLedger(root) {
   const rows = await Promise.all(names.map(n => json(path.join(root, n))));
   const offset=history?history.total:0;
   if (rows.length+offset > BUDGET_POLICY.total || rows.some((r, i) => names[i]!==`attempt-${String(i+1+offset).padStart(2,'0')}.json`||r.sequence !== i + 1 + offset || !['fixed', 'counter'].includes(r.sample) || r.state !== 'pending')) throw Error('Ledger is inconsistent; retain it for manual reconciliation');
-  if(history&&rows.some(r=>r.tool!==history.tool||r.session!==history.session||r.freeze!==history.freeze||r.root!==path.join(history.root,'real',r.sample)))throw Error('New receipts disagree with historical summary/session/root binding');
+  const sessionFile=path.join(root,R10_SESSION_FILE),round=await exists(sessionFile)?await json(sessionFile):undefined;
+  if(round){
+    if(!history||round.tool!==R10_TOOL||typeof round.session!=='string'||!round.session||typeof round.freeze!=='string'||!round.freeze||typeof round.root!=='string'||!path.isAbsolute(round.root)||round.ledgerRoot!==path.resolve(root)||(path.resolve(root)===REAL_LEDGER_ROOT&&round.sourceRoot!==R8_ROOT)||round.firstSequence!==15||JSON.stringify(round.policy)!==JSON.stringify(BUDGET_POLICY)||JSON.stringify(round.priorCounts)!==JSON.stringify({total:14,fixed:9,counter:5}))throw Error('R10 session/policy/root binding mismatch');
+    const expected=['history-summary.json',...Array.from({length:10},(_,i)=>String(i+5).padStart(2,'0')).flatMap(n=>[`attempt-${n}.json`,`attempt-${n}.request.json`,`attempt-${n}.result.json`])].sort();
+    const oldNames=(await fs.readdir(root)).filter(n=>n==='history-summary.json'||/^attempt-(?:0[5-9]|1[0-4])(?:\.|$)/.test(n)).sort();
+    if(JSON.stringify(Object.keys(round.ledgerFiles).sort())!==JSON.stringify(expected)||JSON.stringify(oldNames)!==JSON.stringify(expected)||round.historySha!==sha(await fs.readFile(historyFile)))throw Error('R10 original 31-file/history baseline mismatch');
+    for(const [file,digest]of Object.entries(round.ledgerFiles))if(sha(await fs.readFile(path.join(root,file)))!==digest)throw Error('R10 original receipt changed');
+    if(JSON.stringify(await treeHashes(round.sourceRoot))!==JSON.stringify(round.sourceFiles))throw Error('R8 original preparation tree changed');
+  }
+  if(history&&rows.some(r=>{const owner=r.sequence<15?history:round;return !owner||r.tool!==owner.tool||r.session!==owner.session||r.freeze!==owner.freeze||r.root!==path.join(owner.root,'real',r.sample);}))throw Error('New receipts disagree with historical summary/session/root binding');
+  if(round&&(rows.filter(r=>r.sequence<15).length!==10||rows.slice(0,10).filter(r=>r.sample==='fixed').length!==5))throw Error('R10 original cumulative14/fixed9/counter5 changed');
+  const stopFile=path.join(root,R10_STOP_FILE),stopped=await exists(stopFile)?await json(stopFile):undefined;
+  if(stopped&&(!round||stopped.tool!==R10_TOOL||stopped.session!==round.session||stopped.root!==round.root))throw Error('R10 stop/session binding mismatch');
   const counts={total:rows.length+offset,fixed:rows.filter(r=>r.sample==='fixed').length+(history?.sampleCounts.fixed??0),counter:rows.filter(r=>r.sample==='counter').length+(history?.sampleCounts.counter??0)};
-  return {rows,counts,history};
+  return {rows,counts,history,round,stopped};
 }
 export async function ledgerEntries(root) {return (await readLedger(root)).rows;}
 export function checkBudget(counts,sample,remaining,otherRemaining) {
   if(!Object.hasOwn(BUDGET_POLICY.sampleCaps,sample))throw Error('Unknown sample');
-  if(BUDGET_POLICY.total-counts.total<remaining+otherRemaining)throw Error('20-call budget cannot complete both frozen samples');
+  if(BUDGET_POLICY.total-counts.total<remaining+otherRemaining)throw Error('30-call budget cannot complete both frozen samples');
   const other=sample==='fixed'?'counter':'fixed';
   if(BUDGET_POLICY.sampleCaps[sample]-counts[sample]<remaining)throw Error('Current sample cap cannot complete its remaining stages');
   if(BUDGET_POLICY.sampleCaps[other]-counts[other]<otherRemaining)throw Error('Other sample cap cannot complete its remaining stages');
 }
-export function checkLedgerBinding(rows,binding,history) {
+export function checkLedgerBinding({rows,history,round,stopped},binding) {
   if(!binding.tool)return;
   if(binding.tool==='KB03-R5-20261030-v3'&&(!history||history.tool!==binding.tool||history.session!==binding.session||history.freeze!==binding.freeze||path.join(history.root,'real',binding.sample)!==binding.root))throw Error('Historical summary/session/root binding mismatch; no fresh-root reset');
+  if(binding.tool===R10_TOOL){
+    if(!round||round.session!==binding.session||round.freeze!==binding.freeze||path.join(round.root,'real',binding.sample)!==binding.root)throw Error('R10 session/root binding mismatch; no fresh-root reset');
+    if(stopped)throw Error('R10 round stopped after failure; no retry, continue or counter');
+  }
   const owned=rows.filter(r=>r.tool===binding.tool);
   if(owned.some(r=>r.session!==binding.session||r.freeze!==binding.freeze))throw Error('Sample already belongs to another preparation; no fresh-root reset');
   if(owned.some(r=>r.sample===binding.sample&&(r.rawId!==binding.rawId||r.jobId!==binding.jobId)))throw Error('Sample job identity changed; no fresh job or root reset');
@@ -73,10 +113,10 @@ export async function reserve(root, binding, remaining, otherRemaining) {
   if(path.resolve(root)!==REAL_LEDGER_ROOT)await fs.mkdir(root, { recursive: true });
   const lock = await fs.open(path.join(root, 'reservation.lock'), 'wx');
   try {
-    const {rows,counts,history} = await readLedger(root);
-    checkBudget(counts,binding.sample,remaining,otherRemaining);
-    checkLedgerBinding(rows,binding,history);
-    const row = { ...binding, sequence: counts.total + 1, state: 'pending', at: new Date().toISOString() };
+    const state = await readLedger(root);
+    checkBudget(state.counts,binding.sample,remaining,otherRemaining);
+    checkLedgerBinding(state,binding);
+    const row = { ...binding, sequence: state.counts.total + 1, state: 'pending', at: new Date().toISOString() };
     await durable(path.join(root, `attempt-${String(row.sequence).padStart(2, '0')}.json`), row);
     return row;
   } finally { await lock.close(); await fs.unlink(path.join(root, 'reservation.lock')); }
@@ -100,11 +140,12 @@ export async function caseState(root) {
   return { state, cp, job, remaining: cp ? deepRemaining(cp) : 5 };
 }
 export async function executeCase({ root, rawId, provider, ledger, binding, otherRemaining, continueExplicit = false }) {
+  if(binding.tool===R10_TOOL&&continueExplicit)throw Error('R10 forbids --continue or retry of this round');
   const before = await caseState(root);
-  if (before.job && before.job.status !== 'completed' && !continueExplicit) throw Error('Existing failed/interrupted case requires --continue; pending calls may already have reached Provider');
-  const {rows,counts,history} = await readLedger(ledger);
-  checkBudget(counts,binding.sample,before.remaining,otherRemaining);
-  checkLedgerBinding(rows,{...binding,root,rawId,jobId:before.job?.id},history);
+  if (before.job && before.job.status !== 'completed' && !continueExplicit) throw Error(binding.tool===R10_TOOL?'R10 failed/interrupted job cannot reenter or retry':'Existing failed/interrupted case requires --continue; pending calls may already have reached Provider');
+  const ledgerState = await readLedger(ledger);
+  checkBudget(ledgerState.counts,binding.sample,before.remaining,otherRemaining);
+  checkLedgerBinding(ledgerState,{...binding,root,rawId,jobId:before.job?.id});
   const raw = await before.state.rawStore.get(rawId);
   if (!raw || sha(raw.body) !== binding.sampleSha) throw Error('Raw SHA mismatch');
   const original = provider.complete.bind(provider);
@@ -136,6 +177,7 @@ export async function executeCase({ root, rawId, provider, ledger, binding, othe
   const view = await runner.readJob(started.job.id), afterRaw = await before.state.rawStore.get(rawId);
   if (afterRaw.bodySha256 !== binding.sampleSha || sha(afterRaw.body) !== binding.sampleSha) throw Error('Raw changed');
   const draft = view.job?.draftId ? await before.state.drafts.get(view.job.draftId) : undefined;
+  if(binding.tool===R10_TOOL&&view.job?.status!=='completed')await stopR10Round(ledger,{code:view.job?.error?.code??'R10_EXECUTION_FAILED',reason:sanitizeProviderText(view.job?.error?.message??'R10 execution did not complete',provider.secrets)});
   const after=await readLedger(ledger);
   return { job: view.job, execution: view.execution, recovery: view.recovery, draft, ownCalls, totalCalls: after.counts.total, counts:after.counts, historicalCalls:after.history?.total??0 };
 }
@@ -157,6 +199,7 @@ export function fakeWireReply(wire) {
   return { stage, value };
 }
 export async function fakeCase(root, body, { fault, continueExplicit = false, ledger = path.join(root, 'ledger'), sample='fixed', otherRemaining=0, session='fake', freeze='fake', tool } = {}) {
+  await assertOfflineTarget(root);
   await assertOfflineTarget(ledger);
   temporary(root); const state = await stores(root);
   let raw = (await state.rawStore.list())[0];
