@@ -113,32 +113,26 @@ function RawDetail({ item, state, job, busy, error, onStartAi, onReimport, onDel
     } catch (error) { if (generation === recoveryGeneration.current) setSavingError(error instanceof Error ? error.message : '保存状态失败。'); }
     finally { if (generation === recoveryGeneration.current) setSavingState(false); }
   };
-  const progressText = status === 'processing' && activeJob
-    ? `${activeJob.mode==='deep'?({extracting:'提取',planning:'知识页规划',outline:'大纲',writing:'写作',quality:'质量检查',ready:'完成'} as Record<string,string>)[activeJob.checkpoint?.deepStage??activeJob.stage]??jobStageLabels[activeJob.stage]:jobStageLabels[activeJob.stage]} · 已验证 ${activeJob.checkpoint?.validatedChunks ?? activeJob.progress.chunksDone}/${activeJob.checkpoint?.totalChunks ?? (activeJob.progress.chunksTotal || '?')} 段 · ${activeJob.checkpoint ? `累计 ${activeJob.checkpoint.attempts} 次调用，复用 ${activeJob.checkpoint.reusedChunks} 段` : `已有 ${activeJob.progress.pagesFound} 条建议`}`
-    : '';
+  const stage = activeJob ? (activeJob.mode === 'deep' ? ({extracting:'提取',planning:'知识页规划',outline:'大纲',writing:'写作',quality:'质量检查',ready:'草稿阶段完成'} as Record<string,string>)[activeJob.checkpoint?.deepStage ?? activeJob.stage] ?? jobStageLabels[activeJob.stage] : jobStageLabels[activeJob.stage]) : rawStatusLabels[status];
+  const recoveryStatus = storageBlocked ? (activeJob?.execution === 'running' ? '正在停止，状态保存失败' : '已停止，状态保存失败') : null;
   return <article className="raw-detail">
-    <div className="detail-actions">
-      <span className={`status ai-status ${status}`}><i />{rawStatusLabels[status]}</span>
-      <span className="detail-type">{sourceLabels[item.sourceType]}</span>{meetingOnly && <span className="detail-type meeting-local-badge">本机专用</span>}
-      <div className="action-group">
-        {!meetingOnly && (status === 'unprocessed' || status === 'failed' || status === 'generated') && <button className="text-button ai-action" disabled={busy || storageBlocked} onClick={() => onStartAi(false,false,status==='failed'&&activeJob?(activeJob.mode??'standard'):mode)}>{busy ? '正在启动…' : status === 'failed' && activeJob?.pipelineVersion ? '显式继续提取' : status === 'failed' ? '重试 AI 整理' : 'AI 整理知识'}</button>}
-        {!meetingOnly && status === 'processing' && activeJob && activeJob.execution !== 'settled' && !storageBlocked && <button className="text-button" onClick={async () => { await api(`/api/extraction-jobs/${encodeURIComponent(activeJob.jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) }); }}>取消整理</button>}
-        {!meetingOnly && status === 'pending_confirmation' && state?.draftId && !storageBlocked && <button className="text-button ai-action" onClick={() => onOpenDraft(state.draftId as string)}>继续审核</button>}
-        {!meetingOnly && <button className="text-button" onClick={onReimport}>重新导入</button>}
-        <button className="text-button danger" onClick={onDelete}>删除</button>
-      </div>
-    </div>
-    {!meetingOnly&&<label className="field raw-extraction-mode">整理模式<select aria-label="整理模式" value={mode} disabled={busy||status==='processing'} onChange={e=>setMode(e.target.value as 'standard'|'deep')}><option value="deep" disabled={item.body.length>30000}>深度整理</option><option value="standard">标准整理</option></select><small>{item.body.length>30000?'正文超过30000字符，深度整理不可选；标准整理保留全文。':'深度整理生成结构化阅读笔记，可显式选择标准整理。'}{status==='failed'&&activeJob?` 显式继续将沿用原任务${activeJob.mode==='deep'?'深度':'标准'}模式；明确重新生成使用当前选择。`:''}</small></label>}
-    {storageBlocked && <section className="notice-warn" role="alert"><b>{activeJob?.execution === 'running' ? '任务正在停止，状态保存失败' : '任务已停止，状态保存失败'}</b><p>{activeJob?.recovery?.message}（{activeJob?.recovery?.phase}）</p><p>重试保存只对账本机状态，不会重新调用模型。</p><button className="secondary-button" disabled={savingState || activeJob?.execution !== 'settled'} onClick={() => void retryStorage()}>{savingState ? '正在保存状态…' : '重试保存状态'}</button>{savingError && <p className="form-error">{savingError}</p>}</section>}
-    {progressText && <p className="ai-progress">{progressText}</p>}
-    {meetingOnly && <p className="notice-warn">Meeting来源仅限本机保存：禁止外部 AI、Wiki沉淀与Prompt背景使用。</p>}
-    {status === 'failed' && state?.lastError && <p className="notice-warn">{state.lastError.code}：{state.lastError.message}{state.lastError.retryable ? '（可以重试）' : '（需要先处理配置或资料问题）'}</p>}
-    {status === 'failed' && activeJob?.mode!=='deep' && activeJob?.error?.code === 'LLM_PLAN_COVERAGE_INVALID' && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(false, true,'standard')}>仅重新规划（带覆盖诊断）</button>}
-    {status === 'failed' && activeJob?.checkpoint && <p className="extract-note">检查点已验证 {activeJob.checkpoint.validatedChunks}/{activeJob.checkpoint.totalChunks} 段，累计 {activeJob.checkpoint.attempts} 次调用。</p>}
-    {status === 'failed' && activeJob?.pipelineVersion && <button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(true,false,mode)}>明确重新生成</button>}
-    {status === 'generated' && (state?.generatedWikiIds?.length ?? 0) > 0 && <p className="extract-note">已生成知识页：<code className="mono">{state?.generatedWikiIds?.join('、')}</code></p>}
-    {error && <p className="form-error" role="alert">{error}</p>}
     <h2>{item.title}</h2>
+    <div className="detail-actions"><span className={`status ai-status ${storageBlocked ? 'failed' : status}`}><i />{recoveryStatus ?? rawStatusLabels[status]}</span><span className="detail-type">{sourceLabels[item.sourceType]}</span>{meetingOnly && <span className="detail-type meeting-local-badge">本机专用</span>}<div className="action-group">{!meetingOnly && <button className="text-button" onClick={onReimport}>重新导入</button>}<button className="text-button danger" onClick={onDelete}>删除</button></div></div>
+    <section className="raw-status-summary" aria-label="整理状态">
+      <p><b>当前阶段：</b>{recoveryStatus ?? stage}{!storageBlocked && status !== 'generated' && (activeJob?.stage === 'done' || activeJob?.checkpoint?.deepStage === 'ready') ? '（草稿阶段结束，正式写入仍需确认）' : ''}</p>
+      <div><b>已保留结果：</b>{status === 'pending_confirmation' && state?.draftId ? '草稿已保存，待你审核。' : status === 'generated' && (state?.generatedWikiIds?.length ?? 0) > 0 ? <>已确认写入：<code className="mono">{state?.generatedWikiIds?.join('、')}</code></> : '暂无可确认的已保存结果。'}{activeJob?.checkpoint && <p className="extract-note">已验证 {activeJob.checkpoint.validatedChunks}/{activeJob.checkpoint.totalChunks} 提取段，累计 {activeJob.checkpoint.attempts} 次调用，复用 {activeJob.checkpoint.reusedChunks} 段；这不是整项完成比例。</p>}</div>
+      {storageBlocked && <section className="notice-warn" role="alert"><b>{activeJob?.execution === 'running' ? '任务正在停止，状态保存失败' : '任务已停止，状态保存失败'}</b><p>{activeJob?.recovery?.message}（{activeJob?.recovery?.phase}）</p>{savingError && <p className="form-error">{savingError}</p>}</section>}
+      {status === 'failed' && state?.lastError && <p className="notice-warn"><b>问题：</b>{state.lastError.message}（{state.lastError.code}）{state.lastError.retryable ? '（可以重试）' : '（需要先处理配置或资料问题）'}</p>}
+      {error && <p className="form-error" role="alert">{error}</p>}
+      {meetingOnly ? <p className="notice-warn">Meeting来源仅限本机保存：禁止外部 AI、Wiki沉淀与Prompt背景使用。</p> : <div className="raw-next-actions"><b>下一步</b>
+        {(status === 'unprocessed' || status === 'failed' || status === 'generated') && <><label className="field raw-extraction-mode">整理模式<select aria-label="整理模式" value={mode} disabled={busy} onChange={e=>setMode(e.target.value as 'standard'|'deep')}><option value="deep" disabled={item.body.length>30000}>深度整理</option><option value="standard">标准整理</option></select><small>{item.body.length>30000?'正文超过30000字符，深度整理不可选；标准整理保留全文。':'深度整理生成结构化阅读笔记，可显式选择标准整理。'}</small></label><div><button className="text-button ai-action" disabled={busy || storageBlocked} onClick={() => onStartAi(false,false,status==='failed'&&activeJob?(activeJob.mode??'standard'):mode)}>{busy ? '正在启动…' : status === 'failed' && activeJob?.pipelineVersion ? '显式继续提取' : status === 'failed' ? '重试 AI 整理' : 'AI 整理知识'}</button><p className="extract-note">{status === 'failed' && activeJob?.pipelineVersion ? `从现有检查点尝试继续，沿用原任务${activeJob.mode==='deep'?'深度':'标准'}模式并保留累计调用；可恢复性由服务端判定。` : '新生成结果先进入草稿，仍需人工确认。'}</p></div></>}
+        {status === 'processing' && activeJob && activeJob.execution !== 'settled' && !storageBlocked && <button className="text-button" onClick={async () => { await api(`/api/extraction-jobs/${encodeURIComponent(activeJob.jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) }); }}>取消整理</button>}
+        {status === 'pending_confirmation' && state?.draftId && !storageBlocked && <div><button className="text-button ai-action" onClick={() => onOpenDraft(state.draftId as string)}>继续审核</button><p className="extract-note">审核草稿后，正式写入仍需你确认。</p></div>}
+        {status === 'failed' && activeJob?.mode!=='deep' && activeJob?.error?.code === 'LLM_PLAN_COVERAGE_INVALID' && <div><button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(false, true,'standard')}>仅重新规划（带覆盖诊断）</button><p className="extract-note">使用既有提取结果重新规划，模型调用继续累计。</p></div>}
+        {status === 'failed' && activeJob?.pipelineVersion && <div><button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(true,false,mode)}>明确重新生成</button><p className="extract-note">按当前选择模式重新生成，不等同继续；调用仍受既有累计预算约束。</p></div>}
+        {storageBlocked && <div><button className="secondary-button" disabled={savingState || activeJob?.execution !== 'settled'} onClick={() => void retryStorage()}>{savingState ? '正在保存状态…' : '重试保存状态'}</button><p className="extract-note">{activeJob?.execution === 'running' ? '等待任务停止后再试。' : '仅对账本机状态，不会重新调用模型。'}</p></div>}
+      </div>}
+    </section>
     {item.isDemo && <p className="demo-notice">【演示数据】虚构教学示例，不代表真实公司或业务事实。</p>}
     <div className="detail-source">{item.sourceName}{item.author ? ` · ${item.author}` : ''}</div>
     <div className="metadata-grid"><Meta label="导入时间" value={dateText(item.importedAt)} /><Meta label="原发布日期" value={item.publishedAt || '未填写'} /><Meta label="来源链接" value={item.url || '未填写'} link={!!item.url} /><Meta label="资料 ID" value={item.id} mono /></div>
@@ -421,6 +415,3 @@ function toFailure(error: unknown): ImportFailure {
   }
   return { code: 'REQUEST_FAILED', message: error instanceof Error ? error.message : '导入失败，请重试。' };
 }
-
-
-

@@ -1,5 +1,17 @@
 # 工程状态
 
+## LIFEOS L2：Raw 状态与恢复表达独立通过（2026-10-31）
+
+用户授权仅执行正式优化方案阶段2，验收通过后提交同步并停止。评分0/1/1/0=2、A标准：Astra Medium /root/lifeos_planner规划，Terra High /root/lifeos_builder施工，Sol High /root/lifeos_reviewer独立验收。基线f0f7630b4b1bec0d63fcd58dd88a349d1e1481ac；最终受验产品指纹见独立报告，本条与交付文件由同一提交绑定。
+
+Raw详情按对象、当前阶段、已保留结果、问题和下一步组织；继续/重规划/重新生成/保存恢复说明与动作相邻，沿用原模式与累计账本语义。只改RawPage与3条Raw局部CSS，不改服务、API、Prompt或恢复引擎。实际截图发现的保存失败仍显示运行及区块紧贴两项缺陷已返修独立关闭；L2-01–04本批整体独立PASS，不代签全产品或真实模型质量。
+
+独立初验34/34、返修后受影响组件3/3通过，未受影响31项复用；同版施工tsc及空envDir构建通过。真实headless Chrome完整App/API/stores/runner（仅Provider fake）完成1440/1024状态、焦点、刷新、迟到隔离及动作检查；保存恢复fake计数17→17、原草稿SHA不变。三次脚本异步/导航预期错误保留，浏览器按分段实际证据与完成补验pass=true签收，不称完整脚本整程exit0。
+
+真实Provider/config/正式workspace访问0，历史知识287/500、Prompt20/24、KB03 24/30仅沿既有记录、未重新核账且未消耗。KB03原PASS及会议上传UI独立BLOCKED、旧收据缺口保持。自有隔离服务已关闭，TEMP证据保留；原AGENTS及两份JSON、包装报告未纳入提交。阶段3及后续未启动。
+
+证据：[冻结任务](handoffs/LIFEOS-L2-20261031-task.md)、[施工](reports/LIFEOS-L2-20261031-builder.md)、[独立验收](reports/LIFEOS-L2-20261031-review.md)。
+
 ## KB03 R10：两例真实重验与本批独立通过（2026-10-31）
 
 用户明确批准累计total30/fixed20/counter15、历史已用照扣、同一已授权Raw/虚构反例发送OpenAI当前模型，任何失败停止全轮。沿B评分0/2/2/2=6，Sol High /root/r7_builder施工、Astra Medium /root/r7_reviewer规划/独立验收，主线程批准具体release。工具v4在同一本机账本追加R10会话，保留原history4及05–14十条收据；产品仍R9 revision19，参数/timeout不改。
