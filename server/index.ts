@@ -309,7 +309,7 @@ app.delete('/api/wiki/:id', async (req, res, next) => {
     res.json({ id: result.id, title: result.title, references: pages });
   } catch (error) { next(error); }
 });
-registerHomeRoutes(app, {root, raws:store, wiki:wikiStore, runner});
+registerHomeRoutes(app, {root, raws:store, wiki:wikiStore, runner, prompts});
 registerB04Routes(app, {
   root, rulesDir, provider: activeProvider, llm, runner, jobs, drafts, commits, rawStates, rawStore: store, wikiStore,
 });

@@ -73,3 +73,12 @@ button.stat-card { cursor: default; }.stat-card:disabled { color: inherit; opaci
 .home-page .recent-copy small { overflow-wrap: anywhere; }
 .home-action-row > button { flex: 0 0 auto; white-space: nowrap; }
 @media (max-width: 1050px) { .home-page .home-columns { grid-template-columns: minmax(0, 1fr); } }
+
+.period-review { margin:16px 0; padding:18px; }
+.period-review section { margin-top:20px; }
+.period-review details { margin:8px 0; }
+.review-entry { margin-bottom:16px; }
+.review-dates { display:flex; flex-wrap:wrap; align-items:end; gap:12px; }
+.review-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; overflow-wrap:anywhere; }
+.review-row > button { flex:0 0 auto; }
+.period-review .review-feedback-text { min-width:0; white-space:pre-wrap; overflow-wrap:anywhere; }

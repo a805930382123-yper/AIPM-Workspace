@@ -13,6 +13,7 @@ CommitStore及KnowledgeWorkflowStore正式确认服务层统一拒绝未全审/�
 ## 范围与部署
 
 桌面优先、单用户、本机运行的 Web 工作台。先通过 localhost 使用；本轮不创建云资源。长期知识资产由用户本机文件承载。产品包含首页、知识库、Raw、会议档案、Prompt 工作台、设置六项导航。
+LIFEOS L6周期回顾由首页入口主动打开，使用只读`GET /api/home/review?start=YYYY-MM-DD&end=YYYY-MM-DD`，上海时区开始日包含、结束日不含。Wiki按created统计期间新增且当前仍保留的记录，缺失/无效时间单列；反馈按用户usedOn归属，保留Prompt使用版本；待办直接复用homeActions当前快照，不按周期筛选。严格枚举当前正式文件，排除回收与已删反馈，各来源错误独立显示，不以读取失败冒充无记录。回顾不持久化、不调用模型、不定时执行；反馈展开明细为本次读取快照，Wiki和待办导航沿已有身份/版本检查。口径及证据见[L6任务卡](handoffs/LIFEOS-L6-20261031-task.md)与[独立验收](reports/LIFEOS-L6-20261031-review.md)。
 
 Meeting Hub M01提供会议元数据/目录/策略与备份，M02提供页面/目录/筛选/HTTPS来源与策略确认，M03提供授权纪要归档/原件/副本/历史/安全阅读/删除，M04提供Public/Internal独立授权的本机Raw登记/来源限制/两阶段恢复，M05完成跨页缓存/真实ID定位/迟到及后台选择隔离、完整本地闭环和MH48交付映射。M01–M05本机阶段PASS；接口见[M01](meeting-hub/M01-interface.md)、[M02](meeting-hub/M02-interface.md)、[M03](meeting-hub/M03-interface.md)、[M04](meeting-hub/M04-interface.md)、[M05](meeting-hub/M05-interface.md)。原全项目FAIL与真实AI阻塞以status为准。
 

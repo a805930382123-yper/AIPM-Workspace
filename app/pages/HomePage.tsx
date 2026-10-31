@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
 import type { Raw, Stats } from '../api';
 import { api, dateText, sourceLabels } from '../api';
 
 export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void }) {
+  const [reviewOpen,setReviewOpen]=useState(false);
   const [actions,setActions]=useState<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}|null>(null);
   const [actionError,setActionError]=useState(''); const generation=useRef(0);
   const loadActions=async()=>{const current=++generation.current;setActionError('');try{const result=await api<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}>('/api/home/actions');if(current===generation.current)setActions(result);}catch{if(current===generation.current)setActionError('行动事项读取失败，请刷新。');}};
@@ -19,6 +21,7 @@ export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, on
   ];
   return <div className="page home-page">
     <div className="page-heading"><div><p className="eyebrow">个人知识工作台</p><h1>早上好，开始积累业务知识</h1><p className="subheading">把原始资料交给 AI 整理成知识草稿，再由你审核确认。</p></div><div className="heading-actions"><button className="secondary-button" onClick={onCreateWiki}><span>＋</span> 手动创建 Wiki</button><button className="primary-button" onClick={onImport}><span>＋</span> 导入并整理 Raw</button></div></div>
+    <div className="review-entry"><button className="secondary-button" onClick={()=>setReviewOpen(true)} disabled={reviewOpen}>周期回顾</button></div>{reviewOpen&&<PeriodReview onClose={()=>setReviewOpen(false)} onOpenWiki={id=>onOpenWiki(id)} onOpenAction={item=>onOpenAction?.(item)} />}
     <section className="stats-grid" aria-label="知识库统计">{cards.map((card, i) => <button key={card.label} className={`stat-card ${i === 0 ? 'stat-primary' : ''}`} onClick={() => card.action?.()} disabled={!card.action}><span className="stat-label">{card.label}</span><strong>{card.value}</strong><span className="stat-detail">{card.detail}</span></button>)}</section>
     <section className="panel home-actions" id="home-actions"><div className="panel-heading"><div><h2>需要你处理</h2><p>{actions ? `已读取事项 ${actions.items.length}` : '正在读取事项…'}</p></div><button className="text-button" onClick={()=>void loadActions()}>刷新</button></div>
       {actionError && <p className="form-error" role="alert">{actionError}</p>}
