@@ -102,6 +102,9 @@ B02手动Wiki采用单页提交加待恢复操作记录。Wiki已提交而派生
 Audit 状态 `open/resolved`，决议 `accepted/partial/rejected/deferred`：accepted/partial 经确认提交修订再 resolved；rejected 保留原因后 resolved；deferred 保持 open。Anchor 无法可靠定位时阻止自动应用，要求重新定位。
 
 Prompt 使用独立 JSON 记录与版本历史，Markdown 导出；`manual/ai_generated/optimized` 为对象来源，版本来源用 `manual/ai_optimized` 等明确值。变量填充只影响本次复制结果，不隐式修改模板。
+LIFEOS L5使用反馈保存在同一`prompts/<id>.json`的可选顶层`feedback`（schemaVersion 1），与current/versions分离；每条记录绑定不可变Prompt ID/使用版本，独立revision处理编辑冲突，首次输入摘要处理创建重试，deletedIds只保留已删UUID防止旧请求复活。反馈CRUD复用现有队列与原子单文件写，不改Prompt正文、更新时间或版本快照，不调用模型。旧无feedback文件读取为空且不迁移；附属反馈损坏仅反馈入口报错，核心Prompt仍可读/计数，普通保存保留原反馈字段。
+
+删除Prompt仍将完整文件移入prompts/recycle，反馈与历史随文件保留；现有v1备份白名单及递归恢复覆盖该文件，无新增备份格式。独立反馈JSON导出包含全部使用版本的有效记录，不含内部摘要/删除ID；原Prompt Markdown导出不混入反馈，反馈JSON不作为恢复归档。接口、约束及验收范围见[L5任务卡](handoffs/LIFEOS-L5-20261031-task.md)与[独立验收](reports/LIFEOS-L5-20261031-review.md)。
 
 ## LLM、导入与搜索
 

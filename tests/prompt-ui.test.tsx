@@ -148,6 +148,7 @@ function stubFetch(): Harness {
       { id: 'customer', label: '客户' }, { id: 'product', label: '产品' }, { id: 'ai', label: 'AI' }, { id: 'office', label: '日常办公' },
     ] });
     if (url === '/api/wiki') return reply({ items: [] });
+    if (method === 'GET' && /^\/api\/prompts\/[^/]+\/feedback\?version=\d+$/.test(url)) return reply({ items: [] });
     // GET only: a POST to the same path is a create, handled further down. Without the method guard
     // the list branch swallowed creates and answered them with a list payload.
     if (method === 'GET' && (url.startsWith('/api/prompts?') || url === '/api/prompts')) {

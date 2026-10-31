@@ -1,5 +1,17 @@
 # 项目总控记录
 
+## LIFEOS L5：Prompt使用反馈独立通过（2026-10-31）
+
+用户明确授权阶段5使用反馈，完成后提交同步即停。评分0/2/2/0=4，新增持久数据涉及Prompt版本、删除和备份完整性，直接B：Astra Medium /root/lifeos_planner规划兼独立验收，Sol High /root/lifeos_reviewer本批施工，两个实例职责独立。基线67e136268b1eaf1b63b3baa868f6a69e00296a6d；冻结卡及最终文件指纹见报告，本记录与交付文件由同一提交绑定。
+
+新增当前/历史版本的手动使用反馈CRUD与独立JSON导出，记录日期、场景、效果、问题/有效部分及改进建议。反馈存同Prompt文件顶层，绑定使用版本，不改current/versions或Prompt更新时间；复用队列与原子写。创建重试、编辑修订冲突、删除后重放按冻结规则处理，旧无反馈数据读取不迁移，损坏反馈明确报错而不污染有效Prompt计数。Prompt删除连反馈与历史移入原回收路径；现有v1备份格式与白名单不变，原Markdown导出不夹带反馈。
+
+施工组合40/40、AI确认保全定向2/2、tsc及空envDir构建通过。首次6个旧UI回归失败源于fake fetch缺新反馈GET，仅补一行空items stub后全过，未改旧断言。独立定向7/7、真实Chrome完整App/API/Store整程7组及恢复根浏览器读回通过：版本CRUD、原子写失败保留输入/原文件、下载、迟到响应隔离、父Prompt回收、真实备份恢复字节一致均有实证。1440/1024布局及键盘焦点实看通过；保留已回收fixture误选和恢复harness缺测试元数据两项准备错误，不计产品失败。无待关闭产品缺陷；L5-01–03本批整体独立PASS。
+
+反馈操作前后Prompt核心快照、统计、Wiki搜索与知识日志保持；模型调用0，配置加载器未接隔离入口，真实Provider/config/正式workspace访问0。反馈不自动外发、不自动优化或创建Prompt版本。历史知识287/500、Prompt20/24、KB03 24/30沿既有记录，未重新核账或消耗；KB03限定范围PASS、会议上传UI独立BLOCKED及旧收据缺口保持。
+
+本轮隔离服务均已关闭，相关端口无监听；TEMP测试证据保留，原AGENTS、两份JSON及包装报告不纳入提交。阶段6未启动。证据：[冻结任务](handoffs/LIFEOS-L5-20261031-task.md)、[施工](reports/LIFEOS-L5-20261031-builder.md)、[独立验收](reports/LIFEOS-L5-20261031-review.md)。下方为历史记录。
+
 ## LIFEOS L4：快消场景填写引导独立通过（2026-10-31）
 
 用户明确授权仅推进正式方案阶段4，通过后提交同步即停。评分0/1/1/0=2、A标准：需求清楚，工作台字段与既有请求链少量耦合，主要风险为误覆盖输入或误注入模型请求；Astra Medium /root/lifeos_planner规划，Terra High /root/lifeos_builder施工，Sol High /root/lifeos_reviewer独立验收并核卡准入。基线223f1cc0245121bc14aa93514cc2d570f8ec27f3；最终文件指纹见独立报告，本记录与交付文件由同一提交绑定。

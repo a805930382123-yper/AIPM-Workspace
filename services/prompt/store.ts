@@ -12,6 +12,7 @@ import yaml from 'js-yaml';
 import { readJsonFile, SerialQueue, writeJsonAtomic } from '../storage/files.ts';
 import type { WikiStore } from '../wiki/store.ts';
 import { PromptError } from './errors.ts';
+import { feedbackData, feedbackDto, feedbackInput, feedbackDeleteInput, feedbackHash, type Feedback, type FeedbackDto } from './feedback.ts';
 import { canonicalInput, normalizePromptInput, requireUuid, type PromptInput } from './validate.ts';
 import { extractVariables, renderTemplate } from './variables.ts';
 
@@ -35,7 +36,7 @@ export type PromptCategory = { id: string; label: string; help?: string };
 
 /** Reuse key for one explicit "new prompt" editing session (the UI generates the UUID). */
 type CreationRecord = { requestId: string; input: PromptInput; createdAt: string };
-type PromptFile = { id: string; current: Prompt; versions: PromptVersion[]; creation: CreationRecord; aiConfirmations?: Record<string, { mode: 'new' | 'version'; payload: string; version: number }> };
+type PromptFile = { feedback?:unknown; id: string; current: Prompt; versions: PromptVersion[]; creation: CreationRecord; aiConfirmations?: Record<string, { mode: 'new' | 'version'; payload: string; version: number }> };
 
 export type WikiLinkStatus = { id: string; title: string | null; status: 'resolved' | 'missing' };
 export type PromptListOptions = { q?: string; category?: string; tag?: string; favorite?: boolean };
@@ -453,6 +454,44 @@ export class PromptStore {
     });
   }
 
+  async getFeedback(id:string,version?:number):Promise<FeedbackDto[]> {
+    const record=await this.read(id);if(!record)throw new PromptError('NOT_FOUND','没有找到这条Prompt，可能已移入回收区。',404);
+    return feedbackData(record.feedback,id,record.versions.map(v=>v.version)).items.filter(item=>version===undefined||item.promptVersion===version).map(feedbackDto).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt)||a.id.localeCompare(b.id));
+  }
+  async createFeedback(id:string,input:unknown):Promise<{feedback:FeedbackDto;reused:boolean}> {
+    return this.serialized(async()=>{
+      const clean=feedbackInput(input,'create');const record=await this.read(id);if(!record)throw new PromptError('NOT_FOUND','没有找到这条Prompt，可能已移入回收区。',404);
+      const data=feedbackData(record.feedback,id,record.versions.map(v=>v.version));const feedbackId=clean.id!,version=clean.promptVersion!;
+      if(data.deletedIds.includes(feedbackId))throw new PromptError('FEEDBACK_DELETED','这条反馈已删除，旧请求不能恢复它；请重新记录。',410);
+      const hash=feedbackHash(id,version,clean),existing=data.items.find(item=>item.id===feedbackId);
+      if(existing){if(existing.creationHash!==hash)throw new PromptError('FEEDBACK_ID_CONFLICT','同一反馈ID已用于其他内容，本次未写入。',409);return {feedback:feedbackDto(existing),reused:true};}
+      if(!record.versions.some(v=>v.version===version))throw new PromptError('INVALID_FEEDBACK_VERSION','要记录反馈的Prompt版本不存在。',400);
+      const now=new Date().toISOString();const item:Feedback={id:feedbackId,promptId:id,promptVersion:version,usedOn:clean.usedOn,scenario:clean.scenario,outcome:clean.outcome,observation:clean.observation,nextImprovement:clean.nextImprovement,revision:1,createdAt:now,updatedAt:now,creationHash:hash};
+      await this.write({...record,feedback:{...data,items:[...data.items,item]}});return {feedback:feedbackDto(item),reused:false};
+    });
+  }
+  async updateFeedback(id:string,feedbackId:string,input:unknown):Promise<FeedbackDto> {
+    return this.serialized(async()=>{
+      const clean=feedbackInput(input,'update');const record=await this.read(id);if(!record)throw new PromptError('NOT_FOUND','没有找到这条Prompt，可能已移入回收区。',404);
+      const data=feedbackData(record.feedback,id,record.versions.map(v=>v.version)),item=data.items.find(entry=>entry.id===feedbackId);
+      if(!item)throw new PromptError(data.deletedIds.includes(feedbackId)?'FEEDBACK_DELETED':'FEEDBACK_NOT_FOUND','没有找到这条反馈，可能已删除；请刷新。',data.deletedIds.includes(feedbackId)?410:404);
+      if(item.revision!==clean.baseRevision)throw new PromptError('FEEDBACK_VERSION_CONFLICT','反馈已被其他操作更新，请刷新后重新编辑；当前输入未被覆盖。',409,{currentRevision:item.revision});
+      const {baseRevision:_base,...editable}=clean;
+      if(['usedOn','scenario','outcome','observation','nextImprovement'].every(key=>item[key as keyof Feedback]===editable[key as keyof typeof editable]))return feedbackDto(item);
+      const next:Feedback={...item,...editable,revision:item.revision+1,updatedAt:new Date().toISOString()};
+      await this.write({...record,feedback:{...data,items:data.items.map(entry=>entry.id===feedbackId?next:entry)}});return feedbackDto(next);
+    });
+  }
+  async deleteFeedback(id:string,feedbackId:string,input:unknown):Promise<{id:string;deleted:true;reused:boolean}> {
+    return this.serialized(async()=>{
+      const baseRevision=feedbackDeleteInput(input);const record=await this.read(id);if(!record)throw new PromptError('NOT_FOUND','没有找到这条Prompt，可能已移入回收区。',404);
+      const data=feedbackData(record.feedback,id,record.versions.map(v=>v.version)),item=data.items.find(entry=>entry.id===feedbackId);
+      if(!item)return {id:feedbackId,deleted:true,reused:true};
+      if(item.revision!==baseRevision)throw new PromptError('FEEDBACK_VERSION_CONFLICT','反馈已被更新，请刷新后重新确认删除。',409,{currentRevision:item.revision});
+      await this.write({...record,feedback:{...data,items:data.items.filter(entry=>entry.id!==feedbackId),deletedIds:[...data.deletedIds,feedbackId]}});return {id:feedbackId,deleted:true,reused:false};
+    });
+  }
+  async exportFeedback(id:string) {return {schemaVersion:1 as const,promptId:id,items:await this.getFeedback(id)};}
   async delete(id: string, baseVersion: number): Promise<{ id: string; deleted: true }> {
     return this.serialized(async () => {
       const record = await this.read(id);

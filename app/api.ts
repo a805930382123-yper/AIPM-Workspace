@@ -283,6 +283,12 @@ export const deletePrompt = (id: string, baseVersion: number) =>
   api<{ id: string; deleted: true }>(`/api/prompts/${encodeURIComponent(id)}`, { method: 'DELETE', body: JSON.stringify({ baseVersion }) });
 export const renderPrompt = (id: string, baseVersion: number, values: Record<string, string>) =>
   api<PromptRenderResult>(`/api/prompts/${encodeURIComponent(id)}/render`, { method: 'POST', body: JSON.stringify({ baseVersion, values }) });
+export type { FeedbackDto, FeedbackInput, FeedbackOutcome } from '../services/prompt/feedback';
+export const promptFeedback = (id:string,version:number) => api<{items:import('../services/prompt/feedback').FeedbackDto[]}>(`/api/prompts/${encodeURIComponent(id)}/feedback?version=${version}`).then(value=>value.items);
+export const createPromptFeedback = (id:string,input:import('../services/prompt/feedback').FeedbackInput&{id:string;promptVersion:number}) => api<{feedback:import('../services/prompt/feedback').FeedbackDto;reused:boolean}>(`/api/prompts/${encodeURIComponent(id)}/feedback`,{method:'POST',body:JSON.stringify(input)});
+export const updatePromptFeedback = (id:string,feedbackId:string,baseRevision:number,input:import('../services/prompt/feedback').FeedbackInput) => api<{feedback:import('../services/prompt/feedback').FeedbackDto}>(`/api/prompts/${encodeURIComponent(id)}/feedback/${encodeURIComponent(feedbackId)}`,{method:'PUT',body:JSON.stringify({...input,baseRevision})});
+export const deletePromptFeedback = (id:string,feedbackId:string,baseRevision:number) => api<{id:string;deleted:true;reused:boolean}>(`/api/prompts/${encodeURIComponent(id)}/feedback/${encodeURIComponent(feedbackId)}`,{method:'DELETE',body:JSON.stringify({baseRevision})});
+export const exportPromptFeedback = (id:string) => api<{schemaVersion:1;promptId:string;items:import('../services/prompt/feedback').FeedbackDto[]}>(`/api/prompts/${encodeURIComponent(id)}/feedback/export`);
 export const promptExportUrl = (id: string) => `/api/prompts/${encodeURIComponent(id)}/export`;
 
 export const rawStatusLabels: Record<RawStatus, string> = {

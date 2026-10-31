@@ -54,6 +54,11 @@ export function registerPromptRoutes(app: express.Express, deps: PromptRouteDeps
     } catch (error) { next(error); }
   });
 
+  app.get('/api/prompts/:id/feedback/export',async(req,res,next)=>{try{const id=requireUuid(req.params.id,'INVALID_ID','Prompt ID必须是有效UUID。');const result=await store.exportFeedback(id);res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Content-Disposition',`attachment; filename="prompt-${id}-feedback.json"`);res.send(JSON.stringify(result,null,2)+'\n');}catch(error){next(error);}});
+  app.get('/api/prompts/:id/feedback',async(req,res,next)=>{try{const id=requireUuid(req.params.id,'INVALID_ID','Prompt ID必须是有效UUID。');const raw=req.query.version;let version:number|undefined;if(raw!==undefined){if(typeof raw!=='string'||!/^\d+$/.test(raw)||!Number.isSafeInteger(Number(raw))||Number(raw)<1)throw new PromptError('INVALID_VERSION','版本过滤必须是正整数。',400);version=Number(raw);}res.json({items:await store.getFeedback(id,version)});}catch(error){next(error);}});
+  app.post('/api/prompts/:id/feedback',async(req,res,next)=>{try{const id=requireUuid(req.params.id,'INVALID_ID','Prompt ID必须是有效UUID。');const result=await store.createFeedback(id,req.body);res.status(result.reused?200:201).json(result);}catch(error){next(error);}});
+  app.put('/api/prompts/:id/feedback/:feedbackId',async(req,res,next)=>{try{const id=requireUuid(req.params.id,'INVALID_ID','Prompt ID必须是有效UUID。'),feedbackId=requireUuid(req.params.feedbackId,'INVALID_ID','反馈ID必须是有效UUID。');res.json({feedback:await store.updateFeedback(id,feedbackId,req.body)});}catch(error){next(error);}});
+  app.delete('/api/prompts/:id/feedback/:feedbackId',async(req,res,next)=>{try{const id=requireUuid(req.params.id,'INVALID_ID','Prompt ID必须是有效UUID。'),feedbackId=requireUuid(req.params.feedbackId,'INVALID_ID','反馈ID必须是有效UUID。');res.json(await store.deleteFeedback(id,feedbackId,req.body));}catch(error){next(error);}});
   app.get('/api/prompts/:id/versions/:version', async (req, res, next) => {
     try {
       const id = requireUuid(req.params.id, 'INVALID_ID', 'Prompt ID 必须是有效的 UUID。');
