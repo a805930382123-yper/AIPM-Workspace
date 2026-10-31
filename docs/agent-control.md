@@ -1,5 +1,17 @@
 # 项目总控记录
 
+## LIFEOS L4：快消场景填写引导独立通过（2026-10-31）
+
+用户明确授权仅推进正式方案阶段4，通过后提交同步即停。评分0/1/1/0=2、A标准：需求清楚，工作台字段与既有请求链少量耦合，主要风险为误覆盖输入或误注入模型请求；Astra Medium /root/lifeos_planner规划，Terra High /root/lifeos_builder施工，Sol High /root/lifeos_reviewer独立验收并核卡准入。基线223f1cc0245121bc14aa93514cc2d570f8ec27f3；最终文件指纹见独立报告，本记录与交付文件由同一提交绑定。
+
+复用customer_interview、business_process、requirements、industry_learning四个ID，展示经销商访谈、门店补货、业务问题转AI需求、材料阅读的输入、预期产出、事实与缺项约束。保留原七模板及手动Brief默认值，选择场景只更新帮助，不覆盖用户文本或Wiki勾选；不改服务模板、模型提示、请求构造和Optimizer。独立浏览器发现帮助区被旧CSS覆盖导致文本挤成一段，F4-01局部样式返修后独立关闭；L4-01/02和L4-03提示边界核验PASS，本卡界面引导工程范围整体独立PASS。
+
+施工定向27/27、强化请求体组件2/2、tsc及空envDir构建通过；独立定向14/14通过，同版未变部分复用施工证据。实际Chrome完整App/真实Prompt API与存储、仅Provider fake，11组功能检查整程exit0：四场景与旧模板兼容、手动编辑、显选Wiki、预览编辑后明确保存、版本1/favorite=false、旧版本及Optimizer、原AI Brief路径和受限会议来源拒绝。最终仅CSS变化，另对1440/1024分行、12px帮助、焦点和无横溢补验PASS，fake计数3→3；保留首次脚本定位失败记录，未计产品失败。
+
+服务/server/rules差异为空，实际API及fake Provider请求确认未附加指导文本且只含显选背景。因此L4-03真实质量条件未触发（N/A），真实模型质量未测，不签质量PASS。未选Wiki不发送，受限来源在Provider前拒绝，知识树SHA不变；本轮真实Provider/config/正式workspace访问0，隔离入口未接配置加载器。历史知识287/500、Prompt20/24、KB03 24/30保持且未重新核账。KB03限定范围PASS、会议上传UI独立BLOCKED及旧收据缺口不变。
+
+本轮隔离服务及包装进程已退出，端口无监听，TEMP证据保留；原AGENTS、两份JSON及包装报告不纳入提交。阶段5及后续未启动。证据：[冻结任务](handoffs/LIFEOS-L4-20261031-task.md)、[施工](reports/LIFEOS-L4-20261031-builder.md)、[独立验收](reports/LIFEOS-L4-20261031-review.md)。下方记录为历史时间点。
+
 ## LIFEOS L3：首页行动事项独立通过（2026-10-31）
 
 用户在阶段2交付后授权继续，本轮仅执行正式方案阶段3，独立通过后提交同步即停。评分0/2/1/0=3、A标准：目标清楚，跨四来源与导航，主要风险为漏报或错定位；Astra Medium /root/lifeos_planner规划，Sol High /root/lifeos_reviewer先审准入，Terra High /root/lifeos_builder施工，原Sol独立验收。基线806b27096dce32d6ab5ddae5c590a7d31523a3cd；最终文件指纹见独立报告，本记录与交付文件由同一提交绑定。
