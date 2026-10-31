@@ -1,22 +1,31 @@
-import { useEffect, useState } from 'react';
-import type { KnowledgeWorkflowSummary, Raw, Stats } from '../api';
-import { dateText, knowledgeWorkflows, sourceLabels } from '../api';
+import { useEffect, useRef, useState } from 'react';
+import type { HomeAction } from '../../services/home/actions';
+import type { Raw, Stats } from '../api';
+import { api, dateText, sourceLabels } from '../api';
 
-export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onOpenWorkflow, onGenerateFromRaw }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void }) {
-  const [workflows, setWorkflows] = useState<KnowledgeWorkflowSummary[]>([]);
-  useEffect(() => { let active = true; knowledgeWorkflows().then(items => { if (active) setWorkflows(items.filter(item => item.status === 'pending_confirmation' || item.status === 'conflict')); }).catch(() => undefined); return () => { active = false; }; }, []);
+export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void }) {
+  const [actions,setActions]=useState<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}|null>(null);
+  const [actionError,setActionError]=useState(''); const generation=useRef(0);
+  const loadActions=async()=>{const current=++generation.current;setActionError('');try{const result=await api<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}>('/api/home/actions');if(current===generation.current)setActions(result);}catch{if(current===generation.current)setActionError('行动事项读取失败，请刷新。');}};
+  useEffect(()=>{void loadActions();return ()=>{generation.current++;};},[]);
+  const openAction=async(item:HomeAction)=>{const current=++generation.current;setActionError('');try{const target=await api<HomeAction>(`/api/home/actions/${item.kind}/${encodeURIComponent(item.id)}?versionToken=${encodeURIComponent(item.versionToken)}`);if(current===generation.current)onOpenAction?.(target);}catch(error){if(current===generation.current)setActionError(error instanceof Error?error.message:'事项读取失败，请刷新。');}};
   const cards = [
     { label: 'Raw 原始资料', value: stats.rawCount, detail: '持续积累的来源材料', action: onOpenRaw },
     { label: 'Wiki 知识', value: stats.wikiCount, detail: '经过确认的知识页面', action: onOpenWiki },
     { label: '本周新增', value: stats.thisWeekNewCount, detail: 'Raw 与 Wiki 新建 · 周一开始', action: undefined },
-    { label: '待审核', value: stats.pendingConfirmationCount, detail: 'AI 知识草稿等待你审核', action: onOpenWiki },
-    { label: 'Open Audit', value: stats.openAuditCount, detail: '尚未处理的知识纠错', action: undefined },
+    { label: '待审核', value: stats.pendingConfirmationCount, detail: 'AI 知识草稿等待你审核', action: () => document.getElementById('home-actions')?.scrollIntoView() },
+    { label: 'Open Audit', value: stats.openAuditCount, detail: '尚未处理的知识纠错', action: () => document.getElementById('home-actions')?.scrollIntoView() },
     { label: 'Prompt', value: stats.promptCount, detail: 'Library 中的有效模板', action: onOpenPrompt },
   ];
   return <div className="page home-page">
     <div className="page-heading"><div><p className="eyebrow">个人知识工作台</p><h1>早上好，开始积累业务知识</h1><p className="subheading">把原始资料交给 AI 整理成知识草稿，再由你审核确认。</p></div><div className="heading-actions"><button className="secondary-button" onClick={onCreateWiki}><span>＋</span> 手动创建 Wiki</button><button className="primary-button" onClick={onImport}><span>＋</span> 导入并整理 Raw</button></div></div>
     <section className="stats-grid" aria-label="知识库统计">{cards.map((card, i) => <button key={card.label} className={`stat-card ${i === 0 ? 'stat-primary' : ''}`} onClick={() => card.action?.()} disabled={!card.action}><span className="stat-label">{card.label}</span><strong>{card.value}</strong><span className="stat-detail">{card.detail}</span></button>)}</section>
-    {workflows.length > 0 && <section className="panel pending-knowledge-workflows"><div className="panel-heading"><div><h2>待审核更新与综合 · {workflows.length}</h2><p>这些草稿也可在重启后继续审核。</p></div></div><div className="raw-list">{workflows.map(item => <button className="raw-list-item" key={item.id} onClick={() => onOpenWorkflow?.(item.id)}><span className="file-icon">{item.kind === 'update' ? '更' : '综'}</span><span className="recent-copy"><b>{item.title}</b><small>{item.kind === 'update' ? '旧 Wiki 更新' : '多来源综合'} · {item.status === 'conflict' ? '提交冲突' : '待确认'} · v{item.revision}</small></span></button>)}</div></section>}
+    <section className="panel home-actions" id="home-actions"><div className="panel-heading"><div><h2>需要你处理</h2><p>{actions ? `已读取事项 ${actions.items.length}` : '正在读取事项…'}</p></div><button className="text-button" onClick={()=>void loadActions()}>刷新</button></div>
+      {actionError && <p className="form-error" role="alert">{actionError}</p>}
+      {actions && Object.entries(actions.sources).map(([source,state])=>state.status==='error' && <p className="form-error" role="alert" key={source}>{({ 'raw-task':'整理任务',draft:'草稿',workflow:'更新与综合',audit:'Audit' } as Record<string,string>)[source]}：{state.message}</p>)}
+      {actions && actions.items.length===0 && Object.values(actions.sources).every(x=>x.status==='ok') && <p>当前没有需要处理的事项。</p>}
+      {actions && <div className="home-action-list">{actions.items.map(item=><div className="home-action-row" key={`${item.kind}:${item.id}`}><div><b>{item.title}</b><p>{({'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'} as Record<string,string>)[item.kind]} · {dateText(item.updatedAt)} · {item.problem}</p><small>{item.result}</small></div><button className="secondary-button" onClick={()=>void openAction(item)}>{item.action}</button></div>)}</div>}
+    </section>
     <div className="home-columns">
       <section className="panel recent-panel"><div className="panel-heading"><div><h2>最近导入</h2><p>你保存的原始材料</p></div><button className="text-button" onClick={() => onOpenRaw()}>查看全部 <span>›</span></button></div>
         {items.length ? <div className="recent-list">{items.slice(0, 5).map(item => <button className="recent-row" key={item.id} onClick={() => onOpenRaw(item.id)}><span className="file-icon">文</span><span className="recent-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{sourceLabels[item.sourceType]} · {item.sourceName}</small></span><time>{dateText(item.importedAt)}</time></button>)}</div> : <div className="empty-recent"><div className="empty-symbol">▧</div><b>这里会显示你导入的资料</b><span>粘贴文章、会议纪要或业务记录，开始建立自己的知识来源。</span><button className="secondary-button" onClick={onImport}>导入第一条资料</button></div>}

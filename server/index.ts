@@ -22,6 +22,7 @@ import { OpenAiCompatibleProvider, type LlmProvider } from '../services/llm/prov
 import { LLMService } from '../services/llm/service.ts';
 import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
+import { registerHomeRoutes } from './home-api.ts';
 import { registerB04Routes } from './llm-api.ts';
 import { registerLlmConfigRoutes } from './llm-config-api.ts';
 import { registerKnowledgeRoutes } from './knowledge-api.ts';
@@ -308,6 +309,7 @@ app.delete('/api/wiki/:id', async (req, res, next) => {
     res.json({ id: result.id, title: result.title, references: pages });
   } catch (error) { next(error); }
 });
+registerHomeRoutes(app, {root, raws:store, wiki:wikiStore, runner});
 registerB04Routes(app, {
   root, rulesDir, provider: activeProvider, llm, runner, jobs, drafts, commits, rawStates, rawStore: store, wikiStore,
 });

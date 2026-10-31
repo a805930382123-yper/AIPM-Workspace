@@ -1,5 +1,17 @@
 # 工程状态
 
+## LIFEOS L3：首页行动事项独立通过（2026-10-31）
+
+用户在阶段2交付后授权继续，本轮仅执行正式方案阶段3，独立通过后提交同步即停。评分0/2/1/0=3、A标准：目标清楚，跨四来源与导航，主要风险为漏报或错定位；Astra Medium /root/lifeos_planner规划，Sol High /root/lifeos_reviewer先审准入，Terra High /root/lifeos_builder施工，原Sol独立验收。基线806b27096dce32d6ab5ddae5c590a7d31523a3cd；最终文件指纹见独立报告，本记录与交付文件由同一提交绑定。
+
+首页聚合当前Raw失败/恢复任务、待审草稿、更新/综合工作流和Open Audit；保留独立事项，阻断优先，分来源显示读取失败。点击前核对当前对象、版本和依赖，复用现有详情入口，精确定位Audit。首页读取不触发恢复、模型或正式写入。初验发现的来源隔离、缺失job漏报、恢复job漏报、1024布局和Audit状态结构验证五项缺陷均经返修独立关闭；L3-01–04整体独立PASS。
+
+施工初始26/26、第一轮返修定向12/12、最后受影响服务5/5及tsc通过，空envDir构建通过；独立初验11/11、最后受影响服务5/5通过，未受影响证据按文件指纹复用。最终真实Chrome完整App/API/stores/runner（仅Provider fake）浏览器20组整程exit0；另补验统计接口故障仍可读事项、关联Wiki删除后点击明确失效，两项PASS。实际检查1440/1024长标题、焦点、精确导航、版本变化、源故障/恢复、处理返回和真空状态；保留早期失败及测试准备错误，不以其冒充最终通过。
+
+重复首页/预检读取的隔离业务目录文件集合及字节SHA不变，Provider计数0，配置加载器未接入隔离入口；真实Provider、产品配置及正式workspace访问0。历史知识287/500、Prompt20/24、KB03 24/30沿既有记录，未重新核账且无新增消耗。KB03原限定范围PASS、会议上传UI独立BLOCKED和旧收据缺口保持。隔离服务已关闭，TEMP原始证据保留；其他任务的AGENTS、两份JSON及包装报告不纳入提交。阶段4及后续未启动。
+
+证据：[冻结任务](handoffs/LIFEOS-L3-20261031-task.md)、[施工](reports/LIFEOS-L3-20261031-builder.md)、[独立验收](reports/LIFEOS-L3-20261031-review.md)。下方记录为历史时间点。
+
 ## LIFEOS L2：Raw 状态与恢复表达独立通过（2026-10-31）
 
 用户授权仅执行正式优化方案阶段2，验收通过后提交同步并停止。评分0/1/1/0=2、A标准：Astra Medium /root/lifeos_planner规划，Terra High /root/lifeos_builder施工，Sol High /root/lifeos_reviewer独立验收。基线f0f7630b4b1bec0d63fcd58dd88a349d1e1481ac；最终受验产品指纹见独立报告，本条与交付文件由同一提交绑定。
