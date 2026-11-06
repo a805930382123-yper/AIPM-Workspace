@@ -42,6 +42,7 @@ import { RecoveryRegistry } from '../services/storage/recovery.ts';
 import { registerRecoveryRoutes } from './recovery-api.ts';
 import { WorkItemStore } from '../services/work-items/store.ts';
 import { registerWorkItemRoutes } from './work-items-api.ts';
+import { WorkAnalysisRuns } from '../services/work-items/analysis-runs.ts';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(process.env.FMCG_DATA_DIR || path.join(moduleDir, '..', 'workspace'));
@@ -294,7 +295,8 @@ app.delete('/api/wiki/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 registerHomeRoutes(app, {root, raws:store, wiki:wikiStore, runner, prompts});
-registerWorkItemRoutes(app, new WorkItemStore(root, store));
+const workItems = new WorkItemStore(root, store);
+registerWorkItemRoutes(app, workItems, new WorkAnalysisRuns(root, id => workItems.get(id), store, providerFactory));
 registerB04Routes(app, {
   root, rulesDir, provider: activeProvider, llm, runner, jobs, drafts, commits, rawStates, rawStore: store, wikiStore,
 });

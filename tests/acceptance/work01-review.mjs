@@ -259,7 +259,7 @@ try {
     await getLabel('记录类型').selectOption(kind);
     await getLabel('记录内容').fill(text);
     if (outcome) await getLabel('复测结果').selectOption(outcome);
-    await save('添加记录');
+    await save('保存处理记录');
   };
   await addHistory('feedback', '补充反馈：门店页只有北区受到影响。');
   await addHistory('reproduction', '复现：打开同一 SKU 的详情页和门店页，库存数字不同。');

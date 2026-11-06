@@ -189,6 +189,26 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .work-images img { display: block; max-width: 100%; max-height: 160px; border: 1px solid var(--line); border-radius: 8px; object-fit: contain; }
 .work-due > p { color: var(--muted); font-size: 13px; margin: 10px 0 4px; }
 .work-due > .form-error { color: #a0473c; }
+.work-save-hint { margin-top: 8px; }
+.work-source-picker { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.work-source-picker legend { margin-bottom: 4px; font-weight: 650; }
+.work-source-option { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; overflow-wrap: anywhere; }
+.work-source-option input { margin-top: 3px; flex: none; accent-color: var(--accent); }
+.work-source-option small { display: inline-block; margin-left: 8px; color: var(--muted); }
+.work-run { border-top: 1px solid var(--line); }
+.work-run-button { color: var(--ink); }
+.work-run-detail { padding: 0 0 16px 4px; }
+.work-run-detail h4 { margin: 16px 0 6px; font-size: 14px; }
+.work-run-input summary, .work-run-source summary { cursor: pointer; overflow-wrap: anywhere; }
+.work-run-source { margin-top: 8px; }
+.work-run-context { margin: 8px 0; font-size: 13px; }
+.work-run-context dt { color: var(--muted); }
+.work-run-context dd { margin: 0 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.work-run-results { padding-left: 20px; margin: 0; }
+.work-run-results li + li { margin-top: 6px; }
+.work-run-results blockquote { padding-left: 12px; border-left: 1px solid var(--line); }
+.work-stage-actions { align-items: center; margin-top: 12px; }
+.work-history-list + form { margin-top: 12px; }
 
 @media (max-width: 620px) {
   .work-section { padding: 16px; }

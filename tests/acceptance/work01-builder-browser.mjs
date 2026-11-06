@@ -88,13 +88,13 @@ try {
     await history.getByLabel('记录类型').selectOption(kind);
     if (outcome) await history.getByLabel('复测结果', { exact: true }).selectOption(outcome);
     await history.getByLabel('记录内容').fill(body);
-    await button('添加记录', history).click();
+    await button('保存处理记录', history).click();
     await history.getByText(body, { exact: true }).waitFor();
   };
   await page.goto(base, { waitUntil: 'domcontentloaded' });
-  await due.getByText('暂无到期的客户问题。').waitFor();
+  await due.getByText('暂无到期的工作事项。').waitFor();
   await nav('工作事项');
-  await page.getByText('还没有客户问题。', { exact: false }).waitFor();
+  await page.getByText('还没有工作事项。', { exact: false }).waitFor();
   await button('新建客户问题').click();
   await page.getByLabel('问题标题').fill(title);
   await page.getByLabel('客户反馈').fill(original);
@@ -193,7 +193,7 @@ try {
   await button('关闭事项', current).click();
   await current.getByText('事项已关闭。').waitFor();
   await nav('首页');
-  await due.getByText('暂无到期的客户问题。').waitFor();
+  await due.getByText('暂无到期的工作事项。').waitFor();
   await nav('工作事项');
   await page.getByRole('button', { name: new RegExp(title) }).click();
   await button('重开事项', current).click();
@@ -217,7 +217,7 @@ try {
   await followUp.fill('2099-01-01');
   await saveCurrent();
   await nav('首页');
-  await due.getByText('暂无到期的客户问题。').waitFor();
+  await due.getByText('暂无到期的工作事项。').waitFor();
   await request(itemRoute, { method: 'PUT', body: { baseRevision: (await request(itemRoute)).revision, followUpOn: '2000-01-01' } });
   await button('刷新到期跟进', due).click();
   await action.getByText('2000-01-01', { exact: true }).waitFor();

@@ -96,16 +96,19 @@ export async function apiForm<T>(url: string, form: FormData): Promise<T> {
   return readResponse<T>(await fetch(url, { method: 'POST', body: form }));
 }
 
-export type { WorkHistory, WorkHistoryInput, WorkItem, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../services/work-items/types';
-import type { WorkItem, WorkItemSummary, WorkItemUpdate } from '../services/work-items/types';
+export type { WorkAnalysis, WorkAnalysisRun, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../services/work-items/types';
+import type { WorkAnalysisRun, WorkAnalysisRunInput, WorkItem, WorkItemCreate, WorkItemSummary, WorkItemUpdate } from '../services/work-items/types';
 
 const workItemUrl = (id: string) => `/api/work-items/${encodeURIComponent(id)}`;
 export const workItems = (due = false) => api<{ items: WorkItemSummary[] }>(`/api/work-items${due ? '?due=1' : ''}`).then(result => result.items);
 export const workItem = (id: string) => api<WorkItem>(workItemUrl(id));
-export const createWorkItem = (input: Pick<WorkItem, 'title' | 'feedback'>) => api<WorkItem>('/api/work-items', { method: 'POST', body: JSON.stringify(input) });
+export const createWorkItem = (input: WorkItemCreate) => api<WorkItem>('/api/work-items', { method: 'POST', body: JSON.stringify(input) });
 export const updateWorkItem = (id: string, input: WorkItemUpdate) => api<WorkItem>(workItemUrl(id), { method: 'PUT', body: JSON.stringify(input) });
 export const uploadWorkScreenshot = (id: string, form: FormData) => apiForm<WorkItem>(`${workItemUrl(id)}/screenshots`, form);
 export const workScreenshotUrl = (id: string, imageId: string) => `${workItemUrl(id)}/screenshots/${encodeURIComponent(imageId)}`;
+const workAnalysisUrl = (id: string) => `${workItemUrl(id)}/analysis-runs`;
+export const workAnalysisRuns = (id: string) => api<{ items: WorkAnalysisRun[] }>(workAnalysisUrl(id)).then(result => result.items);
+export const startWorkAnalysis = (id: string, input: WorkAnalysisRunInput) => api<WorkAnalysisRun>(workAnalysisUrl(id), { method: 'POST', body: JSON.stringify(input) });
 
 export async function rawReferences(id: string): Promise<RawReference[]> {
   return (await api<{ items: RawReference[] }>(`/api/raw/${encodeURIComponent(id)}/references`)).items;

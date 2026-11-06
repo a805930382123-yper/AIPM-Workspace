@@ -1,6 +1,7 @@
 import type { Express } from 'express';
 import multer from 'multer';
 import { StorageError } from '../services/storage/files.ts';
+import type { WorkAnalysisRuns } from '../services/work-items/analysis-runs.ts';
 import { MAX_WORK_SCREENSHOT_BYTES, type WorkItemStore } from '../services/work-items/store.ts';
 
 const upload = multer({
@@ -8,7 +9,7 @@ const upload = multer({
   limits: { fileSize: MAX_WORK_SCREENSHOT_BYTES + 1, files: 1, fields: 2, fieldSize: 4_000 },
 }).single('file');
 
-export function registerWorkItemRoutes(app: Express, store: WorkItemStore) {
+export function registerWorkItemRoutes(app: Express, store: WorkItemStore, analysis: WorkAnalysisRuns) {
   app.get('/api/work-items', async (req, res) => {
     res.json({ items: await store.list(req.query.due === '1') });
   });
@@ -20,6 +21,12 @@ export function registerWorkItemRoutes(app: Express, store: WorkItemStore) {
   });
   app.put('/api/work-items/:id', async (req, res) => {
     res.json(await store.update(req.params.id, req.body));
+  });
+  app.get('/api/work-items/:id/analysis-runs', async (req, res) => {
+    res.json({ items: await analysis.list(req.params.id) });
+  });
+  app.post('/api/work-items/:id/analysis-runs', async (req, res) => {
+    res.status(201).json(await analysis.start(req.params.id, req.body));
   });
   app.post('/api/work-items/:id/screenshots', (req, res, next) => {
     upload(req, res, error => {

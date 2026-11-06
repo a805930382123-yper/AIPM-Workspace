@@ -1,10 +1,16 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import type { Raw, WorkHistory, WorkHistoryInput, WorkItem, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../api';
+import type { Raw, WorkAnalysis, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../api';
 import { ApiError, createWorkItem, updateWorkItem, uploadWorkScreenshot, workItem, workItems, workScreenshotUrl } from '../api';
+import { WorkAnalysisPanel } from './WorkAnalysisPanel';
 
-export const workStatusLabels: Record<WorkStatus, string> = { triage: '待整理', in_progress: '处理中', waiting: '等待处理', retest: '待复测', closed: '已关闭' };
+const customerStatusLabels: Record<WorkStatus, string> = { triage: '待整理', in_progress: '处理中', waiting: '等待处理', retest: '待复测', closed: '已关闭' };
+const analysisStatusLabels: Partial<Record<WorkStatus, string>> = { triage: '待开始', in_progress: '进行中', waiting: '等待补充', closed: '已完成' };
+export const workKindLabel = (kind?: WorkItemKind) => kind === 'product_analysis' ? '产品分析' : '客户问题';
+export const workStatusLabel = (kind: WorkItemKind | undefined, status: WorkStatus) =>
+  (kind === 'product_analysis' ? analysisStatusLabels[status] : undefined) ?? customerStatusLabels[status];
 const historyLabels: Record<WorkHistory['kind'], string> = {
-  feedback: '补充客户反馈', reproduction: '复现记录', technical_reply: '技术回复', sent: '已发送技术反馈', retest: '复测记录', closed: '关闭事项', reopened: '重开事项',
+  feedback: '补充客户反馈', reproduction: '复现记录', technical_reply: '技术回复', sent: '已发送技术反馈', retest: '复测记录',
+  stage_result: '阶段成果', closed: '关闭事项', reopened: '重开事项',
 };
 const eventTime = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', dateStyle: 'medium', timeStyle: 'short' });
 const formatTime = (value: string) => eventTime.format(new Date(value));
@@ -12,8 +18,8 @@ const inputTime = (value?: string) => value ? new Date(Date.parse(value) + 8 * 3
 const timestamp = (value: string) => value ? `${value.length === 16 ? `${value}:00` : value}+08:00` : '';
 const errorText = (error: unknown) => error instanceof Error ? error.message : '本机记录操作失败，请重试。';
 
-function Status({ value }: { value: WorkStatus }) {
-  return <span className={`work-status ${value === 'waiting' ? 'action-warning' : value === 'closed' ? 'action-neutral' : 'action-review'}`}>{workStatusLabels[value]}</span>;
+function Status({ kind, value }: { kind?: WorkItemKind; value: WorkStatus }) {
+  return <span className={`work-status ${value === 'waiting' ? 'action-warning' : value === 'closed' ? 'action-neutral' : 'action-review'}`}>{workStatusLabel(kind, value)}</span>;
 }
 
 export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
@@ -30,6 +36,8 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
   const [reload, setReload] = useState(0);
   const [title, setTitle] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [createKind, setCreateKind] = useState<WorkItemKind>('customer_issue');
+  const [goal, setGoal] = useState('');
   const [createError, setCreateError] = useState('');
   const [creating, setCreating] = useState(false);
 
@@ -53,11 +61,12 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
     setCreateError('');
     setCreating(true);
     try {
-      const saved = await createWorkItem({ title, feedback });
+      const saved = await createWorkItem(createKind === 'product_analysis' ? { kind: createKind, title, goal } : { title, feedback });
       setItem(saved);
       setId(saved.id);
       setTitle('');
       setFeedback('');
+      setGoal('');
       setMode('detail');
       onChanged();
     } catch (error) {
@@ -70,21 +79,32 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
   if (mode === 'detail' && item?.id === id && item) {
     return <WorkItemDetail key={item.id} item={item} raws={raws} onBack={back} onOpenRaw={onOpenRaw} onChanged={onChanged} />;
   }
+  const beginCreate = (kind: WorkItemKind) => {
+    setCreateKind(kind);
+    setCreateError('');
+    setMode('create');
+  };
+  const product = createKind === 'product_analysis';
   return <div className="page work-page">
     <div className="page-heading">
       <div>
-        <h1>{mode === 'create' ? '新建客户问题' : '工作事项'}</h1>
-        {mode === 'list' && <p className="subheading">记录客户问题、处理进展和下一次跟进。</p>}
+        <h1>{mode === 'create' ? `新建${workKindLabel(createKind)}` : '工作事项'}</h1>
+        {mode === 'list' && <p className="subheading">跟进客户问题和产品分析，保留每一步进展。</p>}
       </div>
       {mode === 'list'
-        ? <button className="primary-button" onClick={() => { setCreateError(''); setMode('create'); }}>新建客户问题</button>
+        ? <div className="work-buttons">
+          <button className="primary-button" onClick={() => beginCreate('customer_issue')}>新建客户问题</button>
+          <button className="secondary-button" onClick={() => beginCreate('product_analysis')}>新建产品分析</button>
+        </div>
         : <button className="secondary-button" disabled={creating} onClick={back}>返回工作事项</button>}
     </div>
     {mode === 'create' && <form className="panel work-section work-create" onSubmit={event => void create(event)}>
       <fieldset className="work-form" disabled={creating}>
-        <label className="field">问题标题<input required maxLength={200} value={title} onChange={event => setTitle(event.target.value)} /></label>
-        <label className="field">客户反馈<textarea required maxLength={20_000} rows={6} value={feedback} onChange={event => setFeedback(event.target.value)} /></label>
-        <p className="work-note">保存后，你可以补充客户、项目、复现过程及相关资料。</p>
+        <label className="field">{product ? '事项标题' : '问题标题'}<input required maxLength={200} value={title} onChange={event => setTitle(event.target.value)} /></label>
+        {product
+          ? <div className="field"><label htmlFor="work-create-goal">分析目标</label><textarea id="work-create-goal" required maxLength={20_000} rows={4} value={goal} onChange={event => setGoal(event.target.value)} /></div>
+          : <label className="field">客户反馈<textarea required maxLength={20_000} rows={6} value={feedback} onChange={event => setFeedback(event.target.value)} /></label>}
+        <p className="work-note">{product ? '创建后可补充数据口径、关联资料并保存阶段成果。' : '保存后，你可以补充客户、项目、复现过程及相关资料。'}</p>
         {createError && <p className="form-error" role="alert">{createError}</p>}
         <div className="work-buttons"><button className="primary-button" type="submit">{creating ? '正在创建…' : '创建事项'}</button></div>
       </fieldset>
@@ -93,13 +113,14 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
       <p className="form-error" role="alert">{loadError}</p>
       <button className="secondary-button" onClick={() => setReload(value => value + 1)}>重新读取</button>
     </div> : mode === 'detail' || items === null ? <p role="status">正在读取工作事项…</p> : <section className="panel work-section" aria-labelledby="work-list-heading">
-      <div className="work-section-heading"><h2 id="work-list-heading">客户问题</h2><span className="work-note">{items.length} 项</span></div>
-      {items.length === 0 ? <p className="work-note">还没有客户问题。收到反馈时，可以先保存标题和原反馈。</p> : <ul className="work-list">
+      <div className="work-section-heading"><h2 id="work-list-heading">事项列表</h2><span className="work-note">{items.length} 项</span></div>
+      {items.length === 0 ? <p className="work-note">还没有工作事项。可先记录一条客户反馈或产品分析目标。</p> : <ul className="work-list">
         {items.map(entry => <li key={entry.id}>
           <button className="work-list-row" onClick={() => open(entry.id)}>
             <span className="work-list-title">{entry.title}</span>
+            <span className="work-note">{workKindLabel(entry.kind)}</span>
             {entry.followUpOn && <span className="work-note">跟进 <time dateTime={entry.followUpOn}>{entry.followUpOn}</time></span>}
-            <Status value={entry.status} />
+            <Status kind={entry.kind} value={entry.status} />
           </button>
         </li>)}
       </ul>}
@@ -109,7 +130,11 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
 
 const contextOf = (item: WorkItem) => ({ status: item.status, customer: item.customer ?? '', project: item.project ?? '', occurredAt: inputTime(item.occurredAt),
   waitingFor: item.waitingFor ?? '', nextStep: item.nextStep ?? '', followUpOn: item.followUpOn ?? '' });
-type Section = 'current' | 'history' | 'materials';
+const analysisOf = (analysis?: WorkAnalysis) => ({
+  goal: analysis?.goal ?? '', dataScope: analysis?.dataScope ?? '',
+  confirmedConclusions: analysis?.confirmedConclusions ?? '', openQuestions: analysis?.openQuestions ?? '',
+});
+type Section = 'current' | 'history' | 'report' | 'materials' | 'stage';
 
 function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   item: WorkItem;
@@ -120,6 +145,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
 }) {
   const [saved, setSaved] = useState(item);
   const [context, setContext] = useState(() => contextOf(item));
+  const [analysis, setAnalysis] = useState(() => analysisOf(item.analysis));
   const [closureReason, setClosureReason] = useState('');
   const [report, setReport] = useState(item.reportDraft ?? '');
   const [sent, setSent] = useState<{ body: string; time: string } | null>(null);
@@ -162,6 +188,14 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       nextStep: context.nextStep === previous.nextStep ? current.nextStep : context.nextStep,
       followUpOn: context.followUpOn === previous.followUpOn ? current.followUpOn : context.followUpOn,
     });
+    const previousAnalysis = analysisOf(saved.analysis);
+    const currentAnalysis = analysisOf(next.analysis);
+    setAnalysis({
+      goal: analysis.goal === previousAnalysis.goal ? currentAnalysis.goal : analysis.goal,
+      dataScope: analysis.dataScope === previousAnalysis.dataScope ? currentAnalysis.dataScope : analysis.dataScope,
+      confirmedConclusions: analysis.confirmedConclusions === previousAnalysis.confirmedConclusions ? currentAnalysis.confirmedConclusions : analysis.confirmedConclusions,
+      openQuestions: analysis.openQuestions === previousAnalysis.openQuestions ? currentAnalysis.openQuestions : analysis.openQuestions,
+    });
     if (report === (saved.reportDraft ?? '')) setReport(next.reportDraft ?? '');
   });
   const renderNotice = (section: Section) => notice?.section === section && <div className="work-notice">
@@ -169,13 +203,17 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
     {notice.conflict && <button className="secondary-button" disabled={busy} onClick={() => void readLatest(section)}>重新读取最新版本</button>}
   </div>;
   const changeContext = <K extends keyof typeof context>(key: K, value: (typeof context)[K]) => setContext(previous => ({ ...previous, [key]: value }));
+  const product = saved.kind === 'product_analysis';
   const closing = context.status === 'closed' && saved.status !== 'closed';
   const rawById = new Map(raws.map(raw => [raw.id, raw]));
   const availableRaws = raws.filter(raw => !saved.rawIds.includes(raw.id));
 
   return <div className="page work-page work-detail">
     <div className="page-heading">
-      <div><button className="text-button work-back" onClick={onBack}>返回工作事项</button><h1>{saved.title}</h1><div className="work-detail-meta"><Status value={saved.status} /><span>最近保存 {formatTime(saved.updatedAt)}</span></div></div>
+      <div><button className="text-button work-back" onClick={onBack}>返回工作事项</button><h1>{saved.title}</h1>
+        <div className="work-detail-meta"><span>{workKindLabel(saved.kind)}</span><Status kind={saved.kind} value={saved.status} /><span>最近保存 {formatTime(saved.updatedAt)}</span></div>
+        <p className="work-note work-save-hint">各区独立保存。修改后，请使用该区的保存按钮。</p>
+      </div>
     </div>
     <section className="panel work-section" aria-labelledby="work-current">
       <div className="work-section-heading"><h2 id="work-current">当前情况</h2>
@@ -183,32 +221,43 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       </div>
       <form onSubmit={event => {
         event.preventDefault();
-        void update('current', { ...context, occurredAt: timestamp(context.occurredAt), ...(closing ? { closureReason } : {}) }, closing ? '事项已关闭。' : '当前情况已保存。', next => {
+        const { status, waitingFor, nextStep, followUpOn, customer, project, occurredAt } = context;
+        void update('current', { status, waitingFor, nextStep, followUpOn,
+          ...(product ? { analysis } : { customer, project, occurredAt: timestamp(occurredAt) }),
+          ...(closing ? { closureReason } : {}) }, closing ? (product ? '事项已完成。' : '事项已关闭。') : '当前情况已保存。', next => {
           setContext(contextOf(next));
+          setAnalysis(analysisOf(next.analysis));
           setClosureReason('');
         });
       }}>
         <fieldset className="work-form" disabled={busy}>
           <div className="work-form-grid">
             <div className="field"><label htmlFor="work-status">状态</label><select id="work-status" value={context.status} disabled={saved.status === 'closed'} onChange={event => changeContext('status', event.target.value as WorkStatus)}>
-              {Object.entries(workStatusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              {Object.entries(product ? analysisStatusLabels : customerStatusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></div>
             <label className="field">跟进日期（选填）<input type="date" aria-describedby={context.status === 'waiting' ? 'work-follow-up-hint' : undefined} value={context.followUpOn} onChange={event => changeContext('followUpOn', event.target.value)} /></label>
             {context.status === 'waiting' && <p className="work-note work-span" id="work-follow-up-hint">可以设置跟进日期，到期会显示在首页。也可以暂时留空。</p>}
             <label className="field">等谁／等什么（选填）<input maxLength={300} value={context.waitingFor} onChange={event => changeContext('waitingFor', event.target.value)} /></label>
             <label className="field">下一步（选填）<input maxLength={1000} value={context.nextStep} onChange={event => changeContext('nextStep', event.target.value)} /></label>
+            {product ? <>
+              <div className="field work-span"><label htmlFor="work-goal">分析目标</label><textarea id="work-goal" required maxLength={20_000} rows={2} value={analysis.goal} onChange={event => setAnalysis({ ...analysis, goal: event.target.value })} /></div>
+              <div className="field work-span"><label htmlFor="work-data-scope">数据范围与口径</label><textarea id="work-data-scope" maxLength={20_000} rows={2} value={analysis.dataScope} onChange={event => setAnalysis({ ...analysis, dataScope: event.target.value })} /></div>
+              <div className="field"><label htmlFor="work-conclusions">已确认结论</label><textarea id="work-conclusions" maxLength={20_000} rows={3} value={analysis.confirmedConclusions} onChange={event => setAnalysis({ ...analysis, confirmedConclusions: event.target.value })} /></div>
+              <div className="field"><label htmlFor="work-questions">未解问题</label><textarea id="work-questions" maxLength={20_000} rows={3} value={analysis.openQuestions} onChange={event => setAnalysis({ ...analysis, openQuestions: event.target.value })} /></div>
+            </> : <>
             <label className="field">客户（选填）<input maxLength={200} value={context.customer} onChange={event => changeContext('customer', event.target.value)} /></label>
             <label className="field">项目（选填）<input maxLength={200} value={context.project} onChange={event => changeContext('project', event.target.value)} /></label>
             <label className="field">发生时间（选填，上海时间）<input type="datetime-local" step="1" value={context.occurredAt} onChange={event => changeContext('occurredAt', event.target.value)} /></label>
-            {closing && <label className="field work-span">关闭原因<textarea required maxLength={20_000} rows={2} value={closureReason} onChange={event => setClosureReason(event.target.value)} /></label>}
+            </>}
+            {closing && <label className="field work-span">{product ? '完成说明' : '关闭原因'}<textarea required maxLength={20_000} rows={2} value={closureReason} onChange={event => setClosureReason(event.target.value)} /></label>}
           </div>
-          <div className="work-buttons"><button className="primary-button" type="submit">{closing ? '关闭事项' : '保存当前情况'}</button></div>
+          <div className="work-buttons"><button className="primary-button" type="submit">{closing ? (product ? '完成事项' : '关闭事项') : '保存当前情况'}</button></div>
         </fieldset>
       </form>
       {renderNotice('current')}
     </section>
 
-    <section className="panel work-section" aria-labelledby="work-history">
+    {!product && <section className="panel work-section" aria-labelledby="work-history">
       <div className="work-section-heading"><h2 id="work-history">处理记录</h2></div>
       <ol className="work-history-list">
         <li><div><h3>原客户反馈</h3><time dateTime={saved.createdAt}>{formatTime(saved.createdAt)}</time></div><p className="work-prose">{saved.feedback}</p></li>
@@ -233,12 +282,13 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
             {kind === 'retest' && <div className="field"><label htmlFor="work-retest-outcome">复测结果</label><select id="work-retest-outcome" required value={outcome} onChange={event => setOutcome(event.target.value as typeof outcome)}><option value="">选择结果</option><option value="passed">通过</option><option value="failed">未通过</option></select></div>}
           </div>
           <label className="field">记录内容<textarea rows={3} required maxLength={20_000} value={historyText} onChange={event => setHistoryText(event.target.value)} /></label>
-          <div className="work-buttons"><button className="secondary-button" type="submit">添加记录</button></div>
+          <div className="work-buttons"><button className="secondary-button" type="submit">保存处理记录</button></div>
         </fieldset>
       </form>
+      {renderNotice('history')}
       <form className="work-subsection" onSubmit={event => {
         event.preventDefault();
-        void update('history', { reportDraft: report }, '技术反馈正文已保存。', next => setReport(next.reportDraft ?? ''));
+        void update('report', { reportDraft: report }, '技术反馈正文已保存。', next => setReport(next.reportDraft ?? ''));
       }}>
         <h3>手工技术反馈</h3>
         <fieldset className="work-form" disabled={busy}>
@@ -248,9 +298,9 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
             <button className="secondary-button" type="button" disabled={!report.trim()} onClick={async () => {
               try {
                 await navigator.clipboard.writeText(report);
-                setNotice({ section: 'history', message: '正文已复制。' });
+                setNotice({ section: 'report', message: '正文已复制。' });
               } catch {
-                setNotice({ section: 'history', message: '复制失败，请手动选择正文复制。', error: true });
+                setNotice({ section: 'report', message: '复制失败，请手动选择正文复制。', error: true });
               }
             }}>复制正文</button>
             <button className="secondary-button" type="button" disabled={!!sent} onClick={() => setSent({ body: report, time: '' })}>记录已发送</button>
@@ -259,7 +309,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       </form>
       {sent && <form className="work-subsection" onSubmit={event => {
         event.preventDefault();
-        void update('history', { history: { kind: 'sent', body: sent.body, sentAt: timestamp(sent.time) } }, '发送记录已添加。', () => setSent(null));
+        void update('report', { history: { kind: 'sent', body: sent.body, sentAt: timestamp(sent.time) } }, '发送记录已添加。', () => setSent(null));
       }}>
         <h3>登记实际发送</h3>
         <fieldset className="work-form" disabled={busy}>
@@ -268,8 +318,8 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
           <div className="work-buttons"><button className="primary-button" type="submit">确认记录已发送</button><button className="secondary-button" type="button" onClick={() => setSent(null)}>取消</button></div>
         </fieldset>
       </form>}
-      {renderNotice('history')}
-    </section>
+      {renderNotice('report')}
+    </section>}
 
     <section className="panel work-section" aria-labelledby="work-materials">
       <div className="work-section-heading"><h2 id="work-materials">资料与成果</h2></div>
@@ -336,5 +386,12 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       </div>
       {renderNotice('materials')}
     </section>
+    {product && <WorkAnalysisPanel
+      item={saved}
+      rawById={rawById}
+      busy={busy}
+      saveStage={(body, analysisRunId, onSaved) => void update('stage', { history: { kind: 'stage_result', body, analysisRunId } }, '阶段成果已保存。', onSaved)}
+      stageNotice={renderNotice('stage')}
+    />}
   </div>;
 }

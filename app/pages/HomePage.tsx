@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
 import type { Wiki, WorkItemSummary } from '../api';
-import { workStatusLabels } from './WorkItemsPage';
+import { workKindLabel, workStatusLabel } from './WorkItemsPage';
 import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
 import type { Raw, Stats } from '../api';
@@ -63,13 +63,13 @@ export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, on
     ].map(entry=><button className="home-entry" key={entry.title} onClick={entry.action}><span className="entry-icon"><Icon name={entry.icon}/></span><span><b>{entry.title}</b><small>{entry.description}</small></span><span aria-hidden="true">›</span></button>)}</div>
     {reviewOpen&&<PeriodReview onClose={()=>setReviewOpen(false)} onOpenWiki={id=>onOpenWiki(id)} onOpenAction={item=>onOpenAction?.(item)} />}
     {onOpenWorkItem && <section className="panel home-actions work-due" aria-labelledby="work-due-heading">
-      <div className="panel-heading"><div><h2 id="work-due-heading">到期跟进</h2><p>客户问题 · 按上海日期</p></div>
+      <div className="panel-heading"><div><h2 id="work-due-heading">到期跟进</h2><p>工作事项 · 按上海日期</p></div>
         <button className="text-button" onClick={() => setDueReload(value => value + 1)}>刷新到期跟进</button>
       </div>
       {dueError ? <p className="form-error" role="alert">{dueError}</p> : dueItems === null ? <p role="status">正在读取到期跟进…</p> : dueItems.length === 0
-        ? <p>暂无到期的客户问题。</p>
+        ? <p>暂无到期的工作事项。</p>
         : <div className="home-action-list">{dueItems.map(item => <article className="home-action-row" key={item.id} aria-label={item.title}>
-          <div><b>{item.title}</b><p>{item.followUpOn && <time dateTime={item.followUpOn}>{item.followUpOn}</time>} · {workStatusLabels[item.status]}</p></div>
+          <div><b>{item.title}</b><p>{workKindLabel(item.kind)} · {item.followUpOn && <time dateTime={item.followUpOn}>{item.followUpOn}</time>} · {workStatusLabel(item.kind, item.status)}</p></div>
           <button className="secondary-button" onClick={() => onOpenWorkItem(item.id)}>查看事项</button>
         </article>)}</div>}
     </section>}
