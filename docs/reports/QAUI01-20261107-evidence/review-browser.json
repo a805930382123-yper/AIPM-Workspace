@@ -1,0 +1,265 @@
+{
+  "checks": [
+    "Q01 normal desktop and empty screenshots; Q05 polling and disabled controls while asking",
+    "Q01 long text and source titles at 1440/1024/390; Q02 labels and stable numbering with real current response plus visual-only fixtures",
+    "Q03 keyboard and pointer locate corresponding evidence, real Wiki navigation and Raw offset/quote/SHA",
+    "Q05 failure is explicit, old question remains identified, retry requires action and reuses request ID",
+    "Q04 whole/selected previews, crossed inline numbers stripped from selection, cancel read-only, stored selection IDs and draft access; Q05 disk failure preserves edits, retry reuses proposal",
+    "Q03 real stale citation rejects and exposes error; Q05 insufficient answer has no fake citations, save or extra provider call"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "pageWidth": 1440,
+      "panelWidth": 1094,
+      "panelClientWidth": 1094,
+      "input": {
+        "x": 341,
+        "y": 273,
+        "width": 271,
+        "height": 104
+      },
+      "answer": {
+        "x": 661,
+        "y": 353.3125,
+        "width": 646.875,
+        "height": 140
+      },
+      "citation": {
+        "x": 682,
+        "y": 604.3125,
+        "width": 684,
+        "height": 25
+      }
+    },
+    {
+      "viewport": 1440,
+      "pageWidth": 1440,
+      "panelWidth": 1094,
+      "panelClientWidth": 1094,
+      "input": {
+        "x": 341,
+        "y": 273,
+        "width": 271,
+        "height": 104
+      },
+      "answer": {
+        "x": 661,
+        "y": 353.3125,
+        "width": 646.875,
+        "height": 364
+      },
+      "citation": {
+        "x": 682,
+        "y": 828.3125,
+        "width": 684,
+        "height": 25
+      }
+    },
+    {
+      "viewport": 1024,
+      "pageWidth": 1024,
+      "panelWidth": 744,
+      "panelClientWidth": 744,
+      "input": {
+        "x": 281,
+        "y": 116.59375,
+        "width": 271,
+        "height": 104
+      },
+      "answer": {
+        "x": 601,
+        "y": 217.703125,
+        "width": 376,
+        "height": 504
+      },
+      "citation": {
+        "x": 622,
+        "y": 832.703125,
+        "width": 334,
+        "height": 25
+      }
+    },
+    {
+      "viewport": 390,
+      "pageWidth": 390,
+      "panelWidth": 356,
+      "panelClientWidth": 356,
+      "input": {
+        "x": 33,
+        "y": 360.796875,
+        "width": 324,
+        "height": 104
+      },
+      "answer": {
+        "x": 33,
+        "y": 762.296875,
+        "width": 324,
+        "height": 532
+      },
+      "citation": {
+        "x": 54,
+        "y": 1405.296875,
+        "width": 282,
+        "height": 25
+      }
+    },
+    {
+      "viewport": 390,
+      "pageWidth": 390,
+      "panelWidth": 356,
+      "panelClientWidth": 356,
+      "input": {
+        "x": 33,
+        "y": -133.203125,
+        "width": 324,
+        "height": 104
+      },
+      "answer": {
+        "x": 33,
+        "y": 268.296875,
+        "width": 324,
+        "height": 196
+      },
+      "citation": {
+        "x": 54,
+        "y": 575.296875,
+        "width": 282,
+        "height": 25
+      }
+    }
+  ],
+  "screenshots": [
+    "review-desktop-empty.png",
+    "review-desktop-answer.png",
+    "review-long-content-1440.png",
+    "review-long-content-1024.png",
+    "review-long-content-390.png",
+    "review-keyboard-citation-focus.png",
+    "review-mobile-raw-location.png",
+    "review-old-answer-after-failure.png",
+    "review-cross-section-preview.png"
+  ],
+  "pageErrors": [],
+  "success": true,
+  "selection": {
+    "rawSelection": "统计必须记录年份和活跃条件。[1][2][3]\n\n【综合推断】综合推断：不同统计口径应",
+    "selectedText": "统计必须记录年份和活跃条件。\n\n【综合推断】综合推断：不同统计口径应",
+    "sections": [
+      "section-0",
+      "section-1"
+    ],
+    "citations": [
+      "wiki-0",
+      "wiki-1",
+      "wiki-2"
+    ]
+  },
+  "counters": {
+    "provider": 5,
+    "realProviderCalls": 0,
+    "configuration": "not-connected"
+  },
+  "chrome": "156.0.8078.80",
+  "requests": [
+    {
+      "url": "/api/knowledge/answers",
+      "method": "POST",
+      "data": {
+        "requestId": "3ef54c12-8811-4b27-b844-ce34a3029c2e",
+        "question": "有效门店统计的年份与签约口径有什么区别？",
+        "retry": false
+      }
+    },
+    {
+      "url": "/api/knowledge/answers/3ef54c12-8811-4b27-b844-ce34a3029c2e/citations/wiki-1",
+      "method": "GET",
+      "data": null
+    },
+    {
+      "url": "/api/knowledge/answers/3ef54c12-8811-4b27-b844-ce34a3029c2e/citations/raw-0",
+      "method": "GET",
+      "data": null
+    },
+    {
+      "url": "/api/knowledge/answers",
+      "method": "POST",
+      "data": {
+        "requestId": "05184e36-f4cd-4ae1-ab73-19916df1c11a",
+        "question": "有效门店统计的活跃口径和签约口径如何区分？",
+        "retry": false
+      }
+    },
+    {
+      "url": "/api/knowledge/answers",
+      "method": "POST",
+      "data": {
+        "requestId": "05184e36-f4cd-4ae1-ab73-19916df1c11a",
+        "question": "有效门店统计的活跃口径和签约口径如何区分？",
+        "retry": true
+      }
+    },
+    {
+      "url": "/api/knowledge/answers/05184e36-f4cd-4ae1-ab73-19916df1c11a/save",
+      "method": "POST",
+      "data": {
+        "key": "7dcd32dd-d534-4c8c-a548-1b305e6033bf",
+        "resultRevision": 3,
+        "preview": {
+          "title": "QAUI01 合成渠道口径核对",
+          "conclusion": "统计必须记录年份和活跃条件。",
+          "inferences": "综合推断：不同统计口径应\n人工核对后再分渠道统计。",
+          "tags": [],
+          "selectedText": "统计必须记录年份和活跃条件。\n\n【综合推断】综合推断：不同统计口径应",
+          "selectedSectionIds": [
+            "section-0",
+            "section-1"
+          ],
+          "citationIds": [
+            "wiki-0",
+            "wiki-1",
+            "wiki-2"
+          ]
+        }
+      }
+    },
+    {
+      "url": "/api/knowledge/answers/05184e36-f4cd-4ae1-ab73-19916df1c11a/save",
+      "method": "POST",
+      "data": {
+        "key": "7dcd32dd-d534-4c8c-a548-1b305e6033bf",
+        "resultRevision": 3,
+        "preview": {
+          "title": "QAUI01 合成渠道口径核对",
+          "conclusion": "统计必须记录年份和活跃条件。",
+          "inferences": "综合推断：不同统计口径应\n人工核对后再分渠道统计。",
+          "tags": [],
+          "selectedText": "统计必须记录年份和活跃条件。\n\n【综合推断】综合推断：不同统计口径应",
+          "selectedSectionIds": [
+            "section-0",
+            "section-1"
+          ],
+          "citationIds": [
+            "wiki-0",
+            "wiki-1",
+            "wiki-2"
+          ]
+        }
+      }
+    },
+    {
+      "url": "/api/knowledge/answers/05184e36-f4cd-4ae1-ab73-19916df1c11a/citations/wiki-0",
+      "method": "GET",
+      "data": null
+    },
+    {
+      "url": "/api/knowledge/answers",
+      "method": "POST",
+      "data": {
+        "requestId": "70a9519b-bcc9-4857-bbbd-04652648b76c",
+        "question": "天王星卫星轨道周期需要多久？",
+        "retry": false
+      }
+    }
+  ]
+}
