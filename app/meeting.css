@@ -81,3 +81,11 @@
 .meeting-page .meeting-meta b{font-size:14px;color:#34435e}
 .meeting-page .meeting-meta span{font-size:12px;color:var(--muted)}
 .meeting-page .meeting-policy-summary{margin:20px 0}.meeting-page .meeting-group,.meeting-page .meeting-sources{margin-top:12px;padding:0 16px;border:1px solid var(--line);border-radius:8px}.meeting-page .meeting-group>summary,.meeting-page .meeting-sources>summary{padding:14px 0;color:var(--ink);font-size:14px;font-weight:600;cursor:pointer}.meeting-page .meeting-sources>p{padding-bottom:12px}
+
+.meeting-minute-clear .danger-button { color: #8b3029; background: #fff; border-color: #b96760; opacity: 1; }
+.meeting-minute-clear .danger-button:hover:not(:disabled) { color: #fff; background: #8b3029; border-color: #8b3029; }
+.meeting-minute-clear .danger-button:disabled { color: #70443f; background: #f3e9e8; border-color: #d4b8b5; opacity: 1; cursor: not-allowed; }
+.meeting-minute-save { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.meeting-minute-save span { color: #526176; font-size: 13px; }
+.meeting-minute-save .primary-button:disabled { cursor: not-allowed; }
+.meeting-save-notice { padding: 10px 12px; color: #286247; background: #edf8f1; border: 1px solid #bcdcc9; border-radius: 8px; font-size: 13px; }
