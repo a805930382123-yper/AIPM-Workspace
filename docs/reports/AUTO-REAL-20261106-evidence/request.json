@@ -1,0 +1,138 @@
+{
+  "system": "知识维护提议，严格输出schema JSON。pages为从0开始的本次输入主题，每个索引必须恰好被一个成果的pageIndexes覆盖。同一真实targetWikiId只可出现一次：将涉及该页的所有主题归并在一个pageIndexes集合及一份完整候选内，保留全部主题的依据与待核问题。独立新主题按语义分开，同分类或检索命中不能作为合并依据。已有同主题优先update同一真实ID。完整body保留旧有效内容、人工补充、旧来源，并整合本次内容；事实/整理/推断/待核分别分段。不同年份、主体、条件、单位及口径并列；矛盾并列待核，禁止自行裁定。相同内容及来源无变化选noop；仅增加来源选link且body和title原样；新主题create。targetWikiId/baseRevision只可来自context，create为null。dependsOn填写被引用的新页面所属输入主题索引，同一成果内部无需依赖。不要引用未提议的新页。summary列实际差异和保留内容，questions列矛盾待核。不增加本次更新审核章节。若输入含requested，严格按指定动作/目标输出一份覆盖全部给定主题的候选。create只依据给定主题和原文证据，禁止带入旧页内容；update基于唯一新目标快照，若有同一目标此前候选，保留其中已有的人工编辑。{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"version\",\"changes\"],\"properties\":{\"version\":{\"type\":\"integer\",\"enum\":[1]},\"changes\":{\"type\":\"array\",\"minItems\":1,\"maxItems\":50,\"items\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"pageIndexes\",\"action\",\"targetWikiId\",\"baseRevision\",\"title\",\"body\",\"aliases\",\"tags\",\"reason\",\"summary\",\"questions\",\"dependsOn\"],\"properties\":{\"pageIndexes\":{\"type\":\"array\",\"maxItems\":50,\"items\":{\"type\":\"integer\",\"minimum\":0},\"minItems\":1},\"action\":{\"type\":\"string\",\"enum\":[\"create\",\"update\",\"link\",\"noop\"]},\"targetWikiId\":{\"type\":[\"string\",\"null\"]},\"baseRevision\":{\"type\":[\"integer\",\"null\"]},\"title\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":8000},\"body\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":100000},\"aliases\":{\"type\":\"array\",\"maxItems\":50,\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":8000}},\"tags\":{\"type\":\"array\",\"maxItems\":50,\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":8000}},\"reason\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":8000},\"summary\":{\"type\":\"array\",\"maxItems\":50,\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":8000}},\"questions\":{\"type\":\"array\",\"maxItems\":50,\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":8000}},\"dependsOn\":{\"type\":\"array\",\"maxItems\":50,\"items\":{\"type\":\"integer\",\"minimum\":0}}}}}}}",
+  "user": "{\"stage\":\"maintenance\",\"source\":{\"id\":\"837dfe63-a182-4691-84d1-1f9279908404\",\"title\":\"星桥直营网点2026年试点记录\",\"sourceType\":\"report\",\"sourceName\":\"完全虚构 AUTO-REAL 验收样例\",\"tags\":[\"星桥\",\"直营网点\"]},\"document\":{\"title\":\"星桥直营网点2026年试点记录\",\"main_topic\":\"星桥试点记录\",\"source_level\":\"D\",\"summary\":\"来源事实：\\n2026年，星桥直营试点样本目标120家，实际开业90家。\\n回访负责人尚未指定。\\nAI工具尚未上线，试点收益尚未核验。\"},\"pages\":[{\"pageId\":\"8d3c9be5-b5b2-45e2-8e2c-bab5d0f87004\",\"title\":\"2026 年开业口径\",\"type\":\"metric\",\"category\":\"channel\",\"one_line_definition\":\"2026 年开业口径\",\"source_facts\":[{\"text\":\"2026年，星桥直营试点样本目标120家，实际开业90家。\",\"evidenceIds\":[\"c1-l001\"]}],\"ai_organized\":[],\"ai_inferences\":[],\"related_pages\":[],\"open_questions\":[\"2026年试点统计是否纳入演示店，待确认。\"],\"source_evidence\":[{\"id\":\"c1-l001\",\"rawId\":\"837dfe63-a182-4691-84d1-1f9279908404\",\"quote\":\"2026年，星桥直营试点样本目标120家，实际开业90家。\\n\\n回访负责人尚未指定。AI工具尚未上线，试点收益尚未核验。\\n\\n\",\"start\":0,\"end\":61,\"chunkIndex\":0},{\"id\":\"c1-l002\",\"rawId\":\"837dfe63-a182-4691-84d1-1f9279908404\",\"quote\":\"2026年试点统计是否纳入演示店，待确认。\",\"start\":61,\"end\":82,\"chunkIndex\":0}],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"D\",\"selected\":false,\"provenance\":[{\"chunkIndex\":0,\"start\":0,\"end\":82}]},{\"pageId\":\"d1ccd54d-f7a2-432d-9f94-9c429c5d1ec5\",\"title\":\"回访与上线状态\",\"type\":\"metric\",\"category\":\"channel\",\"one_line_definition\":\"回访与上线状态\",\"source_facts\":[{\"text\":\"回访负责人尚未指定。\",\"evidenceIds\":[\"c1-l001\"]},{\"text\":\"AI工具尚未上线，试点收益尚未核验。\",\"evidenceIds\":[\"c1-l001\"]}],\"ai_organized\":[],\"ai_inferences\":[],\"related_pages\":[],\"open_questions\":[],\"source_evidence\":[{\"id\":\"c1-l001\",\"rawId\":\"837dfe63-a182-4691-84d1-1f9279908404\",\"quote\":\"2026年，星桥直营试点样本目标120家，实际开业90家。\\n\\n回访负责人尚未指定。AI工具尚未上线，试点收益尚未核验。\\n\\n\",\"start\":0,\"end\":61,\"chunkIndex\":0}],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"D\",\"selected\":false,\"provenance\":[{\"chunkIndex\":0,\"start\":0,\"end\":82}]}],\"context\":[{\"title\":\"星桥直营网点年度观察\",\"sources\":[\"c27de474-39a4-4bb0-b33f-890b44b0166e\"],\"type\":\"metric\",\"category\":\"channel\",\"aliases\":[],\"tags\":[\"星桥\"],\"knowledge_status\":\"source_supported\",\"confidence\":\"medium\",\"source_level\":\"D\",\"review_status\":\"reviewed\",\"id\":\"731f9adf-4038-40bc-8990-0c2e6b685695\",\"domain\":\"fmcg\",\"created\":\"2026-11-06T12:31:33.233Z\",\"updated\":\"2026-11-06T12:31:33.233Z\",\"revision\":1,\"body\":\"## 旧来源事实\\n\\n2025年，星桥直营城区样本目标100家，实际开业80家。\\n\\n## 人工补充\\n\\n各年度按各自统计范围并列，不跨年相加。开业须通过首单验收。\"}],\"requested\":{\"action\":\"update\",\"targetWikiId\":\"731f9adf-4038-40bc-8990-0c2e6b685695\"}}",
+  "structuredOutput": {
+    "name": "knowledge_maintenance",
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "changes"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "changes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pageIndexes",
+              "action",
+              "targetWikiId",
+              "baseRevision",
+              "title",
+              "body",
+              "aliases",
+              "tags",
+              "reason",
+              "summary",
+              "questions",
+              "dependsOn"
+            ],
+            "properties": {
+              "pageIndexes": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 1
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "update",
+                  "link",
+                  "noop"
+                ]
+              },
+              "targetWikiId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "baseRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8000
+              },
+              "body": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100000
+              },
+              "aliases": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 8000
+                }
+              },
+              "tags": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 8000
+                }
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8000
+              },
+              "summary": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 8000
+                }
+              },
+              "questions": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 8000
+                }
+              },
+              "dependsOn": {
+                "type": "array",
+                "maxItems": 50,
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "timeoutMs": 120000
+}
