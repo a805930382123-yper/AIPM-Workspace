@@ -1,18 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
-import type { Wiki } from '../api';
+import type { Wiki, WorkItemSummary } from '../api';
+import { workStatusLabels } from './WorkItemsPage';
 import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
 import type { Raw, Stats } from '../api';
-import { api, dateText, sourceLabels } from '../api';
+import { api, dateText, sourceLabels, workItems } from '../api';
 
 const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
 const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
 
-export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number }) {
+export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [reviewFilter,setReviewFilter]=useState(false);
+  const [dueItems, setDueItems] = useState<WorkItemSummary[] | null>(null);
+  const [dueError, setDueError] = useState('');
+  const [dueReload, setDueReload] = useState(0);
+  const showDue = Boolean(onOpenWorkItem);
+  useEffect(() => {
+    if (!showDue) return;
+    let active = true;
+    setDueItems(null);
+    setDueError('');
+    void workItems(true).then(items => { if (active) setDueItems(items); })
+      .catch(() => { if (active) setDueError('到期跟进读取失败，请刷新后重试。'); });
+    return () => { active = false; };
+  }, [showDue, dueReload, workItemsRevision]);
   useEffect(()=>{let active=true;api<{items:Wiki[]}>('/api/wiki').then(result=>{if(active)setRecentWiki([...result.items].sort((a,b)=>b.updated.localeCompare(a.updated)).slice(0,4));}).catch(()=>{if(active)setWikiError('最近知识读取失败，请稍后重试。');});return()=>{active=false;};},[]);
   const [reviewOpen,setReviewOpen]=useState(false);
   const [actions,setActions]=useState<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}|null>(null);
@@ -48,6 +62,17 @@ export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, on
       {title:'新建会议',description:'记录和管理会议',icon:'calendar',action:onCreateMeeting},
     ].map(entry=><button className="home-entry" key={entry.title} onClick={entry.action}><span className="entry-icon"><Icon name={entry.icon}/></span><span><b>{entry.title}</b><small>{entry.description}</small></span><span aria-hidden="true">›</span></button>)}</div>
     {reviewOpen&&<PeriodReview onClose={()=>setReviewOpen(false)} onOpenWiki={id=>onOpenWiki(id)} onOpenAction={item=>onOpenAction?.(item)} />}
+    {onOpenWorkItem && <section className="panel home-actions work-due" aria-labelledby="work-due-heading">
+      <div className="panel-heading"><div><h2 id="work-due-heading">到期跟进</h2><p>客户问题 · 按上海日期</p></div>
+        <button className="text-button" onClick={() => setDueReload(value => value + 1)}>刷新到期跟进</button>
+      </div>
+      {dueError ? <p className="form-error" role="alert">{dueError}</p> : dueItems === null ? <p role="status">正在读取到期跟进…</p> : dueItems.length === 0
+        ? <p>暂无到期的客户问题。</p>
+        : <div className="home-action-list">{dueItems.map(item => <article className="home-action-row" key={item.id} aria-label={item.title}>
+          <div><b>{item.title}</b><p>{item.followUpOn && <time dateTime={item.followUpOn}>{item.followUpOn}</time>} · {workStatusLabels[item.status]}</p></div>
+          <button className="secondary-button" onClick={() => onOpenWorkItem(item.id)}>查看事项</button>
+        </article>)}</div>}
+    </section>}
     <section className="panel home-actions" id="home-actions"><div className="panel-heading"><div><h2>需要你处理</h2><p>{actions ? `已读取事项 ${actions.items.length} 项 · 稍后处理 ${deferredActions.length} 项` : '正在读取事项…'}</p></div><div>{reviewFilter && <button className="text-button" onClick={()=>setReviewFilter(false)}>显示全部事项</button>}<button className="text-button" onClick={()=>void loadActions()}>刷新</button></div></div>
       {actionError && <p className="form-error" role="alert">{actionError}</p>}
       {actions && Object.entries(actions.sources).map(([source,state])=>state.status==='error' && <p className="form-error" role="alert" key={source}>{({ 'raw-task':'整理任务',draft:'草稿',workflow:'更新与综合',audit:'Audit' } as Record<string,string>)[source]}：{state.message}</p>)}

@@ -18,8 +18,8 @@ type ImportFailure = {
 };
 type Mode = 'paste' | 'file';
 
-export function RawPage({ initialCitation,items, selectedId, onSelected, onOpenImport, onCommitted, openImport, onCloseImport, onDeleted, processing, job, onJobStarted, navigationGeneration = 0, selectionGeneration = 0, onOpenDraft, onOpenWorkflow, onRefresh }: {
-  initialCitation?:RawCitationTarget|null;items: Raw[]; selectedId: string | null; onSelected: (id: string) => void; onOpenImport: () => void;
+export function RawPage({ initialOriginal, initialCitation,items, selectedId, onSelected, onOpenImport, onCommitted, openImport, onCloseImport, onDeleted, processing, job, onJobStarted, navigationGeneration = 0, selectionGeneration = 0, onOpenDraft, onOpenWorkflow, onRefresh }: {
+  initialOriginal?:boolean;initialCitation?:RawCitationTarget|null;items: Raw[]; selectedId: string | null; onSelected: (id: string) => void; onOpenImport: () => void;
   onCommitted: (raw: Raw) => Promise<void>; openImport: boolean; onCloseImport: () => void; onDeleted: (id: string) => Promise<void>;
   processing: Record<string, RawProcessingState>; job: ExtractionJob | null;
   onJobStarted: (job: ExtractionJob, pageGeneration?: number, selectionGeneration?: number) => void; navigationGeneration?: number; selectionGeneration?: number; onOpenDraft: (draftId: string) => void; onOpenWorkflow?: (id: string) => void; onRefresh: () => Promise<void>;
@@ -81,7 +81,7 @@ export function RawPage({ initialCitation,items, selectedId, onSelected, onOpenI
         const state = processing[item.id];
         return <button key={item.id} className={`raw-list-item ${selected?.id === item.id ? 'selected' : ''}`} onClick={() => onSelected(item.id)}><span className="file-icon">文</span><span className="recent-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{sourceLabels[item.sourceType]} · {item.sourceName}{item.origin ? ' · 本机专用' : ''}</small><small>{dateText(item.importedAt)}{state && state.status !== 'unprocessed' ? ` · ${state.status === 'processing' ? '上次保存状态：' : ''}${rawStatusLabels[state.status]}` : ''}</small></span></button>;
       })}</div> : <div className="list-empty"><div className="empty-symbol">▧</div><b>还没有原始资料</b><span>导入第一份文章或业务记录。</span><button className="secondary-button" onClick={onOpenImport}>导入资料</button></div>}</section>
-      <section className="panel raw-detail-panel">{selected ? <RawDetail initialCitation={initialCitation} initialTranslation={importTranslation?.rawId === selected.id ? importTranslation : null} key={selected.id} item={selected} state={selectedState} job={job} onStorageReconciled={value => { onJobStarted(value, navigationGeneration, selectionGeneration); void onRefresh(); }} busy={aiBusy} error={aiError} onStartAi={(restart, planningRetry,mode) => void startAi(selected.id, restart, planningRetry,mode)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
+      <section className="panel raw-detail-panel">{selected ? <RawDetail initialOriginal={initialOriginal} initialCitation={initialCitation} initialTranslation={importTranslation?.rawId === selected.id ? importTranslation : null} key={selected.id} item={selected} state={selectedState} job={job} onStorageReconciled={value => { onJobStarted(value, navigationGeneration, selectionGeneration); void onRefresh(); }} busy={aiBusy} error={aiError} onStartAi={(restart, planningRetry,mode) => void startAi(selected.id, restart, planningRetry,mode)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
     </div>
     {dialogOpen && <ImportDialog prefill={reimport} onClose={closeDialogs} onCommitted={onCommitted} onOpen={openCommitted} onGenerate={generateImported} />}
     {deletingItem && <DeleteDialog item={deletingItem} onClose={() => setDeletingItem(null)} onDeleted={handleDeleted} />}
@@ -89,8 +89,8 @@ export function RawPage({ initialCitation,items, selectedId, onSelected, onOpenI
   </div>;
 }
 
-function RawDetail({ initialCitation,initialTranslation,item, state, job, busy, error, onStartAi, onReimport, onDelete, onOpenDraft, onStorageReconciled }: {
-  initialCitation?:RawCitationTarget|null;initialTranslation:RawTranslation|null;item: Raw; state?: RawProcessingState; job: ExtractionJob | null; busy: boolean; error: string; onStorageReconciled: (job: ExtractionJob) => void;
+function RawDetail({ initialOriginal = false, initialCitation,initialTranslation,item, state, job, busy, error, onStartAi, onReimport, onDelete, onOpenDraft, onStorageReconciled }: {
+  initialOriginal?:boolean;initialCitation?:RawCitationTarget|null;initialTranslation:RawTranslation|null;item: Raw; state?: RawProcessingState; job: ExtractionJob | null; busy: boolean; error: string; onStorageReconciled: (job: ExtractionJob) => void;
   onStartAi: (restart?: boolean, planningRetry?: boolean,mode?:'standard'|'deep') => void; onReimport: () => void; onDelete: () => void; onOpenDraft: (draftId: string) => void;
 }) {
   const citationMark=useRef<HTMLElement>(null),citation=initialCitation?.rawId===item.id?initialCitation:null;
@@ -101,7 +101,8 @@ function RawDetail({ initialCitation,initialTranslation,item, state, job, busy, 
   const [translationActionError, setTranslationActionError] = useState('');
   const [translationAction, setTranslationAction] = useState<'retry' | 'cancel' | null>(null);
   const [translationRead, setTranslationRead] = useState(0);
-  const [readingOriginal, setReadingOriginal] = useState(false);
+  const [readingOriginal, setReadingOriginal] = useState(initialOriginal);
+  useEffect(() => { setReadingOriginal(initialOriginal); }, [initialOriginal]);
   const canReadTranslation = !!item.urlImport && !item.origin;
   const translationCurrent = translation?.rawSha256 === item.bodySha256;
   const translatedBody = translationCurrent && translation.status === 'completed' ? translation.body : undefined;

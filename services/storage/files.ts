@@ -26,7 +26,7 @@ async function renameAtomic(from: string, to: string, attempts = 5): Promise<voi
   }
 }
 
-export async function writeFileAtomic(target: string, value: string): Promise<void> {
+export async function writeFileAtomic(target: string, value: string | Uint8Array): Promise<void> {
   return withJobFileAccess(target, async () => {
     await mkdir(path.dirname(target), { recursive: true });
     const temp = path.join(path.dirname(target), `.${path.basename(target)}.${randomUUID()}.tmp`);
