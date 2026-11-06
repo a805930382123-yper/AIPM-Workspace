@@ -12,10 +12,12 @@ const sourceTypeLabels: Record<string, string> = {
   wechat: '微信公众号', article: '网页文章', report: '行业报告', company: '公司资料',
   customer: '客户资料', meeting: '会议纪要', note: '个人笔记', other: '其他',
 };
-export function renderConfirmedNote(draft:DraftRecord):string{
-  const lines=['## 深度整理笔记','','> '+(draft.noteReview?'人工修改，已人工核对':'深度笔记，已人工核对'),'',renderStructuredNote(draft.structuredNote!,true)];
-  lines.push('',draft.noteReview?'> 历史模型报告，编辑后未复核；本次人工已明确查看报告状态与确定性警告。':'> 生成时模型报告仅供参考；本次人工已明确查看报告状态与确定性警告。');
-  for(const warning of inspectEditedNote(draft.structuredNote!,new Map(draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>[r.id,r.text] as const)))))lines.push(`- 确定性警告（人工已知悉）：${escapeNoteText(warning)}`);
+export function renderConfirmedNote(draft:DraftRecord,outcomeReviewed=false):string{
+  const reviewLabel = outcomeReviewed ? '已进行成果审核' : '已人工核对';
+  const lines=['## 深度整理笔记','','> '+(draft.noteReview?'人工修改，':'深度笔记，')+reviewLabel,'',renderStructuredNote(draft.structuredNote!,true)];
+  const reportLabel = draft.noteReview ? '历史模型报告，编辑后未复核' : '生成时模型报告仅供参考';
+  lines.push('',outcomeReviewed ? `> ${reportLabel}。` : `> ${reportLabel}；本次人工已明确查看报告状态与确定性警告。`);
+  for(const warning of inspectEditedNote(draft.structuredNote!,new Map(draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>[r.id,r.text] as const)))))lines.push(`- 确定性警告${outcomeReviewed ? '' : '（人工已知悉）'}：${escapeNoteText(warning)}`);
   for(const finding of draft.qualityReport?.findings??[])lines.push(`- 模型历史发现（${finding.severity}）：${escapeNoteText(finding.reason)}`);
   if(draft.noteReview?.exclusions.length){lines.push('','### 明确排除与理由','');for(const e of draft.noteReview.exclusions)lines.push(`- ${e.kind==='fact'?'事实':'原文问题'} ${escapeNoteText(e.id)}：${escapeNoteText(e.reason)}`);}
   lines.push('','### 待确认问题','');

@@ -83,13 +83,17 @@ export function validateDiscard(value: unknown): { baseRevision?: number } {
   return body.baseRevision === undefined ? {} : { baseRevision: revision(body.baseRevision) };
 }
 
-export function validateConfirm(value: unknown,allowSourceOnly=false): { baseRevision: number; selectedPageIds: string[]; idempotencyKey: string } {
+export function validateConfirm(value: unknown,allowSourceOnly=false): { baseRevision: number; selectedPageIds: string[]; idempotencyKey: string; outcomeDigest?: string } {
   const body = object(value, '请求内容');
-  if(['noteApproval','humanReview','qualityReport'].some(k=>Object.hasOwn(body,k)))throw new InputError('INVALID_CONFIRM','不能伪造笔记审批或模型报告。',400);
+  if(['noteApproval','humanReview','qualityReport','outcomeReview'].some(k=>Object.hasOwn(body,k)))throw new InputError('INVALID_CONFIRM','不能伪造审批或模型报告。',400);
   const baseRevision = revision(body.baseRevision);
   const selectedPageIds = stringList(body.selectedPageIds, 'selectedPageIds', { required: true });
   if (!selectedPageIds.length&&!allowSourceOnly) throw new InputError('NO_SELECTION', '至少选择一条知识建议才能确认写入。', 400);
   const key = body.idempotencyKey;
   if (typeof key !== 'string' || !key.trim() || key.length > 128) throw new InputError('INVALID_IDEMPOTENCY_KEY', 'idempotencyKey 必须是 1–128 个字符的文本。', 400);
-  return { baseRevision, selectedPageIds, idempotencyKey: key.trim() };
+  const outcomeDigest = body.outcomeDigest;
+  if (outcomeDigest !== undefined && (typeof outcomeDigest !== 'string' || !/^[a-f0-9]{64}$/.test(outcomeDigest))) {
+    throw new InputError('INVALID_OUTCOME_DIGEST', '成果摘要无效，请刷新草稿后再确认。', 400);
+  }
+  return { baseRevision, selectedPageIds, idempotencyKey: key.trim(), outcomeDigest };
 }

@@ -1,0 +1,55 @@
+/** TEMP-only synthetic materials, real runner/API/stores/App, fake Provider. Never loads product configuration. */
+import express from 'express';
+import {createServer} from 'vite';
+import react from '@vitejs/plugin-react';
+import {mkdtemp,writeFile,readFile,realpath} from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import type {AddressInfo} from 'node:net';
+import {lwFixture} from '../tests/lw01-fixture.ts';
+import {LLMService} from '../services/llm/service.ts';
+import {registerB04Routes} from '../server/llm-api.ts';
+import {registerKnowledgeRoutes} from '../server/knowledge-api.ts';
+import {registerHomeRoutes} from '../server/home-api.ts';
+import {PromptStore} from '../services/prompt/store.ts';
+import {getStats} from '../services/stats/index.ts';
+import {validateWikiInput,validateBaseRevision} from '../server/wiki-validation.ts';
+import {validateRaw} from '../server/validation.ts';
+const reuse=process.argv.includes('--root'),root=reuse?path.resolve(process.argv[process.argv.indexOf('--root')+1]):await mkdtemp(path.join(os.tmpdir(),'lw01-browser-'));
+const relative=path.relative(await realpath(os.tmpdir()),await realpath(root));if(!relative||relative.startsWith('..')||path.isAbsolute(relative))throw Error('TEMP isolated root required');
+const f=await lwFixture(root),prompts=new PromptStore(root);await prompts.initialize();await f.commits.reconcile();
+let fixtures:any;
+if(reuse)fixtures=JSON.parse(await readFile(path.join(root,'fixtures.json'),'utf8'));
+else{
+  fixtures={};for(const mode of ['standard','deep']){
+    const theme=(mode==='deep'?'深度':'标准')+'渠道覆盖';
+    const a=await f.rawStore.create({title:`LW01 ${mode} 资料A`,sourceType:'report',sourceName:'虚构渠道访谈A',tags:[theme],body:'2025年渠道覆盖100家，按有效门店统计。'});
+    const b=await f.rawStore.create({title:`LW01 ${mode} 资料B`,sourceType:'report',sourceName:'虚构渠道报告B',tags:[theme],body:'2026年渠道覆盖120家，按签约门店统计。\n另一报告称2026年渠道覆盖90家，统计口径待核。\n门店回访周期为7天，渠道负责人未知。'});
+    fixtures[mode]={theme,a:a.id,b:b.id};
+  }await writeFile(path.join(root,'fixtures.json'),JSON.stringify(fixtures,null,2));
+}
+const app=express();app.use(express.json({limit:'3mb'}));
+app.get('/__control/counters',(_req,res)=>res.json({provider:f.requests.length,configuration:'not-connected',realProviderCalls:0}));
+app.post('/__control/topics',(req,res)=>{f.setTopics(req.body.topics);res.json({ok:true});});
+app.get('/__control/requests',(_req,res)=>res.json(f.requests));
+app.get('/api/health',(_req,res)=>res.json({ok:true,isolated:true}));
+app.get('/api/raw',async(_req,res)=>res.json({items:await f.rawStore.list()}));
+app.get('/api/raw/:id',async(req,res)=>{const raw=await f.rawStore.get(req.params.id);if(!raw)return res.sendStatus(404);res.json(raw);});
+app.post('/api/raw',async(req,res)=>res.status(201).json(await f.rawStore.create(validateRaw(req.body))));
+app.get('/api/stats',async(_req,res)=>res.json(await getStats(root,f.rawStore,new Date(),prompts)));
+app.get('/api/recovery-issues',(_req,res)=>res.json({items:[],overflow:false}));
+app.get('/api/wiki/schema',async(_req,res)=>res.json(await f.wiki.schema()));
+app.get('/api/wiki',async(req,res)=>res.json({items:await f.wiki.list({q:typeof req.query.q==='string'?req.query.q:undefined}),categoryCounts:await f.wiki.categoryCounts()}));
+app.get('/api/wiki/:id/references',async(req,res)=>res.json({items:await f.wiki.references(req.params.id)}));
+app.get('/api/wiki/:id',async(req,res)=>{const p=await f.wiki.get(req.params.id);if(!p)return res.sendStatus(404);res.json({...p,links:(await f.wiki.links(p.id)).map(l=>({target:l.text,status:l.status==='found'?'resolved':l.status,candidates:l.candidates}))});});
+app.put('/api/wiki/:id',async(req,res)=>res.json(await f.wiki.update(req.params.id,validateBaseRevision(req.body.baseRevision),validateWikiInput(req.body))));
+app.get('/api/audits',(_req,res)=>res.json({items:[]}));
+app.get('/api/llm/config',(_req,res)=>res.json({configured:true,keyConfigured:false,provider:'fake',model:'lw01-engineering-only',missing:[],source:'none',baseUrlHost:null,environmentLocked:true}));
+registerB04Routes(app,{root,rawStore:f.rawStore,rawStates:f.rawStates,drafts:f.drafts,jobs:f.jobs,runner:f.runner,rulesDir:path.resolve('rules'),provider:()=>f.provider,llm:new LLMService('rules'),commits:f.commits,wikiStore:f.wiki});
+registerKnowledgeRoutes(app,{root,raws:f.rawStore,drafts:f.drafts,wiki:f.wiki,provider:()=>f.provider});
+registerHomeRoutes(app,{root,raws:f.rawStore,wiki:f.wiki,runner:f.runner,prompts});
+app.use(((error,_req,res,_next)=>res.status(error.status??500).json({error:{code:error.code??'ISOLATED_ERROR',message:error.message,details:error.details}})) as express.ErrorRequestHandler);
+const server=app.listen(0,'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const apiPort=(server.address() as AddressInfo).port;
+const envDir=await mkdtemp(path.join(os.tmpdir(),'lw01-empty-env-'));const vite=await createServer({configFile:false,root:process.cwd(),envDir,plugins:[react()],server:{host:'127.0.0.1',port:0,proxy:{'/api':`http://127.0.0.1:${apiPort}`}}});await vite.listen();
+const info={pid:process.pid,url:`http://127.0.0.1:${(vite.httpServer!.address() as AddressInfo).port}`,api:`http://127.0.0.1:${apiPort}`,root,fixtures,provider:'fake-only',configLoader:'not-connected'};await writeFile(path.join(root,'isolated-session.json'),JSON.stringify(info,null,2));console.log(JSON.stringify(info,null,2));
+const close=async()=>{await vite.close();await new Promise<void>(r=>server.close(()=>r()));process.exit(0);};process.on('SIGINT',()=>void close());process.on('SIGTERM',()=>void close());

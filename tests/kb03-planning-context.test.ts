@@ -79,18 +79,19 @@ async function fixture(mode:'standard'|'deep'='deep',mutate?:(stage:string,value
   return {root,state,raw,requests,wires,runner,checkpoints,start,clean:async()=>{globalThis.fetch=originalFetch;await fs.rm(root,{recursive:true,force:true});}};
 }
 
-for(const mode of ['standard','deep'] as const)test(`R6 actual adapter ${mode} sends compact wire with unchanged source/schema/timeouts and N+1/N+4`,async()=>{
+for(const mode of ['standard','deep'] as const)test(`R6 actual adapter ${mode} sends compact wire with unchanged source/schema/timeouts and N+2/N+5`,async()=>{
   const f=await fixture(mode);try{
-    const job=await f.start();assert.equal(job.status,'completed');assert.equal(f.requests.length,mode==='deep'?5:2);
+    const job=await f.start();assert.equal(job.status,'completed');assert.equal(f.requests.length,mode==='deep'?6:3);
     const cp=(await f.checkpoints.get(job.id))!,catalogs=new Map(cp.chunks.map(c=>[c.index,buildEvidenceLocatorCatalog(f.raw.body,{...c,text:f.raw.body.slice(c.start,c.end)})]));
     const internal=buildKnowledgePlanningInput(f.raw.body,cp.completedChunks,catalogs),payload=JSON.parse(f.requests[1].user.split('\n').at(-1)!);
-    const projected=reversible(f.raw.body,internal);assert.deepEqual(payload,{...projected,source:{id:f.raw.id,title:f.raw.title,sourceType:f.raw.sourceType,sourceName:f.raw.sourceName,tags:f.raw.tags},sourcePolicy:(await loadExtractionRules('rules')).sourcePolicy});
+    const projected=reversible(f.raw.body,internal);assert.deepEqual(payload,{...projected,source:{id:f.raw.id,title:f.raw.title,sourceType:f.raw.sourceType,sourceName:f.raw.sourceName,tags:f.raw.tags},sourcePolicy:(await loadExtractionRules('rules')).sourcePolicy,wikiContext:[]});
+    assert.equal(JSON.parse(f.requests.at(-1)!.user).stage,'maintenance');
     assert(payload.sourceContexts.every((c:any)=>!('text'in c)&&c.passageId));assert(payload.passages.length>0);
     assert(f.requests[1].system.includes('不能把整passage内其它陈述归给每个unit'));
     assert(f.requests[1].system.includes('passage.text.slice(contextStart-passage.start,contextEnd-passage.start)'));
     assert.deepEqual(f.wires[1].response_format.json_schema,{...f.requests[1].structuredOutput,strict:true});
     assert.equal(FROZEN_BUDGETS.totalDeadlineMs,600000);assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-19');
-    assert.deepEqual(f.requests.map(r=>r.timeoutMs),mode==='deep'?[60000,60000,120000,120000,120000]:[60000,60000]);
+    assert.deepEqual(f.requests.map(r=>r.timeoutMs),mode==='deep'?[60000,60000,120000,120000,120000,120000]:[60000,60000,120000]);
     for(const w of f.wires){assert.equal(w.model,'gpt-6.1-terra');assert.equal(w.stream,false);assert(!('temperature'in w));assert(!('reasoning_effort'in w));assert(!('max_tokens'in w));}
     const draft=await f.state.drafts.get(job.draftId);assert.equal(draft.humanReview.approvals.length,0);
     for(const unit of draft.humanReview.units){assert.equal(unit.text,f.raw.body.slice(unit.start,unit.end));}
@@ -122,7 +123,7 @@ test('R6 explicit coverage retry retains source/policy/records/passages and exac
   let fail=true;const f=await fixture('standard',(stage,value)=>{if(stage==='planning'&&fail)value.pages[0].factUnitIds.pop();return JSON.stringify(value);});try{
     const first=await f.start();assert.equal(first.error.code,'LLM_PLAN_COVERAGE_INVALID');assert.equal(f.requests.length,2);
     const saved=(await f.checkpoints.get(first.id))!,original=JSON.parse(f.requests[1].user.split('\n').at(-1)!);fail=false;
-    const completed=await f.start({planningRetry:true});assert.equal(completed.id,first.id);assert.equal(completed.status,'completed');assert.equal(completed.callCount,3);assert.equal(f.requests.length,3);
+    const completed=await f.start({planningRetry:true});assert.equal(completed.id,first.id);assert.equal(completed.status,'completed');assert.equal(completed.callCount,4);assert.equal(f.requests.length,4);assert.equal(JSON.parse(f.requests[3].user).stage,'maintenance');
     const retry=JSON.parse(f.requests[2].user.split('\n').at(-1)!);assert.deepEqual(retry,{...original,coverageFeedback:saved.lastError!.diagnostic});assert.deepEqual((await f.checkpoints.get(first.id))!.completedChunks,saved.completedChunks);
   }finally{await f.clean();}
 });
@@ -131,7 +132,7 @@ test('R6 new-version failed planning explicitly resumes same job and reuses chun
   let fail=true;const f=await fixture('deep',(stage,value)=>stage==='planning'&&fail?'{invalid':JSON.stringify(value));try{
     const first=await f.start();assert.equal(first.status,'failed');assert.equal(f.requests.length,2);
     const extracted=structuredClone((await f.checkpoints.get(first.id))!.completedChunks);
-    fail=false;const done=await f.start();assert.equal(done.status,'completed');assert.equal(done.id,first.id);assert.equal(done.callCount,6);assert.equal(f.requests.length,6);assert.deepEqual((await f.checkpoints.get(done.id))!.completedChunks,extracted);
+    fail=false;const done=await f.start();assert.equal(done.status,'completed');assert.equal(done.id,first.id);assert.equal(done.callCount,7);assert.equal(f.requests.length,7);assert.equal(JSON.parse(f.requests[6].user).stage,'maintenance');assert.deepEqual((await f.checkpoints.get(done.id))!.completedChunks,extracted);
   }finally{await f.clean();}
   const old=await fixture('deep',(stage,value)=>stage==='planning'?'{invalid':JSON.stringify(value));try{
     const job=await old.start(),cp=(await old.checkpoints.get(job.id))!;
@@ -143,8 +144,8 @@ test('R6 new-version failed planning explicitly resumes same job and reuses chun
 
 for(const revision of ['17','18'])for(const mode of ['standard','deep'] as const)test(`R9 completed revision${revision} ${mode} draft remains readable, HUMAN reviewed and explicitly confirmable`,async()=>{
   const f=await fixture(mode);try{
-    const job=await f.start(),cp=(await f.checkpoints.get(job.id))!;await f.checkpoints.save({...cp,rulesVersion:cp.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-'+revision)});
-    const file=path.join(f.root,'drafts',job.draftId+'.json'),draft=JSON.parse(await fs.readFile(file,'utf8'));draft.rulesVersion=draft.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-'+revision);await fs.writeFile(file,JSON.stringify(draft));
+    const job=await f.start(),cp=(await f.checkpoints.get(job.id))!;const {maintenance:_newContext,...historicalCheckpoint}=cp;await f.checkpoints.save({...historicalCheckpoint,rulesVersion:cp.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-'+revision)});
+    const file=path.join(f.root,'drafts',job.draftId+'.json'),draft=JSON.parse(await fs.readFile(file,'utf8'));delete draft.maintenance;draft.rulesVersion=draft.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-'+revision);await fs.writeFile(file,JSON.stringify(draft));
     assert.equal((await f.state.drafts.get(draft.id)).id,draft.id);
     if(mode==='standard'){const reused=await f.start();assert.equal(reused.id,job.id);}else await assert.rejects(f.start(),{code:'STORAGE_RECONCILE_CONFLICT'});
     const used=f.requests.length,wiki=new WikiStore(f.root,f.state.rawStore);await wiki.initialize();

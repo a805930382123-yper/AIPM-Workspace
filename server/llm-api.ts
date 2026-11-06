@@ -1,3 +1,7 @@
+import {verifyInspectionInput} from '../services/wiki/inspection-input.ts';
+import {isQuestionDraft,type KnowledgeDraftRecord} from '../services/wiki/drafts.ts';
+import {assertWikiSourcesAllowed} from '../services/wiki/source-lineage.ts';
+import {assertRawNotMeeting} from '../services/meeting/source-policy.ts';
 // B04: HTTP surface for the LLM review flow. All routes are additive; the B01–B03 routes and
 // their response shapes are untouched.
 import { randomUUID } from 'node:crypto';
@@ -98,11 +102,11 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     try {
       const rawId = typeof req.query.rawId === 'string' ? req.query.rawId : undefined;
       const status = typeof req.query.status === 'string' ? req.query.status : undefined;
-      const items = (await deps.drafts.list())
-        .filter(draft => (!rawId || draft.rawId === rawId) && (!status || draft.status === status))
+      const items = (await deps.drafts.listKnowledge())
+        .filter(draft => (!rawId || (!isQuestionDraft(draft)&&draft.rawId === rawId)) && (!status || draft.status === status))
         .map(draft => ({
-          id: draft.id, rawId: draft.rawId, rawTitle: draft.rawTitle, status: draft.status, revision: draft.revision,
-          createdAt: draft.createdAt, updatedAt: draft.updatedAt, jobId: draft.jobId,
+          id: draft.id,...(isQuestionDraft(draft)?{inputKind:draft.input.kind,question:draft.input.kind==='inspection'?'知识检查维护':draft.input.question}:{rawId:draft.rawId,rawTitle:draft.rawTitle,jobId:draft.jobId}), status: draft.status, revision: draft.revision,
+          createdAt: draft.createdAt, updatedAt: draft.updatedAt,
           title: draft.document.title, pageCount: draft.pages.length,
           selectedCount: draft.pages.filter(page => page.selected).length,
           commitOperationId: draft.commitOperationId ?? null,
@@ -147,12 +151,19 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
   };
 
   /** F04-01: the review payload always carries the full draft, the preview and the Raw metadata. */
-  const draftPayload = async (draft: NonNullable<Awaited<ReturnType<DraftStore['get']>>>) => {
+  const draftPayload = async (draft:KnowledgeDraftRecord) => {
+    if(isQuestionDraft(draft)){
+      let changed=false;for(const p of draft.input.wikiSnapshots){const current=await deps.wikiStore.get(p.id);if(!current)throw new InputError('QUESTION_BASIS_MISSING','问答依据页不存在。',409);await assertWikiSourcesAllowed(deps.wikiStore,deps.rawStore,current);if(current.revision!==p.revision)changed=true;}for(const r of draft.input.rawSnapshots)assertRawNotMeeting(await deps.rawStore.get(r.id));
+      if(draft.input.kind==='inspection'){try{await verifyInspectionInput(draft.input,deps.wikiStore,deps.rawStore);changed=false;}catch(error){if((error as {code?:string}).code==='INSPECTION_BASIS_CHANGED')changed=true;else throw error;}}
+      return {...deps.drafts.view(draft),reviewContentDigest:deps.drafts.contentDigest(draft),preview:null,raw:null,questionBasisChanged:changed&&draft.status!=='confirmed'};
+    }
     const raw = await deps.rawStore.get(draft.rawId);
     const previewValue = await preview(draft);
     const reuseTitle = previewValue?.sourceReuse?.title;
+    const job=draft.maintenance?await deps.jobs.get(draft.jobId):undefined;
     return {
       ...deps.drafts.view(draft, { sourceTitle: reuseTitle ?? draft.source.title }),
+      ...(job?{extraction:{...draft.extraction,callCount:Math.max(draft.extraction.callCount,job.callCount)}}:{}),
       ...(draft.structuredNote?{noteQualityStatus:draft.noteReview?'historical':'generated',noteCoverage:noteCoverage(draft.structuredNote,draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)),draft.humanReview!.units.filter(u=>u.kind==='question').flatMap(u=>u.records.map(r=>r.id)),draft.noteReview?.exclusions,draft.noteReview?.questionIds),noteWarnings:inspectEditedNote(draft.structuredNote,new Map(draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>[r.id,r.text] as const))))}:{}),
       reviewContentDigest: draft.humanReview ? deps.drafts.contentDigest(draft) : null,
       preview: previewValue,
@@ -162,17 +173,46 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
 
   app.get('/api/drafts/:draftId', async (req, res, next) => {
     try {
-      const draft = await deps.drafts.get(req.params.draftId);
+      const draft = await deps.drafts.getKnowledge(req.params.draftId);
       if (!draft) throw new InputError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
       res.json(await draftPayload(draft));
     } catch (error) { next(error); }
   });
 
+  app.post('/api/drafts/:draftId/changes/prepare',async(req,res,next)=>{
+    const controller=new AbortController();
+    const abort=()=>{if(!res.writableEnded)controller.abort();};
+    res.on('close',abort);
+    try{
+      const {baseRevision,changeId,action,targetWikiId,preparationId}=req.body??{};
+      if(!Number.isSafeInteger(baseRevision)||baseRevision<1||typeof changeId!=='string'||!['create','update','link','noop'].includes(action)
+        ||(preparationId!==undefined&&(typeof preparationId!=='string'||! /^[a-f0-9-]{36}$/iu.test(preparationId)))
+        ||(action==='create'?targetWikiId!==undefined:typeof targetWikiId!=='string'||! /^[a-f0-9-]{36}$/iu.test(targetWikiId))){
+        throw new InputError('INVALID_CHANGE','请选择有效的成果动作和目标。',400);
+      }
+      const draft=await deps.runner.prepareChange(req.params.draftId,{baseRevision,changeId,action,targetWikiId,preparationId},controller.signal);
+      if(!controller.signal.aborted)res.json(await draftPayload(draft));
+    }catch(error){if(!controller.signal.aborted)next(error);}
+    finally{res.off('close',abort);}
+  });
+  app.post('/api/drafts/:draftId/changes/prepare/:preparationId/cancel',(req,res)=>{
+    res.json({cancelled:deps.runner.cancelPreparation(req.params.draftId,req.params.preparationId)});
+  });
+
+  app.post('/api/drafts/:draftId/finish',async(req,res,next)=>{
+    try{
+      const {baseRevision}=validateDiscard(req.body);
+      if(baseRevision===undefined)throw new InputError('INVALID_CHANGE','请提供当前草稿版本。',400);
+      res.json(await draftPayload(await deps.wikiStore.withLock(()=>deps.runner.finishReview(req.params.draftId,baseRevision))));
+    }catch(error){next(error);}
+  });
+
   app.patch('/api/drafts/:draftId', async (req, res, next) => {
     try {
       const patch = validateDraftPatch(req.body);
-      const draft = await deps.drafts.get(req.params.draftId);
+      const draft = await deps.drafts.getKnowledge(req.params.draftId);
       if (!draft) throw new InputError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
+      if(isQuestionDraft(draft))throw new InputError('QUESTION_PATCH_UNAVAILABLE','问答草稿请逐项编辑维护候选。',409);
       const raw = await deps.rawStore.get(draft.rawId);
       if (!raw) throw new InputError('RAW_MISSING', '对应的原始资料不存在，不能编辑这份草稿。', 409);
       const updated = await deps.drafts.patch(draft.id, patch, { body: raw.body, rules: await draftRules() });
@@ -200,7 +240,8 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     const route=action==='page'?'/api/drafts/:draftId/review/pages/:pageId':`/api/drafts/:draftId/review/${action}`;
     app.post(route,async(req,res,next)=>{try{
       const input=validateHumanReview(req.body,action,String(req.params.pageId));
-      const draft=await deps.drafts.get(String(req.params.draftId));if(!draft)throw new InputError('DRAFT_NOT_FOUND','草稿不存在。',404);
+      const draft=await deps.drafts.getKnowledge(String(req.params.draftId));if(!draft)throw new InputError('DRAFT_NOT_FOUND','草稿不存在。',404);
+      if(isQuestionDraft(draft)){res.json(await draftPayload(await deps.drafts.reviewQuestionOperation(draft.id,input)));return;}
       const raw=await deps.rawStore.get(draft.rawId);if(!raw)throw new InputError('RAW_MISSING','原文不存在。',409);
       res.json(await draftPayload(await deps.drafts.reviewOperation(draft.id,input,{body:raw.body,rulesDir:deps.rulesDir})));
     }catch(error){next(error);}});
@@ -209,7 +250,7 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
   app.post('/api/drafts/:draftId/discard', async (req, res, next) => {
     try {
       const { baseRevision } = validateDiscard(req.body);
-      const draft = await deps.drafts.get(req.params.draftId);
+      const draft = await deps.drafts.getKnowledge(req.params.draftId);
       if (!draft) throw new InputError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
       const discarded = await deps.drafts.discard(draft.id, baseRevision);
       const state = await deps.rawStates.get(discarded.rawId);
@@ -226,12 +267,13 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
       const result = await deps.wikiStore.withLock(() => deps.commits.confirm({
         draftId: req.params.draftId, baseRevision: input.baseRevision, selectedPageIds: input.selectedPageIds,
         idempotencyKey: input.idempotencyKey, operationId: randomUUID(), now: new Date().toISOString(),
+        outcomeDigest: input.outcomeDigest,
       }));
       const manifest = result.manifest;
       res.status(manifest.status === 'completed' ? 201 : 202).json({
         operationId: manifest.operationId, status: manifest.status, reused: result.reused, sourceReused: result.sourceReused,
         sourceId: manifest.snapshot.sourceRecord?.id ?? manifest.snapshot.reuseSourceId ?? null,
-        wikiIds: manifest.snapshot.pageRecords.map(record => record.id),
+        wikiIds: manifest.snapshot.maintenance?.resultWikiIds??manifest.snapshot.pageRecords.map(record => record.id),
         sourceReuseId: manifest.snapshot.reuseSourceId ?? null,
         writtenWikiIds: manifest.writtenWikiIds, phases: manifest.phases, warnings: manifest.snapshot.warnings,
       });
@@ -243,12 +285,19 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
       const manifest = await deps.commits.status(req.params.operationId);
       if (!manifest) throw new InputError('COMMIT_NOT_FOUND', '没有找到这个提交操作。', 404);
       res.json({
-        operationId: manifest.operationId, draftId: manifest.draftId, rawId: manifest.rawId, status: manifest.status,
+        operationId: manifest.operationId, draftId: manifest.draftId, ...(manifest.questionInput?{inputKind:'question_answer',resultId:manifest.questionInput.resultId}:{rawId:manifest.rawId}), status: manifest.status,
         createdAt: manifest.createdAt, updatedAt: manifest.updatedAt, completedAt: manifest.completedAt ?? null,
         phases: manifest.phases, writtenWikiIds: manifest.writtenWikiIds,
         sourceId: manifest.snapshot.sourceRecord?.id ?? manifest.snapshot.reuseSourceId ?? null,
-        wikiIds: manifest.snapshot.pageRecords.map(record => record.id),
+        wikiIds: manifest.snapshot.maintenance?.resultWikiIds??manifest.snapshot.pageRecords.map(record => record.id),
         selectedPageIds: manifest.snapshot.selectedPageIds,
+        ...(manifest.snapshot.maintenance?{
+          noChanges:manifest.snapshot.maintenance.noChanges??false,
+          changeResults:Object.fromEntries(manifest.snapshot.maintenance.changeIds.map((id,i)=>[id,manifest.snapshot.maintenance!.resultWikiIds[i]])),
+        }:{}),
+        ...(manifest.snapshot.outcomeReview&&manifest.status!=='completed'?{confirmation:{
+          baseRevision:manifest.snapshot.capturedRevision,outcomeDigest:manifest.snapshot.outcomeReview.digest,idempotencyKey:manifest.idempotencyKey,
+        }}:{}),
         error: manifest.error ?? null, recoveryHint: manifest.recoveryHint ?? null, warnings: manifest.snapshot.warnings,
       });
     } catch (error) { next(error); }

@@ -28,6 +28,10 @@ export async function storageFixture() {
     await hook?.(request);
     const review = semanticReviewReply(request); if (review) return review;
     const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
+    if(data.stage==='maintenance'){
+      const text=JSON.stringify({version:1,changes:data.pages.map((p:any,pageIndex:number)=>({pageIndex,action:'create',targetWikiId:null,baseRevision:null,title:p.title,body:'## 来源事实\n'+p.source_facts.map((f:any)=>f.text).join('\n'),aliases:[],tags:[],reason:'历史回归fixture新增维护阶段确定回复。',summary:['新建主题'],questions:[],dependsOn:[]}))});
+      return {text,bytes:Buffer.byteLength(text),finishReason:'stop'};
+    }
     const result = request.user.includes('请对下列全部已验证事实规划知识页')
       ? { version:3,document: { source_level: 'D', title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }
       : { version: 2, facts: data.map((x: { id: string }) => ({ atomId: x.id, kind: 'fact' })), questions: [], sourceNotes: [] };
@@ -65,3 +69,10 @@ export async function storageFixture() {
   return { root, raw, jobs, requests, runner, rawStates, rawStore, drafts, provider, newRunner: () => new ExtractionRunner(deps), setConfigured: (value: boolean) => { configured = value; }, setHook: (value?: (request: LlmCompletionRequest) => Promise<void>) => { hook = value; }, start, wait, hashes, checkpoint: (id: string) => new ExtractionCheckpointStore(root).get(id), succeed: () => { validPlan = true; }, clean: async () => { for (const id of ids) { if ((await runner.readJob(id)).execution === 'running') await runner.cancel(id); await runner.waitForSettlement(id); } await rm(root, { recursive: true, force: true }); } };
 }
 
+
+/** Explicit historical-draft compatibility fixture. The real default runner still performs maintenance and counts it. */
+export async function legacyDraftFixture(){
+  const fixture=await storageFixture();const create=fixture.drafts.create.bind(fixture.drafts);
+  fixture.drafts.create=async(input,deep)=>{const {maintenance:_maintenance,...historical}=input;return create(historical,deep);};
+  return fixture;
+}

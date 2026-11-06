@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
+import type { HomeAction } from '../services/home/actions.ts';
 
 const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'http://localhost/', pretendToBeVisual: true });
 const { window } = dom;
@@ -36,6 +37,10 @@ const draft = {
   raw: { id: rawId, title: raw.title, sourceType: 'note', sourceName: '内存夹具', author: null, publishedAt: null, url: null, importedAt: raw.importedAt, bodySha256: raw.bodySha256 },
 };
 const workflowSummary = { id: workflowId, kind: 'update', status: 'pending_confirmation', title: '导航测试更新工作流', revision: 1, createdAt: '', updatedAt: '', targetWikiId: 'wiki-fixture', lastCommitError: null, commitOperationId: null };
+const workflowAction: HomeAction = {
+  kind: 'workflow', id: workflowId, title: workflowSummary.title, problem: '待确认', result: '草稿已保存，待审核',
+  action: '查看工作流', updatedAt: raw.importedAt, priority: 1, target: { workflowId, revision: 1 }, versionToken: 'test-workflow-v1',
+};
 const workflow = {
   id: workflowId, kind: 'update', status: 'pending_confirmation', revision: 1, title: '导航测试更新工作流', category: 'industry_basics',
   provider: { name: 'memory', model: 'fixture' }, rawSnapshots: [], targetWikiId: 'wiki-fixture', baseRevision: 1,
@@ -47,9 +52,16 @@ const schema = { domain: 'fmcg', types: [{ id: 'concept', label: '概念', descr
 const response = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 
 function installFetch() {
+  const actionReads: string[] = [];
   globalThis.fetch = (async (input: unknown) => {
     const url = String(input);
     if (url === '/api/raw') return response({ items: [raw] });
+    if (url === '/api/wiki') return response({ items: [] });
+    if (url === '/api/home/actions') return response({ items: [workflowAction], sources: { workflow: { status: 'ok' } } });
+    if (url.startsWith('/api/home/actions/workflow/')) {
+      actionReads.push(url);
+      if (url === `/api/home/actions/workflow/${workflowId}?versionToken=${workflowAction.versionToken}`) return response(workflowAction);
+    }
     if (url === '/api/stats') return response({ rawCount: 1, wikiCount: 0, thisWeekNewCount: 0, pendingConfirmationCount: 1, openAuditCount: 0, promptCount: 0, weekStartsOn: '' });
     if (url === '/api/raw-processing') return response({ items: [{ rawId, status: 'pending_confirmation', updatedAt: '', draftId }] });
     if (url === '/api/knowledge/workflows') return response({ items: [workflowSummary] });
@@ -63,6 +75,7 @@ function installFetch() {
     if (url.startsWith('/api/drafts?')) return response({ items: [{ id: draftId, rawId, rawTitle: raw.title, title: draft.title, updatedAt: '' }] });
     return response({ error: { code: 'NOT_FOUND', message: `Unexpected test route ${url}` } }, 404);
   }) as typeof fetch;
+  return actionReads;
 }
 
 const tick = () => new Promise(resolve => setTimeout(resolve, 0));
@@ -82,11 +95,11 @@ async function click(element: HTMLElement) {
   await act(async () => { element.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })); await tick(); });
 }
 async function mountApp() {
-  installFetch();
+  const actionReads = installFetch();
   const container = window.document.getElementById('root') as HTMLElement;
   const root = createRoot(container);
   await act(async () => { root.render(createElement(App)); await tick(); });
-  return { container, unmount: async () => { await act(async () => root.unmount()); } };
+  return { container, actionReads, unmount: async () => { await act(async () => root.unmount()); } };
 }
 
 test('App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw退出工作流且Raw选择保留', async () => {
@@ -106,12 +119,15 @@ test('App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw�
 
   const workflowToHome = await mountApp();
   try {
-    await waitFor(() => !!workflowToHome.container.querySelector('.pending-knowledge-workflows button'), '首页待审核工作流');
-    await click(button(workflowToHome.container, '导航测试更新工作流'));
+    await waitFor(() => !!workflowToHome.container.querySelector('.home-action-row button'), '首页待审核工作流');
+    const action = workflowToHome.container.querySelector('.home-action-row')!;
+    assert.match(action.textContent ?? '', /导航测试更新工作流/);
+    await click(button(action, '查看工作流'));
     await waitFor(() => workflowToHome.container.querySelector('h1')?.textContent === '审阅更新建议', '打开实际工作流组件');
-    await click(button(workflowToHome.container, '首页'));
-    await waitFor(() => workflowToHome.container.querySelector('h1')?.textContent?.includes('早上好') === true, '侧栏返回首页');
-    assert.equal(workflowToHome.container.querySelector('h1')?.textContent?.includes('审阅更新建议'), false, '导航必须退出工作流审核覆盖');
+    assert.deepEqual(workflowToHome.actionReads, [`/api/home/actions/workflow/${workflowId}?versionToken=${workflowAction.versionToken}`]);
+    await click(button(workflowToHome.container.querySelector('.sidebar')!, '首页'));
+    await waitFor(() => workflowToHome.container.querySelector('.home-page h1')?.textContent === '工作台', '侧栏返回首页');
+    assert.equal(workflowToHome.container.querySelector('h1')?.textContent, '工作台', '导航必须退出工作流审核覆盖');
   } finally { await workflowToHome.unmount(); }
 
   const workflowToRaw = await mountApp();

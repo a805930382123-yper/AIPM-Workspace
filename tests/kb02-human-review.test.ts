@@ -4,7 +4,8 @@ import {createHash,randomUUID} from 'node:crypto';
 import {readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
-import {storageFixture} from './support/kb02-storage-fixture.ts';
+// These cases exercise historical drafts; the default runner's new maintenance call remains counted.
+import {legacyDraftFixture as storageFixture} from './support/kb02-storage-fixture.ts';
 import {storageHttp} from './support/kb02-storage-http.ts';
 import {approveDraft,approveWorkflow} from './support/human-review.ts';
 import {WikiStore} from '../services/wiki/store.ts';
@@ -24,9 +25,9 @@ async function candidate(two=true) {
   const wiki=new WikiStore(f.root,f.rawStore);await wiki.initialize();const commits=new WikiCommitService({root:f.root,wikiStore:wiki,drafts:f.drafts,rawStates:f.rawStates,rawStore:f.rawStore});await commits.initialize();
   return {...f,job,wiki,commits,draft:(await f.drafts.get(job.draftId!))!,input:()=>({draftId:job.draftId!,baseRevision:0,selectedPageIds:[] as string[],idempotencyKey:randomUUID(),operationId:randomUUID(),now:new Date().toISOString()})};
 }
-test('HUMAN revision13 uses extraction + planning only, original IDs preserved, all pages gate direct formal writes',async()=>{
+test('HUMAN revision13 historical draft after extraction + planning + maintenance, original IDs preserved, all pages gate direct formal writes',async()=>{
   const f=await candidate();try{
-    let d=f.draft;assert.equal(f.requests.length,2);assert.equal(d.rulesVersion,(await loadExtractionRules('rules')).rulesVersion+'-kb02-2');assert.equal(d.humanReview!.approvals.length,0);
+    let d=f.draft;assert.equal(f.requests.length,3);assert.equal(d.rulesVersion,(await loadExtractionRules('rules')).rulesVersion+'-kb02-2');assert.equal(d.humanReview!.approvals.length,0);
     const cp=(await f.checkpoint(f.job.id))!;assert.deepEqual(d.humanReview!.units.flatMap(u=>u.memberIds).sort(),cp.completedChunks.flatMap(c=>[...c.facts,...c.questions].map(x=>x.id)).sort());
     assert.equal(knowledgePlanCallMinimum({...cp,rulesVersion:'x-kb02-atoms-planning-12-x'}),3);assert.equal(knowledgePlanCallMinimum(cp),2);
     const input={...f.input(),baseRevision:d.revision,selectedPageIds:[d.pages[0].pageId]};
@@ -97,13 +98,13 @@ for(const mode of ['zero','partial','conflict','reviewed-restart'] as const)test
       assert.equal(result.resumed.length,0);assert(result.conflicts.some(c=>c.code==='HUMAN_REVIEW_REQUIRED'));assert.equal((await f.wiki.allRecords()).length,0);d=await approveDraft(f.drafts,d.id,f.raw.body);const next={...f.input(),baseRevision:d.revision,selectedPageIds:[d.pages[0].pageId]};const completed=await f.wiki.withLock(()=>f.commits.confirm(next));assert.equal(completed.manifest.status,'completed');assert.equal(JSON.parse(await readFile(file,'utf8')).supersededBy,next.operationId);
     }else if(mode==='conflict'){assert.equal(result.resumed.length,0);assert(result.conflicts.some(c=>c.code==='COMMIT_TARGET_CONFLICT'));assert.equal((await f.wiki.allRecords()).length,1);}
     else{assert.equal(result.resumed.length,1);assert.equal((await f.wiki.allRecords()).length,2);if(mode==='partial')assert.equal(result.resumed[0].legacyRecovery,'verified_partial');}
-    assert.equal(f.requests.length,2);
+    assert.equal(f.requests.length,3);
   }finally{await f.clean();}
 });
 test('HUMAN legacy explicit migration uses real cp IDs, GET does not write and fallback preserves duplicate/no-location entries',async()=>{
   const f=await candidate();try{
     const file=path.join(f.root,'drafts',f.draft.id+'.json'),old=structuredClone(f.draft);delete old.humanReview;await writeFile(file,JSON.stringify(old));const before=await readFile(file);assert(!(await f.drafts.get(old.id))!.humanReview);assert.deepEqual(await readFile(file),before);
-    let d=await f.drafts.reviewOperation(old.id,{action:'start',baseRevision:old.revision},{body:f.raw.body,rulesDir:'rules'});assert(d.humanReview!.units.every(u=>u.origin==='kb02'));assert.equal(f.requests.length,2);
+    let d=await f.drafts.reviewOperation(old.id,{action:'start',baseRevision:old.revision},{body:f.raw.body,rulesDir:'rules'});assert(d.humanReview!.units.every(u=>u.origin==='kb02'));assert.equal(f.requests.length,3);
     delete d.humanReview;d.pages[0].source_facts.push(structuredClone(d.pages[0].source_facts[0]));d.pages[0].open_questions=['旧问题无法定位','旧问题无法定位'];await writeFile(file,JSON.stringify(d));
     d=await f.drafts.reviewOperation(d.id,{action:'start',baseRevision:d.revision},{body:f.raw.body,rulesDir:'rules'});assert(d.humanReview!.units.every(u=>u.origin==='legacy'));
     const qs=d.humanReview!.units.filter(u=>u.kind==='question');assert.equal(qs.length,2);assert.notEqual(qs[0].id,qs[1].id);assert(qs.every(q=>q.evidence.length===0&&q.memberIds.length===0));
@@ -164,6 +165,6 @@ test('HUMAN legitimate old standalone update migrates explicit snapshots; new mi
   const create=()=>service.createUpdate({draftId:d.id,pageId:d.pages[0].pageId,baseRevision:d.revision,targetWikiId:target.id,draft:d,raw:f.raw,target,provider});
   const modern=await create();delete modern.inputDraft;delete modern.humanReview;await service.save(modern);await assert.rejects(service.reviewOperation(modern.id,{action:'start',baseRevision:modern.revision}),{code:'INPUT_REVIEW_REQUIRED'});
   const damaged=await create();delete damaged.inputDraft;delete damaged.humanReview;delete damaged.reviewProtocolVersion;damaged.rawSnapshots[0].bodySha256='0'.repeat(64);await service.save(damaged);await assert.rejects(service.reviewOperation(damaged.id,{action:'start',baseRevision:damaged.revision}),{code:'RAW_CHANGED'});
-  const legacy=await create();delete legacy.inputDraft;delete legacy.humanReview;delete legacy.reviewProtocolVersion;await service.save(legacy);const started=await service.reviewOperation(legacy.id,{action:'start',baseRevision:legacy.revision});assert(started.legacyStandaloneInput);assert.equal(started.reviewProtocolVersion,1);assert(!started.inputDraft);assert(started.humanReview!.units.every(u=>u.origin==='model'&&u.memberIds.length===0));const reviewed=await approveWorkflow(service,legacy.id),result=await f.wiki.withLock(()=>service.confirm(legacy.id,reviewed.revision,'legacy-explicit'));assert.equal(result.workflow.status,'confirmed');assert((await f.wiki.get(target.id))!.body.startsWith('原有人工内容'));assert.equal(f.requests.length,2);
+  const legacy=await create();delete legacy.inputDraft;delete legacy.humanReview;delete legacy.reviewProtocolVersion;await service.save(legacy);const started=await service.reviewOperation(legacy.id,{action:'start',baseRevision:legacy.revision});assert(started.legacyStandaloneInput);assert.equal(started.reviewProtocolVersion,1);assert(!started.inputDraft);assert(started.humanReview!.units.every(u=>u.origin==='model'&&u.memberIds.length===0));const reviewed=await approveWorkflow(service,legacy.id),result=await f.wiki.withLock(()=>service.confirm(legacy.id,reviewed.revision,'legacy-explicit'));assert.equal(result.workflow.status,'confirmed');assert((await f.wiki.get(target.id))!.body.startsWith('原有人工内容'));assert.equal(f.requests.length,3);
  }finally{await f.clean();}
 });

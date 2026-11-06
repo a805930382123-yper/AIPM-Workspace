@@ -2,10 +2,9 @@ import { createHash } from 'node:crypto';
 import { LlmError, assertNoKnownSecret, describeUnparsable } from './provider.ts';
 import { runKnowledgePipeline, validateKnowledgeCheckpoint, type KnowledgeRunInput } from './knowledge-extraction.ts';
 import type { ExtractionCheckpoint } from './checkpoints.ts';
-import { validStructuredNote, STRUCTURED_NOTE_LIMITS, type StructuredNote, type NoteAttribution, type NoteText } from '../wiki/structured-note.ts';
+import { validStructuredNote, type StructuredNote, type NoteAttribution, type NoteText } from '../wiki/structured-note.ts';
 
 export const DEEP_VERSION = 'kb03-1';
-export const deepCallLimit = (n: number) => 2 * n + 8;
 type Scan = { version: 1; rawSha256: string; lines: { start: number; end: number; kind: 'heading'|'paragraph'|'list'|'table'|'blank' }[] };
 export type DeepOutline = { version: 1; sections: { id: string; title: string; question: string; factIds: string[]; questionIds: string[] }[]; excluded: { kind: 'fact'|'question'; id: string; reason: string }[] };
 type Finding = { severity: 'warning'|'error'; category: 'semantic'|'numeric'|'coverage'|'supplementary'|'structure'; sectionId: string|null; blockIndex: number|null; reason: string };
@@ -70,10 +69,44 @@ export function preserveDeepBoundaries(note:StructuredNote,outline:DeepOutline,c
       return {sectionId:section?.id??first,item:{role:'needs_verification' as const,factIds:section?[item.id]:[],text:item.text,reason:`原文存在歧义或转录疑点，保留原句待核，不据此补写或纠正事实${section?'':'；此项虽未纳入大纲正文，疑点仍需核对'}。fact ${item.id}；atom ${item.atomId}；locator ${item.locatorIds.join('、')}`}};
     }),
   ]);
-  const leaves=deepLeaves(note);
+  // Resolve identity only from a trusted fact/atom-to-evidence mapping. Unlocated prose stays untouched.
+  const locate=(item:NoteText):string|undefined=>{
+    if(item.role!=='needs_verification')return;
+    const matches=cp.completedChunks.flatMap(c=>[
+      ...c.facts.filter(f=>f.kind==='ambiguous'&&f.text===item.text&&(item.factIds.includes(f.id)||item.reason?.includes('fact '+f.id+'；'))).map(f=>({category:'ambiguous',record:f,chunk:c})),
+      ...(c.sourceNotes??[]).filter(n=>n.text===item.text&&item.reason?.includes('atom '+n.atomId)&&item.reason?.includes('locator '+n.locatorIds.join('、'))).map(n=>({category:'source_note',record:n,chunk:c})),
+    ]);
+    const positions=matches.map(m=>{const refs=m.record.locatorIds.map(id=>m.chunk.evidence.find(e=>e.id===id));if(refs.some(e=>!e||e.rawId!==cp.rawId))return;return {rawId:cp.rawId,start:Math.min(...refs.map(e=>e!.start)),end:Math.max(...refs.map(e=>e!.end)),category:m.category as 'ambiguous'|'source_note'};}).filter(v=>v!==undefined);
+    if(item.sourceBoundary){
+      const marker=item.sourceBoundary;
+      const records=cp.completedChunks.flatMap(c=>(marker.category==='ambiguous'?c.facts.filter(f=>f.kind==='ambiguous'):marker.category==='source_note'?(c.sourceNotes??[]):c.questions).map(record=>({record,chunk:c})));
+      const reliable=marker.rawId===cp.rawId&&records.some(({record:r,chunk:c})=>r.text===item.text&&r.locatorIds.length&&r.locatorIds.every(id=>c.evidence.some(e=>e.id===id&&e.rawId===marker.rawId))&&Math.min(...r.locatorIds.map(id=>c.evidence.find(e=>e.id===id)!.start))===marker.start&&Math.max(...r.locatorIds.map(id=>c.evidence.find(e=>e.id===id)!.end))===marker.end);
+      if(reliable)return JSON.stringify(marker);return;
+    }
+    const keys=[...new Set(positions.map(p=>JSON.stringify(p)))];if(keys.length!==1)return;
+    item.sourceBoundary=positions[0];return keys[0];
+  };
+  const seen=new Map<string,{item:NoteAttribution;sectionTitle:string}>();
   for(const section of preserved.sections){
-    const missing:NoteText[]=required.filter(r=>r.sectionId===section.id&&!leaves.some(l=>l.sectionId===r.sectionId&&l.role===r.item.role&&l.prose===r.item.text&&l.reason===r.item.reason&&JSON.stringify(l.factIds)===JSON.stringify(r.item.factIds))).map(r=>r.item);
-    for(let i=0;i<missing.length;i+=STRUCTURED_NOTE_LIMITS.items)section.blocks.push({type:'list',items:missing.slice(i,i+STRUCTURED_NOTE_LIMITS.items)});
+    for(const r of required.filter(r=>r.sectionId===section.id))section.blocks.push({type:'list',items:[r.item]});
+    for(const block of section.blocks){
+      const entries:Array<{item:NoteAttribution;prose:string;remove:()=>void}>=[];
+      if(block.type==='list')for(const item of [...block.items])entries.push({item,prose:item.text,remove:()=>{block.items.splice(block.items.indexOf(item),1);}});
+      else if(block.type==='paragraph'||block.type==='callout')entries.push({item:block,prose:block.text,remove:()=>{block.text='';}});
+      else if(block.type==='table')for(const row of block.rows)entries.push({item:row,prose:row.cells.join(' '),remove:()=>{row.cells=row.cells.map(()=> '待核原句见合并项');delete row.sourceBoundary;}});
+      else if(block.type==='path_diagram')for(const item of [...block.nodes,...block.edges])entries.push({item,prose:item.text,remove:()=>{item.text='待核原句见合并项';delete item.sourceBoundary;}});
+      for(const entry of entries){
+        const {item,prose}=entry,position=locate({...item,text:prose});if(!position)continue;
+        item.sourceBoundary=JSON.parse(position);
+        // A single locator can cover several different atoms. Keep each exact original sentence.
+        const key=JSON.stringify([position,prose]),previous=seen.get(key);
+        if(!previous){seen.set(key,{item,sectionTitle:section.title});continue;}
+        previous.item.reason=[...new Set([...(previous.item.reason??'').split('\n'),...(item.reason??'').split('\n')].filter(Boolean))].sort().join('\n');
+        previous.item.factIds=[...new Set([...previous.item.factIds,...item.factIds])].sort();entry.remove();
+      }
+    }
+    section.blocks=section.blocks.filter(b=>b.type==='list'?b.items.length:!((b.type==='paragraph'||b.type==='callout')&&!b.text));
+    if(!section.blocks.length)section.blocks.push({type:'paragraph',role:'needs_verification',factIds:[],text:'待核原句见合并项，保留本节问题。',reason:'同一来源位置的原句已合并，章节问题仍需核对。'});
   }
   if(!validStructuredNote(preserved,new Set(cp.completedChunks.flatMap(c=>c.facts.map(f=>f.id)))))fail('LLM_DEEP_BOUNDARY_CAPACITY','来源或歧义待核说明超出笔记现有容量，未截断或丢弃，未保存笔记。');
   return preserved;
@@ -83,7 +116,7 @@ export function checkDeepNote(note: StructuredNote, outline: DeepOutline, cp: Ex
   const leaves=deepLeaves(note), used=new Set<string>(),facts=new Map(cp.completedChunks.flatMap(c=>c.facts.map(f=>[f.id,f.text] as const)));
   for(const leaf of leaves){
     const section=outline.sections.find(s=>s.id===leaf.sectionId)!;
-    if(leaf.factIds.some(id=>!section.factIds.includes(id)))fail('LLM_DEEP_WRITING_INVALID','正文引用越过大纲章节或引用已排除事实。');
+    if(leaf.factIds.some(id=>!section.factIds.includes(id))&&!(leaf.role==='needs_verification'&&leaf.sourceBoundary&&leaf.factIds.every(id=>cp.completedChunks.some(c=>c.facts.some(f=>f.id===id&&f.kind==='ambiguous'&&f.locatorIds.every(ref=>c.evidence.some(e=>e.id===ref&&e.rawId===leaf.sourceBoundary!.rawId&&e.start>=leaf.sourceBoundary!.start&&e.end<=leaf.sourceBoundary!.end)))))))fail('LLM_DEEP_WRITING_INVALID','正文引用越过大纲章节或引用已排除事实。');
     leaf.factIds.forEach(id=>used.add(id));
     if(leaf.role==='supplementary'){
       if(numbers(leaf.prose).length||/(?:公司|集团|有限公司|排名|预测|明年|今年|去年|昨日|今日|明日|季度)/.test(leaf.prose))fail('LLM_DEEP_SUPPLEMENT_INVALID','补充知识含具体数据、公司、日期、排名或预测。');
@@ -110,10 +143,10 @@ export const deepMinimum = (cp: ExtractionCheckpoint) => cp.completedChunks.leng
 export const deepRemaining = (cp: ExtractionCheckpoint) => cp.chunks.length-cp.completedChunks.length+(cp.plan?0:1)+(cp.deep?.outline?0:1)+(cp.deep?.note?0:1)+(cp.deep?.qualityReport?0:1);
 export async function validateDeepCheckpoint(input: Pick<KnowledgeRunInput,'raw'|'body'|'bodySha256'|'provider'|'rulesDir'|'checkpoint'>) {
   const cp=input.checkpoint;
-  if(cp.pipelineVersion!==DEEP_VERSION||cp.mode!=='deep'||!validDeepState(cp.deep,cp)||JSON.stringify(cp.deep.scan)!==JSON.stringify(scanDeepStructure(input.body))||cp.attempts<deepMinimum(cp)||cp.attempts>deepCallLimit(cp.chunks.length))fail('LLM_CHECKPOINT_CORRUPT','深度检查点结构、扫描或计数不一致。');
+  if(cp.pipelineVersion!==DEEP_VERSION||cp.mode!=='deep'||!validDeepState(cp.deep,cp)||JSON.stringify(cp.deep.scan)!==JSON.stringify(scanDeepStructure(input.body))||cp.attempts<deepMinimum(cp))fail('LLM_CHECKPOINT_CORRUPT','深度检查点结构、扫描或计数不一致。');
   assertNoKnownSecret(cp.deep,input.provider.secrets);
   await validateKnowledgeCheckpoint(input);
-  if(cp.deep.note)checkDeepNote(cp.deep.note,cp.deep.outline!,cp);
+  if(cp.deep.note){if(JSON.stringify(preserveDeepBoundaries(cp.deep.note,cp.deep.outline!,cp))!==JSON.stringify(cp.deep.note))throw new LlmError('LLM_CHECKPOINT_INCOMPATIBLE','已存笔记与本轮原句归并规则不兼容；检查点完整保留，请明确重新生成，不会自动外发。',409);checkDeepNote(cp.deep.note,cp.deep.outline!,cp);}
 }
 
 export async function runDeepPipeline(input: KnowledgeRunInput) {
@@ -150,5 +183,5 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
     if(!keys(output,['version','findings'])||output.version!==1||!validFindings(output.findings,cp.deep!.note!.sections.map(s=>({id:s.id,blockCount:s.blocks.length}))))fail('LLM_DEEP_QUALITY_INVALID','模型质量报告无效，检查未完成。');
     await save({...cp.deep!,qualityReport:{version:1,deterministic:'passed',model:output.findings.length?'warning':'passed',findings:output.findings}});
   }
-  return {outcome:{...base.outcome,callCount:cp.attempts,rulesVersion:`${cp.rulesVersion}-${DEEP_VERSION}`,warnings:[...base.outcome.warnings,'深度笔记尚未开放正式确认；数值检查及模型只读报告不替代逐页人工核对主体、条件、未知和否定。']},checkpoint:cp};
+  return {outcome:{...base.outcome,callCount:cp.attempts,rulesVersion:`${cp.rulesVersion}-${DEEP_VERSION}`,warnings:[...base.outcome.warnings,'数值检查与模型报告可作为审核参考。请检查深度笔记的入库价值、明显错误和重大遗漏。']},checkpoint:cp};
 }

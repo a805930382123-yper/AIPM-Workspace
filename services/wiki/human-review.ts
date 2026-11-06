@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 /** Original records are immutable; assignments and user prose are separate. */
 export type ReviewEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type ReviewUnit = {
-  id: string; kind: 'fact' | 'question' | 'proposal'; origin: 'kb02' | 'legacy' | 'model'; text: string;
+  id: string; kind: 'fact' | 'question' | 'proposal'; origin: 'kb02' | 'legacy' | 'model' | 'wiki'; text: string;
   memberIds: string[]; sourceId?: string; start?: number; end?: number; factKind?: 'fact' | 'ambiguous';
   records: Array<{ id: string; text: string; evidenceIds: string[] }>;
   evidence: ReviewEvidence[]; section?: string; sourceLabel?: string;
@@ -23,7 +23,7 @@ export const reviewBasisDigest = (units: ReviewUnit[]) => hash(units);
 
 export function validHumanReview(value: unknown): value is HumanReview {
   if (!object(value) || value.version !== 1 || !Array.isArray(value.units) || value.units.length > 4096 || !object(value.assignments) || !Array.isArray(value.approvals) || typeof value.basisDigest !== 'string') return false;
-  if (value.units.some(u => !object(u) || typeof u.id !== 'string' || !u.id || !['fact','question','proposal'].includes(u.kind) || !['kb02','legacy','model'].includes(u.origin) || typeof u.text !== 'string' || !strings(u.memberIds) || !Array.isArray(u.records) || u.records.some((r: unknown) => !object(r) || typeof r.id !== 'string' || typeof r.text !== 'string' || !strings(r.evidenceIds)) || !Array.isArray(u.evidence) || u.evidence.some((e: unknown) => !object(e) || typeof e.id !== 'string' || typeof e.rawId !== 'string' || typeof e.quote !== 'string' || !Number.isSafeInteger(e.start) || !Number.isSafeInteger(e.end) || e.start < 0 || e.end <= e.start || e.quote.length !== e.end-e.start || !Number.isInteger(e.chunkIndex)))) return false;
+  if (value.units.some(u => !object(u) || typeof u.id !== 'string' || !u.id || !['fact','question','proposal'].includes(u.kind) || !['kb02','legacy','model','wiki'].includes(u.origin) || typeof u.text !== 'string' || !strings(u.memberIds) || !Array.isArray(u.records) || u.records.some((r: unknown) => !object(r) || typeof r.id !== 'string' || typeof r.text !== 'string' || !strings(r.evidenceIds)) || !Array.isArray(u.evidence) || u.evidence.some((e: unknown) => !object(e) || typeof e.id !== 'string' || typeof e.rawId !== 'string' || typeof e.quote !== 'string' || !Number.isSafeInteger(e.start) || !Number.isSafeInteger(e.end) || e.start < 0 || e.end <= e.start || e.quote.length !== e.end-e.start || !Number.isInteger(e.chunkIndex)))) return false;
   if (new Set(value.units.map(u=>u.id)).size !== value.units.length || value.basisDigest !== reviewBasisDigest(value.units)) return false;
   for(const u of value.units as ReviewUnit[]){
     if(new Set(u.memberIds).size!==u.memberIds.length||u.records.some(r=>r.evidenceIds.some(id=>!u.evidence.some(e=>e.id===id))))return false;

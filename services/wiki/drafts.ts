@@ -1,3 +1,8 @@
+import {changePageIndexes,validMaintenance,maintenanceDigest,assertMaintenanceReviewed,type KnowledgeChange,type KnowledgeMaintenance} from './maintenance.ts';
+import {questionHash} from './question-input.ts';
+import {verifyEvidenceInput,validEvidenceInput,type EvidenceDraftInput,type InspectionDraftInput} from './inspection-input.ts';
+import {WikiStore} from './store.ts';
+import {RawStore} from '../raw/store.ts';
 // B04: recoverable, versioned extraction drafts. A draft is the only place AI output lives
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
@@ -49,6 +54,7 @@ export type DraftSource = {
   reuseWikiId?: string; editedByUser?: boolean; bodyEditedByUser?: boolean;
 };
 export type DraftRecord = {
+  maintenance?:KnowledgeMaintenance;
   structuredNote?: StructuredNote;
   extractionMode?: 'deep'; qualityReport?: DeepQualityReport;
   noteReview?: NoteReviewMetadata; noteApproval?:NoteApproval;
@@ -63,6 +69,9 @@ export type DraftRecord = {
   commitOperationId?: string; confirmedAt?: string; discardedAt?: string;
   extraction: { callCount: number; chunkCount: number; pagesFound: number };
 };
+export type QuestionDraftRecord=Omit<DraftRecord,'rawId'|'rawSha256'|'rawTitle'|'rawMeta'|'jobId'|'maintenance'|'source'> & {input:EvidenceDraftInput;maintenance:KnowledgeMaintenance};
+export type KnowledgeDraftRecord=DraftRecord|QuestionDraftRecord;
+export function isQuestionDraft(record:KnowledgeDraftRecord):record is QuestionDraftRecord{return 'input' in record&&['question_answer','inspection'].includes(record.input?.kind);}
 
 export class DraftError extends Error {
   constructor(public code: string, message: string, public status = 400, public details?: unknown) { super(message); }
@@ -107,12 +116,57 @@ export class DraftStore {
 
   async initialize() { await mkdir(this.directory(), { recursive: true }); }
 
-  contentDigest(record: DraftRecord): string {
+  contentDigest(record: KnowledgeDraftRecord): string {
+    if(isQuestionDraft(record))return maintenanceDigest(record);
+    if(record.maintenance)return maintenanceDigest(record);
     if(!record.humanReview)throw new DraftError('HUMAN_REVIEW_REQUIRED','请先开始逐页人工审查。',409);
     return reviewContentDigest({draftId:record.id,rawId:record.rawId,rawSha256:record.rawSha256},candidateContent(record),record.humanReview);
   }
-  async assertReviewed(record: DraftRecord, body: string): Promise<string> {
+  outcomeDigest(record: DraftRecord): string {
+    const maintenance = record.maintenance && {
+      ...record.maintenance,
+      changes: record.maintenance.changes.map(({ approval: _approval, committedOperationId: _operation, ...change }) => change),
+    };
+    const review = record.humanReview && {
+      basisDigest: record.humanReview.basisDigest,
+      assignments: record.humanReview.assignments,
+    };
+    return createHash('sha256').update(JSON.stringify({ content: candidateContent({ ...record, maintenance }), review })).digest('hex');
+  }
+  async assertRawOutcome(record: DraftRecord, body: string, selectedPageIds: string[], digest: string): Promise<void> {
+    if (this.outcomeDigest(record) !== digest) throw new DraftError('REVIEW_CONTENT_CHANGED', '成果内容已变化，请刷新后确认当前成果。', 409);
+    if (createHash('sha256').update(body).digest('hex') !== record.rawSha256) throw new DraftError('RAW_CHANGED', '原文实际内容与校验值不一致。', 409);
+    const selectedTopics = new Set(selectedPageIds);
+    for(const change of record.maintenance?.changes??[]){
+      if(selectedPageIds.includes(record.pages[change.pageIndex]?.pageId)){
+        for(const index of changePageIndexes(change))selectedTopics.add(record.pages[index].pageId);
+      }
+    }
+    const selectedPages = record.pages.filter(page => selectedTopics.has(page.pageId));
+    await this.assertEvidenceStillValid(record, body, selectedPages);
+    for (const page of selectedPages) {
+      const ids = new Set(page.source_evidence.map(evidence => evidence.id));
+      if (page.source_facts.some(fact => fact.evidenceIds.some(id => !ids.has(id)))) {
+        throw new DraftError('EVIDENCE_UNKNOWN_ID', `「${page.title}」引用了无法定位的原文证据。`, 409);
+      }
+    }
+    if (record.humanReview) {
+      assertReviewStructure(record.humanReview, record.pages.map(page => page.pageId));
+      const noteIds = new Set(record.structuredNote ? [
+        ...noteFactIds(record.structuredNote),
+        ...(record.noteReview?.questionIds ?? []),
+        ...(record.noteReview?.exclusions.map(item => item.id) ?? []),
+      ] : []);
+      const units = record.humanReview.units.filter(unit =>
+        selectedTopics.has(record.humanReview!.assignments[unit.id] ?? '') || unit.records.some(item => noteIds.has(item.id)),
+      );
+      assertReviewSources({ ...record.humanReview, units }, [{ id: record.rawId, body, bodySha256: record.rawSha256 }]);
+    }
+  }
+  async assertReviewed(record: KnowledgeDraftRecord, body: string,appliedTargets:import('./store.ts').WikiRecord[]=[]): Promise<string> {
+    if(isQuestionDraft(record)){const raws=new RawStore(this.root),wiki=new WikiStore(this.root,raws);await verifyEvidenceInput(record.input,wiki,raws,appliedTargets);assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));const facts=record.humanReview.units.filter(u=>u.kind==='fact');if(facts.length!==record.input.citations.length||record.input.citations.some((c,i)=>!facts.some(u=>u.id==='reference-'+i&&u.text===c.quote&&u.records.length===1&&u.records[0].text===c.quote)))throw new DraftError('QUESTION_EVIDENCE_CHANGED','问答原始依据目录已变化，不能写入。',409);return assertMaintenanceReviewed(record); }
 
+    if(record.maintenance){assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));assertReviewSources(record.humanReview,[{id:record.rawId,body,bodySha256:record.rawSha256}]);await this.assertEvidenceStillValid(record,body);const digest=assertMaintenanceReviewed(record);if(record.structuredNote)this.assertNoteReviewed(record,digest);return digest;}
     assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));
     assertReviewSources(record.humanReview,[{id:record.rawId,body,bodySha256:record.rawSha256}]);
     await this.assertEvidenceStillValid(record,body);
@@ -133,15 +187,16 @@ export class DraftStore {
       if(record.status!=='pending_confirmation'||record.revision!==value.baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿已变化，请刷新后重新核对。',409);
       assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));assertReviewSources(record.humanReview,[{id:record.rawId,body,bodySha256:record.rawSha256}]);await this.assertEvidenceStillValid(record,body);
       const digest=this.contentDigest(record);if(value.reviewContentDigest!==digest)throw new DraftError('REVIEW_CONTENT_CHANGED','笔记内容摘要已变化。',409);
-      assertHumanReviewed(record.humanReview,record.pages.map(p=>p.pageId),digest);
+      if(record.maintenance)assertMaintenanceReviewed(record);else assertHumanReviewed(record.humanReview,record.pages.map(p=>p.pageId),digest);
       const approval:NoteApproval={version:1,digest,at:new Date().toISOString(),warningsAcknowledged:true,historicalReportAcknowledged:true};this.assertNoteReviewed({...record,noteApproval:approval},digest);
       const next={...record,noteApproval:approval,revision:record.revision+1,updatedAt:new Date().toISOString()};await writeJsonAtomic(this.fileFor(id),next);return next;
     });
   }
-  async prepareReviewedCommit(id:string,revision:number,digest:string,body:string,operationId:string,prepare:()=>Promise<void>):Promise<void> {
+  async prepareReviewedCommit(id:string,revision:number,digest:string,body:string,operationId:string,prepare:()=>Promise<void>,outcomePageIds?:string[]):Promise<void> {
     await this.queue.run(async()=>{
-      const current=await this.get(id);if(!current||current.status!=='pending_confirmation'||current.revision!==revision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿在提交准备期间变化，请刷新并重新审查。',409);
-      if(await this.assertReviewed(current,body)!==digest)throw new DraftError('REVIEW_CONTENT_CHANGED','草稿内容已变化。',409);
+      const current=await this.getKnowledge(id);if(!current||current.status!=='pending_confirmation'||current.revision!==revision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿在提交准备期间变化，请刷新并重新审查。',409);
+      if (outcomePageIds !== undefined && !isQuestionDraft(current)) await this.assertRawOutcome(current, body, outcomePageIds, digest);
+      else if(await this.assertReviewed(current,body)!==digest)throw new DraftError('REVIEW_CONTENT_CHANGED','草稿内容已变化。',409);
       await prepare();await writeJsonAtomic(this.fileFor(id),{...current,status:'committing',commitOperationId:operationId,updatedAt:new Date().toISOString()});
     });
   }
@@ -191,7 +246,7 @@ export class DraftStore {
     }))};
     if(Buffer.byteLength(JSON.stringify(payload),'utf8')>3*1024*1024)throw new DraftError('DRAFT_PATCH_TOO_LARGE','合并后的完整保存内容超过现有3MiB请求上限；原草稿及审批保持。',413);
   }
-  private deriveReviewPages(record:DraftRecord,rebindFields=false) {
+  private deriveReviewPages(record:KnowledgeDraftRecord,rebindFields=false) {
     if(!record.humanReview)return;
     assertReviewStructure(record.humanReview,record.pages.map(p=>p.pageId));
     for(const page of record.pages){
@@ -244,6 +299,7 @@ export class DraftStore {
       for (const page of next.pages) this.validateTemplateReferences(page, next.rawId, current.pages.find(p => p.pageId === page.pageId), next.humanReview);
       if((input.action==='questions'||(input.action==='move'&&next.humanQuestionUnitIds?.length))&&!next.source.bodyEditedByUser)next.source.body=renderSourceBody(next.source,next.rawMeta,next.pages.filter(p=>p.selected),next.pages.filter(p=>!p.selected));
       if(input.action==='page')confirmHumanPage(next.humanReview,next.pages.map(p=>p.pageId),{pageId:input.pageId!,reviewContentDigest:input.reviewContentDigest!,confirmed:input.confirmed!},this.contentDigest(next));
+      if(next.maintenance&&maintenanceDigest(next)!==maintenanceDigest(current))for(const c of next.maintenance.changes)delete c.approval;
       if(next.structuredNote&&this.contentDigest(next)!==this.contentDigest(current))delete next.noteApproval;
       if(JSON.stringify(next)===JSON.stringify(current))return current;
       next.revision++;next.updatedAt=new Date().toISOString();this.assertRoundtripSize(next);await writeJsonAtomic(this.fileFor(id),next);return next;
@@ -251,8 +307,8 @@ export class DraftStore {
   }
 
   /** Defensive load-time check: a draft whose evidence no longer matches its Raw is reported. */
-  async assertEvidenceStillValid(draft: DraftRecord, body: string): Promise<void> {
-    for (const page of draft.pages) {
+  async assertEvidenceStillValid(draft: DraftRecord, body: string, pages = draft.pages): Promise<void> {
+    for (const page of pages) {
       this.validateTemplateReferences(page, draft.rawId, undefined, draft.humanReview);
       for (const evidence of page.source_evidence) {
         if (body.slice(evidence.start, evidence.end) !== evidence.quote) {
@@ -266,11 +322,29 @@ export class DraftStore {
     }
   }
 
-  async get(id: string): Promise<DraftRecord | undefined> {
-    if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined;
-    return readJsonRecord<DraftRecord>(this.root,this.fileFor(id),(value):value is DraftRecord=>isExtractionDraft(value,id));
+  async getKnowledge(id:string):Promise<KnowledgeDraftRecord|undefined>{
+    if(!/^[0-9a-f-]{36}$/i.test(id))return;
+    return readJsonRecord(this.root,this.fileFor(id),(value):value is KnowledgeDraftRecord=>isExtractionDraft(value,id));
   }
-
+  async get(id:string):Promise<DraftRecord|undefined>{const record=await this.getKnowledge(id);return record&&!isQuestionDraft(record)?record:undefined;}
+  async listKnowledge():Promise<KnowledgeDraftRecord[]>{const scan=await scanJsonRecords<KnowledgeDraftRecord>(this.directory(),(value,file):value is KnowledgeDraftRecord=>isExtractionDraft(value,path.basename(file,'.json')),this.root);return scan.records.map(r=>r.value).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));}
+  async createInspection(input:{id:string;input:InspectionDraftInput;maintenance:KnowledgeMaintenance;provider:DraftRecord['provider'];callCount:number}){return this.createQuestion(input);}
+  async createQuestion(input:{id:string;input:EvidenceDraftInput;maintenance:KnowledgeMaintenance;provider:DraftRecord['provider'];callCount:number}):Promise<QuestionDraftRecord>{
+    return this.queue.run(async()=>{
+      const existing=await this.getKnowledge(input.id);if(existing){if(!isQuestionDraft(existing)||questionHash(existing.input)!==questionHash(input.input))throw new DraftError('QUESTION_DRAFT_CONFLICT','此草稿标识已绑定其他内容。',409);return existing;}
+      if(!validEvidenceInput(input.input)||!validMaintenance(input.maintenance))throw new DraftError('QUESTION_INPUT_INVALID','问答维护输入无效。');
+      const raws=new RawStore(this.root);await verifyEvidenceInput(input.input,new WikiStore(this.root,raws),raws);
+      const now=new Date().toISOString(),pages:DraftPage[]=input.maintenance.changes.map(c=>({pageId:randomUUID(),title:c.candidate.title,type:c.candidate.type,category:c.candidate.category,one_line_definition:c.candidate.title,source_facts:input.input.citations.map(ref=>({text:ref.quote,evidenceIds:ref.kind==='raw'?[ref.id]:[]})),ai_organized:input.input.sections.filter(s=>s.kind==='fact'||s.kind==='conflict').map(s=>s.text),ai_inferences:input.input.sections.filter(s=>s.kind==='inference'||s.kind==='advice').map(s=>s.text),related_pages:[],open_questions:input.input.sections.filter(s=>s.kind==='insufficient').map(s=>s.text),source_evidence:input.input.citations.filter(ref=>ref.kind==='raw').map(ref=>({id:ref.id,rawId:ref.recordId,quote:ref.quote,start:ref.start,end:ref.end,chunkIndex:-1})),knowledge_status:c.candidate.knowledge_status,confidence:c.candidate.confidence,source_level:c.candidate.source_level,selected:false,provenance:[]}));
+      const units:ReviewUnit[]=input.input.citations.map((ref,i)=>({id:'reference-'+i,kind:'fact',origin:ref.kind==='wiki'?'wiki':'legacy',text:ref.quote,memberIds:[],records:[{id:'reference-'+i,text:ref.quote,evidenceIds:ref.kind==='raw'?[ref.id]:[]}],evidence:ref.kind==='raw'?[{id:ref.id,rawId:ref.recordId,quote:ref.quote,start:ref.start,end:ref.end,chunkIndex:-1}]:[],sourceLabel:ref.kind==='wiki'?'知识页内容：'+ref.title+' / v'+ref.revision:'原始资料：'+ref.title}));
+      input.input.sections.forEach((section,i)=>units.push({id:'answer-proposal-'+i,kind:'proposal',origin:'model',text:section.text,memberIds:[],records:[],evidence:[],sourceLabel:section.kind==='inference'||section.kind==='advice'?'问答推断/建议，非原文事实':'问答整理提议，非原文引文'}));
+      const record:QuestionDraftRecord={input:structuredClone(input.input),maintenance:structuredClone(input.maintenance),id:input.id,status:'pending_confirmation',revision:1,createdAt:now,updatedAt:now,rulesVersion:'lw02-question-answer-1',provider:input.provider,document:{title:(input.input.kind==='inspection'?'检查维护':input.input.preview.title),main_topic:(input.input.kind==='inspection'?'检查问题维护':input.input.question),summary:(input.input.kind==='inspection'?input.input.findings.map(f=>f.summary).join('；'):input.input.preview.conclusion)},pages,warnings:['引用已核对身份、版本和原句；语义支持程度仍需人工审查。'],extraction:{callCount:input.callCount,chunkCount:0,pagesFound:pages.length},humanReview:newHumanReview(units,Object.fromEntries(units.map(u=>[u.id,pages[0].pageId])))};
+      await writeJsonAtomic(this.fileFor(record.id),record);return record;
+    });
+  }
+  async reviewQuestionOperation(id:string,input:{baseRevision:number;action:string;unitIds?:string[];pageId?:string|null}):Promise<QuestionDraftRecord>{
+    return this.queue.run(async()=>{const current=await this.getKnowledge(id);if(!current||!isQuestionDraft(current))throw new DraftError('QUESTION_DRAFT_MISSING','问答草稿不存在。',404);if(current.status!=='pending_confirmation'||current.revision!==input.baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿已变化，请刷新。',409);if(input.action!=='move'&&input.action!=='start')throw new DraftError('QUESTION_REVIEW_ACTION','问答草稿请使用来源归属及逐项审核。');
+      const raws=new RawStore(this.root);await verifyEvidenceInput(current.input,new WikiStore(this.root,raws),raws);const next=structuredClone(current);if(input.action==='move')moveHumanUnits(next.humanReview!,next.pages.map(p=>p.pageId),input.unitIds!,input.pageId??null);if(JSON.stringify(next.humanReview)===JSON.stringify(current.humanReview))return current;for(const c of next.maintenance.changes)delete c.approval;next.revision++;next.updatedAt=new Date().toISOString();await writeJsonAtomic(this.fileFor(id),next);return next;});
+  }
   async editStructuredNote(id:string,input:unknown,body:string):Promise<DraftRecord>{
     return this.queue.run(async()=>{
       if(!input||typeof input!=='object'||Array.isArray(input))throw new DraftError('INVALID_NOTE_PATCH','结构化笔记编辑格式无效。');
@@ -309,10 +383,72 @@ export class DraftStore {
     return (await this.list()).find(draft => draft.commitOperationId === operationId);
   }
 
+  async reviewChange(id:string,input:unknown):Promise<DraftRecord>{const prior=await this.getKnowledge(id);if(prior&&isQuestionDraft(prior))throw new DraftError('QUESTION_REVIEW_REQUIRED','请使用问答草稿审核入口。');const record=await this.reviewKnowledgeChange(id,input);if(isQuestionDraft(record))throw new DraftError('QUESTION_REVIEW_REQUIRED','草稿身份已变化。');return record;}
+  async reviewKnowledgeChange(id:string,input:unknown):Promise<KnowledgeDraftRecord>{
+    return this.queue.run(async()=>{
+      if(!input||typeof input!=='object'||Array.isArray(input))throw new DraftError('INVALID_CHANGE','变更审核格式无效。');
+      const value=input as Record<string,unknown>;
+      if(Object.keys(value).some(k=>!['baseRevision','changeId','decision','body','title','confirmed','digest'].includes(k))||!Number.isInteger(value.baseRevision)||typeof value.changeId!=='string'||(value.decision!==undefined&&!['accept','defer'].includes(String(value.decision)))||(value.body!==undefined&&typeof value.body!=='string')||(value.title!==undefined&&typeof value.title!=='string')||(value.confirmed!==undefined&&typeof value.confirmed!=='boolean'))throw new DraftError('INVALID_CHANGE','变更审核字段无效。');
+      const current=await this.getKnowledge(id);if(!current?.maintenance)throw new DraftError('MAINTENANCE_MISSING','没有知识维护草稿。',404);
+      if(isQuestionDraft(current)){const raws=new RawStore(this.root);await verifyEvidenceInput(current.input,new WikiStore(this.root,raws),raws);}
+      if(current.status!=='pending_confirmation'||current.revision!==value.baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿已变化，请刷新后审核。',409);
+      const next=structuredClone(current),change=next.maintenance!.changes.find(c=>c.changeId===value.changeId);
+      if(!change)throw new DraftError('CHANGE_MISSING','变更项不存在。',404);
+      if(value.body!==undefined||value.title!==undefined){if(change.action==='noop'||change.action==='link')throw new DraftError('CHANGE_NOT_EDITABLE','关联或无变化项不能重写正文。',409);if(value.body!==undefined)change.candidate.body=value.body as string;if(value.title!==undefined)change.candidate.title=value.title as string;}
+      if(value.decision!==undefined)change.decision=value.decision as 'accept'|'defer';
+      if(!validMaintenance(next.maintenance))throw new DraftError('INVALID_CHANGE','变更内容无效或超出上限。');
+      if(change.committedOperationId)throw new DraftError('CHANGE_ALREADY_COMMITTED','该项已正式提交。',409);
+      const digest=maintenanceDigest(next,change.changeId);
+      if(digest!==maintenanceDigest(current,change.changeId))delete change.approval;
+      if(value.confirmed===true){if(value.digest!==digest)throw new DraftError('REVIEW_CONTENT_CHANGED','内容变化，请保存后重新核对。',409);if(change.decision!=='accept')throw new DraftError('CHANGE_NOT_ACCEPTED','请先接受本项。',409);change.approval={digest,at:new Date().toISOString()};}
+      if(value.confirmed===false)delete change.approval;
+      next.revision++;next.updatedAt=new Date().toISOString();await writeJsonAtomic(this.fileFor(id),next);return next;
+    });
+  }
+
+  async savePreparedChange(id:string,baseRevision:number,change:KnowledgeChange,absorbedId:string|undefined,target:import('./store.ts').WikiRecord|undefined,callCount:number):Promise<DraftRecord>{
+    return this.queue.run(async()=>{
+      const next=await this.get(id);
+      if(!next?.maintenance||next.status!=='pending_confirmation'||next.revision!==baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','草稿已变化，原成果保留，请刷新后重试。',409);
+      const maintenance=next.maintenance;
+      maintenance.changes=maintenance.changes.filter(c=>c.changeId!==absorbedId).map(c=>{
+        if(c.changeId===change.changeId)return change;
+        if(absorbedId&&c.dependsOn.includes(absorbedId))return {...c,dependsOn:[...new Set(c.dependsOn.map(dep=>dep===absorbedId?change.changeId:dep))]};
+        return c;
+      });
+      // Keep snapshots referenced by other outcomes. A newly chosen target gets a fresh snapshot.
+      const required=maintenance.context.filter(p=>p.id!==target?.id&&maintenance.changes.some(c=>c.targetWikiId===p.id));
+      maintenance.context=[...required,...(target?[target]:[]),...maintenance.context.filter(p=>p.id!==target?.id&&!required.includes(p))].slice(0,Math.max(8,required.length+Number(!!target)));
+      if(!validMaintenance(maintenance))throw new DraftError('INVALID_CHANGE','重准备结果无效，原成果保留。');
+      for(const c of maintenance.changes)delete c.approval;
+      if(next.humanReview)next.humanReview.approvals=[];
+      delete next.noteApproval;
+      next.extraction.callCount=callCount;
+      next.revision++;
+      next.updatedAt=new Date().toISOString();
+      this.assertRoundtripSize(next);
+      await writeJsonAtomic(this.fileFor(id),next);
+      return next;
+    });
+  }
+
+  async finishMaintenance(id:string,baseRevision:number):Promise<DraftRecord>{
+    return this.queue.run(async()=>{
+      const draft=await this.get(id);
+      if(!draft?.maintenance)throw new DraftError('MAINTENANCE_MISSING','没有知识维护草稿。',404);
+      if(draft.discardedAt&&draft.revision===baseRevision+1)return draft;
+      if(draft.status!=='pending_confirmation'||draft.revision!==baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','请刷新草稿并处理未完成的提交。',409);
+      const now=new Date().toISOString();
+      const next:DraftRecord={...draft,status:draft.maintenance.changes.some(c=>c.committedOperationId)||draft.commitOperationId?'confirmed':'discarded',revision:draft.revision+1,discardedAt:now,updatedAt:now};
+      await writeJsonAtomic(this.fileFor(id),next);
+      return next;
+    });
+  }
+
   /** Creates the reviewable draft from a validated extraction outcome. */
   async create(input: {
     raw: { id: string; title: string; bodySha256: string; sourceType?: string; sourceName?: string; author?: string; publishedAt?: string; url?: string; importedAt?: string };
-    outcome: ExtractOutcome; jobId: string; body: string; rules: DraftRules;
+    outcome: ExtractOutcome; jobId: string; body: string; rules: DraftRules;maintenance?:KnowledgeMaintenance;
   }, deep?: {note: StructuredNote; qualityReport: DeepQualityReport}): Promise<DraftRecord> {
     return this.queue.run(async () => {
       if([input,input.outcome].some(v=>['structuredNote','qualityReport','extractionMode','noteReview','noteApproval'].some(k=>Object.hasOwn(v,k))))throw new DraftError('STRUCTURED_NOTE_INPUT_UNAVAILABLE','结构化笔记尚未开放创建入口。');
@@ -355,6 +491,7 @@ export class DraftStore {
       // Default preview only: it is re-rendered from the actual selection on every save/confirm
       // while the user has not edited the body themselves (F04-05).
       record.source.body = renderSourceBody(record.source, record.rawMeta, record.pages.filter(page => page.selected), record.pages.filter(page => !page.selected));
+      if(input.maintenance){if(!validMaintenance(input.maintenance))throw new DraftError('MAINTENANCE_INVALID','内部维护草稿无效。');record.maintenance=structuredClone(input.maintenance);}
       await writeJsonAtomic(this.fileFor(record.id), record);
       return record;
     });
@@ -395,6 +532,7 @@ export class DraftStore {
       if (patch.baseRevision !== current.revision) {
         throw new DraftError('DRAFT_REVISION_CONFLICT', '草稿已被修改，请刷新后重新审阅。', 409, { currentRevision: current.revision });
       }
+      if(current.maintenance&&(patch.merge||patch.deletePageIds?.length))throw new DraftError('INVALID_PATCH','请在成果页调整动作和目标来归并知识维护成果。',409);
       const next: DraftRecord = JSON.parse(JSON.stringify(current)) as DraftRecord;
       if(!next.humanReview&&(patch.merge||patch.deletePageIds?.length))throw new DraftError('HUMAN_REVIEW_REQUIRED','请先开始审查以保存不可变来源目录，再合并或删除页面。',409);
       // Source records are read-only even for an old draft before migration.
@@ -466,6 +604,7 @@ export class DraftStore {
         next.source.body = renderSourceBody(next.source, next.rawMeta, next.pages.filter(page => page.selected), next.pages.filter(page => !page.selected));
       }
       if (JSON.stringify(candidateContent(next)) === JSON.stringify(candidateContent(current))) return current;
+      if(next.maintenance)for(const c of next.maintenance.changes)delete c.approval;
       if(next.humanReview)next.humanReview.approvals=[];delete next.noteApproval;
       next.revision = current.revision + 1;
       next.updatedAt = new Date().toISOString();
@@ -696,7 +835,10 @@ export class DraftStore {
   }
 
   /** Preview payload: adds the server-rendered body for each page. */
-  view(record: DraftRecord, options: { sourceTitle?: string } = {}): DraftRecord & { pages: Array<DraftPage & { renderedBody: string }>; sourceRenderedBody: string } {
+  view(record:DraftRecord,options?:{sourceTitle?:string}):DraftRecord & {pages:Array<DraftPage & {renderedBody:string}>;sourceRenderedBody:string;outcomeDigest:string;changeDigests?:Record<string,string>};
+  view(record:KnowledgeDraftRecord,options?:{sourceTitle?:string}):KnowledgeDraftRecord & {pages:Array<DraftPage & {renderedBody:string}>;sourceRenderedBody:string;outcomeDigest?:string};
+  view(record:KnowledgeDraftRecord,options:{sourceTitle?:string}={}):KnowledgeDraftRecord & {pages:Array<DraftPage & {renderedBody:string}>;sourceRenderedBody:string;outcomeDigest?:string;changeDigests?:Record<string,string>}{
+    if(isQuestionDraft(record))return {...record,changeDigests:Object.fromEntries(record.maintenance.changes.map(c=>[c.changeId,maintenanceDigest(record,c.changeId)])),sourceRenderedBody:record.input.kind==='inspection'?record.input.findings.map(f=>f.summary).join('\n'):record.input.preview.conclusion+'\n'+record.input.preview.inferences,pages:record.pages.map((p,i)=>({...p,renderedBody:record.maintenance.changes[i]?.candidate.body??''}))};
     // F04-05: when an existing Source is reused, the pages must link its real title.
     const sourceTitle = options.sourceTitle ?? record.source.title;
     const selectedPages = record.pages.filter(page => page.selected);
@@ -706,6 +848,8 @@ export class DraftStore {
       : renderSourceBody(record.source, record.rawMeta, selectedPages, record.pages.filter(page => !page.selected));
     return {
       ...record,
+      outcomeDigest: this.outcomeDigest(record),
+      ...(record.maintenance?{changeDigests:Object.fromEntries(record.maintenance.changes.map(c=>[c.changeId,maintenanceDigest(record,c.changeId)]))}:{}),
       sourceRenderedBody: sourceBody,
       pages: record.pages.map(page => ({
         ...page,
@@ -740,6 +884,14 @@ export class DraftStore {
     });
   }
 
+  async markMaintenanceCommitted(id:string,operationId:string,changeIds:string[]):Promise<KnowledgeDraftRecord>{
+    return this.queue.run(async()=>{
+      const current=await this.getKnowledge(id);if(!current?.maintenance)throw new DraftError('MAINTENANCE_MISSING','知识变更草稿不存在。',409);
+      const next=structuredClone(current);for(const c of next.maintenance!.changes)if(changeIds.includes(c.changeId))c.committedOperationId=operationId;
+      next.status=next.maintenance!.changes.some(c=>!c.committedOperationId)?'pending_confirmation':'confirmed';next.commitOperationId=operationId;next.updatedAt=new Date().toISOString();
+      await writeJsonAtomic(this.fileFor(id),next);return next;
+    });
+  }
   async markConfirmed(id: string, operationId: string): Promise<DraftRecord> {
     return this.queue.run(async () => {
       const current = await this.get(id);

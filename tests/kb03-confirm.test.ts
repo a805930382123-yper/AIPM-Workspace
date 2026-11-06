@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createHash,randomUUID} from 'node:crypto';
-import {readFile,writeFile,mkdtemp,rm} from 'node:fs/promises';
+import {readFile,writeFile,mkdtemp,rename,rm} from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import {confirmFixture} from './support/kb03-confirm-fixture.ts';
@@ -26,7 +26,7 @@ test('KB03 confirm HTTP Source-only still requires all pages, explicit note revi
   const response=await f.http.request(`/api/drafts/${d.id}/review/structured-note`,review);assert.equal(response.status,200,JSON.stringify(response));d=(await f.drafts.get(d.id))!;assert.equal(d.noteApproval!.digest,f.drafts.contentDigest(d));assert.equal(d.humanReview!.approvals.length,d.pages.length);
   assert.equal((await commit(d,{noteApproval:{approved:true}})).status,400);
   const result=await commit(d);assert.equal(result.status,201,JSON.stringify(result));const records=await f.wiki.allRecords();assert.equal(records.length,1);assert.equal(records[0].type,'source');assert.equal((records[0].body.match(/^## 深度整理笔记$/gm)??[]).length,1);assert(!records[0].body.includes('[['));assert(records[0].body.includes('补充知识，未经原文支持'));assert(records[0].body.includes('待核实'));assert(records[0].body.includes('事实引用'));assert.equal((await f.rawStates.get(f.raw.id)).status,'generated');
-  const repeated=await commit(d);assert.equal(repeated.status,201);assert(repeated.json.reused);assert.equal((await f.wiki.allRecords()).length,1);assert.equal(f.requests.length,5);
+  const repeated=await commit(d);assert.equal(repeated.status,201);assert(repeated.json.reused);assert.equal((await f.wiki.allRecords()).length,1);assert.equal(f.requests.length,6);
  }finally{await f.clean();}
 });
 test('KB03 confirm selected subset, manual text/role/evidence/table special characters retained; all edits invalidate both approvals',async()=>{
@@ -35,7 +35,20 @@ test('KB03 confirm selected subset, manual text/role/evidence/table special char
   d=await f.drafts.editStructuredNote(d.id,{baseRevision:d.revision,structuredNote:note,humanQuestions:['人工待确认：负责人。']},f.raw.body);assert(!d.noteApproval);assert.equal(d.humanReview!.approvals.length,0);assert.notEqual(f.drafts.contentDigest(d),approved);
   await assert.rejects(f.wiki.withLock(()=>f.commits.confirm(f.input(d))));d=await f.review([0]);const result=await f.wiki.withLock(()=>f.commits.confirm(f.input(d)));const source=result.manifest.snapshot.sourceRecord!;assert.equal(result.manifest.snapshot.pageRecords.length,1);assert(source.body.includes('[[门店范围]]'));assert(!source.body.includes('[[在售口径]]'));assert(source.body.includes('人工修改，已人工核对'));assert(source.body.includes('历史模型报告，编辑后未复核'));assert(source.body.includes('人工待确认：负责人'));assert(source.body.includes('&#124;'));assert(source.body.includes('&#10;'));assert(source.body.includes('&lt;script&gt;'));
   const exportMd=(await f.wiki.exportMarkdown(source.id))!;assert.equal(exportMd.markdown,await f.wiki.readPageFile(source.id));
-  const mismatch={...f.input((await f.drafts.get(d.id))!),selectedPageIds:[]};await assert.rejects(f.wiki.withLock(()=>f.commits.confirm(mismatch)),{code:'CONFIRM_PAYLOAD_CHANGED'});
+  const snapshot = async () => Promise.all([
+    f.wiki.readPageFile(source.id),
+    f.wiki.readPageFile(result.manifest.snapshot.pageRecords[0].id),
+    readFile(path.join(f.root,'knowledge/logs/wiki.jsonl'),'utf8'),
+  ]);
+  const before = await snapshot(), confirmed = (await f.drafts.get(d.id))!;
+  const mismatch={...f.input(confirmed),selectedPageIds:[]};
+  await assert.rejects(f.wiki.withLock(()=>f.commits.confirm(mismatch)),{code:'CONFIRM_PAYLOAD_CHANGED',status:409});
+  assert.equal((await f.commits.list()).length,1);
+  assert.deepEqual(await snapshot(),before);
+  const manifestFile = path.join(f.root,'state/wiki-commits',result.manifest.operationId+'.json');
+  await rename(manifestFile, manifestFile+'.held');
+  await assert.rejects(f.wiki.withLock(()=>f.commits.confirm(mismatch)),{code:'DRAFT_ALREADY_COMMITTED',status:409});
+  assert.deepEqual(await snapshot(),before);
  }finally{await f.clean();}
 });
 test('KB03 note review blocks uncovered and validly accepts numeric warning only with explicit acknowledgment; existing same-Raw Source conflicts',async()=>{
@@ -60,7 +73,7 @@ for(const phase of ['zero','pages','index','log'] as const)test(`KB03 real ${pha
   if(phase==='pages'){const file=path.join(f.root,'drafts',d.id+'.json'),current=JSON.parse(await readFile(file,'utf8'));current.structuredNote.orientation='后来的可变草稿不能重渲染冻结正文';await writeFile(file,JSON.stringify(current));}
   const recovery=phase==='pages'?JSON.parse((await promisify(execFile)(process.execPath,['--import','tsx','tests/support/kb03-confirm-restart.ts',f.root])).stdout):await f.commits.reconcile();assert.equal(recovery.resumed.length,1,JSON.stringify(recovery));assert.equal((await f.wiki.allRecords()).length,2);assert.equal((await f.wiki.get(manifest.snapshot.sourceRecord!.id))!.body,manifest.snapshot.sourceRecord!.body);
   const logs=await readFile(path.join(f.root,'knowledge/logs/wiki.jsonl'),'utf8');assert.equal(logs.trim().split('\n').filter(x=>JSON.parse(x).operationId===input.operationId).length,2);
-  assert.equal((await f.commits.reconcile()).resumed.length,0);assert.equal(f.requests.length,5);
+  assert.equal((await f.commits.reconcile()).resumed.length,0);assert.equal(f.requests.length,6);
  }finally{await f.clean();}
 });
 test('KB03 partial recovery rejects changed target bytes and old deep prepared without frozen approval',async()=>{

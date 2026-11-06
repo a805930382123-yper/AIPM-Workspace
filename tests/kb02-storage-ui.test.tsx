@@ -87,7 +87,9 @@ test('SR01 start failure reload is actionable and late storage response cannot c
     };
     const props = { items: [f.raw as Raw, other as Raw], selectedId: f.raw.id, onSelected: () => {}, onOpenImport: () => {}, onCommitted: async () => {}, openImport: false, onCloseImport: () => {}, onDeleted: async () => {}, processing: { [f.raw.id]: state }, job: null, onJobStarted: () => { callbackCount++; }, onOpenDraft: () => { callbackCount++; }, onRefresh: async () => {} };
     root = createRoot(w.document.getElementById('root')!); await act(async () => { root!.render(createElement(RawPage, props)); });
-    await tick(() => !!button('重试保存状态'), 'start-state recovery on reload'); assert.equal(button('AI 整理知识')?.disabled, true);
+    await tick(() => !!button('重试保存状态'), 'start-state recovery on reload');
+    assert.equal(button('整理到知识库')?.disabled, true);
+    assert.equal(button('继续审核'), undefined);
     fault.release(); await click(button('重试保存状态')); await seen;
     await act(async () => { root!.render(createElement(RawPage, { ...props, selectedId: other.id, selectionGeneration: 1 })); });
     release(); await act(async () => { await new Promise(r => setTimeout(r, 60)); });
@@ -96,15 +98,20 @@ test('SR01 start failure reload is actionable and late storage response cannot c
 });
 
 test('SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review', async () => {
-  const f = await storageFixture(), h = await storageHttp(f), fault = atomicFault(f.root, 'coverage-checkpoint');
+  const f = await storageFixture(), h = await storageHttp(f, f.runner, { knowledge: true }), fault = atomicFault(f.root, 'coverage-checkpoint');
   let root: ReturnType<typeof createRoot> | undefined;
+  const retryPayloads: unknown[] = [];
+  const stages = () => f.requests.map(request => request.system.startsWith('知识维护提议')
+    ? 'maintenance' : request.user.includes('请对下列全部已验证事实规划知识页') ? 'planning' : 'extraction');
   try {
     const job = (await f.start()).job; await f.runner.waitForSettlement(job.id);
+    assert.deepEqual(stages(), ['extraction', 'planning']);
     globalThis.fetch = async (url, init) => {
       const route = String(url);
       if (route === '/api/raw') return new Response(JSON.stringify({ items: [f.raw] }));
       if (route === '/api/stats') return new Response(JSON.stringify({ rawCount: 1, wikiCount: 0, thisWeekNewCount: 1, pendingConfirmationCount: 0, openAuditCount: 0, promptCount: 0, weekStartsOn: '' }));
       if (route === '/api/recovery-issues' || route === '/api/knowledge/workflows') return new Response(JSON.stringify({ items: [] }));
+      if (route === `/api/raw/${f.raw.id}/extract`) retryPayloads.push(JSON.parse(String(init?.body)));
       return nativeFetch(route.startsWith('/api/') ? h.base + route : url, init);
     };
     root = createRoot(w.document.getElementById('root')!); await act(async () => { root!.render(createElement(App)); });
@@ -112,11 +119,23 @@ test('SR01 App recovers coverage storage failure then polls same-job explicit pl
     await click([...w.document.querySelectorAll('button')].find(x => x.textContent?.includes('Raw 原始资料')));
     await tick(() => !!button('重试保存状态'), 'storage recovery'); fault.release(); await click(button('重试保存状态'));
     await tick(() => !!button('仅重新规划（带覆盖诊断）'), 'recovered business failure');
+    assert.deepEqual(stages(), ['extraction', 'planning'], 'storage recovery must not call the Provider');
+    assert.deepEqual(await f.drafts.list(), []);
     // Allow the recovered failed status to settle the old poll before continuing the same id.
     await act(async () => { await new Promise(r => setTimeout(r, 1600)); });
     f.succeed(); await click(button('仅重新规划（带覆盖诊断）'));
-    await tick(() => !!w.document.querySelector('.draft-page h1')?.textContent?.includes('审核'), 'same-job completed opens draft');
-    assert.equal((await f.jobs.get(job.id))?.status, 'completed'); assert.equal(f.requests.length, 3); assert.equal((await f.jobs.list()).length, 1);
+    await tick(() => w.document.querySelector('.draft-page h1')?.textContent === '整理成果' && !!w.document.querySelector('input[aria-label^="选择入库 "]'), 'same-job completed opens maintenance outcomes');
+    assert.deepEqual(retryPayloads, [{ planningRetry: true, mode: 'standard' }]);
+    assert.deepEqual(stages(), ['extraction', 'planning', 'planning', 'maintenance']);
+    const finished = await f.jobs.get(job.id);
+    const drafts = await f.drafts.list();
+    assert.equal(finished?.status, 'completed');
+    assert.equal(finished?.callCount, 4);
+    assert.equal((await f.jobs.list()).length, 1);
+    assert.equal(drafts.length, 1);
+    assert.equal(drafts[0].id, finished?.draftId);
+    assert.equal(drafts[0].maintenance?.changes[0].decision, 'defer');
+    assert.equal(button('确认所选成果入库')?.disabled, true);
   } finally { if (root) await act(async () => { root!.unmount(); }); globalThis.fetch = nativeFetch; fault.restore(); await h.close(); await f.clean(); }
 });
 

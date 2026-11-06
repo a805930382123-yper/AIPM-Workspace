@@ -31,19 +31,33 @@ async function fixture(index=0) {
 
 for(let index=0;index<variants.length;index++)test(`R9 fake wire and visible note preserve source boundaries and ambiguous original ${index+1} even when model omits them`,async()=>{
   const f=await fixture(index);try{
-    const started=await f.start(),runtime=await f.wait(started.json.jobId);assert.equal(runtime.job?.status,'completed',JSON.stringify(runtime));assert.equal(f.requests.length,5);
+    const started=await f.start(),runtime=await f.wait(started.json.jobId);assert.equal(runtime.job?.status,'completed',JSON.stringify(runtime));assert.equal(f.requests.length,6);
     const cp=(await new ExtractionCheckpointStore(f.root).get(started.json.jobId))!,draft=(await f.drafts.get(runtime.job!.draftId!))!,note=draft.structuredNote!;
     const sourceNotes=cp.completedChunks.flatMap(c=>c.sourceNotes??[]),facts=cp.completedChunks.flatMap(c=>c.facts),leaves=deepLeaves(note);
     assert.equal(sourceNotes.length,2);assert(!facts.some(fact=>sourceNotes.some(n=>n.atomId===fact.atomId)));assert.equal(facts.filter(fact=>fact.kind==='ambiguous').length,1);
+    assert.notEqual(sourceNotes[0].text, sourceNotes[1].text);
+    assert.deepEqual(sourceNotes[0].locatorIds, sourceNotes[1].locatorIds, 'two distinct original sentences share one coarse locator');
     for(const request of f.requests.filter(r=>r.system.startsWith('KB03 '))){const p=JSON.parse(request.user);assert.deepEqual(p.sourceNotes,sourceNotes);assert.deepEqual(p.source,{id:f.raw.id,title:f.raw.title,sourceType:f.raw.sourceType,sourceName:f.raw.sourceName,publishedAt:f.raw.publishedAt,url:f.raw.url,tags:f.raw.tags});assert.deepEqual(p.evidence,cp.completedChunks.flatMap(c=>c.evidence));assert(request.system.includes('登记线索'));assert(request.system.includes('转录'));}
     const planning=JSON.parse(f.requests[1].user.split('\n').at(-1)!);assert(!('sourceNotes'in planning));assert.equal(planning.factUnits.length,facts.length);
-    for(const item of [...sourceNotes,...facts.filter(fact=>fact.kind==='ambiguous')]){const visible=leaves.filter(l=>l.role==='needs_verification'&&l.prose===item.text&&l.reason?.includes(item.atomId!));assert.equal(visible.length,1);for(const locator of item.locatorIds)assert(visible[0].reason!.includes(locator));}
+    for (const item of [...sourceNotes, ...facts.filter(fact => fact.kind === 'ambiguous')]) {
+      const visible = leaves.filter(leaf => leaf.role === 'needs_verification' && leaf.prose === item.text && leaf.reason?.includes(item.atomId!));
+      assert.equal(visible.length, 1, JSON.stringify({ item, boundaries: leaves.filter(leaf => leaf.role === 'needs_verification') }));
+      for (const locator of item.locatorIds) assert(visible[0].reason!.includes(locator));
+      const evidence = cp.completedChunks[item.chunkIndex].evidence.filter(ref => item.locatorIds.includes(ref.id));
+      assert.deepEqual(visible[0].sourceBoundary, {
+        rawId: f.raw.id, start: Math.min(...evidence.map(ref => ref.start)), end: Math.max(...evidence.map(ref => ref.end)),
+        category: 'kind' in item ? 'ambiguous' : 'source_note',
+      });
+    }
     assert.deepEqual(preserveDeepBoundaries(note,cp.deep!.outline!,cp),note);checkDeepNote(note,cp.deep!.outline!,cp);assert(validStructuredNote(note,new Set(facts.map(f=>f.id))));
     const missing=structuredClone(note);missing.sections[0].blocks.pop();assert.throws(()=>checkDeepNote(missing,cp.deep!.outline!,cp),{code:'LLM_DEEP_BOUNDARY_MISSING'});
-    const quality=JSON.parse(f.requests.at(-1)!.user);assert.deepEqual(quality.note,note);assert(f.requests.at(-1)!.system.includes('不能只因引用/evidence含原句'));
+    const qualityRequest = f.requests.find(request => request.system.startsWith('KB03 quality'));
+    assert(qualityRequest);
+    const quality=JSON.parse(qualityRequest.user);assert.deepEqual(quality.note,note);assert(qualityRequest.system.includes('不能只因引用/evidence含原句'));
     assert.match(draft.source.body,/登记日期：2021-03-04/);assert.match(draft.source.body,/登记链接：https:\/\/example\.test\/registered/);assert.match(draft.source.body,/作者：未提供（作者）/);assert.match(draft.source.body,/登记线索，未经外部核验/);assert(!draft.source.body.includes('原发布日期'));
-    assert.equal((await f.rawStore.get(f.raw.id))!.body,f.raw.body);const replay=await f.start();assert.equal(replay.json.jobId,started.json.jobId);assert.equal(f.requests.length,5);
-    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-19');assert.equal(FROZEN_BUDGETS.totalDeadlineMs,600000);assert.deepEqual(f.requests.map(r=>r.timeoutMs),[60000,60000,120000,120000,120000]);assert(f.requests[0].user.includes('疑似错字'));
+    assert.equal((await f.rawStore.get(f.raw.id))!.body,f.raw.body);const replay=await f.start();assert.equal(replay.json.jobId,started.json.jobId);assert.equal(f.requests.length,6);
+    assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-19');assert.equal(FROZEN_BUDGETS.totalDeadlineMs,600000);assert.deepEqual(f.requests.map(r=>r.timeoutMs),[60000,60000,120000,120000,120000,120000]);assert(f.requests[0].user.includes('疑似错字'));
+    assert.equal(JSON.parse(f.requests.at(-1)!.user).stage, 'maintenance');
   }finally{await f.clean();}
 });
 
@@ -54,7 +68,7 @@ test('R9 excluded ambiguous fact still has visible exact pending-verification te
   });try{
     const started=await f.start(),runtime=await f.wait(started.json.jobId);assert.equal(runtime.job?.status,'completed',JSON.stringify(runtime));
     const cp=(await new ExtractionCheckpointStore(f.root).get(started.json.jobId))!,doubt=cp.completedChunks.flatMap(c=>c.facts).find(f=>f.kind==='ambiguous')!;
-    const leaves=deepLeaves((await f.drafts.get(runtime.job!.draftId!))!.structuredNote!);const visible=leaves.find(l=>l.role==='needs_verification'&&l.prose===doubt.text)!;assert(visible);assert.deepEqual(visible.factIds,[]);assert(visible.reason!.includes(doubt.id));assert.match(visible.reason!,/虽未纳入大纲正文/);assert.equal(f.requests.length,5);
+    const leaves=deepLeaves((await f.drafts.get(runtime.job!.draftId!))!.structuredNote!);const visible=leaves.find(l=>l.role==='needs_verification'&&l.prose===doubt.text)!;assert(visible);assert.deepEqual(visible.factIds,[]);assert(visible.reason!.includes(doubt.id));assert.match(visible.reason!,/虽未纳入大纲正文/);assert.equal(f.requests.length,6);
   }finally{await f.clean();}
 });
 
@@ -70,8 +84,9 @@ test('R9 failed quality resumes the same persisted boundary note in a real new p
     const started=await f.start(),failed=await f.wait(started.json.jobId);assert.equal(failed.job?.status,'failed');assert.equal(f.requests.length,5);
     const before=(await new ExtractionCheckpointStore(f.root).get(started.json.jobId))!.deep!.note!;
     const support=pathToFileURL(path.resolve('tests/support/kb03-quality-runner.mjs')).href,reply=pathToFileURL(path.resolve('tests/support/kb03-deep-fixture.ts')).href;
-    const script=`import {stores,runnerFor} from ${JSON.stringify(support)};import {deepReply} from ${JSON.stringify(reply)};let calls=0;const state=await stores(${JSON.stringify(f.root)});const provider={name:'fake',model:'budget-model',complete:async request=>{calls++;return {text:JSON.stringify(deepReply(request)),bytes:1,finishReason:'stop'};}};const runner=runnerFor(${JSON.stringify(f.root)},state,provider);await runner.reconcile();if(calls)throw Error('automatic call');const started=await runner.start(${JSON.stringify(f.raw.id)},{mode:'deep',newJobId:'d14bd9bf-19a0-4c46-b162-049033766179',now:new Date().toISOString()});await runner.waitForSettlement(started.job.id);const view=await runner.readJob(started.job.id);const draft=view.job?.draftId?await state.drafts.get(view.job.draftId):undefined;console.log(JSON.stringify({calls,job:view.job,note:draft?.structuredNote}));`;
-    const child=spawnSync(process.execPath,['--import','tsx','--import','./tests/support/css-stub.mjs','--input-type=module','-e',script],{windowsHide:true,encoding:'utf8'});assert.equal(child.status,0,child.stderr);const result=JSON.parse(child.stdout);assert.equal(result.calls,1);assert.equal(result.job.id,started.json.jobId);assert.equal(result.job.status,'completed');assert.equal(result.job.callCount,6);assert.deepEqual(result.note,before);
+    const maintenance=pathToFileURL(path.resolve('tests/support/compat01-maintenance-reply.ts')).href;
+    const script=`import {stores,runnerFor} from ${JSON.stringify(support)};import {deepReply} from ${JSON.stringify(reply)};import {maintenanceReply} from ${JSON.stringify(maintenance)};const stages=[];const state=await stores(${JSON.stringify(f.root)});const provider={name:'fake',model:'budget-model',complete:async request=>{const stage=JSON.parse(request.user).stage;stages.push(stage);return {text:JSON.stringify(stage==='maintenance'?maintenanceReply(request.user):deepReply(request)),bytes:1,finishReason:'stop'};}};const runner=runnerFor(${JSON.stringify(f.root)},state,provider);await runner.reconcile();if(stages.length)throw Error('automatic call');const started=await runner.start(${JSON.stringify(f.raw.id)},{mode:'deep',newJobId:'d14bd9bf-19a0-4c46-b162-049033766179',now:new Date().toISOString()});await runner.waitForSettlement(started.job.id);const view=await runner.readJob(started.job.id);const draft=view.job?.draftId?await state.drafts.get(view.job.draftId):undefined;console.log(JSON.stringify({stages,job:view.job,note:draft?.structuredNote}));`;
+    const child=spawnSync(process.execPath,['--import','tsx','--import','./tests/support/css-stub.mjs','--input-type=module','-e',script],{windowsHide:true,encoding:'utf8'});assert.equal(child.status,0,child.stderr);const result=JSON.parse(child.stdout);assert.deepEqual(result.stages,['quality','maintenance']);assert.equal(result.job.id,started.json.jobId);assert.equal(result.job.status,'completed');assert.equal(result.job.callCount,7);assert.deepEqual(result.note,before);
   }finally{await f.clean();}
 });
 

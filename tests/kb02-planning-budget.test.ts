@@ -1,12 +1,13 @@
 import { semanticReviewReply } from './support/semantic-review.ts';
+import { maintenanceReply } from './support/compat01-maintenance-reply.ts';
 import assert from 'node:assert/strict';
-import { createHash, randomUUID } from 'node:crypto';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { ExtractionCheckpointStore } from '../services/llm/checkpoints.ts';
-import { ExtractionJobStore, ExtractionRunner, JobError } from '../services/llm/jobs.ts';
+import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { type LlmCompletionRequest, type LlmProvider } from '../services/llm/provider.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
 import { LLMService } from '../services/llm/service.ts';
@@ -25,6 +26,10 @@ async function fixture() {
   let validPlan = false;
   const provider: LlmProvider = { name: 'fake', model: 'budget-model', complete: async request => {
     requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
+    if (request.system.startsWith('知识维护提议')) {
+      const text = JSON.stringify(maintenanceReply(request.user));
+      return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
+    }
     const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
     const result = request.user.includes('请对下列全部已验证事实规划知识页')
       ? { version:3,document: { source_level: 'D', title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }
@@ -56,13 +61,10 @@ async function fixture() {
     }
     throw new Error('Budget fixture deadline: ' + JSON.stringify(await safeSnapshot(id)));
   };
-  const hashes = async (jobId: string) => Promise.all([
-    ['extraction-checkpoints', jobId], ['extraction-jobs', jobId], ['raw-processing', raw.id],
-  ].map(async ([dir, id]) => createHash('sha256').update(await readFile(path.join(root, 'state', dir, id + '.json'))).digest('hex')));
-  return { root, raw, jobs, requests, safeSnapshots: () => Promise.all([...ids].map(safeSnapshot)), start, wait, hashes, checkpoint: (id: string) => new ExtractionCheckpointStore(root).get(id), succeed: () => { validPlan = true; }, clean: async () => { for (const id of ids) { if ((await runner.readJob(id)).execution === 'running') await runner.cancel(id); await runner.waitForSettlement(id); } await rm(root, { recursive: true, force: true }); } };
+  return { root, raw, jobs, drafts, requests, safeSnapshots: () => Promise.all([...ids].map(safeSnapshot)), start, wait, checkpoint: (id: string) => new ExtractionCheckpointStore(root).get(id), succeed: () => { validPlan = true; }, clean: async () => { for (const id of ids) { if ((await runner.readJob(id)).execution === 'running') await runner.cancel(id); await runner.waitForSettlement(id); } await rm(root, { recursive: true, force: true }); } };
 }
 
-test('KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart', async () => {
+test('KB02 repeated explicit replanning retains diagnostics beyond the former limit and allows explicit restart', async () => {
   const f = await fixture();
   let primaryFailure = false;
   try {
@@ -71,7 +73,7 @@ test('KB02 exhausted explicit replanning rejects before writes, retains diagnost
     assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
     assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
     assert.equal(job.callCount, 2);
-    for (let calls = 3; calls <= 6; calls++) {
+    for (let calls = 3; calls <= 7; calls++) {
       assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
       assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
       assert.equal((await f.start({ planningRetry: true })).job.id, job.id);
@@ -79,32 +81,33 @@ test('KB02 exhausted explicit replanning rejects before writes, retains diagnost
       assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
       assert.equal(job.callCount, calls);
     }
-    const saved = await f.checkpoint(job.id), before = await f.hashes(job.id);
-    assert.equal(saved?.attempts, 6);
+    const saved = await f.checkpoint(job.id);
+    assert.equal(saved?.attempts, 7);
     assert.equal(saved?.completedChunks.length, 1);
     assert.deepEqual(saved?.lastError?.diagnostic?.facts.missing, ['fu-13-26-fact']);
     assert.deepEqual(job.error?.details, saved?.lastError?.diagnostic);
-    for (let replay = 0; replay < 3; replay++) {
-      await assert.rejects(f.start({ planningRetry: true }), (error: unknown) => error instanceof JobError && error.code === 'LLM_ATTEMPT_LIMIT' && error.status === 409 && /累计 6 次调用上限.*显式重新生成/u.test(error.message));
-      assert.deepEqual(await f.hashes(job.id), before);
-      assert.equal(f.requests.length, 6);
-    }
+    assert.equal(f.requests.length, 7);
+    assert.equal((await f.drafts.list()).length, 0);
     f.succeed();
     const restarted = await f.start({ restart: true });
     assert.notEqual(restarted.job.id, job.id);
     const completed = await f.wait(restarted.job.id);
     assert.equal(completed.status, 'completed');
-    assert.equal(completed.callCount, 2);
+    assert.equal(completed.callCount, 3);
+    assert.deepEqual(f.requests.slice(7).map(stageOf), ['extracting', 'planning', 'maintenance']);
     assert.deepEqual(await f.checkpoint(job.id), saved);
   } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
 });
 
-test('KB02 revision13 last single planning slot stays in the same job with successful chunks and cumulative attempts', async () => {
+const stageOf = (request: LlmCompletionRequest) => request.system.startsWith('知识维护提议') ? 'maintenance'
+  : request.user.includes('请对下列全部已验证事实规划知识页') ? 'planning' : 'extracting';
+
+for (const attemptsBeforeSuccess of [5, 7]) test(`KB02 preserves chunks through planning and maintenance after ${attemptsBeforeSuccess} persisted attempts`, async () => {
   const f = await fixture();
   let primaryFailure = false;
   try {
     let job = await f.wait((await f.start()).job.id);
-    for (let calls = 3; calls <= 5; calls++) {
+    for (let calls = 3; calls <= attemptsBeforeSuccess; calls++) {
       assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
       assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
       await f.start({ planningRetry: true });
@@ -117,11 +120,16 @@ test('KB02 revision13 last single planning slot stays in the same job with succe
     f.succeed();
     assert.equal((await f.start({ planningRetry: true })).job.id, job.id);
     job = await f.wait(job.id);
+    assert.equal(job.callCount, attemptsBeforeSuccess + 2);
+    const settled = (await f.checkpoint(job.id))!;
+    assert.deepEqual(settled.completedChunks, chunk);
+    assert.equal(settled.attempts, attemptsBeforeSuccess + 2);
+    assert(settled.plan, 'the final replan completed');
+    assert.equal(f.requests.length, attemptsBeforeSuccess + 2);
+    assert.deepEqual(f.requests.map(stageOf), ['extracting', ...Array(attemptsBeforeSuccess).fill('planning'), 'maintenance']);
+    assert.deepEqual(JSON.parse(f.requests[attemptsBeforeSuccess].user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
     assert.equal(job.status, 'completed');
-    assert.equal(job.callCount, 6);
-    assert.deepEqual((await f.checkpoint(job.id))!.completedChunks, chunk);
-    assert.equal(f.requests.length, 6);
-    assert.equal(f.requests.filter(r => !r.user.includes('请对下列全部已验证事实规划知识页') && !r.user.startsWith('请审核下列完整候选知识规划')).length, 1);
-    assert.deepEqual(JSON.parse(f.requests.at(-1)!.user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
+    assert(settled.maintenance?.proposal);
+    assert.equal((await f.drafts.list()).length, 1);
   } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
 });

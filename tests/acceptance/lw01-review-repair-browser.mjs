@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createRequire} from 'node:module';
+const {chromium}=createRequire(import.meta.url)('C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const s=JSON.parse(await readFile(process.argv[2],'utf8')),out='docs/reports/LW01-20261101-evidence',log={session:s,success:false,checks:[]};
+const b=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true}),p=await b.newPage({viewport:{width:1536,height:1080}});p.setDefaultTimeout(15000);
+const api=async(route,method='GET',body)=>{const r=await fetch(s.api+route,{method,headers:{'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});assert(r.ok,await r.clone().text());return r.json();};
+const shot=async name=>p.screenshot({path:`${out}/review-repair-${name}.png`,fullPage:true});
+const stable=()=>p.waitForFunction(()=>document.querySelector('.draft-page')?.getAttribute('aria-busy')==='false');
+async function act(path,fn,status=200){const response=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes(path));await fn();const r=await response;assert.equal(r.status(),status,await r.text());await stable();return r.json();}
+async function item(){const c=p.locator('#change-0');await act('/changes/review',()=>c.getByRole('button',{name:'接受此项',exact:true}).click());await act('/changes/review',()=>c.getByRole('checkbox').click());}
+async function note(){const panel=p.locator('.note-approval');await panel.getByRole('checkbox').nth(0).check();assert(await panel.getByRole('button').isDisabled());await panel.getByRole('checkbox').nth(1).check();await act('/review/structured-note',()=>panel.getByRole('button').click());}
+async function generate(title){await p.locator('.nav-item').filter({hasText:'Raw'}).click();await p.locator('.raw-list-item').filter({hasText:title}).click();await p.getByLabel('整理模式',{exact:true}).selectOption('deep');await p.getByRole('button',{name:'整理并融入知识库',exact:true}).click();await p.waitForFunction(()=>document.querySelector('.draft-page h1')||[...document.querySelectorAll('button')].some(b=>b.textContent==='继续审核'));if(await p.getByRole('button',{name:'继续审核',exact:true}).count())await p.getByRole('button',{name:'继续审核',exact:true}).click();await p.getByRole('heading',{name:'审核知识变更',exact:true}).waitFor();}
+try{
+ await api('/__control/topics','POST',{topics:[s.fixtures.deep.theme]});await p.goto(s.url);await p.locator('.home-entry-grid').waitFor();await generate('LW01 deep 资料A');await item();assert(await p.getByRole('button',{name:/确认写入 Wiki/}).isDisabled());await shot('deep-ack-required');await note();
+ const dir=p.locator('details').filter({has:p.getByText('来源事实与问题归属',{exact:true})});await dir.locator('summary').click();const select=dir.locator('select').first(),owner=await select.inputValue();await act('/review/move',()=>select.selectOption(''));assert(await p.getByRole('button',{name:/确认写入 Wiki/}).isDisabled());assert(!await p.locator('#change-0').getByRole('checkbox').isChecked());await shot('unresolved-blocked');
+ await act('/review/move',()=>select.selectOption(owner));await act('/changes/review',()=>p.locator('#change-0').getByRole('checkbox').click());await note();
+ await p.getByRole('button',{name:'返回 Raw',exact:true}).click();assert((await p.getByLabel('受影响知识主题',{exact:true}).innerText()).includes(s.fixtures.deep.theme));await shot('raw-pending');await p.getByRole('button',{name:'继续审核',exact:true}).click();
+ const result=await act('/confirm',()=>p.getByRole('button',{name:/确认写入 Wiki/}).click(),201);await p.getByRole('button',{name:'返回 Raw',exact:true}).click();assert((await p.getByLabel('受影响知识主题',{exact:true}).innerText()).includes('已写入主题'));await shot('raw-committed');
+ const target=(await api('/api/wiki')).items.find(x=>x.title===s.fixtures.deep.theme);await generate('LW01 deep 资料B');await item();await note();
+ const old=await api('/api/wiki/'+target.id);await api('/api/wiki/'+target.id,'PUT',{...old,baseRevision:old.revision,body:old.body+'\n独验并发人工保留'});
+ await act('/confirm',()=>p.getByRole('button',{name:/确认写入 Wiki/}).click(),409);await p.getByRole('alert').waitFor();assert((await api('/api/wiki/'+target.id)).body.endsWith('独验并发人工保留'));await shot('revision-conflict');
+ log.checks=['deep acknowledgement required after item approval','one acknowledgement insufficient','null ownership clears approval and blocks','restore ownership and both acknowledgements commit','Raw pending and written real topic','actual UI stale revision 409 preserves manual content'];log.result=result;log.target=target.id;log.success=true;
+}catch(e){log.failure={message:e.message,stack:e.stack};await shot('failure');throw e;}finally{await writeFile(`${out}/review-repair-browser.json`,JSON.stringify(log,null,2));await b.close();}

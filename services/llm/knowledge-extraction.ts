@@ -8,7 +8,7 @@ import { assertNoKnownSecret, describeUnparsable, LlmError, type LlmProvider } f
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
-import { checkpointCallLimit, type CheckpointChunk, type ExtractionCheckpoint } from './checkpoints.ts';
+import type { CheckpointChunk, ExtractionCheckpoint } from './checkpoints.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -28,7 +28,7 @@ function sourceSummary(facts: string[]) {
 }
 export type KnowledgeRunInput = {
   raw: ExtractRawInput; body: string; bodySha256: string; provider: LlmProvider; rulesDir: string;
-  checkpoint: ExtractionCheckpoint; planningRetry?: boolean; signal?: AbortSignal;
+  checkpoint: ExtractionCheckpoint; beforePlanning?:(checkpoint:ExtractionCheckpoint)=>Promise<ExtractionCheckpoint>; planningRetry?: boolean; signal?: AbortSignal;
   beforeCall: (stage: 'extracting' | 'planning') => Promise<ExtractionCheckpoint>;
   saveCheckpoint: (value: Omit<ExtractionCheckpoint, 'integrity'>) => Promise<ExtractionCheckpoint>;
   onProgress?: (value: ExtractProgress) => void;
@@ -83,7 +83,7 @@ export async function validateKnowledgeCheckpoint(input: Pick<KnowledgeRunInput,
   // Only storage reconciliation with an already-associated completed draft may use its
   // original revision's call floor. Pipeline/resume callers never pass this argument.
   const countRulesVersion = completedDraft && completedDraft.callCount === current.attempts ? completedDraft.rulesVersion : current.rulesVersion;
-  if (current.attempts < knowledgePlanCallMinimum({ ...current, rulesVersion: countRulesVersion }) || current.completedChunks.reduce((sum, part) => sum + part.facts.length, 0) > 256 || current.completedChunks.reduce((sum, part) => sum + part.questions.length, 0) > 128 || current.attempts > checkpointCallLimit(current)) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点事实/问题或调用计数超出任务上限，已拒绝恢复。', 409);
+  if (current.attempts < knowledgePlanCallMinimum({ ...current, rulesVersion: countRulesVersion }) || current.completedChunks.reduce((sum, part) => sum + part.facts.length, 0) > 256 || current.completedChunks.reduce((sum, part) => sum + part.questions.length, 0) > 128) throw new LlmError('LLM_CHECKPOINT_CORRUPT', '检查点事实、问题或累计调用计数不一致，已拒绝恢复。', 409);
   const validatedChunkIds = new Set<number>();
   const factIdsSeen = new Set<string>(); const questionIdsSeen = new Set<string>();
   for (const saved of current.completedChunks) {
@@ -202,14 +202,14 @@ export async function runKnowledgePipeline(input: KnowledgeRunInput): Promise<{ 
       current = await input.saveCheckpoint({ ...current, completedChunks: nextChunks, stage: 'extracting', lastError: undefined });
       emit('extracting', nextChunks.length);
     }
+    if(input.beforePlanning&&!current.maintenance)current=await input.beforePlanning(current);
     const allFacts = current.completedChunks.flatMap(part => part.facts);
     const allQuestions = current.completedChunks.flatMap(part => part.questions);
     if (!allFacts.length) throw new LlmError('LLM_EMPTY_RESULT', '整篇没有可规划的已验证事实（EMPTY_RESULT）。', 422);
     guard();
-    if (checkpointCallLimit(current) - current.attempts < 1) throw new LlmError('LLM_ATTEMPT_LIMIT', '剩余调用预算不足以完成规划；成功块已保留，请检查资料后显式重新生成。', 429);
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
-    const planningPayload = { ...buildKnowledgePlanningWire(input.body, planningInput), source: { id: input.raw.id, title: input.raw.title, sourceType: input.raw.sourceType, sourceName: input.raw.sourceName, author: input.raw.author, publishedAt: input.raw.publishedAt, url: input.raw.url, tags: input.raw.tags }, sourcePolicy: bundle.sourcePolicy, ...(feedback ? { coverageFeedback: feedback } : {}) };
+    const planningPayload = { ...(current.maintenance?{wikiContext:current.maintenance.context}:{}), ...buildKnowledgePlanningWire(input.body, planningInput), source: { id: input.raw.id, title: input.raw.title, sourceType: input.raw.sourceType, sourceName: input.raw.sourceName, author: input.raw.author, publishedAt: input.raw.publishedAt, url: input.raw.url, tags: input.raw.tags }, sourcePolicy: bundle.sourcePolicy, ...(feedback ? { coverageFeedback: feedback } : {}) };
     assertNoKnownSecret(planningPayload, input.provider.secrets ?? []);
     const planningJson = JSON.stringify(planningPayload);
     if (Buffer.byteLength(planningJson, 'utf8') > 192 * 1024) throw new LlmError('LLM_PLANNING_TOO_LARGE', '整篇事实规划输入超过192KiB；检查点已保存，请缩短资料后显式重新生成。', 422);

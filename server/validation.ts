@@ -10,7 +10,7 @@ export function validateRawMetadata(value: unknown): RawMetadata {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new InputError('INVALID_BODY', '请求内容格式不正确。');
   const x = value as Record<string, unknown>;
   if (x.origin !== undefined) throw new InputError('MEETING_ORIGIN_FORBIDDEN', 'Meeting 来源标识只能由服务端登记。', 403);
-  for (const field of ['id','importedAt','status','bodySha256','isDemo','assetId','assetFileName','assetFormat','assetByteSize','assetSha256','extractionParser','extractionNote']) {
+  for (const field of ['id','importedAt','status','bodySha256','isDemo','assetId','assetFileName','assetFormat','assetByteSize','assetSha256','extractionParser','extractionNote','urlImport']) {
     if (field in x) throw new InputError('SYSTEM_FIELD_FORBIDDEN', 'Raw 系统字段只能由服务端生成。', 403, { field });
   }
   const requiredText = (key: string, label: string) => {

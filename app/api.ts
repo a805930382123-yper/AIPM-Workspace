@@ -1,3 +1,7 @@
+import type {InspectionDraftInput} from '../services/wiki/inspection-input';
+import type {KnowledgeAnswer} from '../services/llm/knowledge-answers';
+import type {AnswerCitation,QuestionDraftInput,QuestionPreview} from '../services/wiki/question-input';
+import type {KnowledgeChange,KnowledgeMaintenance} from '../services/wiki/maintenance';
 import type {StructuredNote,NoteReviewMetadata,NoteExclusion,NoteApproval} from '../services/wiki/structured-note';
 import type {DeepQualityReport} from '../services/llm/knowledge-deep';
 import type { HumanReview } from '../services/wiki/human-review.ts';
@@ -9,6 +13,7 @@ export type Raw = {
   /** B03: retained original file linkage. Absent for pasted text. */
   assetId?: string; assetFileName?: string; assetFormat?: string; assetByteSize?: number; assetSha256?: string;
   extractionParser?: string; extractionNote?: string;
+  urlImport?: { finalUrl: string; fetchedAt: string };
   isDemo?: boolean;
   origin?: MeetingRawOrigin;
 };
@@ -25,6 +30,17 @@ export type RawImportResult = {
   extraction: { parser: string; note: string; bodyChars: number };
   warnings?: string[];
 };
+export type RawTranslation = {
+  rawId: string; rawSha256: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'skipped' | 'cancelled';
+  completedChunks: number; totalChunks: number; attempts: number;
+  body?: string; reason?: string; error?: { code: string; message: string };
+};
+export type RawUrlImportResult = { kind: 'url'; raw: Raw; extraction: RawImportResult['extraction']; translation?: RawTranslation };
+const translationUrl = (rawId: string) => `/api/raw/${encodeURIComponent(rawId)}/translation`;
+export const rawTranslation = (rawId: string) => api<{translation: RawTranslation | null}>(translationUrl(rawId));
+export const changeRawTranslation = (rawId: string, action: 'retry' | 'cancel') =>
+  api<{translation: RawTranslation}>(`${translationUrl(rawId)}/${action}`, {method:'POST', body:'{}'});
 export type RawReference = { id: string; title: string; type?: WikiType };
 export type Stats = { rawCount: number; wikiCount: number; thisWeekNewCount: number; pendingConfirmationCount: number; openAuditCount: number; promptCount: number; weekStartsOn: string; recentChanges?: Array<{time:string;action:string;id:string;title:string;type:string;revision:number;isDemo?:boolean}> };
 export type MeetingConfidentiality = 'Public' | 'Internal' | 'Sensitive' | 'Restricted';
@@ -146,7 +162,11 @@ export type DraftPreview = {
   titleConflicts: Array<{ title: string; existingId: string; existingTitle: string; kind: 'strong' | 'alias' }>;
   batchDuplicateTitles: string[];
 };
-export type DraftView = {
+export type RawDraftView = {
+  input?:undefined;
+  outcomeDigest?: string;
+  sourceRenderedBody?: string;
+  maintenance?:KnowledgeMaintenance;changeDigests?:Record<string,string>;
   noteApproval?:NoteApproval;
   structuredNote?:StructuredNote;noteReview?:NoteReviewMetadata;qualityReport?:DeepQualityReport;noteQualityStatus?:'historical'|'generated';noteWarnings?:string[];
   humanReview?:HumanReview; humanQuestionUnitIds?:string[]; reviewContentDigest?:string|null;
@@ -160,12 +180,31 @@ export type DraftView = {
   preview: DraftPreview | null;
   raw: { id: string; title: string; sourceType: SourceType; sourceName: string; author: string | null; publishedAt: string | null; url: string | null; importedAt: string; bodySha256: string } | null;
 };
+export type QuestionDraftView=Omit<RawDraftView,'rawId'|'rawTitle'|'jobId'|'source'|'input'> & {input:QuestionDraftInput;questionBasisChanged?:boolean};
+export type InspectionDraftView=Omit<QuestionDraftView,'input'> & {input:InspectionDraftInput};
+export type DraftView=RawDraftView|QuestionDraftView|InspectionDraftView;
+export type KnowledgeInspection={id:string;revision:number;includeRelated:boolean;status:'queued'|'checking'|'completed'|'partial'|'failed';stage:string;attempts:number;scope:{selected:string[];candidates:string[];read:Array<{id:string;title:string;revision:number}>;skipped:Array<{id:string;reason:string}>;gaps:string[]};findings:import('../services/wiki/inspection-input').InspectionFinding[];lint:Array<{code:string;objectId:string|null;message:string}>;audits:Array<{id:string;wikiId:string;status:string;comment:string}>;drafts:Array<{key:string;selectedFindingIds:string[];draftId?:string;status:string;reason?:string}>;error?:{code:string;message:string}};
+const inspectionPath=(id:string)=>'/api/knowledge/inspections/'+encodeURIComponent(id);
+export const startInspection=(input:{requestId:string;wikiIds:string[];includeRelated:boolean;retry?:boolean})=>api<KnowledgeInspection>('/api/knowledge/inspections',{method:'POST',body:JSON.stringify(input)});
+export const currentInspection=()=>api<KnowledgeInspection|null>('/api/knowledge/inspections/current');
+export const getInspection=(id:string)=>api<KnowledgeInspection>(inspectionPath(id));
+export const inspectionEvidence=(id:string,findingId:string,evidenceId:string)=>api<AnswerCitation>(inspectionPath(id)+'/findings/'+encodeURIComponent(findingId)+'/evidence/'+encodeURIComponent(evidenceId));
+export const decideInspection=(id:string,findingId:string,input:{baseRevision:number;status:'viewed'|'deferred';reason:string})=>api<KnowledgeInspection>(inspectionPath(id)+'/findings/'+encodeURIComponent(findingId)+'/decision',{method:'POST',body:JSON.stringify(input)});
+export const draftInspection=(id:string,input:{baseRevision:number;selectedFindingIds:string[];key:string})=>api<{status:string;draftId?:string;reason?:string;inspection:KnowledgeInspection}>(inspectionPath(id)+'/draft',{method:'POST',body:JSON.stringify(input)});
+
+export const askKnowledge=(input:{requestId:string;question:string;retry?:boolean})=>api<KnowledgeAnswer>('/api/knowledge/answers',{method:'POST',body:JSON.stringify(input)});
+export const knowledgeAnswer=(id:string)=>api<KnowledgeAnswer>('/api/knowledge/answers/'+encodeURIComponent(id));
+export const currentKnowledgeAnswer=()=>api<KnowledgeAnswer|null>('/api/knowledge/answers/current');
+export const answerCitation=(id:string,citationId:string)=>api<AnswerCitation>('/api/knowledge/answers/'+encodeURIComponent(id)+'/citations/'+encodeURIComponent(citationId));
+export const saveKnowledgeAnswer=(id:string,input:{key:string;resultRevision:number;preview:QuestionPreview})=>api<{status:string;draftId?:string;reason?:string;answer:KnowledgeAnswer}>('/api/knowledge/answers/'+encodeURIComponent(id)+'/save',{method:'POST',body:JSON.stringify(input)});
 export type DraftSummary = { id: string; rawId: string; rawTitle: string; status: string; revision: number; title: string; pageCount: number; selectedCount: number; updatedAt: string };
 export type WikiCommitStatus = {
   operationId: string; draftId: string; rawId: string; status: 'prepared' | 'committing' | 'completed' | 'failed';
   createdAt: string; updatedAt: string; completedAt: string | null;
   phases: Array<{ name: string; status: 'pending' | 'done' | 'failed'; error?: string }>;
   writtenWikiIds: string[]; sourceId: string | null; wikiIds: string[]; selectedPageIds: string[];
+  noChanges?:boolean;changeResults?:Record<string,string>;
+  confirmation?:{baseRevision:number;outcomeDigest:string;idempotencyKey:string};
   error: { code: string; message: string; phase?: string } | null; recoveryHint: string | null; warnings: string[];
 };
 export type DraftEvidencePatch = { id: string; rawId?: string; quote: string; start?: number; end?: number };
@@ -199,9 +238,15 @@ export const drafts = (query: { rawId?: string; status?: string } = {}) => {
   return api<{ items: DraftSummary[] }>(`/api/drafts${suffix}`).then(value => value.items);
 };
 export const draftView = (draftId: string) => api<DraftView>(`/api/drafts/${encodeURIComponent(draftId)}`);
+export const prepareDraftChange=(draftId:string,input:{baseRevision:number;changeId:string;action:KnowledgeChange['action'];targetWikiId?:string;preparationId:string})=>
+  api<RawDraftView>(`/api/drafts/${encodeURIComponent(draftId)}/changes/prepare`,{method:'POST',body:JSON.stringify(input)});
+export const cancelDraftPreparation=(draftId:string,preparationId:string)=>
+  api<{cancelled:boolean}>(`/api/drafts/${encodeURIComponent(draftId)}/changes/prepare/${encodeURIComponent(preparationId)}/cancel`,{method:'POST'});
+export const finishDraftReview=(draftId:string,baseRevision:number)=>
+  api<RawDraftView>(`/api/drafts/${encodeURIComponent(draftId)}/finish`,{method:'POST',body:JSON.stringify({baseRevision})});
 export const patchDraft = (draftId: string, patch: DraftPatch) => api<DraftView>(`/api/drafts/${encodeURIComponent(draftId)}`, { method: 'PATCH', body: JSON.stringify(patch) });
 export const discardDraft = (draftId: string, baseRevision?: number) => api<{ id: string; status: string; rawId: string }>(`/api/drafts/${encodeURIComponent(draftId)}/discard`, { method: 'POST', body: JSON.stringify(baseRevision === undefined ? {} : { baseRevision }) });
-export const confirmDraft = (draftId: string, input: { baseRevision: number; selectedPageIds: string[]; idempotencyKey: string }) =>
+export const confirmDraft = (draftId: string, input: { baseRevision: number; selectedPageIds: string[]; idempotencyKey: string; outcomeDigest?: string }) =>
   api<{ operationId: string; status: string; reused: boolean; sourceReused: boolean; sourceId: string | null; wikiIds: string[]; writtenWikiIds: string[]; warnings: string[]; phases: WikiCommitStatus['phases'] }>(`/api/drafts/${encodeURIComponent(draftId)}/confirm`, { method: 'POST', body: JSON.stringify(input) });
 export const wikiCommit = (operationId: string) => api<WikiCommitStatus>(`/api/wiki-commits/${encodeURIComponent(operationId)}`);
 export const startDraftReview=(id:string,baseRevision:number)=>api<DraftView>(`/api/drafts/${encodeURIComponent(id)}/review/start`,{method:'POST',body:JSON.stringify({baseRevision})});

@@ -11,6 +11,7 @@ import net from 'node:net';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import type { DraftRecord } from '../services/wiki/drafts.ts';
 import { buildPayloadForChunk, chunkFromPrompt, contentOf, isPlanningPrompt, planningPayloadFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -65,15 +66,10 @@ async function stopServer(service: Service | undefined): Promise<void> {
 }
 
 type Reply = { status: number; json: unknown; text: string };
+type MaintenanceDraft = DraftRecord & { maintenance: NonNullable<DraftRecord['maintenance']>; changeDigests: Record<string, string> };
+type ReviewAction = { decision?: 'accept' | 'defer'; title?: string; body?: string; confirmed?: boolean; digest?: string };
 function makeClient(service: Service) {
   const request = async (url: string, method = 'GET', body?: unknown): Promise<Reply> => {
-    // Legacy HTTP transaction tests perform the new required individual user actions first.
-    if(method==='POST'&&/^\/api\/drafts\/[^/]+\/confirm$/u.test(url)){
-      const base=url.slice(0,-8),input=body as any,view=await request(base);let draft=view.json as any;
-      if(view.status===200&&draft.status==='pending_confirmation'&&draft.revision===input.baseRevision&&input.selectedPageIds?.length&&input.selectedPageIds.every((id:string)=>draft.pages.some((p:any)=>p.pageId===id))){
-        const started=await request(base+'/review/start','POST',{baseRevision:draft.revision});if(started.status===200){draft=started.json;for(const page of draft.pages){const result=await request(base+'/review/pages/'+page.pageId,'POST',{baseRevision:draft.revision,reviewContentDigest:draft.reviewContentDigest,confirmed:true});assert.equal(result.status,200,result.text);draft=result.json;}body={...input,baseRevision:draft.revision};}
-      }
-    }
     const response = await fetch(`${service.base}${url}`, {
       method,
       ...(body === undefined ? {} : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
@@ -94,7 +90,27 @@ function makeClient(service: Service) {
       await delay(50);
     }
   };
-  return { request, waitForJob };
+  const changeRequest = (draft: MaintenanceDraft, changeId: string, action: ReviewAction) => request(`/api/knowledge/drafts/${draft.id}/changes/review`, 'POST', {
+    baseRevision: draft.revision, changeId, ...action,
+  });
+  const reviewChange = async (draft: MaintenanceDraft, changeId: string, action: ReviewAction) => {
+    const result = await changeRequest(draft, changeId, action);
+    assert.equal(result.status, 200, result.text);
+    return result.json as MaintenanceDraft;
+  };
+  const acceptChanges = async (draftId: string, pageIds: string[]) => {
+    const view = await request(`/api/drafts/${draftId}`);
+    assert.equal(view.status, 200, view.text);
+    let draft = view.json as MaintenanceDraft;
+    const changes = draft.maintenance.changes.filter(change => pageIds.includes(draft.pages[change.pageIndex].pageId));
+    assert.equal(changes.length, pageIds.length);
+    for (const { changeId } of changes) {
+      draft = await reviewChange(draft, changeId, { decision: 'accept' });
+      draft = await reviewChange(draft, changeId, { confirmed: true, digest: draft.changeDigests[changeId] });
+    }
+    return draft;
+  };
+  return { request, waitForJob, changeRequest, reviewChange, acceptChanges };
 }
 type Client = ReturnType<typeof makeClient>;
 type Shape = { [key: string]: any; error?: { code?: string; message?: string; details?: Record<string, unknown> } };
@@ -148,6 +164,8 @@ test('E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂�
     const jobId = String((shape(extract) as { jobId?: string }).jobId);
     const finished = await client.waitForJob(jobId);
     assert.equal((shape(finished) as { status?: string }).status, 'completed', finished.text);
+    assert.equal(harness.fake.requests.length, 3);
+    assert.equal(JSON.parse(harness.fake.requests[2].user).stage, 'maintenance');
     const draftId = String((shape(finished) as { draftId?: string }).draftId);
 
     const processing = await client.request('/api/raw-processing');
@@ -208,9 +226,24 @@ test('E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂�
     assert.deepEqual(selected.map(page => page.pageId), [second.pageId], '只有勾选的建议会被提交');
     assert.equal(updated.pages.find(page => page.pageId === first.pageId)?.title, '人工改名的概念');
     assert.equal(updated.raw?.id, raw.id);
-    const confirm = await client.request(`/api/drafts/${draftId}/confirm`, 'POST', {
-      baseRevision: updated.revision, selectedPageIds: selected.map(page => page.pageId), idempotencyKey: 'http-key-1',
-    });
+    const commit = (revision: number, selectedPageIds: string[], idempotencyKey: string) => client.request(`/api/drafts/${draftId}/confirm`, 'POST', { baseRevision: revision, selectedPageIds, idempotencyKey });
+    const missingApproval = await commit(updated.revision, [second.pageId], 'http-unreviewed');
+    assert.equal(missingApproval.status, 409, missingApproval.text);
+    assert.equal(shape(missingApproval).error?.code, 'NO_SELECTION');
+    const accepted = await client.acceptChanges(draftId, [second.pageId]);
+    const chosen = accepted.maintenance.changes.find(change => accepted.pages[change.pageIndex].pageId === second.pageId)!;
+    const editedBody = chosen.candidate.body + '\n\n## 人工说明\n复核后保留原文口径。';
+    const edited = await client.reviewChange(accepted, chosen.changeId, { body: editedBody });
+    assert.equal(edited.maintenance.changes.find(change => change.changeId === chosen.changeId)?.approval, undefined);
+    const staleDigest = await client.changeRequest(edited, chosen.changeId, { confirmed: true, digest: accepted.changeDigests[chosen.changeId] });
+    assert.equal(staleDigest.status, 409, staleDigest.text);
+    assert.equal(shape(staleDigest).error?.code, 'REVIEW_CONTENT_CHANGED');
+    const needsReview = await commit(edited.revision, [second.pageId], 'http-edited');
+    assert.equal(needsReview.status, 409, needsReview.text);
+    assert.equal(shape(needsReview).error?.code, 'CHANGE_REVIEW_REQUIRED');
+    assert.deepEqual(shape(await client.request('/api/wiki')).items, []);
+    const approved = await client.reviewChange(edited, chosen.changeId, { confirmed: true, digest: edited.changeDigests[chosen.changeId] });
+    const confirm = await commit(approved.revision, [second.pageId], 'http-key-1');
     assert.equal(confirm.status, 201, confirm.text);
     const committed = shape(confirm) as unknown as { operationId: string; sourceId: string; wikiIds: string[]; sourceReused: boolean; writtenWikiIds: string[] };
     assert.equal(committed.writtenWikiIds.length, selected.length + 1);
@@ -229,17 +262,18 @@ test('E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂�
     assert.ok(source, 'Source 必须已创建');
     assert.deepEqual(source?.sources, [raw.id]);
     assert.match(source?.body ?? '', /## 摘要/);
+    assert.match(wikiAfter.items.find(item => item.id === committed.wikiIds[0])?.body ?? '', /复核后保留原文口径。/);
     const unselected = updated.pages.find(page => !page.selected);
     if (unselected) assert.equal(wikiAfter.items.some(item => item.title === unselected.title), false, '未选中的建议不得落盘');
     const search = shape(await client.request(`/api/wiki?q=${encodeURIComponent('人工改名的来源摘要')}`)) as unknown as { items: Array<{ id: string }> };
     assert.equal(search.items.some(item => item.id === committed.sourceId), true, '确认后的 Source 必须可搜索');
     const exportReply = await client.request(`/api/wiki/${committed.sourceId}/export`);
     assert.match(exportReply.text, new RegExp(raw.id), '导出必须保留 Raw 来源');
-    assert.equal((shape(await client.request('/api/stats')) as { pendingConfirmationCount?: number }).pendingConfirmationCount, 0);
-    assert.equal((shape(await client.request('/api/raw-processing')) as { items: Array<{ rawId: string; status: string }> }).items.find(item => item.rawId === raw.id)?.status, 'generated');
+    assert.equal(shape(await client.request('/api/stats')).pendingConfirmationCount, 1, '暂缓项仍待审核');
+    assert.equal(shape(await client.request('/api/raw-processing')).items.find((item: { rawId: string }) => item.rawId === raw.id)?.status, 'pending_confirmation');
     assert.equal(sha(await readFile(rawFile)), rawHash, '确认后 Raw 文件仍必须逐字节不变');
     evidence.scenarios.happyPath = {
-      rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: rawHash, draftId, draftRevision: updated.revision,
+      rawId: raw.id, rawSha256: raw.bodySha256, rawFileSha256: rawHash, draftId, draftRevision: approved.revision,
       selectedPageIds: selected.map(page => page.pageId), sourceId: committed.sourceId, wikiIds: committed.wikiIds,
       writtenWikiIds: committed.writtenWikiIds, operationId: committed.operationId,
       wikiCount: wikiAfter.items.length, unselectedTitle: updated.pages.find(page => !page.selected)?.title ?? null,
@@ -267,12 +301,30 @@ test('E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂�
     });
     assert.equal(changedPayload.status, 409, changedPayload.text);
     assert.equal(shape(changedPayload).error?.code, 'IDEMPOTENCY_KEY_MISMATCH', '同 key 不同 payload 必须 409');
-    const changedPayloadOtherKey = await client.request(`/api/drafts/${draftId}/confirm`, 'POST', {
-      baseRevision: updated.revision, selectedPageIds: [first.pageId], idempotencyKey: 'http-key-9',
-    });
+    const partial = shape(await client.request(`/api/drafts/${draftId}`)) as MaintenanceDraft;
+    const deferred = partial.maintenance.changes.find(change => partial.pages[change.pageIndex].pageId === first.pageId)!;
+    assert.equal(deferred.decision, 'defer');
+    assert.equal(deferred.committedOperationId, undefined);
+    const changedPayloadOtherKey = await commit(partial.revision, [first.pageId], 'http-key-9');
     assert.equal(changedPayloadOtherKey.status, 409, changedPayloadOtherKey.text);
-    assert.equal(shape(changedPayloadOtherKey).error?.code, 'CONFIRM_PAYLOAD_CHANGED');
-    assert.equal((shape(await client.request('/api/wiki')) as { items: unknown[] }).items.length, selected.length + 1, '被拒绝的确认不得新增页面');
+    assert.equal(shape(changedPayloadOtherKey).error?.code, 'NO_SELECTION', '新 key 不能绕过暂缓项的人工审核');
+    assert.deepEqual(shape(await client.request('/api/wiki')).items, wikiAfter.items, '被拒绝的确认不得写入任何页面');
+    await client.reviewChange(partial, deferred.changeId, { title: '人工改名的概念' });
+    const continued = await client.acceptChanges(draftId, [first.pageId]);
+    const secondCommit = await commit(continued.revision, [first.pageId], 'http-continue');
+    assert.equal(secondCommit.status, 201, secondCommit.text);
+    assert.notEqual(shape(secondCommit).operationId, committed.operationId);
+    assert.equal(shape(secondCommit).sourceId, committed.sourceId);
+    assert.equal(shape(await client.request(`/api/wiki/${shape(secondCommit).wikiIds[0]}`)).title, '人工改名的概念');
+    assert.equal(shape(await client.request('/api/stats')).pendingConfirmationCount, 0);
+    assert.equal(shape(await client.request('/api/raw-processing')).items.find((item: { rawId: string }) => item.rawId === raw.id)?.status, 'generated');
+    assert.equal(sha(await readFile(rawFile)), rawHash);
+    const beforeMismatch = shape(await client.request('/api/wiki')).items;
+    const completedMismatch = await commit(continued.revision, [first.pageId, second.pageId], 'http-new-payload');
+    assert.equal(completedMismatch.status, 409, completedMismatch.text);
+    assert.equal(shape(completedMismatch).error?.code, 'CONFIRM_PAYLOAD_CHANGED');
+    assert.deepEqual(shape(await client.request('/api/wiki')).items, beforeMismatch);
+    assert.equal(harness.fake.requests.length, 3, '人工审核、确认、重试及续批不发模型请求');
 
     // Browse endpoints must never leak the key.
     for (const url of ['/api/raw', '/api/raw-processing', '/api/drafts', `/api/drafts/${draftId}`, '/api/wiki', '/api/stats', `/api/wiki-commits/${committed.operationId}`, '/api/llm/config']) {
@@ -427,17 +479,21 @@ test('F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标
     fake.setHandler(request => {
       round += 1;
       const chunk = chunkFromPrompt(request.user);
-      return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `复用-HTTP-主题-${round}` }])) };
+      const specs = [{ title: `复用-HTTP-主题-${round}` }];
+      if (round === 2) specs.push({ title: '复用-HTTP-暂缓主题' });
+      return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), specs)) };
     });
   });
   try {
     const { client } = harness;
     const rawReply = await client.request('/api/raw', 'POST', {
       title: '带元数据的报告', sourceType: 'report', sourceName: '某咨询公司报告', tags: ['渠道'],
-      author: '张三', publishedAt: '2026-09-01', url: 'https://example.com/report', body: '渠道动销资料正文。',
+      author: '张三', publishedAt: '2026-09-01', url: 'https://example.com/report', body: '渠道动销资料正文。库存周转资料正文。',
     });
     assert.equal(rawReply.status, 201, rawReply.text);
     const raw = shape(rawReply) as unknown as { id: string };
+    const rawFile = path.join(harness.dataRoot, 'knowledge', 'raw', 'reports', `${raw.id}.md`);
+    const rawHash = sha(await readFile(rawFile));
     // 第一次：确认 Source + 1 页，然后人工改 Source 标题。
     const first = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
     const firstJob = await client.waitForJob(String((shape(first) as { jobId?: string }).jobId));
@@ -445,12 +501,9 @@ test('F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标
     const firstDraft = shape(await client.request(`/api/drafts/${firstDraftId}`)) as unknown as { revision: number; pages: Array<{ pageId: string; selected: boolean }> };
     // F04-03: 默认未选 → 先勾选再确认。
     assert.equal(firstDraft.pages.every(page => page.selected === false), true);
-    const selectFirst = await client.request(`/api/drafts/${firstDraftId}`, 'PATCH', {
-      baseRevision: firstDraft.revision, pages: [{ pageId: firstDraft.pages[0].pageId, selected: true }],
-    });
-    assert.equal(selectFirst.status, 200, selectFirst.text);
+    const selectFirst = await client.acceptChanges(firstDraftId, [firstDraft.pages[0].pageId]);
     const firstConfirm = await client.request(`/api/drafts/${firstDraftId}/confirm`, 'POST', {
-      baseRevision: (shape(selectFirst) as unknown as { revision: number }).revision,
+      baseRevision: selectFirst.revision,
       selectedPageIds: [firstDraft.pages[0].pageId], idempotencyKey: 'http-reuse-1',
     });
     assert.equal(firstConfirm.status, 201, firstConfirm.text);
@@ -473,9 +526,15 @@ test('F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标
     assert.equal(secondDraft.preview.sourceReuse?.id, firstResult.sourceId, '预览必须显示复用既有 Source');
     assert.equal(secondDraft.preview.sourceReuse?.title, '既有来源页标题');
     assert.ok(secondDraft.pages[0].renderedBody.includes('[[既有来源页标题]]'), '预览里新页必须链接既有 Source 的真实标题');
-    const selectSecond = await client.request(`/api/drafts/${secondDraftId}`, 'PATCH', { baseRevision: secondDraft.revision, pages: [{ pageId: secondDraft.pages[0].pageId, selected: true }] });
+    const sourceBefore = shape(await client.request(`/api/wiki/${firstResult.sourceId}`));
+    const secondView = shape(await client.request(`/api/drafts/${secondDraftId}`)) as MaintenanceDraft;
+    assert.equal(secondView.maintenance.changes.length, 2);
+    const secondChange = secondView.maintenance.changes[0];
+    await client.reviewChange(secondView, secondChange.changeId, { body: secondDraft.pages[0].renderedBody });
+    const selectSecond = await client.acceptChanges(secondDraftId, [secondDraft.pages[0].pageId]);
+    assert.equal(selectSecond.maintenance.changes.find(change => change.candidate.title === '复用-HTTP-暂缓主题')?.decision, 'defer');
     const secondConfirm = await client.request(`/api/drafts/${secondDraftId}/confirm`, 'POST', {
-      baseRevision: (shape(selectSecond) as unknown as { revision: number }).revision,
+      baseRevision: selectSecond.revision,
       selectedPageIds: [secondDraft.pages[0].pageId], idempotencyKey: 'http-reuse-2',
     });
     assert.equal(secondConfirm.status, 201, secondConfirm.text);
@@ -485,6 +544,17 @@ test('F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标
     const newPage = shape(await client.request(`/api/wiki/${secondResult.wikiIds[0]}`)) as unknown as { body: string };
     assert.ok(newPage.body.includes('[[既有来源页标题]]'), `新页必须链接既有 Source 的真实标题，实际 ${newPage.body}`);
     assert.equal(newPage.body.includes('[[复用-HTTP-主题-2]]') && !newPage.body.includes('[[既有来源页标题]]'), false);
+    const sourceAfter = shape(await client.request(`/api/wiki/${firstResult.sourceId}`));
+    assert.equal(sourceAfter.body, sourceBefore.body.trimEnd() + '\n\n## 本次关联知识\n- [[复用-HTTP-主题-2]]\n');
+    assert.equal(sourceAfter.revision, sourceBefore.revision + 1);
+    assert.equal(sourceAfter.title, sourceBefore.title);
+    assert.deepEqual(sourceAfter.sources, sourceBefore.sources);
+    const reused = await client.request(`/api/drafts/${secondDraftId}/confirm`, 'POST', { baseRevision: selectSecond.revision, selectedPageIds: [secondDraft.pages[0].pageId], idempotencyKey: 'http-reuse-replay' });
+    assert.equal(reused.status, 201, reused.text);
+    assert.equal(shape(reused).operationId, shape(secondConfirm).operationId);
+    assert.deepEqual(shape(await client.request(`/api/wiki/${firstResult.sourceId}`)), sourceAfter);
+    assert(!shape(await client.request('/api/wiki')).items.some((page: { title: string }) => page.title === '复用-HTTP-暂缓主题'));
+    assert.equal(sha(await readFile(rawFile)), rawHash);
   } finally { await harness.clean(); }
 });
 
@@ -509,10 +579,11 @@ test('F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按�
     const draft = shape(await client.request(`/api/drafts/${draftId}`)) as unknown as { revision: number; pages: Array<{ pageId: string; title: string; selected: boolean; one_line_definition: string }> };
     assert.equal(draft.pages.every(page => page.selected === false), true, '默认未选');
     const [p1, p2] = draft.pages;
-    // 只改标题，不改 selected 标记（复刻残留场景）。
-    const patched = await client.request(`/api/drafts/${draftId}`, 'PATCH', { baseRevision: draft.revision, pages: [{ pageId: p1.pageId, title: 'HTTP 人工改名但未勾选' }] });
-    assert.equal(patched.status, 200, patched.text);
-    const revision = (shape(patched) as unknown as { revision: number }).revision;
+    const maintenanceDraft = draft as unknown as MaintenanceDraft;
+    const change = maintenanceDraft.maintenance.changes.find(item => maintenanceDraft.pages[item.pageIndex].pageId === p1.pageId)!;
+    const patched = await client.reviewChange(maintenanceDraft, change.changeId, { title: 'HTTP 人工改名但未勾选' });
+    assert(patched.pages.every(page => !page.selected), '维护变更接受独立于旧选择标记');
+    const revision = (await client.acceptChanges(draftId, [p1.pageId])).revision;
     const confirm = await client.request(`/api/drafts/${draftId}/confirm`, 'POST', { baseRevision: revision, selectedPageIds: [p1.pageId], idempotencyKey: 'http-residual-1' });
     assert.equal(confirm.status, 201, confirm.text);
     const committed = shape(confirm) as unknown as { operationId: string; sourceId: string; wikiIds: string[] };
@@ -577,7 +648,7 @@ test('F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求
     const started = await client.request(`/api/raw/${raw.id}/extract`, 'POST', {});
     const job = await client.waitForJob(String((shape(started) as { jobId?: string })?.jobId), 60000);
     assert.equal((shape(job) as { status?: string }).status, 'completed', job.text);
-    assert.equal((shape(job) as { callCount?: number }).callCount, 5, 'revision13四块 + 一次规划，人审不外发');
+    assert.equal((shape(job) as { callCount?: number }).callCount, 6, '四块 + 一次规划和一次维护，人审不外发');
     const draftId = String((shape(job) as { draftId?: string }).draftId);
     const draft = shape(await client.request(`/api/drafts/${draftId}`)) as unknown as { pages: Array<{ pageId: string; source_evidence: Array<{ id: string; quote: string; start: number; end: number; rawId: string }>; source_facts: Array<{ text: string; evidenceIds: string[] }> }>; extraction: { chunkCount: number } };
     assert.equal(draft.extraction.chunkCount, 4);
@@ -620,12 +691,13 @@ test('E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面�
     const finished = await client.waitForJob(String((shape(started) as { jobId?: string }).jobId));
     const draftId = String((shape(finished) as { draftId?: string }).draftId);
     const draft = shape(await client.request(`/api/drafts/${draftId}`)) as unknown as { revision: number; pages: Array<{ pageId: string }> };
+    const reviewed = await client.acceptChanges(draftId, draft.pages.map(page => page.pageId));
     // Block the index write made by the commit's index phase.
     const indexFile = path.join(harness.dataRoot, 'knowledge', 'wiki', 'index.md');
     await rm(indexFile, { force: true });
     await mkdir(indexFile);
     const confirm = await client.request(`/api/drafts/${draftId}/confirm`, 'POST', {
-      baseRevision: draft.revision, selectedPageIds: draft.pages.map(page => page.pageId), idempotencyKey: 'http-partial',
+      baseRevision: reviewed.revision, selectedPageIds: draft.pages.map(page => page.pageId), idempotencyKey: 'http-partial',
     });
     assert.equal(confirm.status, 500, confirm.text);
     const error = shape(confirm).error;

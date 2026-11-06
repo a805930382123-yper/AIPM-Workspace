@@ -7,7 +7,9 @@ import { WikiCommitService } from '../../services/wiki/commits.ts';
 import { storageFixture } from './kb02-storage-fixture.ts';
 import {registerKnowledgeRoutes} from '../../server/knowledge-api.ts';
 
-export async function storageHttp(f: Awaited<ReturnType<typeof storageFixture>>, runner = f.runner, options:{knowledge?:boolean}={}) {
+type StorageHttpFixture = Pick<Awaited<ReturnType<typeof storageFixture>>, 'root' | 'rawStore' | 'rawStates' | 'drafts' | 'jobs' | 'runner' | 'provider'>;
+
+export async function storageHttp<F extends StorageHttpFixture>(f: F, runner = f.runner, options:{knowledge?:boolean}={}) {
   const wikiStore = new WikiStore(f.root, f.rawStore); await wikiStore.initialize();
   const commits = new WikiCommitService({ root: f.root, wikiStore, drafts: f.drafts, rawStates: f.rawStates, rawStore: f.rawStore }); await commits.initialize();
   const app = express(); app.use(express.json());

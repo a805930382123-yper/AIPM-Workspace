@@ -19,6 +19,8 @@ export type RawAssetMetadata = {
 export type RawInput = RawAssetMetadata & {
   title: string; sourceType: SourceType; sourceName: string; author?: string;
   publishedAt?: string; url?: string; tags: string[]; body: string;
+  /** Server-generated trace for a successful URL import. */
+  urlImport?: { finalUrl: string; fetchedAt: string };
 };
 export type RawMeetingOrigin = {
   kind: 'meeting'; meeting_id: string; import_id: string; original_sha256: string;

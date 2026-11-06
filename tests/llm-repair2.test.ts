@@ -1,5 +1,5 @@
 import os from 'node:os';
-import {addLegacyReviewPrecondition} from './support/human-review.ts';
+import { reviewSelectedChanges } from './support/compat01-draft-review.ts';
 // B04 第二次返修专项测试（B04-recheck-fix-card 的三项残留 F04-04 / F04-05 / F04-11）。
 // 每个用例复刻独立复验报告里的"最小实际复现"，修复前必须失败。
 // Provider 是真实 HTTP fake，经真实 OpenAI-compatible 适配器调用。
@@ -36,7 +36,6 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined) 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
-  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }])) };
@@ -105,6 +104,7 @@ test('F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功
     const draft = await context.draftFor(raw.id);
     assert.equal(draft.pages.length, 1);
     const p1 = draft.pages[0].pageId;
+    await reviewSelectedChanges(context.drafts, draft, [p1]);
     const first = await context.confirm(draft.id, [p1], 'key-A');
     assert.equal(first.manifest.status, 'completed');
     const filesAfterFirst = await context.wikiFiles();
@@ -160,13 +160,12 @@ test('F04-05 残留：正式 Source 的所有派生段落以本次确认选集�
     assert.equal(draft.pages.every(page => page.selected === false), true, '新草稿默认未选');
     const [p1, p2] = draft.pages;
     // 复刻残留：只改 p1 标题，不动 selected 标记。
-    const patched = await context.drafts.patch(draft.id, {
-      baseRevision: draft.revision,
-      pages: [{ pageId: p1.pageId, title: '人工改名但未在草稿勾选' }],
-    }, { body: raw.body, rules: await context.draftRules() });
+    const change = draft.maintenance!.changes.find(item => draft.pages[item.pageIndex].pageId === p1.pageId)!;
+    const patched = await context.drafts.reviewChange(draft.id, { baseRevision: draft.revision, changeId: change.changeId, title: '人工改名但未在草稿勾选' });
     assert.equal(patched.pages.every(page => page.selected === false), true);
     assert.equal(patched.pages.find(page => page.pageId === p2.pageId)?.title, '未确认的页');
     // 公开确认只勾选 p1（与草稿标记不同）。
+    await reviewSelectedChanges(context.drafts, patched, [p1.pageId]);
     const outcome = await context.confirm(patched.id, [p1.pageId], 'selection-key');
     assert.equal(outcome.manifest.status, 'completed');
     const sourceId = outcome.manifest.snapshot.sourceRecord?.id as string;

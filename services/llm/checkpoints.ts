@@ -1,3 +1,5 @@
+import {validMaintenance,type KnowledgeChange,type KnowledgeMaintenance} from '../wiki/maintenance.ts';
+import type {WikiRecord} from '../wiki/store.ts';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { mkdir, readdir, open } from 'node:fs/promises';
@@ -7,19 +9,18 @@ import { FROZEN_BUDGETS } from './rules.ts';
 import { validCoverageDiagnostic, type CoverageDiagnostic } from './knowledge-atoms.ts';
 import { MAX_EVIDENCE_LOCATORS_PER_CHUNK } from './locators.ts';
 import { templateSections, type TemplateFieldKey } from '../wiki/template-fields.ts';
-import { validDeepState, deepCallLimit, type DeepState } from './knowledge-deep.ts';
+import { validDeepState, type DeepState } from './knowledge-deep.ts';
 
 export const KB02_PIPELINE_VERSION = 'kb02-2';
-export const knowledgeCallLimit = (chunkCount: number) => Math.min(128, 2 * chunkCount + 4);
 export type CheckpointFact = { id: string; text: string; locatorIds: string[]; chunkIndex: number; atomId?: string; kind?: 'fact' | 'ambiguous' };
 export type CheckpointQuestion = { id: string; text: string; locatorIds: string[]; chunkIndex: number; atomId?: string };
 export type CheckpointEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type CheckpointChunk = { index: number; start: number; end: number; facts: CheckpointFact[]; questions: CheckpointQuestion[]; evidence: CheckpointEvidence[]; sourceNotes?: Array<{ atomId: string; text: string; locatorIds: string[]; chunkIndex: number }> };
 export type PlannedTemplateFields = Partial<Record<TemplateFieldKey, { text: string; factIds: string[] }>>;
 export type KnowledgePlan = { document: { title: string; main_topic: string; summary: string; source_level?: 'A' | 'B' | 'C' | 'D' }; pages: Array<{ title: string; type: string; category: string; factIds: string[]; questionIds: string[]; templateFields?: PlannedTemplateFields }> };
-export const checkpointCallLimit = (cp: Pick<ExtractionCheckpoint,'pipelineVersion'|'chunks'>) => cp.pipelineVersion==='kb03-1'?deepCallLimit(cp.chunks.length):knowledgeCallLimit(cp.chunks.length);
 export type ExtractionCheckpoint = {
   mode?: 'standard'|'deep'; deep?: DeepState;
+  maintenance?:{version:1;protocol?:2;context:WikiRecord[];proposal?:KnowledgeMaintenance};
   version: 1; jobId: string; rawId: string; rawSha256: string; pipelineVersion: string; rulesVersion: string;
   providerIdentity: string; chunks: Array<{ index: number; start: number; end: number }>;
   completedChunks: CheckpointChunk[]; plan?: KnowledgePlan; draftId?: string;
@@ -34,8 +35,9 @@ const isObject = (value: unknown): value is Record<string, unknown> => !!value &
 const hasKeys = (value: unknown, required: string[], optional: string[] = []) => isObject(value) && required.every(key => Object.hasOwn(value, key)) && Object.keys(value).every(key => required.includes(key) || optional.includes(key));
 const isText = (value: unknown, max: number, nonempty = true): value is string => typeof value === 'string' && value.length <= max && (!nonempty || value.trim().length > 0);
 const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpoint => {
-  if (!hasKeys(value, ['version','jobId','rawId','rawSha256','pipelineVersion','rulesVersion','providerIdentity','chunks','completedChunks','attempts','stage','updatedAt','integrity'], ['plan','draftId','lastError','mode','deep'])) return false;
+  if (!hasKeys(value, ['version','jobId','rawId','rawSha256','pipelineVersion','rulesVersion','providerIdentity','chunks','completedChunks','attempts','stage','updatedAt','integrity'], ['plan','draftId','lastError','mode','deep','maintenance'])) return false;
   const cp = value as Record<string, any>;
+  if(cp.maintenance!==undefined&&(!hasKeys(cp.maintenance,['version','context'],['proposal','protocol'])||cp.maintenance.version!==1||(cp.maintenance.protocol!==undefined&&cp.maintenance.protocol!==2)||!Array.isArray(cp.maintenance.context)||cp.maintenance.context.length>8||JSON.stringify(cp.maintenance.context).length>48000||(cp.maintenance.proposal!==undefined&&(!validMaintenance(cp.maintenance.proposal)||(cp.maintenance.protocol===2&&cp.maintenance.proposal.changes.some((c:KnowledgeChange)=>!c.pageIndexes))))))return false;
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
   if (cp.version !== 1 || cp.jobId !== id || !isText(cp.rawId, 64) || !uuid.test(cp.rawId) || !/^[0-9a-f]{64}$/iu.test(String(cp.rawSha256)) || !['kb02-1', KB02_PIPELINE_VERSION,'kb03-1'].includes(cp.pipelineVersion) || !isText(cp.rulesVersion, 256) || !isText(cp.providerIdentity, 512) || !Number.isSafeInteger(cp.attempts) || (cp.attempts as number) < 0 || !['extracting','planning','assembling','done'].includes(String(cp.stage)) || !isText(cp.updatedAt, 40) || !/^[0-9a-f]{64}$/iu.test(String(cp.integrity))) return false;
   if (!Array.isArray(cp.chunks) || cp.chunks.length < 1 || cp.chunks.length > MAX_CHUNKS || cp.chunks.some((chunk, i) => !hasKeys(chunk, ['index','start','end']) || chunk.index !== i || !Number.isSafeInteger(chunk.start) || !Number.isSafeInteger(chunk.end) || (chunk.start as number) < 0 || (chunk.end as number) <= (chunk.start as number))) return false;

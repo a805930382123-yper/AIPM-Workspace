@@ -92,7 +92,7 @@ for(const [name,result,code] of [
 
 test('SEMANTIC schema fingerprint changes; production rejects old revision and undercount before calls or writes',async()=>{
   const f=await storageFixture();try{
-    f.succeed();const job=await f.wait((await f.start()).job.id),valid=(await f.checkpoint(job.id))!;assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-18');
+    f.succeed();const job=await f.wait((await f.start()).job.id),valid=(await f.checkpoint(job.id))!;assert.equal(KB02_PROMPT_REVISION,'kb02-atoms-planning-19');
     const calls=f.requests.length,hashes=await f.hashes(job.id);
     const run=(checkpoint:typeof valid)=>runKnowledgePipeline({raw:f.raw,body:f.raw.body,bodySha256:valid.rawSha256,provider:f.provider,rulesDir:'rules',checkpoint,beforeCall:async()=>{assert.fail('invalid checkpoint must not account');},saveCheckpoint:async()=>{assert.fail('invalid checkpoint must not write');}});
     await assert.rejects(run({...valid,attempts:valid.completedChunks.length}),{code:'LLM_CHECKPOINT_CORRUPT'});
@@ -138,16 +138,17 @@ test('SEMANTIC single-unit independent future AI mechanism can pass retaining bo
   const frozen=await fixture(sample.body),before=JSON.stringify(frozen.input);await frozen.run();assert.equal(JSON.stringify(frozen.input),before);assert.deepEqual(frozen.plan.pages.flatMap(p=>p.factUnitIds),frozen.input.factUnits.map(u=>u.id));
 });
 
-test('SEMANTIC current production uses N+1 calls, remains unreviewed across restart and cannot confirm',async()=>{
+test('SEMANTIC current production uses N+2 calls, remains unreviewed across restart and cannot confirm',async()=>{
   const f=await storageFixture();try{
     f.succeed();const original=f.provider.complete;f.provider.complete=async r=>{assert(!isReview(r),'B1 is not a production request');return original(r);};
     const first=await f.wait((await f.start()).job.id);assert.equal(first.status,'completed');assert(!first.error);
-    const cp=(await f.checkpoint(first.id))!;assert(cp.plan);assert.equal(first.callCount,cp.chunks.length+1);assert(!cp.lastError);
+    const cp=(await f.checkpoint(first.id))!;assert(cp.plan);assert.equal(first.callCount,cp.chunks.length+2);assert(cp.maintenance?.proposal);assert(!cp.lastError);
+    assert.equal(f.requests.filter(r=>r.system.startsWith('知识维护提议')).length,1);
     await assert.rejects(f.start({planningRetry:true}));const before=f.requests.length;await f.newRunner().reconcile();assert.equal(f.requests.length,before);
     assert.deepEqual((await f.checkpoint(first.id))!.completedChunks,cp.completedChunks);const drafts=await f.drafts.list();assert.equal(drafts.length,1);
     const draft=drafts[0];assert.equal(draft.humanReview!.approvals.length,0);
     const wiki=new WikiStore(f.root,f.rawStore);await wiki.initialize();const commits=new WikiCommitService({root:f.root,wikiStore:wiki,drafts:f.drafts,rawStates:f.rawStates,rawStore:f.rawStore});await commits.initialize();
-    await assert.rejects(wiki.withLock(()=>commits.confirm({draftId:draft.id,baseRevision:draft.revision,selectedPageIds:draft.pages.map(p=>p.pageId),idempotencyKey:'unreviewed-semantic-test',operationId:randomUUID(),now:new Date().toISOString()})),{code:'HUMAN_REVIEW_INCOMPLETE'});
+    await assert.rejects(wiki.withLock(()=>commits.confirm({draftId:draft.id,baseRevision:draft.revision,selectedPageIds:draft.pages.map(p=>p.pageId),idempotencyKey:'unreviewed-semantic-test',operationId:randomUUID(),now:new Date().toISOString()})),{code:'NO_SELECTION'});
     assert.equal((await wiki.list()).length,0);assert.equal(f.requests.length,before);
   }finally{await f.clean();}
 });
@@ -170,9 +171,11 @@ test('SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and exp
   const f=await storageFixture();try{
     f.succeed();const job=await f.wait((await f.start()).job.id),original=(await f.checkpoint(job.id))!,draft=(await f.drafts.get(job.draftId!))!;
     const oldRules=original.rulesVersion.replace(KB02_PROMPT_REVISION,'kb02-atoms-planning-11');
-    const legacy={...draft,rulesVersion:oldRules+'-kb02-2',extraction:{...draft.extraction,callCount:2}};
+    const {maintenance:_newProposal,...historicalDraft}=draft;
+    const legacy={...historicalDraft,rulesVersion:oldRules+'-kb02-2',extraction:{...draft.extraction,callCount:2}};
     await writeFile(path.join(f.root,'drafts',draft.id+'.json'),JSON.stringify(legacy));
-    const old=await new ExtractionCheckpointStore(f.root).save({...original,rulesVersion:oldRules,attempts:2,stage:'assembling'});
+    const {maintenance:_newContext,...historicalCheckpoint}=original;
+    const old=await new ExtractionCheckpointStore(f.root).save({...historicalCheckpoint,rulesVersion:oldRules,attempts:2,stage:'assembling'});
     await f.jobs.update(job.id,{status:'running',stage:'assembling',callCount:2});const cpFile=path.join(f.root,'state/extraction-checkpoints',job.id+'.json'),before=await readFile(cpFile),calls=f.requests.length;
     const runner=f.newRunner();await runner.reconcile();const recovered=await runner.readJob(job.id);assert.equal(recovered.job?.status,'completed');assert.equal(recovered.recovery,undefined);assert.equal(f.requests.length,calls);
     const settled=(await f.checkpoint(job.id))!;assert.equal(settled.rulesVersion,oldRules);assert.equal(settled.attempts,2);assert.deepEqual(settled.plan,old.plan);assert.notDeepEqual(await readFile(cpFile),before,'settlement may finish stage, never revision or attempts');

@@ -97,7 +97,7 @@ test('FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero 
   let seen=false;const hold=new Promise<void>(resolve=>{release=resolve;});f.setHook(async()=>{seen=true;await hold;});
   const r=await h.request(`/api/raw/${raw.id}/extract`,{restart:true});assert.equal(r.status,202);restartId=r.json.jobId;assert.notEqual(restartId,cp.jobId);
   for(let n=0;n<200&&!seen;n++)await new Promise(resolve=>setTimeout(resolve,10));assert(seen);
-  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-18-/u);
+  const fresh=await cpStore.get(restartId);assert.equal(fresh!.completedChunks.length,0);assert.equal(fresh!.attempts,1);assert.match(fresh!.rulesVersion,/kb02-atoms-planning-19-/u);
   await f.runner.cancel(restartId);release();await f.runner.waitForSettlement(restartId);assert.deepEqual(await readFile(files[0]),before[0]);assert.equal(f.requests.length,1);
  }finally{release();if(restartId)await f.runner.waitForSettlement(restartId);await h.close();await f.clean();}
 });

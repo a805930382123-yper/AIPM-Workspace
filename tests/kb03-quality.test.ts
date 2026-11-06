@@ -11,29 +11,29 @@ import { COUNTER, BUDGET_POLICY, REAL_LEDGER_ROOT, sha, durable, json, fakeCase,
 import { freeze, validateRelease, TOOL, FIXED_SHA } from './acceptance/KB03-R5-20261030-real.mjs';
 
 const temp = () => fs.mkdtemp(path.join(os.tmpdir(), 'kb03-quality-'));
-test('R5 actual adapter strict wire and optional-null decoding completes N+4; completed replay sends zero', async () => {
+test('R5 actual adapter strict wire and optional-null decoding completes N+5; completed replay sends zero', async () => {
   const root = await temp();
   const first = await fakeCase(root, COUNTER);
-  assert.equal(first.job.status, 'completed'); assert.equal(first.ownCalls, 5); assert.equal(first.totalCalls, 5);
-  assert.deepEqual(first.wires.map((w: any) => w.stage), ['extracting', 'planning', 'outline', 'writing', 'quality']);
-  assert.deepEqual(first.wires.map((w: any) => w.strict), [true, true, false, false, false]);
+  assert.equal(first.job.status, 'completed'); assert.equal(first.ownCalls, 6); assert.equal(first.totalCalls, 6);
+  assert.deepEqual(first.wires.map((w: any) => w.stage), ['extracting', 'planning', 'outline', 'writing', 'quality', 'maintenance']);
+  assert.deepEqual(first.wires.map((w: any) => w.strict), [true, true, false, false, false, true]);
   assert.equal(first.wires[1].nullableFields, true); assert.equal(first.configReads, 0); assert.equal(first.realRequests, 0);
   assert(first.draft.structuredNote); assert.equal(first.draft.extractionMode, 'deep');
   const again = await fakeCase(root, COUNTER);
-  assert.equal(again.ownCalls, 0); assert.equal(again.totalCalls, 5); assert.equal(again.draft.id, first.draft.id);
+  assert.equal(again.ownCalls, 0); assert.equal(again.totalCalls, 6); assert.equal(again.draft.id, first.draft.id);
 });
 
-for (const stage of ['extracting', 'planning', 'outline', 'writing', 'quality']) test(`R5 ${stage} invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job`, async () => {
+for (const stage of ['extracting', 'planning', 'outline', 'writing', 'quality', 'maintenance']) test(`R5 ${stage} invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job`, async () => {
   const root = await temp();
   const failed = await fakeCase(root, COUNTER, { fault: (current: string, value: unknown) => current === stage ? '{invalid' : JSON.stringify(value) });
-  const expected = ['extracting', 'planning', 'outline', 'writing', 'quality'].indexOf(stage) + 1;
+  const expected = ['extracting', 'planning', 'outline', 'writing', 'quality', 'maintenance'].indexOf(stage) + 1;
   assert.equal(failed.job.status, 'failed'); assert.equal(failed.ownCalls, expected); assert.equal(failed.draft, undefined);
   const before = await ledgerEntries(path.join(root, 'ledger'));
   await assert.rejects(fakeCase(root, COUNTER), /requires --continue/);
   assert.deepEqual(await ledgerEntries(path.join(root, 'ledger')), before);
   const resumed = await fakeCase(root, COUNTER, { continueExplicit: true });
-  assert.equal(resumed.job.status, 'completed'); assert.equal(resumed.job.id, failed.job.id); assert.equal(resumed.totalCalls, 6);
-  assert.equal(resumed.ownCalls, 6 - expected); assert.equal(resumed.job.callCount, 6);
+  assert.equal(resumed.job.status, 'completed'); assert.equal(resumed.job.id, failed.job.id); assert.equal(resumed.totalCalls, 7);
+  assert.equal(resumed.ownCalls, 7 - expected); assert.equal(resumed.job.callCount, 7);
 });
 
 test('R5 escaped credential candidate is rejected and no credential reaches durable trace', async () => {

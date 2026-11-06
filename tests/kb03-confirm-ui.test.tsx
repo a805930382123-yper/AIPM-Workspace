@@ -10,12 +10,31 @@ const {act,createElement}=await import('react'),{createRoot}=await import('react
 const nativeFetch=globalThis.fetch,buttons=(label:string)=>[...w.document.querySelectorAll('button')].filter(b=>b.textContent?.trim()===label);
 async function tick(check:()=>boolean,label:string){for(let i=0;i<500;i++){await act(async()=>{await new Promise(r=>setTimeout(r,15));});if(check())return;}assert.fail(label+' '+w.document.body.textContent?.slice(0,1000));}
 async function click(b:HTMLButtonElement|undefined){assert(b);assert(!b.disabled);await act(async()=>b.click());}
-test('KB03 complete DraftReview React + actual HTTP Source-only requires page and explicit note acknowledgment before formal success',async()=>{
- const f=await confirmFixture(),h=await storageHttp(f as any,f.runner,{knowledge:true}),root=createRoot(w.document.getElementById('root')!);globalThis.fetch=(url,init)=>nativeFetch(String(url).startsWith('/api/')?h.base+url:url,init);let done=0;
- try{await act(async()=>root.render(createElement(DraftReviewPage,{draftId:f.d.id,onBack:()=>{},onOpenRaw:()=>{},onCommitted:async()=>{done++;}})));await tick(()=>!!buttons('知识卡片与主题归属审查')[0],'loaded');const confirm=()=>[...w.document.querySelectorAll('button')].find(b=>b.textContent?.startsWith('确认写入 Wiki'))!;assert(confirm().disabled);
-  await click(buttons('知识卡片与主题归属审查')[0]);await tick(()=>buttons('确认本页主题与归属').length===2,'two pages');
-  for(let i=0;i<2;i++){await click(buttons('确认本页主题与归属')[i]);await tick(()=>!buttons('确认本页主题与归属')[i].disabled,'page reviewed');}assert(confirm().disabled);
-  const approve=()=>buttons('确认已核对深度笔记、引用、覆盖与待确认问题')[0];assert(approve().disabled);for(const c of w.document.querySelectorAll<HTMLInputElement>('.note-approval input'))await act(async()=>c.click());await tick(()=>!approve().disabled,'explicit flags');await click(approve());await tick(()=>!confirm().disabled,'note binding');assert(confirm().textContent!.includes('（0）'));await click(buttons('收起知识卡片与人审')[0]);await click(confirm());await tick(()=>done===1,'formal completion');assert(w.document.body.textContent!.includes('正式保存成功'));assert(w.document.querySelector('.subheading')!.textContent!.includes('confirmed'));assert(confirm().disabled);assert(buttons('保存草稿')[0].disabled);assert(!w.document.querySelector('.result-panel')!.closest('[hidden]'));assert.equal((await f.wiki.allRecords()).length,1);assert.equal((await f.wiki.allRecords())[0].type,'source');assert.equal(f.requests.length,5);
+test('KB03 Source-only outcome uses one explicit confirmation and writes the deep note',async()=>{
+ const f=await confirmFixture(),h=await storageHttp(f as any,f.runner,{knowledge:true}),root=createRoot(w.document.getElementById('root')!);
+ const requests:Array<{url:string;body:any}>=[];
+ globalThis.fetch=(url,init)=>{if(init?.method==='POST')requests.push({url:String(url),body:JSON.parse(String(init.body))});return nativeFetch(String(url).startsWith('/api/')?h.base+url:url,init);};
+ let done=0;
+ try{
+  await act(async()=>root.render(createElement(DraftReviewPage,{draftId:f.d.id,onBack:()=>{},onOpenRaw:()=>{},onCommitted:async()=>{done++;}})));
+  await tick(()=>!!buttons('仅确认来源笔记入库')[0],'Source-only result ready');
+  assert.equal(w.document.querySelector('.note-approval'),null);
+  assert.equal((await f.wiki.allRecords()).length,0);
+  assert.match(w.document.querySelector('[aria-label="整体确认入库"]')!.textContent!,/本次主题 0 项/);
+  await click(buttons('仅确认来源笔记入库')[0]);
+  await tick(()=>done===1,'formal completion');
+  assert(w.document.querySelector('.subheading')!.textContent!.includes('已确认'));
+  assert(w.document.querySelector('[aria-label="已入库成果"]'));
+  assert.equal(buttons('仅确认来源笔记入库').length,0);
+  assert.equal(requests.length,1);
+  assert.equal(requests[0].url,'/api/drafts/'+f.d.id+'/confirm');
+  assert.deepEqual(requests[0].body.selectedPageIds,[]);
+  assert.equal(requests[0].body.outcomeDigest,f.drafts.outcomeDigest(f.d));
+  const wiki=await f.wiki.allRecords();
+  assert.equal(wiki.length,1);
+  assert.equal(wiki[0].type,'source');
+  assert.match(wiki[0].body,/深度整理笔记/);
+  assert.equal(f.requests.length,6);
  }finally{await act(async()=>root.unmount());globalThis.fetch=nativeFetch;await h.close();await f.clean();}
 });
 test('KB03 formal reading DOM grid preserves pipes/newlines/HTML/links as literal text, falls back on invalid table',async()=>{

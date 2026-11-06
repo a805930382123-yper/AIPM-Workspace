@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';import {readFile,writeFile} from 'node:fs/promises';import {createRequire} from 'node:module';
+const {chromium}=createRequire(import.meta.url)('C:/Users/80593/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'),s=JSON.parse(await readFile(process.argv[2],'utf8')),out='docs/reports/LW02-20261101-evidence';
+const b=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true}),p=await b.newPage({viewport:{width:1536,height:1080}}),e={success:false};p.setDefaultTimeout(15000);
+try{
+ await p.goto(s.url);await p.locator('.home-entry-grid').waitFor();await p.locator('.nav-item').filter({hasText:'知识库'}).click();await p.getByRole('button',{name:'向知识库提问',exact:true}).click();await p.getByLabel('知识库问题',{exact:true}).fill(s.fixtures.question);await p.getByRole('button',{name:'提问',exact:true}).click();await p.waitForFunction(()=>document.querySelector('.wiki-question')?.getAttribute('aria-busy')==='false'&&document.querySelector('[data-answer-section]'));
+ await p.getByRole('button',{name:'保存全部预览',exact:true}).click();await p.getByLabel('问答保存预览',{exact:true}).getByLabel('建议主题',{exact:true}).fill('独验文案修复草稿');await p.getByRole('button',{name:'生成维护草稿',exact:true}).click();await p.getByRole('button',{name:'查看对应草稿',exact:true}).click();await p.getByRole('heading',{name:'审核知识变更',exact:true}).waitFor();
+ const text=await p.locator('.draft-page').innerText();assert(text.includes('问答成果基于既有资料，回答不构成新来源；请核对全部真实依据。'));assert(text.includes('我已核对本项完整正文、差异、全部真实依据及待核问题'));assert(!text.includes('来源笔记只记录本份资料'));assert(!text.includes('差异、来源笔记及待核问题'));
+ await p.screenshot({path:`${out}/review-copy-fixed.png`,fullPage:true});e.success=true;e.notice='问答成果基于既有资料，回答不构成新来源；请核对全部真实依据。';e.checkbox='我已核对本项完整正文、差异、全部真实依据及待核问题';e.session=s;
+}finally{await writeFile(`${out}/review-copy-fixed.json`,JSON.stringify(e,null,2));await b.close();}

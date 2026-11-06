@@ -1,5 +1,6 @@
 import os from 'node:os';
-import {addLegacyReviewPrecondition} from './support/human-review.ts';
+import { approveDraft } from './support/human-review.ts';
+import { historicalB04Draft, reviewSelectedChanges } from './support/compat01-draft-review.ts';
 // B04 service-level closed loop: extraction → draft → review edits → confirmed commit, plus
 // failure, cancel, idempotency and recovery behaviour. The provider is a real HTTP server
 // (tests/support/fake-llm.ts) reached through the real OpenAI-compatible adapter.
@@ -44,7 +45,6 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined) 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
-  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     const rawId = rawIdFromPrompt(request.user);
@@ -128,8 +128,9 @@ test('E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项�
     assert.equal((await getStats(context.dataRoot, context.rawStore)).pendingConfirmationCount, 1);
 
     const selected = draft.pages.slice(0, 2);
+    const reviewed = await reviewSelectedChanges(context.drafts, draft, selected.map(page => page.pageId));
     const result = await context.wikiStore.withLock(() => context.commits.confirm({
-      draftId: draft.id, baseRevision: draft.revision, selectedPageIds: selected.map(page => page.pageId),
+      draftId: draft.id, baseRevision: reviewed.revision, selectedPageIds: selected.map(page => page.pageId),
       idempotencyKey: 'flow-key-1', operationId: crypto.randomUUID(), now: new Date().toISOString(),
     }));
     assert.equal(result.manifest.status, 'completed');
@@ -160,13 +161,13 @@ test('E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项�
     assert.equal(afterDraft?.status, 'confirmed');
     const afterState = await context.rawStates.get(raw.id);
     assert.equal(afterState.status, 'generated');
-    assert.deepEqual(afterState.generatedWikiIds?.length, 3);
+    assert.deepEqual(afterState.generatedWikiIds, result.manifest.snapshot.pageRecords.map(page => page.id));
     assert.equal(sha(await readFile(rawFile)), rawHashBefore, 'Raw 文件必须逐字节不变');
     assert.equal((await getStats(context.dataRoot, context.rawStore)).pendingConfirmationCount, 0);
   } finally { await context.clean(); }
 });
 
-test('E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变', async () => {
+test('E04-04 旧草稿复用既有 Source：只新增选中页，既有 Source 文件不变', async () => {
   const context = await setup();
   try {
     const raw = await context.createRaw(`${TOPICS[0]}\n\n${TOPICS[1]}`);
@@ -179,8 +180,10 @@ test('E04-04 复用既有 Source：只新增选中页，既有 Source 文件不�
     const started = await context.extract(raw.id);
     const draft = await context.drafts.get(started.finished.draftId as string);
     assert.ok(draft, started.finished.error?.message ?? '新知识草稿必须存在');
+    const historical = await historicalB04Draft(context.dataRoot, draft);
+    const reviewed = await approveDraft(context.drafts, historical.id, raw.body);
     const result = await context.wikiStore.withLock(() => context.commits.confirm({
-      draftId: draft.id, baseRevision: draft.revision, selectedPageIds: draft.pages.map(page => page.pageId),
+      draftId: draft.id, baseRevision: reviewed.revision, selectedPageIds: draft.pages.map(page => page.pageId),
       idempotencyKey: 'reuse-key', operationId: crypto.randomUUID(), now: new Date().toISOString(),
     }));
     assert.equal(result.sourceReused, true);
@@ -207,8 +210,9 @@ test('E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化
     const draft = await context.drafts.get(started.finished.draftId as string);
     assert.ok(draft);
     const ids = draft.pages.map(page => page.pageId);
+    const reviewed = await reviewSelectedChanges(context.drafts, draft, ids);
     const first = await context.wikiStore.withLock(() => context.commits.confirm({
-      draftId: draft.id, baseRevision: draft.revision, selectedPageIds: ids, idempotencyKey: 'same-key',
+      draftId: draft.id, baseRevision: reviewed.revision, selectedPageIds: ids, idempotencyKey: 'same-key',
       operationId: crypto.randomUUID(), now: new Date().toISOString(),
     }));
     const filesAfterFirst = await context.wikiFiles();
@@ -260,9 +264,10 @@ test('E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化
     const second = await context.extract(raw2.id);
     const draft2 = await context.drafts.get(second.finished.draftId as string);
     assert.ok(draft2);
+    const reviewedSecond = await reviewSelectedChanges(context.drafts, draft2, draft2.pages.map(page => page.pageId));
     const key = 'concurrent-key';
     const run = () => context.wikiStore.withLock(() => context.commits.confirm({
-      draftId: draft2.id, baseRevision: draft2.revision, selectedPageIds: draft2.pages.map(page => page.pageId),
+      draftId: draft2.id, baseRevision: reviewedSecond.revision, selectedPageIds: draft2.pages.map(page => page.pageId),
       idempotencyKey: key, operationId: crypto.randomUUID(), now: new Date().toISOString(),
     })).then(value => ({ value }), error => ({ error: error as { code: string } }));
     const [a, b] = await Promise.all([run(), run()]);
@@ -284,13 +289,14 @@ test('E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同
     const started = await context.extract(raw.id);
     const draft = await context.drafts.get(started.finished.draftId as string);
     assert.ok(draft);
+    const reviewed = await reviewSelectedChanges(context.drafts, draft, draft.pages.map(page => page.pageId));
     const indexFile = path.join(context.dataRoot, 'knowledge', 'wiki', 'index.md');
     await rm(indexFile, { force: true });
     await mkdir(indexFile);
     const failure = await (async () => {
       try {
         await context.wikiStore.withLock(() => context.commits.confirm({
-          draftId: draft.id, baseRevision: draft.revision, selectedPageIds: draft.pages.map(page => page.pageId),
+          draftId: draft.id, baseRevision: reviewed.revision, selectedPageIds: draft.pages.map(page => page.pageId),
           idempotencyKey: 'index-failure', operationId: crypto.randomUUID(), now: new Date().toISOString(),
         }));
       } catch (error) { return error as { code: string; status: number; details?: { committed?: boolean; operationId?: string; writtenWikiIds?: string[] } }; }
@@ -482,7 +488,7 @@ test('E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块�
     const started = await context.extract(raw.id, );
     assert.equal(started.finished.status, 'completed', started.finished.error?.message ?? '');
     assert.ok((started.finished.chunksTotal ?? 0) > 10, '十万字必须切成多块');
-    assert.equal(started.finished.callCount, started.finished.chunksTotal + 1, 'revision13每块一次调用 + 一次规划，人审不外发');
+    assert.equal(started.finished.callCount, started.finished.chunksTotal + 2, '每块一次调用 + 一次规划和一次维护，人审不外发');
     // KB02 planning sees all extracted fact/question IDs and text, without evidence or raw chunk payloads.
     const planningRequests = context.fake.requests.filter(request => request.user.includes('请对下列全部已验证事实规划知识页'));
     assert.equal(planningRequests.length, 1, '全部分块完成后必须恰好进行一次整篇规划');
@@ -586,8 +592,9 @@ test('E04-04 审核编辑：部分选择、删除、合并、改名与证据重�
   try {
     const raw = await context.createRaw(`${TOPICS[0]}\n\n${TOPICS[1]}`);
     const started = await context.extract(raw.id);
-    const draft = await context.drafts.get(started.finished.draftId as string);
-    assert.ok(draft);
+    const generated = await context.drafts.get(started.finished.draftId as string);
+    assert.ok(generated);
+    const draft = await historicalB04Draft(context.dataRoot, generated);
     const rules = {
       types: ['concept', 'entity', 'business_process', 'metric'], categories: ['industry_basics', 'metric', 'supply_chain', 'other'],
       knowledge_status: ['source_supported', 'ai_organized', 'inferred', 'needs_verification', 'verified'], confidence: ['high', 'medium', 'low'],
@@ -668,7 +675,7 @@ test('E04-04 标题冲突：既有页面占用标题时整体 409，零正式变
   });
   try {
     const raw = await context.createRaw(TOPICS[0], '冲突资料');
-    await context.wikiStore.create({
+    const occupied = await context.wikiStore.create({
       title: '已被占用的标题', type: 'concept', category: 'industry_basics', sources: [], tags: [], aliases: ['别名也占位'],
       knowledge_status: 'needs_verification', confidence: 'low', source_level: 'D', review_status: 'unreviewed', body: '## 定义\n\n已有页面。\n',
     });
@@ -676,18 +683,19 @@ test('E04-04 标题冲突：既有页面占用标题时整体 409，零正式变
     const started = await context.extract(raw.id);
     const draft = await context.drafts.get(started.finished.draftId as string);
     assert.ok(draft);
+    const reviewed = await reviewSelectedChanges(context.drafts, draft, draft.pages.map(page => page.pageId));
     const conflict = await (async () => {
       try {
         await context.wikiStore.withLock(() => context.commits.confirm({
-          draftId: draft.id, baseRevision: draft.revision, selectedPageIds: draft.pages.map(page => page.pageId),
+          draftId: draft.id, baseRevision: reviewed.revision, selectedPageIds: draft.pages.map(page => page.pageId),
           idempotencyKey: 'conflict-key', operationId: crypto.randomUUID(), now: new Date().toISOString(),
         }));
-      } catch (error) { return error as { code: string; status: number; details?: { existingId?: string } }; }
+      } catch (error) { return error as { code: string; status: number; details?: { wikiId?: string } }; }
       return undefined;
     })();
     assert.equal(conflict?.code, 'WIKI_TITLE_CONFLICT');
     assert.equal(conflict?.status, 409);
-    assert.ok(conflict?.details?.existingId);
+    assert.equal(conflict?.details?.wikiId, occupied.id);
     assert.deepEqual(await context.wikiFiles(), before, '冲突时不得写入任何新页面');
     assert.equal((await context.drafts.get(draft.id))?.status, 'pending_confirmation', '冲突后可改名重试');
     assert.equal(await context.commits.findByDraft(draft.id), undefined, '冲突不得留下提交清单');

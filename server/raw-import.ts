@@ -4,17 +4,102 @@
 // or reports an explicit failure that names what was already committed (never a fake success).
 import type { AssetStore, AssetRecord } from '../services/raw/assets.ts';
 import type { RawRecord, RawStore } from '../services/raw/store.ts';
+import type { RawTranslationService, RawTranslationView } from '../services/raw/translations.ts';
+import type { Express } from 'express';
+import multer from 'multer';
 import { MAX_BODY_CHARS, MAX_UPLOAD_BYTES } from '../services/raw/limits.ts';
+import { readPublicRawUrl, type ImportedWebText } from '../services/raw/url-import.ts';
 import {
   ParseError, declaredFormat, detectFileFormat, extractBody, fileExtension, fileStem, type RawFileFormat,
 } from '../services/raw/parse.ts';
-import { InputError, validateRawMetadata } from './validation.ts';
+import { InputError, validateBody, validateRawMetadata } from './validation.ts';
 
 export type ImportResult = {
   raw: RawRecord;
   asset: AssetRecord;
   extraction: { parser: string; note: string; bodyChars: number };
 };
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  // Busboy marks a field truncated when it reaches its byte limit. Reserve one
+  // byte so exactly MAX_BODY_CHARS three-byte UTF-8 characters reach validation.
+  limits: { fileSize: MAX_UPLOAD_BYTES, files: 1, fields: 10, fieldSize: MAX_BODY_CHARS * 3 + 1 },
+  defParamCharset: 'utf8',
+}).single('file');
+
+export function registerRawImportRoute(app: Express, deps: {
+  store: RawStore; assets: AssetStore; readUrl?: (value: string) => Promise<ImportedWebText>; translations?: RawTranslationService;
+}): void {
+  app.post('/api/raw/import', (req, res, next) => {
+    if (req.is('multipart/form-data')) upload(req, res, next);
+    else next();
+  }, async (req, res, next) => {
+    try {
+      const multipart = req.is('multipart/form-data');
+      let metadata: unknown = req.body?.metadata ?? {};
+      if (multipart && typeof metadata === 'string') {
+        try { metadata = metadata.trim() ? JSON.parse(metadata) : {}; }
+        catch { throw new InputError('INVALID_METADATA', 'metadata 不是有效的 JSON 字符串。', 400); }
+      }
+      if (req.file) {
+        const result = await importRawFile({ ...deps, bytes: req.file.buffer, fileName: req.file.originalname, metadata });
+        res.status(201).json({ kind: 'file', ...result });
+        return;
+      }
+      if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) throw new InputError('INVALID_METADATA', 'metadata 必须是一个对象。');
+      const fields = metadata as Record<string, unknown>;
+      const body: unknown = req.body?.body;
+      if (body !== undefined && typeof body !== 'string') throw new InputError('INVALID_FIELD', '正文必须是文本。');
+      if (typeof body === 'string' && body.trim()) {
+        const raw = await deps.store.create({ ...validateRawMetadata(fields), body: validateBody(body) });
+        res.status(201).json({ kind: 'paste', raw, extraction: { parser: 'pasted_text', note: '按粘贴正文原样保存。', bodyChars: raw.body.length } });
+        return;
+      }
+      if (typeof fields.url !== 'string' || !fields.url.trim()) {
+        if (fields.url !== undefined && fields.url !== null && typeof fields.url !== 'string') throw new InputError('INVALID_URL', '网页地址必须是文本。');
+        throw new InputError('MISSING_IMPORT_CONTENT', '请选择文件、粘贴正文或填写公开网页链接。');
+      }
+      const originalUrl = fields.url.trim();
+      const preference: unknown = req.body?.translateToChinese;
+      if (preference !== undefined && typeof preference !== 'boolean' && !(multipart && (preference === 'true' || preference === 'false'))) {
+        throw new InputError('INVALID_TRANSLATION_PREFERENCE', '翻译选项必须明确为 true 或 false。');
+      }
+      const translate = preference === true || (multipart && preference === 'true');
+      const omitted = (value: unknown) => value === undefined || value === null || (typeof value === 'string' && !value.trim());
+      const hasTitle = !omitted(fields.title);
+      const hasSource = !omitted(fields.sourceName);
+      const verified = validateRawMetadata({
+        ...fields, url: originalUrl,
+        title: hasTitle ? fields.title : '网页原文', sourceName: hasSource ? fields.sourceName : '公开网页',
+        sourceType: omitted(fields.sourceType) ? 'article' : fields.sourceType,
+      });
+      const result = await (deps.readUrl ?? readPublicRawUrl)(originalUrl);
+      const host = new URL(result.finalUrl).hostname;
+      const raw = await deps.store.create({
+        ...verified, title: hasTitle ? verified.title : result.title.slice(0, 300) || host,
+        sourceName: hasSource ? verified.sourceName : host, body: validateBody(result.body),
+        urlImport: { finalUrl: result.finalUrl, fetchedAt: result.fetchedAt },
+        extractionParser: result.parser, extractionNote: result.note,
+      });
+      let translation: RawTranslationView | undefined;
+      if (translate) {
+        try {
+          if (!deps.translations) throw new Error('Translation service unavailable');
+          translation = await deps.translations.start(raw.id);
+        } catch {
+          // The Raw was already committed. A translation startup/storage failure
+          // must never prompt the user to import the same document again.
+          translation = {
+            rawId: raw.id, rawSha256: raw.bodySha256, status: 'failed', attempts: 0, completedChunks: 0, totalChunks: 0,
+            error: { code: 'TRANSLATION_START_FAILED', message: '原文已保存，翻译未能启动。可以在原文详情单独重试。' },
+          };
+        }
+      }
+      res.status(201).json({ kind: 'url', raw, extraction: { parser: result.parser, note: result.note, bodyChars: raw.body.length }, ...(translation ? { translation } : {}) });
+    } catch (error) { next(error); }
+  });
+}
 
 function message(error: unknown): string {
   const text = error instanceof Error ? error.message : String(error);

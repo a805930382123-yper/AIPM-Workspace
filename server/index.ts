@@ -8,7 +8,9 @@ import { AssetStore } from '../services/raw/assets.ts';
 import { RawStateStore } from '../services/raw/state.ts';
 import { MAX_UPLOAD_BYTES } from '../services/raw/limits.ts';
 import { ParseError } from '../services/raw/parse.ts';
-import { importRawFile } from './raw-import.ts';
+import { registerRawImportRoute } from './raw-import.ts';
+import { registerRawTranslationRoutes } from './raw-translations.ts';
+import { RawTranslationService } from '../services/raw/translations.ts';
 import { validateRaw, InputError } from './validation.ts';
 import { getStats } from '../services/stats/index.ts';
 import { WikiError, WikiStore } from '../services/wiki/store.ts';
@@ -145,14 +147,6 @@ try {
   console.error('B04 状态对账失败：', error instanceof Error ? error.message : error);
 }
 
-// B03: single file per request, held in memory so an over-limit body is rejected
-// while receiving and never reaches the data directory.
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_UPLOAD_BYTES, files: 1, fields: 10 },
-  defParamCharset: 'utf8',
-}).single('file');
-
 const app = express();
 registerRecoveryRoutes(app,recovery);
 app.disable('x-powered-by');
@@ -163,7 +157,8 @@ app.use(express.json({ limit: '3mb', strict: true }));
 // must not prevent the manual workspace or unrelated read APIs from starting/responding.
 app.use((...args) => {
   const req = args[0] as express.Request; const next = args[2]!;
-  const ai = (req.method === 'POST' && (/^\/api\/raw\/[^/]+\/extract$/u.test(req.path) || /^\/api\/knowledge\/(?:updates|syntheses)$/u.test(req.path) || /^\/api\/audits\/[^/]+\/propose$/u.test(req.path) || /^\/api\/prompt-ai\/(?:brief|generate|optimize|optimize\/check|drafts\/[^/]+\/rewrite)$/u.test(req.path) || /^\/api\/prompt-ai\/drafts\/[^/]+\/confirm$/u.test(req.path))) || (req.method === 'GET' && /^\/api\/prompt-ai\/drafts(?:\/[^/]+)?$/u.test(req.path));
+  const prepare = req.method === 'POST' && ['create','update'].includes(req.body?.action) && /^\/api\/drafts\/[^/]+\/changes\/prepare\/?$/u.test(req.path);
+  const ai = prepare || (req.method === 'POST' && (/^\/api\/raw\/[^/]+\/extract$/u.test(req.path) || /^\/api\/knowledge\/(?:updates|syntheses)$/u.test(req.path) || /^\/api\/knowledge\/(?:answers(?:\/[^/]+\/save)?|inspections(?:\/[^/]+\/draft)?)\/?$/iu.test(req.path) || /^\/api\/audits\/[^/]+\/propose$/u.test(req.path) || /^\/api\/prompt-ai\/(?:brief|generate|optimize|optimize\/check|drafts\/[^/]+\/rewrite)$/u.test(req.path) || /^\/api\/prompt-ai\/drafts\/[^/]+\/confirm$/u.test(req.path))) || (req.method === 'GET' && /^\/api\/prompt-ai\/drafts(?:\/[^/]+)?$/u.test(req.path));
   if (!ai) { next(); return; }
   void providerFactory().then(snapshot => providerContext.run({ provider: snapshot }, next)).catch(next);
 });
@@ -190,22 +185,9 @@ app.get('/api/raw/assets', async (req, res, next) => {
     res.json({ items });
   } catch (error) { next(error); }
 });
-app.post('/api/raw/import', (req, res, next) => {
-  upload(req, res, async (uploadError: unknown) => {
-    if (uploadError) { next(uploadError); return; }
-    try {
-      if (!req.file) throw new InputError('MISSING_FILE', '请求中没有文件。请使用 multipart/form-data 上传，字段名为 file。', 400);
-      const rawMetadata = typeof req.body?.metadata === 'string' ? req.body.metadata.trim() : '';
-      let metadata: unknown = {};
-      if (rawMetadata) {
-        try { metadata = JSON.parse(rawMetadata); }
-        catch { throw new InputError('INVALID_METADATA', 'metadata 不是有效的 JSON 字符串。', 400); }
-      }
-      const result = await importRawFile({ store, assets: assetStore, bytes: req.file.buffer, fileName: req.file.originalname, metadata });
-      res.status(201).json(result);
-    } catch (error) { next(error); }
-  });
-});
+const rawTranslations = new RawTranslationService({ root, raws: store, provider: providerFactory });
+registerRawImportRoute(app, { store, assets: assetStore, translations: rawTranslations });
+registerRawTranslationRoutes(app, rawTranslations);
 app.get('/api/raw/:id/references', async (req, res, next) => {
   try {
     const item = await store.get(req.params.id);

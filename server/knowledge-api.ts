@@ -1,3 +1,5 @@
+import {KnowledgeInspectionService} from '../services/llm/knowledge-inspections.ts';
+import {KnowledgeAnswerService} from '../services/llm/knowledge-answers.ts';
 import type express from 'express';
 import type { RawStore } from '../services/raw/store.ts';
 import type { DraftStore } from '../services/wiki/drafts.ts';
@@ -11,7 +13,20 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
   root: string; raws: RawStore; drafts: DraftStore; wiki: WikiStore; provider: () => LlmProvider | undefined;
 }) {
   const workflows = new KnowledgeWorkflowStore(deps.root, deps.wiki, deps.raws);
-  const ready = workflows.initialize();
+  const answers=new KnowledgeAnswerService({root:deps.root,raws:deps.raws,wiki:deps.wiki,drafts:deps.drafts,provider:deps.provider});
+  const inspections=new KnowledgeInspectionService({root:deps.root,wiki:deps.wiki,raws:deps.raws,drafts:deps.drafts,provider:deps.provider});
+  const ready=Promise.all([workflows.initialize(),answers.initialize(),inspections.initialize()]);
+  app.post('/api/knowledge/inspections',async(req,res,next)=>{try{await ready;res.status(202).json(await inspections.start(req.body));}catch(e){next(e);}});
+  app.get('/api/knowledge/inspections/current',async(_req,res,next)=>{try{await ready;res.json(await inspections.current());}catch(e){next(e);}});
+  app.get('/api/knowledge/inspections/:id',async(req,res,next)=>{try{await ready;const r=await inspections.read(String(req.params.id));if(!r)throw new WikiError('INSPECTION_MISSING','检查不存在。',404);res.json(r);}catch(e){next(e);}});
+  app.get('/api/knowledge/inspections/:id/findings/:findingId/evidence/:evidenceId',async(req,res,next)=>{try{await ready;res.json(await inspections.evidence(String(req.params.id),String(req.params.findingId),String(req.params.evidenceId)));}catch(e){next(e);}});
+  app.post('/api/knowledge/inspections/:id/findings/:findingId/decision',async(req,res,next)=>{try{await ready;res.json(await inspections.decision(String(req.params.id),String(req.params.findingId),req.body));}catch(e){next(e);}});
+  app.post('/api/knowledge/inspections/:id/draft',async(req,res,next)=>{try{await ready;res.json(await inspections.draft(String(req.params.id),req.body));}catch(e){next(e);}});
+  app.post('/api/knowledge/answers',async(req,res,next)=>{try{await ready;res.json(await answers.ask(req.body));}catch(error){next(error);}});
+  app.get('/api/knowledge/answers/current',async(_req,res,next)=>{try{await ready;res.json((await answers.current())??null);}catch(error){next(error);}});
+  app.get('/api/knowledge/answers/:id',async(req,res,next)=>{try{await ready;const result=await answers.read(String(req.params.id));if(!result)throw new WikiError('ANSWER_MISSING','回答不存在。',404);res.json(result);}catch(error){next(error);}});
+  app.get('/api/knowledge/answers/:id/citations/:citationId',async(req,res,next)=>{try{await ready;res.json(await answers.citation(String(req.params.id),String(req.params.citationId)));}catch(error){next(error);}});
+  app.post('/api/knowledge/answers/:id/save',async(req,res,next)=>{try{await ready;res.json(await answers.save(String(req.params.id),req.body));}catch(error){next(error);}});
   const requireProvider = () => {
     const provider = deps.provider();
     if (!provider) throw new WikiError('LLM_NOT_CONFIGURED', '产品 Provider 未配置，无法生成知识草稿。请在设置中配置服务端 Provider 后重试。', 503);
@@ -32,6 +47,7 @@ export function registerKnowledgeRoutes(app: express.Express, deps: {
     const candidates = findDuplicateCandidates({ title: pageTitle, category: pageCategory, tags: raw?.tags ?? [], content: pageContent }, await deps.wiki.allRecords());
     res.json({ draftId: draft.id, pageId: storedPage.pageId, draftRevision: draft.revision, decision: storedPage.reviewDecision ?? null, targetWikiId: storedPage.updateTargetWikiId ?? null, candidates: candidates.map(item => ({ wiki: item.wiki, score: item.score, matches: item.matches })) });
   };
+  app.post('/api/knowledge/drafts/:draftId/changes/review',async(req,res,next)=>{try{const record=await deps.drafts.reviewKnowledgeChange(String(req.params.draftId),req.body);res.json(deps.drafts.view(record));}catch(error){next(error);}});
   app.get('/api/knowledge/drafts/:draftId/pages/:pageId/duplicates', async (req, res, next) => {
     try {
       await duplicateResponse(req, res);

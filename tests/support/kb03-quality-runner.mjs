@@ -13,6 +13,7 @@ import { deepRemaining } from '../../services/llm/knowledge-deep.ts';
 import { OpenAiCompatibleProvider, assertNoKnownSecret, sanitizeProviderText } from '../../services/llm/provider.ts';
 import { containsKnownSecret } from '../../services/llm/config.ts';
 import { deepReply } from './kb03-deep-fixture.ts';
+import { maintenanceReply } from './compat01-maintenance-reply.ts';
 
 export const sha = value => createHash('sha256').update(value).digest('hex');
 export const BUDGET_POLICY = Object.freeze({ total:30, sampleCaps:Object.freeze({fixed:20,counter:15}), minimumCalls:5 });
@@ -132,16 +133,20 @@ export function runnerFor(root, state, provider, rulesDir = path.resolve('rules'
     return { types: b.fmcg.types.map(t => t.id).filter(t => !['source', 'synthesis'].includes(t)), categories: b.fmcg.categories.map(c => c.id), ...b.fmcg.enums };
   } });
 }
-export function stageOf(request) { return request.system.startsWith('KB03 ') ? JSON.parse(request.user).stage : request.user.includes('请对下列全部已验证事实规划知识页') ? 'planning' : 'extracting'; }
-export async function caseState(root) {
+export function stageOf(request, offlineMaintenance = false) {
+  if (offlineMaintenance && request.system.startsWith('知识维护提议')) return 'maintenance';
+  return request.system.startsWith('KB03 ') ? JSON.parse(request.user).stage : request.user.includes('请对下列全部已验证事实规划知识页') ? 'planning' : 'extracting';
+}
+export async function caseState(root, offlineMaintenance = false) {
   const state = await stores(root), jobs = await state.jobs.list(), checkpoints = await new ExtractionCheckpointStore(root).list();
   if (jobs.length > 1 || checkpoints.length > 1) throw Error('Unexpected extra job/checkpoint; no automatic reset');
   const cp = checkpoints[0], job = jobs[0];
-  return { state, cp, job, remaining: cp ? deepRemaining(cp) : 5 };
+  const maintenanceRemaining = offlineMaintenance && job?.status !== 'completed' && !cp?.maintenance?.proposal ? 1 : 0;
+  return { state, cp, job, remaining: (cp ? deepRemaining(cp) : 5) + maintenanceRemaining };
 }
-export async function executeCase({ root, rawId, provider, ledger, binding, otherRemaining, continueExplicit = false }) {
+export async function executeCase({ root, rawId, provider, ledger, binding, otherRemaining, continueExplicit = false, offlineMaintenance = false }) {
   if(binding.tool===R10_TOOL&&continueExplicit)throw Error('R10 forbids --continue or retry of this round');
-  const before = await caseState(root);
+  const before = await caseState(root, offlineMaintenance);
   if (before.job && before.job.status !== 'completed' && !continueExplicit) throw Error(binding.tool===R10_TOOL?'R10 failed/interrupted job cannot reenter or retry':'Existing failed/interrupted case requires --continue; pending calls may already have reached Provider');
   const ledgerState = await readLedger(ledger);
   checkBudget(ledgerState.counts,binding.sample,before.remaining,otherRemaining);
@@ -151,8 +156,8 @@ export async function executeCase({ root, rawId, provider, ledger, binding, othe
   const original = provider.complete.bind(provider);
   let ownCalls = 0;
   const wrapped = { name: provider.name, model: provider.model, cacheIdentity: provider.cacheIdentity, secrets: provider.secrets, complete: async request => {
-    const current = await caseState(root);
-    const attempt = await reserve(ledger, { ...binding, root, rawId, stage: stageOf(request), jobId: current.cp?.jobId }, current.remaining, otherRemaining);
+    const current = await caseState(root, offlineMaintenance);
+    const attempt = await reserve(ledger, { ...binding, root, rawId, stage: stageOf(request, offlineMaintenance), jobId: current.cp?.jobId }, current.remaining, otherRemaining);
     ownCalls++;
     const prefix = path.join(ledger, `attempt-${String(attempt.sequence).padStart(2, '0')}`);
     // Inputs are exactly the product request: no reference notes or independent oracle.
@@ -188,9 +193,10 @@ function fillWire(value, schema) {
   return value;
 }
 export function fakeWireReply(wire) {
-  const request = { system: wire.messages[0].content, user: wire.messages[1].content }, stage = stageOf(request);
+  const request = { system: wire.messages[0].content, user: wire.messages[1].content }, stage = stageOf(request, true);
   let value;
-  if (['outline', 'writing', 'quality'].includes(stage)) value = deepReply(request);
+  if (stage === 'maintenance') value = maintenanceReply(request.user);
+  else if (['outline', 'writing', 'quality'].includes(stage)) value = deepReply(request);
   else {
     const p = JSON.parse(request.user.split('\n').at(-1));
     value = stage === 'extracting' ? { version: 2, facts: p.filter(a => a.text.trim()).slice(0, 32).map(a => ({ atomId: a.id, kind: a.fragment ? 'ambiguous' : 'fact' })), questions: [], sourceNotes: [] } : { version: 3, document: { title: '虚构工程样例', main_topic: '工程协议', source_level: 'D' }, pages: [{ title: '虚构工程样例', type: 'concept', category: 'industry_basics', factUnitIds: p.factUnits.map(f => f.id), questionUnitIds: p.questionUnits.map(q => q.id) }] };
@@ -212,6 +218,6 @@ export async function fakeCase(root, body, { fault, continueExplicit = false, le
     const text = fault ? fault(reply.stage, reply.value, wires.length) : JSON.stringify(reply.value);
     return new Response(JSON.stringify({ choices: [{ message: { content: text }, finish_reason: 'stop' }] }), { status: 200, headers: { 'content-type': 'application/json' } });
   };
-  try { return { ...(await executeCase({ root, rawId: raw.id, provider, ledger, binding: { sample, sampleSha: sha(body), freeze, session, ...(tool?{tool}:{}) }, otherRemaining, continueExplicit })), wires, configReads: 0, realRequests: 0 }; }
+  try { return { ...(await executeCase({ root, rawId: raw.id, provider, ledger, binding: { sample, sampleSha: sha(body), freeze, session, ...(tool?{tool}:{}) }, otherRemaining, continueExplicit, offlineMaintenance: true })), wires, configReads: 0, realRequests: 0 }; }
   finally { globalThis.fetch = prior; }
 }

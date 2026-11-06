@@ -65,10 +65,10 @@ export function SettingsPage({ onOpenExampleTask = () => undefined, onImported =
     finally { setDemoBusy(false); }
   };
   return <div className="page settings-page">
-    <div className="page-heading"><div><p className="eyebrow">设置 · 本机服务端配置</p><h1>设置</h1><p className="subheading">产品只调用你自己配置的服务端 Provider；API Key 不出现在页面、草稿、Wiki 或日志中。</p></div><button className="secondary-button" onClick={() => void reload()} disabled={configBusy || configLoading}>重新读取</button></div>
+    <div className="page-heading"><div><h1>设置</h1><p className="subheading">产品只调用你自己配置的服务端 Provider；API Key 不出现在页面、草稿、Wiki 或日志中。</p></div><button className="secondary-button" onClick={() => void reload()} disabled={configBusy || configLoading}>重新读取</button></div>
     {error && <div className="form-error" role="alert"><p>{error}</p></div>}
     <section className="panel settings-panel">
-      <div className="panel-heading"><div><h2>LLM Provider</h2><p>单一 OpenAI-compatible Chat Completions 适配器（非流式）</p></div><span className={`config-badge ${config?.configured ? 'ok' : 'off'}`}>{config ? (config.configured ? '已配置' : '未配置') : '读取中…'}</span></div>
+      <div className="panel-heading"><div><h2>LLM Provider</h2><p>单一 OpenAI-compatible Chat Completions 适配器（非流式）</p></div><span className={`config-badge ${config?.configured ? 'ok' : 'off'}`}>{config ? (config.configured ? '已配置' : '未配置') : configLoading ? '读取中…' : '读取失败'}</span></div>
       <div className="settings-body">
         <div className="metadata-grid settings-grid">
           <div className="meta"><span>Provider</span><b>{config?.provider ?? '—'}</b></div>
@@ -85,19 +85,19 @@ export function SettingsPage({ onOpenExampleTask = () => undefined, onImported =
           <label>API Key<input aria-label="API Key" type="password" autoComplete="new-password" value={apiKey} onChange={event => { sequence.current++; setApiKey(event.target.value); setTestMessage(''); setConfigMessage(''); }} placeholder={config?.keyConfigured ? '留空以保留已保存的 Key' : '首次保存时必填'} disabled={configLoading || configBusy || config?.environmentLocked} /></label>
           <p className="field-help">已配置时，API Key 留空会保留旧值；新 Key 仅在点击保存后发送到本机服务端，保存后输入框会清空。</p>
           <p className="field-help">连接测试会向此 Provider 发送固定的非业务消息，可能产生少量 API 费用。不会发送 Raw、Wiki、Prompt、会议内容或草稿，也不会写入业务资产。</p>
-          <div className="settings-config-actions"><button className="primary-button" onClick={() => void saveConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked}>{configBusy ? '处理中…' : '保存配置'}</button><button className="secondary-button" onClick={() => void testConfig()} disabled={!config?.configured || configLoading || configBusy || changed}>测试连接</button><button className="secondary-button" onClick={() => void clearConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked || (!config.keyConfigured && config.source !== 'local-file')}>清除本机配置</button></div>
+          <div className="settings-config-actions"><button className="primary-button" onClick={() => void saveConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked}>{configBusy ? '处理中…' : '保存配置'}</button><button className="secondary-button" onClick={() => void testConfig()} disabled={!config?.configured || configLoading || configBusy || changed}>测试连接</button><button className="secondary-button settings-danger" onClick={() => void clearConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked || (!config.keyConfigured && config.source !== 'local-file')}>清除本机配置</button></div>
           {configMessage && <p role="status" className="notice-ok">{configMessage}</p>}{testMessage && <p role="status" className="notice-ok">连接测试成功：{testMessage}</p>}{configError && <p role="alert" className="form-error">{configError}</p>}
         </div>
         {config && !config.configured && <p className="notice-warn">尚未配置：{config.missing.join('、')}。未配置时导入、手动 Wiki、搜索与导出仍可用；点击「AI 整理知识」会返回明确的缺配置错误。</p>}
-        <div className="settings-help">
-          <h3>如何配置</h3>
+        <details className="settings-help">
+          <summary>如何配置</summary>
           <p>在启动服务端的终端设置环境变量（或在受忽略的 <code>{config?.configFile ?? '.env.local'}</code> 中写入同名键），然后重启服务端：</p>
           <pre>{`$env:${config?.envNames.baseUrl ?? 'FMCG_LLM_BASE_URL'} = 'https://<你的 Provider>/v1'
 $env:${config?.envNames.model ?? 'FMCG_LLM_MODEL'} = '<模型名>'
 $env:${config?.envNames.apiKey ?? 'FMCG_LLM_API_KEY'} = '<你的 API Key>'
 npm run dev`}</pre>
           <p>环境变量优先级高于 .env.local，并会锁定本页编辑。仅在设置页明确保存后，新 AI 请求使用新配置；已经开始的任务继续使用开始时的配置快照。</p>
-        </div>
+        </details>
       </div>
     </section>
     <section className="panel settings-panel"><div className="panel-heading"><div><h2>演示数据</h2><p>虚构教学内容。只在点击导入后写入本机，可重复执行并保留已编辑记录。</p></div><button className="primary-button" onClick={() => void importDemo()} disabled={demoBusy}>{demoBusy ? '正在导入…' : '导入演示数据'}</button></div>
@@ -105,7 +105,7 @@ npm run dev`}</pre>
       <div className="settings-body"><p>{demo?.imported ? '已存在演示清单；重复导入会复用现有记录，删除的条目不会自动复活。' : '尚无演示清单。导入会新建 1 条 Raw、5 条 Wiki、4 条 Prompt。'}</p>
       {demo?.items.length ? <ul className="demo-item-list">{demo.items.map(item => <li key={item.key}><span>{item.title}</span><small>{item.type} · {item.status} · {item.id}</small></li>)}</ul> : null}
       {demo?.exampleTask && <div className="demo-task"><b>演示数据 · 示例任务入口：{demo.exampleTask.title}</b><p>打开 Generator 并填入可编辑任务，不会自动调用 Provider 或保存。</p><button className="secondary-button" onClick={() => onOpenExampleTask(demo.exampleTask.task)}>打开示例任务</button></div>}
-      <h3>本地备份与恢复</h3><p>停止本地服务写入后导出。恢复只写入一个不存在或空的新数据根目录；CLI 会验证文件长度与 SHA-256。</p><pre>{`node --import tsx scripts/backup_workspace.ts export --data-root <root> --output <file>\nnode --import tsx scripts/backup_workspace.ts restore --input <file> --data-root <new-root>`}</pre>
+      <details className="settings-backup"><summary>本地备份与恢复</summary><p>停止本地服务写入后导出。恢复只写入一个不存在或空的新数据根目录；CLI 会验证文件长度与 SHA-256。</p><pre>{`node --import tsx scripts/backup_workspace.ts export --data-root <root> --output <file>\nnode --import tsx scripts/backup_workspace.ts restore --input <file> --data-root <new-root>`}</pre></details>
       </div>
     </section>
   </div>;

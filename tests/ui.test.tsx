@@ -51,7 +51,8 @@ test('文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界'
   assert.match(html, new RegExp(`${MAX_UPLOAD_BYTES / 1024 / 1024} MiB`));
   assert.match(html, /严格 UTF-8/);
   assert.match(html, /扫描版 PDF 与加密 PDF 本批不支持/);
-  assert.match(html, /保存并生成 Wiki 草稿/);
+  assert.match(html, /从网页导入 Raw/);
+  assert.doesNotMatch(html, /保存并生成 Wiki 草稿/, '重导入预填链接且尚未选文件时，只提供保存网页原文');
   const titleInput = /<input[^>]*placeholder="例如：经销商订货流程访谈纪要"[^>]*>/.exec(html)?.[0] ?? '';
   assert.match(titleInput, /value="文件导入资料"/, '重新导入必须预填标题');
   const sourceInput = /<input[^>]*placeholder="例如：客户访谈 \/ 公众号名称"[^>]*>/.exec(html)?.[0] ?? '';

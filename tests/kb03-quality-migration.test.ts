@@ -32,18 +32,18 @@ async function r10Fixture(){
   return {root,ledger,oldRoot,newRoot,round,options:{ledger,tool:TOOL,session:'v4-session',freeze:'v4-freeze',sample:'fixed',otherRemaining:5}};
 }
 
-test('R10 original history4/ten receipts preserved; actual new fake5+5 = total24/fixed14/counter10, restart zero',async()=>{
+test('R10 original history4/ten receipts preserved; actual new fake6+6 = total26/fixed15/counter11, restart zero',async()=>{
   const root=await temp(),old=path.join(root,'old'),oldLedger=path.join(root,'old-ledger'),ledger=path.join(root,'fake','ledger');
   await durable(path.join(old,'manifest.json'),{tool:'v1'});await durable(path.join(old,'freeze.json'),{freeze:'v1'});await durable(path.join(old,'state/extraction-jobs/failed.json'),{status:'failed',callCount:4});
   await seed(oldLedger);await durable(path.join(oldLedger,'attempt-01.error.json'),{code:'LLM_NETWORK_ERROR'});await durable(path.join(oldLedger,'attempt-02.result.json'),{state:'received',text:'synthetic'});await durable(path.join(oldLedger,'attempt-03.error.json'),{code:'LLM_TIMEOUT'});
   const baseline=await captureMigration(old,oldLedger);await verifyMigration(baseline);
-  const result=await fake(root);assert.deepEqual(result.counts,{total:24,fixed:14,counter:10});assert.deepEqual(result.rows.map((r:any)=>r.callCount),[5,5]);assert.equal(result.configReads,0);assert.equal(result.realRequests,0);await verifyMigration(baseline);
+  const result=await fake(root);assert.deepEqual(result.counts,{total:26,fixed:15,counter:11});assert.deepEqual(result.rows.map((r:any)=>r.callCount),[6,6]);assert.equal(result.configReads,0);assert.equal(result.realRequests,0);await verifyMigration(baseline);
   const replay=await fake(root);assert.deepEqual(replay.rows.map((r:any)=>r.callCount),[0,0]);assert.deepEqual(replay.counts,result.counts);
   const moduleURL=pathToFileURL(path.resolve('tests/acceptance/KB03-R5-20261030-real.mjs')).href;
   const child=spawnSync(process.execPath,['--import','tsx','--input-type=module','-e',`import {fake} from ${JSON.stringify(moduleURL)};const r=await fake(${JSON.stringify(root)});console.log(JSON.stringify({calls:r.rows.map(x=>x.callCount),counts:r.counts}));`],{windowsHide:true,encoding:'utf8'});
   assert.equal(child.status,0,child.stderr);assert.deepEqual(JSON.parse(child.stdout),{calls:[0,0],counts:result.counts});await verifyMigration(baseline);
-  const attempts=await ledgerEntries(ledger);assert.deepEqual(attempts.map((r:any)=>r.sequence),Array.from({length:20},(_,i)=>i+5));assert.equal(attempts[0].tool,V3_TOOL);assert.equal(attempts[10].tool,TOOL);
-  const state=await readLedger(ledger);assert.equal(state.history.receiptsAvailable,false);assert.equal(state.history.proof,'summary-only; not per-request evidence');assert.equal(state.history.total,4);assert.equal(state.rows.length,20);assert.equal(Object.keys(state.round.ledgerFiles).length,31);assert.deepEqual(state.round.priorCounts,{total:14,fixed:9,counter:5});
+  const attempts=await ledgerEntries(ledger);assert.deepEqual(attempts.map((r:any)=>r.sequence),Array.from({length:22},(_,i)=>i+5));assert.equal(attempts[0].tool,V3_TOOL);assert.equal(attempts[10].tool,TOOL);
+  const state=await readLedger(ledger);assert.equal(state.history.receiptsAvailable,false);assert.equal(state.history.proof,'summary-only; not per-request evidence');assert.equal(state.history.total,4);assert.equal(state.rows.length,22);assert.equal(Object.keys(state.round.ledgerFiles).length,31);assert.deepEqual(state.round.priorCounts,{total:14,fixed:9,counter:5});
   for(const [file,digest]of Object.entries(state.round.ledgerFiles))assert.equal(sha(await fs.readFile(path.join(ledger,file))),digest);assert.deepEqual(await treeHashes(state.round.sourceRoot),state.round.sourceFiles);
   for(let n=1;n<=4;n++)await assert.rejects(fs.stat(path.join(ledger,`attempt-0${n}.json`)),{code:'ENOENT'});
 });
@@ -80,7 +80,7 @@ test('R7 new root/session cannot reset a v2 sample or its failed same-job cumula
   await assert.rejects(fakeCase(path.join(root,'replacement'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'replacement',freeze:'v2-freeze',tool:LEGACY_TOOL}),/another preparation|cap/);assert.deepEqual(await ledgerEntries(ledger),before);
   await assert.rejects(fakeCase(path.join(root,'same-session-new-root'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL}),/job identity/);assert.deepEqual(await ledgerEntries(ledger),before);
   await assert.rejects(fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL}),/requires --continue/);
-  const done=await fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL,continueExplicit:true});assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,6);assert.equal(done.totalCalls,10);assert.equal(done.ownCalls,4);
+  const done=await fakeCase(path.join(root,'fixed'),COUNTER,{ledger,sample:'fixed',otherRemaining:5,session:'v2-session',freeze:'v2-freeze',tool:LEGACY_TOOL,continueExplicit:true});assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,7);assert.equal(done.totalCalls,11);assert.equal(done.ownCalls,5);
 });
 
 test('R7 old trace/job/manifest changes fail baseline validation and pending reservation remains append-only under concurrency',async()=>{
@@ -101,7 +101,15 @@ test('R8 fake refuses fixed local and original real ledgers before writes',async
   await assert.rejects(assertOfflineTarget(path.join(REAL_LEDGER_ROOT,'fake','ledger')),/never write the real ledger/);
   await assert.rejects(assertOfflineTarget(LEGACY_LEDGER_ROOT),/never write the real ledger/);
   await assert.rejects(assertOfflineTarget(R8_ROOT),/R8 source root/);await assert.rejects(assertOfflineTarget(path.join(R8_ROOT,'new')),/R8 source root/);
-  await assert.rejects(fake(R8_ROOT),/R8 source root/);await assert.rejects(fakeCase(path.join(R8_ROOT,'new'),COUNTER,{ledger:path.join(root,'isolated-ledger')}),/R8 source root/);
+  // The CLI's TEMP boundary runs first when the historical R8 root belongs to another Windows profile.
+  const relativeR8=path.relative(os.tmpdir(),R8_ROOT);
+  const cliRejection=!relativeR8||relativeR8.startsWith('..')||path.isAbsolute(relativeR8)
+    ? /^Only a child of system TEMP is allowed$/
+    : /^Offline preparation\/fake must never write the real ledger or R8 source root$/;
+  await assert.rejects(fake(R8_ROOT),{message:cliRejection});
+  const isolatedLedger=path.join(root,'isolated-ledger');
+  await assert.rejects(fakeCase(path.join(R8_ROOT,'new'),COUNTER,{ledger:isolatedLedger}),/R8 source root/);
+  await assert.rejects(fs.stat(isolatedLedger),{code:'ENOENT'});
 });
 
 test('R10 old31/root/session mutations and replacement preparation fail before any adapter call',async()=>{
@@ -130,10 +138,10 @@ test('R10 actual adapter failure keeps pending15/16 and immutable stop rejects r
   assert.equal(child.status,0,child.stderr);assert.deepEqual(JSON.parse(child.stdout),{counts:failed.counts,blocked:true});assert.deepEqual((await readLedger(f.ledger)).counts,failed.counts);
 });
 
-test('R10 independent quality stop prevents counter even after a completed five-call fixed job',async()=>{
-  const f=await r10Fixture(),fixed=await fakeCase(path.join(f.newRoot,'real','fixed'),COUNTER,f.options);assert.equal(fixed.job.status,'completed');assert.equal(fixed.ownCalls,5);assert.deepEqual(fixed.counts,{total:19,fixed:14,counter:5});
+test('R10 independent quality stop prevents counter even after a completed six-call fixed job',async()=>{
+  const f=await r10Fixture(),fixed=await fakeCase(path.join(f.newRoot,'real','fixed'),COUNTER,f.options);assert.equal(fixed.job.status,'completed');assert.equal(fixed.ownCalls,6);assert.deepEqual(fixed.counts,{total:20,fixed:15,counter:5});
   const stopped=await stopR10Round(f.ledger,{code:'R10_QUALITY_FAILED',reason:'Independent synthetic quality finding; stop whole round.'});assert.equal(stopped.code,'R10_QUALITY_FAILED');
-  await assert.rejects(fakeCase(path.join(f.newRoot,'real','counter'),COUNTER,{...f.options,sample:'counter',otherRemaining:0}),/round stopped/);assert.deepEqual((await readLedger(f.ledger)).counts,fixed.counts);await assert.rejects(fs.stat(path.join(f.ledger,'attempt-20.json')),{code:'ENOENT'});
+  await assert.rejects(fakeCase(path.join(f.newRoot,'real','counter'),COUNTER,{...f.options,sample:'counter',otherRemaining:0}),/round stopped/);assert.deepEqual((await readLedger(f.ledger)).counts,fixed.counts);await assert.rejects(fs.stat(path.join(f.ledger,'attempt-21.json')),{code:'ENOENT'});
 });
 
 test('R10 pending15 durable-write failure sends zero and stops the round without charging an unsaved reservation',async()=>{
@@ -170,5 +178,5 @@ test('R8 v3 summary tamper/loss, another ledger/session/root and a fresh job rej
   // Removing the persisted job cannot authorize a replacement job over charged receipts.
   const jobBytes=await fs.readFile(failedJob);await fs.unlink(failedJob);await assert.rejects(fakeCase(caseRoot,COUNTER,{...counted,continueExplicit:true}),/job identity/);assert.equal(attempted,0);await fs.writeFile(failedJob,jobBytes);
   await assert.rejects(fakeCase(caseRoot,COUNTER,options),/requires --continue/);
-  const done=await fakeCase(caseRoot,COUNTER,{...options,continueExplicit:true});assert.equal(done.job.status,'completed');assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,6);assert.equal(done.ownCalls,4);assert.deepEqual(done.counts,{total:10,fixed:10,counter:0});
+  const done=await fakeCase(caseRoot,COUNTER,{...options,continueExplicit:true});assert.equal(done.job.status,'completed');assert.equal(done.job.id,failed.job.id);assert.equal(done.job.callCount,7);assert.equal(done.ownCalls,5);assert.deepEqual(done.counts,{total:11,fixed:11,counter:0});
 });

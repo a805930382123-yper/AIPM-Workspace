@@ -1,3 +1,5 @@
+import type {InspectionDerivation} from './inspection-input.ts';
+import type {AnswerDerivation} from './question-input.ts';
 import { randomUUID } from 'node:crypto';
 import { appendFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -16,6 +18,7 @@ export type Confidence = 'high' | 'medium' | 'low';
 export type SourceLevel = 'A' | 'B' | 'C' | 'D';
 export type ReviewStatus = 'unreviewed' | 'reviewed';
 export type WikiRecord = {
+  inspectionDerivations?:InspectionDerivation[];answerDerivations?:AnswerDerivation[];
   id: string; title: string; type: WikiType; domain: 'fmcg'; category: string; created: string; updated: string;
   sources: string[]; tags: string[]; knowledge_status: KnowledgeStatus; confidence: Confidence;
   source_level: SourceLevel; review_status: ReviewStatus; aliases: string[]; revision: number; body: string;
@@ -212,7 +215,7 @@ export class WikiStore {
       const clean = await this.validateRecord(input);
       const aliases = [...clean.aliases];
       if (normalize(current.title) !== normalize(clean.title) && !aliases.some(alias => normalize(alias) === normalize(current.title))) aliases.push(current.title);
-      const updated: WikiRecord = { ...clean, id: current.id, domain: 'fmcg', created: current.created, updated: new Date().toISOString(), revision: current.revision + 1, aliases, ...(current.isDemo ? { isDemo: true } : {}) };
+      const updated: WikiRecord = { ...clean, ...(current.inspectionDerivations?{inspectionDerivations:structuredClone(current.inspectionDerivations)}:{}), id: current.id, domain: 'fmcg', created: current.created, updated: new Date().toISOString(), revision: current.revision + 1, aliases, ...(current.isDemo ? { isDemo: true } : {}) };
       await this.commitChange('update', updated, () => writeAtomic(recordPath(this.root, id), frontmatter(updated)));
       return updated;
     });

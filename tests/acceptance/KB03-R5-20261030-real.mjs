@@ -133,10 +133,10 @@ export async function fake(root){
   const rows=[];
   for(const name of ['fixed','counter']){
     const body=prepared?(await json(path.join(root,'inputs',name+'.json'))).body:name==='fixed'?'虚构工程样例：门店目标100家，在售20家。负责人未知。':COUNTER;
-    const otherRemaining=(await caseState(path.join(newRoot,'real',name==='fixed'?'counter':'fixed'))).remaining;
+    const otherRemaining=(await caseState(path.join(newRoot,'real',name==='fixed'?'counter':'fixed'),true)).remaining;
     const result=await fakeCase(path.join(newRoot,'real',name),body,{ledger,sample:name,otherRemaining,session:'fake-v4',freeze:'fake-v4',tool:TOOL});
     rows.push({sample:name,status:result.job?.status,callCount:result.ownCalls,wires:result.wires});
-    if(result.job?.status!=='completed'||![0,5].includes(result.ownCalls))throw Error('Fake N+4 failed: '+JSON.stringify(rows.at(-1)));
+    if(result.job?.status!=='completed'||![0,6].includes(result.ownCalls))throw Error('Fake N+5 failed: '+JSON.stringify(rows.at(-1)));
   }
   const {counts}=await readLedger(ledger);
   await durable(path.join(root,`fake-summary-${Date.now()}.json`),{root,preparedInputs:prepared,configReads:0,realRequests:0,policy:BUDGET_POLICY,counts,rows,qualityVerdict:'NOT_SCORED: fake engineering only'});

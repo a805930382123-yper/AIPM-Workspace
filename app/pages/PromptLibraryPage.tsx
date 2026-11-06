@@ -421,24 +421,15 @@ export function PromptLibraryPage({ onChanged, onOpenWiki }: { onChanged: () => 
   const linkById = new Map((detail?.wikiLinks ?? []).map(link => [link.id, link]));
   const wikiTitle = (id: string) => linkById.get(id)?.title ?? wikis.find(item => item.id === id)?.title ?? null;
 
-  if (workbench !== 'library') return <div className="page prompt-page">
-    <nav className="prompt-tabs" aria-label="Prompt 工作台功能"><button className="prompt-tab" onClick={() => setWorkbench('library')}>Library</button><button className={`prompt-tab ${workbench==='generator'?'active':''}`} onClick={() => setWorkbench('generator')}>Generator</button><button className={`prompt-tab ${workbench==='optimizer'?'active':''}`} onClick={() => setWorkbench('optimizer')}>Optimizer</button></nav>
-    <PromptAiWorkbench key={`${workbench}-${taskSeed}`} mode={workbench} initialTask={taskSeed} onLibrary={() => setWorkbench('library')} onSaved={refreshCommittedPrompt} categories={categories} />
-  </div>;
-
   return <div className="page prompt-page">
-    <div className="page-heading"><div><p className="eyebrow">可复用工作方法 · 手动 Library</p><h1>Prompt 工作台</h1><p className="subheading">把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。</p></div>
-      <div className="heading-actions"><button className="secondary-button" onClick={() => setWorkbench('generator')}>AI 生成 Prompt</button><button className="secondary-button" onClick={() => setWorkbench('optimizer')}>优化 Prompt</button><button className="primary-button" onClick={startCreate} disabled={!schema}><span>＋</span> 新建 Prompt</button></div></div>
+    <div className="page-heading"><div><h1>Prompt 工作台</h1><p className="subheading">把常用的业务提问方式整理成可复用的模板：填写变量、复制最终正文，模板本身保持不变。</p></div>
+      <div className="heading-actions"><button className="primary-button" onClick={() => { setWorkbench('library'); startCreate(); }} disabled={!schema}><span>＋</span> 手动新建</button></div></div>
     <nav className="prompt-tabs" aria-label="Prompt 工作台功能">
-      <span className="prompt-tab active">Library</span>
-      <button className="prompt-tab" onClick={() => setWorkbench('generator')}>Generator</button>
-      <button className="prompt-tab" onClick={() => setWorkbench('optimizer')}>Optimizer</button>
+      {([['library','模板库'],['generator','生成'],['optimizer','优化']] as const).map(([id,label]) => <button key={id} className={`prompt-tab ${workbench === id ? 'active' : ''}`} aria-current={workbench === id ? 'page' : undefined} onClick={() => setWorkbench(id)}>{label}</button>)}
     </nav>
+    {workbench !== 'library' ? <PromptAiWorkbench key={`${workbench}-${taskSeed}`} mode={workbench} initialTask={taskSeed} onLibrary={() => setWorkbench('library')} onSaved={refreshCommittedPrompt} categories={categories} /> : <>
     {error && <div className="prompt-message error-message" role="alert">{error}<button onClick={() => setError('')}>关闭</button></div>}
     {notice && <div className="prompt-message success-message" role="status">{notice}<button onClick={() => setNotice('')}>关闭</button></div>}
-    <div className="prompt-map panel"><div className="map-title"><div><h2>分类</h2><span>六个默认分类，点击筛选</span></div><span className="map-total">{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)} 条</span></div>
-      <div className="category-grid"><button className={`category-chip ${category === '' ? 'chosen' : ''}`} onClick={() => setCategory('')}>全部<span>{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}</span></button>{categories.map(item => <button className={`category-chip ${category === item.id ? 'chosen' : ''}`} key={item.id} title={item.help} onClick={() => setCategory(category === item.id ? '' : item.id)}>{item.label}<span>{categoryCounts[item.id] ?? 0}</span></button>)}</div>
-      {category && <p className="category-help">{categories.find(item => item.id === category)?.help}</p>}</div>
     <div className="prompt-workspace">
       <section className="panel prompt-list-panel">
         <div className="prompt-search">
@@ -447,6 +438,9 @@ export function PromptLibraryPage({ onChanged, onOpenWiki }: { onChanged: () => 
           <label className="prompt-favorite-filter"><input type="checkbox" checked={favoriteOnly} onChange={event => setFavoriteOnly(event.target.checked)} />只看收藏</label>
           <span className="prompt-count">{items.length} 条</span>
         </div>
+    <div className="prompt-map"><div className="map-title"><div><h2>分类</h2><span>六个默认分类，点击筛选</span></div><span className="map-total">{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)} 条</span></div>
+      <div className="category-grid"><button className={`category-chip ${category === '' ? 'chosen' : ''}`} onClick={() => setCategory('')}>全部<span>{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}</span></button>{categories.map(item => <button className={`category-chip ${category === item.id ? 'chosen' : ''}`} key={item.id} title={item.help} onClick={() => setCategory(category === item.id ? '' : item.id)}>{item.label}<span>{categoryCounts[item.id] ?? 0}</span></button>)}</div>
+      {category && <p className="category-help">{categories.find(item => item.id === category)?.help}</p>}</div>
         <div className="prompt-list-content">{loading ? <div className="list-empty">正在读取 Prompt Library…</div> : items.length ? items.map(item => <button key={item.id} className={`prompt-list-item ${selectedId === item.id ? 'selected' : ''}`} onClick={() => selectId(item.id)}><span className="prompt-list-mark">{item.favorite ? '★' : '✳'}</span><span className="prompt-list-copy"><b>{item.name}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{categoryLabel(item.category)} · 第 {item.version} 版</small><small>{item.tags.length ? `标签：${item.tags.join('、')}` : promptSourceLabels[item.source]}</small></span></button>) : <div className="list-empty"><span className="empty-symbol">✳</span><b>{query || tag || category || favoriteOnly ? '没有匹配的 Prompt' : 'Library 还是空的'}</b><span>{query || tag || category || favoriteOnly ? '换个关键词，或清空筛选条件。' : '创建第一条模板，把常用提问方式固定下来。'}</span><button className="secondary-button" onClick={startCreate}>新建 Prompt</button></div>}</div>
       </section>
       <section className="panel prompt-detail-panel">
@@ -461,6 +455,7 @@ export function PromptLibraryPage({ onChanged, onOpenWiki }: { onChanged: () => 
       </section>
     </div>
     {deleteTarget && <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !busy) setDeleteTarget(null); }}><section className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="prompt-delete-title"><div className="dialog-header"><div><p className="eyebrow">移到回收区</p><h2 id="prompt-delete-title">删除“{deleteTarget.name}”</h2><p>删除后不再出现在列表、搜索、统计和版本接口中；使用反馈随Prompt进入回收区，备份会保留。关联的 Wiki 与知识库不受影响。</p></div><button className="icon-button" aria-label="关闭" onClick={() => setDeleteTarget(null)}>×</button></div><div className="dialog-footer"><span>第 {deleteTarget.version} 版 · {deleteTarget.variables.length} 个变量</span><div><button className="secondary-button" onClick={() => setDeleteTarget(null)} disabled={busy}>取消</button><button className="danger-button" onClick={() => void confirmDelete()} disabled={busy}>{busy ? '正在删除…' : '确认删除'}</button></div></div></section></div>}
+    </>}
   </div>;
 }
 
@@ -530,13 +525,6 @@ function PromptDetail({ prompt, activeCategory, links, wikiTitle, versions, busy
     <h2>{prompt.name}</h2>{prompt.isDemo && <p className="demo-notice">【演示数据】虚构教学模板，请按真实业务修改。</p>}
     <div className="prompt-meta-grid"><Meta label="分类" value={activeCategory?.label ?? prompt.category} /><Meta label="版本" value={`第 ${prompt.version} 版`} /><Meta label="创建时间" value={dateText(prompt.createdAt)} /><Meta label="最近修改" value={dateText(prompt.updatedAt)} /></div>
     {prompt.tags.length > 0 && <div className="tag-row">{prompt.tags.map(value => <span key={value} className="tag">{value}</span>)}</div>}
-    {prompt.scenario && <section className="prompt-section"><h3>场景</h3><p>{prompt.scenario}</p></section>}
-    {prompt.inputRequirements && <section className="prompt-section"><h3>输入要求</h3><p>{prompt.inputRequirements}</p></section>}
-    {prompt.outputRequirements && <section className="prompt-section"><h3>输出要求</h3><p>{prompt.outputRequirements}</p></section>}
-    <section className="prompt-section"><h3>相关 Wiki · {prompt.relatedWikiIds.length}</h3>{(links.length ? links : prompt.relatedWikiIds.map(id => ({ id, title: wikiTitle(id), status: 'missing' as const }))).length
-      ? <div className="link-status-list">{(links.length ? links : prompt.relatedWikiIds.map(id => ({ id, title: wikiTitle(id), status: 'missing' as const }))).map(link => <div className="wiki-link-row" key={link.id}>{link.status === 'resolved' && link.title ? <><code>{link.title}</code><button className="text-button" onClick={() => onOpenWiki(link.id)}>打开 Wiki ›</button></> : <><code>{link.title ?? link.id}</code><span className="link-missing">关联已失效：这个 Wiki 已经不存在，Prompt 正文和其他功能不受影响</span></>}</div>)}</div>
-      : <p className="muted-copy">未关联 Wiki。</p>}</section>
-    {prompt.examples && <section className="prompt-section"><h3>示例</h3><pre className="prompt-body-view">{prompt.examples}</pre></section>}
     <section className="prompt-section"><div className="section-header"><h3>正文模板</h3><span>原样保存 · 不会因为填写变量而改变</span></div><pre className="prompt-body-view">{prompt.body}</pre></section>
     <section className="prompt-section prompt-fill"><div className="section-header"><h3>填写变量并复制</h3><span>{variables.length ? `${variables.length} 个变量` : '正文没有变量，可直接复制'}</span></div>
       {variables.length > 0 && <div className="prompt-fields">{variables.map(name => <label className="field" key={name}><span>{name}</span><input value={values[name] ?? ''} onChange={event => onValues({ ...values, [name]: event.target.value })} placeholder={`填写 ${name}`} />{!(values[name] ?? '').trim() && <em className="prompt-missing">未填写</em>}</label>)}</div>}
@@ -547,8 +535,17 @@ function PromptDetail({ prompt, activeCategory, links, wikiTitle, versions, busy
       {copy.status === 'done' && <p className="prompt-copy-ok" role="status">{copy.message}</p>}
       {copy.status === 'failed' && <div className="prompt-copy-failed" role="alert"><p>{copy.message}</p><textarea ref={copyRef} readOnly value={copy.text} aria-label="可手动选取的最终正文" /></div>}
     </section>
+    <details className="prompt-secondary"><summary>场景、要求与相关 Wiki{links.some(link=>link.status==='missing')?' · 存在失效关联':''}</summary>
+    {prompt.scenario && <section className="prompt-section"><h3>场景</h3><p>{prompt.scenario}</p></section>}
+    {prompt.inputRequirements && <section className="prompt-section"><h3>输入要求</h3><p>{prompt.inputRequirements}</p></section>}
+    {prompt.outputRequirements && <section className="prompt-section"><h3>输出要求</h3><p>{prompt.outputRequirements}</p></section>}
+    <section className="prompt-section"><h3>相关 Wiki · {prompt.relatedWikiIds.length}</h3>{(links.length ? links : prompt.relatedWikiIds.map(id => ({ id, title: wikiTitle(id), status: 'missing' as const }))).length
+      ? <div className="link-status-list">{(links.length ? links : prompt.relatedWikiIds.map(id => ({ id, title: wikiTitle(id), status: 'missing' as const }))).map(link => <div className="wiki-link-row" key={link.id}>{link.status === 'resolved' && link.title ? <><code>{link.title}</code><button className="text-button" onClick={() => onOpenWiki(link.id)}>打开 Wiki ›</button></> : <><code>{link.title ?? link.id}</code><span className="link-missing">关联已失效：这个 Wiki 已经不存在，Prompt 正文和其他功能不受影响</span></>}</div>)}</div>
+      : <p className="muted-copy">未关联 Wiki。</p>}</section>
+    {prompt.examples && <section className="prompt-section"><h3>示例</h3><pre className="prompt-body-view">{prompt.examples}</pre></section>}
+    </details>
     <PromptFeedback key={`${prompt.id}-${prompt.version}`} promptId={prompt.id} promptName={prompt.name} promptVersion={prompt.version} />
-    <section className="prompt-section"><div className="section-header"><h3>版本历史 · {versions.length}</h3><span>每次有效保存都会追加完整快照</span></div>
-      <div className="prompt-version-list">{versions.length ? [...versions].reverse().map(item => <button key={item.version} className="prompt-version-row" onClick={() => onOpenVersion(item.version)}><b>第 {item.version} 版</b><span>{dateText(item.savedAt)}</span><small>{promptChangeSourceLabels[item.changeSource]} · {item.snapshot.body.length} 字符</small></button>) : <span className="muted-copy">正在读取版本…</span>}</div></section>
+    <details className="prompt-secondary prompt-section"><summary><h3>版本历史 · {versions.length}</h3></summary><p>每次有效保存都会追加完整快照。</p>
+      <div className="prompt-version-list">{versions.length ? [...versions].reverse().map(item => <button key={item.version} className="prompt-version-row" onClick={() => onOpenVersion(item.version)}><b>第 {item.version} 版</b><span>{dateText(item.savedAt)}</span><small>{promptChangeSourceLabels[item.changeSource]} · {item.snapshot.body.length} 字符</small></button>) : <span className="muted-copy">正在读取版本…</span>}</div></details>
   </article>;
 }

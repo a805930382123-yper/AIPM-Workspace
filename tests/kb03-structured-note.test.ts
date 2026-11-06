@@ -10,7 +10,9 @@ import { JSDOM } from 'jsdom';
 import { parseStructuredNote, renderStructuredNote, validStructuredNote, STRUCTURED_NOTE_LIMITS as L } from '../services/wiki/structured-note.ts';
 import { candidateContent, assertHumanReviewed, reviewContentDigest } from '../services/wiki/human-review.ts';
 import { isExtractionDraft } from '../services/storage/record-validators.ts';
-import { storageFixture } from './support/kb02-storage-fixture.ts';
+import { legacyDraftFixture, storageFixture } from './support/kb02-storage-fixture.ts';
+import { maintenanceDigest } from '../services/wiki/maintenance.ts';
+import { reviewSelectedChanges } from './support/compat01-draft-review.ts';
 import { storageHttp } from './support/kb02-storage-http.ts';
 import { approveDraft } from './support/human-review.ts';
 import { WikiStore } from '../services/wiki/store.ts';
@@ -19,6 +21,34 @@ import { KnowledgeWorkflowStore } from '../services/wiki/knowledge-workflows.ts'
 
 const fixture = JSON.parse(await readFile('tests/fixtures/kb03-structured-note.json', 'utf8'));
 const facts = new Set(['fact-1']);
+
+test('KB03 current maintenance digest binds the accepted candidate and invalidates approval on edit', async () => {
+  const fixture = await storageFixture();
+  try {
+    fixture.succeed();
+    const job = await fixture.wait((await fixture.start()).job.id);
+    assert.equal(job.status, 'completed');
+    const draft = (await fixture.drafts.get(job.draftId!))!;
+    const reviewed = await reviewSelectedChanges(fixture.drafts, draft, [draft.pages[0].pageId]);
+    const change = reviewed.maintenance!.changes[0];
+    const digest = fixture.drafts.contentDigest(reviewed);
+    assert.equal(digest, maintenanceDigest(reviewed));
+    assert.notEqual(digest, reviewContentDigest({ draftId: reviewed.id, rawId: reviewed.rawId, rawSha256: reviewed.rawSha256 }, candidateContent(reviewed), reviewed.humanReview!));
+    assert.equal(await fixture.drafts.assertReviewed(reviewed, fixture.raw.body), digest);
+    const edited = await fixture.drafts.reviewChange(reviewed.id, {
+      baseRevision: reviewed.revision,
+      changeId: change.changeId,
+      body: change.candidate.body + '\n\n人工备注：区分目标与实际。',
+    });
+    assert.equal(edited.maintenance!.changes[0].approval, undefined);
+    assert.notEqual(fixture.drafts.contentDigest(edited), digest);
+    await assert.rejects(fixture.drafts.assertReviewed(edited, fixture.raw.body), { code: 'CHANGE_REVIEW_REQUIRED' });
+    assert.equal((await fixture.rawStore.get(fixture.raw.id))?.bodySha256, fixture.raw.bodySha256);
+    assert.equal(fixture.requests.length, 3);
+  } finally {
+    await fixture.clean();
+  }
+});
 test('KB03 all five blocks and four roles parse without changing original values; deterministic output', () => {
   const note = parseStructuredNote(fixture, facts);
   assert.deepEqual(note, fixture); assert.notEqual(note, fixture);
@@ -81,7 +111,7 @@ test('KB03 Markdown hostile text remains text in the installed reader, no inject
 });
 
 test('KB03 old draft compatible; new field strict read/preserve, digest binding and actual HTTP/service formal gates', async () => {
-  const f=await storageFixture(); f.succeed(); const job=await f.wait((await f.start()).job.id);
+  const f=await legacyDraftFixture(); f.succeed(); const job=await f.wait((await f.start()).job.id);
   const wiki=new WikiStore(f.root,f.rawStore);await wiki.initialize();
   const commits=new WikiCommitService({root:f.root,wikiStore:wiki,drafts:f.drafts,rawStates:f.rawStates,rawStore:f.rawStore});await commits.initialize();
   const workflows=new KnowledgeWorkflowStore(f.root,wiki,f.rawStore);await workflows.initialize();
@@ -111,7 +141,7 @@ test('KB03 old draft compatible; new field strict read/preserve, digest binding 
     await assert.rejects(f.drafts.prepareReviewedCommit(old.id,old.revision,oldDigest,f.raw.body,randomUUID(),async()=>assert.fail('must not prepare')),{code:'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE'});
     const formalHttp=await http.request(`/api/drafts/${old.id}/confirm`,commitInput);assert.equal(formalHttp.status,409);assert.equal(formalHttp.json.error.message,'请先明确核对深度笔记、引用、覆盖与待确认问题。');
     await assert.rejects(workflows.createUpdate({draftId:old.id,pageId:old.pages[0].pageId,baseRevision:old.revision,targetWikiId:randomUUID(),draft:next,raw:f.raw,target:{} as any,provider:f.provider}),{code:'STRUCTURED_NOTE_CONFIRM_UNAVAILABLE'});
-    assert.equal((await wiki.allRecords()).length,0);assert.equal(f.requests.length,2);
+    assert.equal((await wiki.allRecords()).length,0);assert.equal(f.requests.length,3);
     // A harmless old-path edit preserves the note and invalidates the former approvals.
     const bundle=await import('../services/llm/rules.ts').then(m=>m.loadExtractionRules('rules'));
     const edited=await f.drafts.patch(old.id,{baseRevision:old.revision,pages:[{pageId:old.pages[0].pageId,title:'人工修改标题'}]},{body:f.raw.body,rules:{types:['metric'],categories:['metric'],...bundle.fmcg.enums} as any});

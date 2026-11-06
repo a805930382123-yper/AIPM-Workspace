@@ -6,7 +6,7 @@ export const STRUCTURED_NOTE_LIMITS = {
 } as const;
 export const NOTE_ROLES = ['source_supported', 'reorganized', 'supplementary', 'needs_verification'] as const;
 export type NoteRole = typeof NOTE_ROLES[number];
-export type NoteAttribution = { role: NoteRole; factIds: string[]; reason?: string };
+export type NoteAttribution = { role: NoteRole; factIds: string[]; reason?: string; sourceBoundary?:{rawId:string;start:number;end:number;category:'ambiguous'|'source_note'|'question'} };
 export type NoteText = NoteAttribution & { text: string };
 export type NoteBlock =
   | (NoteText & { type: 'paragraph' })
@@ -50,7 +50,7 @@ export function validStructuredNote(value: unknown, factIds: ReadonlySet<string>
     if (v.role === 'supplementary' && v.factIds.length) return false;
     return v.role === 'needs_verification' ? text(v.reason, lim.reason) : v.reason === undefined;
   };
-  const leaf = (v: unknown, fields: string[], prose: string[]) => object(v) && keys(v, [...fields, 'role', 'factIds'], ['reason']) && attribution(v) && prose.every(k => text(v[k], lim.text));
+  const leaf = (v: unknown, fields: string[], prose: string[]) => object(v) && keys(v, [...fields, 'role', 'factIds'], ['reason','sourceBoundary']) && (v.sourceBoundary===undefined||(object(v.sourceBoundary)&&keys(v.sourceBoundary,['rawId','start','end','category'])&&typeof v.sourceBoundary.rawId==='string'&&Number.isInteger(v.sourceBoundary.start)&&Number.isInteger(v.sourceBoundary.end)&&Number(v.sourceBoundary.start)>=0&&Number(v.sourceBoundary.end)>Number(v.sourceBoundary.start)&&['ambiguous','source_note','question'].includes(String(v.sourceBoundary.category)))) && attribution(v) && prose.every(k => text(v[k], lim.text));
   if (!object(value) || !keys(value, ['version', 'orientation', 'sections']) || value.version !== 1 || !text(value.orientation, lim.text) || !array(value.sections, lim.sections)) return false;
   const sectionIds = new Set<string>();
   for (const section of value.sections) {

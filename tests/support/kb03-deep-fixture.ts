@@ -1,4 +1,4 @@
-import { storageFixture } from './kb02-storage-fixture.ts';
+import { legacyDraftFixture as storageFixture } from './kb02-storage-fixture.ts';
 import { storageHttp } from './kb02-storage-http.ts';
 import type { LlmCompletionRequest } from '../../services/llm/provider.ts';
 
@@ -25,7 +25,7 @@ export async function deepFixture(body?:string) {
   let mutate: ((stage:string,value:any,payload:any)=>unknown)|undefined;
   let hook: ((stage:string,request:LlmCompletionRequest)=>Promise<void>)|undefined;
   f.provider.complete=async request=>{
-    requests.push(request);const deep=request.system.startsWith('KB03 '),stage=deep?JSON.parse(request.user).stage:request.user.includes('请对下列全部已验证事实规划知识页')?'planning':'extracting';
+    requests.push(request);const deep=request.system.startsWith('KB03 '),stage=deep?JSON.parse(request.user).stage:request.system.startsWith('知识维护提议')?'maintenance':request.user.includes('请对下列全部已验证事实规划知识页')?'planning':'extracting';
     await hook?.(stage,request);
     if(!deep){
       const response=await original(request);

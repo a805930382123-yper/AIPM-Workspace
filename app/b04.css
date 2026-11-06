@@ -63,3 +63,86 @@
 .draft-evidence-pos { color: #97a2b0; font-size: 10px; white-space: nowrap; }
 .conflict-warn { border-color: #ecdcc4; }
 @media (max-width: 1050px) { .draft-columns { grid-template-columns: 1fr; } }
+/* UI03: 审核、工作流及设置 */
+.draft-page,.workflow-page{color:var(--ink)}
+.draft-page .page-heading,.workflow-page .page-heading{align-items:flex-start;flex-wrap:wrap}
+.draft-page .heading-actions,.workflow-page .action-group{display:flex;flex-wrap:wrap;gap:8px}
+.review-overview{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin:0 0 16px;padding:14px 18px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#34435e;font-size:14px;line-height:1.6}
+.review-overview b{color:var(--ink)}.review-overview span:last-child{margin-left:auto;font-size:12px;color:var(--muted)}
+.draft-page .draft-card-body,.workflow-page .draft-card-body{margin-bottom:16px;padding:22px 24px;overflow-wrap:anywhere}
+.draft-page .draft-card-body h2,.workflow-page .draft-card-body h2{margin:0 0 8px;font-size:19px;color:var(--ink)}
+.draft-page .draft-card-body h3,.workflow-page .draft-card-body h3{font-size:16px;color:var(--ink)}
+.draft-page .draft-card-body p,.workflow-page .draft-card-body p,.draft-page .draft-source-body p{font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+.draft-page .field,.workflow-page .field{font-size:13px;color:#34435e}
+.draft-page .field input,.draft-page .field select,.draft-page .field textarea,.workflow-page .field input,.workflow-page .field select,.workflow-page .field textarea,.draft-page .draft-title,.draft-page .draft-line textarea{font-size:14px;border-radius:8px}
+.draft-page .draft-card .field input,.draft-page .draft-card .field select{font-size:14px}
+.draft-page .draft-block h4,.draft-page .draft-evidence h4{font-size:14px;color:var(--ink)}
+.draft-page .draft-select,.draft-page .draft-evidence-row,.workflow-page .draft-evidence-row{font-size:13px;line-height:1.6}
+.draft-page .draft-evidence-row,.workflow-page .draft-evidence-row{align-items:flex-start;flex-wrap:wrap;overflow-wrap:anywhere}
+.draft-page .draft-evidence-row>div,.workflow-page .draft-evidence-row>div{min-width:0;flex:1 1 300px;overflow-wrap:anywhere}
+.draft-page .draft-evidence-quote{white-space:normal;overflow-wrap:anywhere}
+.draft-page .draft-evidence-pos,.draft-page .draft-evidence-ref,.draft-page .extract-note,.workflow-page small{font-size:12px;color:var(--muted)}
+.draft-page .draft-raw-preview{font-size:14px;line-height:1.75;overflow-wrap:anywhere;border-radius:8px}
+.draft-page .draft-card.selected{border-left:1px solid #c8bfff;background:#faf9ff}
+.draft-page .notice-warn,.workflow-page .notice-warn,.settings-page .notice-warn,.draft-page .form-error,.workflow-page .form-error,.settings-page .form-error{font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.settings-page .settings-panel{max-width:1100px;margin-bottom:16px}
+.settings-page .settings-body{padding:24px}
+.settings-page .settings-body>p,.settings-page .settings-help{font-size:14px;line-height:1.7;color:#34435e}
+.settings-page .settings-grid .meta span,.settings-page .field-help,.settings-page .config-badge{font-size:12px;color:var(--muted)}
+.settings-page .settings-grid .meta b{font-size:14px;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
+.settings-page .settings-config-form{gap:14px}
+.settings-page .settings-config-form label{font-size:13px;color:#34435e}
+.settings-page .settings-config-form input{min-height:40px;font-size:14px;border-radius:8px}
+.settings-page .settings-config-form input:focus-visible{outline:3px solid #a99bff;outline-offset:2px}
+.settings-page .settings-help h3{font-size:16px;color:var(--ink)}
+.settings-page .settings-help pre{max-width:100%;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;border-radius:8px}
+@media(max-width:800px){.draft-page .page-heading,.workflow-page .page-heading{align-items:flex-start}.draft-page .heading-actions,.workflow-page .action-group{width:100%}.draft-page .draft-card-head{flex-wrap:wrap}.draft-page .draft-title{min-width:0;flex:1 1 180px}.draft-page .draft-card-body,.workflow-page .draft-card-body,.settings-page .settings-body{padding:18px}.review-overview span:last-child{margin-left:0}}
+.workflow-page .workflow-sources,.workflow-page .workflow-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:12px 0 24px}
+.workflow-page .workflow-sources .field,.workflow-page .workflow-sections .field{margin:0}
+.workflow-page .workflow-sources textarea{min-height:130px}
+.workflow-page .workflow-sections textarea{min-height:100px}
+.workflow-page .workflow-sources .field:only-child,.workflow-page .workflow-sections .field:last-child{grid-column:1/-1}
+@media(max-width:800px){.workflow-page .workflow-sources,.workflow-page .workflow-sections{grid-template-columns:minmax(0,1fr)}.workflow-page .workflow-sections .field:last-child{grid-column:auto}}
+.draft-page .note-approval .draft-line{display:flex;flex-direction:row;align-items:flex-start;gap:10px;font-size:14px;line-height:1.6}
+.draft-page .note-approval .draft-line input[type=checkbox]{flex:0 0 auto;width:auto;height:auto;margin:4px 0 0;accent-color:var(--accent)}
+.draft-page .review-technical{margin-top:8px;font-size:12px;color:var(--muted)}.draft-page .review-technical summary{cursor:pointer}.draft-page .review-technical p{overflow-wrap:anywhere}
+.settings-page .settings-help summary,.settings-page .settings-backup summary{cursor:pointer;font-size:16px;font-weight:650;color:var(--ink)}
+.settings-page .settings-backup{margin-top:24px}.settings-page .settings-backup pre{max-width:100%;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.settings-page .settings-danger{color:#a0473c;border-color:#e3bcb6}.settings-page .settings-danger:hover:not(:disabled){color:#843f37;background:#fff3f1}
+.workflow-page .review-technical{margin-top:8px;color:var(--muted);font-size:12px}.workflow-page .review-technical summary{cursor:pointer}.workflow-page .review-technical p{overflow-wrap:anywhere}
+
+/* LW01 action list uses the existing draft surface. */
+.maintenance-change-table { width: 100%; border-collapse: collapse; text-align: left; }
+.maintenance-change-table th, .maintenance-change-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
+.maintenance-change-table th { color: var(--text-secondary); font-weight: 600; }
+
+.raw-outcome { display: grid; gap: 16px; }
+.raw-outcome .page-heading { margin-bottom: 0; }
+.raw-outcome h2, .raw-outcome h3 { margin: 0 0 8px; }
+.outcome-cards { display: grid; gap: 12px; }
+.outcome-card-heading { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 12px; }
+.outcome-card-heading h3 { margin-top: 6px; }
+.outcome-card .notice-warn, .outcome-confirm .notice-warn { margin: 8px 0; }
+.raw-outcome details { margin: 10px 0; }
+.raw-outcome details > summary { cursor: pointer; }
+.raw-outcome blockquote { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.outcome-edit { min-width: 0; border: 1px solid #e2e9f1; border-radius: 8px; margin: 10px 0; }
+.outcome-edit .heading-actions { margin-top: 10px; }
+.outcome-confirm { border-color: #d8d1fb; }
+.outcome-cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.outcome-cards > div:first-child { grid-column: 1 / -1; }
+.outcome-card { min-width: 0; }
+.outcome-excerpt { white-space: normal; overflow-wrap: anywhere; }
+.outcome-confirm { position: sticky; top: 8px; z-index: 2; }
+.outcome-confirm p { margin: 4px 0; }
+.outcome-confirm .heading-actions { margin-top: 8px; }
+@media (max-width: 800px) { .outcome-cards { grid-template-columns: minmax(0,1fr); } }
+.raw-outcome { gap: 12px; }
+.outcome-cards { gap: 8px; }
+.outcome-card { align-self: start; padding: 10px 14px; }
+.outcome-card-heading { align-items: center; }
+.outcome-card-heading > div { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.outcome-card-heading h3 { margin: 0; }
+.outcome-card .outcome-excerpt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 6px 0; }
+.outcome-card details { margin: 4px 0; }
+.outcome-cards > div:first-child p { margin: 4px 0; }

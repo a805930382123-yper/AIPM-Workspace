@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-import type { DraftView, Raw } from '../app/api';
+import type { RawDraftView as DraftView, Raw } from '../app/api';
 
 const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'http://localhost/', pretendToBeVisual: true });
 const { window } = dom;
@@ -237,35 +237,40 @@ test('B04 设置页：未配置时给出缺失项与手动链路提示', async (
 
 test('B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口', async () => {
   const stub = stubFetch();
-  const mounted = await mount(<RawPage {...rawPageProps()} />);
+  let startedJobId: string | undefined;
+  const mounted = await mount(<RawPage {...rawPageProps({ onJobStarted: (job: { jobId: string }) => { startedJobId = job.jobId; } })} />);
   try {
     assert.match(mounted.container.innerHTML, /未处理/);
-    assert.ok(byText('AI 整理知识', mounted.container));
-    await click(required(byText('AI 整理知识', mounted.container), 'AI 整理按钮'));
+    await click(required(byText('整理到知识库', mounted.container), 'Raw 整理入口'));
     const extract = stub.calls.find(call => call.url.endsWith('/extract'));
     assert.ok(extract, '必须调用 POST /api/raw/:id/extract');
     assert.equal(extract?.method, 'POST');
+    assert.deepEqual(JSON.parse(extract.body!), { mode: 'deep' });
+    assert.equal(startedJobId, 'job-1');
   } finally { await mounted.unmount(); }
 
   const stopped = await mount(<RawPage {...rawPageProps({
     processing: { [makeRaw().id]: { rawId: makeRaw().id, status: 'processing', updatedAt: '', jobId: 'job-1' } },
-    job: { jobId: 'job-1', rawId: makeRaw().id, status: 'running', stage: 'extracting', progress: { chunksTotal: 3, chunksDone: 1, pagesFound: 2 }, draftId: null, error: null, provider: { name: 'openai-compatible', model: 'fake-model' }, callCount: 1, startedAt: '', finishedAt: null, cancelRequested: false },
+    job: { jobId: 'job-1', rawId: makeRaw().id, status: 'running', stage: 'extracting', progress: { chunksTotal: 3, chunksDone: 1, pagesFound: 2 }, checkpoint: { stage: 'extracting', validatedChunks: 1, totalChunks: 3, attempts: 1, reusedChunks: 0, resumable: true }, draftId: null, error: null, provider: { name: 'openai-compatible', model: 'fake-model' }, callCount: 1, startedAt: '', finishedAt: null, cancelRequested: false },
   })} />);
   try {
     assert.match(stopped.container.innerHTML, /AI 处理中/);
     assert.match(stopped.container.innerHTML, /提取精简事实/);
-    assert.match(stopped.container.innerHTML, /已验证 1\/3 段/);
+    assert.match(stopped.container.innerHTML, /已验证 1\/3 提取段/);
     assert.ok(byText('取消整理', stopped.container));
     await click(required(byText('取消整理', stopped.container), '取消按钮'));
     assert.ok(stub.calls.some(call => call.url.endsWith('/cancel')), '取消必须调用 cancel 接口');
   } finally { await stopped.unmount(); }
 
+  let openedDraftId: string | undefined;
   const pending = await mount(<RawPage {...rawPageProps({
+    onOpenDraft: (id: string) => { openedDraftId = id; },
     processing: { [makeRaw().id]: { rawId: makeRaw().id, status: 'pending_confirmation', updatedAt: '', jobId: 'job-1', draftId: 'draft-1' } },
   })} />);
   try {
     assert.match(pending.container.innerHTML, /待人工确认/);
     await click(required(byText('继续审核', pending.container), '继续审核按钮'));
+    assert.equal(openedDraftId, 'draft-1');
   } finally { await pending.unmount(); }
 
   const failed = await mount(<RawPage {...rawPageProps({

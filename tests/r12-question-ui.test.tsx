@@ -18,7 +18,7 @@ test('R12 React explicit checkbox reaches production HTTP, invalidates review an
   const mount=async()=>{root=createRoot(w.document.getElementById('root')!);await act(async()=>root!.render(createElement(DraftReviewPage,{draftId:f.draft.id,onBack:()=>{},onOpenRaw:()=>{},onCommitted:async()=>{}})));await tick(()=>!!w.document.querySelector(`input[aria-label="同时列入待确认问题 ${questionUnitIds[0]}"]`),'mark control');};
   await mount();const checkbox=()=>w.document.querySelector<HTMLInputElement>(`input[aria-label="同时列入待确认问题 ${questionUnitIds[0]}"]`)!;
   assert.equal(checkbox().checked,false);await act(async()=>checkbox().click());assert.equal(checkbox().disabled,true);releaseMark!();await tick(()=>checkbox().checked&&!checkbox().disabled,'mark saved');
-  assert(w.document.body.textContent!.includes('已审 0/14 页'));assert([...w.document.querySelectorAll('textarea')].some(t=>t.value===markedText));
+  assert(![...w.document.querySelectorAll('button')].some(b=>b.textContent==='确认本页主题与归属'));assert([...w.document.querySelectorAll('textarea')].some(t=>t.value===markedText));
   const d=(await f.drafts.get(f.draft.id))!;assert.deepEqual(d.humanQuestionUnitIds,[questionUnitIds[0]]);assert.equal(d.humanReview!.approvals.length,0);
   await act(async()=>root!.unmount());root=undefined;await mount();assert.equal(checkbox().checked,true);
   const title=w.document.querySelector<HTMLInputElement>('.draft-title')!;await act(async()=>{Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype,'value')!.set!.call(title,'人工新标题');title.dispatchEvent(new w.Event('input',{bubbles:true}));});await tick(()=>checkbox().disabled,'dirty disables marker');

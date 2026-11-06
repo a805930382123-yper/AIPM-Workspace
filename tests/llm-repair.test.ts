@@ -1,5 +1,6 @@
 import os from 'node:os';
-import {addLegacyReviewPrecondition} from './support/human-review.ts';
+import { approveDraft } from './support/human-review.ts';
+import { historicalB04Draft, reviewSelectedChanges } from './support/compat01-draft-review.ts';
 // B04 返修专项测试（F04-01…F04-11 的服务端复现）。每个场景复刻返修卡/独立验收的失败断言：
 // 修复前必须失败，修复后必须通过。Provider 是真实 HTTP fake（tests/support/fake-llm.ts），
 // 经真实 OpenAI-compatible 适配器调用，代理/失败注入都走产品代码路径。
@@ -39,7 +40,6 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
-  addLegacyReviewPrecondition(commits,drafts,rawStore);
   const fake = await startFakeProvider(request => {
     const chunk = chunkFromPrompt(request.user);
     return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }])) };
@@ -156,7 +156,7 @@ test('F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会�
   } finally { await context.clean(); }
 });
 
-test('F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断', async () => {
+test('F04-07 旧草稿合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断', async () => {
   const context = await setup(fake => {
     fake.setHandler(request => {
       const chunk = chunkFromPrompt(request.user);
@@ -185,7 +185,7 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
     while (body.length < 8200) body += filler;
     body += '\n事实B：库存周转天数反映资金占用。事实A：动销率需要与库存一起看。门店补货：安全库存与补货周期决定缺货风险。尚未确认：安全库存是否按地区区分？\r\n';
     const raw = await context.createRaw(body, '合并事实资料');
-    const draft = await context.draftFor(raw.id);
+    const draft = await historicalB04Draft(context.dataRoot, await context.draftFor(raw.id));
     assert.equal(draft.pages.length, 2);
     assert.ok(draft.pages.every(page => page.ai_organized.length === 0 && page.ai_inferences.length === 0), 'KB02 新草稿不自动生成整理/推断');
     const [a, b] = draft.pages;
@@ -215,6 +215,7 @@ test('F04-07 合并保留所有不同事实与证据，重复事实合并证据�
     assert.ok(page.open_questions.length >= 2, '待确认问题必须保留两侧内容');
     assert.equal(page.source_facts.some(fact => fact.text.includes('推断')), false, '事实不能被替换成推断');
     // 合并后的草稿仍可编辑并确认，证据在提交前再次校验通过。
+    await approveDraft(context.drafts, merged.id, raw.body);
     const outcome = await context.confirm(merged.id, [page.pageId], 'merge-key');
     assert.equal(outcome.manifest.status, 'completed');
     const written = await context.wikiStore.get(outcome.manifest.snapshot.pageRecords[0].id);
@@ -293,6 +294,7 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
       const commitDir = path.join(blocking.dataRoot, 'state', 'wiki-commits');
       await rm(commitDir, { recursive: true, force: true });
       await writeFile(commitDir, 'not a directory', 'utf8');
+      await reviewSelectedChanges(blocking.drafts, draft, [draft.pages[0].pageId]);
       const error = await (async () => {
         try { await blocking.confirm(draft.id, [draft.pages[0].pageId], 'manifest-preflight'); }
         catch (problem) { return problem as { code: string; status: number; message: string; details?: Record<string, unknown> }; }
@@ -318,6 +320,7 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
     const indexFile = path.join(context.dataRoot, 'knowledge', 'wiki', 'index.md');
     await rm(indexFile, { force: true });
     await mkdir(indexFile);
+    await reviewSelectedChanges(context.drafts, draft, [draft.pages[0].pageId]);
     const firstError = await (async () => {
       try { await context.confirm(draft.id, [draft.pages[0].pageId], 'manifest-failure'); }
       catch (problem) { return problem as { code: string; status: number; details?: Record<string, unknown> }; }
@@ -379,7 +382,7 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
   } finally { await context.clean(); }
 });
 
-test('F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本', async () => {
+test('F04-05 旧草稿复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本', async () => {
   let round = 0;
   const context = await setup(fake => {
     // 每次提取给出不同标题，避免第二次提取与第一次的正式页面重名（那是另一条正确规则）。
@@ -392,7 +395,8 @@ test('F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本
   try {
     // 第一次确认创建 Source + 1 页。
     const raw = await context.createRaw('渠道动销资料正文一。', '复用来源');
-    const first = await context.draftFor(raw.id);
+    const first = await historicalB04Draft(context.dataRoot, await context.draftFor(raw.id));
+    await approveDraft(context.drafts, first.id, raw.body);
     const firstPage = first.pages[0];
     const firstOutcome = await context.confirm(first.id, [firstPage.pageId], 'first-key');
     const sourceId = firstOutcome.manifest.snapshot.sourceRecord?.id as string;
@@ -405,7 +409,8 @@ test('F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本
     const renamedHash = sha(await readFile(renamedFile));
 
     // 同一 Raw 再次提取（草稿 Source 标题与既有标题不同），只选一页确认。
-    const second = await context.draftFor(raw.id);
+    const second = await historicalB04Draft(context.dataRoot, await context.draftFor(raw.id));
+    await approveDraft(context.drafts, second.id, raw.body);
     assert.notEqual(second.source.title, '既有 Source 标题');
     assert.equal(second.pages.length, 1);
     const secondPage = second.pages[0];
@@ -443,17 +448,12 @@ test('F04-05 新 Source 只链接本次创建的选中页，未选建议按文�
     assert.equal(draft.pages.length, 2);
     const chosen = draft.pages.find(page => page.title === '本次创建的指标') as typeof draft.pages[number];
     const skipped = draft.pages.find(page => page.title === '本次不创建的概念') as typeof draft.pages[number];
-    // 人工改标题 + 部分选择，然后保存（模拟浏览器 U03/U11 的操作）。
-    const updated = await context.drafts.patch(draft.id, {
-      baseRevision: draft.revision,
-      pages: [
-        { pageId: chosen.pageId, title: '人工改名后的指标', selected: true },
-        { pageId: skipped.pageId, selected: false },
-      ],
-    }, { body: raw.body, rules: await context.draftRules() });
-    const selectedTitles = updated.pages.filter(page => page.selected).map(page => page.title);
-    assert.deepEqual(selectedTitles, ['人工改名后的指标']);
-    const outcome = await context.confirm(updated.id, selectedTitles.map(() => chosen.pageId), 'selected-key');
+    const change = draft.maintenance!.changes.find(item => draft.pages[item.pageIndex].pageId === chosen.pageId)!;
+    const updated = await context.drafts.reviewChange(draft.id, { baseRevision: draft.revision, changeId: change.changeId, title: '人工改名后的指标' });
+    const reviewed = await reviewSelectedChanges(context.drafts, updated, [chosen.pageId]);
+    assert.deepEqual(reviewed.maintenance!.changes.filter(item => item.decision === 'accept').map(item => item.candidate.title), ['人工改名后的指标']);
+    assert.equal(reviewed.maintenance!.changes.find(item => draft.pages[item.pageIndex].pageId === skipped.pageId)?.decision, 'defer');
+    const outcome = await context.confirm(reviewed.id, [chosen.pageId], 'selected-key');
     const sourceId = outcome.manifest.snapshot.sourceRecord?.id as string;
     const source = await context.wikiStore.get(sourceId);
     assert.ok(source);
@@ -497,6 +497,7 @@ test('F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，
     assert.match(draft.source.body, /登记日期：2026-09-01/);
     assert.match(draft.source.body, /登记链接：https:\/\/example\.com\/report-2026/);
     assert.match(draft.source.body, /Raw：带完整元数据的报告/);
+    await reviewSelectedChanges(context.drafts, draft, [draft.pages[0].pageId]);
     const outcome = await context.confirm(draft.id, [draft.pages[0].pageId], 'metadata-key');
     const source = await context.wikiStore.get(outcome.manifest.snapshot.sourceRecord?.id as string);
     assert.ok(source);
@@ -515,6 +516,7 @@ test('F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，
       baseRevision: bareDraft.revision, source: { body: '## 人工正文\n\n只写我自己的内容。\n' },
     }, { body: bare.body, rules: await context.draftRules() });
     assert.equal(edited.source.bodyEditedByUser, true);
+    await reviewSelectedChanges(context.drafts, edited, [edited.pages[0].pageId]);
     const editedOutcome = await context.confirm(edited.id, [edited.pages[0].pageId], 'edited-key');
     const editedSource = await context.wikiStore.get(editedOutcome.manifest.snapshot.sourceRecord?.id as string);
     assert.match(editedSource?.body ?? '', /只写我自己的内容/);

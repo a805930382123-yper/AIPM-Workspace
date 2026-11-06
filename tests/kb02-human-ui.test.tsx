@@ -16,24 +16,103 @@ async function tick(check:()=>boolean,label:string){const deadline=performance.n
 async function click(button:HTMLButtonElement|undefined){assert(button);assert(!button.disabled);await act(async()=>{button.click();await new Promise(r=>setTimeout(r,0));});}
 async function change(element:HTMLInputElement|HTMLSelectElement,value:string){await act(async()=>{const proto=element instanceof w.HTMLSelectElement?w.HTMLSelectElement.prototype:w.HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value')!.set!.call(element,value);element.dispatchEvent(new w.Event('change',{bubbles:true}));if(element instanceof w.HTMLInputElement)element.dispatchEvent(new w.Event('input',{bubbles:true}));});}
 
-test('HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits',async()=>{
- const f=await storageFixture();f.succeed();const original=f.provider.complete;f.provider.complete=async request=>{const response=await original(request);if(request.user.includes('请对下列全部已验证事实规划知识页')){const p=JSON.parse(response.text),page=p.pages[0];p.pages=[{...page,title:'目标门店',factUnitIds:page.factUnitIds.slice(0,1)},{...page,title:'铺货率',factUnitIds:page.factUnitIds.slice(1)}];return {...response,text:JSON.stringify(p)};}return response;};
- const job=await f.wait((await f.start()).job.id),h=await storageHttp(f,f.runner,{knowledge:true});let root:ReturnType<typeof createRoot>|undefined,committed=0;
- globalThis.fetch=(url,init)=>nativeFetch(String(url).startsWith('/api/')?h.base+url:url,init);
- try{const mount=async()=>{root=createRoot(w.document.getElementById('root')!);await act(async()=>root!.render(createElement(DraftReviewPage,{draftId:job.draftId!,onBack:()=>{},onOpenRaw:()=>{},onCommitted:async()=>{committed++;}})));await tick(()=>buttons('确认本页主题与归属').length===2,'two page review');};
-  await mount();assert(w.document.body.textContent!.includes(f.raw.body));assert([...w.document.querySelectorAll('.draft-line textarea')].some(e=>(e as HTMLTextAreaElement).readOnly));
-  const confirm=()=>[...w.document.querySelectorAll('button')].find(b=>b.textContent?.startsWith('确认写入 Wiki'))!;assert(confirm().disabled);
-  const checks=w.document.querySelectorAll<HTMLInputElement>('.draft-card-head .draft-select input');await act(async()=>{checks[0].click();});assert(confirm().disabled);await click(buttons('保存草稿')[0]);await tick(()=>!buttons('确认本页主题与归属')[0].disabled,'saved selection');
-  let d=(await f.drafts.get(job.draftId!))!,unit=d.humanReview!.units[0];let select=w.document.querySelector<HTMLSelectElement>(`select[aria-label="归属 ${unit.id}"]`)!;
-  await change(select,'');await tick(()=>w.document.body.textContent!.includes('未解决 1 项'),'unresolved');assert(confirm().disabled);
-  select=w.document.querySelector<HTMLSelectElement>(`select[aria-label="归属 ${unit.id}"]`)!;await change(select,d.pages[0].pageId);await tick(()=>w.document.body.textContent!.includes('未解决 0 项'),'resolved');
-  for(let i=0;i<2;i++){await click(buttons('确认本页主题与归属')[i]);await tick(()=>buttons('确认本页主题与归属').every(b=>!b.disabled),'page saved');}
-  await tick(()=>!confirm().disabled,'all reviewed');
-  const title=w.document.querySelector<HTMLInputElement>('.draft-title')!;await change(title,'人工确认的新主题');await tick(()=>confirm().disabled,'unsaved editing blocks');await click(buttons('保存草稿')[0]);await tick(()=>w.document.body.textContent!.includes('已审 0/2 页')&&buttons('确认本页主题与归属').every(b=>!b.disabled),'all invalidated and save settled');
-  for(let i=0;i<2;i++){await click(buttons('确认本页主题与归属')[i]);await tick(()=>buttons('确认本页主题与归属').every(b=>!b.disabled),'re-reviewed');}
-  await act(async()=>root!.unmount());root=undefined;await mount();await tick(()=>!confirm().disabled,'refresh retains approvals');await click(confirm());await tick(()=>committed===1,'formal explicit commit');
-  d=(await f.drafts.get(job.draftId!))!;assert.equal(d.status,'confirmed');assert.equal(f.requests.length,2);assert.equal((await f.rawStore.get(f.raw.id))!.body,f.raw.body);
- }finally{if(root)await act(async()=>root!.unmount());globalThis.fetch=nativeFetch;await h.close();await f.clean();}
+test('RAWUX01 maintenance React + real HTTP preserves edits and requires a fresh explicit selection and overall confirmation', async () => {
+  const f = await storageFixture();
+  f.succeed();
+  const original = f.provider.complete;
+  f.provider.complete = async request => {
+    const response = await original(request);
+    if (!request.user.includes('请对下列全部已验证事实规划知识页')) return response;
+    const plan = JSON.parse(response.text), page = plan.pages[0];
+    plan.pages = [
+      { ...page, title: '目标门店', factUnitIds: page.factUnitIds.slice(0, 1) },
+      { ...page, title: '铺货率', factUnitIds: page.factUnitIds.slice(1) },
+    ];
+    const text = JSON.stringify(plan);
+    return { ...response, text, bytes: Buffer.byteLength(text) };
+  };
+  const h = await storageHttp(f, f.runner, { knowledge: true });
+  let root: ReturnType<typeof createRoot> | undefined, committed = 0;
+  const commitCalls: Array<{url:string; body:any}> = [];
+  const legacyApprovals: string[] = [];
+  globalThis.fetch = (url, init) => {
+    if (String(url).endsWith('/confirm')) commitCalls.push({url:String(url),body:JSON.parse(String(init?.body))});
+    if (/\/review\/(pages|structured-note)/.test(String(url))) legacyApprovals.push(String(url));
+    return nativeFetch(String(url).startsWith('/api/') ? h.base + url : url, init);
+  };
+  try {
+    const job = await f.wait((await f.start()).job.id);
+    assert.equal(job.status, 'completed');
+    assert.ok(job.draftId);
+    const draftId = job.draftId, readDraft = async () => (await f.drafts.get(draftId))!;
+    const wiki = new WikiStore(f.root, f.rawStore);
+    const stage = (request: (typeof f.requests)[number]) => request.system.startsWith('知识维护提议')
+      ? 'maintenance' : request.user.includes('请对下列全部已验证事实规划知识页') ? 'planning' : 'extraction';
+    assert.deepEqual(f.requests.map(stage), ['extraction', 'planning', 'maintenance']);
+    const mount = async () => {
+      root = createRoot(w.document.getElementById('root')!);
+      await act(async () => root!.render(createElement(DraftReviewPage, {
+        draftId, onBack: () => {}, onOpenRaw: () => {}, onCommitted: async () => { committed++; },
+      })));
+      await tick(() => checks().length === 2, 'two outcome choices');
+    };
+    const confirm = () => [...w.document.querySelectorAll('button')].find(b => b.textContent?.startsWith('确认所选成果入库'))!;
+    const checks = () => [...w.document.querySelectorAll<HTMLInputElement>('input[aria-label^="选择入库 "]')];
+    await mount();
+    await tick(() => Boolean(w.document.querySelector('.draft-raw-preview')?.textContent), 'Raw preview loaded');
+    assert.equal(w.document.querySelector('.draft-raw-preview')?.textContent, f.raw.body);
+    assert.equal(w.document.querySelector('.draft-raw-preview')?.getAttribute('contenteditable'), null);
+    assert(confirm().disabled);
+    assert(checks().every(check => !check.disabled && !check.checked));
+    await act(async () => { checks()[0].click(); checks()[1].click(); });
+    assert.equal(confirm().disabled, false);
+    assert.deepEqual((await readDraft()).maintenance!.changes.map(c => c.decision), ['defer', 'defer']);
+    const initial = await readDraft(), unit = initial.humanReview!.units[0];
+    const assignment = () => w.document.querySelector<HTMLSelectElement>(`select[aria-label="归属 ${unit.id}"]`)!;
+    await change(assignment(), '');
+    await tick(() => assignment().value === '' && !confirm().disabled, 'optional unresolved assignment persisted');
+    assert.equal((await readDraft()).humanReview!.assignments[unit.id], null);
+    await click(buttons('编辑主题成果')[0]);
+    const title = w.document.querySelector<HTMLInputElement>('.outcome-edit input')!;
+    await change(title, '人工确认的新主题');
+    assert(confirm().disabled);
+    await click(buttons('保存成果编辑')[0]);
+    await tick(() => !w.document.querySelector('.outcome-edit') && !confirm().disabled, 'edited outcome saved');
+    const edited = (await readDraft()).maintenance!.changes;
+    assert.equal(edited[0].candidate.title, '人工确认的新主题');
+    assert(edited.every(c => c.approval === undefined));
+    await act(async () => root!.unmount());
+    root = undefined;
+    await mount();
+    assert(w.document.body.textContent!.includes('人工确认的新主题'));
+    assert(confirm().disabled);
+    await act(async () => { checks()[0].click(); checks()[1].click(); });
+    const current = await readDraft();
+    assert.equal(commitCalls.length, 0);
+    assert.deepEqual(await wiki.list(), []);
+    await click(confirm());
+    await tick(() => committed === 1, 'explicit formal commit');
+    assert.equal(commitCalls.length, 1);
+    assert.equal(commitCalls[0].url, '/api/drafts/'+draftId+'/confirm');
+    assert.equal(commitCalls[0].body.baseRevision, current.revision);
+    assert.equal(commitCalls[0].body.outcomeDigest, f.drafts.outcomeDigest(current));
+    assert.deepEqual(legacyApprovals, []);
+    assert.equal((await readDraft()).status, 'confirmed');
+    const formal = await wiki.list();
+    assert.equal(formal.length, 3);
+    assert(formal.some(page => page.type === 'source' && page.sources.includes(f.raw.id)));
+    assert(formal.some(page => page.title === '人工确认的新主题' && page.sources.includes(f.raw.id)));
+    assert(formal.some(page => page.title === '铺货率' && page.sources.includes(f.raw.id)));
+    assert.deepEqual(f.requests.map(stage), ['extraction', 'planning', 'maintenance']);
+    const raw = await f.rawStore.get(f.raw.id);
+    assert.equal(raw?.body, f.raw.body);
+    assert.equal(raw?.bodySha256, f.raw.bodySha256);
+  } finally {
+    if (root) await act(async () => root!.unmount());
+    globalThis.fetch = nativeFetch;
+    await h.close();
+    await f.clean();
+  }
 });
 
 test('HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review',async()=>{

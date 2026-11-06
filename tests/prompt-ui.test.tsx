@@ -369,11 +369,13 @@ test('B07/B08 UI：Generator 与 Optimizer 入口已开放，Library 新建仍�
   const { unmount } = await mount();
   try {
     await settle();
-    const aiActions = [...window.document.querySelectorAll('button')].filter(button => ['AI 生成 Prompt','优化 Prompt','Generator','Optimizer'].includes((button.textContent ?? '').trim()));
-    assert.equal(aiActions.length, 4, '标题与页签均能打开 Generator/Optimizer');
-    assert.ok(aiActions.every(button => !(button as HTMLButtonElement).disabled), 'B08 入口已开放');
+    const navigation = required(window.document.querySelector('nav[aria-label="Prompt 工作台功能"]'), '工作台导航');
+    const aiActions = [...navigation.querySelectorAll('button')];
+    assert.deepEqual(aiActions.map(button => button.textContent?.trim()), ['模板库','生成','优化']);
+    assert.equal(aiActions[0].getAttribute('aria-current'), 'page');
+    assert.ok(aiActions.every(button => !button.disabled), 'B08 入口已开放');
 
-    await click(required(byText('新建 Prompt'), '新建按钮'));
+    await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     const form = required(window.document.querySelector('.prompt-editor'), '编辑器');
     const inputs = [...form.querySelectorAll('input')] as HTMLInputElement[];
@@ -515,7 +517,7 @@ test('返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选�
     await click(required(versionRow('第 2 版'), '乙第 2 版'));
     await settle(20);
     assert.equal(harness.waiting(creating), 1);
-    await click(required(byText('新建 Prompt'), '新建按钮'));
+    await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     assert.ok(required(window.document.querySelector('.prompt-editor'), '新建表单'));
     harness.release(creating);
@@ -579,7 +581,7 @@ test('返修 F07-05：迟到的保存响应不得清空之后新建的表单', a
     assert.equal(harness.waiting(putGate), 1, '甲的 PUT 仍在途中');
 
     // 响应在途时开始新建人工内容
-    await click(required(byText('新建 Prompt'), '新建按钮'));
+    await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     const form = required(window.document.querySelector('.prompt-editor'), '新建编辑器');
     await type(required(form.querySelector('.prompt-editor input') as HTMLInputElement, '名称输入'), '新模板未保存内容');
@@ -616,7 +618,7 @@ test('返修 F07-05：迟到的冲突响应不得把错误串到新表单', asyn
     await settle(20);
     assert.equal(harness.waiting(gate), 1);
 
-    await click(required(byText('新建 Prompt'), '新建按钮'));
+    await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     await type(required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement, '另一个新模板');
     harness.release(gate);
@@ -673,7 +675,7 @@ test('返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误�
     assert.ok(chip('日常办公').textContent?.includes('1'), '分类计数不随筛选变化');
 
     // 连续筛选不得误清当前新建表单
-    await click(required(byText('新建 Prompt'), '新建按钮'));
+    await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     await type(required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement, '筛选期间的新模板');
     await type(searchBox(), '模板');
@@ -749,7 +751,7 @@ test('返修 F07-04 残留：同模板打开历史/返回当前都作废在途 r
     await settle(20);
     assert.equal(harness.waiting(third.gate), 1);
     third.disarm();
-    await click(required(byText('新建 Prompt'), '新建按钮'));
+    await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     await type(required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement, '生成期间的新模板');
     harness.release(third.gate);
@@ -766,7 +768,7 @@ test('返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally �
     await settle();
     const editorInput = () => required(window.document.querySelector('.prompt-editor input') as HTMLInputElement | null, '名称输入');
     const openForm = async (name: string) => {
-      await click(required(byText('新建 Prompt'), '新建按钮'));
+      await click(required(byText('手动新建'), '新建按钮'));
       await settle(20);
       await type(editorInput(), name);
       await type(required(window.document.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement | null, '正文输入'), `${name}的正文。`);

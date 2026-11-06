@@ -4,7 +4,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {deepFixture} from './support/kb03-deep-fixture.ts';
-test('KB03 independent completed draft identity and mode cannot be silently reused',async()=>{
+test('KB03 validates pending draft identity before reusing the same Raw task across modes',async()=>{
  const f=await deepFixture();try{
   const start=await f.start(),runtime=await f.wait(start.json.jobId),file=path.join(f.root,'drafts',runtime.job!.draftId!+'.json');
   const original=await readFile(file,'utf8'),record=JSON.parse(original),used=f.requests.length;
@@ -13,6 +13,12 @@ test('KB03 independent completed draft identity and mode cannot be silently reus
    assert(response.status>=400,JSON.stringify(response));assert.equal(f.requests.length,used);
    assert.equal(await readFile(file,'utf8'),JSON.stringify({...record,...patch}));await writeFile(file,original);
   }
-  assert.equal((await f.start('standard')).status,409);assert.equal(f.requests.length,used);
+  const reopened=await f.start('standard');
+  assert.equal(reopened.status,200);
+  assert.equal(reopened.json.jobId,start.json.jobId);
+  assert.equal(reopened.json.draftId,runtime.job!.draftId);
+  assert.equal(reopened.json.mode,'deep');
+  assert.equal(reopened.json.reused,true);
+  assert.equal(f.requests.length,used);
  }finally{await f.clean();}
 });

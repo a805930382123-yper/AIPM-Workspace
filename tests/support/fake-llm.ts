@@ -1,4 +1,5 @@
 import { semanticReviewReply } from './semantic-review.ts';
+import { maintenanceReply } from './compat01-maintenance-reply.ts';
 // Test support: an independent fake HTTP provider (OpenAI-compatible Chat Completions shape).
 // Tests point the real `OpenAiCompatibleProvider` at this server, so the product code path that
 // calls a provider is exercised for real; nothing in `services/` knows about this file.
@@ -76,6 +77,8 @@ export async function startFakeProvider(handler: (request: FakeRequest) => FakeR
           const adapted = adaptKb02PlanningRequest(request, run);
           try { let planned = mergeHandler(adapted); if (planned.kind === 'delay') { const { ms, content } = planned; await new Promise(resolve => setTimeout(resolve, ms)); planned = { kind: 'content', content: content ?? '{}' }; } reply = toKb02PlanReply(planned, request, run); }
           catch (error) { throw error; }
+        } else if (request.system.startsWith('知识维护提议')) {
+          reply = { kind: 'content', content: contentOf(maintenanceReply(request.user)) };
         } else { const review = semanticReviewReply(request); reply = review ? { kind: 'content', content: review.text } : current(request); }
       } catch (error) { reply = { kind: 'status', status: 500, body: { error: { message: String(error) } } }; }
       if (reply.kind === 'delay') {
