@@ -6,7 +6,10 @@ import type { HomeAction } from '../../services/home/actions';
 import type { Raw, Stats } from '../api';
 import { api, dateText, sourceLabels } from '../api';
 
-export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void }) {
+const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
+const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
+
+export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision }: { stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [reviewFilter,setReviewFilter]=useState(false);
@@ -15,8 +18,19 @@ export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, on
   const [actions,setActions]=useState<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}|null>(null);
   const [actionError,setActionError]=useState(''); const generation=useRef(0);
   const loadActions=async()=>{const current=++generation.current;setActionError('');try{const result=await api<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}>('/api/home/actions');if(current===generation.current)setActions(result);}catch{if(current===generation.current)setActionError('行动事项读取失败，请刷新。');}};
-  useEffect(()=>{void loadActions();return ()=>{generation.current++;};},[]);
+  useEffect(()=>{void loadActions();return ()=>{generation.current++;};},[actionsRevision]);
   const openAction=async(item:HomeAction)=>{const current=++generation.current;setActionError('');try{const target=await api<HomeAction>(`/api/home/actions/${item.kind}/${encodeURIComponent(item.id)}?versionToken=${encodeURIComponent(item.versionToken)}`);if(current===generation.current)onOpenAction?.(target);}catch(error){if(current===generation.current)setActionError(error instanceof Error?error.message:'事项读取失败，请刷新。');}};
+  const currentActions = actions?.items.filter(item => item.status !== 'deferred' && (!reviewFilter || item.kind === 'draft' || item.kind === 'workflow')) ?? [];
+  const deferredActions = actions?.items.filter(item => item.status === 'deferred') ?? [];
+  const renderAction = (item: HomeAction) => {
+    const label = item.status ? actionStatuses[item.status] : item.kind === 'draft' ? '待审核' : item.kind === 'audit' ? '待纠错' : '待处理';
+    const badge = item.priority === 0 ? 'action-warning' : item.kind === 'draft' && item.status !== 'deferred' ? 'action-review' : 'action-neutral';
+    return <article className="home-action-row" key={`${item.kind}:${item.id}`} aria-label={item.title}>
+      <div><b>{item.title}</b><p>{actionKinds[item.kind]} · {dateText(item.updatedAt)} · {item.problem}</p><small>{item.result}</small></div>
+      <span className={`action-badge ${badge}`}>{label}</span>
+      <button className="secondary-button" onClick={() => void openAction(item)}>{item.action}</button>
+    </article>;
+  };
   const cards = [
     { label: 'Raw 原始资料', value: stats.rawCount, detail: '持续积累的来源材料', action: onOpenRaw },
     { label: 'Wiki 知识', value: stats.wikiCount, detail: '当前知识页面', action: onOpenWiki },
@@ -34,12 +48,16 @@ export function HomePage({ stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, on
       {title:'新建会议',description:'记录和管理会议',icon:'calendar',action:onCreateMeeting},
     ].map(entry=><button className="home-entry" key={entry.title} onClick={entry.action}><span className="entry-icon"><Icon name={entry.icon}/></span><span><b>{entry.title}</b><small>{entry.description}</small></span><span aria-hidden="true">›</span></button>)}</div>
     {reviewOpen&&<PeriodReview onClose={()=>setReviewOpen(false)} onOpenWiki={id=>onOpenWiki(id)} onOpenAction={item=>onOpenAction?.(item)} />}
-    <section className="panel home-actions" id="home-actions"><div className="panel-heading"><div><h2>需要你处理</h2><p>{actions ? `已读取事项 ${actions.items.length}` : '正在读取事项…'}</p></div><div>{reviewFilter && <button className="text-button" onClick={()=>setReviewFilter(false)}>显示全部事项</button>}<button className="text-button" onClick={()=>void loadActions()}>刷新</button></div></div>
+    <section className="panel home-actions" id="home-actions"><div className="panel-heading"><div><h2>需要你处理</h2><p>{actions ? `已读取事项 ${actions.items.length} 项 · 稍后处理 ${deferredActions.length} 项` : '正在读取事项…'}</p></div><div>{reviewFilter && <button className="text-button" onClick={()=>setReviewFilter(false)}>显示全部事项</button>}<button className="text-button" onClick={()=>void loadActions()}>刷新</button></div></div>
       {actionError && <p className="form-error" role="alert">{actionError}</p>}
       {actions && Object.entries(actions.sources).map(([source,state])=>state.status==='error' && <p className="form-error" role="alert" key={source}>{({ 'raw-task':'整理任务',draft:'草稿',workflow:'更新与综合',audit:'Audit' } as Record<string,string>)[source]}：{state.message}</p>)}
-      {actions && actions.items.length===0 && Object.values(actions.sources).every(x=>x.status==='ok') && <p>当前没有需要处理的事项。</p>}
-      {actions && reviewFilter && !actions.items.some(item=>item.kind==='draft'||item.kind==='workflow') && <p>当前没有待审核草稿或工作流。</p>}
-      {actions && <div className="home-action-list">{actions.items.filter(item=>!reviewFilter||item.kind==='draft'||item.kind==='workflow').map(item=><div className="home-action-row" key={`${item.kind}:${item.id}`}><div><b>{item.title}</b><p>{({'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'} as Record<string,string>)[item.kind]} · {dateText(item.updatedAt)} · {item.problem}</p><small>{item.result}</small></div><span className={`action-badge ${item.kind==='raw-task'?'action-warning':item.kind==='draft'?'action-review':'action-neutral'}`}>{item.kind==='raw-task'?(item.problem.includes('失败')?'整理失败':'待处理'):item.kind==='draft'?'待审核':item.kind==='workflow'?'待处理':'待纠错'}</span><button className="secondary-button" onClick={()=>void openAction(item)}>{item.action}</button></div>)}</div>}
+      {actions && currentActions.length === 0 && Object.values(actions.sources).every(x=>x.status==='ok') && <p>{reviewFilter?'当前没有待审核草稿或工作流。':'当前没有需要处理的事项。'}</p>}
+      {actions && <div className="home-action-list">{currentActions.map(renderAction)}</div>}
+      <section className="home-deferred" aria-labelledby="home-deferred-heading">
+        <h3 id="home-deferred-heading">稍后处理</h3>
+        {actions && deferredActions.length > 0 && <div className="home-action-list">{deferredActions.map(renderAction)}</div>}
+        {actions?.sources.draft?.status === 'ok' && deferredActions.length === 0 && <p>暂时没有稍后处理的整理成果。</p>}
+      </section>
     </section>
     <div className="home-columns">
       <section className="panel recent-panel"><div className="panel-heading"><div><h2>最近知识</h2><p>按更新时间排列</p></div><button className="text-button" onClick={()=>onOpenWiki()}>查看全部 ›</button></div>{wikiError ? <p className="form-error" role="alert">{wikiError}</p> : recentWiki === null ? <p>正在读取知识…</p> : recentWiki.length ? <div className="recent-list">{recentWiki.map(item=><button className="recent-row" key={item.id} onClick={()=>onOpenWiki(item.id)}><span className="entry-icon"><Icon name="book"/></span><span className="recent-copy"><b>{item.title}</b><small>{item.type} · {item.sources.length} 个来源</small></span><time>{dateText(item.updated)}</time></button>)}</div> : <div className="empty-recent"><b>暂无知识页面</b><span>创建或确认知识后会显示在这里。</span></div>}</section>

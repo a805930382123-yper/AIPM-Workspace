@@ -69,6 +69,26 @@ export class CommitError extends Error {
   constructor(public code: string, message: string, public status = 400, public details?: unknown) { super(message); }
 }
 
+export function scanWikiCommits(root: string) {
+  return scanJsonRecords<KnowledgeCommitManifest>(path.join(root, 'state', 'wiki-commits'),
+    (value, file): value is KnowledgeCommitManifest => isCommitManifest(value, path.basename(file, '.json')), root);
+}
+
+/** Include a frozen operation whose draft status could not be saved. */
+export function pendingRawCommit(draft: DraftRecord, manifests: KnowledgeCommitManifest[]) {
+  const own = manifests.filter(manifest => manifest.draftId === draft.id);
+  if (own.some(manifest => manifest.rawId !== draft.rawId || manifest.rawSha256 !== draft.rawSha256)
+    || (draft.commitOperationId && !own.some(manifest => manifest.operationId === draft.commitOperationId))) {
+    throw new CommitError('COMMIT_DRAFT_MISMATCH', '无法核对草稿关联的原提交，请检查本机记录。', 409);
+  }
+  const pending = own.filter(manifest => manifest.status !== 'completed' && !manifest.supersededBy)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  if (!pending && draft.status === 'committing') {
+    throw new CommitError('COMMIT_DRAFT_MISMATCH', '原提交记录不可用，请检查本机记录。', 409);
+  }
+  return pending;
+}
+
 export class WikiCommitService {
   private readonly queue = new SerialQueue();
   constructor(private readonly deps: {
@@ -85,7 +105,7 @@ export class WikiCommitService {
     const m=await readJsonRecord<KnowledgeCommitManifest>(this.deps.root,this.fileFor(operationId),(v):v is KnowledgeCommitManifest=>isCommitManifest(v,operationId));if(m===undefined)return undefined;if(!isCommitManifest(m,operationId))throw new StorageError('STORAGE_CORRUPT','提交清单结构无效，原文件已保留；恢复执行已停止。',500,{category:'recovery',nextAction:'inspect_or_restore'});return m;
   }
   async list(): Promise<KnowledgeCommitManifest[]> {
-    const records=await scanJsonRecords<KnowledgeCommitManifest>(this.directory(),(v,file):v is CommitManifest=>isCommitManifest(v,path.basename(file,'.json')),this.deps.root);
+    const records=await scanWikiCommits(this.deps.root);
     return records.records.map(x=>x.value);
   }  async findByDraft(draftId: string): Promise<KnowledgeCommitManifest | undefined> {
     return (await this.list()).find(manifest => manifest.draftId === draftId && !manifest.supersededBy);
@@ -225,6 +245,7 @@ export class WikiCommitService {
     if (input.baseRevision !== draft.revision) {
       throw new CommitError('DRAFT_REVISION_CONFLICT', '草稿已被修改，请刷新后重新审阅再确认。', 409, { currentRevision: draft.revision });
     }
+    if (draft.deferredAt) throw new CommitError('DRAFT_DEFERRED', '请先继续处理这份草稿，再确认入库。', 409);
     if (!raw) throw new CommitError('RAW_MISSING', '对应的原始资料不存在（可能已被删除），不能确认写入。', 409);
     if (raw.bodySha256 !== draft.rawSha256) throw new CommitError('RAW_CHANGED', '原始正文的校验值与整理时不一致，已停止写入以避免产生坏来源。', 409);
     if (outcomeReview) await this.deps.drafts.assertRawOutcome(draft, raw.body, requested, outcomeReview.digest);

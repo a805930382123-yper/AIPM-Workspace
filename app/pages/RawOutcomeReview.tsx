@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState, type ReactNode} from 'react';
-import {ApiError, api, cancelDraftPreparation, confirmDraft, discardDraft, draftView, finishDraftReview, patchDraft, prepareDraftChange, savePageDecision, startUpdateWorkflow, wikiCommit} from '../api';
+import {ApiError, api, cancelDraftPreparation, confirmDraft, discardDraft, draftView, finishDraftReview, patchDraft, prepareDraftChange, savePageDecision, setDraftDeferred, startUpdateWorkflow, wikiCommit} from '../api';
 import type {DraftView, RawDraftView, Wiki, WikiCommitStatus} from '../api';
 import {FormalNoteReader} from '../components/FormalNoteReader';
 import {StructuredNoteEditor} from '../components/StructuredNoteEditor';
@@ -29,6 +29,7 @@ const statusLabels = {pending_confirmation:'待确认', committing:'正在处理
 
 export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenWiki, onOpenWorkflow, onCommitted, advanced, advancedDirty, advancedBusy}: Props) {
   const [selection, setSelection] = useState(() => {
+    if (view.deferredAt) return [];
     const remaining=view.maintenance?.changes.filter(c=>!c.committedOperationId);
     return remaining?.every(c=>c.action==='noop')?remaining.map(c=>view.pages[c.pageIndex].pageId):view.pages.filter(p=>p.selected&&p.reviewDecision!=='defer').map(p=>p.pageId);
   });
@@ -54,26 +55,29 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
       if(preparation.current)void cancelDraftPreparation(view.id,preparation.current).catch(()=>undefined);
     };
   }, [view.id]);
-  const operationIds=[...new Set([view.commitOperationId,...(view.maintenance?.changes.map(c=>c.committedOperationId)??[])].filter((id):id is string=>!!id))].join(',');
+  const operationId = view.pendingCommitOperationId ?? view.commitOperationId;
+  const operationIds=[...new Set([operationId,...(view.maintenance?.changes.map(c=>c.committedOperationId)??[])].filter((id):id is string=>!!id))].join(',');
   useEffect(() => {
     if (!operationIds) return;
     let active = true;
     Promise.all(operationIds.split(',').map(wikiCommit)).then(values => {
       if (active){
         setResults(Object.fromEntries(values.map(value=>[value.operationId,value])));
-        setOperation(values.find(value=>value.operationId===view.commitOperationId)??null);
+        setOperation(values.find(value=>value.operationId===operationId)??null);
       }
     }).catch(problem => {
       if (active) setError(problem instanceof Error ? problem.message : '无法读取提交状态。');
     });
     return () => { active = false; };
-  }, [operationIds,view.commitOperationId]);
+  }, [operationIds,operationId]);
 
   const cards = view.maintenance
     ? view.maintenance.changes.map(change=>({page:view.pages[change.pageIndex],change,topics:(change.pageIndexes??[change.pageIndex]).map(i=>view.pages[i])}))
     : view.pages.map(page=>({page,change:undefined,topics:[page]}));
   const readOnly = view.status !== 'pending_confirmation';
+  const deferred = !!view.deferredAt && !readOnly;
   const recovering = operation && operation.status !== 'completed';
+  const pendingRecovery = !!view.pendingCommitOperationId && operation?.operationId !== view.pendingCommitOperationId;
   const chosen = recovering ? operation.selectedPageIds : cards.filter(({page, change}) =>
     !change?.committedOperationId && (change || page.reviewDecision !== 'update') && selection.includes(page.pageId),
   ).map(({page}) => page.pageId);
@@ -81,9 +85,10 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
   const sourceReuse = view.preview?.sourceReuse;
   const noChanges=chosen.length>0&&cards.filter(({page})=>chosen.includes(page.pageId)).every(({change})=>change?.action==='noop');
   const blockedSource = !view.preview?.rawExists || !view.preview.rawSha256Matches || (!noChanges&&!!view.preview.sourceAmbiguous);
-  const disabled = !!busy || readOnly || !!recovering || advancedDirty || advancedBusy;
+  const disabled = !!busy || readOnly || !!recovering || pendingRecovery || deferred || advancedDirty || advancedBusy;
   const missingDependencies=cards.filter(({page,change})=>chosen.includes(page.pageId)&&change?.dependsOn.some(id=>cards.some(other=>other.change?.changeId===id&&!other.change.committedOperationId&&!chosen.includes(other.page.pageId))));
-  const canConfirm = !busy && !edit && !adjustment && !noteDirty && !advancedDirty && !advancedBusy && !blockedSource && (recovering || (!readOnly && !missingDependencies.length && (chosen.length > 0 || allowsSourceOnly)));
+  const canConfirm = !busy && !edit && !adjustment && !noteDirty && !advancedDirty && !advancedBusy && !blockedSource && !pendingRecovery && !deferred && (recovering || (!readOnly && !missingDependencies.length && (chosen.length > 0 || allowsSourceOnly)));
+  const canDefer = view.deferAvailable && !disabled && !edit && !adjustment && !noteDirty && !discarding;
   const selectedTitles = cards.filter(({page}) => chosen.includes(page.pageId)).map(({page,change}) => change?.candidate.title ?? page.title);
   const selectedQuestions = cards.filter(({page}) => chosen.includes(page.pageId)).flatMap(({page,change}) => change?.questions ?? page.open_questions);
   const sourceBody = view.structuredNote ? `## 深度整理笔记\n\n${renderStructuredNote(view.structuredNote)}` : view.sourceRenderedBody ?? view.source.body;
@@ -200,6 +205,16 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
     await onCommitted();
   });
 
+  const changeDeferred = (value: boolean) => run(value ? 'defer' : 'resume', async () => {
+    const next = await setDraftDeferred(view.id, view.revision, value);
+    if (!mounted.current) return;
+    onView(next);
+    if (value) setSelection([]);
+    request.current = null;
+    setNotice(value ? '已移到首页的稍后处理。' : '已恢复处理，可以重新选择待确认的成果。');
+    await onCommitted();
+  });
+
   const resolveDuplicate = (pageId: string, targetWikiId?: string) => run('duplicate', async () => {
     if (targetWikiId) {
       const result = await startUpdateWorkflow({draftId:view.id, pageId, targetWikiId, baseRevision:view.revision});
@@ -221,15 +236,21 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
 
   return <div className="page draft-page raw-outcome" aria-busy={!!busy || advancedBusy}>
     <div className="page-heading">
-      <div><h1>整理成果</h1><p className="subheading">{view.rawTitle} · {view.structuredNote ? '深度整理' : '标准整理'} · {view.maintenance&&view.discardedAt?(view.status==='discarded'?'全部不采纳':'选择已结束'):operation?.noChanges&&readOnly?'已检查，无需变更':statusLabels[view.status]} · 草稿 v{view.revision}</p></div>
+      <div><h1>整理成果</h1><p className="subheading">{view.rawTitle} · {view.structuredNote ? '深度整理' : '标准整理'} · {view.maintenance&&view.discardedAt?(view.status==='discarded'?'全部不采纳':'选择已结束'):deferred?'稍后处理':recovering||pendingRecovery?statusLabels.committing:operation?.noChanges&&readOnly?'已检查，无需变更':statusLabels[view.status]} · 草稿 v{view.revision}</p></div>
       <div className="heading-actions"><button className="secondary-button" onClick={onBack} disabled={!!busy}>返回</button><button className="text-button" onClick={() => onOpenRaw(view.rawId)} disabled={!!busy}>查看原始资料</button></div>
     </div>
     {error && <div className="form-error" role="alert">{error}</div>}
     {notice && <div className="notice-success" role="status">{notice}</div>}
+    {deferred && <section className="panel draft-card-body" aria-labelledby="outcome-deferred-heading">
+      <h2 id="outcome-deferred-heading">稍后处理</h2>
+      <p>已保存的成果仍在这里。继续处理后，可以选择剩余成果并确认入库。</p>
+      {!view.deferAvailable && <p className="notice-warn">请从原始资料核对当前整理状态后再继续。</p>}
+      <button className="primary-button" disabled={!!busy || !view.deferAvailable} onClick={() => void changeDeferred(false)}>{busy === 'resume' ? '正在恢复…' : '继续处理'}</button>
+    </section>}
     {blockedSource && <p className="notice-warn" role="alert">{!view.preview?.rawExists ? '原始资料已不可读，请核实资料后再入库。' : !view.preview.rawSha256Matches ? '原始正文已变化，请根据当前资料重新整理。' : '有多个既有来源笔记与本资料关联，请先解决来源归属。'}</p>}
     {operation?.status === 'completed' && <section className="panel draft-card-body" aria-label={operation.noChanges?'无需变更':'已入库成果'}>
       <h2>{operation.noChanges?'已检查，无需变更':'已入库成果'}</h2>
-      <p>{view.status === 'pending_confirmation' ? '本次选择已完成，其他成果仍可继续选择。' : operation.noChanges?'所选主题的正文和来源均已涵盖本次资料。':'本次选择已写入知识库。'}</p>
+      <p>{deferred?'本次选择已完成，剩余成果已保存。':view.status === 'pending_confirmation' ? '本次选择已完成，其他成果仍可继续选择。' : operation.noChanges?'所选主题的正文和来源均已涵盖本次资料。':'本次选择已写入知识库。'}</p>
       <div className="heading-actions">
         {operation.sourceId && <button className="text-button" onClick={() => onOpenWiki?.(operation.sourceId!)}>打开正式来源笔记</button>}
         {operation.wikiIds.map((id, index) => <button className="text-button" key={id} onClick={() => onOpenWiki?.(id)}>打开正式主题{operation.wikiIds.length > 1 ? ` ${index + 1}` : ''}</button>)}
@@ -241,7 +262,7 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
       <p>已落盘 {operation.writtenWikiIds.length} 项。继续时复用上次确认的成果。</p>
       {operation.writtenWikiIds.map((id,index)=><button key={id} className="text-button" onClick={()=>onOpenWiki?.(id)}>打开已落盘记录 {index+1}</button>)}
     </section>}
-    {(!readOnly || recovering) && <section className="panel draft-card-body outcome-confirm" aria-label="整体确认入库">
+    {!deferred && !pendingRecovery && (!readOnly || recovering) && <section className="panel draft-card-body outcome-confirm" aria-label="整体确认入库">
       <h2>整体检查与确认</h2>
       <p>核对所选成果的价值、重大遗漏、明显错误和统计口径，再确认入库。</p>
       <p><strong>本次主题 {chosen.length} 项</strong>{selectedTitles.length ? ` · ${selectedTitles.slice(0,3).join('、')}${selectedTitles.length>3?'等':''}` : ''}</p>
@@ -251,8 +272,10 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
       {missingDependencies.length>0&&!recovering&&<p className="notice-warn">所选成果「{missingDependencies.map(({change})=>change?.candidate.title).join('、')}」还有依赖成果未选，请一并选择。</p>}
       <div className="heading-actions">
         <button className="primary-button" disabled={!canConfirm} onClick={() => void confirm()}>{busy === 'confirm' ? '正在确认…' : recovering ? '继续上次确认' : noChanges?'确认检查完成（无需变更）':chosen.length ? `确认所选成果入库（${chosen.length}）` : allowsSourceOnly ? '仅确认来源笔记入库' : '确认所选成果入库'}</button>
+        {view.deferAvailable && !recovering && <button className="secondary-button" disabled={!canDefer} aria-describedby="outcome-defer-help" onClick={() => void changeDeferred(true)}>{busy === 'defer' ? '正在保存…' : '稍后处理'}</button>}
         {!recovering && <button className="text-button danger" disabled={disabled || !!edit || !!adjustment || noteDirty} onClick={() => setDiscarding(true)}>{view.maintenance?(view.commitOperationId?'结束本次选择':'全部不采纳'):'放弃草稿'}</button>}
       </div>
+      {view.deferAvailable && !recovering && <p id="outcome-defer-help" className="extract-note">稍后处理会保留已保存的成果。继续时可重新选择，再确认入库。</p>}
       {discarding && <div className="delete-panel"><p>{view.maintenance?'未提交的成果将仅保留在整理历史。':'确定放弃当前草稿及其待入库成果？'}</p><button className="secondary-button" disabled={!!busy} onClick={() => setDiscarding(false)}>取消</button><button className="danger-quiet" disabled={!!busy} onClick={() => void finish()}>{view.maintenance?(view.commitOperationId?'确认结束':'确认全部不采纳'):'确认放弃'}</button></div>}
     </section>}
     <section className="panel draft-card-body" aria-label="来源笔记成果">

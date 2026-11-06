@@ -177,10 +177,11 @@ export type RawDraftView = {
   pages: DraftPage[]; source: DraftSource; warnings: string[];
   extraction: { callCount: number; chunkCount: number; pagesFound: number };
   commitOperationId?: string; confirmedAt?: string; discardedAt?: string;
+  deferredAt?: string; deferAvailable?: boolean; pendingCommitOperationId?: string;
   preview: DraftPreview | null;
   raw: { id: string; title: string; sourceType: SourceType; sourceName: string; author: string | null; publishedAt: string | null; url: string | null; importedAt: string; bodySha256: string } | null;
 };
-export type QuestionDraftView=Omit<RawDraftView,'rawId'|'rawTitle'|'jobId'|'source'|'input'> & {input:QuestionDraftInput;questionBasisChanged?:boolean};
+export type QuestionDraftView=Omit<RawDraftView,'rawId'|'rawTitle'|'jobId'|'source'|'input'|'deferredAt'|'deferAvailable'|'pendingCommitOperationId'> & {input:QuestionDraftInput;questionBasisChanged?:boolean};
 export type InspectionDraftView=Omit<QuestionDraftView,'input'> & {input:InspectionDraftInput};
 export type DraftView=RawDraftView|QuestionDraftView|InspectionDraftView;
 export type KnowledgeInspection={id:string;revision:number;includeRelated:boolean;status:'queued'|'checking'|'completed'|'partial'|'failed';stage:string;attempts:number;scope:{selected:string[];candidates:string[];read:Array<{id:string;title:string;revision:number}>;skipped:Array<{id:string;reason:string}>;gaps:string[]};findings:import('../services/wiki/inspection-input').InspectionFinding[];lint:Array<{code:string;objectId:string|null;message:string}>;audits:Array<{id:string;wikiId:string;status:string;comment:string}>;drafts:Array<{key:string;selectedFindingIds:string[];draftId?:string;status:string;reason?:string}>;error?:{code:string;message:string}};
@@ -244,6 +245,8 @@ export const cancelDraftPreparation=(draftId:string,preparationId:string)=>
   api<{cancelled:boolean}>(`/api/drafts/${encodeURIComponent(draftId)}/changes/prepare/${encodeURIComponent(preparationId)}/cancel`,{method:'POST'});
 export const finishDraftReview=(draftId:string,baseRevision:number)=>
   api<RawDraftView>(`/api/drafts/${encodeURIComponent(draftId)}/finish`,{method:'POST',body:JSON.stringify({baseRevision})});
+export const setDraftDeferred = (draftId: string, baseRevision: number, deferred: boolean) =>
+  api<RawDraftView>(`/api/drafts/${encodeURIComponent(draftId)}/defer`, {method:'POST',body:JSON.stringify({baseRevision,deferred})});
 export const patchDraft = (draftId: string, patch: DraftPatch) => api<DraftView>(`/api/drafts/${encodeURIComponent(draftId)}`, { method: 'PATCH', body: JSON.stringify(patch) });
 export const discardDraft = (draftId: string, baseRevision?: number) => api<{ id: string; status: string; rawId: string }>(`/api/drafts/${encodeURIComponent(draftId)}/discard`, { method: 'POST', body: JSON.stringify(baseRevision === undefined ? {} : { baseRevision }) });
 export const confirmDraft = (draftId: string, input: { baseRevision: number; selectedPageIds: string[]; idempotencyKey: string; outcomeDigest?: string }) =>

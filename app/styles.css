@@ -72,6 +72,13 @@ button.stat-card { cursor: default; }.stat-card:disabled { color: inherit; opaci
 .home-page .home-columns, .home-page .recent-panel { min-width: 0; }
 .home-page .recent-copy small { overflow-wrap: anywhere; }
 .home-action-row > button { flex: 0 0 auto; white-space: nowrap; }
+.home-deferred { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 12px; }
+.home-deferred h3 { margin: 0 0 8px; font-size: 16px; }
+.home-deferred > p { margin: 0 0 6px; color: var(--muted); font-size: 13px; }
+@media (max-width: 520px) {
+  .home-action-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+  .home-action-row > button { grid-column: 1 / -1; justify-self: start; }
+}
 @media (max-width: 1050px) { .home-page .home-columns { grid-template-columns: minmax(0, 1fr); } }
 
 .period-review { margin:16px 0; padding:18px; }

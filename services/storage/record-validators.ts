@@ -13,7 +13,7 @@ const digest=(v:unknown)=>str(v)&&/^[0-9a-f]{64}$/i.test(v);
 /** Shared by the extraction draft reader and recovery scan, before any recovery action. */
 export function isExtractionDraft(v:unknown,id?:string):boolean {
  if(obj(v)&&Object.hasOwn(v,'input')){
-   if(!validEvidenceInput(v.input)||['rawId','rawSha256','rawTitle','rawMeta','jobId','source'].some(k=>Object.hasOwn(v,k))||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!Number.isInteger(v.revision)||Number(v.revision)<1||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!obj(v.document)||!str(v.document.title)||!validMaintenance(v.maintenance)||!validHumanReview(v.humanReview)||!Array.isArray(v.pages)||!v.pages.length)return false;
+   if(!validEvidenceInput(v.input)||['rawId','rawSha256','rawTitle','rawMeta','jobId','source','deferredAt'].some(k=>Object.hasOwn(v,k))||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!Number.isInteger(v.revision)||Number(v.revision)<1||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!obj(v.document)||!str(v.document.title)||!validMaintenance(v.maintenance)||!validHumanReview(v.humanReview)||!Array.isArray(v.pages)||!v.pages.length)return false;
    return v.pages.every(p=>obj(p)&&isUuid(p.pageId)&&str(p.title)&&Array.isArray(p.source_facts)&&p.source_facts.every(f=>obj(f)&&str(f.text)&&strings(f.evidenceIds))&&Array.isArray(p.source_evidence)&&p.source_evidence.every(e=>obj(e)&&isUuid(e.rawId)&&str(e.quote)&&nonnegative(e.start)&&nonnegative(e.end))&&strings(p.ai_organized)&&strings(p.ai_inferences)&&strings(p.open_questions));
  }
 
@@ -23,6 +23,7 @@ export function isExtractionDraft(v:unknown,id?:string):boolean {
   const indexes=v.maintenance.changes.flatMap(changePageIndexes);
   if(indexes.some(i=>i>=pageCount)||(v.maintenance.changes.some(c=>c.pageIndexes)&&indexes.length!==pageCount))return false;
  }
+ if(obj(v)&&v.deferredAt!==undefined&&(!v.maintenance||!str(v.deferredAt)||!Number.isFinite(Date.parse(v.deferredAt))))return false;
  if(obj(v)&&obj(v.document)&&v.document.source_level!==undefined&&(!str(v.document.source_level)||!['A','B','C','D'].includes(v.document.source_level)))return false;
  if(obj(v)&&v.humanReview!==undefined&&!validHumanReview(v.humanReview))return false;
  if(obj(v)&&Object.hasOwn(v,'structuredNote')){

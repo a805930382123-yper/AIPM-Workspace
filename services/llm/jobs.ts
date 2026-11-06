@@ -119,8 +119,10 @@ export class ExtractionRunner {
   async readJob(id: string) {
     const job = await this.deps.jobs.get(id);
     const execution = this.tasks.has(id) ? 'running' as const : 'settled' as const;
-    const recovery = this.pending.get(id)?.issue ?? (job?.status === 'running' && execution === 'settled' ? { code: 'STORAGE_RECONCILE_REQUIRED', message: '发现已停止的任务；请重试保存状态以核验本机检查点和草稿。', persisted: false as const, phase: 'restart-disk', action: 'reconcile-storage' as const } : undefined);
-    return { job, execution, recovery };
+    const pending = this.pending.get(id);
+    const recovery = pending?.issue ?? (job?.status === 'running' && execution === 'settled' ? { code: 'STORAGE_RECONCILE_REQUIRED', message: '发现已停止的任务；请重试保存状态以核验本机检查点和草稿。', persisted: false as const, phase: 'restart-disk', action: 'reconcile-storage' as const } : undefined);
+    const pendingDraftId = pending?.rawId === job?.rawId ? pending?.draftId : undefined;
+    return { job, execution, recovery, ...(pendingDraftId ? {pendingDraftId} : {}) };
   }
   recoveryJobs() { return [...this.pending].filter(([, value]) => value.issue).map(([jobId, value]) => ({ jobId, rawId: value.rawId })); }
   async waitForSettlement(id: string) { await this.tasks.get(id); return this.readJob(id); }

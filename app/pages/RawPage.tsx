@@ -136,18 +136,27 @@ function RawDetail({ initialCitation,initialTranslation,item, state, job, busy, 
     } finally { setTranslationAction(null); }
   };
   const status = state?.status ?? 'unprocessed';
-  const [topicSummary,setTopicSummary]=useState<{draft:string[];written:string[];history?:string}|null>(null),[topicError,setTopicError]=useState('');
+  const [topicSummary,setTopicSummary]=useState<{draft:string[];written:string[];draftId?:string;history?:string;deferred?:boolean;commitRecovery?:boolean}|null>(null),[topicError,setTopicError]=useState('');
   useEffect(()=>{let active=true;setTopicSummary(null);setTopicError('');
     const load=async()=>{
-      const proposed=state?.draftId?await draftView(state.draftId):null;
-      const formal=await Promise.all((state?.generatedWikiIds??[]).map(id=>api<Wiki>('/api/wiki/'+encodeURIComponent(id))));
-      const history=status!=='processing'&&status!=='failed'&&proposed?.maintenance&&(proposed.status==='confirmed'||proposed.status==='discarded')
+      const response=state?.draftId?await draftView(state.draftId):null;
+      if (response && (response.input || response.id !== state?.draftId || response.rawId !== item.id
+        || (status === 'pending_confirmation' && state?.jobId && response.jobId !== state.jobId))) {
+        throw new Error('整理草稿与当前资料或任务不匹配，请刷新后核对。');
+      }
+      const proposed = response && !response.input ? response : null;
+      const formal=await Promise.all((state?.generatedWikiIds??[]).map(id=>api<Wiki>('/api/wiki/'+encodeURIComponent(id)))).catch(error => {
+        if (active) setTopicError(error instanceof Error ? error.message : '无法读取正式主题。');
+        return [];
+      });
+      const commitRecovery = proposed?.status === 'committing' || !!proposed?.pendingCommitOperationId;
+      const history=!commitRecovery&&status!=='processing'&&status!=='failed'&&proposed?.maintenance&&(proposed.status==='confirmed'||proposed.status==='discarded')
         ? proposed.discardedAt?(proposed.status==='discarded'?'全部不采纳':'选择已结束'):proposed.maintenance.changes.every(c=>c.action==='noop'&&c.committedOperationId)?'已检查，无需变更':'已确认入库'
         : undefined;
-      if(active)setTopicSummary({draft:history?[]:proposed?.maintenance?proposed.maintenance.changes.filter(c=>!c.committedOperationId).map(c=>({create:'新建',update:'更新',link:'补来源',noop:'无变化'}[c.action])+'：'+c.candidate.title):proposed?.pages.filter(p=>p.selected).map(p=>p.title)??[],written:formal.filter(p=>p.type!=='source').map(p=>p.title),history});
+      if(active)setTopicSummary({draft:history?[]:proposed?.maintenance?proposed.maintenance.changes.filter(c=>!c.committedOperationId).map(c=>({create:'新建',update:'更新',link:'补来源',noop:'无变化'}[c.action])+'：'+c.candidate.title):proposed?.pages.filter(p=>p.selected).map(p=>p.title)??[],written:formal.filter(p=>p.type!=='source').map(p=>p.title),draftId:proposed?.id,history,deferred:proposed?.status==='pending_confirmation'&&!!proposed.deferredAt,commitRecovery});
     };if(state?.draftId||state?.generatedWikiIds?.length)void load().catch(e=>{if(active)setTopicError(e instanceof Error?e.message:'无法读取受影响主题，请刷新重试。');});
     return()=>{active=false;};
-  },[item.id,status,state?.draftId,state?.updatedAt,state?.generatedWikiIds?.join(',')]);
+  },[item.id,status,state?.draftId,state?.jobId,state?.updatedAt,state?.generatedWikiIds?.join(',')]);
   const [mode,setMode]=useState<'standard'|'deep'>(()=>item.body.length<=30000?'deep':'standard');
   const [savingState, setSavingState] = useState(false);
   const [savingError, setSavingError] = useState('');
@@ -157,7 +166,7 @@ function RawDetail({ initialCitation,initialTranslation,item, state, job, busy, 
   const storedJobId = state?.recoveryJobId ?? state?.jobId;
   useEffect(() => { if (!storedJobId) { setStoredJob(null); return; } let active = true; extractionJob(storedJobId).then(value => { if (active) setStoredJob(value); }).catch(() => undefined); return () => { active = false; }; }, [storedJobId]);
   const meetingOnly = item.origin !== undefined;
-  const activeJob = job && job.rawId === item.id ? job : storedJob && storedJob.rawId === item.id ? storedJob : null;
+  const activeJob = job && job.rawId === item.id && (!storedJobId || job.jobId === storedJobId) ? job : storedJob && storedJob.rawId === item.id && storedJob.jobId === storedJobId ? storedJob : null;
   const storageBlocked = !!activeJob?.recovery;
   const retryStorage = async () => {
     if (!activeJob) return;
@@ -172,12 +181,14 @@ function RawDetail({ initialCitation,initialTranslation,item, state, job, busy, 
   };
   const stage = activeJob ? (activeJob.mode === 'deep' ? ({extracting:'提取',planning:'知识页规划',outline:'大纲',writing:'写作',quality:'质量检查',ready:'草稿阶段完成'} as Record<string,string>)[activeJob.checkpoint?.deepStage ?? activeJob.stage] ?? jobStageLabels[activeJob.stage] : jobStageLabels[activeJob.stage]) : rawStatusLabels[status];
   const recoveryStatus = storageBlocked ? (activeJob?.execution === 'running' ? '正在停止，状态保存失败' : '已停止，状态保存失败') : null;
+  const draftStatus = topicSummary?.commitRecovery ? '上次确认待完成' : topicSummary?.deferred ? '稍后处理' : topicSummary?.history;
+  const draftId = topicSummary?.draftId === state?.draftId ? topicSummary?.draftId : undefined;
   return <article className="raw-detail">
     <h2>{item.title}</h2>
-    <div className="detail-actions"><span className={`status ai-status ${storageBlocked ? 'failed' : status}`}><i />{recoveryStatus ?? topicSummary?.history ?? rawStatusLabels[status]}</span><span className="detail-type">{sourceLabels[item.sourceType]}</span>{meetingOnly && <span className="detail-type meeting-local-badge">本机专用</span>}<div className="action-group">{!meetingOnly && <button className="text-button" onClick={onReimport}>重新导入</button>}<button className="text-button danger" onClick={onDelete}>删除</button></div></div>
+    <div className="detail-actions"><span className={`status ai-status ${storageBlocked ? 'failed' : status}`}><i />{recoveryStatus ?? draftStatus ?? rawStatusLabels[status]}</span><span className="detail-type">{sourceLabels[item.sourceType]}</span>{meetingOnly && <span className="detail-type meeting-local-badge">本机专用</span>}<div className="action-group">{!meetingOnly && <button className="text-button" onClick={onReimport}>重新导入</button>}<button className="text-button danger" onClick={onDelete}>删除</button></div></div>
     <section className="raw-status-summary" aria-label="整理状态">
-      <p><b>当前阶段：</b>{recoveryStatus ?? topicSummary?.history ?? stage}{!storageBlocked && status === 'pending_confirmation' && (activeJob?.stage === 'done' || activeJob?.checkpoint?.deepStage === 'ready') ? '（草稿阶段结束，正式写入仍需确认）' : ''}</p>
-      <div><b>已保留结果：</b>{status === 'pending_confirmation' && state?.draftId ? '草稿已保存，待你审核。' : status === 'generated' && (state?.generatedWikiIds?.length ?? 0) > 0 ? <>已确认写入：<code className="mono">{state?.generatedWikiIds?.join('、')}</code></> : '暂无可确认的已保存结果。'}{activeJob?.checkpoint && <p className="extract-note">已验证 {activeJob.checkpoint.validatedChunks}/{activeJob.checkpoint.totalChunks} 提取段，累计 {activeJob.checkpoint.attempts} 次调用，复用 {activeJob.checkpoint.reusedChunks} 段；这不是整项完成比例。</p>}</div>
+      <p><b>当前阶段：</b>{recoveryStatus ?? draftStatus ?? stage}{!storageBlocked && !draftStatus && status === 'pending_confirmation' && (activeJob?.stage === 'done' || activeJob?.checkpoint?.deepStage === 'ready') ? '（草稿阶段结束，正式写入仍需确认）' : ''}</p>
+      <div><b>已保留结果：</b>{topicSummary?.deferred ? '已保存草稿及剩余成果。' : status === 'pending_confirmation' && draftId ? '草稿已保存，待你审核。' : status === 'generated' && (state?.generatedWikiIds?.length ?? 0) > 0 ? <>已确认写入：<code className="mono">{state?.generatedWikiIds?.join('、')}</code></> : '暂无可确认的已保存结果。'}{activeJob?.checkpoint && <p className="extract-note">已验证 {activeJob.checkpoint.validatedChunks}/{activeJob.checkpoint.totalChunks} 提取段，累计 {activeJob.checkpoint.attempts} 次调用，复用 {activeJob.checkpoint.reusedChunks} 段；这不是整项完成比例。</p>}</div>
       {topicError&&<p className="form-error" role="alert">受影响主题读取失败：{topicError}</p>}{topicSummary&&<div aria-label="受影响知识主题">{topicSummary.draft.length>0&&<p><b>草稿拟影响主题：</b>{topicSummary.draft.join('；')}</p>}{topicSummary.written.length>0&&<p><b>已写入主题：</b>{topicSummary.written.join('、')}</p>}</div>}
       {storageBlocked && <section className="notice-warn" role="alert"><b>{activeJob?.execution === 'running' ? '任务正在停止，状态保存失败' : '任务已停止，状态保存失败'}</b><p>{activeJob?.recovery?.message}（{activeJob?.recovery?.phase}）</p>{savingError && <p className="form-error">{savingError}</p>}</section>}
       {status === 'failed' && state?.lastError && <p className="notice-warn"><b>问题：</b>{state.lastError.code === 'LLM_ATTEMPT_LIMIT' ? '旧任务曾因调用次数停止。可以显式继续，检查点和累计次数会保留。' : <>{state.lastError.message}（{state.lastError.code}）{state.lastError.retryable ? '（可以重试）' : '（需要先处理配置或资料问题）'}</>}</p>}
@@ -185,8 +196,11 @@ function RawDetail({ initialCitation,initialTranslation,item, state, job, busy, 
       {meetingOnly ? <p className="notice-warn">Meeting来源仅限本机保存：禁止外部 AI、Wiki沉淀与Prompt背景使用。</p> : <div className="raw-next-actions"><b>下一步</b>
         {(status === 'unprocessed' || status === 'failed' || status === 'generated') && <><label className="field raw-extraction-mode">整理模式<select aria-label="整理模式" value={mode} disabled={busy} onChange={e=>setMode(e.target.value as 'standard'|'deep')}><option value="deep" disabled={item.body.length>30000}>深度整理</option><option value="standard">标准整理</option></select><small>{item.body.length>30000?'正文超过30000字符，深度整理不可选；标准整理保留全文。':'深度整理生成结构化阅读笔记，可显式选择标准整理。'}</small></label><div><button className="text-button ai-action" disabled={busy || storageBlocked} onClick={() => onStartAi(false,false,status==='failed'&&activeJob?(activeJob.mode??'standard'):mode)}>{busy ? '正在启动…' : status === 'failed' && activeJob?.pipelineVersion ? '显式继续提取' : status === 'failed' ? '重试 AI 整理' : '整理到知识库'}</button><p className="extract-note">{status === 'failed' && activeJob?.pipelineVersion ? `从现有检查点尝试继续，沿用原任务${activeJob.mode==='deep'?'深度':'标准'}模式并保留累计调用；可恢复性由服务端判定。` : '自动准备知识页成果，待你选择并确认。'}</p></div></>}
         {status === 'processing' && activeJob && activeJob.execution !== 'settled' && !storageBlocked && <button className="text-button" onClick={async () => { await api(`/api/extraction-jobs/${encodeURIComponent(activeJob.jobId)}/cancel`, { method: 'POST', body: JSON.stringify({}) }); }}>取消整理</button>}
-        {status === 'pending_confirmation' && state?.draftId && !storageBlocked && <div><button className="text-button ai-action" onClick={() => onOpenDraft(state.draftId as string)}>继续审核</button><p className="extract-note">先查看整理成果，选出值得入库的主题后统一确认。</p></div>}
-        {topicSummary?.history&&state?.draftId&&<button className="text-button" onClick={()=>onOpenDraft(state.draftId!)}>查看整理结果</button>}
+        {(status === 'pending_confirmation' || topicSummary?.commitRecovery) && draftId && !storageBlocked && !topicSummary?.history && <div>
+          <button className="text-button ai-action" onClick={() => onOpenDraft(draftId)}>{topicSummary?.commitRecovery ? '查看上次确认' : topicSummary?.deferred ? '查看暂缓成果' : '继续审核'}</button>
+          <p className="extract-note">{topicSummary?.commitRecovery ? '打开原成果，继续完成上次确认。' : topicSummary?.deferred ? '打开原草稿后，选择继续处理。' : '先查看整理成果，选出值得入库的主题后统一确认。'}</p>
+        </div>}
+        {topicSummary?.history&&draftId&&<button className="text-button" onClick={()=>onOpenDraft(draftId)}>查看整理结果</button>}
         {status === 'failed' && activeJob?.mode!=='deep' && activeJob?.error?.code === 'LLM_PLAN_COVERAGE_INVALID' && <div><button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(false, true,'standard')}>仅重新规划（带覆盖诊断）</button><p className="extract-note">使用既有提取结果重新规划，模型调用继续累计。</p></div>}
         {status === 'failed' && activeJob?.pipelineVersion && <div><button className="text-button" disabled={busy || storageBlocked} onClick={() => onStartAi(true,false,mode)}>明确重新生成</button><p className="extract-note">按当前选择模式重新生成，仍会显示实际累计调用。</p></div>}
         {storageBlocked && <div><button className="secondary-button" disabled={savingState || activeJob?.execution !== 'settled'} onClick={() => void retryStorage()}>{savingState ? '正在保存状态…' : '重试保存状态'}</button><p className="extract-note">{activeJob?.execution === 'running' ? '等待任务停止后再试。' : '仅对账本机状态，不会重新调用模型。'}</p></div>}

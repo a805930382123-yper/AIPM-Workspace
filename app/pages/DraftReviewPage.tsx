@@ -83,7 +83,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
   const typeOptions = useMemo(() => (schema?.types ?? []).filter(type => type.id !== 'source' && type.id !== 'synthesis'), [schema]);
   const selectedIds = pages.filter(page => page.selected).map(page => page.pageId);
   const conflicts = view ? conflictText(view) : [];
-  const readOnly = view ? view.status !== 'pending_confirmation' : true;
+  const readOnly = !view || view.status !== 'pending_confirmation' || (!view.input && !!view.deferredAt);
   const legacyDirty=!!view&&reviewFingerprint(view,pages)!==savedFingerprint;
   const dirty=legacyDirty||noteDirty;
   const reviewComplete=!!view?.humanReview&&Object.values(view.humanReview.assignments).every(id=>id!==null)&&pages.every(p=>view.humanReview!.approvals.some(a=>a.pageId===p.pageId&&a.digest===view.reviewContentDigest));

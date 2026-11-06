@@ -11,7 +11,7 @@ import { loadExtractionRules } from '../services/llm/rules.ts';
 import type { LlmProvider } from '../services/llm/provider.ts';
 import type { ExtractionRunner, ExtractionJobStore } from '../services/llm/jobs.ts';
 import type { DraftStore } from '../services/wiki/drafts.ts';
-import type { WikiCommitService } from '../services/wiki/commits.ts';
+import { pendingRawCommit, scanWikiCommits, type WikiCommitService } from '../services/wiki/commits.ts';
 import type { RawStateStore } from '../services/raw/state.ts';
 import type { RawStore } from '../services/raw/store.ts';
 import type { WikiStore } from '../services/wiki/store.ts';
@@ -161,8 +161,16 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     const previewValue = await preview(draft);
     const reuseTitle = previewValue?.sourceReuse?.title;
     const job=draft.maintenance?await deps.jobs.get(draft.jobId):undefined;
+    const activeMaintenance = draft.maintenance && !draft.discardedAt;
+    const pendingCommit = activeMaintenance ? pendingRawCommit(draft, await deps.commits.list()) : undefined;
+    // A legacy draft remains readable if the current Raw state cannot establish defer eligibility.
+    const state = activeMaintenance && draft.status === 'pending_confirmation' ? await deps.rawStates.get(draft.rawId).catch(() => undefined) : undefined;
     return {
       ...deps.drafts.view(draft, { sourceTitle: reuseTitle ?? draft.source.title }),
+      ...(pendingCommit ? {pendingCommitOperationId:pendingCommit.operationId} : {}),
+      deferAvailable: !!state && state.status === 'pending_confirmation' && state.jobId === draft.jobId && state.draftId === draft.id
+        && job?.status === 'completed' && job.rawId === draft.rawId && job.draftId === draft.id && !pendingCommit
+        && raw?.bodySha256 === draft.rawSha256 && !!draft.maintenance?.changes.some(change => !change.committedOperationId),
       ...(job?{extraction:{...draft.extraction,callCount:Math.max(draft.extraction.callCount,job.callCount)}}:{}),
       ...(draft.structuredNote?{noteQualityStatus:draft.noteReview?'historical':'generated',noteCoverage:noteCoverage(draft.structuredNote,draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)),draft.humanReview!.units.filter(u=>u.kind==='question').flatMap(u=>u.records.map(r=>r.id)),draft.noteReview?.exclusions,draft.noteReview?.questionIds),noteWarnings:inspectEditedNote(draft.structuredNote,new Map(draft.humanReview!.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>[r.id,r.text] as const))))}:{}),
       reviewContentDigest: draft.humanReview ? deps.drafts.contentDigest(draft) : null,
@@ -203,8 +211,45 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     try{
       const {baseRevision}=validateDiscard(req.body);
       if(baseRevision===undefined)throw new InputError('INVALID_CHANGE','请提供当前草稿版本。',400);
-      res.json(await draftPayload(await deps.wikiStore.withLock(()=>deps.runner.finishReview(req.params.draftId,baseRevision))));
+      const finished = await deps.wikiStore.withLock(async () => {
+        const draft = await deps.drafts.get(req.params.draftId);
+        if (draft?.maintenance && !draft.discardedAt && pendingRawCommit(draft, await deps.commits.list())) {
+          throw new InputError('COMMIT_RECOVERY_REQUIRED', '请先完成上次确认，再结束选择。', 409);
+        }
+        return deps.runner.finishReview(req.params.draftId,baseRevision);
+      });
+      res.json(await draftPayload(finished));
     }catch(error){next(error);}
+  });
+
+  app.post('/api/drafts/:draftId/defer', async (req, res, next) => {
+    try {
+      const {baseRevision, deferred} = req.body ?? {};
+      if (!Number.isSafeInteger(baseRevision) || baseRevision < 1 || typeof deferred !== 'boolean'
+        || Object.keys(req.body).some(key => key !== 'baseRevision' && key !== 'deferred')) {
+        throw new InputError('INVALID_DEFER', '请提供当前草稿版本及稍后处理状态。', 400);
+      }
+      const updated = await deps.wikiStore.withLock(async () => {
+        const draft = await deps.drafts.get(req.params.draftId);
+        if (!draft?.maintenance) throw new InputError('MAINTENANCE_MISSING', '没有可暂缓的 Raw 整理草稿。', 404);
+        const [raw, state, job, commits] = await Promise.all([
+          deps.rawStore.get(draft.rawId), deps.rawStates.get(draft.rawId), deps.runner.readJob(draft.jobId), scanWikiCommits(deps.root),
+        ]);
+        assertRawNotMeeting(raw);
+        if (!raw || raw.bodySha256 !== draft.rawSha256 || state.status !== 'pending_confirmation' || state.jobId !== draft.jobId
+          || state.draftId !== draft.id || job.job?.status !== 'completed' || job.job.rawId !== draft.rawId || job.job.draftId !== draft.id || job.recovery) {
+          throw new InputError('DRAFT_BINDING_CHANGED', '无法核对原资料与整理任务，请刷新后重试。', 409);
+        }
+        if (commits.issues.length || commits.partial || commits.overflow) {
+          throw new InputError('COMMIT_STATE_UNAVAILABLE', '原提交状态读取失败，请检查本机记录后重试。', 503);
+        }
+        if (pendingRawCommit(draft, commits.records.map(record => record.value))) {
+          throw new InputError('COMMIT_RECOVERY_REQUIRED', '请先完成上次确认，再稍后处理。', 409);
+        }
+        return deps.drafts.setDeferred(draft.id, baseRevision, deferred);
+      });
+      res.json(await draftPayload(updated));
+    } catch (error) { next(error); }
   });
 
   app.patch('/api/drafts/:draftId', async (req, res, next) => {

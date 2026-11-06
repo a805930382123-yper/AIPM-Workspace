@@ -66,10 +66,10 @@ export type DraftRecord = {
   rulesVersion: string; provider: { name: string; model: string }; jobId: string;
   document: { title: string; main_topic: string; summary: string; source_level?: 'A' | 'B' | 'C' | 'D' };
   pages: DraftPage[]; source: DraftSource; warnings: string[];
-  commitOperationId?: string; confirmedAt?: string; discardedAt?: string;
+  commitOperationId?: string; confirmedAt?: string; discardedAt?: string; deferredAt?: string;
   extraction: { callCount: number; chunkCount: number; pagesFound: number };
 };
-export type QuestionDraftRecord=Omit<DraftRecord,'rawId'|'rawSha256'|'rawTitle'|'rawMeta'|'jobId'|'maintenance'|'source'> & {input:EvidenceDraftInput;maintenance:KnowledgeMaintenance};
+export type QuestionDraftRecord=Omit<DraftRecord,'rawId'|'rawSha256'|'rawTitle'|'rawMeta'|'jobId'|'maintenance'|'source'|'deferredAt'> & {input:EvidenceDraftInput;maintenance:KnowledgeMaintenance};
 export type KnowledgeDraftRecord=DraftRecord|QuestionDraftRecord;
 export function isQuestionDraft(record:KnowledgeDraftRecord):record is QuestionDraftRecord{return 'input' in record&&['question_answer','inspection'].includes(record.input?.kind);}
 
@@ -440,8 +440,27 @@ export class DraftStore {
       if(draft.status!=='pending_confirmation'||draft.revision!==baseRevision)throw new DraftError('DRAFT_REVISION_CONFLICT','请刷新草稿并处理未完成的提交。',409);
       const now=new Date().toISOString();
       const next:DraftRecord={...draft,status:draft.maintenance.changes.some(c=>c.committedOperationId)||draft.commitOperationId?'confirmed':'discarded',revision:draft.revision+1,discardedAt:now,updatedAt:now};
+      delete next.deferredAt;
       await writeJsonAtomic(this.fileFor(id),next);
       return next;
+    });
+  }
+
+  async setDeferred(id: string, baseRevision: number, deferred: boolean): Promise<DraftRecord> {
+    return this.queue.run(async () => {
+      const draft = await this.get(id);
+      if (!draft?.maintenance) throw new DraftError('MAINTENANCE_MISSING', '没有可暂缓的 Raw 整理草稿。', 404);
+      if (draft.status !== 'pending_confirmation' || draft.revision !== baseRevision || !draft.maintenance.changes.some(change => !change.committedOperationId)) {
+        throw new DraftError('DRAFT_REVISION_CONFLICT', '草稿已变化或没有剩余成果，请刷新。', 409);
+      }
+      if (Boolean(draft.deferredAt) === deferred) return draft;
+      const now = new Date().toISOString();
+      if (deferred) draft.deferredAt = now;
+      else delete draft.deferredAt;
+      draft.revision++;
+      draft.updatedAt = now;
+      await writeJsonAtomic(this.fileFor(id), draft);
+      return draft;
     });
   }
 
