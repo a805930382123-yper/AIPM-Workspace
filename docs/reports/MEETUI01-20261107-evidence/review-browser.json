@@ -1,0 +1,101 @@
+{
+  "success": true,
+  "checks": [
+    "M02 file and paste persist on bottom save, no duplicate on no-op, same file reselects; M04 original read-only and import failure retains same request ID/file",
+    "M03 edit/clear pending are mutually exclusive, cancel read-only; M04 actual 409 preserves draft, reload/retry persists editable copy only",
+    "M05 metadata footer PATCH feedback and app refresh; meeting originals and editable text still present",
+    "M01 readable disabled/enabled/processing delete and focus at wide/narrow sizes; M04 only confirmed delete writes, Restricted has no usable local save"
+  ],
+  "screenshots": [
+    "review-disabled-1440.png",
+    "review-confirmed-1440.png",
+    "review-disabled-390.png",
+    "review-confirmed-390.png",
+    "review-delete-processing-390.png",
+    "review-delete-processing-1440.png"
+  ],
+  "pageErrors": [],
+  "requests": [
+    {
+      "method": "POST",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377/minutes/import"
+    },
+    {
+      "method": "POST",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377/minutes/import"
+    },
+    {
+      "method": "POST",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377/minutes/import"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377/minutes/e6a87647-3adc-48a7-ad60-c479a77e1eeb"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377/minutes/e6a87647-3adc-48a7-ad60-c479a77e1eeb"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377"
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/meetings/f961c140-5234-45d3-93b0-d1016bce5377/minutes"
+    }
+  ],
+  "contrast": [
+    {
+      "state": "disabled",
+      "viewport": 1440,
+      "color": "rgb(112, 68, 63)",
+      "background": "rgb(243, 233, 232)",
+      "opacity": 1,
+      "ratio": 6.814004666568135
+    },
+    {
+      "state": "enabled",
+      "viewport": 1440,
+      "color": "rgb(139, 48, 41)",
+      "background": "rgb(255, 255, 255)",
+      "opacity": 1,
+      "ratio": 8.226926719983872
+    },
+    {
+      "state": "disabled",
+      "viewport": 390,
+      "color": "rgb(112, 68, 63)",
+      "background": "rgb(243, 233, 232)",
+      "opacity": 1,
+      "ratio": 6.814004666568135
+    },
+    {
+      "state": "enabled",
+      "viewport": 390,
+      "color": "rgb(139, 48, 41)",
+      "background": "rgb(243, 233, 232)",
+      "opacity": 1,
+      "ratio": 6.907383193944711
+    },
+    {
+      "state": "processing",
+      "viewport": 390,
+      "color": "rgb(112, 68, 63)",
+      "background": "rgb(243, 233, 232)",
+      "opacity": 1,
+      "ratio": 6.814004666568135
+    },
+    {
+      "state": "processing",
+      "viewport": 1440,
+      "color": "rgb(112, 68, 63)",
+      "background": "rgb(243, 233, 232)",
+      "opacity": 1,
+      "ratio": 6.814004666568135
+    }
+  ],
+  "sameMultipartRetryKey": true,
+  "providerCallsDuringReview": 0,
+  "chrome": "156.0.8078.80"
+}
