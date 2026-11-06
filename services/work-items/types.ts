@@ -16,6 +16,26 @@ export type WorkAnalysisOutput = {
   openQuestions: string[];
 };
 
+export type WorkAnalysisStageContext = {
+  historyIndex: number;
+  at: string;
+  body: string;
+  source: 'manual' | 'ai_assisted';
+  analysisRunId?: string;
+};
+
+export type WorkAnalysisTheme = {
+  title: string;
+  conclusion: { kind: 'evidence_supported' | 'hypothesis'; text: string } | null;
+  evidence: number[];
+  counterEvidence: number[];
+  openQuestions: string[];
+  nextSteps: string[];
+  confirmedConflict: { confirmedQuote: string; observationIndexes: number[]; suggestedRevision: string } | null;
+};
+
+export type WorkAnalysisOutputV2 = WorkAnalysisOutput & { roundSummary: string; themes: WorkAnalysisTheme[] };
+
 export type WorkAnalysisRun = {
   id: string;
   itemId: string;
@@ -24,12 +44,17 @@ export type WorkAnalysisRun = {
   finishedAt?: string;
   status: 'running' | 'completed' | 'failed' | 'interrupted';
   provider: { name: string; model: string };
-  input: WorkAnalysis & { sources: WorkAnalysisSource[] };
-  output?: WorkAnalysisOutput;
+  outputVersion?: 2;
+  input: WorkAnalysis & { sources: WorkAnalysisSource[]; roundQuestion?: string; stageContext?: WorkAnalysisStageContext };
+  sourceRawIds?: string[];
+  output?: WorkAnalysisOutput | WorkAnalysisOutputV2;
   error?: { code: string; message: string };
 };
 
-export type WorkAnalysisRunInput = { baseRevision: number; rawIds: string[] };
+export type WorkAnalysisRunInput = { baseRevision: number; rawIds: string[] } & (
+  { outputVersion?: never; roundQuestion?: never; stageHistoryIndex?: never }
+  | { outputVersion: 2; roundQuestion?: string; stageHistoryIndex?: number }
+);
 export type WorkItemCreate = { kind?: 'customer_issue'; title: string; feedback: string }
   | { kind: 'product_analysis'; title: string; goal: string };
 

@@ -96,7 +96,7 @@ export async function apiForm<T>(url: string, form: FormData): Promise<T> {
   return readResponse<T>(await fetch(url, { method: 'POST', body: form }));
 }
 
-export type { WorkAnalysis, WorkAnalysisRun, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../services/work-items/types';
+export type { WorkAnalysis, WorkAnalysisOutputV2, WorkAnalysisRun, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../services/work-items/types';
 import type { WorkAnalysisRun, WorkAnalysisRunInput, WorkItem, WorkItemCreate, WorkItemSummary, WorkItemUpdate } from '../services/work-items/types';
 
 const workItemUrl = (id: string) => `/api/work-items/${encodeURIComponent(id)}`;

@@ -134,7 +134,7 @@ const analysisOf = (analysis?: WorkAnalysis) => ({
   goal: analysis?.goal ?? '', dataScope: analysis?.dataScope ?? '',
   confirmedConclusions: analysis?.confirmedConclusions ?? '', openQuestions: analysis?.openQuestions ?? '',
 });
-type Section = 'current' | 'history' | 'report' | 'materials' | 'stage';
+type Section = 'current' | 'history' | 'report' | 'materials' | 'stage' | 'analysis';
 
 function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   item: WorkItem;
@@ -176,7 +176,9 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   };
   const update = (section: Section, patch: Omit<WorkItemUpdate, 'baseRevision'>, message: string, onSaved?: (next: WorkItem) => void) =>
     save(section, () => updateWorkItem(saved.id, { baseRevision: saved.revision, ...patch }), message, onSaved);
-  const readLatest = (section: Section) => save(section, () => workItem(saved.id), '已读取最新版本。请核对你的输入后再保存。', next => {
+  const readLatest = (section: Section) => save(section, () => workItem(saved.id), section === 'analysis'
+    ? '已读取最新版本。请重新选择本轮资料和阶段成果。'
+    : '已读取最新版本。请核对你的输入后再保存。', next => {
     const previous = contextOf(saved);
     const current = contextOf(next);
     setContext({
@@ -390,6 +392,9 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       item={saved}
       rawById={rawById}
       busy={busy}
+      analysisDirty={Object.entries(analysisOf(saved.analysis)).some(([field, value]) => analysis[field as keyof WorkAnalysis] !== value)}
+      reloadItem={() => readLatest('analysis')}
+      analysisNotice={renderNotice('analysis')}
       saveStage={(body, analysisRunId, onSaved) => void update('stage', { history: { kind: 'stage_result', body, analysisRunId } }, '阶段成果已保存。', onSaved)}
       stageNotice={renderNotice('stage')}
     />}

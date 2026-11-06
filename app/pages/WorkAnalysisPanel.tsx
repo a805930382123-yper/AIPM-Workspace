@@ -1,14 +1,88 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { startWorkAnalysis, workAnalysisRuns, type Raw, type WorkAnalysisRun, type WorkItem } from '../api';
+import { ApiError, startWorkAnalysis, workAnalysisRuns, type Raw, type WorkAnalysisOutputV2, type WorkAnalysisRun, type WorkItem } from '../api';
 
 const runLabels: Record<WorkAnalysisRun['status'], string> = { running: '分析中', completed: '待确认草稿', failed: '分析失败', interrupted: '已中断' };
 const runTime = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', dateStyle: 'medium', timeStyle: 'short' });
 const resultLimit = 20_000;
+const questionLimit = 2000;
+const stageSource = (assisted: boolean) => assisted ? '带入 AI 草稿后保存' : '人工填写';
 
-export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice }: {
+function AnalysisContext({ input, showQuestion }: { input: Omit<WorkAnalysisRun['input'], 'sources' | 'stageContext'>; showQuestion?: boolean }) {
+  return <dl className="work-run-context">
+    <dt>分析目标</dt><dd>{input.goal}</dd>
+    <dt>数据范围与口径</dt><dd>{input.dataScope || '未填写'}</dd>
+    <dt>已确认结论</dt><dd>{input.confirmedConclusions || '未填写'}</dd>
+    <dt>未解问题</dt><dd>{input.openQuestions || '未填写'}</dd>
+    {showQuestion && <><dt>本轮问题</dt><dd>{input.roundQuestion || '未填写'}</dd></>}
+  </dl>;
+}
+
+function AnalysisThemes({ output, runId }: { output: WorkAnalysisOutputV2; runId: string }) {
+  const links = (indexes: number[]) => <span className="work-evidence-links">
+    {indexes.map(index => <a key={index} href={`#observation-${runId}-${index}`}>观察 {index + 1}</a>)}
+  </span>;
+  return <>
+    <h4>本轮摘要</h4>
+    <p className="work-prose">{output.roundSummary}</p>
+    <h4>主题分析</h4>
+    {output.themes.map(({ title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict }, index) =>
+      <section className="work-analysis-theme" key={index} aria-labelledby={`work-theme-${runId}-${index}`}>
+        <h5 id={`work-theme-${runId}-${index}`}>{title}</h5>
+        <p className="work-prose"><strong>{conclusion?.kind === 'evidence_supported' ? '有证据支持' : conclusion ? '待验证假设' : '待验证'}</strong>
+          {conclusion ? `：${conclusion.text}` : '：现有资料不足以形成结论。'}</p>
+        <dl className="work-theme-evidence">
+          <dt>支持证据</dt><dd>{evidence.length ? links(evidence) : '本轮未找到支持证据'}</dd>
+          <dt>反例</dt><dd>{counterEvidence.length ? links(counterEvidence) : '本轮未发现反例'}</dd>
+        </dl>
+        {openQuestions.length > 0 && <><h6>待核问题</h6><ul className="work-run-results">
+          {openQuestions.map((question, i) => <li className="work-prose" key={i}>{question}</li>)}
+        </ul></>}
+        {nextSteps.length > 0 && <><h6>建议下一步</h6><ul className="work-run-results">
+          {nextSteps.map((step, i) => <li className="work-prose" key={i}>{step}</li>)}
+        </ul></>}
+        {confirmedConflict && <div className="work-theme-conflict">
+          <h6>与已确认结论冲突</h6>
+          <blockquote className="work-prose">{confirmedConflict.confirmedQuote}</blockquote>
+          {links(confirmedConflict.observationIndexes)}
+          <p className="work-prose">建议修订：{confirmedConflict.suggestedRevision}</p>
+          <p className="work-note">如需修改已确认结论，请在「当前情况」核对并保存。</p>
+        </div>}
+      </section>
+    )}
+  </>;
+}
+
+function stageDraft(run: WorkAnalysisRun, output: NonNullable<WorkAnalysisRun['output']>) {
+  const list = (title: string, values: string[]) => values.length ? [title, ...values.map(value => `- ${value}`)].join('\n') : '';
+  const citations = (indexes: number[]) => indexes.map(index => `观察 ${index + 1}`).join('、');
+  const summary = 'roundSummary' in output ? `本轮摘要（待确认）\n${output.roundSummary}` : '';
+  const themes = 'themes' in output ? output.themes.map(theme => {
+    const { title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict } = theme;
+    return [
+      title,
+      conclusion ? `${conclusion.kind === 'evidence_supported' ? '有证据支持（待确认）' : '待验证假设'}：${conclusion.text}` : '待验证：现有资料不足以形成结论。',
+      evidence.length ? `支持证据：${citations(evidence)}` : '',
+      `反例：${counterEvidence.length ? citations(counterEvidence) : '本轮未发现反例'}`,
+      list('待核问题', openQuestions),
+      list('建议下一步', nextSteps),
+      confirmedConflict ? `与已确认结论冲突：「${confirmedConflict.confirmedQuote}」（${citations(confirmedConflict.observationIndexes)}）\n建议修订：${confirmedConflict.suggestedRevision}` : '',
+    ].filter(Boolean).join('\n');
+  }) : [];
+  const observations = output.observations.map(({ observation, quote, rawId }, index) => {
+    const title = run.input.sources.find(source => source.rawId === rawId)?.title;
+    return `观察 ${index + 1}：${observation}\n  ${title}：${quote}`;
+  });
+  return [summary, ...themes, list('观察与原文依据', observations), list('建议', output.suggestions), list('待核问题', output.openQuestions)]
+    .filter(Boolean).join('\n\n');
+}
+
+export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadItem, analysisNotice, saveStage, stageNotice }: {
   item: Extract<WorkItem, { kind: 'product_analysis' }>;
   rawById: ReadonlyMap<string, Raw>;
   busy: boolean;
+  analysisDirty: boolean;
+  reloadItem: () => Promise<void>;
+  analysisNotice: ReactNode;
   saveStage: (body: string, analysisRunId: string | undefined, onSaved: () => void) => void;
   stageNotice: ReactNode;
 }) {
@@ -18,10 +92,15 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
   const [reload, setReload] = useState(0);
   const [starting, setStarting] = useState(false);
   const [chosen, setChosen] = useState<string[]>([]);
+  const [question, setQuestion] = useState('');
+  const [stageIndex, setStageIndex] = useState<number>();
+  const [previewRevision, setPreviewRevision] = useState<number>();
+  const [staleRevision, setStaleRevision] = useState<number>();
   const [openId, setOpenId] = useState<string>();
   const [stageBody, setStageBody] = useState('');
   const [stageRunId, setStageRunId] = useState<string>();
   const stageEditor = useRef<HTMLTextAreaElement>(null);
+  const previewHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -42,18 +121,43 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
   }, [item.id, reload]);
 
   const rawIds = chosen.filter(id => item.rawIds.includes(id) && rawById.has(id) && !rawById.get(id)?.origin);
+  const stages = item.history.flatMap((entry, index) => entry.kind === 'stage_result' ? [{ entry, index }] : []);
+  const selectedStage = stageIndex === undefined ? undefined : stages.find(({ index }) => index === stageIndex)?.entry;
+  const needsReload = staleRevision === item.revision;
+  const showPreview = previewRevision === item.revision;
   const running = starting || Boolean(runs?.some(run => run.status === 'running'));
-  const canStart = !busy && !running && !readError && runs !== null && item.status !== 'closed' && rawIds.length > 0;
+  const canStart = !busy && !running && !readError && runs !== null && item.status !== 'closed' && rawIds.length > 0 && !needsReload;
+  useEffect(() => { if (showPreview) previewHeading.current?.focus(); }, [showPreview]);
+
+  const openRun = (id: string) => {
+    setOpenId(id);
+    document.getElementById(`work-run-button-${id}`)?.focus();
+  };
 
   const launch = async () => {
     setLaunchError('');
     setStarting(true);
     try {
-      const run = await startWorkAnalysis(item.id, { baseRevision: item.revision, rawIds });
+      const run = await startWorkAnalysis(item.id, {
+        baseRevision: item.revision, rawIds, outputVersion: 2, roundQuestion: question.trim() || undefined,
+        stageHistoryIndex: selectedStage ? stageIndex : undefined,
+      });
       setOpenId(run.id);
       setChosen([]);
+      setQuestion('');
+      setStageIndex(undefined);
+      setPreviewRevision(undefined);
+      setStaleRevision(undefined);
     } catch (error) {
-      setLaunchError(error instanceof Error ? error.message : '未能启动本轮分析。');
+      if (error instanceof ApiError && error.code === 'REVISION_CONFLICT') {
+        setStaleRevision(item.revision);
+        setChosen([]);
+        setStageIndex(undefined);
+        setPreviewRevision(undefined);
+        await reloadItem();
+      } else {
+        setLaunchError(error instanceof Error ? error.message : '未能启动本轮分析。');
+      }
     } finally {
       setStarting(false);
       setReload(value => value + 1);
@@ -63,8 +167,13 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
   return <>
     <section className="panel work-section" aria-labelledby="work-analysis">
       <div className="work-section-heading"><h2 id="work-analysis">AI 分析</h2></div>
-      <form className="work-form" onSubmit={event => { event.preventDefault(); if (canStart) void launch(); }}>
-        <p className="work-note">本轮会把选中的 Raw 原文和已保存的分析内容发送给设置中的模型。修改过分析目标或口径时，请先保存当前情况。</p>
+      <form className="work-form" onSubmit={event => { event.preventDefault(); if (canStart && showPreview) void launch(); }}>
+        <p className="work-note">选好本轮资料后，可预览将发送给设置中模型的内容。</p>
+        <div className="field">
+          <label htmlFor="work-round-question">本轮问题（选填）</label>
+          <textarea id="work-round-question" rows={2} maxLength={questionLimit} disabled={running || item.status === 'closed'}
+            value={question} onChange={event => { setQuestion(event.target.value); setPreviewRevision(undefined); }} />
+        </div>
         {item.rawIds.length === 0 ? <p className="work-note">在「资料与成果」中关联 Raw，再选择本轮材料。</p>
           : <fieldset className="work-source-picker" disabled={running || item.status === 'closed'}>
             <legend>本轮资料</legend>
@@ -74,15 +183,60 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
               const checked = rawIds.includes(id);
               return <label className="work-source-option" key={id}>
                 <input type="checkbox" checked={checked} disabled={!raw || !!raw.origin || (!checked && rawIds.length >= 8)}
-                  onChange={event => setChosen(event.target.checked ? [...rawIds, id] : rawIds.filter(value => value !== id))} />
+                  onChange={event => {
+                    setChosen(event.target.checked ? [...rawIds, id] : rawIds.filter(value => value !== id));
+                    setPreviewRevision(undefined);
+                  }} />
                 <span>{raw?.title ?? 'Raw 来源不可用'}{raw?.origin && <small>仅可在本机查看</small>}</span>
               </label>;
             })}
           </fieldset>}
-        <div className="work-buttons"><button className="primary-button" disabled={!canStart}>{running ? '分析中…' : '发起分析'}</button></div>
+        <div className="field">
+          <label htmlFor="work-stage-context">承接阶段成果（选填）</label>
+          <select id="work-stage-context" value={selectedStage ? stageIndex : ''} disabled={running || item.status === 'closed' || !stages.length}
+            onChange={event => { setStageIndex(event.target.value === '' ? undefined : Number(event.target.value)); setPreviewRevision(undefined); }}>
+            <option value="">不承接阶段成果</option>
+            {stages.map(({ entry, index }) => <option key={index} value={index}>
+              {stageSource(!!entry.analysisRunId)} · {runTime.format(new Date(entry.at))} · {entry.body.trim().slice(0, 28)}
+            </option>)}
+          </select>
+        </div>
+        {!stages.length && <p className="work-note">保存阶段成果后，可在下一轮选择承接。</p>}
+        {(analysisDirty || stageBody.trim()) && <p className="work-note">
+          {analysisDirty && '「当前情况」有未保存的编辑。'}
+          {stageBody.trim() && '「阶段成果」有未保存的编辑。'}
+          可使用下方预览中的已保存版本；要发送修改后的内容，请先保存。
+        </p>}
+        {selectedStage && !showPreview && <details className="work-run-input">
+          <summary>查看所选成果 · {stageSource(!!selectedStage.analysisRunId)} · {runTime.format(new Date(selectedStage.at))}</summary>
+          <p className="work-prose">{selectedStage.body}</p>
+          {selectedStage.analysisRunId && <button type="button" className="text-button" onClick={() => openRun(selectedStage.analysisRunId!)}>查看该轮分析</button>}
+        </details>}
+        {showPreview ? <section className="work-analysis-preview" aria-labelledby="work-send-preview">
+          <h3 id="work-send-preview" tabIndex={-1} ref={previewHeading}>发送预览</h3>
+          <AnalysisContext input={{ ...item.analysis, roundQuestion: question.trim() }} showQuestion />
+          <h4>承接阶段成果</h4>
+          {selectedStage ? <details className="work-run-source">
+            <summary>{stageSource(!!selectedStage.analysisRunId)} · {runTime.format(new Date(selectedStage.at))}</summary>
+            <p className="work-prose">{selectedStage.body}</p>
+            {selectedStage.analysisRunId && <button type="button" className="text-button" onClick={() => openRun(selectedStage.analysisRunId!)}>查看该轮分析</button>}
+          </details> : <p className="work-note">本轮不承接阶段成果。</p>}
+          <h4>本轮 Raw · {rawIds.length} 条</h4>
+          {rawIds.map(id => {
+            const raw = rawById.get(id)!;
+            return <details className="work-run-source" key={id}>
+              <summary>{raw.title} · 全部原文</summary><p className="work-prose">{raw.body}</p>
+            </details>;
+          })}
+          <div className="work-buttons"><button className="primary-button" disabled={!canStart}>{running ? '分析中…' : '发起分析'}</button></div>
+        </section> : <div className="work-buttons">
+          <button type="button" className="secondary-button" disabled={!canStart} onClick={() => setPreviewRevision(item.revision)}>预览发送内容</button>
+        </div>}
         {running && <p className="work-note" role="status">可以离开此页，回来后在原事项查看这轮结果。</p>}
         {item.status === 'closed' && <p className="work-note">重开事项后可发起新一轮分析。</p>}
         {launchError && <p className="form-error" role="alert">{launchError}</p>}
+        {staleRevision !== undefined && (needsReload || !rawIds.length) && analysisNotice}
+        {needsReload && <div className="work-buttons"><button type="button" className="secondary-button" disabled={busy || starting} onClick={() => void reloadItem()}>重新读取最新版本</button></div>}
       </form>
       <div className="work-subsection">
         <div className="work-section-heading"><h3>分析记录</h3>
@@ -95,35 +249,32 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
           const expanded = openId === run.id;
           const output = run.output;
           return <article className="work-run" key={run.id}>
-            <button className="work-list-row work-run-button" aria-expanded={expanded} aria-controls={`analysis-${run.id}`}
+            <button className="work-list-row work-run-button" id={`work-run-button-${run.id}`} aria-expanded={expanded} aria-controls={`analysis-${run.id}`}
               onClick={() => setOpenId(expanded ? undefined : run.id)}>
               <span className="work-list-title">第 {runs.length - index} 轮 · {runTime.format(new Date(run.startedAt))}</span>
               <span className={`work-status ${run.error ? 'action-warning' : 'action-review'}`}>{runLabels[run.status]}</span>
             </button>
             <div className="work-run-detail" id={`analysis-${run.id}`} hidden={!expanded}>
               {expanded && <>
-                <details className="work-run-input">
-                  <summary>输入快照 · {run.input.sources.length} 条 Raw</summary>
-                  <dl className="work-run-context">
-                    <dt>分析目标</dt><dd>{run.input.goal}</dd>
-                    <dt>数据范围与口径</dt><dd>{run.input.dataScope || '未填写'}</dd>
-                    <dt>已确认结论</dt><dd>{run.input.confirmedConclusions || '未填写'}</dd>
-                    <dt>未解问题</dt><dd>{run.input.openQuestions || '未填写'}</dd>
-                  </dl>
-                  {run.input.sources.map(source => <details className="work-run-source" key={source.rawId}>
-                    <summary>{source.title} · 本轮原文</summary>
-                    <p className="work-prose">{source.body}</p>
-                  </details>)}
-                </details>
                 {run.error && <p className="form-error">{run.error.message}</p>}
                 {output && <>
+                  {'roundSummary' in output && <AnalysisThemes output={output} runId={run.id} />}
                   <h4>观察与原文依据</h4>
+                  {run.outputVersion === 2 && <p className="work-note">以下观察用于核对依据，条数不代表事件总数或真实频次。</p>}
                   {output.observations.length === 0 ? <p className="work-note">本轮没有形成可核对的观察。</p>
-                    : <ul className="work-run-results">{output.observations.map(({ observation, quote, rawId }, index) => <li key={index}>
+                    : <ol className="work-run-results work-observations">{output.observations.map(({ observation, quote, rawId }, index) => <li key={index} id={`observation-${run.id}-${index}`} tabIndex={-1}>
+                      <span className="work-note">观察 {index + 1}</span>
                       <p className="work-prose">{observation}</p>
                       <p className="work-note">{run.input.sources.find(source => source.rawId === rawId)?.title} · 原文</p>
                       <blockquote className="work-prose">{quote}</blockquote>
-                    </li>)}</ul>}
+                      <button className="text-button" onClick={() => {
+                        const source = document.getElementById(`work-source-${run.id}-${rawId}`) as HTMLDetailsElement;
+                        const snapshot = source.parentElement as HTMLDetailsElement;
+                        snapshot.open = true;
+                        source.open = true;
+                        source.querySelector('summary')?.focus();
+                      }}>查看本轮原文</button>
+                    </li>)}</ol>}
                   <h4>建议</h4>
                   {output.suggestions.length ? <ul className="work-run-results">{output.suggestions.map((text, index) => <li key={index} className="work-prose">{text}</li>)}</ul>
                     : <p className="work-note">本轮没有给出建议。</p>}
@@ -132,22 +283,26 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
                     : <p className="work-note">本轮没有新增待核问题。</p>}
                   <div className="work-buttons work-stage-actions">
                     <button className="secondary-button" disabled={busy || Boolean(stageBody.trim())} onClick={() => {
-                      const observations = output.observations.map(({ observation, quote, rawId }) => {
-                        const title = run.input.sources.find(source => source.rawId === rawId)?.title;
-                        return `- ${observation}\n  ${title}：${quote}`;
-                      });
-                      const sections = [
-                        observations.length && ['观察与原文依据', ...observations].join('\n'),
-                        output.suggestions.length && ['建议', ...output.suggestions.map(text => `- ${text}`)].join('\n'),
-                        output.openQuestions.length && ['待核问题', ...output.openQuestions.map(text => `- ${text}`)].join('\n'),
-                      ];
-                      setStageBody(sections.filter(Boolean).join('\n\n'));
+                      setStageBody(stageDraft(run, output));
                       setStageRunId(run.id);
                       stageEditor.current?.focus();
                     }}>带入阶段成果</button>
                     {stageBody.trim() && <p className="work-note">保存或清空正在编辑的阶段成果后，可带入另一轮草稿。</p>}
                   </div>
                 </>}
+                <details className="work-run-input">
+                  <summary>输入快照 · {run.input.sources.length} 条 Raw</summary>
+                  <AnalysisContext input={run.input} showQuestion={run.outputVersion === 2} />
+                  {run.input.stageContext && <details className="work-run-source">
+                    <summary>承接阶段成果 · {stageSource(run.input.stageContext.source === 'ai_assisted')} · {runTime.format(new Date(run.input.stageContext.at))}</summary>
+                    <p className="work-prose">{run.input.stageContext.body}</p>
+                    {run.input.stageContext.analysisRunId && <button className="text-button" onClick={() => openRun(run.input.stageContext!.analysisRunId!)}>查看承接来源轮次</button>}
+                  </details>}
+                  {run.input.sources.map(source => <details className="work-run-source" id={`work-source-${run.id}-${source.rawId}`} key={source.rawId}>
+                    <summary>{source.title} · 本轮原文</summary>
+                    <p className="work-prose">{source.body}</p>
+                  </details>)}
+                </details>
               </>}
             </div>
           </article>;
@@ -161,10 +316,7 @@ export function WorkAnalysisPanel({ item, rawById, busy, saveStage, stageNotice 
           <time dateTime={entry.at}>{runTime.format(new Date(entry.at))}</time></div>
         {entry.kind === 'stage_result' && entry.analysisRunId && <p className="work-note">
           取自 AI 分析
-          <button className="text-button" onClick={() => {
-            setOpenId(entry.analysisRunId);
-            document.getElementById('work-analysis')?.scrollIntoView();
-          }}>查看该轮分析</button>
+          <button className="text-button" onClick={() => openRun(entry.analysisRunId!)}>查看该轮分析</button>
         </p>}
         <p className="work-prose">{entry.body}</p>
       </li>)}</ul>
