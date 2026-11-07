@@ -28,8 +28,9 @@ function AnalysisThemes({ output, runId }: { output: WorkAnalysisOutputV2; runId
     {output.themes.map(({ title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict }, index) =>
       <section className="work-analysis-theme" key={index} aria-labelledby={`work-theme-${runId}-${index}`}>
         <h5 id={`work-theme-${runId}-${index}`}>{title}</h5>
-        <p className="work-prose"><strong>{conclusion?.kind === 'evidence_supported' ? '有证据支持' : conclusion ? '待验证假设' : '待验证'}</strong>
+        <p className="work-prose"><strong>{conclusion?.kind === 'evidence_supported' ? 'AI 标注：有支持材料（待核对）' : conclusion ? '待验证假设' : '待验证'}</strong>
           {conclusion ? `：${conclusion.text}` : '：现有资料不足以形成结论。'}</p>
+        {conclusion?.kind === 'evidence_supported' && <p className="work-note">支持材料不代表同主题每个案例均已证实；证据不足的判断仍待核实。</p>}
         <dl className="work-theme-evidence">
           <dt>支持证据</dt><dd>{evidence.length ? links(evidence) : '本轮未找到支持证据'}</dd>
           <dt>反例</dt><dd>{counterEvidence.length ? links(counterEvidence) : '本轮未发现反例'}</dd>
@@ -54,25 +55,23 @@ function AnalysisThemes({ output, runId }: { output: WorkAnalysisOutputV2; runId
 
 function stageDraft(run: WorkAnalysisRun, output: NonNullable<WorkAnalysisRun['output']>) {
   const list = (title: string, values: string[]) => values.length ? [title, ...values.map(value => `- ${value}`)].join('\n') : '';
-  const citations = (indexes: number[]) => indexes.map(index => `观察 ${index + 1}`).join('、');
-  const summary = 'roundSummary' in output ? `本轮摘要（待确认）\n${output.roundSummary}` : '';
-  const themes = 'themes' in output ? output.themes.map(theme => {
-    const { title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict } = theme;
+  if ('roundSummary' in output) {
+    const questions = [...new Set([...output.themes.flatMap(theme => theme.openQuestions), ...output.openQuestions])];
+    const conflicts = output.themes.flatMap(theme => theme.confirmedConflict ? [theme.confirmedConflict] : []);
+    const shorten = (value: string, limit: number) => value.length > limit ? `${value.slice(0, limit)}…` : value;
     return [
-      title,
-      conclusion ? `${conclusion.kind === 'evidence_supported' ? '有证据支持（待确认）' : '待验证假设'}：${conclusion.text}` : '待验证：现有资料不足以形成结论。',
-      evidence.length ? `支持证据：${citations(evidence)}` : '',
-      `反例：${counterEvidence.length ? citations(counterEvidence) : '本轮未发现反例'}`,
-      list('待核问题', openQuestions),
-      list('建议下一步', nextSteps),
-      confirmedConflict ? `与已确认结论冲突：「${confirmedConflict.confirmedQuote}」（${citations(confirmedConflict.observationIndexes)}）\n建议修订：${confirmedConflict.suggestedRevision}` : '',
-    ].filter(Boolean).join('\n');
-  }) : [];
+      `AI 草稿，待确认\n\n本轮摘要（待确认）\n${output.roundSummary}`,
+      list('待核问题', questions.slice(0, 2).map(question => shorten(question, 120))),
+      questions.length > 2 ? `其余 ${questions.length - 2} 条待核问题见原分析。` : '',
+      conflicts.length ? `与已确认结论存在 ${conflicts.length} 处冲突。首条建议修订：${shorten(conflicts[0].suggestedRevision, 160)}\n请在原分析逐项核对，不改变已确认结论。` : '',
+      '完整证据、反例与其他建议见原分析。',
+    ].filter(Boolean).join('\n\n');
+  }
   const observations = output.observations.map(({ observation, quote, rawId }, index) => {
     const title = run.input.sources.find(source => source.rawId === rawId)?.title;
     return `观察 ${index + 1}：${observation}\n  ${title}：${quote}`;
   });
-  return [summary, ...themes, list('观察与原文依据', observations), list('建议', output.suggestions), list('待核问题', output.openQuestions)]
+  return [list('观察与原文依据', observations), list('建议', output.suggestions), list('待核问题', output.openQuestions)]
     .filter(Boolean).join('\n\n');
 }
 
