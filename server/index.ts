@@ -43,6 +43,9 @@ import { registerRecoveryRoutes } from './recovery-api.ts';
 import { WorkItemStore } from '../services/work-items/store.ts';
 import { registerWorkItemRoutes } from './work-items-api.ts';
 import { WorkAnalysisRuns } from '../services/work-items/analysis-runs.ts';
+import { NewsService } from '../services/news/service.ts';
+import { readNewsSources } from '../services/news/sources.ts';
+import { registerNewsRoutes } from './news-api.ts';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(process.env.FMCG_DATA_DIR || path.join(moduleDir, '..', 'workspace'));
@@ -165,6 +168,7 @@ app.use((...args) => {
   if (!ai) { next(); return; }
   void providerFactory().then(snapshot => providerContext.run({ provider: snapshot }, next)).catch(next);
 });
+registerNewsRoutes(app, new NewsService({ root, clock: () => new Date(), readSources: readNewsSources, aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory }));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/stats', async (_req, res, next) => {
   try { res.json(await getStats(root, store, new Date(), prompts)); } catch (error) { next(error); }

@@ -1,0 +1,33 @@
+import { useEffect, useRef, useState } from 'react';
+import { api } from '../api';
+import type { NewsEdition, NewsSection, NewsSectionName } from '../../services/news/types';
+import '../news.css';
+type View={date:string;aiEnabled:boolean;edition:NewsEdition|null;fallbacks:Partial<Record<NewsSectionName,{date:string;section:NewsSection}>>};
+const labels={fmcg:'快消行业',ai:'AI 前沿'};
+const status={running:'正在准备',ready:'分析已生成',source_only:'来源摘录可阅读',empty:'近期内容不足',failed:'读取失败',interrupted:'上次准备中断'};
+function useToday(ensure:boolean){
+ const [view,setView]=useState<View|null>(null),[error,setError]=useState('');
+ const current=useRef<View|null>(null),refreshRef=useRef<()=>void>(()=>{});
+ useEffect(()=>{current.current=view},[view]);
+ useEffect(()=>{let active=true,inFlight=false;
+  const load=async(first=false,checkDate=false)=>{if(inFlight)return;inFlight=true;try{
+   let value=await api<View>(first&&ensure?'/api/news/today/ensure':'/api/news/today',first&&ensure?{method:'POST',body:'{}'}:undefined);
+   if(ensure&&checkDate&&current.current&&value.date!==current.current.date)value=await api<View>('/api/news/today/ensure',{method:'POST',body:'{}'});
+   if(active){current.current=value;setView(value);setError('');}
+  }catch{if(active)setError('资讯状态读取失败，请重新读取。');}finally{inFlight=false;}};
+  refreshRef.current=()=>{void load(false,false)};
+  const onFocus=()=>{if(document.visibilityState==='visible')void load(false,true)};
+  const onVisibility=()=>{if(document.visibilityState==='visible')void load(false,true)};
+  if(ensure){window.addEventListener('focus',onFocus);document.addEventListener('visibilitychange',onVisibility);}
+  void load(true);return()=>{active=false;refreshRef.current=()=>{};window.removeEventListener('focus',onFocus);document.removeEventListener('visibilitychange',onVisibility);};
+ },[ensure]);
+ useEffect(()=>{if(error||!view||!Object.values(view.edition?.sections||{}).some(x=>x.status==='running'))return;const timer=setTimeout(()=>refreshRef.current(),2000);return()=>clearTimeout(timer);},[view,error]);
+ return {view,error,setView,setError,refresh:()=>refreshRef.current()};
+}
+export function NewsHome({onOpen}:{onOpen:()=>void}){const {view,error,refresh}=useToday(true);return <section className="panel news-home"><div><h2>每日资讯</h2><p>{view?`${view.date} · AI 分析${view.aiEnabled?'已启用':'未启用'}`:'正在读取资讯状态'}</p>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}<div className="news-home-status">{(['fmcg','ai'] as const).map(n=><span key={n}>{labels[n]}：{view?.edition?.sections[n]?status[view.edition.sections[n]!.status]:'等待准备'}</span>)}</div></div><button className="secondary-button" onClick={onOpen}>阅读资讯</button></section>;}
+export function NewsPage(){const {view,error,setView,setError,refresh}=useToday(false);const [history,setHistory]=useState<{items:Array<{date:string}>;errors:string[]}|null>(null),[selected,setSelected]=useState<string|null>(null),[edition,setEdition]=useState<NewsEdition|null>(null),[readError,setReadError]=useState('');
+ useEffect(()=>{let active=true;api<{items:Array<{date:string}>;errors:string[]}>('/api/news/history').then(x=>{if(active)setHistory(x)}).catch(()=>{if(active)setReadError('历史记录读取失败。')});return()=>{active=false}},[]);
+ useEffect(()=>{let active=true;setEdition(null);setReadError('');if(selected)void api<NewsEdition>(`/api/news/editions/${selected}`).then(x=>{if(active)setEdition(x)}).catch(()=>{if(active)setReadError('这期记录读取失败。')});return()=>{active=false}},[selected]);
+ const retry=async(n:NewsSectionName,s:NewsSection)=>{try{const x=await api<View>('/api/news/today/retry',{method:'POST',body:JSON.stringify({section:n,attempt:s.attempt})});setView(x);setError('');}catch(e){setError(e instanceof Error?e.message:'重试失败，请刷新。')}};
+ const shown=selected?edition:view?.edition;return <div className="page news-page"><div className="page-heading"><div><h1>每日资讯</h1><p className="subheading">来源摘录与分析分开保存，日期以来源为准。</p></div></div><div className="news-toolbar"><label>阅读日期 <select value={selected||''} onChange={e=>setSelected(e.target.value||null)}><option value="">今天 {view?.date||''}</option>{history?.items.filter(x=>x.date!==view?.date).map(x=><option key={x.date}>{x.date}</option>)}</select></label><span>{!view?.aiEnabled?'AI 分析未启用':'AI 分析已启用'}</span></div>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}{readError&&<p className="form-error" role="alert">{readError}</p>}{history?.errors.map(e=><p className="form-error" key={e}>{e}</p>)}{selected&&!edition&&!readError&&<p>正在读取历史…</p>}
+ {(['fmcg','ai'] as const).map(n=>{const current=shown?.sections[n],fallback=!selected&&current&&['failed','interrupted'].includes(current.status)?view?.fallbacks[n]:undefined,section=fallback?.section||current;return <section className="news-section" key={n}><div className="news-section-heading"><div><h2>{labels[n]}</h2><p>{current?status[current.status]:'暂无记录'}{fallback?` · 显示 ${fallback.date} 的内容`:''}</p></div>{!selected&&current&&['failed','interrupted'].includes(current.status)&&<button className="secondary-button" onClick={()=>void retry(n,current)}>重试{labels[n]}</button>}</div>{current?.error&&<p className="form-error">{current.error}</p>}{section?.sources.some(s=>s.status==='failed')&&<p className="news-notice">部分来源不可用，覆盖不完整。</p>}{section?.status==='empty'&&<p>近期没有足够的可核验内容。</p>}{n==='fmcg'&&section&&section.items.length<3&&<p className="news-notice">近期快消内容不足 3 条；渠道近期内容可能不足。</p>}{n==='fmcg'&&section&&!section.items.some(x=>x.sourceId==='commerce')&&<p className="news-notice">近期渠道资讯不足。</p>}{!section&&<p>暂无可阅读内容。</p>}{section?.items.map(item=><article className="news-article" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3><p className="news-meta">{item.sourceName}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {item.evidenceKind==='source_summary'?'AIHOT 来源摘要，未核验原文':'来源正文摘录'}</p><p>{item.excerpt.slice(0,280)}{item.excerpt.length>280?'…':''}</p>{item.excerpt.length>280&&<details><summary>展开完整摘录</summary><p>{item.excerpt}</p></details>}{item.analysis?<div className="news-analysis"><p><b>事实：</b>{item.analysis.fact}</p><p><b>值得关注：</b>{item.analysis.whyItMatters}</p><p><b>可能影响（推断）：</b>{item.analysis.possibleImpact}</p></div>:<p className="news-meta">为何值得关注 / 可能影响：未生成分析</p>}</article>)}</section>})}</div>}
