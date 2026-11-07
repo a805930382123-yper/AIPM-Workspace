@@ -51,6 +51,32 @@ export type WorkAnalysisRun = {
   error?: { code: string; message: string };
 };
 
+export type WorkBasisCheck = {
+  target: string;
+  decision: 'supported' | 'unsupported' | 'uncertain';
+  reason: string;
+  evidence: Array<{ rawId: string; quote: string }>;
+};
+
+export type WorkBasisReview = {
+  version: 1;
+  itemId: string;
+  runId: string;
+  reviewId: string;
+  attempt: number;
+  provider: WorkAnalysisRun['provider'];
+  startedAt: string;
+} & (
+  { status: 'running' }
+  | { status: 'completed'; finishedAt: string; result: { checks: WorkBasisCheck[] } }
+  | { status: 'failed'; finishedAt: string; error: { code: string; message: string } }
+  | { status: 'interrupted'; error: { code: string; message: string } }
+);
+
+export type WorkAnalysisRunWithReview = WorkAnalysisRun & {
+  basisReview?: WorkBasisReview | { status: 'unavailable'; error: { code: string; message: string } };
+};
+
 export type WorkAnalysisRunInput = { baseRevision: number; rawIds: string[] } & (
   { outputVersion?: never; roundQuestion?: never; stageHistoryIndex?: never }
   | { outputVersion: 2; roundQuestion?: string; stageHistoryIndex?: number }

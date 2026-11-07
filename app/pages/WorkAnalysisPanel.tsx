@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ApiError, startWorkAnalysis, workAnalysisRuns, type Raw, type WorkAnalysisOutputV2, type WorkAnalysisRun, type WorkItem } from '../api';
+import { ApiError, startWorkAnalysis, startWorkBasisReview, workAnalysisRuns, type Raw, type WorkAnalysisOutputV2, type WorkAnalysisRun, type WorkAnalysisRunWithReview, type WorkItem } from '../api';
 
 const runLabels: Record<WorkAnalysisRun['status'], string> = { running: '分析中', completed: '待确认草稿', failed: '分析失败', interrupted: '已中断' };
 const runTime = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', dateStyle: 'medium', timeStyle: 'short' });
@@ -22,13 +22,13 @@ function AnalysisThemes({ output, runId }: { output: WorkAnalysisOutputV2; runId
     {indexes.map(index => <a key={index} href={`#observation-${runId}-${index}`}>观察 {index + 1}</a>)}
   </span>;
   return <>
-    <h4>本轮摘要</h4>
+    <h4 id={`work-round-summary-${runId}`}>本轮摘要</h4>
     <p className="work-prose">{output.roundSummary}</p>
     <h4>主题分析</h4>
     {output.themes.map(({ title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict }, index) =>
       <section className="work-analysis-theme" key={index} aria-labelledby={`work-theme-${runId}-${index}`}>
         <h5 id={`work-theme-${runId}-${index}`}>{title}</h5>
-        <p className="work-prose"><strong>{conclusion?.kind === 'evidence_supported' ? 'AI 标注：有支持材料（待核对）' : conclusion ? '待验证假设' : '待验证'}</strong>
+        <p className="work-prose" id={`work-conclusion-${runId}-${index}`}><strong>{conclusion?.kind === 'evidence_supported' ? 'AI 标注：有支持材料（待核对）' : conclusion ? '待验证假设' : '待验证'}</strong>
           {conclusion ? `：${conclusion.text}` : '：现有资料不足以形成结论。'}</p>
         {conclusion?.kind === 'evidence_supported' && <p className="work-note">支持材料不代表同主题每个案例均已证实；证据不足的判断仍待核实。</p>}
         <dl className="work-theme-evidence">
@@ -51,6 +51,110 @@ function AnalysisThemes({ output, runId }: { output: WorkAnalysisOutputV2; runId
       </section>
     )}
   </>;
+}
+
+function showSource(runId: string, rawId: string) {
+  const source = document.getElementById(`work-source-${runId}-${rawId}`) as HTMLDetailsElement | null;
+  if (!source) return;
+  (source.parentElement as HTMLDetailsElement).open = true;
+  source.open = true;
+  source.querySelector('summary')?.focus();
+}
+
+function WorkBasisReviewPanel({ run, round, onReviewChanged }: {
+  run: WorkAnalysisRunWithReview;
+  round: number;
+  onReviewChanged: (review?: Awaited<ReturnType<typeof startWorkBasisReview>>) => void;
+}) {
+  const [preview, setPreview] = useState<string | null>();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState('');
+  const previewHeading = useRef<HTMLHeadingElement>(null);
+  const review = run.basisReview;
+  const retry = review?.status === 'failed' || review?.status === 'interrupted' ? review.reviewId : undefined;
+  const mayStart = !review || retry !== undefined;
+  const showPreview = mayStart && preview === (retry ?? null);
+  const inProgress = pending || review?.status === 'running';
+  const output = run.output!;
+  const decisionLabels = { supported: '有依据', unsupported: '依据不支持', uncertain: '证据不足' };
+
+  useEffect(() => { if (showPreview) previewHeading.current?.focus(); }, [showPreview]);
+
+  const launch = async () => {
+    setPending(true);
+    setError('');
+    let updated: Awaited<ReturnType<typeof startWorkBasisReview>> | undefined;
+    try {
+      updated = await startWorkBasisReview(run.itemId, run.id, retry);
+      setPreview(undefined);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) setPreview(undefined);
+      setError(error instanceof Error ? error.message : '未能启动检查。');
+    } finally {
+      onReviewChanged(updated);
+      setPending(false);
+    }
+  };
+
+  return <section className="work-basis-review" aria-labelledby={`work-review-${run.id}`}>
+    <h4 id={`work-review-${run.id}`}>模型复核</h4>
+    <p className="work-note">核对草稿的依据和证据强度，复核意见由你确认。</p>
+    {inProgress && <p className="work-note" role="status">正在检查分析依据…</p>}
+    {review && 'provider' in review && <p className="work-note work-prose">第 {review.attempt} 次检查 · {review.provider.model}</p>}
+    {review?.status === 'failed' && <p className="form-error" role="alert">检查失败。{review.error.message}</p>}
+    {review?.status === 'interrupted' && <p className="form-error" role="alert">{review.error.message}</p>}
+    {review?.status === 'unavailable' && <p className="form-error" role="alert">{review.error.message}</p>}
+    {review?.status === 'completed' && <>
+      <p className="work-review-summary">{review.result.checks.every(check => check.decision === 'supported')
+        ? '模型未发现依据问题' : '模型发现依据问题或仍需核对的判断'}</p>
+      <ul className="work-review-checks">
+        {review.result.checks.map(({ target, decision, reason, evidence }) => {
+          const index = Number(target.split('.')[1]);
+          const title = target === 'scope' ? '反例、口径与事实范围' : target === 'roundSummary' ? '本轮摘要'
+            : target.startsWith('observations.') ? `观察 ${index + 1}`
+            : `主题结论 · ${'themes' in output ? output.themes[index].title : ''}`;
+          const anchor = target === 'scope' ? undefined : target === 'roundSummary' ? `work-round-summary-${run.id}`
+            : target.startsWith('observations.') ? `observation-${run.id}-${index}` : `work-conclusion-${run.id}-${index}`;
+          return <li key={target}>
+            <div className="work-review-check-heading">
+              {anchor ? <a href={`#${anchor}`}>{title}</a> : <strong>{title}</strong>}
+              <span className={`work-status ${decision === 'supported' ? 'action-review' : 'action-warning'}`}>{decisionLabels[decision]}</span>
+            </div>
+            <p className="work-prose">{reason}</p>
+            {evidence.map(({ rawId, quote }, index) => <blockquote className="work-prose" key={index}>
+              <p>{quote}</p>
+              <button className="text-button" type="button" onClick={() => showSource(run.id, rawId)}>
+                {run.input.sources.find(source => source.rawId === rawId)?.title} · 查看本轮原文
+              </button>
+            </blockquote>)}
+          </li>;
+        })}
+      </ul>
+    </>}
+    {showPreview && <section className="work-analysis-preview" aria-labelledby={`work-review-preview-${run.id}`}>
+      <h5 id={`work-review-preview-${run.id}`} tabIndex={-1} ref={previewHeading}>依据检查发送预览 · 第 {round} 轮</h5>
+      <p className="work-note">会把这轮当时实际发送的文本及其<a href={`#work-original-output-${run.id}`}>原分析草稿</a>发给当前设置中的模型，可能与原模型相同。</p>
+      <AnalysisContext input={run.input} showQuestion={run.outputVersion === 2} />
+      {run.input.stageContext && <details className="work-run-source">
+        <summary>原承接阶段成果 · {stageSource(run.input.stageContext.source === 'ai_assisted')}</summary>
+        <p className="work-prose">{run.input.stageContext.body}</p>
+      </details>}
+      <h5>原输入资料 · {run.input.sources.length} 条 Raw</h5>
+      {run.input.sources.map(source => <details className="work-run-source" key={source.rawId}>
+        <summary>{source.title} · 原输入全文</summary><p className="work-prose">{source.body}</p>
+      </details>)}
+      <div className="work-buttons">
+        <button className="primary-button" type="button" disabled={inProgress} onClick={() => void launch()}>开始检查</button>
+        <button className="text-button" type="button" disabled={inProgress} onClick={() => { setPreview(undefined); setError(''); }}>取消</button>
+      </div>
+    </section>}
+    {mayStart && !showPreview && !inProgress && <div className="work-buttons">
+      <button className="secondary-button" type="button" onClick={() => { setError(''); setPreview(retry ?? null); }}>
+        {retry ? '重新检查' : '检查分析依据'}
+      </button>
+    </div>}
+    {error && <p className="form-error" role="alert">{error}</p>}
+  </section>;
 }
 
 function stageDraft(run: WorkAnalysisRun, output: NonNullable<WorkAnalysisRun['output']>) {
@@ -85,7 +189,7 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
   saveStage: (body: string, analysisRunId: string | undefined, onSaved: () => void) => void;
   stageNotice: ReactNode;
 }) {
-  const [runs, setRuns] = useState<WorkAnalysisRun[] | null>(null);
+  const [runs, setRuns] = useState<WorkAnalysisRunWithReview[] | null>(null);
   const [readError, setReadError] = useState('');
   const [launchError, setLaunchError] = useState('');
   const [reload, setReload] = useState(0);
@@ -110,7 +214,7 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
         if (!active) return;
         setRuns(list);
         setReadError('');
-        if (list.some(run => run.status === 'running')) timer = setTimeout(() => void read(), 1200);
+        if (list.some(run => run.status === 'running' || run.basisReview?.status === 'running')) timer = setTimeout(() => void read(), 1200);
       } catch (error) {
         if (active) setReadError(error instanceof Error ? error.message : '无法读取分析记录。');
       }
@@ -257,6 +361,11 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
               {expanded && <>
                 {run.error && <p className="form-error">{run.error.message}</p>}
                 {output && <>
+                  <WorkBasisReviewPanel run={run} round={runs.length - index} onReviewChanged={review => {
+                    if (review) setRuns(current => current?.map(value => value.id === run.id ? { ...value, basisReview: review } : value) ?? null);
+                    setReload(value => value + 1);
+                  }} />
+                  <h4 id={`work-original-output-${run.id}`}>原分析草稿</h4>
                   {'roundSummary' in output && <AnalysisThemes output={output} runId={run.id} />}
                   <h4>观察与原文依据</h4>
                   {run.outputVersion === 2 && <p className="work-note">以下观察用于核对依据，条数不代表事件总数或真实频次。</p>}
@@ -266,13 +375,7 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
                       <p className="work-prose">{observation}</p>
                       <p className="work-note">{run.input.sources.find(source => source.rawId === rawId)?.title} · 原文</p>
                       <blockquote className="work-prose">{quote}</blockquote>
-                      <button className="text-button" onClick={() => {
-                        const source = document.getElementById(`work-source-${run.id}-${rawId}`) as HTMLDetailsElement;
-                        const snapshot = source.parentElement as HTMLDetailsElement;
-                        snapshot.open = true;
-                        source.open = true;
-                        source.querySelector('summary')?.focus();
-                      }}>查看本轮原文</button>
+                      <button className="text-button" onClick={() => showSource(run.id, rawId)}>查看本轮原文</button>
                     </li>)}</ol>}
                   <h4>建议</h4>
                   {output.suggestions.length ? <ul className="work-run-results">{output.suggestions.map((text, index) => <li key={index} className="work-prose">{text}</li>)}</ul>

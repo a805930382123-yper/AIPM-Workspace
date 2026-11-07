@@ -224,6 +224,19 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .work-observations > li { padding: 10px 0; scroll-margin-top: 80px; }
 .work-observations > li + li { margin: 0; border-top: 1px solid var(--line); }
 .work-run-detail > .work-run-input:not(:first-child) { margin-top: 12px; }
+.work-basis-review { min-width: 0; margin: 12px 0; padding: 12px 14px; background: var(--canvas); border-radius: 8px; }
+.work-basis-review > h4 { margin-top: 0; }
+.work-basis-review .work-analysis-preview { margin-top: 12px; border-bottom: 0; padding-bottom: 0; }
+.work-basis-review h5 { margin: 10px 0 6px; font-size: 14px; }
+.work-basis-review .work-buttons { margin-top: 10px; }
+.work-basis-review a { color: var(--accent); text-underline-offset: .2em; }
+.work-review-summary { margin: 10px 0; font-weight: 650; }
+.work-review-checks { list-style: none; padding: 0; margin: 0; }
+.work-review-checks li { border-top: 1px solid var(--line); padding: 10px 0; }
+.work-review-checks li:last-child { padding-bottom: 0; }
+.work-review-check-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; overflow-wrap: anywhere; }
+.work-review-checks blockquote { margin: 8px 0 0; padding-left: 10px; border-left: 1px solid var(--line); }
+.work-review-checks blockquote p { margin: 0 0 4px; }
 .work-stage-actions { align-items: center; margin-top: 12px; }
 .work-history-list + form { margin-top: 12px; }
 

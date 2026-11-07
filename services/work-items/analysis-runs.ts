@@ -6,7 +6,8 @@ import { assertRawNotMeeting, SourcePolicyError } from '../meeting/source-policy
 import type { RawStore } from '../raw/store.ts';
 import { JSON_SCAN_BUDGET, listJsonRecords, readJsonRecord, StorageError, writeJsonAtomic } from '../storage/files.ts';
 import { isUuid } from '../storage/record-validators.ts';
-import type { WorkAnalysis, WorkAnalysisOutput, WorkAnalysisOutputV2, WorkAnalysisRun, WorkAnalysisSource, WorkAnalysisStageContext, WorkItem } from './types.ts';
+import { basisReviewUnavailable, WorkBasisReviews, workAnalysisSendInput } from './basis-review.ts';
+import type { WorkAnalysis, WorkAnalysisOutput, WorkAnalysisOutputV2, WorkAnalysisRun, WorkAnalysisRunWithReview, WorkAnalysisSource, WorkAnalysisStageContext, WorkItem } from './types.ts';
 
 const MAX_SOURCES = 8;
 const MAX_RAW_BYTES = 128 * 1024;
@@ -162,24 +163,38 @@ export function readWorkAnalysisRun(root: string, itemId: string, id: string) {
 
 export class WorkAnalysisRuns {
   private readonly active = new Map<string, string>();
+  readonly basisReviews: WorkBasisReviews;
 
   constructor(
     private readonly root: string,
     private readonly getItem: (id: string) => Promise<WorkItem>,
     private readonly raws: Pick<RawStore, 'get'>,
     private readonly providerFactory: () => Promise<LlmProvider | undefined>,
-  ) {}
+  ) {
+    this.basisReviews = new WorkBasisReviews(root, async (itemId, runId) => {
+      const item = await getItem(itemId);
+      if (item.kind !== 'product_analysis') throw new StorageError('WORK_ANALYSIS_KIND', '请选择产品分析事项。', 400);
+      return readWorkAnalysisRun(root, itemId, runId);
+    }, raws, providerFactory);
+  }
 
-  async list(itemId: string): Promise<WorkAnalysisRun[]> {
+  async list(itemId: string): Promise<WorkAnalysisRunWithReview[]> {
     const item = await this.getItem(itemId);
     if (item.kind !== 'product_analysis') throw new StorageError('WORK_ANALYSIS_KIND', '请选择产品分析事项。', 400);
     const records = await listJsonRecords(runDirectory(this.root, itemId),
       (value, file): value is WorkAnalysisRun => validRun(value, itemId, path.basename(file, '.json')), this.root);
-    return records.map(({ value }): WorkAnalysisRun =>
-      value.status === 'running' && this.active.get(itemId) !== value.id
-        ? { ...value, status: 'interrupted', error: { code: 'WORK_ANALYSIS_INTERRUPTED', message: '本轮分析已中断。可在原事项发起新一轮。' } }
-        : value
-    ).sort((a, b) => b.startedAt.localeCompare(a.startedAt) || a.id.localeCompare(b.id));
+    const runs: WorkAnalysisRunWithReview[] = [];
+    for (const { value } of records) {
+      if (value.status === 'running' && this.active.get(itemId) !== value.id) {
+        runs.push({ ...value, status: 'interrupted', error: { code: 'WORK_ANALYSIS_INTERRUPTED', message: '本轮分析已中断。可在原事项发起新一轮。' } });
+      } else if (value.status === 'completed') {
+        const basisReview = await this.basisReviews.latest(value).catch(() => basisReviewUnavailable);
+        runs.push(basisReview ? { ...value, basisReview } : value);
+      } else {
+        runs.push(value);
+      }
+    }
+    return runs.sort((a, b) => b.startedAt.localeCompare(a.startedAt) || a.id.localeCompare(b.id));
   }
 
   async start(itemId: string, value: unknown): Promise<WorkAnalysisRun> {
@@ -263,10 +278,7 @@ export class WorkAnalysisRuns {
       const { goal, dataScope, confirmedConclusions, openQuestions } = item.analysis;
       const fields = { goal, dataScope, confirmedConclusions, openQuestions, sources };
       const input = version2 ? { ...fields, roundQuestion, stageContext } : fields;
-      const sendInput = version2 ? {
-        ...fields, roundQuestion,
-        stageContext: stageContext && { body: stageContext.body, source: stageContext.source },
-      } : fields;
+      const sendInput = workAnalysisSendInput(input);
       assertNoKnownSecret(sendInput, provider.secrets);
       const run: WorkAnalysisRun = {
         id, itemId, baseRevision: item.revision, startedAt: new Date().toISOString(), status: 'running',

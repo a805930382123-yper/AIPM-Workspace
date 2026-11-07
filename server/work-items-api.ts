@@ -28,6 +28,9 @@ export function registerWorkItemRoutes(app: Express, store: WorkItemStore, analy
   app.post('/api/work-items/:id/analysis-runs', async (req, res) => {
     res.status(201).json(await analysis.start(req.params.id, req.body));
   });
+  app.post('/api/work-items/:id/analysis-runs/:runId/basis-review', async (req, res) => {
+    res.json(await analysis.basisReviews.start(req.params.id, req.params.runId, req.body));
+  });
   app.post('/api/work-items/:id/screenshots', (req, res, next) => {
     upload(req, res, error => {
       if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {

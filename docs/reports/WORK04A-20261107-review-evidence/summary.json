@@ -1,0 +1,140 @@
+{
+  "checks": [
+    "A2/A3: POST input/target/state/provenance/secret/size/configuration gates; denied calls 0 and read/save available",
+    "A1/A3: real Chrome 1440/390 preview/confirm/snapshot/three decisions/readback/WORK03P manual draft and current-model HTTP",
+    "A1: legacy v1 review plus all-supported label and no resend on repeat",
+    "A2: provider error/secret echo, 8 invalid structured results, malformed JSON, truncation, output cap rejected with saved failures",
+    "A2: retry/active duplicate/stale ID/corruption; saved draft and other review remain readable",
+    "A2: process kill/restart maps running to interrupted without send; explicit Chrome retry sends exactly once",
+    "A2: recursive backup/restore preserves earlier failed attempts and old original runs; no send on startup/read"
+  ],
+  "ports": {
+    "fake": 50497,
+    "api": 50498,
+    "ui": 50636
+  },
+  "calls": [
+    {
+      "model": "original-model",
+      "path": "/v1/chat/completions",
+      "purpose": "analysis-fixture",
+      "mode": "mixed"
+    },
+    {
+      "model": "original-model",
+      "path": "/v1/chat/completions",
+      "purpose": "analysis-fixture",
+      "mode": "mixed"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "mixed"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "all"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "provider-error"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "omitted"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "duplicate"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "out-of-range"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "empty-reason"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "missing-evidence"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "theme-without-evidence"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "forged-quote"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "cross-source"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "echo-output"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "invalid-json"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "truncated"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "large-response"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "all"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "all"
+    },
+    {
+      "model": "current-review-model",
+      "path": "/v1/chat/completions",
+      "purpose": "review",
+      "mode": "all"
+    }
+  ],
+  "fixtureErrors": [],
+  "realModelCalls": 0
+}
