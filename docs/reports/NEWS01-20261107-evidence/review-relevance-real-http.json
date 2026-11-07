@@ -1,0 +1,281 @@
+{
+  "run": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news01-review\\live-NAuoRX",
+  "checks": [
+    "Read-only and forbidden mutation generated no record, fetch or provider factory config read",
+    "Both real product source adapters wrote source-only items with no provider configuration read or synthetic requests",
+    "Read history, rejected retry, backup/restore, restart, and browser reuse produced no new external call"
+  ],
+  "browser": [
+    {
+      "width": 1440,
+      "file": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news01-review\\live-NAuoRX\\live-source-only-1440.png",
+      "visible": 1440,
+      "scroll": 1440
+    },
+    {
+      "width": 390,
+      "file": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news01-review\\live-NAuoRX\\live-source-only-390.png",
+      "visible": 390,
+      "scroll": 390
+    }
+  ],
+  "requests": [
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/history",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/history",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/editions/2026-11-07",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/retry",
+      "method": "POST",
+      "status": 409
+    },
+    {
+      "route": "/api/news/editions/2026-02-29",
+      "method": "GET",
+      "status": 400
+    },
+    {
+      "route": "/api/stats",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "method": "POST",
+      "status": 200
+    }
+  ],
+  "fakeRequests": 0,
+  "logs": "FMCG AI PM Workspace API: http://127.0.0.1:55856 (data: E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news01-review\\live-NAuoRX\\data)\nFMCG AI PM Workspace API: http://127.0.0.1:55895 (data: E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news01-review\\live-NAuoRX\\data)\n",
+  "cleanup": {
+    "productApiStopped": true,
+    "browserClosed": true,
+    "previewClosed": true,
+    "dummyProviderClosed": true
+  },
+  "emptyHistory": {
+    "items": [],
+    "errors": []
+  },
+  "ensureMs": 40,
+  "sectionSummaries": {
+    "fmcg": {
+      "attempt": 1,
+      "status": "source_only",
+      "sources": [
+        {
+          "name": "商务部",
+          "checkedAt": "2026-11-07T05:19:16.448Z",
+          "status": "ok"
+        },
+        {
+          "name": "中国经济网食品",
+          "checkedAt": "2026-11-07T05:19:16.448Z",
+          "status": "ok"
+        }
+      ],
+      "items": [
+        {
+          "title": "深耕中国市场，创新驱动未来——太古可口可乐中国发布“致胜2035”战略",
+          "url": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3286365.shtml",
+          "publishedAt": "2026-11-06T18:13:00+08:00",
+          "evidenceKind": "article_excerpt"
+        },
+        {
+          "title": "用一杯咖啡打开更广阔的市场",
+          "url": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3285718.shtml",
+          "publishedAt": "2026-11-06T09:26:00+08:00",
+          "evidenceKind": "article_excerpt"
+        }
+      ]
+    },
+    "ai": {
+      "attempt": 1,
+      "status": "source_only",
+      "sources": [
+        {
+          "name": "AIHOT",
+          "checkedAt": "2026-11-07T05:19:16.448Z",
+          "status": "ok"
+        }
+      ],
+      "items": [
+        {
+          "title": "Artificial Analysis 实测 GPT Image 2.6 图像生成与编辑表现",
+          "url": "https://x.com/ArtificialAnlys/status/2118851088111865983",
+          "publishedAt": "2026-11-06T23:40:40.000Z",
+          "evidenceKind": "source_summary"
+        },
+        {
+          "title": "Meta 将基于 Muse Wonder 训练的专用模型上线 Muse 与 Meta AI",
+          "url": "https://research.meta.ai/blog/specialized-models-for-muse-and-metaai",
+          "publishedAt": "2026-11-06T07:00:00.000Z",
+          "evidenceKind": "source_summary"
+        }
+      ]
+    }
+  },
+  "browserVersion": "156.0.8078.80",
+  "pageErrors": [],
+  "success": true,
+  "publicActivity": [
+    {
+      "type": "fetch-start",
+      "method": "GET",
+      "url": "http://www.ce.cn/cysc/sp/"
+    },
+    {
+      "type": "fetch-start",
+      "method": "GET",
+      "url": "https://www.mofcom.gov.cn/"
+    },
+    {
+      "type": "fetch-start",
+      "method": "GET",
+      "url": "https://aihot.news/api/v1/items?mode=selected&window=24h&limit=20"
+    },
+    {
+      "type": "fetch-complete",
+      "method": "GET",
+      "url": "http://www.ce.cn/cysc/sp/",
+      "status": 200,
+      "responseUrl": "http://www.ce.cn/cysc/sp/"
+    },
+    {
+      "type": "fetch-complete",
+      "method": "GET",
+      "url": "https://aihot.news/api/v1/items?mode=selected&window=24h&limit=20",
+      "status": 200,
+      "responseUrl": "https://aihot.news/api/v1/items?mode=selected&window=24h&limit=20"
+    },
+    {
+      "type": "fetch-start",
+      "method": "GET",
+      "url": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3286365.shtml"
+    },
+    {
+      "type": "fetch-complete",
+      "method": "GET",
+      "url": "https://www.mofcom.gov.cn/",
+      "status": 200,
+      "responseUrl": "https://www.mofcom.gov.cn/"
+    },
+    {
+      "type": "fetch-start",
+      "method": "GET",
+      "url": "https://www.mofcom.gov.cn/xwfb/sjfzrfb/art/2026/art_a848a93150ab4eb0a09a2bdd9b9999c2.html"
+    },
+    {
+      "type": "fetch-complete",
+      "method": "GET",
+      "url": "https://www.mofcom.gov.cn/xwfb/sjfzrfb/art/2026/art_a848a93150ab4eb0a09a2bdd9b9999c2.html",
+      "status": 200,
+      "responseUrl": "https://www.mofcom.gov.cn/xwfb/sjfzrfb/art/2026/art_a848a93150ab4eb0a09a2bdd9b9999c2.html"
+    },
+    {
+      "type": "fetch-complete",
+      "method": "GET",
+      "url": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3286365.shtml",
+      "status": 200,
+      "responseUrl": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3286365.shtml"
+    },
+    {
+      "type": "fetch-start",
+      "method": "GET",
+      "url": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3285718.shtml"
+    },
+    {
+      "type": "fetch-complete",
+      "method": "GET",
+      "url": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3285718.shtml",
+      "status": 200,
+      "responseUrl": "http://www.ce.cn/cysc/sp/info/202611/t20261106_3285718.shtml"
+    }
+  ]
+}

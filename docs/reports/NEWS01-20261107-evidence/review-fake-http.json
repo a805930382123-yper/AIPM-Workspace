@@ -1,0 +1,11 @@
+{
+  "root": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news01-review\\fake-http-hkfngt",
+  "checks": [
+    "Actual server/index routes and OpenAI-compatible local fake complete generation, invalid AI fails independently, concurrent manual retry calls only failed AI once",
+    "Full product restart and ensure reuse same analyses without another local provider call",
+    "Corrupt news file returns explicit error and remains intact while actual stats, knowledge draft and home action APIs stay usable"
+  ],
+  "success": true,
+  "calls": 3,
+  "cleanup": "own API and fake stopped"
+}
