@@ -134,7 +134,7 @@ const analysisOf = (analysis?: WorkAnalysis) => ({
   goal: analysis?.goal ?? '', dataScope: analysis?.dataScope ?? '',
   confirmedConclusions: analysis?.confirmedConclusions ?? '', openQuestions: analysis?.openQuestions ?? '',
 });
-type Section = 'current' | 'history' | 'report' | 'materials' | 'stage' | 'analysis';
+type Section = 'suggestion' | 'current' | 'history' | 'report' | 'materials' | 'stage' | 'analysis';
 
 function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   item: WorkItem;
@@ -157,6 +157,8 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   const [imageNote, setImageNote] = useState('');
   const [brokenImages, setBrokenImages] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [suggestionPreview, setSuggestionPreview] = useState<{ revision: number; waitingFor: string; nextStep: string; followUpOn: string } | null>(null);
+  const [suggestionStale, setSuggestionStale] = useState(false);
   const [notice, setNotice] = useState<{ section: Section; message: string; error?: boolean; conflict?: boolean } | null>(null);
 
   const save = async (section: Section, action: () => Promise<WorkItem>, message: string, onSaved?: (next: WorkItem) => void) => {
@@ -169,6 +171,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       setNotice({ section, message });
       onChanged();
     } catch (error) {
+      if (section === 'suggestion' && error instanceof ApiError && error.status === 409) setSuggestionStale(true);
       setNotice({ section, message: errorText(error), error: true, conflict: error instanceof ApiError && error.status === 409 });
     } finally {
       setBusy(false);
@@ -176,9 +179,12 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   };
   const update = (section: Section, patch: Omit<WorkItemUpdate, 'baseRevision'>, message: string, onSaved?: (next: WorkItem) => void) =>
     save(section, () => updateWorkItem(saved.id, { baseRevision: saved.revision, ...patch }), message, onSaved);
-  const readLatest = (section: Section) => save(section, () => workItem(saved.id), section === 'analysis'
+  const readLatest = (section: Section) => {
+    return save(section, () => workItem(saved.id), section === 'analysis'
     ? '已读取最新版本。请重新选择本轮资料和阶段成果。'
     : '已读取最新版本。请核对你的输入后再保存。', next => {
+    setSuggestionPreview(null);
+    setSuggestionStale(false);
     const previous = contextOf(saved);
     const current = contextOf(next);
     setContext({
@@ -200,6 +206,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
     });
     if (report === (saved.reportDraft ?? '')) setReport(next.reportDraft ?? '');
   });
+  };
   const renderNotice = (section: Section) => notice?.section === section && <div className="work-notice">
     <p className={notice.error ? 'form-error' : 'work-note'} role={notice.error ? 'alert' : 'status'}>{notice.message}</p>
     {notice.conflict && <button className="secondary-button" disabled={busy} onClick={() => void readLatest(section)}>重新读取最新版本</button>}
@@ -209,6 +216,17 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   const closing = context.status === 'closed' && saved.status !== 'closed';
   const rawById = new Map(raws.map(raw => [raw.id, raw]));
   const availableRaws = raws.filter(raw => !saved.rawIds.includes(raw.id));
+  const latestProgress = saved.kind === 'customer_issue' ? [...saved.history].reverse().find(entry =>
+    ['sent', 'technical_reply', 'retest', 'closed', 'reopened'].includes(entry.kind)) : undefined;
+  const suggestion = latestProgress?.kind === 'sent' && (saved.status === 'triage' || saved.status === 'in_progress')
+    ? { title: '转为等待技术', reason: '已记录发送技术反馈。', status: 'waiting' as const, waitingFor: '技术', nextStep: '跟进技术回复' }
+    : latestProgress?.kind === 'technical_reply' && (saved.status === 'waiting' || saved.status === 'in_progress')
+      ? { title: '转为待复测', reason: '已记录技术回复。', status: 'retest' as const, waitingFor: '', nextStep: '安排复测' }
+      : latestProgress?.kind === 'retest' && latestProgress.outcome === 'failed' && saved.status === 'retest'
+        ? { title: '继续处理', reason: '最近一次复测未通过。', status: 'in_progress' as const, waitingFor: '', nextStep: '核对失败原因并继续处理' }
+        : undefined;
+  const savedContext = contextOf(saved);
+  const suggestionFields = ['waitingFor', 'nextStep', 'followUpOn'] as const;
 
   return <div className="page work-page work-detail">
     <div className="page-heading">
@@ -221,6 +239,37 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       <div className="work-section-heading"><h2 id="work-current">当前情况</h2>
         {saved.status === 'closed' && <button className="secondary-button" disabled={busy} onClick={() => void update('current', { reopen: true }, '事项已重开。', next => changeContext('status', next.status))}>重开事项</button>}
       </div>
+      {suggestion && <section className="work-analysis-preview" aria-label="事项推进建议">
+        <h3>建议：{suggestion.title}</h3><p className="work-note">{suggestion.reason} 状态不会自动更改。</p>
+        {suggestionPreview?.revision === saved.revision ? <>
+          <p>目标状态：{workStatusLabel(saved.kind, suggestion.status)}</p>
+          {suggestionFields.map(field => {
+            const dirty = context[field] !== savedContext[field];
+            const labels = { waitingFor: '等待对象', nextStep: '下一步', followUpOn: '跟进日期' };
+            return <label className="field" key={field}>{labels[field]}
+              <input type={field === 'followUpOn' ? 'date' : 'text'} maxLength={field === 'waitingFor' ? 300 : field === 'nextStep' ? 1000 : undefined}
+                disabled={dirty || busy} value={suggestionPreview[field]} onChange={event => setSuggestionPreview({ ...suggestionPreview, [field]: event.target.value })} />
+              {dirty && <small>当前情况中有未保存修改，保留在原表单，本次不提交。</small>}
+            </label>;
+          })}
+          <div className="work-buttons"><button type="button" className="primary-button" disabled={busy || context.status !== saved.status || suggestionStale} onClick={() => {
+            const patch: Omit<WorkItemUpdate, 'baseRevision'> = { status: suggestion.status };
+            for (const field of suggestionFields) {
+              if (context[field] === savedContext[field] && suggestionPreview[field] !== savedContext[field]) patch[field] = suggestionPreview[field];
+            }
+            void update('suggestion', patch, '建议已应用。', next => {
+              const nextContext = contextOf(next);
+              setContext(current => ({ ...current, status: nextContext.status,
+                ...Object.fromEntries(suggestionFields.filter(field => field in patch).map(field => [field, nextContext[field]])) }));
+              setSuggestionPreview(null);
+            });
+          }}>应用建议</button><button type="button" className="text-button" disabled={busy} onClick={() => setSuggestionPreview(null)}>取消</button></div>
+          {context.status !== saved.status && <p className="work-note">请先保存或撤销当前情况中的状态修改。</p>}
+          {suggestionStale && <p className="work-note">版本已变化，请先重新读取最新版本。</p>}
+        </> : <button type="button" className="secondary-button" disabled={busy} onClick={() => setSuggestionPreview({ revision: saved.revision,
+          waitingFor: savedContext.waitingFor || suggestion.waitingFor, nextStep: savedContext.nextStep || suggestion.nextStep, followUpOn: savedContext.followUpOn })}>预览建议</button>}
+      </section>}
+      {renderNotice('suggestion')}
       <form onSubmit={event => {
         event.preventDefault();
         const { status, waitingFor, nextStep, followUpOn, customer, project, occurredAt } = context;

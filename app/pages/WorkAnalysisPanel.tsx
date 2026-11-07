@@ -204,6 +204,7 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
   const [stageRunId, setStageRunId] = useState<string>();
   const stageEditor = useRef<HTMLTextAreaElement>(null);
   const previewHeading = useRef<HTMLHeadingElement>(null);
+  const materialsHeading = useRef<HTMLLegendElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -229,6 +230,10 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
   const needsReload = staleRevision === item.revision;
   const showPreview = previewRevision === item.revision;
   const running = starting || Boolean(runs?.some(run => run.status === 'running'));
+  const completed = runs?.filter(run => run.status === 'completed') ?? [];
+  const usedRawIds = new Set(completed.flatMap(run => run.input.sources.map(source => source.rawId)));
+  const newRaws = item.rawIds.filter(id => rawById.has(id) && !rawById.get(id)?.origin && !usedRawIds.has(id));
+  const showSuggestion = !readError && runs !== null && completed.length > 0 && newRaws.length > 0 && !running && item.status !== 'closed';
   const canStart = !busy && !running && !readError && runs !== null && item.status !== 'closed' && rawIds.length > 0 && !needsReload;
   useEffect(() => { if (showPreview) previewHeading.current?.focus(); }, [showPreview]);
 
@@ -270,6 +275,10 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
   return <>
     <section className="panel work-section" aria-labelledby="work-analysis">
       <div className="work-section-heading"><h2 id="work-analysis">AI 分析</h2></div>
+      {showSuggestion && <div className="work-analysis-preview" aria-label="事项推进建议">
+        <p>有 {newRaws.length} 条关联资料尚未用于已完成的分析。</p>
+        <button type="button" className="secondary-button" onClick={() => materialsHeading.current?.focus()}>带新资料继续分析</button>
+      </div>}
       <form className="work-form" onSubmit={event => { event.preventDefault(); if (canStart && showPreview) void launch(); }}>
         <p className="work-note">选好本轮资料后，可预览将发送给设置中模型的内容。</p>
         <div className="field">
@@ -279,7 +288,7 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
         </div>
         {item.rawIds.length === 0 ? <p className="work-note">在「资料与成果」中关联 Raw，再选择本轮材料。</p>
           : <fieldset className="work-source-picker" disabled={running || item.status === 'closed'}>
-            <legend>本轮资料</legend>
+            <legend tabIndex={-1} ref={materialsHeading}>本轮资料</legend>
             <p className="work-note">请选择 1 至 8 条 Raw，原文合计最多 128 KiB。</p>
             {item.rawIds.map(id => {
               const raw = rawById.get(id);

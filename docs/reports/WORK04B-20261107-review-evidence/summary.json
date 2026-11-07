@@ -1,0 +1,340 @@
+{
+  "checks": [
+    "B1 sent: old item read, normal feedback/reproduction/draft do not trigger, preview/cancel no write, accepted defaults and human date in PUT",
+    "B1 reply/retest: preserved values, explicit clear, failure advances only by apply, passed retest blocks previous suggestion, history and status read back",
+    "B1-edit: append order beats sent time, dirty status and busy disable, all three draft fields excluded, customer/project and saved status persist",
+    "B1-edit failure/conflict: real stale PUT 409, input preserved, latest event recomputed without replay, close/reopen does not replay older sent event",
+    "B2 navigation: adding a Raw suggests continuation; narrow Chrome focuses original picker, leaves draft selection/question/stage and item intact, sends no PUT/POST/fake",
+    "B2 runs: hidden during active work, failed run retains suggestion, v1 and completed v2 sources excluded after refresh, original A review and WORK03P summary/label remain available",
+    "B2 suppression: unlink, unavailable, restricted, closed, no-completion and failed-list cases; only explicit analysis sends",
+    "B2 home: existing due/future/closed rule and original item ID link; page errors 0, fake fixture errors 0"
+  ],
+  "ports": {
+    "fake": 54467,
+    "api": 54468,
+    "ui": 54486
+  },
+  "calls": [
+    {
+      "kind": "analysis",
+      "rawIds": [
+        "f7a8c4dd-8100-4fa4-b043-0936bcc0049f"
+      ]
+    },
+    {
+      "kind": "review",
+      "rawIds": [
+        "f7a8c4dd-8100-4fa4-b043-0936bcc0049f"
+      ]
+    },
+    {
+      "kind": "analysis",
+      "rawIds": [
+        "3585d098-1f04-4400-afd3-d61a4eea58ac"
+      ],
+      "question": "只核对新增资料里的口径。"
+    },
+    {
+      "kind": "analysis",
+      "rawIds": [
+        "3585d098-1f04-4400-afd3-d61a4eea58ac"
+      ],
+      "question": "明确重新分析新增口径。"
+    }
+  ],
+  "puts": [
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 1,
+        "history": {
+          "kind": "feedback",
+          "body": "旧客户问题补充记录。"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 2,
+        "history": {
+          "kind": "reproduction",
+          "body": "独验复现说明。"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 3,
+        "reportDraft": "手工准备正文。"
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 4,
+        "history": {
+          "kind": "sent",
+          "body": "已人工发送的合成技术反馈。",
+          "sentAt": "2026-11-05T10:10:00+08:00"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 5,
+        "status": "waiting",
+        "waitingFor": "技术",
+        "nextStep": "跟进技术回复",
+        "followUpOn": "2020-01-02"
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 6,
+        "history": {
+          "kind": "technical_reply",
+          "body": "技术确认修复版本。"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 7,
+        "status": "retest",
+        "nextStep": ""
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 8,
+        "history": {
+          "kind": "retest",
+          "body": "复测失败，仍观察到问题。",
+          "outcome": "failed"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 9,
+        "status": "in_progress",
+        "nextStep": "核对失败原因并继续处理"
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 10,
+        "status": "retest",
+        "waitingFor": "技术",
+        "nextStep": "核对失败原因并继续处理",
+        "followUpOn": "2020-01-02",
+        "customer": "",
+        "project": "",
+        "occurredAt": ""
+      }
+    },
+    {
+      "path": "/api/work-items/d7506f37-7d23-45b1-9823-5cea82ccc54a",
+      "body": {
+        "baseRevision": 11,
+        "history": {
+          "kind": "retest",
+          "body": "复测通过，等待人工确认是否结项。",
+          "outcome": "passed"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/3ebd624a-74ab-4e77-945d-bf9b2cedc3da",
+      "body": {
+        "baseRevision": 2,
+        "history": {
+          "kind": "technical_reply",
+          "body": "追加在先的技术回复。"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/3ebd624a-74ab-4e77-945d-bf9b2cedc3da",
+      "body": {
+        "baseRevision": 3,
+        "history": {
+          "kind": "sent",
+          "body": "已人工发送的合成技术反馈。",
+          "sentAt": "2020-01-01T09:00:00+08:00"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/3ebd624a-74ab-4e77-945d-bf9b2cedc3da",
+      "body": {
+        "baseRevision": 4,
+        "reportDraft": "稍慢的其他区保存。"
+      }
+    },
+    {
+      "path": "/api/work-items/3ebd624a-74ab-4e77-945d-bf9b2cedc3da",
+      "body": {
+        "baseRevision": 5,
+        "status": "waiting"
+      }
+    },
+    {
+      "path": "/api/work-items/3ebd624a-74ab-4e77-945d-bf9b2cedc3da",
+      "body": {
+        "baseRevision": 6,
+        "status": "waiting",
+        "waitingFor": "后于预览编辑的等待对象",
+        "nextStep": "先于预览编辑的下一步",
+        "followUpOn": "2026-12-03",
+        "customer": "未保存客户",
+        "project": "未保存项目",
+        "occurredAt": ""
+      }
+    },
+    {
+      "path": "/api/work-items/d52795b4-173f-4d98-8fb2-79b6da1cd1cc",
+      "body": {
+        "baseRevision": 2,
+        "status": "waiting",
+        "waitingFor": "建议预览里的未提交协调人"
+      }
+    },
+    {
+      "path": "/api/work-items/d52795b4-173f-4d98-8fb2-79b6da1cd1cc",
+      "body": {
+        "baseRevision": 2,
+        "status": "waiting",
+        "waitingFor": "建议预览里的未提交协调人"
+      }
+    },
+    {
+      "path": "/api/work-items/d52795b4-173f-4d98-8fb2-79b6da1cd1cc",
+      "body": {
+        "baseRevision": 3,
+        "history": {
+          "kind": "sent",
+          "body": "已人工发送的合成技术反馈。",
+          "sentAt": "2020-01-01T09:00:00+08:00"
+        }
+      }
+    },
+    {
+      "path": "/api/work-items/d52795b4-173f-4d98-8fb2-79b6da1cd1cc",
+      "body": {
+        "baseRevision": 4,
+        "status": "closed",
+        "waitingFor": "外部新协调人",
+        "nextStep": "并发时保护主表下一步",
+        "followUpOn": "",
+        "customer": "",
+        "project": "",
+        "occurredAt": "",
+        "closureReason": "人工关闭测试。"
+      }
+    },
+    {
+      "path": "/api/work-items/d52795b4-173f-4d98-8fb2-79b6da1cd1cc",
+      "body": {
+        "baseRevision": 5,
+        "reopen": true
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 3,
+        "rawIds": [
+          "f7a8c4dd-8100-4fa4-b043-0936bcc0049f",
+          "3585d098-1f04-4400-afd3-d61a4eea58ac"
+        ]
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 4,
+        "rawIds": [
+          "f7a8c4dd-8100-4fa4-b043-0936bcc0049f",
+          "3585d098-1f04-4400-afd3-d61a4eea58ac",
+          "dd702258-6e73-486f-8c89-781625a92a79"
+        ]
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 5,
+        "rawIds": [
+          "f7a8c4dd-8100-4fa4-b043-0936bcc0049f",
+          "3585d098-1f04-4400-afd3-d61a4eea58ac",
+          "dd702258-6e73-486f-8c89-781625a92a79",
+          "d9ad2338-89b5-4590-a896-f98852588eec"
+        ]
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 6,
+        "rawIds": [
+          "f7a8c4dd-8100-4fa4-b043-0936bcc0049f",
+          "3585d098-1f04-4400-afd3-d61a4eea58ac",
+          "dd702258-6e73-486f-8c89-781625a92a79"
+        ]
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 7,
+        "rawIds": [
+          "f7a8c4dd-8100-4fa4-b043-0936bcc0049f",
+          "3585d098-1f04-4400-afd3-d61a4eea58ac",
+          "dd702258-6e73-486f-8c89-781625a92a79",
+          "d9ad2338-89b5-4590-a896-f98852588eec"
+        ]
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 8,
+        "status": "closed",
+        "waitingFor": "",
+        "nextStep": "",
+        "followUpOn": "",
+        "analysis": {
+          "goal": "仅对比同口径报告。",
+          "dataScope": "",
+          "confirmedConclusions": "",
+          "openQuestions": ""
+        },
+        "closureReason": "独验人工完成产品事项。"
+      }
+    },
+    {
+      "path": "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3",
+      "body": {
+        "baseRevision": 9,
+        "reopen": true
+      }
+    }
+  ],
+  "analysisPosts": [
+    "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3/analysis-runs",
+    "/api/work-items/ef44b630-af5a-4711-bd2e-369782f77ab3/analysis-runs"
+  ],
+  "fakeErrors": [],
+  "pageErrors": [],
+  "chrome": "156.0.8078.80",
+  "realModelCalls": 0
+}
