@@ -1,0 +1,28 @@
+.home-page .home-workspace { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; align-items: start; margin-bottom: 20px; }
+.home-page .home-workspace > *, .home-page .home-workspace-side { min-width: 0; }
+.home-page .home-workspace .home-actions { margin: 0; }
+.home-page .home-workspace-side { display: grid; gap: 16px; }
+.home-page .home-workspace-side .news-home { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin: 0; padding: 20px; overflow-wrap: anywhere; }
+.home-page .news-home h2 { font-size: 18px; color: var(--ink); }
+.home-page .news-home-status { gap: 8px 16px; line-height: 1.5; }
+.home-page .home-workspace .panel-heading { gap: 12px; }
+.home-page .home-workspace .panel-heading > div { min-width: 0; }
+.home-page .home-workspace .panel-heading > div:last-child { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.home-page .home-action-row, .home-page .form-error, .home-page .home-deferred { overflow-wrap: anywhere; }
+.home-page .home-action-row > div { flex: 1; }
+.home-page .home-deferred { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.home-page .home-deferred h3 { margin: 0 0 8px; font-size: 15px; color: var(--ink); }
+.home-page .home-deferred > p, .home-page .home-actions > p:not(.form-error) { color: #566176; font-size: 13px; line-height: 1.6; }
+.home-page .quick-action-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.home-page .quick-action-grid button { white-space: normal; }
+.home-page .recent-copy b { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 1100px) {
+  .home-page .home-workspace { grid-template-columns: minmax(0, 1fr); }
+  .home-page .home-workspace-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .home-page .home-workspace-side { grid-template-columns: minmax(0, 1fr); }
+  .home-page .quick-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-page .home-workspace .panel-heading { align-items: flex-start; flex-wrap: wrap; padding: 16px 0; }
+  .home-page .home-entry { overflow-wrap: anywhere; }
+}
