@@ -1,0 +1,62 @@
+{
+  "out": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\sort-9Dsajb",
+  "checks": [
+    {
+      "label": "order-one",
+      "sectionIds": {
+        "fmcg": [
+          "source-a",
+          "real-time",
+          "date-only",
+          "real-time-2",
+          "recent-practical"
+        ],
+        "ai": [
+          "version2",
+          "version1"
+        ]
+      },
+      "sourceCalls": 2,
+      "modelFactoryCalls": 0,
+      "oldEditionBytesEqual": true
+    },
+    {
+      "label": "order-two",
+      "sectionIds": {
+        "fmcg": [
+          "source-a",
+          "real-time",
+          "date-only",
+          "real-time-2",
+          "recent-practical"
+        ],
+        "ai": [
+          "version2",
+          "version1"
+        ]
+      },
+      "sourceCalls": 2,
+      "modelFactoryCalls": 0,
+      "oldEditionBytesEqual": true
+    },
+    {
+      "label": "boundary",
+      "sectionIds": {
+        "fmcg": [
+          "identity-url",
+          "older-than-7",
+          "at72"
+        ],
+        "ai": [
+          "version2",
+          "version1"
+        ]
+      },
+      "sourceCalls": 2,
+      "modelFactoryCalls": 0,
+      "oldEditionBytesEqual": true
+    }
+  ],
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    'source-a',\n-   'recent-practical',\n    'real-time',\n    'date-only',\n    'real-time-2',\n+   'recent-practical'\n  ]\n\n    at file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news02-review/sort.mjs:57:9"
+}

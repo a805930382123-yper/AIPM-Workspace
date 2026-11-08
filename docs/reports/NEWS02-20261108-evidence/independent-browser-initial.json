@@ -1,0 +1,181 @@
+{
+  "out": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-hlUvBu",
+  "mode": "browser",
+  "node": "v25.2.1",
+  "checks": [
+    {
+      "label": "N2-04 default dev Chrome: normal save, busy, responsive and refresh",
+      "status": "PASS",
+      "evidence": {
+        "rawId": "b849d0d1-25a2-43ce-b94d-8a87e0c2b17c",
+        "homeRawCount": 1,
+        "widths": [
+          1440,
+          390
+        ],
+        "oldFallbackDate": "2026-11-07"
+      }
+    },
+    {
+      "label": "N2-04 Chrome: fallback actual date, 503 retry, old history and deletion",
+      "status": "PASS",
+      "evidence": {
+        "fallbackDate": "2026-11-07",
+        "historicalDate": "2026-11-06",
+        "retryCodes": [
+          503,
+          200
+        ],
+        "deletedShown": true
+      }
+    },
+    {
+      "label": "N2-04 Chrome: projection read failure and explicit recovery",
+      "status": "PASS",
+      "evidence": {
+        "projectionErrorCleared": true
+      }
+    },
+    {
+      "label": "N2-04 Chrome: save finishing after changing the reading date stays scoped",
+      "status": "PASS",
+      "evidence": {
+        "stayedOnToday": true,
+        "historicalStateRecovered": true
+      }
+    },
+    {
+      "label": "N2-04 Chrome: save finishing after leaving refreshes shared statistics without navigating",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Shared home statistics stayed stale after a committed save finished off-page\n\n3 !== 4\n\n    at file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news02-review/verify.mjs:420:14\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news02-review/verify.mjs:120:52)\n    at async browserSuite (file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news02-review/verify.mjs:402:3)\n    at async file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news02-review/verify.mjs:273:46"
+    },
+    {
+      "label": "N2-05 Chrome: saved Raw -> fake draft -> blocked direct confirm -> explicit outcome review and Wiki",
+      "status": "PASS",
+      "evidence": {
+        "rawId": "b849d0d1-25a2-43ce-b94d-8a87e0c2b17c",
+        "draftId": "b3f84100-28c2-40ca-bed2-b58520afc28d",
+        "formalWikiId": "ef850384-5ed9-48d5-a413-fa006e32f9eb",
+        "formalSourceId": "e9293c61-d8d2-4538-8957-b618af861b19",
+        "rawHash": "3cee8e5ae19e52fcdda7fe46d67c3bfd6ab9e3e986e79359c08c8ff85b990fb9",
+        "unreviewed": "NO_SELECTION",
+        "stale": "REVIEW_CONTENT_CHANGED",
+        "explicitConfirm": 201,
+        "fakeCalls": 3
+      }
+    },
+    {
+      "label": "Chrome has zero uncaught page exceptions",
+      "status": "PASS",
+      "evidence": {
+        "pageErrors": 0,
+        "version": "156.0.8078.80"
+      }
+    },
+    {
+      "label": "All edition bytes, frozen implementation and outbound guards",
+      "status": "PASS",
+      "evidence": {
+        "editions": 4,
+        "implementationFiles": 10,
+        "fakeCalls": 3,
+        "blockedOutbound": 0
+      }
+    }
+  ],
+  "apiProcesses": [
+    {
+      "pid": 13240,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-hlUvBu\\data",
+      "port": 50240,
+      "closed": true
+    }
+  ],
+  "pageErrors": [],
+  "fakeCalls": [
+    {
+      "path": "/v1/chat/completions",
+      "stage": "只选择原文atom ID；每条为一个机械原文切片，不得拼写、补写主体/维度/数值。分类顺序：先判断业务陈述或非业务来源声明，再判断业务陈述的完整性/歧义。fragment只是原文切片完整性标记，不决定业务相关性；非业务标题、排版或来源说明即"
+    },
+    {
+      "path": "/v1/chat/completions",
+      "stage": "请对下列全部已验证事实规划知识页，只输出JSON。"
+    },
+    {
+      "path": "/v1/chat/completions",
+      "stage": "{\"stage\":\"maintenance\",\"source\":{\"title\":\"合成资讯：样例连锁超市调整饮料补货\",\"sourceType\":\"article\",\"sourceName\":\"合成消费品资讯（来源正文摘录，非全文）\",\""
+    }
+  ],
+  "realModelCalls": 0,
+  "fingerprintsBefore": {
+    "services/news/sources.ts": "10e1df3b7c7b969b575833737eaaadfe02b9cbf71aa0055294394574b598568b",
+    "services/news/service.ts": "6dbeaf018bf40db6459634fac9cdff407b8d8bddf7378f7d3501d1b049146369",
+    "services/news/raw-save.ts": "b4ddd24a484c417f3aac9c72ce41261443b9332addd656ce267098938d24c414",
+    "services/raw/store.ts": "dab3137efb57b1b43a22f009451484997a151ef4f3f0135455dd398d5422deb0",
+    "server/news-api.ts": "2ed8e8f099162b9ce12d11c0af96fb8f8c905cc876e0ab28915478765d1901d9",
+    "server/index.ts": "2eca18fb00464c55429ba444541316cb010ec469d56c3c1a4e0833cef31a5df1",
+    "app/pages/NewsPage.tsx": "06c512357adaf3a2bd2668dc590e4f32182cc96b78c1504db3f9ff5dc6d0767e",
+    "app/App.tsx": "ec0c32d30247b22685edf753f94045518a8b0004db0b9ed9c36afbeb68731124",
+    "app/news.css": "e20fefe3d97c76dac14443937dce3152b43542dbcc49ea986d54ba0e0961e242",
+    "tests/news02.test.ts": "0eb9c11f9e9291cd7cb85babb51c83d06a685f9f3ebd7036e62f95b2378804d2"
+  },
+  "chrome": "156.0.8078.80",
+  "lateSaveStats": {
+    "before": 3,
+    "shown": 3,
+    "actual": 4,
+    "rawId": "d4f60c49-a413-4287-9da6-5b485981b973",
+    "stayedHome": true
+  },
+  "browserJob": {
+    "jobId": "d18f9d02-0834-4cd1-a0bf-c4f75880d109",
+    "mode": "standard",
+    "rawId": "b849d0d1-25a2-43ce-b94d-8a87e0c2b17c",
+    "status": "completed",
+    "stage": "done",
+    "progress": {
+      "chunksTotal": 1,
+      "chunksDone": 1,
+      "pagesFound": 1
+    },
+    "draftId": "b3f84100-28c2-40ca-bed2-b58520afc28d",
+    "error": null,
+    "provider": {
+      "name": "openai-compatible",
+      "model": "news02-isolation"
+    },
+    "callCount": 3,
+    "startedAt": "2026-11-08T04:54:38.632Z",
+    "finishedAt": "2026-11-08T04:54:38.741Z",
+    "cancelRequested": false,
+    "pipelineVersion": "kb02-2",
+    "checkpoint": {
+      "stage": "done",
+      "validatedChunks": 1,
+      "totalChunks": 1,
+      "resumable": false,
+      "attempts": 3,
+      "reusedChunks": 0
+    },
+    "execution": "settled",
+    "recovery": null
+  },
+  "cleanup": {
+    "browserClosed": true,
+    "viteClosed": true,
+    "fakeClosed": true,
+    "apiClosed": true
+  },
+  "fingerprintsAfter": {
+    "services/news/sources.ts": "10e1df3b7c7b969b575833737eaaadfe02b9cbf71aa0055294394574b598568b",
+    "services/news/service.ts": "6dbeaf018bf40db6459634fac9cdff407b8d8bddf7378f7d3501d1b049146369",
+    "services/news/raw-save.ts": "b4ddd24a484c417f3aac9c72ce41261443b9332addd656ce267098938d24c414",
+    "services/raw/store.ts": "dab3137efb57b1b43a22f009451484997a151ef4f3f0135455dd398d5422deb0",
+    "server/news-api.ts": "2ed8e8f099162b9ce12d11c0af96fb8f8c905cc876e0ab28915478765d1901d9",
+    "server/index.ts": "2eca18fb00464c55429ba444541316cb010ec469d56c3c1a4e0833cef31a5df1",
+    "app/pages/NewsPage.tsx": "06c512357adaf3a2bd2668dc590e4f32182cc96b78c1504db3f9ff5dc6d0767e",
+    "app/App.tsx": "ec0c32d30247b22685edf753f94045518a8b0004db0b9ed9c36afbeb68731124",
+    "app/news.css": "e20fefe3d97c76dac14443937dce3152b43542dbcc49ea986d54ba0e0961e242",
+    "tests/news02.test.ts": "0eb9c11f9e9291cd7cb85babb51c83d06a685f9f3ebd7036e62f95b2378804d2"
+  }
+}

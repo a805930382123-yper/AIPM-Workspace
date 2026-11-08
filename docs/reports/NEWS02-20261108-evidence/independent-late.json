@@ -1,0 +1,87 @@
+{
+  "out": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-3HhEp9",
+  "mode": "late",
+  "node": "v25.2.1",
+  "checks": [
+    {
+      "label": "N2-04 Chrome: save finishing after leaving refreshes shared statistics without navigating",
+      "status": "PASS",
+      "evidence": {
+        "before": 0,
+        "shown": 1,
+        "actual": 1,
+        "rawId": "48c0a49e-50f0-415f-8065-3e059ad1ff8e",
+        "stayedHome": true
+      }
+    },
+    {
+      "label": "Chrome has zero uncaught page exceptions",
+      "status": "PASS",
+      "evidence": {
+        "pageErrors": 0,
+        "version": "156.0.8078.80"
+      }
+    },
+    {
+      "label": "All edition bytes, frozen implementation and outbound guards",
+      "status": "PASS",
+      "evidence": {
+        "editions": 4,
+        "implementationFiles": 11,
+        "fakeCalls": 0,
+        "blockedOutbound": 0
+      }
+    }
+  ],
+  "apiProcesses": [
+    {
+      "pid": 30640,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-3HhEp9\\data",
+      "port": 65452,
+      "closed": true
+    }
+  ],
+  "pageErrors": [],
+  "fakeCalls": [],
+  "realModelCalls": 0,
+  "fingerprintsBefore": {
+    "services/news/sources.ts": "9aec842f9b1368c0e0c9524f86e8f6eeb2d02c7d5d38f61cc4a4cd0b13cfca92",
+    "services/news/service.ts": "472ff94f8fe442cb76090ef8fee60c40c160450e0d3183144b10b35ccd403b80",
+    "services/news/raw-save.ts": "b4ddd24a484c417f3aac9c72ce41261443b9332addd656ce267098938d24c414",
+    "services/raw/store.ts": "dab3137efb57b1b43a22f009451484997a151ef4f3f0135455dd398d5422deb0",
+    "server/news-api.ts": "2ed8e8f099162b9ce12d11c0af96fb8f8c905cc876e0ab28915478765d1901d9",
+    "server/index.ts": "2eca18fb00464c55429ba444541316cb010ec469d56c3c1a4e0833cef31a5df1",
+    "app/pages/NewsPage.tsx": "089178109145e3b7ee0c7e753f95d34d77dd31c090c6295621a198c51fe59f27",
+    "app/App.tsx": "ec0c32d30247b22685edf753f94045518a8b0004db0b9ed9c36afbeb68731124",
+    "app/news.css": "e20fefe3d97c76dac14443937dce3152b43542dbcc49ea986d54ba0e0961e242",
+    "tests/news02.test.ts": "f399f2b2ab8fe1fb75db770d8a8fc9ab5df9a975ed46ef5d6763fb191c59e751",
+    "tests/news02-ui.test.tsx": "6f9c92030b71f20d2c37e65ddf2273e1f09622951d208ee92e42af01fb1e9f8b"
+  },
+  "chrome": "156.0.8078.80",
+  "lateSaveStats": {
+    "before": 0,
+    "shown": 1,
+    "actual": 1,
+    "rawId": "48c0a49e-50f0-415f-8065-3e059ad1ff8e",
+    "stayedHome": true
+  },
+  "cleanup": {
+    "browserClosed": true,
+    "viteClosed": true,
+    "fakeClosed": true,
+    "apiClosed": true
+  },
+  "fingerprintsAfter": {
+    "services/news/sources.ts": "9aec842f9b1368c0e0c9524f86e8f6eeb2d02c7d5d38f61cc4a4cd0b13cfca92",
+    "services/news/service.ts": "472ff94f8fe442cb76090ef8fee60c40c160450e0d3183144b10b35ccd403b80",
+    "services/news/raw-save.ts": "b4ddd24a484c417f3aac9c72ce41261443b9332addd656ce267098938d24c414",
+    "services/raw/store.ts": "dab3137efb57b1b43a22f009451484997a151ef4f3f0135455dd398d5422deb0",
+    "server/news-api.ts": "2ed8e8f099162b9ce12d11c0af96fb8f8c905cc876e0ab28915478765d1901d9",
+    "server/index.ts": "2eca18fb00464c55429ba444541316cb010ec469d56c3c1a4e0833cef31a5df1",
+    "app/pages/NewsPage.tsx": "089178109145e3b7ee0c7e753f95d34d77dd31c090c6295621a198c51fe59f27",
+    "app/App.tsx": "ec0c32d30247b22685edf753f94045518a8b0004db0b9ed9c36afbeb68731124",
+    "app/news.css": "e20fefe3d97c76dac14443937dce3152b43542dbcc49ea986d54ba0e0961e242",
+    "tests/news02.test.ts": "f399f2b2ab8fe1fb75db770d8a8fc9ab5df9a975ed46ef5d6763fb191c59e751",
+    "tests/news02-ui.test.tsx": "6f9c92030b71f20d2c37e65ddf2273e1f09622951d208ee92e42af01fb1e9f8b"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "out": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm",
+  "mode": "http",
+  "node": "v25.2.1",
+  "checks": [
+    {
+      "label": "N2-02 guards and reading are side-effect free",
+      "status": "PASS",
+      "evidence": {
+        "rejected": [
+          400,
+          403,
+          403,
+          415,
+          409,
+          404,
+          400
+        ],
+        "viewDate": "2026-11-08",
+        "fallbackDate": "2026-11-07"
+      }
+    },
+    {
+      "label": "N2-02/03 concurrent saves, original provenance and restart",
+      "status": "PASS",
+      "evidence": {
+        "parallel": 10,
+        "created": 1,
+        "rawId": "9bb1c3b8-76f4-4b5d-af27-d5b4ffa0bef9",
+        "rawHash": "44c29f94fc0e8003edd2428b912cfd4d2ca66d21dd7e4fad88bd178788c742ca",
+        "aiRawId": "e3ca9304-f84d-4e54-9bf1-aa83f251e5d1",
+        "unknownDateRawId": "b801a59d-d7af-4c13-af84-9997d1114ccc"
+      }
+    },
+    {
+      "label": "N2-03 actual pending and linked rename fault windows",
+      "status": "PASS",
+      "evidence": {
+        "firstPendingWrite": 500,
+        "rawWrite": 409,
+        "absentRetry": 409,
+        "linkedWrite": 409,
+        "recovered": "f8fd3e67-6086-4f4e-9df1-884b45fa7863",
+        "rawHash": "4472fdcc7952e96727aa87ff3dd0f54082937c9e347efafb1999a7d2742ec8bc"
+      }
+    },
+    {
+      "label": "N2-03 deletion, conflicting Raw and corrupt receipt preserve files",
+      "status": "PASS",
+      "evidence": {
+        "linkedDeleted": 409,
+        "pendingDeleted": 409,
+        "conflict": 409,
+        "corrupt": 409
+      }
+    },
+    {
+      "label": "N2-06 actual backup/restore, old archive and ordinary Raw",
+      "status": "PASS",
+      "evidence": {
+        "receiptAndRawAndEditionBytesEqual": true,
+        "restoredId": "9bb1c3b8-76f4-4b5d-af27-d5b4ffa0bef9",
+        "oldNoReceipts": true,
+        "ordinaryCreate": 201
+      }
+    },
+    {
+      "label": "All edition bytes, frozen implementation and outbound guards",
+      "status": "PASS",
+      "evidence": {
+        "editions": 4,
+        "implementationFiles": 10,
+        "fakeCalls": 0,
+        "blockedOutbound": 0
+      }
+    }
+  ],
+  "apiProcesses": [
+    {
+      "pid": 26984,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm\\data",
+      "port": 61295,
+      "closed": true
+    },
+    {
+      "pid": 23044,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm\\data",
+      "port": 61325,
+      "closed": true
+    },
+    {
+      "pid": 21588,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm\\data",
+      "port": 61342,
+      "closed": true
+    },
+    {
+      "pid": 30680,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm\\data",
+      "port": 61356,
+      "closed": true
+    },
+    {
+      "pid": 18660,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm\\restored",
+      "port": 61370,
+      "closed": true
+    },
+    {
+      "pid": 14456,
+      "dir": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news02-review\\full-raCDpm\\restored-old",
+      "port": 61384,
+      "closed": true
+    }
+  ],
+  "pageErrors": [],
+  "fakeCalls": [],
+  "realModelCalls": 0,
+  "fingerprintsBefore": {
+    "services/news/sources.ts": "10e1df3b7c7b969b575833737eaaadfe02b9cbf71aa0055294394574b598568b",
+    "services/news/service.ts": "6dbeaf018bf40db6459634fac9cdff407b8d8bddf7378f7d3501d1b049146369",
+    "services/news/raw-save.ts": "b4ddd24a484c417f3aac9c72ce41261443b9332addd656ce267098938d24c414",
+    "services/raw/store.ts": "dab3137efb57b1b43a22f009451484997a151ef4f3f0135455dd398d5422deb0",
+    "server/news-api.ts": "2ed8e8f099162b9ce12d11c0af96fb8f8c905cc876e0ab28915478765d1901d9",
+    "server/index.ts": "2eca18fb00464c55429ba444541316cb010ec469d56c3c1a4e0833cef31a5df1",
+    "app/pages/NewsPage.tsx": "06c512357adaf3a2bd2668dc590e4f32182cc96b78c1504db3f9ff5dc6d0767e",
+    "app/App.tsx": "ec0c32d30247b22685edf753f94045518a8b0004db0b9ed9c36afbeb68731124",
+    "app/news.css": "e20fefe3d97c76dac14443937dce3152b43542dbcc49ea986d54ba0e0961e242",
+    "tests/news02.test.ts": "0eb9c11f9e9291cd7cb85babb51c83d06a685f9f3ebd7036e62f95b2378804d2"
+  },
+  "cleanup": {
+    "browserClosed": true,
+    "viteClosed": true,
+    "fakeClosed": true,
+    "apiClosed": true
+  },
+  "fingerprintsAfter": {
+    "services/news/sources.ts": "10e1df3b7c7b969b575833737eaaadfe02b9cbf71aa0055294394574b598568b",
+    "services/news/service.ts": "6dbeaf018bf40db6459634fac9cdff407b8d8bddf7378f7d3501d1b049146369",
+    "services/news/raw-save.ts": "b4ddd24a484c417f3aac9c72ce41261443b9332addd656ce267098938d24c414",
+    "services/raw/store.ts": "dab3137efb57b1b43a22f009451484997a151ef4f3f0135455dd398d5422deb0",
+    "server/news-api.ts": "2ed8e8f099162b9ce12d11c0af96fb8f8c905cc876e0ab28915478765d1901d9",
+    "server/index.ts": "2eca18fb00464c55429ba444541316cb010ec469d56c3c1a4e0833cef31a5df1",
+    "app/pages/NewsPage.tsx": "06c512357adaf3a2bd2668dc590e4f32182cc96b78c1504db3f9ff5dc6d0767e",
+    "app/App.tsx": "ec0c32d30247b22685edf753f94045518a8b0004db0b9ed9c36afbeb68731124",
+    "app/news.css": "e20fefe3d97c76dac14443937dce3152b43542dbcc49ea986d54ba0e0961e242",
+    "tests/news02.test.ts": "0eb9c11f9e9291cd7cb85babb51c83d06a685f9f3ebd7036e62f95b2378804d2"
+  }
+}
