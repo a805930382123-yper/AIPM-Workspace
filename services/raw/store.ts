@@ -117,6 +117,15 @@ export class RawStore {
     return { record: written, created: true };
   }
 
+  /** Server-only news bridge; fixed identity is never accepted from a Raw client. */
+  async createNewsRegistration(id: string, input: RawInput): Promise<RawRecord> {
+    const record = await this.createWithId(id, input, false);
+    if (record.title !== input.title || record.sourceType !== input.sourceType || record.sourceName !== input.sourceName ||
+        record.url !== input.url || record.publishedAt !== input.publishedAt || record.extractionNote !== input.extractionNote ||
+        record.body !== input.body || JSON.stringify(record.tags) !== JSON.stringify(input.tags)) throw new RawIntegrityError();
+    return record;
+  }
+
   private async createWithId(id: string, input: RawInput, isDemo: boolean): Promise<RawRecord> {
     const existing = await this.get(id);
     if (existing) return existing;

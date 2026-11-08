@@ -27,13 +27,21 @@ const dom=(text:string,url:string)=>new JSDOM(text,{url,virtualConsole:new Virtu
 const id=(url:string)=>createHash('sha256').update(url).digest('hex').slice(0,24);
 const cleaned=(s:string)=>s.replace(/\s+/gu,' ').trim();
 export function matchesNewsFocus(section:NewsSectionName,title:string,summary:string):boolean {
-  const text=`${title} ${summary}`;
-  if(section==='fmcg') return /品牌|零售|商超|超市|便利店|门店|连锁|渠道|经销|商贸流通|批发和零售|新品|饮料|咖啡|可口可乐|乳品|乳制品|啤酒|包装食品|食品企业|食品公司|餐饮品牌/u.test(text);
-  const product=/模型|智能体|agent|ChatGPT|分析工具|数据分析功能|语音助手|AI工具|人工智能工具|大模型|图像生成|图像编辑|语音聊天|编程助手|代码助手|生成式|推理工具|开放接口|API|产品功能|应用程序|聊天机器人/iu.test(text);
-  const capital=/融资|估值|投资者|上市|IPO|芯片.*(?:滞留|禁运|出口|贸易|限制)|(?:禁运|出口|贸易).*芯片/iu.test(title);
-  const change=/(?:发布|推出|更新|上线|开放|新增|支持|升级|重构).{0,20}(?:模型|工具|产品|功能|智能体|agent|API)|(?:模型|工具|产品|功能|智能体|agent|API).{0,20}(?:发布|推出|更新|上线|开放|新增|支持|升级|重构)/iu.test(title);
-  return product&&(!capital||change);
+  const text=title+' '+summary;
+  if(section==='fmcg') {
+    if (/汽车|房地产|地产|手机|农业收储/u.test(title)) return false;
+    return /食品|饮料|日化|乳品|乳制品|啤酒|咖啡|可口可乐|餐饮品牌|商超|超市|便利店|零售|批发和零售|批零|商贸流通|消费品|连锁门店/u.test(text);
+  }
+  const product=/人工智能|大模型|模型|智能体|agent|ChatGPT|Cursor|GPT|AI工具|编程助手|图像生成|语音助手/iu.test(text);
+  const practical=/发布|推出|更新|上线|开放|新增|支持|升级|评测|测评|工作流|功能|可用|分析|语音|图像/iu.test(text);
+  const capital=/融资|估值|投资者|上市|IPO|芯片.*(?:滞留|禁运|出口|贸易|限制)|(?:禁运|出口|贸易).*芯片/iu.test(text);
+  const productChange=/(?:发布|推出|上线|升级|新增|开放|更新)(?:了|的|全新|新款|新版|新一代|首款|与)*(?:模型|智能体|agent|AI工具|工具|产品|功能|ChatGPT|Cursor|GPT)|(?:模型|智能体|agent|AI工具|ChatGPT|Cursor|GPT)(?:[\w. -]{0,15}|新版本)?(?:发布|推出|上线|升级|新增|开放|更新|评测|测评)(?!融资|投资|估值)/iu.test(title);
+  return product && practical && (!capital || productChange);
 }
+export const newsPriority=(section:NewsSectionName,item:NewsItem)=>{
+  const text=item.title+' '+item.excerpt;
+  return section==='fmcg' ? Number(/发布|推出|新增|更新|新品|增长|下降|销量|市场|经营|供应链|开店|发展|战略/u.test(text)) : Number(/发布|推出|更新|上线|新增|升级|评测|测评|工作流|功能/iu.test(text));
+};
 function safeOriginal(value:unknown):string|null { if(typeof value!=='string') return null; try {const u=new URL(value); return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password ? u.href:null;} catch{return null;} }
 export async function readNewsSources(section:NewsSectionName, now:Date):Promise<SourceResult> {
   const keys=section==='fmcg'?(['ce','commerce'] as const):(['aihot'] as const); const result:SourceResult={items:[],sources:[]};

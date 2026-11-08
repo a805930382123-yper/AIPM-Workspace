@@ -168,7 +168,7 @@ app.use((...args) => {
   if (!ai) { next(); return; }
   void providerFactory().then(snapshot => providerContext.run({ provider: snapshot }, next)).catch(next);
 });
-registerNewsRoutes(app, new NewsService({ root, clock: () => new Date(), readSources: readNewsSources, aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory }));
+registerNewsRoutes(app, new NewsService({ root, clock: () => new Date(), readSources: readNewsSources, rawStore: store, aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory }));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/stats', async (_req, res, next) => {
   try { res.json(await getStats(root, store, new Date(), prompts)); } catch (error) { next(error); }
