@@ -1,3 +1,4 @@
+import { readResearchSources } from './research-sources.ts';
 import { createHash } from 'node:crypto';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import type { NewsItem, NewsSectionName, SourceResult } from './types.ts';
@@ -44,6 +45,7 @@ export const newsPriority=(section:NewsSectionName,item:NewsItem)=>{
 };
 function safeOriginal(value:unknown):string|null { if(typeof value!=='string') return null; try {const u=new URL(value); return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password ? u.href:null;} catch{return null;} }
 export async function readNewsSources(section:NewsSectionName, now:Date):Promise<SourceResult> {
+  if((section as NewsSectionName)==='fmcg') return readResearchSources(now);
   const keys=section==='fmcg'?(['ce','commerce'] as const):(['aihot'] as const); const result:SourceResult={items:[],sources:[]};
   await Promise.all(keys.map(async key=>{
     const source=sources[key],checkedAt=now.toISOString();
