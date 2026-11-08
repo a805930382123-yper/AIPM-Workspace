@@ -1,0 +1,1523 @@
+{
+  "success": true,
+  "checks": [
+    "H01/H02 populated desktop and two narrow widths; task-first order, long title without overflow",
+    "H04 filter, reset, deferred visibility, stale action preflight and real UI routes to Raw and due item",
+    "H02/H03 keyboard focus, no duplicated top actions, eight routes and independent news entry/status",
+    "H04/H05 first failure exits loading, explicit refresh and partial failure with long text, true empty state"
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "pageWidth": 1440,
+      "entries": {
+        "x": 316,
+        "y": 187.796875,
+        "w": 1096,
+        "h": 92,
+        "scroll": 1096,
+        "client": 1096
+      },
+      "tasks": {
+        "x": 316,
+        "y": 297.796875,
+        "w": 720,
+        "h": 619,
+        "scroll": 718,
+        "client": 718
+      },
+      "due": {
+        "x": 1052,
+        "y": 297.796875,
+        "w": 360,
+        "h": 167,
+        "scroll": 358,
+        "client": 358
+      },
+      "news": {
+        "x": 1052,
+        "y": 480.796875,
+        "w": 360,
+        "h": 211,
+        "scroll": 358,
+        "client": 358
+      }
+    },
+    {
+      "width": 1024,
+      "pageWidth": 1024,
+      "entries": {
+        "x": 256,
+        "y": 187.796875,
+        "w": 746,
+        "h": 196,
+        "scroll": 746,
+        "client": 746
+      },
+      "tasks": {
+        "x": 256,
+        "y": 401.796875,
+        "w": 746,
+        "h": 619,
+        "scroll": 744,
+        "client": 744
+      },
+      "due": {
+        "x": 256,
+        "y": 1036.796875,
+        "w": 365,
+        "h": 211,
+        "scroll": 363,
+        "client": 363
+      },
+      "news": {
+        "x": 637,
+        "y": 1036.796875,
+        "w": 365,
+        "h": 211,
+        "scroll": 363,
+        "client": 363
+      }
+    },
+    {
+      "width": 390,
+      "pageWidth": 390,
+      "entries": {
+        "x": 16,
+        "y": 385.796875,
+        "w": 358,
+        "h": 199,
+        "scroll": 358,
+        "client": 358
+      },
+      "tasks": {
+        "x": 16,
+        "y": 602.796875,
+        "w": 358,
+        "h": 910,
+        "scroll": 356,
+        "client": 356
+      },
+      "due": {
+        "x": 16,
+        "y": 1528.796875,
+        "w": 358,
+        "h": 219,
+        "scroll": 356,
+        "client": 356
+      },
+      "news": {
+        "x": 16,
+        "y": 1763.796875,
+        "w": 358,
+        "h": 211,
+        "scroll": 356,
+        "client": 356
+      }
+    },
+    {
+      "width": 390,
+      "pageWidth": 390,
+      "entries": {
+        "x": 16,
+        "y": 385.796875,
+        "w": 358,
+        "h": 199,
+        "scroll": 358,
+        "client": 358
+      },
+      "tasks": {
+        "x": 16,
+        "y": 602.796875,
+        "w": 358,
+        "h": 636.796875,
+        "scroll": 356,
+        "client": 356
+      },
+      "due": {
+        "x": 16,
+        "y": 1255.59375,
+        "w": 358,
+        "h": 219,
+        "scroll": 356,
+        "client": 356
+      },
+      "news": {
+        "x": 16,
+        "y": 1490.59375,
+        "w": 358,
+        "h": 211,
+        "scroll": 356,
+        "client": 356
+      }
+    },
+    {
+      "width": 1440,
+      "pageWidth": 1440,
+      "entries": {
+        "x": 316,
+        "y": 187.796875,
+        "w": 1096,
+        "h": 92,
+        "scroll": 1096,
+        "client": 1096
+      },
+      "tasks": {
+        "x": 316,
+        "y": 297.796875,
+        "w": 720,
+        "h": 204.59375,
+        "scroll": 718,
+        "client": 718
+      },
+      "due": {
+        "x": 1052,
+        "y": 297.796875,
+        "w": 360,
+        "h": 124.796875,
+        "scroll": 358,
+        "client": 358
+      },
+      "news": {
+        "x": 1052,
+        "y": 438.59375,
+        "w": 360,
+        "h": 211,
+        "scroll": 358,
+        "client": 358
+      }
+    }
+  ],
+  "requests": [
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions/raw-task/00000000-0000-4000-8000-000000000005",
+      "search": "?versionToken=test-token",
+      "method": "GET",
+      "status": 409
+    },
+    {
+      "route": "/api/home/actions/raw-task/00000000-0000-4000-8000-000000000005",
+      "search": "?versionToken=test-token",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items/00000000-0000-4000-8000-000000000003",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items/00000000-0000-4000-8000-000000000003",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/review",
+      "search": "?start=2026-11-02&end=2026-11-09",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/review",
+      "search": "?start=2026-11-02&end=2026-11-09",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompts/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompts/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompt-ai/schema",
+      "search": "",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "route": "/api/prompts",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompt-ai/drafts",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompt-ai/schema",
+      "search": "",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "route": "/api/prompts",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompt-ai/drafts",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompts",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/meeting-catalog",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/meetings",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/meeting-catalog",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/meetings",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "?summary=true",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "search": "?status=pending_confirmation",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "?summary=true",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "search": "?status=pending_confirmation",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "?summary=true",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "search": "?status=pending_confirmation",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "?summary=true",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "search": "?status=pending_confirmation",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompts/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompts/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/prompts",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "?summary=true",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "search": "?status=pending_confirmation",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki/schema",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "?summary=true",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/drafts",
+      "search": "?status=pending_confirmation",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/knowledge/workflows",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki-lint",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/history",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/history",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/editions/2026-11-08/saved-raws",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "blockedRequests": [],
+  "screenshots": [
+    "review-populated-1440.png",
+    "review-populated-1024.png",
+    "review-populated-390.png",
+    "review-partial-error-390.png",
+    "review-empty-1440.png"
+  ],
+  "chrome": "156.0.8078.80"
+}

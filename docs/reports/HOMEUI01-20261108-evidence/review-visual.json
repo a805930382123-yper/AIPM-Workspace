@@ -1,0 +1,185 @@
+{
+  "success": true,
+  "checks": [
+    "Normal-length synthetic task screenshot at 1440 and 390"
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "pageWidth": 1440,
+      "entries": {
+        "x": 316,
+        "y": 187.796875,
+        "w": 1096,
+        "h": 92,
+        "scroll": 1096,
+        "client": 1096
+      },
+      "tasks": {
+        "x": 316,
+        "y": 297.796875,
+        "w": 720,
+        "h": 535,
+        "scroll": 718,
+        "client": 718
+      },
+      "due": {
+        "x": 1052,
+        "y": 297.796875,
+        "w": 360,
+        "h": 167,
+        "scroll": 358,
+        "client": 358
+      },
+      "news": {
+        "x": 1052,
+        "y": 480.796875,
+        "w": 360,
+        "h": 211,
+        "scroll": 358,
+        "client": 358
+      }
+    },
+    {
+      "width": 390,
+      "pageWidth": 390,
+      "entries": {
+        "x": 16,
+        "y": 385.796875,
+        "w": 358,
+        "h": 199,
+        "scroll": 358,
+        "client": 358
+      },
+      "tasks": {
+        "x": 16,
+        "y": 602.796875,
+        "w": 358,
+        "h": 742,
+        "scroll": 356,
+        "client": 356
+      },
+      "due": {
+        "x": 16,
+        "y": 1360.796875,
+        "w": 358,
+        "h": 219,
+        "scroll": 356,
+        "client": 356
+      },
+      "news": {
+        "x": 16,
+        "y": 1595.796875,
+        "w": 358,
+        "h": 211,
+        "scroll": 356,
+        "client": 356
+      }
+    }
+  ],
+  "requests": [
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/recovery-issues",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/news/today/ensure",
+      "search": "",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/work-items",
+      "search": "?due=1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/wiki",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/home/actions",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/stats",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/raw-processing",
+      "search": "",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "blockedRequests": [],
+  "screenshots": [
+    "review-desktop.png",
+    "review-mobile-workspace.png"
+  ],
+  "chrome": "156.0.8078.80"
+}
