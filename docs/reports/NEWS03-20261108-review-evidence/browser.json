@@ -1,0 +1,83 @@
+{
+  "stage": "browser",
+  "date": "2026-11-08",
+  "node": "v25.2.1",
+  "out": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ",
+  "checks": [
+    {
+      "name": "Real Chrome one",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: false == true\n    at browserCase (file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news03-review/check.mjs:222:14)\n    at async check (file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news03-review/check.mjs:96:50)\n    at async file:///E:/AI/Work/AIPM%20Workspace/node_modules/.cache/news03-review/check.mjs:268:7"
+    },
+    {
+      "name": "Real Chrome empty",
+      "status": "PASS",
+      "version": "156.0.8078.80",
+      "mode": "empty"
+    },
+    {
+      "name": "Real Chrome failed",
+      "status": "PASS",
+      "version": "156.0.8078.80",
+      "mode": "failed"
+    }
+  ],
+  "processes": [
+    {
+      "data": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ\\chrome-one",
+      "mode": "one",
+      "port": 54652,
+      "log": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ\\outbound-0.jsonl",
+      "closed": true,
+      "outbound": [
+        "https://worldpanelbynumerator.com/language/chinese-simplified",
+        "https://nielseniq.cn/global/zh/insights/consumer-packaged-goods/",
+        "https://worldpanelbynumerator.com/insights/fixture-fmcg"
+      ]
+    },
+    {
+      "data": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ\\chrome-empty",
+      "mode": "empty",
+      "port": 61383,
+      "log": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ\\outbound-1.jsonl",
+      "closed": true,
+      "outbound": [
+        "https://worldpanelbynumerator.com/language/chinese-simplified",
+        "https://nielseniq.cn/global/zh/insights/consumer-packaged-goods/"
+      ]
+    },
+    {
+      "data": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ\\chrome-failed",
+      "mode": "failed",
+      "port": 51043,
+      "log": "E:\\AI\\Work\\AIPM Workspace\\node_modules\\.cache\\news03-review\\run-TJn4HJ\\outbound-2.jsonl",
+      "closed": true,
+      "outbound": [
+        "https://worldpanelbynumerator.com/language/chinese-simplified",
+        "https://nielseniq.cn/global/zh/insights/consumer-packaged-goods/"
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "before": {
+    "services/news/types.ts": "ef15ccbde4e2756b74cf69de11c411e7714cf30b661517eeecd89e4806baf42e",
+    "services/news/sources.ts": "94c7603ddab439fd167852eae20a7def84bfe27bd2b16ee99745743c47886899",
+    "services/news/research-sources.ts": "aa47ae7a0c1efee2bedbf4bc2bf749c134028780f3f56a966077a8ae47696a59",
+    "services/news/service.ts": "1804638685603923912908e17bb60c90120b3ccd0215ba7405da1ef69703cd8a",
+    "services/news/raw-save.ts": "17fcb728d44cf568dbfaa525aa7487c97f1ed93202b3e8896110c034f58e8c23",
+    "app/pages/NewsPage.tsx": "b0b1b25c5179ba083cac4cc0254c332fe8a53c11605a79362136864f59671ce2",
+    "tests/news01.test.ts": "a4b3a40df256b9beae25daaf1e9ffecc80825735ef678dbb176136d8e0d57728",
+    "tests/news01-sources.test.ts": "107ae4ab1bed009d8394188807dcd79103897bcc8e53ef696a62699c9c9b091d"
+  },
+  "after": {
+    "services/news/types.ts": "ef15ccbde4e2756b74cf69de11c411e7714cf30b661517eeecd89e4806baf42e",
+    "services/news/sources.ts": "94c7603ddab439fd167852eae20a7def84bfe27bd2b16ee99745743c47886899",
+    "services/news/research-sources.ts": "aa47ae7a0c1efee2bedbf4bc2bf749c134028780f3f56a966077a8ae47696a59",
+    "services/news/service.ts": "1804638685603923912908e17bb60c90120b3ccd0215ba7405da1ef69703cd8a",
+    "services/news/raw-save.ts": "17fcb728d44cf568dbfaa525aa7487c97f1ed93202b3e8896110c034f58e8c23",
+    "app/pages/NewsPage.tsx": "b0b1b25c5179ba083cac4cc0254c332fe8a53c11605a79362136864f59671ce2",
+    "tests/news01.test.ts": "a4b3a40df256b9beae25daaf1e9ffecc80825735ef678dbb176136d8e0d57728",
+    "tests/news01-sources.test.ts": "107ae4ab1bed009d8394188807dcd79103897bcc8e53ef696a62699c9c9b091d"
+  },
+  "sameFiles": true
+}

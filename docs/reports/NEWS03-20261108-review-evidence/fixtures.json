@@ -1,0 +1,83 @@
+[
+  {
+    "name": "N3-01 excludes autumn grain, generic releases, and cross-origin redirects",
+    "status": "PASS",
+    "calls": [
+      "https://worldpanelbynumerator.com/language/chinese-simplified",
+      "https://nielseniq.cn/global/zh/insights/consumer-packaged-goods/",
+      "https://worldpanelbynumerator.com/insights/release",
+      "https://worldpanelbynumerator.com/insights/period",
+      "https://worldpanelbynumerator.com/insights/redirect"
+    ],
+    "period": "2025年、2026年一季度"
+  },
+  {
+    "name": "N3-01 posting date cannot become study period and empty shells are excluded",
+    "status": "PASS",
+    "item": {
+      "id": "b573b8d78e389df38cc961ef",
+      "title": "快消消费者研究报告",
+      "sourceId": "worldpanel",
+      "sourceName": "Worldpanel by Numerator",
+      "url": "https://worldpanelbynumerator.com/insights/valid",
+      "publishedAt": "2026-11-04",
+      "fetchedAt": "2026-11-08T06:00:00.000Z",
+      "excerpt": "本报告于2026年9月发布。消费者研究通过跟踪隔离样本中的城市家庭来比较购买行为，针对零售渠道记录购买频次、销售额及品类贡献。样本包括数个虚拟城区，研究结果显示该品牌在实验组的销售额同比上升3%，线上渠道则实现5%的同比增长。",
+      "evidenceKind": "article_excerpt",
+      "research": {
+        "kind": "官方研究正文摘录，非全文",
+        "dataPeriod": null
+      }
+    },
+    "sources": [
+      {
+        "name": "NIQ",
+        "checkedAt": "2026-11-08T06:00:00.000Z",
+        "status": "failed",
+        "error": "部分候选未取得可读正文。"
+      },
+      {
+        "name": "Worldpanel by Numerator",
+        "checkedAt": "2026-11-08T06:00:00.000Z",
+        "status": "ok",
+        "error": "部分候选未取得可读正文。"
+      }
+    ]
+  },
+  {
+    "name": "N3-01 release and data in the same sentence; explicit report introduction",
+    "status": "PASS",
+    "actualPeriod": "2025年、2026年一季度",
+    "summaryLabel": "官方报告介绍摘录，非报告全文"
+  },
+  {
+    "name": "N3-01 NIQ PDF size limit and page cap",
+    "status": "PASS",
+    "calls": [
+      "https://worldpanelbynumerator.com/language/chinese-simplified",
+      "https://nielseniq.cn/global/zh/insights/consumer-packaged-goods/",
+      "https://nielseniq.cn/global/zh/insights/analysis/2026/size/",
+      "https://nielseniq.cn/wp-content/uploads/sites/9/2026/11/size.pdf",
+      "https://nielseniq.cn/global/zh/insights/analysis/2026/pages/",
+      "https://nielseniq.cn/wp-content/uploads/sites/9/2026/11/pages.pdf"
+    ],
+    "pdfPages": 21,
+    "hasQualifyingPage21": true
+  },
+  {
+    "name": "N3-02 Shanghai 365-day selection, prior research dedupe, and AI window",
+    "status": "PASS",
+    "windowStart": "2025-11-09",
+    "fmcg": [
+      "nowAllowed",
+      "top"
+    ],
+    "ai": [
+      "aiA",
+      "aiB",
+      "aiC"
+    ],
+    "one": "source_only",
+    "zero": "empty"
+  }
+]
