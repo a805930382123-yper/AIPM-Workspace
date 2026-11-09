@@ -164,6 +164,7 @@ export function readWorkAnalysisRun(root: string, itemId: string, id: string) {
 export class WorkAnalysisRuns {
   private readonly active = new Map<string, string>();
   readonly basisReviews: WorkBasisReviews;
+  isRunning(itemId: string) { return this.active.has(itemId) || this.basisReviews.isRunning(itemId); }
 
   constructor(
     private readonly root: string,

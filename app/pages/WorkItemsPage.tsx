@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { Raw, WorkAnalysis, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../api';
-import { ApiError, createWorkItem, updateWorkItem, uploadWorkScreenshot, workItem, workItems, workScreenshotUrl } from '../api';
+import { api, ApiError, createWorkItem, updateWorkItem, uploadWorkScreenshot, workItem, workItems, workScreenshotUrl } from '../api';
 import { WorkAnalysisPanel } from './WorkAnalysisPanel';
 
 const customerStatusLabels: Record<WorkStatus, string> = { triage: '待整理', in_progress: '处理中', waiting: '等待处理', retest: '待复测', closed: '已关闭' };
@@ -157,6 +157,15 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   const [imageNote, setImageNote] = useState('');
   const [brokenImages, setBrokenImages] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const remove = async () => {
+    setBusy(true); setDeleteError('');
+    try {
+      await api('/api/work-items/' + encodeURIComponent(saved.id), { method: 'DELETE', body: JSON.stringify({ baseRevision: saved.revision }) });
+      onChanged(); onBack();
+    } catch (error) { setDeleteError(errorText(error)); } finally { setBusy(false); }
+  };
   const [suggestionPreview, setSuggestionPreview] = useState<{ revision: number; waitingFor: string; nextStep: string; followUpOn: string } | null>(null);
   const [suggestionStale, setSuggestionStale] = useState(false);
   const [notice, setNotice] = useState<{ section: Section; message: string; error?: boolean; conflict?: boolean } | null>(null);
@@ -235,6 +244,14 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
         <p className="work-note work-save-hint">各区独立保存。修改后，请使用该区的保存按钮。</p>
       </div>
     </div>
+    <section className="panel work-section" aria-label="删除工作事项">
+      {!deleteConfirm ? <button className="secondary-button" disabled={busy} onClick={() => setDeleteConfirm(true)}>删除事项</button> : <>
+        <p>确定删除“{saved.title}”及其处理记录？删除无法撤销，未保存的修改也将丢失。关联 Raw 原文保留。</p>
+        <p className="work-note">已有截图、分析及复核文件保留在本机，但不再从事项入口访问。</p>
+        <div className="work-buttons"><button className="secondary-button" disabled={busy} onClick={() => { setDeleteConfirm(false); setDeleteError(''); }}>取消删除</button><button className="primary-button" disabled={busy} onClick={() => void remove()}>{busy ? '正在删除…' : '确认删除事项'}</button></div>
+      </>}
+      {deleteError && <p className="form-error" role="alert">{deleteError} 请重新打开事项后核对并重试。</p>}
+    </section>
     <section className="panel work-section" aria-labelledby="work-current">
       <div className="work-section-heading"><h2 id="work-current">当前情况</h2>
         {saved.status === 'closed' && <button className="secondary-button" disabled={busy} onClick={() => void update('current', { reopen: true }, '事项已重开。', next => changeContext('status', next.status))}>重开事项</button>}

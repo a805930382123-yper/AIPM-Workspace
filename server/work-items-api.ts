@@ -19,6 +19,10 @@ export function registerWorkItemRoutes(app: Express, store: WorkItemStore, analy
   app.get('/api/work-items/:id', async (req, res) => {
     res.json(await store.get(req.params.id));
   });
+  app.delete('/api/work-items/:id', async (req, res) => {
+    await store.delete(req.params.id, req.body?.baseRevision, () => analysis.isRunning(req.params.id));
+    res.json({ deleted: true });
+  });
   app.put('/api/work-items/:id', async (req, res) => {
     res.json(await store.update(req.params.id, req.body));
   });

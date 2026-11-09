@@ -1,5 +1,12 @@
 # 项目总控记录
 
+## WORKDELETE 工作事项删除通过（2026-11-09）
+
+每条客户/产品事项及旧无kind事项详情新增删除入口与确认/取消。DELETE带baseRevision，在事项队列内校验版本并阻止运行中分析/复核；删除主记录及内嵌处理历史。成功退出详情刷新列表，到期不再出现。关联Raw保留，独立截图/分析/复核文件留本机但不再从事项访问；确认说明不可撤销和未保存修改丢失。
+
+施工work_delete、独验delete_review不同实例；本轮实现和WORKDELETE范围PASS，无待返修。独立node --import tsx --import ./tests/support/css-stub.mjs --test tests/work-delete.test.ts tests/work01-http.test.ts 3/3通过；JSDOM确认/取消/409失败/成功返回通过；实际RawStore关联后删除，完整Raw对象不变。真实浏览器未测，未操作正式事项或真实模型。基线bc2f3cff8274522800ace744625a6caa37b6191a加报告5文件SHA；详见[独验](reports/WORKDELETE-20261109-review.md)。
+
+
 ## WORK 合成两轮闭环验证（2026-11-09）
 
 用户要求模拟材料并验证事项→补料继续分析→自动化评估。已制作6条明确标注合成的反馈，真实隔离产品HTTP完成两轮各3条Raw逐字导入/关联、fake分析、显式阶段成果保存，第二轮承接首轮，回读历史及原文不变。材料日期歧义修正关闭，本轮HTTP合成闭环PASS。UI、真实模型质量、真实业务价值与WORK05自动接收NOT_RUN；阶段成果与模型响应是预写fixture，不证明推理质量。

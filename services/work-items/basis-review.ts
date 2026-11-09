@@ -94,6 +94,7 @@ export const basisReviewUnavailable = {
 
 export class WorkBasisReviews {
   private readonly active = new Map<string, string>();
+  isRunning(itemId: string) { return [...this.active.keys()].some(key => key.startsWith(itemId + ":")); }
 
   constructor(
     private readonly root: string,

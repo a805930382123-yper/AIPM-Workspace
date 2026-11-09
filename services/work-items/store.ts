@@ -164,6 +164,14 @@ export class WorkItemStore {
     return current;
   }
 
+  async delete(id: string, baseRevision: unknown, isRunning: () => boolean) {
+    return this.queue.run(async () => {
+      await this.currentRevision(id, baseRevision);
+      if (isRunning()) throw new StorageError('WORK_ITEM_BUSY', '分析或依据复核正在运行，请结束后再删除。', 409);
+      await rm(this.file(id));
+    });
+  }
+
   async update(id: string, value: unknown): Promise<WorkItem> {
     if (!isRecord(value)) invalid('工作事项格式不正确。');
     return this.queue.run(async () => {
