@@ -1,5 +1,12 @@
 # 项目总控记录
 
+## WORK 合成两轮闭环验证（2026-11-09）
+
+用户要求模拟材料并验证事项→补料继续分析→自动化评估。已制作6条明确标注合成的反馈，真实隔离产品HTTP完成两轮各3条Raw逐字导入/关联、fake分析、显式阶段成果保存，第二轮承接首轮，回读历史及原文不变。材料日期歧义修正关闭，本轮HTTP合成闭环PASS。UI、真实模型质量、真实业务价值与WORK05自动接收NOT_RUN；阶段成果与模型响应是预写fixture，不证明推理质量。
+
+操作closed_loop、独验closed_review为不同实例。命令node --import tsx tests/acceptance/work-closed-20261109.mjs退出0；最终fake2、施工累计fake6、真实0。独验独立Node磁盘核对6原文/2轮/6关联/2成果/第二轮输入退出0，未重复跑操作脚本。基线09359d0fec9b931952a68a8298f533ce8d5c6405，无产品代码修改，正式数据/用户服务未动，自有进程已关闭。材料、两轮成果、自动化判断及独验见[交付目录](reports/WORK-CLOSED-20261109/README.md)、[独立验收](reports/WORK-CLOSED-20261109/review.md)。下一步需真实来源和使用观察再决定单来源自动补料。
+
+
 ## NEWS06 AIHOT直接展示（2026-11-09）
 
 按用户要求AI栏请求AIHOT selected/24h/limit=5，按源顺序取前5条，移除本地关键词、日期筛选、重新排序及历史/本期去重；保留必要格式检查。快消中国优先和5条、每日缓存与可选AI分析不变。今日缓存不重建，下次生成生效。施工news_five停写，主线程独立复验35/35 PASS；本轮及NEWS06范围PASS，无真实来源或模型调用、无正式数据变更。测试命令：node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts tests/news01-ui.test.tsx tests/news02-ui.test.tsx。受验基线05d709594f7cd0daacc878acbb38560921a32713加当前工作区；含之前NEWS04/05未提交修改。
