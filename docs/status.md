@@ -1,5 +1,9 @@
 # 工程状态
 
+## README 使用说明重写（2026-11-09）
+
+按用户审核的八部分结构重写 README：介绍、安装、功能用法、借鉴与许可、备份、限制、FAQ及详细文档。评分0/0/0/0，A轻量，沿用已审核方案；Luna High readme_builder施工，Sol High readme_review独立验收。初检文档事实问题已关闭，本轮文档范围PASS；产品整体验收未执行，既有批次结论不变。实际命令、基线956910b及最终README SHA见[独验报告](reports/README-20261109-review.md)。未运行产品服务或模型，未改业务数据。
+
 ## WORKREPLY 解决入口去重（2026-11-09）
 
 客户活动状态下拉只提供待整理/处理中/等待处理/待复测；已解决仅由快捷按钮进入，仍需说明并确认。进入后只读已解决选项显示正确，可回选活动状态取消；已保存后重开机制保持。产品分析不变。仅WorkItemsPage.tsx一行产品修改。施工customer_reply、独验delete_review；独立JSDOM入口/取消零请求/保存/重开与旧回复回归PASS，局部及本轮范围PASS。真实浏览器未测。基线b0afd2e078fbb5d4368b86f9c4b6566729848f73，文件SHA和命令见[独验](reports/WORKREPLY-ENTRY-20261109-review.md)。
