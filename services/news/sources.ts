@@ -6,7 +6,7 @@ import type { NewsItem, NewsSectionName, SourceResult } from './types.ts';
 const sources = {
   ce: {name:'中国经济网食品', url:'http://www.ce.cn/cysc/sp/'},
   commerce: {name:'商务部', url:'https://www.mofcom.gov.cn/'},
-  aihot: {name:'AIHOT', url:'https://aihot.news/api/v1/items?mode=selected&window=24h&limit=20'},
+  aihot: {name:'AIHOT', url:'https://aihot.news/api/v1/items?mode=selected&window=24h&limit=5'},
 };
 const allowed = (u:URL) => (u.origin === 'http://www.ce.cn' && /^\/cysc\/(?:sp\/|newmain\/yc\/jsxw\/)/u.test(u.pathname)) || (u.origin === 'https://www.mofcom.gov.cn' && (u.pathname === '/' || /^\/xwfb\/sjfzrfb\/art\/\d{4}\/art_[a-f0-9]+\.html$/u.test(u.pathname))) || (u.origin === 'https://aihot.news' && u.pathname === '/api/v1/items');
 async function get(url:string):Promise<string> {
@@ -53,7 +53,7 @@ export async function readNewsSources(section:NewsSectionName, now:Date):Promise
       const text=await get(source.url); const items:NewsItem[]=[];
       if(key==='aihot') {
         const json=JSON.parse(text); if(!Array.isArray(json.items)) throw Error('来源格式异常'); let validCount=0;
-        for(const row of json.items.slice(0,20)) {const url=safeOriginal(row.links?.original); if(!url||typeof row.id!=='string'||typeof row.title!=='string'||typeof row.summary!=='string') continue; validCount++; if(!matchesNewsFocus('ai',row.title,row.summary))continue; items.push({id:id(url),title:row.title.slice(0,300),sourceId:key,sourceName:source.name,url,publishedAt:typeof row.publishedAt==='string'&&!Number.isNaN(Date.parse(row.publishedAt))?row.publishedAt:null,fetchedAt:checkedAt,excerpt:row.summary.slice(0,1500),evidenceKind:'source_summary'});}
+        for(const row of json.items.slice(0,5)) {const url=safeOriginal(row.links?.original); if(!url||typeof row.id!=='string'||typeof row.title!=='string'||typeof row.summary!=='string') continue; validCount++; items.push({id:id(url),title:row.title.slice(0,300),sourceId:key,sourceName:source.name,url,publishedAt:typeof row.publishedAt==='string'&&!Number.isNaN(Date.parse(row.publishedAt))?row.publishedAt:null,fetchedAt:checkedAt,excerpt:row.summary.slice(0,1500),evidenceKind:'source_summary'});}
         if(json.items.length&&!validCount)throw Error('来源条目格式异常');
       } else {
         const page=dom(text,source.url), doc=page.window.document;

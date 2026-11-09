@@ -51,3 +51,5 @@ test('仅引用独立标注的明确数据期，报告材料分级与原文保�
     });
   }
 });
+
+test('过期中国候选不挤掉有效研报，未来日期不抓取',async()=>{const orig=globalThis.fetch;const requests:string[]=[];globalThis.fetch=async(input)=>{const url=String(input);requests.push(url);if(url.includes('nielseniq.cn'))return new Response('',{status:503});if(url.endsWith('chinese-simplified'))return new Response([...Array.from({length:4},(_,i)=>({id:'old-'+i,title:'中国快消消费者研究',date:'November 1, 2024'})),{id:'future',title:'中国快消研究',date:'November 9, 2026'},{id:'valid',title:'全球快消消费者研究',date:'November 3, 2026'}].map(c=>`<div class="blog-post-title"><div class="post-meta"><div class="small-text">${c.date}</div></div><a href="/insights/${c.id}">${c.title}</a></div>`).join(''),{headers:{'content-type':'text/html'}});return new Response(`<div class="article w-richtext"><p>${'消费者研究显示快消销售额同比增长0.9%。'+'研究分析渠道结构和消费者购买行为。'.repeat(8)}</p></div>`,{headers:{'content-type':'text/html'}})};try{const x=await readResearchSources(now);assert.equal(x.items.length,1);assert.ok(x.items[0].url.endsWith('/valid'));assert.ok(!requests.some(x=>/\/insights\/(old-|future)/u.test(x)));}finally{globalThis.fetch=orig;}});

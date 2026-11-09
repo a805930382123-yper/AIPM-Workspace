@@ -1,5 +1,24 @@
 # 工程状态
 
+## NEWS06 AIHOT直接展示（2026-11-09）
+
+按用户要求AI栏请求AIHOT selected/24h/limit=5，按源顺序取前5条，移除本地关键词、日期筛选、重新排序及历史/本期去重；保留必要格式检查。快消中国优先和5条、每日缓存与可选AI分析不变。今日缓存不重建，下次生成生效。施工news_five停写，主线程独立复验35/35 PASS；本轮及NEWS06范围PASS，无真实来源或模型调用、无正式数据变更。测试命令：node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts tests/news01-ui.test.tsx tests/news02-ui.test.tsx。受验基线05d709594f7cd0daacc878acbb38560921a32713加当前工作区；含之前NEWS04/05未提交修改。
+
+
+## NEWS05 中国市场研报优先（2026-11-09）
+
+快消候选与最终精选按标题、URL路径、已取得正文中的中国/China线索优先，中文语言与域名不作为中国市场证据；非中国内容可补位。候选截断前排除365日外和未来日期，避免过期中国报告挤掉有效候选。保留两栏最多5条、AI排序、去重和当日缓存，下一次生成生效。关键词优先不等于语义地区分类。未新增来源或真实模型调用。
+
+施工news_five与主线程独立检查分离。施工31/31 PASS（node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts）；主线程独立news01及两份UI测试9/9、最终news03-repair测试20/20 PASS。本轮候选过期问题关闭，NEWS05范围整体PASS。真实来源刷新与浏览器交互未测，正式资料未改。受验基线05d709594f7cd0daacc878acbb38560921a32713，受验为当前工作区research-sources.ts/service.ts/NewsPage.tsx，包含上轮NEWS04数量调整。本轮暂存成功，但commit仍因unable to create temporary file: Invalid argument / Error building trees失败；未提交或推送。
+
+
+## NEWS04 每日资讯数量调整（2026-11-09）
+
+用户要求快消研报与洞察、AI前沿各展示5条。服务端统一最多5条，快消页面说明同步；合格来源不足可少于5条。既有日期窗口、去重、来源抓取上限、今日缓存保持；下次生成生效。施工 news_five 与主线程独立检查均完成，本轮修改及数量调整范围 PASS。
+
+施工运行 node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts，29/29通过。主线程独立运行同入口 tests/news01-ui.test.tsx tests/news02-ui.test.tsx，3/3通过；内联隔离 NewsService 断言验证两栏6选5、同日ensure复用，模型调用0。未运行真实浏览器或真实来源刷新。基线05d709594f7cd0daacc878acbb38560921a32713，受验产品为该基线工作区中的 services/news/service.ts 与 app/pages/NewsPage.tsx，仅各1行调整。未改正式数据。Git add 因 unable to create temporary file: Invalid argument 失败，本轮未提交、未推送，修改保留本地。
+
+
 ## WORK05 模拟资料与现有人工补料演练通过（2026-11-08）
 
 用户要求模拟资料验收，明确采用假设场景：每周智能参谋提问/回答导出补到同一能力缺口事项。两周6+6条均标合成，含成功对照、报告失败、时点、口径及歧义，另附重复/改稿/缺字段/停服样例。未将假设当真实来源授权。
