@@ -305,7 +305,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
         <fieldset className="work-form" disabled={busy}>
           <div className="work-form-grid">
             <div className="field"><label htmlFor="work-status">状态</label><select id="work-status" value={context.status} disabled={saved.status === 'closed'} onChange={event => changeContext('status', event.target.value as WorkStatus)}>
-              {Object.entries(product ? analysisStatusLabels : customerStatusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              {Object.entries(product ? analysisStatusLabels : customerStatusLabels).filter(([value]) => product || value !== 'closed' || context.status === 'closed').map(([value, label]) => <option key={value} value={value} disabled={!product && value === 'closed'}>{label}</option>)}
             </select></div>
             <label className="field">跟进日期（选填）<input type="date" aria-describedby={context.status === 'waiting' ? 'work-follow-up-hint' : undefined} value={context.followUpOn} onChange={event => changeContext('followUpOn', event.target.value)} /></label>
             {context.status === 'waiting' && <p className="work-note work-span" id="work-follow-up-hint">可以设置跟进日期，到期会显示在首页。也可以暂时留空。</p>}
