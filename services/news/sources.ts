@@ -44,8 +44,8 @@ export const newsPriority=(section:NewsSectionName,item:NewsItem)=>{
   return section==='fmcg' ? Number(/发布|推出|新增|更新|新品|增长|下降|销量|市场|经营|供应链|开店|发展|战略/u.test(text)) : Number(/发布|推出|更新|上线|新增|升级|评测|测评|工作流|功能/iu.test(text));
 };
 function safeOriginal(value:unknown):string|null { if(typeof value!=='string') return null; try {const u=new URL(value); return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password ? u.href:null;} catch{return null;} }
-export async function readNewsSources(section:NewsSectionName, now:Date):Promise<SourceResult> {
-  if((section as NewsSectionName)==='fmcg') return readResearchSources(now);
+export async function readNewsSources(section:NewsSectionName, now:Date, exclusions?:{urls:Set<string>;titles:Set<string>}):Promise<SourceResult> {
+  if((section as NewsSectionName)==='fmcg') return readResearchSources(now,exclusions);
   const keys=section==='fmcg'?(['ce','commerce'] as const):(['aihot'] as const); const result:SourceResult={items:[],sources:[]};
   await Promise.all(keys.map(async key=>{
     const source=sources[key],checkedAt=now.toISOString();
