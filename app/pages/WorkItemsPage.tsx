@@ -1,15 +1,15 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Raw, WorkAnalysis, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../api';
 import { api, ApiError, createWorkItem, updateWorkItem, uploadWorkScreenshot, workItem, workItems, workScreenshotUrl } from '../api';
 import { WorkAnalysisPanel } from './WorkAnalysisPanel';
 
-const customerStatusLabels: Record<WorkStatus, string> = { triage: '待整理', in_progress: '处理中', waiting: '等待处理', retest: '待复测', closed: '已关闭' };
+const customerStatusLabels: Record<WorkStatus, string> = { triage: '待整理', in_progress: '处理中', waiting: '等待处理', retest: '待复测', closed: '已解决' };
 const analysisStatusLabels: Partial<Record<WorkStatus, string>> = { triage: '待开始', in_progress: '进行中', waiting: '等待补充', closed: '已完成' };
 export const workKindLabel = (kind?: WorkItemKind) => kind === 'product_analysis' ? '产品分析' : '客户问题';
 export const workStatusLabel = (kind: WorkItemKind | undefined, status: WorkStatus) =>
   (kind === 'product_analysis' ? analysisStatusLabels[status] : undefined) ?? customerStatusLabels[status];
 const historyLabels: Record<WorkHistory['kind'], string> = {
-  feedback: '补充客户反馈', reproduction: '复现记录', technical_reply: '技术回复', sent: '已发送技术反馈', retest: '复测记录',
+  feedback: '补充客户反馈', reproduction: '复现记录', technical_reply: '技术回复', customer_reply: '回复客户', sent: '已发送技术反馈', retest: '复测记录',
   stage_result: '阶段成果', closed: '关闭事项', reopened: '重开事项',
 };
 const eventTime = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', dateStyle: 'medium', timeStyle: 'short' });
@@ -149,7 +149,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   const [closureReason, setClosureReason] = useState('');
   const [report, setReport] = useState(item.reportDraft ?? '');
   const [sent, setSent] = useState<{ body: string; time: string } | null>(null);
-  const [kind, setKind] = useState<'feedback' | 'reproduction' | 'technical_reply' | 'retest'>('feedback');
+  const [kind, setKind] = useState<'feedback' | 'reproduction' | 'technical_reply' | 'customer_reply' | 'retest'>('feedback');
   const [historyText, setHistoryText] = useState('');
   const [outcome, setOutcome] = useState<'' | 'passed' | 'failed'>('');
   const [selectedRaw, setSelectedRaw] = useState('');
@@ -222,11 +222,14 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   </div>;
   const changeContext = <K extends keyof typeof context>(key: K, value: (typeof context)[K]) => setContext(previous => ({ ...previous, [key]: value }));
   const product = saved.kind === 'product_analysis';
+  const closureInput = useRef<HTMLTextAreaElement>(null);
+  const [focusClosure, setFocusClosure] = useState(false);
+  useEffect(() => { if (focusClosure) { closureInput.current?.focus(); setFocusClosure(false); } }, [focusClosure]);
   const closing = context.status === 'closed' && saved.status !== 'closed';
   const rawById = new Map(raws.map(raw => [raw.id, raw]));
   const availableRaws = raws.filter(raw => !saved.rawIds.includes(raw.id));
   const latestProgress = saved.kind === 'customer_issue' ? [...saved.history].reverse().find(entry =>
-    ['sent', 'technical_reply', 'retest', 'closed', 'reopened'].includes(entry.kind)) : undefined;
+    ['sent', 'technical_reply', 'customer_reply', 'retest', 'closed', 'reopened'].includes(entry.kind)) : undefined;
   const suggestion = latestProgress?.kind === 'sent' && (saved.status === 'triage' || saved.status === 'in_progress')
     ? { title: '转为等待技术', reason: '已记录发送技术反馈。', status: 'waiting' as const, waitingFor: '技术', nextStep: '跟进技术回复' }
     : latestProgress?.kind === 'technical_reply' && (saved.status === 'waiting' || saved.status === 'in_progress')
@@ -254,6 +257,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
     </section>
     <section className="panel work-section" aria-labelledby="work-current">
       <div className="work-section-heading"><h2 id="work-current">当前情况</h2>
+        {!product && saved.status !== 'closed' && <button className="primary-button" disabled={busy} onClick={() => { changeContext('status', 'closed'); setFocusClosure(true); }}>标记为已解决</button>}
         {saved.status === 'closed' && <button className="secondary-button" disabled={busy} onClick={() => void update('current', { reopen: true }, '事项已重开。', next => changeContext('status', next.status))}>重开事项</button>}
       </div>
       {suggestion && <section className="work-analysis-preview" aria-label="事项推进建议">
@@ -292,7 +296,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
         const { status, waitingFor, nextStep, followUpOn, customer, project, occurredAt } = context;
         void update('current', { status, waitingFor, nextStep, followUpOn,
           ...(product ? { analysis } : { customer, project, occurredAt: timestamp(occurredAt) }),
-          ...(closing ? { closureReason } : {}) }, closing ? (product ? '事项已完成。' : '事项已关闭。') : '当前情况已保存。', next => {
+          ...(closing ? { closureReason } : {}) }, closing ? (product ? '事项已完成。' : '问题已解决。') : '当前情况已保存。', next => {
           setContext(contextOf(next));
           setAnalysis(analysisOf(next.analysis));
           setClosureReason('');
@@ -317,9 +321,9 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
             <label className="field">项目（选填）<input maxLength={200} value={context.project} onChange={event => changeContext('project', event.target.value)} /></label>
             <label className="field">发生时间（选填，上海时间）<input type="datetime-local" step="1" value={context.occurredAt} onChange={event => changeContext('occurredAt', event.target.value)} /></label>
             </>}
-            {closing && <label className="field work-span">{product ? '完成说明' : '关闭原因'}<textarea required maxLength={20_000} rows={2} value={closureReason} onChange={event => setClosureReason(event.target.value)} /></label>}
+            {closing && <label className="field work-span">{product ? '完成说明' : '解决说明'}<textarea ref={closureInput} required maxLength={20_000} rows={2} value={closureReason} onChange={event => setClosureReason(event.target.value)} /></label>}
           </div>
-          <div className="work-buttons"><button className="primary-button" type="submit">{closing ? (product ? '完成事项' : '关闭事项') : '保存当前情况'}</button></div>
+          <div className="work-buttons"><button className="primary-button" type="submit">{closing ? (product ? '完成事项' : '确认问题已解决') : '保存当前情况'}</button></div>
         </fieldset>
       </form>
       {renderNotice('current')}
@@ -342,10 +346,11 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
         void update('history', { history }, '处理记录已添加。', () => { setHistoryText(''); setOutcome(''); });
       }}>
         <h3>添加处理记录</h3>
+        {kind === 'customer_reply' && <p className="work-note">记录已回复客户的内容，不会自动发送消息；确认问题处理完毕后，可标记为已解决。</p>}
         <fieldset className="work-form" disabled={busy}>
           <div className="work-form-grid">
             <div className="field"><label htmlFor="work-history-kind">记录类型</label><select id="work-history-kind" value={kind} onChange={event => setKind(event.target.value as typeof kind)}>
-              {(['feedback', 'reproduction', 'technical_reply', 'retest'] as const).map(value => <option key={value} value={value}>{historyLabels[value]}</option>)}
+              {(['feedback', 'reproduction', 'technical_reply', 'customer_reply', 'retest'] as const).map(value => <option key={value} value={value}>{historyLabels[value]}</option>)}
             </select></div>
             {kind === 'retest' && <div className="field"><label htmlFor="work-retest-outcome">复测结果</label><select id="work-retest-outcome" required value={outcome} onChange={event => setOutcome(event.target.value as typeof outcome)}><option value="">选择结果</option><option value="passed">通过</option><option value="failed">未通过</option></select></div>}
           </div>

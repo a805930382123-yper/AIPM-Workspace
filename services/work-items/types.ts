@@ -85,7 +85,7 @@ export type WorkItemCreate = { kind?: 'customer_issue'; title: string; feedback:
   | { kind: 'product_analysis'; title: string; goal: string };
 
 export type WorkHistoryInput =
-  | { kind: 'feedback' | 'reproduction' | 'technical_reply'; body: string }
+  | { kind: 'feedback' | 'reproduction' | 'technical_reply' | 'customer_reply'; body: string }
   | { kind: 'sent'; body: string; sentAt: string }
   | { kind: 'retest'; body: string; outcome: 'passed' | 'failed' }
   | { kind: 'stage_result'; body: string; analysisRunId?: string };

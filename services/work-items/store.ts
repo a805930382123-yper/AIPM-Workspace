@@ -12,7 +12,7 @@ const TEXT_LIMIT = 20_000;
 const contextLimits = { customer: 200, project: 200, waitingFor: 300, nextStep: 1000, reportDraft: TEXT_LIMIT } as const;
 const customerFields = ['customer', 'project', 'occurredAt', 'reportDraft', 'feedback'] as const;
 const analysisFields = { dataScope: '数据范围与口径', confirmedConclusions: '已确认结论', openQuestions: '未解问题' } as const;
-const historyKinds = ['feedback', 'reproduction', 'technical_reply', 'sent', 'retest'] as const;
+const historyKinds = ['feedback', 'reproduction', 'technical_reply', 'customer_reply', 'sent', 'retest'] as const;
 const imageTypes = { 'image/png': 'png', 'image/jpeg': 'jpg' } as const;
 export const MAX_WORK_SCREENSHOT_BYTES = 5 * 1024 * 1024;
 const shanghaiDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -59,7 +59,7 @@ function historyInput(value: unknown): WorkHistoryInput {
   if (!isRecord(value)) invalid('处理记录格式不正确。');
   const body = requiredText(value.body, TEXT_LIMIT, '记录正文');
   switch (value.kind) {
-    case 'feedback': case 'reproduction': case 'technical_reply':
+    case 'feedback': case 'reproduction': case 'technical_reply': case 'customer_reply':
       return { kind: value.kind, body };
     case 'sent':
       return { kind: 'sent', body, sentAt: timestamp(value.sentAt, '实际发送时间') };
@@ -217,7 +217,7 @@ export class WorkItemStore {
         next.status = value.status;
       }
       if (current.status !== 'closed' && next.status === 'closed') {
-        appended.push({ kind: 'closed', body: requiredText(value.closureReason, TEXT_LIMIT, '关闭原因'), at });
+        appended.push({ kind: 'closed', body: requiredText(value.closureReason, TEXT_LIMIT, product ? '完成说明' : '解决说明'), at });
       }
       if ('reopen' in value) {
         if (value.reopen !== true || current.status !== 'closed' || value.status === 'closed') invalid('只能重开已关闭的事项。');

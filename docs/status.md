@@ -1,5 +1,12 @@
 # 工程状态
 
+## WORKREPLY 回复客户与解决入口通过（2026-11-09）
+
+客户处理记录新增customer_reply“回复客户”，仅本机记录不外发。客户closed显示已解决，新增“标记为已解决”切换并聚焦必填解决说明，保留其他未保存字段；确认保存后退出到期，可重开。回复客户不自动关闭，并抑制旧技术事件的过时建议。产品已完成和旧历史兼容。
+
+施工customer_reply与独验delete_review不同实例，本轮实现与WORKREPLY范围PASS。独立JSDOM回复/焦点/未保存字段/确认解决/重开通过，实际到期排除与重开恢复通过；主线程node --import tsx --import ./tests/support/css-stub.mjs --test tests/customer-reply.test.ts tests/work-delete.test.ts tests/work01-http.test.ts 4/4 PASS，含备份恢复。真实浏览器未测，无正式资料或外部消息操作。受验基线0de6935b9c0c77d6aef943992b3a1e30b1c6eaba加[独验报告](reports/WORKREPLY-20261109-review.md)3产品SHA。
+
+
 ## WORKDELETE 工作事项删除通过（2026-11-09）
 
 每条客户/产品事项及旧无kind事项详情新增删除入口与确认/取消。DELETE带baseRevision，在事项队列内校验版本并阻止运行中分析/复核；删除主记录及内嵌处理历史。成功退出详情刷新列表，到期不再出现。关联Raw保留，独立截图/分析/复核文件留本机但不再从事项访问；确认说明不可撤销和未保存修改丢失。
