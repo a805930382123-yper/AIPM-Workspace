@@ -1,5 +1,13 @@
 # 工程状态
 
+## NEWS09-FIX PwC启用，首批整体通过（2026-11-12）
+
+用户授权处理下载超时和证书原因。Sol真实诊断PwC同一2,400,087字节PDF两次3.335秒/6.932秒，证明链路耗时波动，具体服务端/CDN/网络归因未证；保持12秒/10MiB、不加重试。Terra一次完整真实目录→详情→PDF均200，PDF8.228秒，取得原月份2025-12和物理第6页正文，之后默认启用；旧缓存不重建。
+
+3分A标准，Astra news07_plan规划、Sol news07_review诊断预审独验、Terra news07_build施工。独立最终生产入口/原文PDF页/Raw逐字及幂等/重启缓存通过，组合50/50、新闻范围tsc通过；复用施工全产品tsc与隔离构建和未变UI的NEWS09浏览器证据。PwC阻塞关闭、本轮PASS、NEWS09首批整体PASS。CCFA严格TLS核实www及apex叶证书有效期2026-05-13至2026-08-10，当前已过期，属站方证书问题，保持不启用，不绕过校验；后续可处理KPMG/Mintel但本轮未启动。
+
+基线d677b6d5740be198997f363ffb3dbd59306e4c5c加独验SHA。零模型/正式缓存改写。见[诊断](reports/NEWS09-FIX-20261112-diagnosis.md)、[施工](reports/NEWS09-FIX-20261112-builder.md)、[独验](reports/NEWS09-FIX-20261112-review.md)、[任务卡](handoffs/NEWS09-FIX-20261112-task.md)。
+
 ## NEWS09 统计局局部通过，PwC真实接入阻塞（2026-11-12）
 
 新增国家统计局动态目录及正式社零正文，明确官方宏观统计非品牌销量；新生成/近期补位单源最多2、总5，联合PDF链接去重，旧缓存保留。PwC适配器工程保留但默认关闭，CCFA未启用。统计局解读稿/无列头表格误入问题返修关闭，统计局局部PASS；NEWS09首批整体BLOCKED，不启动后续KPMG/Mintel。
