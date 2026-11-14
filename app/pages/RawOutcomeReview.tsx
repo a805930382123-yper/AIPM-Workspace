@@ -1,10 +1,10 @@
 import {useEffect, useRef, useState, type ReactNode} from 'react';
-import {ApiError, api, cancelDraftPreparation, confirmDraft, discardDraft, draftView, finishDraftReview, patchDraft, prepareDraftChange, savePageDecision, setDraftDeferred, startUpdateWorkflow, wikiCommit} from '../api';
+import {ApiError, api, cancelDraftPreparation, confirmDraft, discardDraft, draftView, finishDraftReview, patchDraft, pdfOriginalPageUrl, prepareDraftChange, savePageDecision, setDraftDeferred, startUpdateWorkflow, wikiCommit} from '../api';
 import type {DraftView, RawDraftView, Wiki, WikiCommitStatus} from '../api';
 import {FormalNoteReader} from '../components/FormalNoteReader';
 import {StructuredNoteEditor} from '../components/StructuredNoteEditor';
 import type {RawCitationTarget} from '../components/WikiQuestionPanel';
-import {renderStructuredNote} from '../../services/wiki/structured-note';
+import {parseNoteGrid,renderStructuredNote} from '../../services/wiki/structured-note';
 import type {KnowledgeChange} from '../../services/wiki/maintenance';
 import {lineDifference} from './KnowledgeMaintenanceReview';
 
@@ -27,6 +27,31 @@ type Adjustment={changeId:string;action:KnowledgeChange['action'];targetWikiId:s
 const actions = {create:'新建主题', update:'更新主题', link:'补充来源', noop:'主题无需改动'};
 const statusLabels = {pending_confirmation:'待确认', committing:'正在处理上次确认', confirmed:'已确认入库', discarded:'已放弃'};
 
+function pdfOutcomeExcerpt(body: string) {
+  const lines = body.split(/\r?\n/u);
+  const entities: Record<string,string> = {'&amp;':'&','&lt;':'<','&gt;':'>','&#10;':' '};
+  const plain = (line: string) => line
+    .replace(/^[-*+]\s+/u,'').replace(/^【归并展示】/u,'')
+    .replace(/（(?:(?:含 PDF 页图 AI 解读|依据原文字层)，)?\[第 \d+ 页\]\(\/api\/raw\/.*$/u,'')
+    .replace(/\[([^\]]+)\]\([^)]+\)/gu,'$1')
+    .replace(/(?<!\\)(\*\*|__|`)(.+?)\1/gu,'$2')
+    .replace(/\\([\\`*_{}\[\]()#+.!|~\-])/gu,'$1')
+    .replace(/&(?:amp|lt|gt|#10);/gu,entity=>entities[entity]).trim();
+  // Updates place the new PDF material after the existing Wiki text.
+  for(let index=lines.lastIndexOf('## 本次 PDF 整理')+1;index<lines.length;index++) {
+    const line = lines[index].trim();
+    if(/^### (?:AI 推断|待核问题)$/u.test(line)) break;
+    if(!line||/^(?:#|>|```|- (?:表头依据|表注|表列|列关系待核)[：:]|不同列口径，单独列示。)/u.test(line)) continue;
+    if(line.startsWith('| ')) {
+      const grid = parseNoteGrid(lines,index);
+      if(grid) return grid.rows[0].slice(0,-1).map(plain).join(' · ');
+      continue;
+    }
+    const excerpt = plain(line);
+    if(excerpt) return excerpt;
+  }
+}
+
 export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenWiki, onOpenWorkflow, onCommitted, advanced, advancedDirty, advancedBusy}: Props) {
   const [selection, setSelection] = useState(() => {
     if (view.deferredAt) return [];
@@ -34,7 +59,9 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
     return remaining?.every(c=>c.action==='noop')?remaining.map(c=>view.pages[c.pageIndex].pageId):view.pages.filter(p=>p.selected&&p.reviewDecision!=='defer').map(p=>p.pageId);
   });
   const [edit, setEdit] = useState<Edit | null>(null);
+  const [pendingRead, setPendingRead] = useState(false);
   const [noteDirty, setNoteDirty] = useState(false);
+  const [noteSaving, setNoteSaving] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -84,14 +111,19 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
   const allowsSourceOnly = !!view.structuredNote;
   const sourceReuse = view.preview?.sourceReuse;
   const noChanges=chosen.length>0&&cards.filter(({page})=>chosen.includes(page.pageId)).every(({change})=>change?.action==='noop');
+  const staleDeferred = deferred && view.preview?.rawSha256Matches === false && !view.deferAvailable && !pendingRecovery && !recovering;
   const blockedSource = !view.preview?.rawExists || !view.preview.rawSha256Matches || (!noChanges&&!!view.preview.sourceAmbiguous);
-  const disabled = !!busy || readOnly || !!recovering || pendingRecovery || deferred || advancedDirty || advancedBusy;
+  const disabled = !!busy || readOnly || !!recovering || pendingRecovery || deferred || advancedDirty || advancedBusy || noteSaving;
+  const editing = !!edit || noteDirty;
+  const navigationDisabled = !!busy || editing || noteSaving;
   const missingDependencies=cards.filter(({page,change})=>chosen.includes(page.pageId)&&change?.dependsOn.some(id=>cards.some(other=>other.change?.changeId===id&&!other.change.committedOperationId&&!chosen.includes(other.page.pageId))));
-  const canConfirm = !busy && !edit && !adjustment && !noteDirty && !advancedDirty && !advancedBusy && !blockedSource && !pendingRecovery && !deferred && (recovering || (!readOnly && !missingDependencies.length && (chosen.length > 0 || allowsSourceOnly)));
-  const canDefer = view.deferAvailable && !disabled && !edit && !adjustment && !noteDirty && !discarding;
+  const canConfirm = !busy && !editing && !adjustment && !noteSaving && !advancedDirty && !advancedBusy && !blockedSource && !pendingRecovery && !deferred && (recovering || (!readOnly && !missingDependencies.length && (chosen.length > 0 || allowsSourceOnly)));
+  const canDefer = view.deferAvailable && !disabled && !editing && !adjustment && !discarding;
   const selectedTitles = cards.filter(({page}) => chosen.includes(page.pageId)).map(({page,change}) => change?.candidate.title ?? page.title);
   const selectedQuestions = cards.filter(({page}) => chosen.includes(page.pageId)).flatMap(({page,change}) => change?.questions ?? page.open_questions);
   const sourceBody = view.structuredNote ? `## 深度整理笔记\n\n${renderStructuredNote(view.structuredNote)}` : view.sourceRenderedBody ?? view.source.body;
+  const pdf = view.pdfInput;
+  const modeLabel = pdf ? `PDF 内容清理 · ${pdf.startPage===1&&pdf.endPage===pdf.pageCount?'整份 PDF':pdf.startPage===pdf.endPage?`第 ${pdf.startPage} 页`:`第 ${pdf.startPage}–${pdf.endPage} 页`}` : view.structuredNote ? '深度整理' : '标准整理';
 
   const run = async (label: string, work: () => Promise<void>) => {
     if (inFlight.current) return;
@@ -103,7 +135,9 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
       await work();
     } catch (problem) {
       if (!mounted.current) return;
-      setError(problem instanceof Error ? problem.message : '操作失败，请重试。');
+      setError(pdf&&problem instanceof ApiError&&problem.code==='WIKI_REVISION_CONFLICT'
+        ? `${problem.message} 可以先复制已保存的编辑，再结束本次选择，返回 PDF 重新生成草稿并审阅。`
+        : problem instanceof Error ? problem.message : '操作失败，请重试。');
       if (problem instanceof ApiError) {
         const details = problem.details as {operationId?: string; pageId?: string; candidates?: Duplicate['candidates']} | undefined;
         if (details?.pageId && details.candidates) setDuplicates({pageId: details.pageId, candidates: details.candidates});
@@ -118,26 +152,50 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
     }
   };
 
+  const applySavedEdit = (next: DraftView, topicId?: string) => {
+    const changed = next.outcomeDigest !== view.outcomeDigest;
+    if (changed) {
+      setSelection(ids => topicId ? ids.filter(id => id !== topicId) : []);
+      request.current = null;
+      setDuplicates(null);
+    }
+    onView(next);
+    setNotice(changed
+      ? `草稿已保存，请查看更新后的成果。${topicId ? '如需入库，请重新选择此主题。' : '如需入库，请重新选择本次成果。'}`
+      : '草稿内容未变化。');
+  };
+
+  const readSavedEdit = async () => {
+    try {
+      return await draftView(view.id);
+    } catch {
+      throw new Error('草稿已保存，暂时无法读取最新内容。请重新读取已保存草稿。');
+    }
+  };
+
   const save = () => run('save', async () => {
     if (!edit) return;
     const card = cards.find(({page}) => page.pageId === edit.id);
     let next: DraftView;
-    if (card?.change) {
+    if (pendingRead) {
+      next = await readSavedEdit();
+    } else if (card?.change) {
       await api(`/api/knowledge/drafts/${encodeURIComponent(view.id)}/changes/review`, {
         method: 'POST',
         body: JSON.stringify({baseRevision: view.revision, changeId: card.change.changeId, title: edit.title, body: edit.text}),
       });
-      next = await draftView(view.id);
+      if (!mounted.current) return;
+      setPendingRead(true);
+      next = await readSavedEdit();
     } else if (card) {
       next = await patchDraft(view.id, {baseRevision: view.revision, pages: [{pageId: edit.id, title: edit.title, one_line_definition: edit.description, ai_organized: edit.text.split('\n').filter(line => line.trim())}]});
     } else {
       next = await patchDraft(view.id, {baseRevision: view.revision, source: {title: edit.title, body: edit.text}});
     }
     if (!mounted.current) return;
-    onView(next);
+    applySavedEdit(next, card?.page.pageId);
+    setPendingRead(false);
     setEdit(null);
-    setDuplicates(null);
-    setNotice('草稿已保存，请查看更新后的成果。');
   });
 
   const confirm = () => run('confirm', async () => {
@@ -228,39 +286,47 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
 
   const editFields = edit && <fieldset className="outcome-edit" disabled={disabled}>
     <legend>编辑成果</legend>
-    <label className="field">成果标题<input value={edit.title} maxLength={300} onChange={event => setEdit({...edit, title:event.target.value})} /></label>
+    {edit.description !== undefined && <p className="extract-note">可修改标题、说明和整理内容。原文事实与引用可在下方完整成果中查看。</p>}
+    <label className="field">成果标题<input readOnly={pendingRead} value={edit.title} maxLength={300} onChange={event => setEdit({...edit, title:event.target.value})} /></label>
     {edit.description !== undefined && <label className="field">一句话说明<input value={edit.description} onChange={event => setEdit({...edit, description:event.target.value})} /></label>}
-    <label className="field">{edit.description !== undefined ? '整理内容（每行一项）' : '成果正文'}<textarea rows={8} value={edit.text} onChange={event => setEdit({...edit, text:event.target.value})} /></label>
-    <div className="heading-actions"><button className="secondary-button" onClick={() => void save()}>保存成果编辑</button><button className="text-button" onClick={() => setEdit(null)}>取消编辑</button></div>
+    <label className="field">{edit.description !== undefined ? '整理内容（每行一项）' : '成果正文'}<textarea rows={8} readOnly={pendingRead} value={edit.text} onChange={event => setEdit({...edit, text:event.target.value})} /></label>
+    {error && <p className="form-error" role="alert">{error}</p>}
+    <div className="heading-actions">
+      <button className="secondary-button" onClick={() => void save()}>{busy === 'save' ? pendingRead ? '正在读取草稿…' : '正在保存…' : pendingRead ? '重新读取已保存草稿' : '保存成果编辑'}</button>
+      {!pendingRead && <button className="text-button" onClick={() => {setEdit(null);setError('');}}>取消编辑</button>}
+    </div>
   </fieldset>;
 
-  return <div className="page draft-page raw-outcome" aria-busy={!!busy || advancedBusy}>
+  return <div className="page draft-page raw-outcome" aria-busy={!!busy || advancedBusy || noteSaving}>
     <div className="page-heading">
-      <div><h1>整理成果</h1><p className="subheading">{view.rawTitle} · {view.structuredNote ? '深度整理' : '标准整理'} · {view.maintenance&&view.discardedAt?(view.status==='discarded'?'全部不采纳':'选择已结束'):deferred?'稍后处理':recovering||pendingRecovery?statusLabels.committing:operation?.noChanges&&readOnly?'已检查，无需变更':statusLabels[view.status]} · 草稿 v{view.revision}</p></div>
-      <div className="heading-actions"><button className="secondary-button" onClick={onBack} disabled={!!busy}>返回</button><button className="text-button" onClick={() => onOpenRaw(view.rawId)} disabled={!!busy}>查看原始资料</button></div>
+      <div><h1>整理成果</h1><p className="subheading">{view.rawTitle} · {modeLabel} · {view.maintenance&&view.discardedAt?(view.status==='discarded'?'全部不采纳':'选择已结束'):deferred?'稍后处理':recovering||pendingRecovery?statusLabels.committing:operation?.noChanges&&readOnly?'已检查，无需变更':statusLabels[view.status]} · 草稿 v{view.revision}</p></div>
+      <div className="heading-actions"><button className="secondary-button" onClick={onBack} disabled={navigationDisabled}>返回</button><button className="text-button" onClick={() => onOpenRaw(view.rawId)} disabled={navigationDisabled}>查看原始资料</button></div>
     </div>
-    {error && <div className="form-error" role="alert">{error}</div>}
+    {error && !edit && <div className="form-error" role="alert">{error}</div>}
     {notice && <div className="notice-success" role="status">{notice}</div>}
     {deferred && <section className="panel draft-card-body" aria-labelledby="outcome-deferred-heading">
       <h2 id="outcome-deferred-heading">稍后处理</h2>
-      <p>已保存的成果仍在这里。继续处理后，可以选择剩余成果并确认入库。</p>
-      {!view.deferAvailable && <p className="notice-warn">请从原始资料核对当前整理状态后再继续。</p>}
-      <button className="primary-button" disabled={!!busy || !view.deferAvailable} onClick={() => void changeDeferred(false)}>{busy === 'resume' ? '正在恢复…' : '继续处理'}</button>
+      <p>{staleDeferred ? '可以结束这次选择，再按当前原文重新整理。' : '已保存的成果仍在这里。继续处理后，可以选择剩余成果并确认入库。'}</p>
+      {!view.deferAvailable && !staleDeferred && <p className="notice-warn">请从原始资料核对当前整理状态后再继续。</p>}
+      {staleDeferred ? <div className="heading-actions">
+        {discarding ? <><button className="secondary-button" disabled={!!busy} onClick={() => setDiscarding(false)}>取消</button><button className="danger-quiet" disabled={!!busy} onClick={() => void finish()}>{view.commitOperationId ? '确认结束' : '确认全部不采纳'}</button></>
+          : <button className="text-button danger" disabled={!!busy} onClick={() => setDiscarding(true)}>{view.commitOperationId ? '结束本次选择' : '全部不采纳'}</button>}
+      </div> : <button className="primary-button" disabled={!!busy || !view.deferAvailable} onClick={() => void changeDeferred(false)}>{busy === 'resume' ? '正在恢复…' : '继续处理'}</button>}
     </section>}
     {blockedSource && <p className="notice-warn" role="alert">{!view.preview?.rawExists ? '原始资料已不可读，请核实资料后再入库。' : !view.preview.rawSha256Matches ? '原始正文已变化，请根据当前资料重新整理。' : '有多个既有来源笔记与本资料关联，请先解决来源归属。'}</p>}
     {operation?.status === 'completed' && <section className="panel draft-card-body" aria-label={operation.noChanges?'无需变更':'已入库成果'}>
       <h2>{operation.noChanges?'已检查，无需变更':'已入库成果'}</h2>
       <p>{deferred?'本次选择已完成，剩余成果已保存。':view.status === 'pending_confirmation' ? '本次选择已完成，其他成果仍可继续选择。' : operation.noChanges?'所选主题的正文和来源均已涵盖本次资料。':'本次选择已写入知识库。'}</p>
       <div className="heading-actions">
-        {operation.sourceId && <button className="text-button" onClick={() => onOpenWiki?.(operation.sourceId!)}>打开正式来源笔记</button>}
-        {operation.wikiIds.map((id, index) => <button className="text-button" key={id} onClick={() => onOpenWiki?.(id)}>打开正式主题{operation.wikiIds.length > 1 ? ` ${index + 1}` : ''}</button>)}
+        {operation.sourceId && <button className="text-button" disabled={navigationDisabled} onClick={() => onOpenWiki?.(operation.sourceId!)}>打开正式来源笔记</button>}
+        {operation.wikiIds.map((id, index) => <button className="text-button" disabled={navigationDisabled} key={id} onClick={() => onOpenWiki?.(id)}>打开正式主题{operation.wikiIds.length > 1 ? ` ${index + 1}` : ''}</button>)}
       </div>
       {operation.warnings.map((warning, index) => <p className="notice-warn" key={index}>{warning}</p>)}
     </section>}
     {recovering && <section className="panel draft-card-body" aria-label="提交恢复">
       <h2>上次确认待完成</h2><p>{operation.error?.message ?? '可继续完成已确认的选集。'}</p>
       <p>已落盘 {operation.writtenWikiIds.length} 项。继续时复用上次确认的成果。</p>
-      {operation.writtenWikiIds.map((id,index)=><button key={id} className="text-button" onClick={()=>onOpenWiki?.(id)}>打开已落盘记录 {index+1}</button>)}
+      {operation.writtenWikiIds.map((id,index)=><button key={id} className="text-button" disabled={navigationDisabled} onClick={()=>onOpenWiki?.(id)}>打开已落盘记录 {index+1}</button>)}
     </section>}
     {!deferred && !pendingRecovery && (!readOnly || recovering) && <section className="panel draft-card-body outcome-confirm" aria-label="整体确认入库">
       <h2>整体检查与确认</h2>
@@ -268,7 +334,7 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
       <p><strong>本次主题 {chosen.length} 项</strong>{selectedTitles.length ? ` · ${selectedTitles.slice(0,3).join('、')}${selectedTitles.length>3?'等':''}` : ''}</p>
       <p>{noChanges?'所选成果无需修改正文或来源。':sourceReuse ? `复用来源笔记「${sourceReuse.title}」` : `写入来源笔记「${view.source.title}」`}</p>
       {selectedQuestions.length > 0 && <details><summary>所选主题有 {selectedQuestions.length} 项待核对</summary><ul>{selectedQuestions.map((question,index)=><li key={index}>{question}</li>)}</ul></details>}
-      {(edit || noteDirty || advancedDirty) && <p className="notice-warn">请先保存编辑，再确认入库。</p>}
+      {(editing || advancedDirty) && <p className="notice-warn">{pendingRead?'请先重新读取已保存草稿，再继续审核。':editing?'请先保存或取消编辑，再离开整理成果或确认入库。':'请先保存编辑，再确认入库。'}</p>}
       {missingDependencies.length>0&&!recovering&&<p className="notice-warn">所选成果「{missingDependencies.map(({change})=>change?.candidate.title).join('、')}」还有依赖成果未选，请一并选择。</p>}
       <div className="heading-actions">
         <button className="primary-button" disabled={!canConfirm} onClick={() => void confirm()}>{busy === 'confirm' ? '正在确认…' : recovering ? '继续上次确认' : noChanges?'确认检查完成（无需变更）':chosen.length ? `确认所选成果入库（${chosen.length}）` : allowsSourceOnly ? '仅确认来源笔记入库' : '确认所选成果入库'}</button>
@@ -276,7 +342,7 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
         {!recovering && <button className="text-button danger" disabled={disabled || !!edit || !!adjustment || noteDirty} onClick={() => setDiscarding(true)}>{view.maintenance?(view.commitOperationId?'结束本次选择':'全部不采纳'):'放弃草稿'}</button>}
       </div>
       {view.deferAvailable && !recovering && <p id="outcome-defer-help" className="extract-note">稍后处理会保留已保存的成果。继续时可重新选择，再确认入库。</p>}
-      {discarding && <div className="delete-panel"><p>{view.maintenance?'未提交的成果将仅保留在整理历史。':'确定放弃当前草稿及其待入库成果？'}</p><button className="secondary-button" disabled={!!busy} onClick={() => setDiscarding(false)}>取消</button><button className="danger-quiet" disabled={!!busy} onClick={() => void finish()}>{view.maintenance?(view.commitOperationId?'确认结束':'确认全部不采纳'):'确认放弃'}</button></div>}
+      {discarding && <div className="delete-panel"><p>{view.maintenance?'未提交的成果将仅保留在整理历史。':'确定放弃当前草稿及其待入库成果？'}</p><button className="secondary-button" disabled={!!busy} onClick={() => setDiscarding(false)}>取消</button><button className="danger-quiet" disabled={disabled || editing || !!adjustment} onClick={() => void finish()}>{view.maintenance?(view.commitOperationId?'确认结束':'确认全部不采纳'):'确认放弃'}</button></div>}
     </section>}
     <section className="panel draft-card-body" aria-label="来源笔记成果">
       <h2>{sourceReuse ? '复用来源笔记' : '来源笔记'}</h2>
@@ -287,7 +353,7 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
         {!view.structuredNote && !edit && <button className="text-button" disabled={disabled||!!adjustment} onClick={() => setEdit({id:'source', title:view.source.title, text:view.source.body})}>编辑来源笔记</button>}
         {edit?.id === 'source' && editFields}
         {view.noteWarnings?.map((warning, index) => <p className="notice-warn" key={index}>{warning}</p>)}
-        {view.structuredNote && <details className="outcome-note-edit"><summary>查看或编辑深度笔记</summary><StructuredNoteEditor view={view} body={body} disabled={disabled || !!edit||!!adjustment} onSaved={onView} onDirty={setNoteDirty} outcomeReview /></details>}
+        {view.structuredNote && <details className="outcome-note-edit"><summary>查看或编辑深度笔记</summary><StructuredNoteEditor view={view} body={body} disabled={disabled || !!edit||!!adjustment} onSaved={applySavedEdit} onDirty={setNoteDirty} onSaving={setNoteSaving} outcomeReview /></details>}
       </>}
     </section>
     <section className="outcome-cards" aria-label="选择入库成果">
@@ -301,26 +367,28 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
         const result=change?.committedOperationId?results[change.committedOperationId]:undefined;
         const resultId=change&&result?.status==='completed'?result.changeResults?.[change.changeId]:undefined;
         const evidence=[...new Map(topics.flatMap(topic=>topic.source_evidence).map(ref=>[ref.id,ref])).values()];
+        const pdfEvidence=[...new Map(topics.flatMap(topic=>topic.pdfEvidence??[]).map(ref=>[ref.unitId,ref])).values()];
         const fullBody = change?.candidate.body ?? page.renderedBody ?? page.ai_organized.join('\n');
-        const excerpt = change?.candidate.body.split('\n').find(line => line.trim() && !line.trimStart().startsWith('#')) ?? page.ai_organized[0] ?? page.source_facts[0]?.text ?? page.one_line_definition;
+        const excerpt = pdf ? pdfOutcomeExcerpt(fullBody) ?? page.one_line_definition
+          : change?.candidate.body.split('\n').find(line => line.trim() && !line.trimStart().startsWith('#')) ?? page.ai_organized[0] ?? page.source_facts[0]?.text ?? page.one_line_definition;
         return <article className="panel draft-card-body outcome-card" key={page.pageId} aria-label={`成果 ${title}`}>
           <div className="outcome-card-heading"><div><span className="tag">{change ? actions[change.action] : '新建主题'}</span><h3>{title}</h3></div>
-            {change?.committedOperationId ? <span>{change.action==='noop'?'已检查，无需变更':'已入库'}{resultId&&<button className="text-button" onClick={()=>onOpenWiki?.(resultId)}>打开正式主题</button>}</span> : view.maintenance&&view.discardedAt?<span>未采纳</span>:<label className="draft-select"><input type="checkbox" aria-label={`选择入库 ${title}`} checked={chosen.includes(page.pageId)} disabled={!canSelect || !!edit || noteDirty} onChange={event => setSelection(ids => event.target.checked ? [...ids, page.pageId] : ids.filter(id => id !== page.pageId))}/>{change?.action==='noop'?'确认检查':'选择入库'}</label>}
+            {change?.committedOperationId ? <span>{change.action==='noop'?'已检查，无需变更':'已入库'}{resultId&&<button className="text-button" disabled={navigationDisabled} onClick={()=>onOpenWiki?.(resultId)}>打开正式主题</button>}</span> : view.maintenance&&view.discardedAt?<span>未采纳</span>:<label className="draft-select"><input type="checkbox" aria-label={`选择入库 ${title}`} checked={chosen.includes(page.pageId)} disabled={!canSelect || editing} onChange={event => setSelection(ids => event.target.checked ? [...ids, page.pageId] : ids.filter(id => id !== page.pageId))}/>{change?.action==='noop'?'确认检查':'选择入库'}</label>}
           </div>
-          {target && <p>目标 <button className="text-button" onClick={() => onOpenWiki?.(target.id)}>{target.title}</button> · v{change?.baseRevision}</p>}
+          {target && <p>目标 <button className="text-button" disabled={navigationDisabled} onClick={() => onOpenWiki?.(target.id)}>{target.title}</button> · v{change?.baseRevision}</p>}
           {!!existing.length && page.reviewDecision !== 'create' && <div className="notice-warn">
             <p>可能与已有主题重复。请选择保留独立主题、更新已有主题，或取消本次选择。</p>
-            {existing.map(candidate => <div key={candidate.id} className="heading-actions"><button className="text-button" onClick={() => onOpenWiki?.(candidate.id)}>{candidate.title}</button>{!view.structuredNote && onOpenWorkflow && <button className="text-button" disabled={disabled || !!edit} onClick={() => void resolveDuplicate(page.pageId, candidate.id)}>生成更新预览</button>}</div>)}
-            <button className="secondary-button" disabled={disabled || !!edit} onClick={() => void resolveDuplicate(page.pageId)}>保留为独立主题</button>
+            {existing.map(candidate => <div key={candidate.id} className="heading-actions"><button className="text-button" disabled={navigationDisabled} onClick={() => onOpenWiki?.(candidate.id)}>{candidate.title}</button>{!view.structuredNote && onOpenWorkflow && <button className="text-button" disabled={disabled || editing} onClick={() => void resolveDuplicate(page.pageId, candidate.id)}>生成更新预览</button>}</div>)}
+            <button className="secondary-button" disabled={disabled || editing} onClick={() => void resolveDuplicate(page.pageId)}>保留为独立主题</button>
           </div>}
           {!change&&page.reviewDecision === 'update' && <div className="notice-warn">
             <p>此前选择了更新已有主题。可以继续更新，也可以改为独立主题。</p>
             <div className="heading-actions">
-              {page.updateTargetWikiId && !view.structuredNote && onOpenWorkflow && <button className="secondary-button" disabled={disabled || !!edit} onClick={() => void resolveDuplicate(page.pageId, page.updateTargetWikiId)}>继续已有主题更新</button>}
-              <button className="secondary-button" disabled={disabled || !!edit} onClick={() => void resolveDuplicate(page.pageId)}>改为独立主题</button>
+              {page.updateTargetWikiId && !view.structuredNote && onOpenWorkflow && <button className="secondary-button" disabled={disabled || editing} onClick={() => void resolveDuplicate(page.pageId, page.updateTargetWikiId)}>继续已有主题更新</button>}
+              <button className="secondary-button" disabled={disabled || editing} onClick={() => void resolveDuplicate(page.pageId)}>改为独立主题</button>
             </div>
           </div>}
-          {change&&!change.committedOperationId&&!readOnly&&<div className="heading-actions">
+          {!pdf&&change&&!change.committedOperationId&&!readOnly&&<div className="heading-actions">
             {!adjustment&&<button className="text-button" disabled={disabled||!!edit||noteDirty} onClick={()=>void openAdjustment(change)}>调整动作或目标</button>}
             {adjustment?.changeId===change.changeId&&<div className="outcome-edit">
               <label className="field">成果动作<select value={adjustment.action} disabled={disabled} onChange={event=>setAdjustment({...adjustment,action:event.target.value as KnowledgeChange['action']})}>{Object.entries(actions).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
@@ -332,15 +400,20 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
           </div>}
           <p className="outcome-excerpt">{(excerpt||page.one_line_definition).slice(0,100)}{excerpt.length>100?'…':''}</p>
           {change?.reason&&<p className="extract-note">{change.reason}</p>}
+          {!readOnly && !editing && !adjustment && !change?.committedOperationId && (!change || change.action === 'create' || change.action === 'update') && <button className="text-button" disabled={disabled} onClick={() => {setError('');setNotice('');setEdit({id:page.pageId, title, text:change?.candidate.body ?? page.ai_organized.join('\n'), description:change ? undefined : page.one_line_definition});}}>编辑主题成果</button>}
+          {edit?.id === page.pageId && editFields}
           <details name="raw-outcome-topic"><summary>阅读完整主题成果{(change?.questions ?? page.open_questions).length ? ` · ${(change?.questions ?? page.open_questions).length} 项待核对` : ''}</summary>
             {topics.length>1&&<p>汇总 {topics.length} 个输入主题 · {topics.map(topic=>topic.title).join('、')}</p>}
             {!!change?.summary.length&&<ul>{change.summary.map((item,index)=><li key={index}>{item}</li>)}</ul>}
             {target&&change?.action==='update'&&<details><summary>查看新旧正文差异</summary><p className="extract-note">按完整行比较，同时可阅读下方完整候选。</p><h4>移除的旧行</h4><pre className="draft-rendered">{lineDifference(target.body,fullBody)||'无'}</pre><h4>新增的行</h4><pre className="draft-rendered">{lineDifference(fullBody,target.body)||'无'}</pre></details>}
             <FormalNoteReader body={fullBody} />
             {(change?.questions ?? page.open_questions).map((question, index) => <p className="notice-warn" key={index}>待核对 · {question}</p>)}
-            {!edit && !adjustment && !noteDirty && !change?.committedOperationId && (!change || change.action === 'create' || change.action === 'update') && <button className="text-button" disabled={disabled} onClick={() => setEdit({id:page.pageId, title, text:change?.candidate.body ?? page.ai_organized.join('\n'), description:change ? undefined : page.one_line_definition})}>编辑主题成果</button>}
-            {edit?.id === page.pageId && editFields}
-            {!!evidence.length && <details><summary>原文引用与位置</summary><ul>{evidence.map(ref => <li key={ref.id}><blockquote>{ref.quote}</blockquote><button className="text-button" onClick={() => onOpenRaw(view.rawId, view.raw ? {rawId:view.rawId, start:ref.start, end:ref.end, quote:ref.quote, bodySha256:view.raw.bodySha256} : undefined)}>打开原句 [{ref.start}, {ref.end})</button></li>)}</ul></details>}
+            {!!evidence.length && <details><summary>原文引用与位置</summary><ul>{evidence.map(ref => <li key={ref.id}><blockquote>{ref.quote}</blockquote><button className="text-button" disabled={navigationDisabled || !view.rawSha256} onClick={() => view.rawSha256 && onOpenRaw(view.rawId, {rawId:view.rawId, start:ref.start, end:ref.end, quote:ref.quote, bodySha256:view.rawSha256})}>打开原句 [{ref.start}, {ref.end})</button></li>)}</ul></details>}
+            {!!pdfEvidence.length && <details><summary>PDF 原页依据（{pdfEvidence.length} 项）</summary><ul>{pdfEvidence.map(ref => <li key={ref.unitId}>
+              <b>{ref.kind==='image'?'页图 AI 解读':'原文字层'} · 第 {ref.page} 页</b>
+              <blockquote>{ref.text}</blockquote>
+              <a className="text-button" href={pdfOriginalPageUrl(view.rawId,ref.page)} target="_blank" rel="noreferrer">打开原 PDF 第 {ref.page} 页</a>
+            </li>)}</ul></details>}
           </details>
         </article>;
       })}
@@ -351,7 +424,7 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
       {view.warnings.map((warning, index) => <p key={index}>{warning}</p>)}
       {view.humanReview?.units.map(unit => <p key={unit.id}>{unit.text}</p>)}
     </details>
-    <details className="panel draft-card-body"><summary>高级草稿编辑</summary><fieldset className="note-legacy-shell" disabled={!!busy || !!edit || !!adjustment || noteDirty || !!recovering || readOnly}>{advanced}</fieldset></details>
+    {!pdf&&<details className="panel draft-card-body"><summary>高级草稿编辑</summary><fieldset className="note-legacy-shell" disabled={navigationDisabled || !!adjustment || !!recovering || readOnly}>{advanced}</fieldset></details>}
 
   </div>;
 }

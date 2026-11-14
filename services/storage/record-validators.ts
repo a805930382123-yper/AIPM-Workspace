@@ -1,4 +1,5 @@
 import {validEvidenceInput} from '../wiki/inspection-input.ts';
+import { validPdfDerivation, validPdfEvidence, validPdfInput } from '../wiki/pdf-input.ts';
 import {changePageIndexes,validMaintenance} from '../wiki/maintenance.ts';
 import {validHumanReview} from '../wiki/human-review.ts';
 import {createHash} from 'node:crypto';
@@ -13,7 +14,7 @@ const digest=(v:unknown)=>str(v)&&/^[0-9a-f]{64}$/i.test(v);
 /** Shared by the extraction draft reader and recovery scan, before any recovery action. */
 export function isExtractionDraft(v:unknown,id?:string):boolean {
  if(obj(v)&&Object.hasOwn(v,'input')){
-   if(!validEvidenceInput(v.input)||['rawId','rawSha256','rawTitle','rawMeta','jobId','source','deferredAt'].some(k=>Object.hasOwn(v,k))||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!Number.isInteger(v.revision)||Number(v.revision)<1||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!obj(v.document)||!str(v.document.title)||!validMaintenance(v.maintenance)||!validHumanReview(v.humanReview)||!Array.isArray(v.pages)||!v.pages.length)return false;
+   if(!validEvidenceInput(v.input)||['rawId','rawSha256','rawTitle','rawMeta','jobId','source','deferredAt','pdfInput'].some(k=>Object.hasOwn(v,k))||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!Number.isInteger(v.revision)||Number(v.revision)<1||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!obj(v.document)||!str(v.document.title)||!validMaintenance(v.maintenance)||!validHumanReview(v.humanReview)||!Array.isArray(v.pages)||!v.pages.length)return false;
    return v.pages.every(p=>obj(p)&&isUuid(p.pageId)&&str(p.title)&&Array.isArray(p.source_facts)&&p.source_facts.every(f=>obj(f)&&str(f.text)&&strings(f.evidenceIds))&&Array.isArray(p.source_evidence)&&p.source_evidence.every(e=>obj(e)&&isUuid(e.rawId)&&str(e.quote)&&nonnegative(e.start)&&nonnegative(e.end))&&strings(p.ai_organized)&&strings(p.ai_inferences)&&strings(p.open_questions));
  }
 
@@ -37,11 +38,25 @@ export function isExtractionDraft(v:unknown,id?:string):boolean {
   const review=v.humanReview;if(v.humanQuestionUnitIds.some(id=>!review.units.some(u=>u.id===id&&u.kind==='fact')))return false;
  }
  if(!obj(v)||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!isUuid(v.rawId)||!digest(v.rawSha256)||!str(v.rawTitle)||!obj(v.rawMeta)||v.rawMeta.rawId!==v.rawId||!str(v.rawMeta.title)||!str(v.rawMeta.sourceType)||!str(v.rawMeta.sourceName)||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!Number.isInteger(v.revision)||Number(v.revision)<1||!str(v.createdAt)||!str(v.updatedAt)||!str(v.rulesVersion)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!str(v.jobId)||!obj(v.document)||!str(v.document.title)||!str(v.document.main_topic)||!str(v.document.summary)||!Array.isArray(v.pages)||!obj(v.source)||!strings(v.warnings)||!obj(v.extraction)||!nonnegative(v.extraction.callCount)||!nonnegative(v.extraction.chunkCount)||!nonnegative(v.extraction.pagesFound))return false;
+ const pdf = v.pdfInput;
+ if (pdf !== undefined && (!validPdfInput(pdf) || !v.maintenance || v.humanReview !== undefined || !v.pages.length)) return false;
+ const pdfUnits = new Map<string, string>();
  const s=v.source;if(!['title','category','summary','body','knowledge_status','confidence','source_level'].every(k=>str(s[k]))||!strings(s.key_takeaways)||(s.reuseWikiId!==undefined&&!isUuid(s.reuseWikiId))||(s.editedByUser!==undefined&&typeof s.editedByUser!=='boolean')||(s.bodyEditedByUser!==undefined&&typeof s.bodyEditedByUser!=='boolean'))return false;
  const ids=new Set<string>();for(const p of v.pages){
   if(obj(p)&&p.templateFields!==undefined&&(!str(p.type)||!validTemplateFields(p.templateFields,p.type)))return false;
   if(obj(p)&&p.mergedTemplateFields!==undefined&&(!validMergedTemplateFields(p.mergedTemplateFields)||!str(p.pageId)||!validHumanReview(v.humanReview)||!mergedFieldsMatchReview(p.mergedTemplateFields,p.pageId,v.rawId as string,v.humanReview)))return false;
   if(!obj(p)||!isUuid(p.pageId)||ids.has(p.pageId)||!['title','type','category','one_line_definition','knowledge_status','confidence','source_level'].every(k=>str(p[k]))||!['ai_organized','ai_inferences','related_pages','open_questions'].every(k=>strings(p[k]))||typeof p.selected!=='boolean'||!Array.isArray(p.source_facts)||!p.source_facts.every(f=>obj(f)&&str(f.text)&&strings(f.evidenceIds))||!Array.isArray(p.source_evidence)||!p.source_evidence.every(e=>obj(e)&&str(e.id)&&e.rawId===v.rawId&&str(e.quote)&&nonnegative(e.start)&&nonnegative(e.end)&&Number(e.end)>=Number(e.start)&&(Number.isInteger(e.chunkIndex)&&Number(e.chunkIndex)>=-1))||!Array.isArray(p.provenance)||!p.provenance.every(e=>obj(e)&&nonnegative(e.chunkIndex)&&nonnegative(e.start)&&nonnegative(e.end)&&Number(e.end)>=Number(e.start))||(p.reviewDecision!==undefined&&!['update','create','defer'].includes(String(p.reviewDecision)))||(p.updateTargetWikiId!==undefined&&!isUuid(p.updateTargetWikiId)))return false;
+  if (pdf) {
+    if (!Array.isArray(p.pdfEvidence) || !p.pdfEvidence.length) return false;
+    const pageUnits = new Set<string>();
+    for (const item of p.pdfEvidence) {
+      if (!validPdfEvidence(item, pdf) || pageUnits.has(item.unitId)) return false;
+      const serialized = JSON.stringify(item);
+      if (pdfUnits.has(item.unitId) && pdfUnits.get(item.unitId) !== serialized) return false;
+      pageUnits.add(item.unitId);
+      pdfUnits.set(item.unitId, serialized);
+    }
+  } else if (p.pdfEvidence !== undefined) return false;
   ids.add(p.pageId);
  }
  return v.commitOperationId===undefined||isUuid(v.commitOperationId);
@@ -49,7 +64,8 @@ export function isExtractionDraft(v:unknown,id?:string):boolean {
 export const isUuid=(v:unknown):v is string=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
 export function isRawState(v:unknown,id?:string):boolean{return obj(v)&&isUuid(v.rawId)&&(!id||v.rawId===id)&&['unprocessed','processing','pending_confirmation','generated','failed'].includes(String(v.status))&&str(v.updatedAt)&&Array.isArray(v.history)&&v.history.length<=50&&v.history.every(x=>obj(x)&&str(x.at)&&str(x.from)&&str(x.to)&&str(x.reason));}
 export function isJob(v:unknown,id?:string):boolean{return obj(v)&&isUuid(v.id)&&(!id||v.id===id)&&isUuid(v.rawId)&&['running','completed','failed','cancelled'].includes(String(v.status))&&str(v.stage)&&Number.isInteger(v.chunksTotal)&&Number(v.chunksTotal)>=0&&Number.isInteger(v.chunksDone)&&Number(v.chunksDone)>=0&&Number.isInteger(v.pagesFound)&&Number(v.pagesFound)>=0&&obj(v.provider)&&str(v.provider.name)&&str(v.provider.model)&&typeof v.cancelRequested==='boolean'&&Number.isInteger(v.callCount)&&Number(v.callCount)>=0&&str(v.startedAt)&&str(v.updatedAt)&&(v.finishedAt===undefined||str(v.finishedAt));}
-export function isWikiRecord(v:unknown):v is Record<string,unknown>{return obj(v)&&isUuid(v.id)&&str(v.title)&&['source','concept','entity','business_process','metric','synthesis'].includes(String(v.type))&&v.domain==='fmcg'&&['industry_basics','category','channel','sales','store','distributor','supply_chain','product','metric','ai_application','company_business','customer','other'].includes(String(v.category))&&str(v.created)&&str(v.updated)&&Array.isArray(v.sources)&&v.sources.every(isUuid)&&strings(v.tags)&&['verified','source_supported','ai_organized','inferred','needs_verification'].includes(String(v.knowledge_status))&&['high','medium','low'].includes(String(v.confidence))&&str(v.source_level)&&['A','B','C','D'].includes(v.source_level)&&['unreviewed','reviewed'].includes(String(v.review_status))&&strings(v.aliases)&&Number.isInteger(v.revision)&&Number(v.revision)>0&&str(v.body)&&(v.isDemo===undefined||typeof v.isDemo==='boolean');}
+export function isWikiRecord(v:unknown):v is Record<string,unknown>{return obj(v)&&isUuid(v.id)&&str(v.title)&&['source','concept','entity','business_process','metric','synthesis'].includes(String(v.type))&&v.domain==='fmcg'&&['industry_basics','category','channel','sales','store','distributor','supply_chain','product','metric','ai_application','company_business','customer','other'].includes(String(v.category))&&str(v.created)&&str(v.updated)&&Array.isArray(v.sources)&&v.sources.every(isUuid)&&strings(v.tags)&&['verified','source_supported','ai_organized','inferred','needs_verification'].includes(String(v.knowledge_status))&&['high','medium','low'].includes(String(v.confidence))&&str(v.source_level)&&['A','B','C','D'].includes(v.source_level)&&['unreviewed','reviewed'].includes(String(v.review_status))&&strings(v.aliases)&&Number.isInteger(v.revision)&&Number(v.revision)>0&&str(v.body)&&(v.isDemo===undefined||typeof v.isDemo==='boolean')
+  && (v.pdfDerivations === undefined || (Array.isArray(v.pdfDerivations) && v.pdfDerivations.every(item => validPdfDerivation(item) && (v.sources as unknown[]).includes(item.rawId))));}
 export function isCommitManifest(v:unknown,id?:string):boolean {
  if(obj(v)&&((obj(v.questionInput)&&v.questionInput.kind!=='question_answer')||(obj(v.inspectionInput)&&v.inspectionInput.kind!=='inspection')))return false;
  if(obj(v)&&(v.questionInput!==undefined||v.inspectionInput!==undefined)&&((v.questionInput!==undefined&&v.inspectionInput!==undefined)||!validEvidenceInput(v.inspectionInput??v.questionInput)||['rawId','rawSha256','rawTitle'].some(k=>Object.hasOwn(v,k))))return false;

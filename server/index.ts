@@ -9,9 +9,12 @@ import { RawStateStore } from '../services/raw/state.ts';
 import { MAX_UPLOAD_BYTES } from '../services/raw/limits.ts';
 import { ParseError } from '../services/raw/parse.ts';
 import { registerRawImportRoute } from './raw-import.ts';
+import { registerRawPdfRoutes } from './raw-pdf.ts';
+import { PdfCleanupService } from '../services/raw/pdf-cleanup.ts';
+import { PdfPageService } from '../services/raw/pdf-pages.ts';
 import { registerRawTranslationRoutes } from './raw-translations.ts';
 import { RawTranslationService } from '../services/raw/translations.ts';
-import { validateRaw, InputError } from './validation.ts';
+import { validateRaw, validateRawBodyUpdate, InputError } from './validation.ts';
 import { getStats } from '../services/stats/index.ts';
 import { WikiError, WikiStore } from '../services/wiki/store.ts';
 import { DraftStore } from '../services/wiki/drafts.ts';
@@ -194,6 +197,9 @@ app.get('/api/raw/assets', async (req, res, next) => {
 });
 const rawTranslations = new RawTranslationService({ root, raws: store, provider: providerFactory });
 registerRawImportRoute(app, { store, assets: assetStore, translations: rawTranslations });
+const pdf = new PdfPageService({ root, raws: store, assets: assetStore, provider: providerFactory });
+const pdfCleanup = new PdfCleanupService({ root, pdf, raws: store, drafts, wiki: wikiStore, rawStates, provider: providerFactory });
+registerRawPdfRoutes(app, pdf, pdfCleanup, wikiStore);
 registerRawTranslationRoutes(app, rawTranslations);
 app.get('/api/raw/:id/references', async (req, res, next) => {
   try {
@@ -206,6 +212,32 @@ app.get('/api/raw/:id', async (req, res, next) => {
   try {
     const item = await store.get(req.params.id);
     if (!item) { res.status(404).json({ error: { code: 'NOT_FOUND', message: '没有找到这条原始资料。' } }); return; }
+    res.json(item);
+  } catch (error) { next(error); }
+});
+app.get('/api/raw/:id/body-history/:revision', async (req, res, next) => {
+  try {
+    const revision = /^(0|[1-9]\d*)$/u.test(req.params.revision) ? Number(req.params.revision) : NaN;
+    const snapshot = await store.bodyHistory(req.params.id, revision);
+    if (!snapshot) throw new InputError('NOT_FOUND', '没有找到这个原文版本。', 404);
+    res.json(snapshot);
+  } catch (error) { next(error); }
+});
+app.patch('/api/raw/:id/body', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const input = validateRawBodyUpdate(req.body);
+    const item = await wikiStore.withLock(() => store.updateBody(id, input, async () => {
+      const state = await rawStates.get(id);
+      if (state.status === 'processing' || runner.recoveryJobs().some(job => job.rawId === id)
+        || pdf.isRunning(id) || pdfCleanup.isRunning(id)) {
+        throw new InputError('RAW_ACTIVE_WORK', '请先完成或停止这条资料正在进行的整理，并保存任务状态，再编辑原文。', 409);
+      }
+      if ((await commits.list()).some(commit => commit.rawId === id && commit.status !== 'completed' && !commit.supersededBy)) {
+        throw new InputError('COMMIT_RECOVERY_REQUIRED', '请先完成这条资料上次确认的入库操作，再编辑原文。', 409);
+      }
+    }));
+    if (!item) throw new InputError('NOT_FOUND', '没有找到这条原始资料。', 404);
     res.json(item);
   } catch (error) { next(error); }
 });

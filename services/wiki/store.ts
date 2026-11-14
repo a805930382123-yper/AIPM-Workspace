@@ -1,5 +1,6 @@
 import type {InspectionDerivation} from './inspection-input.ts';
 import type {AnswerDerivation} from './question-input.ts';
+import type { PdfDerivation } from './pdf-input.ts';
 import { randomUUID } from 'node:crypto';
 import { appendFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -18,6 +19,7 @@ export type Confidence = 'high' | 'medium' | 'low';
 export type SourceLevel = 'A' | 'B' | 'C' | 'D';
 export type ReviewStatus = 'unreviewed' | 'reviewed';
 export type WikiRecord = {
+  pdfDerivations?: PdfDerivation[];
   inspectionDerivations?:InspectionDerivation[];answerDerivations?:AnswerDerivation[];
   id: string; title: string; type: WikiType; domain: 'fmcg'; category: string; created: string; updated: string;
   sources: string[]; tags: string[]; knowledge_status: KnowledgeStatus; confidence: Confidence;
@@ -158,6 +160,11 @@ export class WikiStore {
   }
   async assertRecordSourcesAllowed(record: WikiRecord): Promise<void> {
     for (const id of record.sources) assertRawNotMeeting(await this.rawStore.get(id));
+    for (const { rawId } of record.pdfDerivations ?? []) {
+      const raw = await this.rawStore.get(rawId);
+      if (!raw) throw new WikiError('KNOWLEDGE_SOURCE_MISSING', 'PDF 依据的原始资料已缺失。', 409);
+      assertRawNotMeeting(raw);
+    }
   }
   private async validateRecord(input: WikiInput): Promise<WikiInput> {
     const rules = await this.schema();
@@ -179,8 +186,9 @@ export class WikiStore {
     if (input.knowledge_status === 'source_supported' && !sources.length) {
       throw new WikiError('STATUS_REQUIRES_SOURCE', 'source_supported 必须关联有效 Raw 来源。');
     }
+    const { pdfDerivations: _protectedPdfDerivations, ...editable } = input;
     return {
-      ...input, title, sources,
+      ...editable, title, sources,
       aliases: [...new Set(input.aliases.map(v => v.trim()).filter(Boolean))],
       tags: [...new Set(input.tags.map(v => v.trim()).filter(Boolean))],
     };
@@ -216,6 +224,10 @@ export class WikiStore {
       const aliases = [...clean.aliases];
       if (normalize(current.title) !== normalize(clean.title) && !aliases.some(alias => normalize(alias) === normalize(current.title))) aliases.push(current.title);
       const updated: WikiRecord = { ...clean, ...(current.inspectionDerivations?{inspectionDerivations:structuredClone(current.inspectionDerivations)}:{}), id: current.id, domain: 'fmcg', created: current.created, updated: new Date().toISOString(), revision: current.revision + 1, aliases, ...(current.isDemo ? { isDemo: true } : {}) };
+      if (current.pdfDerivations) {
+        updated.pdfDerivations = current.pdfDerivations;
+        updated.sources = [...new Set([...updated.sources, ...current.pdfDerivations.map(item => item.rawId)])];
+      }
       await this.commitChange('update', updated, () => writeAtomic(recordPath(this.root, id), frontmatter(updated)));
       return updated;
     });

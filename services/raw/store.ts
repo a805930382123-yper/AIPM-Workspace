@@ -2,6 +2,8 @@ import { randomUUID, createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
+import type { PdfTextMap } from './parse.ts';
+import { writeFileAtomic } from '../storage/files.ts';
 
 export const SOURCE_TYPES = ['wechat', 'article', 'report', 'company', 'customer', 'meeting', 'note', 'other'] as const;
 export type SourceType = typeof SOURCE_TYPES[number];
@@ -21,6 +23,7 @@ export type RawInput = RawAssetMetadata & {
   publishedAt?: string; url?: string; tags: string[]; body: string;
   /** Server-generated trace for a successful URL import. */
   urlImport?: { finalUrl: string; fetchedAt: string };
+  pdf?: PdfTextMap;
 };
 export type RawMeetingOrigin = {
   kind: 'meeting'; meeting_id: string; import_id: string; original_sha256: string;
@@ -29,7 +32,9 @@ export type RawMeetingOrigin = {
 export type RawRecord = RawInput & {
   id: string; importedAt: string; status: 'unprocessed'; bodySha256: string;
   isDemo?: boolean; origin?: RawMeetingOrigin;
+  bodyRevision?: number; bodyEditedAt?: string;
 };
+export type RawBodyUpdate = { body: string; expectedBodySha256: string; expectedBodyRevision: number };
 export type MeetingRawRegistration = {
   id: string; title: string; sourceName: string; tags: string[]; body: string;
   importedAt: string; origin: RawMeetingOrigin;
@@ -161,12 +166,60 @@ export class RawStore {
   }
 
   async get(id: string): Promise<RawRecord | undefined> {
+    return (await this.readCurrent(id))?.record;
+  }
+
+  private async readCurrent(id: string) {
     if (!rawIdPattern.test(id)) return undefined;
     for (const folder of new Set(Object.values(folderFor))) {
-      try { return verifyIntegrity(parse(await readFile(path.join(this.root, 'knowledge', 'raw', folder, `${id}.md`), 'utf8'))); }
+      const file = path.join(this.root, 'knowledge', 'raw', folder, `${id}.md`);
+      try {
+        const bytes = await readFile(file);
+        return { file, bytes, record: verifyIntegrity(parse(bytes.toString('utf8'))) };
+      }
       catch (e) { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; }
     }
     return undefined;
+  }
+
+  private historyFile(id: string, revision: number) {
+    return path.join(this.root, 'knowledge', 'raw', 'history', id, `${revision}.md`);
+  }
+
+  async bodyHistory(id: string, revision: number): Promise<RawRecord | undefined> {
+    const current = await this.get(id);
+    if (!current || !Number.isSafeInteger(revision) || revision < 0 || revision >= (current.bodyRevision ?? 0)) return undefined;
+    const snapshot = verifyIntegrity(parse(await readFile(this.historyFile(id, revision), 'utf8')));
+    if (snapshot.id !== id || (snapshot.bodyRevision ?? 0) !== revision) throw new RawIntegrityError();
+    return snapshot;
+  }
+
+  /** Public edit operations hold the Wiki write lock throughout the version check and replacement. */
+  async updateBody(id: string, input: RawBodyUpdate, ensureIdle: (record: RawRecord) => Promise<void>): Promise<RawRecord | undefined> {
+    const current = await this.readCurrent(id);
+    if (!current) return undefined;
+    const { file, bytes, record } = current;
+    if (record.origin !== undefined) {
+      throw new RawBodyEditError('MEETING_RAW_EDIT_FORBIDDEN', '请到会议档案编辑纪要工作副本。已登记的 Raw 保留当时的会议原文。', 403);
+    }
+    const revision = record.bodyRevision ?? 0;
+    if (record.bodySha256.toLowerCase() !== input.expectedBodySha256 || revision !== input.expectedBodyRevision) {
+      throw new RawBodyEditError('RAW_BODY_CONFLICT', '原文已被修改。请先读取最新原文并核对，再保存你的编辑。', 409);
+    }
+    if (record.body === input.body) return record;
+    await ensureIdle(record);
+    const snapshot = this.historyFile(id, revision);
+    const archived = await readFile(snapshot).catch(error => {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    });
+    if (archived && !archived.equals(bytes)) throw new RawIntegrityError();
+    if (!archived) await writeFileAtomic(snapshot, bytes);
+    const updated: RawRecord = {
+      ...record, body: input.body, bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
+      bodyRevision: revision + 1, bodyEditedAt: new Date().toISOString(),
+    };
+    await writeFileAtomic(file, serialize(updated));
+    return updated;
   }
 
   /**
@@ -186,4 +239,8 @@ export class RawStore {
     }
     return undefined;
   }
+}
+
+class RawBodyEditError extends Error {
+  constructor(readonly code: string, message: string, readonly status: number) { super(message); }
 }

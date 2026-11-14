@@ -246,3 +246,29 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   .work-list-row { flex-wrap: wrap; gap: 4px 8px; }
   .work-list-title { flex-basis: 100%; }
 }
+
+.pdf-pages { margin: 16px 0; padding: 16px; }
+.pdf-pages-heading, .pdf-job-status, .pdf-page-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.pdf-pages-heading, .pdf-job-status { justify-content: space-between; }
+.pdf-pages-heading h3, .pdf-pages-heading p, .pdf-job-status p { margin: 0; }
+.pdf-job-status { margin: 12px 0; padding: 10px 12px; border-radius: 8px; background: var(--surface-soft, #f5f7fb); }
+.pdf-job-status p + p { margin-top: 5px; }
+.pdf-page-nav { margin: 10px 0; }
+.pdf-page-nav select { margin-left: 4px; }
+.pdf-page-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.pdf-page-grid figure { margin: 0; }
+.pdf-page-grid figcaption { margin-bottom: 6px; font-size: 13px; }
+.pdf-page-grid img { display: block; max-width: 100%; max-height: 760px; width: auto; height: auto; border: 1px solid #dce2ea; border-radius: 4px; }
+.pdf-page-copy h4, .pdf-page-copy h5 { margin: 0 0 6px; }
+.pdf-page-copy pre, .pdf-understanding p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 8px; }
+.pdf-page-copy pre { max-height: 320px; overflow: auto; }
+.pdf-understanding { margin-top: 12px; padding: 10px 12px; border: 1px solid #dce2ea; border-radius: 8px; }
+.pdf-cleanup { border-top: 1px solid #dce2ea; margin-top: 18px; padding-top: 14px; scroll-margin-top: 16px; }
+.pdf-cleanup h3 { margin: 0 0 6px; }
+.pdf-cleanup-range { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0; }
+.pdf-cleanup-range input { width: 5em; }
+.pdf-cleanup-decisions { margin: 12px 0; }
+.pdf-cleanup-decisions ul { padding-left: 1.4em; }
+.pdf-cleanup-decisions li + li { margin-top: 10px; }
+.pdf-cleanup-decisions li p { margin: 3px 0; overflow-wrap: anywhere; }
+@media (max-width: 850px) { .pdf-page-grid { grid-template-columns: minmax(0, 1fr); } }

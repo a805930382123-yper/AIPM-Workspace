@@ -3,6 +3,7 @@
 // the extension only selects the expected format, which is then verified against
 // the actual bytes and rejected loudly when the two contradict each other.
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import mammoth from 'mammoth';
 
 export type RawFileFormat = 'markdown' | 'txt' | 'docx' | 'pdf';
@@ -103,11 +104,13 @@ export function detectFileFormat(bytes: Buffer, extension: string): Detection {
   return { format: declared };
 }
 
-export type ExtractedBody = { parser: string; note: string; body: string };
+export type PdfTextRange = { page: number; textStart: number | null; textEnd: number | null };
+export type PdfTextMap = { pageCount: number; hasTextLayer: boolean; pages: PdfTextRange[] };
+export type ExtractedBody = { parser: string; note: string; body: string; pdf?: PdfTextMap };
 
 /** Extract the body for an already detected format. Throws ParseError with a specific code. */
-export async function extractBody(bytes: Buffer, format: RawFileFormat): Promise<ExtractedBody> {
-  if (format === 'pdf') return extractPdf(bytes);
+export async function extractBody(bytes: Buffer, format: RawFileFormat, options: { allowPdfWithoutText?: boolean } = {}): Promise<ExtractedBody> {
+  if (format === 'pdf') return extractPdf(bytes, options.allowPdfWithoutText === true);
   if (format === 'docx') return extractDocx(bytes);
   return extractText(bytes);
 }
@@ -141,23 +144,34 @@ async function extractDocx(bytes: Buffer): Promise<ExtractedBody> {
   };
 }
 
-async function extractPdf(bytes: Buffer): Promise<ExtractedBody> {
+export async function openPdf(bytes: Buffer, render = false) {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const packageDirectory = render ? path.dirname(createRequire(import.meta.url).resolve('pdfjs-dist/package.json')) : undefined;
   const task = pdfjs.getDocument({
     data: new Uint8Array(bytes), useSystemFonts: false, disableFontFace: true, useWorkerFetch: false,
+    ...(packageDirectory ? {
+      standardFontDataUrl: path.join(packageDirectory, 'standard_fonts') + '/',
+      cMapUrl: path.join(packageDirectory, 'cmaps') + '/',
+      wasmUrl: path.join(packageDirectory, 'wasm') + '/',
+    } : {}),
   });
-  let document: Awaited<typeof task.promise>;
   try {
-    document = await task.promise;
+    return { document: await task.promise, version: pdfjs.version, close: () => task.destroy() };
   } catch (error) {
+    await task.destroy().catch(() => undefined);
     const name = error instanceof Error ? error.name : '';
     if (name === 'PasswordException') {
       throw new ParseError('PDF_ENCRYPTED', 'PDF 已加密，需要密码才能读取；本批不支持加密文件，未创建 Raw。', 422);
     }
     throw new ParseError('PDF_INVALID', `PDF 结构损坏或无法解析：${reason(error)}；未创建 Raw。`, 422);
   }
+}
+
+async function extractPdf(bytes: Buffer, allowWithoutText: boolean): Promise<ExtractedBody> {
+  const { document, version, close } = await openPdf(bytes);
   try {
-    const pages: string[] = [];
+    const pages: PdfTextRange[] = [];
+    let body = '';
     for (let index = 1; index <= document.numPages; index++) {
       const page = await document.getPage(index);
       const content = await page.getTextContent();
@@ -167,22 +181,29 @@ async function extractPdf(bytes: Buffer): Promise<ExtractedBody> {
         text += item.str;
         if (item.hasEOL) text += '\n';
       }
-      pages.push(text.replace(/\n+$/u, ''));
+      text = text.replace(/\n+$/u, '');
+      if (text.trim()) {
+        if (body) body += '\n\n';
+        const textStart = body.length;
+        body += text;
+        pages.push({ page: index, textStart, textEnd: body.length });
+      } else pages.push({ page: index, textStart: null, textEnd: null });
+      page.cleanup();
     }
-    const emptyPages = pages.map((text, index) => ({ page: index + 1, text })).filter(item => !item.text.trim()).map(item => item.page);
-    const body = pages.filter(text => text.trim()).join('\n\n');
-    const parser = `pdfjs-dist ${pdfjs.version}`;
-    if (!body.trim()) {
+    const emptyPages = pages.filter(item => item.textStart === null).map(item => item.page);
+    const parser = `pdfjs-dist ${version}`;
+    if (!body && !allowWithoutText) {
       throw new ParseError('PDF_NO_TEXT', `PDF 共 ${document.numPages} 页，但没有可提取的文字层（可能是扫描件或纯图片页）。本批不做 OCR；未创建 Raw，请改用粘贴文本。`, 422);
     }
     return {
       parser,
-      note: `${parser} 提取页面文字：共 ${document.numPages} 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。`
-        + (emptyPages.length ? ` 第 ${emptyPages.join('、')} 页没有文字层（图片/扫描页），未包含在正文中。` : ''),
-      body,
+      note: body ? `${parser} 提取页面文字：共 ${document.numPages} 页，页内按行还原、页间以空行分隔，不做 OCR 且不静默截断。`
+        + (emptyPages.length ? ` 第 ${emptyPages.join('、')} 页没有文字层（图片/扫描页），未包含在正文中。` : '')
+        : `PDF 共 ${document.numPages} 页，没有可提取的文字层。原件已保留，可在 PDF 页面查看或显式启动图文理解。`,
+      body, pdf: { pageCount: document.numPages, hasTextLayer: !!body, pages },
     };
   } finally {
-    await task.destroy();
+    await close();
   }
 }
 

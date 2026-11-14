@@ -3,26 +3,41 @@ import {editStructuredNote,reviewStructuredNote,type RawDraftView as DraftView,t
 import {NOTE_ROLES,noteCoverage,type StructuredNote,type NoteAttribution,type NoteExclusion} from '../../services/wiki/structured-note';
 
 const labels={source_supported:'原文支持',reorganized:'整理归纳',supplementary:'补充知识，未经原文支持',needs_verification:'待核实'};
-export function StructuredNoteEditor({view,body,disabled,onSaved,onDirty,outcomeReview=false}:{view:DraftView;body:string;disabled:boolean;onSaved:(v:import('../api').DraftView)=>void;onDirty:(v:boolean)=>void;outcomeReview?:boolean}){
+export function StructuredNoteEditor({view,body,disabled,onSaved,onDirty,onSaving,outcomeReview=false}:{view:DraftView;body:string;disabled:boolean;onSaved:(v:import('../api').DraftView)=>void;onDirty:(v:boolean)=>void;onSaving?:(v:boolean)=>void;outcomeReview?:boolean}){
   const [note,setNote]=useState<StructuredNote>(()=>structuredClone(view.structuredNote!));
   const [exclusions,setExclusions]=useState<NoteExclusion[]>(view.noteReview?.exclusions??[]),[questionIds,setQuestionIds]=useState<string[]>(view.noteReview?.questionIds??[]),[humanQuestions,setHumanQuestions]=useState<string[]>(view.noteReview?.humanQuestions??[]);
   const [editing,setEditing]=useState(false),[saving,setSaving]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const [warningsAcknowledged,setWarningsAcknowledged]=useState(false),[historyAcknowledged,setHistoryAcknowledged]=useState(false);
   const [evidence,setEvidence]=useState<DraftEvidence|null>(null);const mark=useRef<HTMLElement>(null),generation=useRef(0);
-  useEffect(()=>{generation.current++;setNote(structuredClone(view.structuredNote!));setExclusions(view.noteReview?.exclusions??[]);setQuestionIds(view.noteReview?.questionIds??[]);setHumanQuestions(view.noteReview?.humanQuestions??[]);setError('');setEvidence(null);setSaving(false);return()=>{generation.current++;};},[view.id,view.revision]);
+  const restoreSavedNote=()=>{
+    setNote(structuredClone(view.structuredNote!));
+    setExclusions(view.noteReview?.exclusions??[]);
+    setQuestionIds(view.noteReview?.questionIds??[]);
+    setHumanQuestions(view.noteReview?.humanQuestions??[]);
+    setError('');
+  };
+  useEffect(()=>{generation.current++;restoreSavedNote();setEvidence(null);setSaving(false);return()=>{generation.current++;};},[view.id,view.revision]);
   const directory=view.humanReview!.units.filter(u=>u.kind==='fact'||u.kind==='question').flatMap(u=>u.records.map(r=>({...r,kind:u.kind,evidence:u.evidence.filter(e=>r.evidenceIds.includes(e.id))})));
   const facts=directory.filter(r=>r.kind==='fact'),questions=directory.filter(r=>r.kind==='question');
   const dirty=JSON.stringify({note,exclusions,questionIds,humanQuestions})!==JSON.stringify({note:view.structuredNote,exclusions:view.noteReview?.exclusions??[],questionIds:view.noteReview?.questionIds??[],humanQuestions:view.noteReview?.humanQuestions??[]});
   useEffect(()=>{onDirty(dirty);},[dirty,onDirty]);
+  useEffect(()=>{onSaving?.(saving);},[saving,onSaving]);
   useEffect(()=>{if(evidence)mark.current?.scrollIntoView({behavior:'smooth',block:'center'});},[evidence]);
   const coverage=noteCoverage(note,facts.map(f=>f.id),questions.map(q=>q.id),exclusions,questionIds);
   const change=(fn:(next:StructuredNote)=>void)=>{setNote(current=>{const next=structuredClone(current);fn(next);return next;});setNotice('');};
   const field=(label:string,value:string,write:(value:string)=>void)=><label className="field">{label}<textarea rows={2} value={value} onChange={e=>write(e.target.value)}/></label>;
   const attribution=(leaf:NoteAttribution,write:(fn:(v:NoteAttribution)=>void)=>void,remove?:()=>void)=><div className="note-attribution"><span className={`note-role ${leaf.role}`}>{labels[leaf.role]}</span>{leaf.factIds.map(id=><button type="button" className="text-button" key={id} onClick={()=>{const e=facts.find(f=>f.id===id)?.evidence[0];if(e)setEvidence(e);}}>{id}</button>)}{leaf.role==='needs_verification'&&<p>原因：{leaf.reason}</p>}{editing&&<details><summary>编辑角色与事实引用</summary><label className="field">内容角色<select value={leaf.role} onChange={e=>write(v=>{v.role=e.target.value as NoteAttribution['role'];if(v.role==='supplementary')v.factIds=[];if(v.role==='needs_verification')v.reason??='';else delete v.reason;})}>{NOTE_ROLES.map(role=><option key={role} value={role}>{labels[role]}</option>)}</select></label>{leaf.role!=='supplementary'&&facts.map(f=><label className="draft-line" key={f.id}><input type="checkbox" aria-label={`引用 ${f.id}`} checked={leaf.factIds.includes(f.id)} onChange={e=>write(v=>{v.factIds=e.target.checked?[...v.factIds,f.id]:v.factIds.filter(id=>id!==f.id);})}/>{f.id}：{f.text}</label>)}{leaf.role==='needs_verification'&&field('待核实原因',leaf.reason??'',value=>write(v=>{v.reason=value;}))}</details>}{editing&&leaf.role==='supplementary'&&remove&&<button type="button" className="text-button danger" onClick={remove}>删除补充</button>}</div>;
-  const save=async()=>{const current=generation.current;setSaving(true);setError('');try{const result=await editStructuredNote(view.id,view.revision,note,exclusions,questionIds,humanQuestions);if(current!==generation.current)return;onSaved(result);setNotice(result.revision===view.revision?'内容未变化，保留原审批。':'笔记已保存，人工修改待核对；全部旧审批已失效。');}catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'保存失败，输入已保留。');}finally{if(current===generation.current)setSaving(false);}};
+  const save=async()=>{const current=generation.current;setSaving(true);setError('');setNotice('');try{const result=await editStructuredNote(view.id,view.revision,note,exclusions,questionIds,humanQuestions);if(current!==generation.current)return;onSaved(result);if(outcomeReview)setEditing(false);setNotice(result.revision===view.revision?'内容未变化，保留原审批。':outcomeReview?'笔记已保存。如需入库，请重新选择本次成果。':'笔记已保存，人工修改待核对；全部旧审批已失效。');}catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'保存失败。');}finally{if(current===generation.current)setSaving(false);}};
   const rawValid=!!view.preview?.rawExists&&view.preview.rawSha256Matches&&!!body;
   return <section className="panel structured-note" aria-label="深度结构化笔记">
-    <div className="panel-heading"><div><h2>深度阅读笔记</h2><p>{view.noteReview||dirty?'人工修改，待核对':'AI生成草稿，待人工核对'}</p></div><div className="action-group"><button type="button" className="secondary-button" onClick={()=>setEditing(!editing)}>{editing?'阅读笔记':'编辑笔记'}</button><button type="button" className="primary-button" disabled={disabled||saving||!rawValid} onClick={()=>void save()}>{saving?'正在保存笔记…':'保存笔记'}</button></div></div>
+    <div className="panel-heading">
+      <div><h2>深度阅读笔记</h2><p>{view.noteReview||dirty?'人工修改，待核对':'AI生成草稿，待人工核对'}</p></div>
+      <div className="action-group">
+        <button type="button" className="secondary-button" disabled={disabled||saving} onClick={()=>setEditing(!editing)}>{editing?'阅读笔记':'编辑笔记'}</button>
+        {(editing||dirty)&&<button type="button" className="text-button" disabled={disabled||saving} onClick={()=>{restoreSavedNote();setEditing(false);setNotice('');}}>取消笔记编辑</button>}
+        <button type="button" className="primary-button" disabled={disabled||saving||!rawValid} onClick={()=>void save()}>{saving?'正在保存笔记…':'保存笔记'}</button>
+      </div>
+    </div>
     {!rawValid&&<p className="form-error" role="alert">原文缺失、变更或尚未读完，已禁止保存。</p>}{error&&<p className="form-error" role="alert">{error} 输入已保留，可修正后重试。</p>}{notice&&<p role="status">{notice}</p>}
     <div className="notice-warn">{outcomeReview?'保存后请重新查看成果与本次选择，再确认入库。':'保存后请逐页审核知识卡片，并明确核对深度笔记，再显式确认创建Source及所选知识页。'}{view.noteReview||dirty?'历史模型报告，编辑后未复核。':'模型报告仅反映生成时检查，不替代人工审查。'}</div>
     <details><summary>{view.noteReview||dirty?'历史模型报告，编辑后未复核':'生成时模型报告'}</summary><pre>{JSON.stringify(view.qualityReport,null,2)}</pre></details>{view.noteWarnings?.map(w=><p className="notice-warn" key={w}>{w}</p>)}

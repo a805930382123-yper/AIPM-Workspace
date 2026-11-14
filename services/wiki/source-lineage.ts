@@ -9,5 +9,10 @@ export async function assertWikiSourcesAllowed(wiki:Pick<WikiStore,'get'>,raws:{
   }
 }
 export function knowledgeRoots(page:WikiRecord):{rawIds:string[];manualWikiIds:string[]}{
-  return {rawIds:[...new Set([...page.sources,...[...(page.answerDerivations??[]),...(page.inspectionDerivations??[])].flatMap(d=>d.rawIds)])],manualWikiIds:(page.answerDerivations?.length||page.inspectionDerivations?.length)?[...new Set([...(page.answerDerivations??[]),...(page.inspectionDerivations??[])].flatMap(d=>d.manualWikiIds))]:page.sources.length?[]:[page.id]};
+  const rawIds = [...new Set([...page.sources, ...(page.pdfDerivations ?? []).map(item => item.rawId),
+    ...[...(page.answerDerivations ?? []), ...(page.inspectionDerivations ?? [])].flatMap(item => item.rawIds)])];
+  const manualWikiIds = page.answerDerivations?.length || page.inspectionDerivations?.length
+    ? [...new Set([...(page.answerDerivations ?? []), ...(page.inspectionDerivations ?? [])].flatMap(item => item.manualWikiIds))]
+    : rawIds.length ? [] : [page.id];
+  return { rawIds, manualWikiIds };
 }

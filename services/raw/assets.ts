@@ -3,9 +3,12 @@
 // A stored original is written and verified before any parsing is attempted, so a
 // failed parse can always be explained ("原件已保留，正文未入库") after a restart.
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { EXTENSION_BY_FORMAT, type StoredFormat } from './parse.ts';
+import { MAX_UPLOAD_BYTES } from './limits.ts';
+import type { RawRecord } from './store.ts';
+import { StorageError } from '../storage/files.ts';
 
 export type AssetStatus = 'stored' | 'parsed' | 'parse_failed' | 'detached';
 
@@ -53,6 +56,22 @@ export class AssetStore {
     if (!/^[0-9a-f-]{36}$/i.test(id)) return undefined;
     try { return JSON.parse(await readFile(this.recordPath(id), 'utf8')) as AssetRecord; }
     catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error; }
+  }
+
+  async readBoundPdf(raw: RawRecord): Promise<{ asset: AssetRecord; bytes: Buffer }> {
+    if (raw.assetFormat !== 'pdf' || !raw.assetId) throw new StorageError('PDF_ASSET_REQUIRED', '这条 Raw 没有关联 PDF 原件。', 404);
+    const asset = await this.get(raw.assetId);
+    if (!asset || asset.id !== raw.assetId || asset.format !== 'pdf' || asset.status !== 'parsed'
+      || asset.rawId !== raw.id || asset.storedFile !== `${asset.id}.pdf` || asset.sha256 !== raw.assetSha256
+      || asset.byteSize !== raw.assetByteSize || asset.byteSize <= 0 || asset.byteSize > MAX_UPLOAD_BYTES) {
+      throw new StorageError('PDF_ASSET_CHANGED', 'PDF 原件或其关联记录已变化，不能读取或继续。', 409);
+    }
+    const file = path.join(this.directory(), asset.storedFile);
+    const info = await stat(file).catch(() => undefined);
+    if (!info?.isFile() || info.size !== asset.byteSize) throw new StorageError('PDF_ASSET_CHANGED', 'PDF 原件缺失或大小已变化。', 409);
+    const bytes = await readFile(file);
+    if (bytes.length !== asset.byteSize || AssetStore.hash(bytes) !== asset.sha256) throw new StorageError('PDF_ASSET_CHANGED', 'PDF 原件校验值已变化。', 409);
+    return { asset, bytes };
   }
 
   private async writeRecord(record: AssetRecord): Promise<void> {

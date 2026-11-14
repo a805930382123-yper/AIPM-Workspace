@@ -150,7 +150,7 @@ export async function importRawFile(input: {
   // 3) extract the body with a real parser.
   let extracted;
   try {
-    extracted = await extractBody(bytes, detection.format);
+    extracted = await extractBody(bytes, detection.format, { allowPdfWithoutText: detection.format === 'pdf' });
   } catch (error) {
     if (error instanceof ParseError) throw await retentionError(error.code, error.message, error.status, detection.format);
     throw await retentionError('PARSE_FAILED', `解析失败：${message(error)}；未创建 Raw。`, 422, detection.format);
@@ -158,7 +158,7 @@ export async function importRawFile(input: {
   if (extracted.body.length > MAX_BODY_CHARS) {
     throw await retentionError('BODY_TOO_LARGE', `提取到的正文为 ${extracted.body.length.toLocaleString()} 个字符，超过 ${MAX_BODY_CHARS.toLocaleString()} 字符上限；未创建 Raw。`, 413, detection.format);
   }
-  if (!extracted.body.trim()) {
+  if (!extracted.body.trim() && !(detection.format === 'pdf' && extracted.pdf?.hasTextLayer === false)) {
     throw await retentionError('EMPTY_CONTENT', '提取到的正文为空或只有空白字符；未创建 Raw。', 422, detection.format);
   }
 
@@ -170,6 +170,7 @@ export async function importRawFile(input: {
       assetId: asset.id, assetFileName: fileName, assetFormat: detection.format,
       assetByteSize: asset.byteSize, assetSha256: asset.sha256,
       extractionParser: extracted.parser, extractionNote: extracted.note,
+      ...(extracted.pdf ? { pdf: extracted.pdf } : {}),
     });
   } catch (error) {
     throw await retentionError('RAW_WRITE_FAILED', `正文已提取，但写入正式 Raw 失败：${message(error)}`, 500, detection.format);

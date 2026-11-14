@@ -142,7 +142,7 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     }
     return {
       rawExists: Boolean(raw),
-      rawSha256Matches: Boolean(raw && raw.bodySha256 === draft.rawSha256),
+      rawSha256Matches: Boolean(raw && raw.bodySha256 === draft.rawSha256 && !(draft.pdfInput && raw.bodyRevision)),
       sourceReuse: reuseSource ?? null,
       sourceAmbiguous: binding.length > 1 ? binding.map(page => ({ id: page.id, title: page.title })) : null,
       titleConflicts: conflicts,
@@ -198,6 +198,8 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
         ||(action==='create'?targetWikiId!==undefined:typeof targetWikiId!=='string'||! /^[a-f0-9-]{36}$/iu.test(targetWikiId))){
         throw new InputError('INVALID_CHANGE','请选择有效的成果动作和目标。',400);
       }
+      const current = await deps.drafts.get(req.params.draftId);
+      if (current?.pdfInput) throw new InputError('PDF_CHANGE_PREPARE_UNAVAILABLE', '请结束本次选择后，从已整理的 PDF 页重新生成候选。', 409);
       const draft=await deps.runner.prepareChange(req.params.draftId,{baseRevision,changeId,action,targetWikiId,preparationId},controller.signal);
       if(!controller.signal.aborted)res.json(await draftPayload(draft));
     }catch(error){if(!controller.signal.aborted)next(error);}
@@ -236,7 +238,7 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
           deps.rawStore.get(draft.rawId), deps.rawStates.get(draft.rawId), deps.runner.readJob(draft.jobId), scanWikiCommits(deps.root),
         ]);
         assertRawNotMeeting(raw);
-        if (!raw || raw.bodySha256 !== draft.rawSha256 || state.status !== 'pending_confirmation' || state.jobId !== draft.jobId
+        if (!raw || raw.bodySha256 !== draft.rawSha256 || (draft.pdfInput && raw.bodyRevision) || state.status !== 'pending_confirmation' || state.jobId !== draft.jobId
           || state.draftId !== draft.id || job.job?.status !== 'completed' || job.job.rawId !== draft.rawId || job.job.draftId !== draft.id || job.recovery) {
           throw new InputError('DRAFT_BINDING_CHANGED', '无法核对原资料与整理任务，请刷新后重试。', 409);
         }

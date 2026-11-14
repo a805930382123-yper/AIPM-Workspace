@@ -176,7 +176,7 @@ test('文件导入成功：正文与原件都入库，元数据、哈希与关�
 });
 
 test('解析失败保留隔离原件与失败记录，不创建正式 Raw、不增加统计', async () => {
-  for (const [name, code] of [['broken.docx', 'DOCX_INVALID'], ['scan-image.pdf', 'PDF_NO_TEXT'], ['gbk-notes.txt', 'UNSUPPORTED_ENCODING'], ['fake-pdf.pdf', 'FORMAT_MISMATCH']] as const) {
+  for (const [name, code] of [['broken.docx', 'DOCX_INVALID'], ['gbk-notes.txt', 'UNSUPPORTED_ENCODING'], ['fake-pdf.pdf', 'FORMAT_MISMATCH']] as const) {
     const context = await setup();
     try {
       const bytes = await fixture(name);
@@ -198,6 +198,21 @@ test('解析失败保留隔离原件与失败记录，不创建正式 Raw、不�
       assert.deepEqual(await assetFiles(context.root), [`${assetId}.json`, record?.storedFile].sort());
     } finally { await context.clean(); }
   }
+});
+
+test('扫描 PDF 文件导入保留原件并用空正文记录真实页码', async () => {
+  const context = await setup();
+  try {
+    const bytes = await fixture('scan-image.pdf');
+    const { raw, asset } = await importRawFile({ store: context.store, assets: context.assets, bytes, fileName: 'scan-image.pdf', metadata: { sourceType: 'report' } });
+    assert.equal(raw.body, '');
+    assert.equal(raw.bodySha256, sha256(Buffer.alloc(0)));
+    assert.deepEqual(raw.pdf, { pageCount: 1, hasTextLayer: false, pages: [{ page: 1, textStart: null, textEnd: null }] });
+    assert.equal(asset.sha256, sha256(bytes));
+    assert.equal(asset.status, 'parsed');
+    assert.deepEqual((await context.assets.readBoundPdf(raw)).bytes, bytes);
+    assert.equal((await context.store.get(raw.id))?.body, '');
+  } finally { await context.clean(); }
 });
 
 test('超限文件在接收阶段拒绝；超限正文保留原件但不创建 Raw', async () => {

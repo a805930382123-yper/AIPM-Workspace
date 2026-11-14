@@ -13,9 +13,12 @@ export type Raw = {
   /** B03: retained original file linkage. Absent for pasted text. */
   assetId?: string; assetFileName?: string; assetFormat?: string; assetByteSize?: number; assetSha256?: string;
   extractionParser?: string; extractionNote?: string;
+  pdf?: { pageCount: number; hasTextLayer: boolean; pages: PdfTextRange[] };
   urlImport?: { finalUrl: string; fetchedAt: string };
   isDemo?: boolean;
   origin?: MeetingRawOrigin;
+  bodyRevision?: number;
+  bodyEditedAt?: string;
 };
 export type MeetingRawOrigin = { kind: 'meeting'; meeting_id: string; import_id: string; original_sha256: string; registered_confidentiality: MeetingConfidentiality; processing_policy: 'meeting_local_only' };
 export type RawSummary = Omit<Raw, 'body' | 'bodySha256'>;
@@ -42,6 +45,48 @@ export const rawTranslation = (rawId: string) => api<{translation: RawTranslatio
 export const changeRawTranslation = (rawId: string, action: 'retry' | 'cancel') =>
   api<{translation: RawTranslation}>(`${translationUrl(rawId)}/${action}`, {method:'POST', body:'{}'});
 export type RawReference = { id: string; title: string; type?: WikiType };
+export type PdfTextRange = { page: number; textStart: number | null; textEnd: number | null };
+export type PdfPageSummary = PdfTextRange & { imageUrl: string; status: 'pending' | 'completed' };
+export type PdfPage = PdfPageSummary & {
+  text: string;
+  understanding?: { blank: boolean; content: string; visuals: string; inference: string; questions: string[] };
+};
+export type RawPdf = {
+  rawId: string; assetId: string; assetSha256: string; pageCount: number; hasTextLayer: boolean; originalUrl: string;
+  pages: PdfPageSummary[];
+  job: null | {
+    status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
+    completedPages: number; totalPages: number; attempts: number; failedPage?: number; error?: { code: string; message: string };
+  };
+};
+const rawPdfUrl = (rawId: string) => `/api/raw/${encodeURIComponent(rawId)}/pdf`;
+async function pdfSummary(url: string, init?: RequestInit): Promise<RawPdf> {
+  const result = await api<RawPdf>(url, init);
+  if (!result || !Array.isArray(result.pages)) throw new Error('暂时无法读取 PDF 页目录。');
+  return result;
+}
+export const getRawPdf = (rawId: string) => pdfSummary(rawPdfUrl(rawId));
+export const getRawPdfPage = (rawId: string, page: number) => api<PdfPage>(`${rawPdfUrl(rawId)}/pages/${page}`);
+export const changeRawPdfJob = (rawId: string, action: 'understand' | 'cancel') =>
+  pdfSummary(`${rawPdfUrl(rawId)}/${action}`, {method:'POST', body:'{}'});
+export type PdfCleanupRange = {startPage:number;endPage:number};
+export type PdfCleanupDecision = {
+  id:string;page:number;text:string;origin:'text'|'image';kind:'content'|'visuals'|'inference'|'question';
+  decision:'keep'|'merge'|'skip';reason:string;topic?:string;mergedInto?:string;
+};
+export type PdfCleanupView = {
+  rawId:string;pageCount:number;completedPages:number[];
+  job:null | (PdfCleanupRange & {
+    status:'queued'|'running'|'completed'|'failed'|'cancelled';stage:'cleaning'|'indexing'|'assembling'|'done';
+    attempts:number;completedBatches:number;totalBatches:number;error?:{code:string;message:string};draftId?:string;
+    draftStatus?:'pending_confirmation'|'committing'|'confirmed'|'discarded';canRegenerate?:boolean;
+    counts:{kept:number;merged:number;skipped:number};decisions:PdfCleanupDecision[];topics:Array<{title:string;unitCount:number}>;
+  });
+};
+export const getPdfCleanup = (rawId:string) => api<PdfCleanupView>(`${rawPdfUrl(rawId)}/cleanup`);
+export const changePdfCleanup = (rawId:string, action:'start'|'cancel'|'draft', range?:PdfCleanupRange) =>
+  api<PdfCleanupView>(`${rawPdfUrl(rawId)}/cleanup${action==='start'?'':`/${action}`}`, {method:'POST',body:range ? JSON.stringify(range) : undefined});
+export const pdfOriginalPageUrl = (rawId:string, page:number) => `${rawPdfUrl(rawId)}/original#page=${page}`;
 export type Stats = { rawCount: number; wikiCount: number; thisWeekNewCount: number; pendingConfirmationCount: number; openAuditCount: number; promptCount: number; weekStartsOn: string; recentChanges?: Array<{time:string;action:string;id:string;title:string;type:string;revision:number;isDemo?:boolean}> };
 export type MeetingConfidentiality = 'Public' | 'Internal' | 'Sensitive' | 'Restricted';
 export type MeetingCatalogEntry = { id: string; name: string; active: boolean };
@@ -115,6 +160,13 @@ export const startWorkBasisReview = (id: string, runId: string, retryFromReviewI
 export async function rawReferences(id: string): Promise<RawReference[]> {
   return (await api<{ items: RawReference[] }>(`/api/raw/${encodeURIComponent(id)}/references`)).items;
 }
+export const getRaw = (id: string) => api<Raw>(`/api/raw/${encodeURIComponent(id)}`);
+export const getRawBodyHistory = (id: string, revision: number) =>
+  api<Raw>(`/api/raw/${encodeURIComponent(id)}/body-history/${revision}`);
+export const saveRawBody = (raw: Raw, body: string) =>
+  api<Raw>(`/api/raw/${encodeURIComponent(raw.id)}/body`, {
+    method: 'PATCH', body: JSON.stringify({ body, expectedBodySha256: raw.bodySha256, expectedBodyRevision: raw.bodyRevision ?? 0 }),
+  });
 export async function deleteRaw(id: string): Promise<{ id: string; title: string; assetId: string | null; assetRetained: boolean; warnings: string[] }> {
   return api(`/api/raw/${encodeURIComponent(id)}`, { method: 'DELETE', body: JSON.stringify({}) });
 }
@@ -150,6 +202,7 @@ export type ExtractionJob = {
   cancelRequested: boolean; reused?: boolean; pipelineVersion?: string; checkpoint?: { stage: 'extracting' | 'planning' | 'assembling' | 'done'; validatedChunks: number; totalChunks: number; resumable: boolean; reason?: string; attempts: number; reusedChunks: number; deepStage?:string };
 };
 export type DraftEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
+export type PdfDraftEvidence = {unitId:string;page:number;resultSha256:string;kind:'image'|'text';text:string;start?:number;end?:number};
 export type DraftFact = { text: string; evidenceIds: string[] };
 export type DraftPage = {
   templateFields?: TemplateFields;
@@ -157,6 +210,7 @@ export type DraftPage = {
   pageId: string; title: string; type: string; category: string; one_line_definition: string;
   source_facts: DraftFact[]; ai_organized: string[]; ai_inferences: string[]; related_pages: string[]; open_questions: string[];
   source_evidence: DraftEvidence[];
+  pdfEvidence?: PdfDraftEvidence[];
   knowledge_status: string; confidence: string; source_level: string;
   selected: boolean; provenance: Array<{ chunkIndex: number; start: number; end: number }>;
   reviewDecision?: 'update' | 'create' | 'defer'; updateTargetWikiId?: string;
@@ -181,13 +235,14 @@ export type DraftPreview = {
 };
 export type RawDraftView = {
   input?:undefined;
+  pdfInput?: PdfCleanupRange & {pageCount:number;assetId:string;assetSha256:string;basisDigest:string};
   outcomeDigest?: string;
   sourceRenderedBody?: string;
   maintenance?:KnowledgeMaintenance;changeDigests?:Record<string,string>;
   noteApproval?:NoteApproval;
   structuredNote?:StructuredNote;noteReview?:NoteReviewMetadata;qualityReport?:DeepQualityReport;noteQualityStatus?:'historical'|'generated';noteWarnings?:string[];
   humanReview?:HumanReview; humanQuestionUnitIds?:string[]; reviewContentDigest?:string|null;
-  id: string; rawId: string; rawTitle: string; status: 'pending_confirmation' | 'committing' | 'confirmed' | 'discarded';
+  id: string; rawId: string; rawSha256?: string; rawTitle: string; status: 'pending_confirmation' | 'committing' | 'confirmed' | 'discarded';
   revision: number; createdAt: string; updatedAt: string; rulesVersion: string;
   provider: { name: string; model: string }; jobId: string;
   document: { title: string; main_topic: string; summary: string };
@@ -198,7 +253,7 @@ export type RawDraftView = {
   preview: DraftPreview | null;
   raw: { id: string; title: string; sourceType: SourceType; sourceName: string; author: string | null; publishedAt: string | null; url: string | null; importedAt: string; bodySha256: string } | null;
 };
-export type QuestionDraftView=Omit<RawDraftView,'rawId'|'rawTitle'|'jobId'|'source'|'input'|'deferredAt'|'deferAvailable'|'pendingCommitOperationId'> & {input:QuestionDraftInput;questionBasisChanged?:boolean};
+export type QuestionDraftView=Omit<RawDraftView,'rawId'|'rawSha256'|'rawTitle'|'jobId'|'source'|'input'|'deferredAt'|'deferAvailable'|'pendingCommitOperationId'> & {input:QuestionDraftInput;questionBasisChanged?:boolean};
 export type InspectionDraftView=Omit<QuestionDraftView,'input'> & {input:InspectionDraftInput};
 export type DraftView=RawDraftView|QuestionDraftView|InspectionDraftView;
 export type KnowledgeInspection={id:string;revision:number;includeRelated:boolean;status:'queued'|'checking'|'completed'|'partial'|'failed';stage:string;attempts:number;scope:{selected:string[];candidates:string[];read:Array<{id:string;title:string;revision:number}>;skipped:Array<{id:string;reason:string}>;gaps:string[]};findings:import('../services/wiki/inspection-input').InspectionFinding[];lint:Array<{code:string;objectId:string|null;message:string}>;audits:Array<{id:string;wikiId:string;status:string;comment:string}>;drafts:Array<{key:string;selectedFindingIds:string[];draftId?:string;status:string;reason?:string}>;error?:{code:string;message:string}};

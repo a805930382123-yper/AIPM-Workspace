@@ -63,9 +63,10 @@ export function validateSchema(value: unknown, schema: JsonSchemaNode, at = '$')
   if (schema.enum && !schema.enum.includes(value as never)) {
     errors.push(`${at}: 值 ${JSON.stringify(value)} 不在允许的枚举内（${schema.enum.map(item => JSON.stringify(item)).join('、')}）`);
   }
-  if (typeof value === 'string') {
-    if (schema.minLength !== undefined && value.length < schema.minLength) errors.push(`${at}: 字符串长度 ${value.length} 小于最小长度 ${schema.minLength}`);
-    if (schema.maxLength !== undefined && value.length > schema.maxLength) errors.push(`${at}: 字符串长度 ${value.length} 超过最大长度 ${schema.maxLength}`);
+  if (typeof value === 'string' && (schema.minLength !== undefined || schema.maxLength !== undefined)) {
+    const length = [...value].length;
+    if (schema.minLength !== undefined && length < schema.minLength) errors.push(`${at}: 字符串长度 ${length} 小于最小长度 ${schema.minLength}`);
+    if (schema.maxLength !== undefined && length > schema.maxLength) errors.push(`${at}: 字符串长度 ${length} 超过最大长度 ${schema.maxLength}`);
   }
   if (typeof value === 'number') {
     if (schema.minimum !== undefined && value < schema.minimum) errors.push(`${at}: 数值 ${value} 小于最小值 ${schema.minimum}`);

@@ -4,6 +4,7 @@ import {markAnswerCommitted} from '../llm/knowledge-answers.ts';
 import type {QuestionDraftInput} from './question-input.ts';
 import {assertMaintenanceReviewed,maintenanceDigest,type KnowledgeChange} from './maintenance.ts';
 import { assertWikiSourcesAllowed } from './source-lineage.ts';
+import { withPdfDerivation } from './pdf-input.ts';
 // B04: confirmed-commit transactions. Nothing formal is written before the frozen manifest is
 // persisted; a failure mid-way is reported honestly (operationId + which targets exist) and the
 // same operation is resumed from the manifest instead of asking the user to confirm again.
@@ -13,7 +14,7 @@ import path from 'node:path';
 import {isCommitManifest} from '../storage/record-validators.ts';
 import { SerialQueue, StorageError, scanJsonRecords, readJsonRecord, writeJsonAtomic } from '../storage/files.ts';
 import { derivedTakeaways, type DraftRecord, type DraftStore } from './drafts.ts';
-import { renderPageBody, renderSourceBody, renderConfirmedNote } from './render.ts';
+import { renderPageBody, renderSourceBody, renderConfirmedNote, pdfOriginalPageLink } from './render.ts';
 import { WikiError, WikiStore, type WikiRecord } from './store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import type {NoteApproval,StructuredNote,NoteReviewMetadata} from './structured-note.ts';
@@ -93,7 +94,7 @@ export class WikiCommitService {
   private readonly queue = new SerialQueue();
   constructor(private readonly deps: {
     root: string; wikiStore: WikiStore; drafts: DraftStore; rawStates: RawStateStore;
-    rawStore: { get(id: string): Promise<{ id: string; title: string; body: string; bodySha256: string; tags: string[] } | undefined> };
+    rawStore: { get(id: string): Promise<{ id: string; title: string; body: string; bodySha256: string; tags: string[]; bodyRevision?: number } | undefined> };
   }) {}
   private directory() { return path.join(this.deps.root, 'state', 'wiki-commits'); }
   private fileFor(operationId: string) { return path.join(this.directory(), `${operationId}.json`); }
@@ -190,6 +191,9 @@ export class WikiCommitService {
     prior.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     let existing = priorKey ?? prior.find(manifest => manifest.status !== 'completed' || JSON.stringify([...manifest.snapshot.selectedPageIds].sort()) === JSON.stringify([...requested].sort()));
     if(!priorKey&&draft.maintenance&&existing?.status==='completed'&&requested.every(id=>draft!.maintenance!.changes.some(c=>!c.committedOperationId&&draft!.pages[c.pageIndex]?.pageId===id)))existing=undefined;
+    if (draft.pdfInput && raw?.bodyRevision && existing?.status !== 'completed') {
+      throw new CommitError('RAW_CHANGED', 'PDF 提取文字已由人工修改，旧页整理草稿不能继续入库。', 409);
+    }
     if(existing&&existing.status!=='completed'&&!existing.humanReviewDigest&&!existing.snapshot.outcomeReview){
       const onDisk=await this.verifiedTargets(existing);
       if(!onDisk.length){
@@ -248,6 +252,7 @@ export class WikiCommitService {
     if (draft.deferredAt) throw new CommitError('DRAFT_DEFERRED', '请先继续处理这份草稿，再确认入库。', 409);
     if (!raw) throw new CommitError('RAW_MISSING', '对应的原始资料不存在（可能已被删除），不能确认写入。', 409);
     if (raw.bodySha256 !== draft.rawSha256) throw new CommitError('RAW_CHANGED', '原始正文的校验值与整理时不一致，已停止写入以避免产生坏来源。', 409);
+    if (draft.pdfInput && !outcomeReview) throw new CommitError('PDF_OUTCOME_REQUIRED', '请先查看并确认 PDF 整理成果。', 409);
     if (outcomeReview) await this.deps.drafts.assertRawOutcome(draft, raw.body, requested, outcomeReview.digest);
     const humanReviewDigest = outcomeReview ? undefined : await this.deps.drafts.assertReviewed(draft, raw.body);
     if(!outcomeReview&&!draft.maintenance&&draft.structuredNote&&JSON.stringify(draft.pages.filter(p=>p.selected).map(p=>p.pageId).sort())!==JSON.stringify([...requested].sort()))throw new CommitError('REVIEW_SELECTION_CHANGED','请先保存当前选卡，再重新审核笔记。',409);
@@ -387,12 +392,22 @@ export class WikiCommitService {
         continue;
       }
       const exactBody=!!snapshot.outcomeReview&&!!c.pageIndexes;
+      if (!question && draft.pdfInput && old && c.action === 'update' && !c.candidate.body.startsWith(old.body.trimEnd() + '\n\n')) {
+        throw new CommitError('PDF_EXISTING_CONTENT_REQUIRED', '请保留目标 Wiki 的现有正文，在补充章节中编辑本次 PDF 内容。', 409);
+      }
       if(exactBody&&(c.action==='create'||c.action==='update')){
         const unresolved=[...c.candidate.body.matchAll(/\[\[([^\]]+)\]\]/gu)].find(([link,title])=>!acceptedTitles.has(title.trim())&&!old?.body.includes(link));
         if(unresolved)throw new CommitError('CHANGE_DEPENDENCY_REQUIRED',`候选正文的链接「${unresolved[1]}」尚无正式主题，请选择相关成果或编辑链接。`,409);
       }
       const record:WikiRecord=old&&c.action==='link'?{...old,sources:[...new Set([...old.sources,...incomingRawIds])],updated:now,revision:old.revision+1}:{...(old??{id,domain:'fmcg',created:now,review_status:'unreviewed'}),...c.candidate,id,body:exactBody?c.candidate.body:clean(c.candidate.body),updated:now,revision:(old?.revision??0)+1} as WikiRecord;
       if(old&&c.action==='link'&&JSON.stringify(record.sources)===JSON.stringify(old.sources))continue;
+      if (!question && draft.pdfInput) {
+        const page = draft.pages[c.pageIndex];
+        record.pdfDerivations = withPdfDerivation(old?.pdfDerivations, draft, [page]);
+        const missingLinks = [...new Set(page.pdfEvidence!.map(item => item.page))]
+          .map(number => pdfOriginalPageLink(draft.rawId, number)).filter(link => !record.body.includes(link));
+        if (missingLinks.length) record.body += '\n\n### PDF 页级依据\n\n' + missingLinks.join('、') + '\n';
+      }
       if(question&&draft.input.kind==='inspection'){const input=draft.input,ids=input.changeFindingIds[c.changeId],findings=input.findings.filter(f=>ids.includes(f.id));record.inspectionDerivations=[...(old?.inspectionDerivations??[]),{inspectionId:input.inspectionId,findingIds:ids,wikiIds:[...new Set(findings.flatMap(f=>f.wikiIds))],rawIds:[...new Set(findings.flatMap(f=>f.evidence.flatMap(e=>e.rawIds)))],manualWikiIds:[...new Set(findings.flatMap(f=>f.evidence.flatMap(e=>e.manualWikiIds)))]}];}
       if(question&&draft.input.kind==='question_answer')record.answerDerivations=[...(old?.answerDerivations??[]),{answerId:draft.input.resultId,answerRevision:draft.input.resultRevision,wikiIds:draft.input.wikiSnapshots.map(p=>p.id),rawIds:draft.input.rawSnapshots.map(r=>r.id),manualWikiIds:[...new Set(draft.input.citations.flatMap(c=>c.manualWikiIds))],containsInference:draft.input.sections.some(s=>s.kind==='inference'||s.kind==='advice')}];
       if(old)before[id]=old;
@@ -404,8 +419,22 @@ export class WikiCommitService {
       if(!source||source.type!=='source'||source.sources.length!==1||(question||source.sources[0]!==draft.rawId))throw new CommitError('SOURCE_BINDING_CHANGED','已有Source与Raw绑定不一致。',409);
       const missing=changes.filter(c=>!snapshot.outcomeReview||c.action!=='noop').map(c=>c.candidate.title).filter(title=>!source.body.includes('[['+title+']]'));
       if(missing.length){snapshot.sourceRecord={...source,body:source.body.trimEnd()+'\n\n## 本次关联知识\n'+[...new Set(missing)].map(t=>'- [['+t+']]').join('\n')+'\n',revision:source.revision+1,updated:now};before[source.id]=source;actions[source.id]='link';}
+      if (!question && draft.pdfInput && !snapshot.sourceRecord) {
+        snapshot.sourceRecord = { ...source, revision: source.revision + 1, updated: now };
+        before[source.id] = source;
+        actions[source.id] = 'link';
+      }
     }
-    if(snapshot.sourceRecord)snapshot.sourceRecord.body=clean(snapshot.sourceRecord.body);
+    if (!question && draft.pdfInput && snapshot.sourceRecord) {
+      const source = snapshot.sourceRecord;
+      source.pdfDerivations = withPdfDerivation(source.pdfDerivations, draft, selectedPages);
+      const { startPage, endPage, pageCount } = draft.pdfInput;
+      const href = '/api/raw/' + draft.rawId + '/pdf/original#page=';
+      const range = startPage === endPage ? '第 ' + startPage + ' 页' : '第 ' + startPage + '–' + endPage + ' 页';
+      const note = 'PDF 整理范围：[' + range + '](' + href + startPage + ')（原件共 ' + pageCount + ' 页）。页图内容为 AI 解读，可在成果中回看原页。';
+      if (!source.body.includes(note)) source.body = source.body.trimEnd() + '\n\n' + note + '\n';
+    }
+    if(snapshot.sourceRecord && (question || !draft.pdfInput || !snapshot.reuseSourceId))snapshot.sourceRecord.body=clean(snapshot.sourceRecord.body);
     snapshot.digests=Object.fromEntries([...records,...(snapshot.sourceRecord?[snapshot.sourceRecord]:[])].map(r=>[r.id,sha256(this.deps.wikiStore.pageContent(r))]));
     snapshot.maintenance={version:1,targets:changes.flatMap(c=>c.targetWikiId?[all.find(p=>p.id===c.targetWikiId)!]:[]),before,actions,changeIds:changes.map(c=>c.changeId),resultWikiIds,reviewDigest:digest,...(snapshot.outcomeReview&&changes.length>0&&changes.every(c=>c.action==='noop')?{noChanges:true as const}:{})};
   }

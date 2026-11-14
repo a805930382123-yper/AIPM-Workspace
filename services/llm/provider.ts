@@ -11,6 +11,7 @@ export class LlmError extends Error {
 export type LlmCompletionRequest = {
   system: string; user: string; timeoutMs: number; maxOutputBytes: number; signal?: AbortSignal; purpose?: 'knowledge' | 'prompt';
   structuredOutput?: StructuredOutput;
+  image?: Buffer;
 };
 export type LlmCompletion = {
   text: string; finishReason: string | null; bytes: number;
@@ -179,6 +180,13 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const constrainedFlash = (request.purpose === 'knowledge' || request.purpose === 'prompt')
       && ['open.bigmodel.cn', 'api.z.ai'].includes(host)
       && model.trim().toLowerCase() === 'glm-5.3-flash';    const url = baseUrl + "/chat/completions";
+    let userContent: string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> = request.user;
+    if (request.image !== undefined) {
+      if (!Buffer.isBuffer(request.image) || request.image.length > 5 * 1024 * 1024 || request.image.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') {
+        throw new LlmError('LLM_IMAGE_INVALID', '图像请求只接受大小有界的本地 PNG 页面。', 422);
+      }
+      userContent = [{ type: 'text', text: request.user }, { type: 'image_url', image_url: { url: `data:image/png;base64,${request.image.toString('base64')}` } }];
+    }
     const controller = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => { timedOut = true; controller.abort(); }, request.timeoutMs);
@@ -190,7 +198,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         headers: { 'content-type': 'application/json', authorization: `Bearer ${this.config.apiKey}` },
         body: JSON.stringify({
           model, stream: false, ...(defaultTemperature ? {} : { temperature: 0 }),
-          messages: [{ role: 'system', content: request.system }, { role: 'user', content: request.user }],
+          messages: [{ role: 'system', content: request.system }, { role: 'user', content: userContent }],
           ...(constrainedFlash ? { reasoning_effort: 'low', response_format: { type: 'json_object' } } : {}),
           ...(structured ? { response_format: { type: 'json_schema', json_schema: { ...structured, strict: true } } } : {}),
         }),

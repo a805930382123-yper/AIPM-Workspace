@@ -1,4 +1,6 @@
 import {changePageIndexes,validMaintenance,maintenanceDigest,assertMaintenanceReviewed,type KnowledgeChange,type KnowledgeMaintenance} from './maintenance.ts';
+import { assertPdfEvidence, type PdfDraftInput, type PdfEvidence } from './pdf-input.ts';
+import type { RawRecord } from '../raw/store.ts';
 import {questionHash} from './question-input.ts';
 import {verifyEvidenceInput,validEvidenceInput,type EvidenceDraftInput,type InspectionDraftInput} from './inspection-input.ts';
 import {WikiStore} from './store.ts';
@@ -29,6 +31,7 @@ export type DraftStatus = typeof DRAFT_STATUSES[number];
 export type DraftEvidence = { id: string; rawId: string; quote: string; start: number; end: number; chunkIndex: number };
 export type DraftFact = { text: string; evidenceIds: string[] };
 export type DraftPage = {
+  pdfEvidence?: PdfEvidence[];
   templateFields?: TemplateFields;
   mergedTemplateFields?: MergedTemplateFields[];
   pageId: string; title: string; type: string; category: string; one_line_definition: string;
@@ -54,6 +57,7 @@ export type DraftSource = {
   reuseWikiId?: string; editedByUser?: boolean; bodyEditedByUser?: boolean;
 };
 export type DraftRecord = {
+  pdfInput?: PdfDraftInput;
   maintenance?:KnowledgeMaintenance;
   structuredNote?: StructuredNote;
   extractionMode?: 'deep'; qualityReport?: DeepQualityReport;
@@ -143,6 +147,7 @@ export class DraftStore {
       }
     }
     const selectedPages = record.pages.filter(page => selectedTopics.has(page.pageId));
+    if (record.pdfInput) await assertPdfEvidence(this.root, record, selectedPages);
     await this.assertEvidenceStillValid(record, body, selectedPages);
     for (const page of selectedPages) {
       const ids = new Set(page.source_evidence.map(evidence => evidence.id));
@@ -329,6 +334,39 @@ export class DraftStore {
   async get(id:string):Promise<DraftRecord|undefined>{const record=await this.getKnowledge(id);return record&&!isQuestionDraft(record)?record:undefined;}
   async listKnowledge():Promise<KnowledgeDraftRecord[]>{const scan=await scanJsonRecords<KnowledgeDraftRecord>(this.directory(),(value,file):value is KnowledgeDraftRecord=>isExtractionDraft(value,path.basename(file,'.json')),this.root);return scan.records.map(r=>r.value).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));}
   async createInspection(input:{id:string;input:InspectionDraftInput;maintenance:KnowledgeMaintenance;provider:DraftRecord['provider'];callCount:number}){return this.createQuestion(input);}
+  async createPdf(input: {
+    id: string; raw: RawRecord; binding: PdfDraftInput; pages: Array<Omit<DraftPage, 'pageId' | 'selected'>>;
+    maintenance: KnowledgeMaintenance; provider: DraftRecord['provider']; callCount: number; batchCount: number;
+  }): Promise<DraftRecord> {
+    return this.queue.run(async () => {
+      const existing = await this.get(input.id);
+      if (existing) return existing;
+      const { raw, binding } = input;
+      const now = new Date().toISOString();
+      const pages = input.pages.map(page => ({ ...page, pageId: randomUUID(), selected: false }));
+      const title = raw.title;
+      const summary = 'PDF 第 ' + binding.startPage + '–' + binding.endPage + ' 页内容整理（原件共 ' + binding.pageCount + ' 页）。';
+      const rawMeta: DraftRawMeta = {
+        rawId: raw.id, title, sourceType: raw.sourceType, sourceName: raw.sourceName,
+        author: raw.author, publishedAt: raw.publishedAt, url: raw.url, importedAt: raw.importedAt,
+      };
+      const source: DraftSource = {
+        title, category: 'other', summary, key_takeaways: [], body: '',
+        knowledge_status: 'ai_organized', confidence: 'medium', source_level: 'D',
+      };
+      source.body = renderSourceBody(source, rawMeta, [], pages);
+      const record: DraftRecord = {
+        id: input.id, pdfInput: binding, rawId: raw.id, rawTitle: title, rawSha256: raw.bodySha256, rawMeta, source,
+        document: { title, main_topic: title, summary, source_level: 'D' }, pages, maintenance: input.maintenance,
+        status: 'pending_confirmation', revision: 1, createdAt: now, updatedAt: now, rulesVersion: 'pdf-cleanup-1',
+        provider: input.provider, jobId: input.id, warnings: ['图像理解为 AI 衍生内容；请对照 PDF 原页审核。'],
+        extraction: { callCount: input.callCount, chunkCount: input.batchCount, pagesFound: pages.length },
+      };
+      if (!isExtractionDraft(record)) throw new DraftError('PDF_DRAFT_INVALID', 'PDF 整理草稿结构无效。', 409);
+      await writeJsonAtomic(this.fileFor(record.id), record);
+      return record;
+    });
+  }
   async createQuestion(input:{id:string;input:EvidenceDraftInput;maintenance:KnowledgeMaintenance;provider:DraftRecord['provider'];callCount:number}):Promise<QuestionDraftRecord>{
     return this.queue.run(async()=>{
       const existing=await this.getKnowledge(input.id);if(existing){if(!isQuestionDraft(existing)||questionHash(existing.input)!==questionHash(input.input))throw new DraftError('QUESTION_DRAFT_CONFLICT','此草稿标识已绑定其他内容。',409);return existing;}
