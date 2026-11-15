@@ -3,7 +3,7 @@
 <!-- ENG01 summary -->
 ## 当前状态摘要
 
-当前为 AI 自动化阶段 0，仅 ENG01 获授权；本地 Node22 工程返修及文档独验通过，真实 CI Node22通过、Node24代理用例失败，ENG01整体未通过。最近结论：RAWEDIT02 人工正文编辑通过；RAWEDIT01 整理成果编辑通过；PDF01-GLOBAL 的 62 页草稿待用户确认；PDF01 R3 工程通过；PDF01 R2 真实质量通过。开放事项：Node24产品HTTP代理兼容缺陷待用户裁决是否扩大修复；依赖审计7项告警未处理。正式 Wiki 写入须用户明确操作。已完成部分提交后停止，不启动下一批；每批均等待用户明确确认。证据见[ENG01独验](reports/ENG01-20261115-review.md)；见[路线图](batches/AUTO-ROADMAP-20261114.md)。
+当前为 AI 自动化阶段 0，仅 ENG01 获授权；本地 Node22 工程返修及文档独验通过，真实 CI Node22通过、Node24代理用例失败，ENG01整体未通过。最近结论：RAWEDIT02 人工正文编辑通过；RAWEDIT01 整理成果编辑通过；PDF01-GLOBAL 的 62 页草稿待用户确认；PDF01 R3 工程通过；PDF01 R2 真实质量通过。开放事项：用户已授权仅修Node24产品HTTP代理兼容缺陷，按B模式施工与独验进行中；依赖审计7项告警未处理。正式 Wiki 写入须用户明确操作。已完成部分提交后停止，不启动下一批；每批均等待用户明确确认。证据见[ENG01独验](reports/ENG01-20261115-review.md)；见[路线图](batches/AUTO-ROADMAP-20261114.md)。
 
 归档：[2026 年 10 月](archive/status-2026-10.md)、[2026 年 11 月初](archive/status-2026-11a.md)。
 

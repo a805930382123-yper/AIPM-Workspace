@@ -21,6 +21,7 @@ const publicIp = { address: '93.184.216.34', family: 4 };
 const noCredentials = { title: '虚构资料', sourceType: 'article', sourceName: '隔离来源' };
 const hash = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
 type ReadUrl = typeof readPublicRawUrl;
+const proxyEnv = () => Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(https?_proxy|all_proxy|no_proxy|node_use_env_proxy|node_options)$/iu.test(key)));
 
 async function importApi(readUrl: ReadUrl) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'rawurl01-http-'));
@@ -174,7 +175,7 @@ test('Raw URL native proxy uses a pinned HTTP request target and HTTPS CONNECT w
   proxy.listen(0, '127.0.0.1');
   await once(proxy, 'listening');
   const proxyUrl = `http://127.0.0.1:${(proxy.address() as AddressInfo).port}`;
-  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(https?_proxy|all_proxy|no_proxy|node_use_env_proxy|node_options)$/iu.test(key)));
+  const env = proxyEnv();
   Object.assign(env, { HTTP_PROXY: proxyUrl, HTTPS_PROXY: proxyUrl });
   try {
     const child = await promisify(execFile)(process.execPath, ['--use-env-proxy', '--import', 'tsx', '--input-type=module', '-e', `
@@ -192,6 +193,87 @@ test('Raw URL native proxy uses a pinned HTTP request target and HTTPS CONNECT w
       tunnel: '93.184.216.34:443', tlsName: true,
     });
   } finally { await new Promise<void>((resolve, reject) => proxy.close(error => error ? reject(error) : resolve())); }
+});
+
+test('Raw URL HTTP proxy pins IPv6, confines credentials, and stops on blocked redirects and proxy errors', {
+  skip: process.allowedNodeEnvironmentFlags.has('--use-env-proxy') ? false : 'This Node version does not support the proxy launcher.',
+}, async () => {
+  const seen: Array<{ target?: string; host?: string; auth?: string; originAuth?: string }> = [];
+  const proxy = http.createServer((request, response) => {
+    seen.push({ target: request.url, host: request.headers.host, auth: request.headers['proxy-authorization'], originAuth: request.headers.authorization });
+    if (request.url?.endsWith('/redirect')) {
+      response.writeHead(302, { location: 'http://mixed-fixture.example/blocked' }).end();
+    } else if (request.url?.endsWith('/failure')) {
+      request.socket.destroy();
+    } else if (!request.url?.endsWith('/timeout')) {
+      response.writeHead(200, { 'content-type': 'text/plain' }).end('IPv6 fixture text');
+    }
+  });
+  proxy.listen(0, '127.0.0.1');
+  await once(proxy, 'listening');
+  const port = (proxy.address() as AddressInfo).port;
+  try {
+    const child = await promisify(execFile)(process.execPath, ['--import', 'tsx', '--input-type=module', '-e', `
+      import assert from 'node:assert/strict';
+      import { readPublicRawUrl } from './services/raw/url-import.ts';
+      const pinned = { address: '2606:4700:4700::1111', family: 6 };
+      const resolve = async host => host === 'mixed-fixture.example'
+        ? [pinned, { address: '192.168.1.8', family: 4 }] : [pinned];
+      const base = 'http://original-fixture.example';
+      const result = await readPublicRawUrl(base + '/read?q=1', { resolve });
+      assert.equal(result.body, 'IPv6 fixture text');
+      await assert.rejects(readPublicRawUrl('http://127.0.0.1/blocked'), { code: 'URL_FETCH_BLOCKED' });
+      for (const [route, code] of [['redirect', 'URL_FETCH_BLOCKED'], ['failure', 'URL_FETCH_FAILED'], ['timeout', 'URL_FETCH_TIMEOUT']]) {
+        await assert.rejects(readPublicRawUrl(base + '/' + route, { resolve, timeoutMs: 1_000 }), { code });
+      }
+      console.log('proxy checks passed');
+    `], { env: { ...proxyEnv(), NODE_USE_ENV_PROXY: '1', HTTP_PROXY: `http://fixture%40user:fixture%3Apass@127.0.0.1:${port}` }, timeout: 10_000 });
+    assert.match(child.stdout, /proxy checks passed/u);
+    assert.deepEqual(seen, ['read?q=1', 'redirect', 'failure', 'timeout'].map(route => ({
+      target: `http://[2606:4700:4700::1111]/${route}`, host: 'original-fixture.example',
+      auth: `Basic ${Buffer.from('fixture@user:fixture:pass').toString('base64')}`, originAuth: undefined,
+    })));
+  } finally { await new Promise<void>((resolve, reject) => proxy.close(error => error ? reject(error) : resolve())); }
+});
+
+test('Raw URL HTTP without a proxy or with pinned IP bypass uses origin-form and omits proxy credentials', {
+  skip: process.allowedNodeEnvironmentFlags.has('--use-env-proxy') ? false : 'This Node version does not support the proxy launcher.',
+}, async () => {
+  for (const { enabled, args, options } of [
+    { enabled: false, args: [], options: {} },
+    { enabled: true, args: [], options: { NODE_OPTIONS: '"--use-env-proxy"' } },
+    { enabled: false, args: ['--no-use-env-proxy'], options: { NODE_USE_ENV_PROXY: '1' } },
+  ]) {
+    const child = await promisify(execFile)(process.execPath, [...args, '--import', 'tsx', '--input-type=module', '-e', `
+      import assert from 'node:assert/strict';
+      import { EventEmitter } from 'node:events';
+      import http from 'node:http';
+      import { Readable } from 'node:stream';
+      import { mock } from 'node:test';
+      import { readPublicRawUrl } from './services/raw/url-import.ts';
+      const request = mock.method(http, 'request', (_options, respond) => {
+        // Confirm request parameters without making any connections to the pinned public IP.
+        const response = Object.assign(Readable.from(['transport fixture']), { statusCode: 200, headers: { 'content-type': 'text/plain' } });
+        return Object.assign(new EventEmitter(), { end: () => respond(response) });
+      });
+      const enabled = ${enabled};
+      const cases = enabled ? [['*', true], ['93.184.216.34:80', true], [' 192.0.0.1, 93.184.216.33 - 93.184.216.34 ', true],
+        ['.184.216.34', true], ['.84.216.34', process.versions.node.startsWith('22.')], ['original-fixture.example', false]] : [['', true]];
+      for (const [noProxy, bypass] of cases) {
+        process.env.NO_PROXY = noProxy;
+        await readPublicRawUrl('http://original-fixture.example/read?q=1', { resolve: async () => [{ address: '93.184.216.34', family: 4 }] });
+        const [options] = request.mock.calls.at(-1).arguments;
+        assert.equal(options.hostname, bypass ? '93.184.216.34' : '127.0.0.1');
+        assert.equal(options.path, (bypass ? '' : 'http://93.184.216.34') + '/read?q=1');
+        assert.equal(options.agent, false);
+        assert.equal(options.headers.Host, 'original-fixture.example');
+        assert.equal(options.headers['Proxy-Authorization'], bypass ? undefined : 'Basic dXNlcjpwYXNz');
+      }
+      assert.equal(request.mock.callCount(), cases.length);
+      console.log('transport checks passed');
+    `], { env: { ...proxyEnv(), HTTP_PROXY: 'http://user:pass@127.0.0.1:9', ...options }, timeout: 10_000 });
+    assert.match(child.stdout, /transport checks passed/u);
+  }
 });
 
 const textResponse = (body: string, type = 'text/plain') => ({ status: 200, headers: { 'content-type': type }, body: Readable.from([Buffer.from(body)]) });

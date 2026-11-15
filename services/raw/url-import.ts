@@ -1,7 +1,7 @@
 import { lookup } from 'node:dns/promises';
 import http, { type IncomingHttpHeaders } from 'node:http';
 import https from 'node:https';
-import { BlockList, isIP } from 'node:net';
+import { BlockList, isIP, isIPv4 } from 'node:net';
 import type { Readable } from 'node:stream';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { MAX_BODY_CHARS } from './limits.ts';
@@ -60,28 +60,75 @@ function webUrl(value: string, base?: URL): URL {
   return url;
 }
 
+function ipv4Number(ip: string): number {
+  return ip.split('.').reduce((number, octet) => number * 256 + Number(octet), 0);
+}
+
+function httpProxyFor(address: Address): URL | undefined {
+  if (!process.allowedNodeEnvironmentFlags.has('--use-env-proxy')) return;
+  const envOptions = process.env.NODE_OPTIONS?.match(/(?:[^\s"]|"(?:[^"\\]|\\.)*")+/gu) ?? [];
+  const flag = [...envOptions, ...process.execArgv].reverse()
+    .map(option => option.replace(/^"|"$/gu, '').replaceAll('_', '-'))
+    .find(option => option === '--use-env-proxy' || option === '--no-use-env-proxy');
+  if (flag ? flag === '--no-use-env-proxy' : process.env.NODE_USE_ENV_PROXY !== '1') return;
+
+  const proxyUrl = process.env.http_proxy || process.env.HTTP_PROXY;
+  if (!proxyUrl) return;
+  if (/[\r\n]/u.test(proxyUrl)) throw new Error('Invalid HTTP proxy URL');
+  if (!proxyUrl.startsWith('http://') && !proxyUrl.startsWith('https://')) return;
+  const proxy = new URL(proxyUrl);
+
+  // Native HTTP proxy bypass rules see the pinned socket hostname and default port.
+  const host = address.address.toLowerCase();
+  const noProxy = process.env.no_proxy || process.env.NO_PROXY;
+  const bypass = noProxy?.split(',').some(value => {
+    const entry = value.trim().toLowerCase();
+    if (entry === '*' || entry === host || entry === `${host}:80`) return true;
+    if (entry.startsWith('*.')) return host.endsWith(entry.slice(1));
+    if (entry.startsWith('.')) {
+      const suffix = entry.slice(1);
+      // Node 22 accepts any suffix after the dot. Node 24 requires a label boundary.
+      return process.versions.node.startsWith('22.') ? host.endsWith(suffix) : host === suffix || host.endsWith(entry);
+    }
+    if (address.family === 4 && entry.includes('-')) {
+      const [start, end] = entry.split('-', 2).map(ip => ip.trim());
+      if (isIPv4(start) && isIPv4(end)) {
+        const ip = ipv4Number(host);
+        return ip >= ipv4Number(start) && ip <= ipv4Number(end);
+      }
+    }
+    return false;
+  });
+  return bypass ? undefined : proxy;
+}
+
 function requestPinned(url: URL, address: Address, signal: AbortSignal): Promise<WebResponse> {
   const secure = url.protocol === 'https:';
-  const client = secure ? https : http;
-  const hostname = url.hostname.replace(/^\[|\]$/gu, '');
-  const proxyEnabled = process.execArgv.includes('--use-env-proxy')
-    || process.env.NODE_OPTIONS?.split(/\s+/u).includes('--use-env-proxy')
-    || process.env.NODE_USE_ENV_PROXY === '1';
-  const proxiedHttp = !secure && proxyEnabled && !!(process.env.http_proxy || process.env.HTTP_PROXY);
+  const proxy = secure ? undefined : httpProxyFor(address);
+  const secureProxy = proxy?.protocol === 'https:';
+  const client = secure || secureProxy ? https : http;
+  const hostname = (proxy ?? url).hostname.replace(/^\[|\]$/gu, '');
   const target = address.family === 6 ? `[${address.address}]` : address.address;
-  // Native HTTPS CONNECT uses the socket hostname. Native HTTP forward proxying
-  // would derive its absolute target from Host unless the path is already absolute.
-  const requestPath = `${proxiedHttp ? `http://${target}` : ''}${url.pathname}${url.search}`;
+  // Node's forward proxy agent requires the HTTP target authority to match Host.
+  // Connect directly to the configured proxy to keep the pinned IP and original Host.
+  const requestPath = `${proxy ? `http://${target}` : ''}${url.pathname}${url.search}`;
+  const proxyAuth = proxy && (proxy.username || proxy.password)
+    ? Buffer.from(`${decodeURIComponent(proxy.username)}:${decodeURIComponent(proxy.password)}`).toString('base64')
+    : undefined;
   return new Promise((resolve, reject) => {
-    const request = client.request(url, {
-      hostname: address.address,
+    const request = client.request({
+      hostname: proxy ? hostname : address.address,
+      port: proxy?.port || undefined,
       path: requestPath,
       signal,
-      ...(!secure && !proxiedHttp ? { agent: false } : {}),
+      ...(!secure ? { agent: false } : {}),
+      ...(secureProxy ? { servername: isIP(hostname) ? '' : hostname } : {}),
       ...(secure && !isIP(hostname) ? { servername: hostname } : {}),
       headers: {
         Host: url.host, Connection: 'close',
         Accept: 'text/html,application/xhtml+xml,text/plain', 'Accept-Encoding': 'identity',
+        ...(proxy ? { 'Proxy-Connection': 'close' } : {}),
+        ...(proxyAuth ? { 'Proxy-Authorization': `Basic ${proxyAuth}` } : {}),
       },
     }, response => resolve({ status: response.statusCode ?? 0, headers: response.headers, body: response }));
     request.once('error', reject);
