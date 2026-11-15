@@ -1,6 +1,10 @@
 # 项目总控记录
 
 <!-- ENG01 summary -->
+## RUN01 最新裁决（2026-11-15）
+
+RUN01整体PASS，本轮缺陷关闭PASS。生产同源启动、单实例锁、调度账本与用量、自动化页面及自检已完成；用户批准的脚本内一分钟/最多3次重启、运行中与退避期卸载均已真实验证。工程提交`ddba6a18bf659c1c1189c797c6b1a75a52db31e6`的[真实Windows CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/43695971224)在Node22.23.4/24.22.2各897/897、失败0、跳过0，类型检查与235模块构建通过。Astra Medium独立验收，Sol High施工，评分1/2/2/0=5/B。见[独验报告](reports/RUN01-20261115-review.md)。正式自启未安装，隔离验收任务已清理。本批完成后停止等用户确认，不启动EVAL01/PIPE01；后续批次须逐批明确授权。
+
 ## ENG01 当前裁决
 
 2026-11-15：用户授权的HTTP代理Node24兼容修复已完成，Astra独验PASS；工程提交23c434e真实Windows Node22/24各882项通过，ENG01整体PASS。初始A标准，安全边界扩展按B模式Sol施工/Astra独验。完成后停止，必须等待用户确认，不启动下一批。见[独验报告](reports/ENG01-20261115-review.md)。
