@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "chain": "standard-extract",
+  "scoringSchemaVersion": 2,
+  "recordingId": "live-20261115-baseline",
+  "baseCommit": "ed34d1b7032a4e819aa0a44aca02e61b7150622f",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "verifiedFileSha256": {
+    "scripts/eval/run.mjs": "1451dc5f1350f8b4b43752d23c411aff846ee41c3c16d493d5793e20575648d7",
+    "scripts/eval/score.mjs": "a9e633afe2085a0e295ec68e4961939a2f61fbfcd9906373b0731061246acbcc",
+    "evals/thresholds.json": "fd76ae5aa58d390a3207ef06fadb7c76c42c76414b2e7f57c934fabb42fac9cb"
+  },
+  "original": {
+    "runId": "2026-11-15T10-34-38-191Z-832c444a",
+    "resultSha256": "ca9a118ee1f7bba97facaf49c186675537e8ad5612a6d2398b8d33ecd3387b61",
+    "ledgerSha256": "15fee5274819d55de57c2c16d615197361b030d49c265230ec0d491f93d958f0",
+    "scoringSchemaVersion": 1,
+    "passedCases": 3,
+    "failedCases": 1,
+    "notRunCases": 4,
+    "usage": {
+      "requests": 8,
+      "promptTokens": 33295,
+      "completionTokens": 3865,
+      "unknownRequests": 0
+    }
+  },
+  "mixed": {
+    "runId": "2026-11-15T11-08-15-818Z-2c3749cf",
+    "resultSha256": "dfee62b7e12c5905d13b2ba8c7117c3ee3db9fd5083488f8356e5fc43d411cac",
+    "mode": "mixed",
+    "priorCasesReplayed": 4,
+    "replayedResponses": 8,
+    "newUsage": {
+      "requests": 8,
+      "promptTokens": 33476,
+      "completionTokens": 1738,
+      "unknownRequests": 0
+    },
+    "cumulativeUsage": {
+      "requests": 16,
+      "promptTokens": 66771,
+      "completionTokens": 5603,
+      "unknownRequests": 0
+    },
+    "passedCases": 8,
+    "totalCases": 8,
+    "measures": {
+      "structure": 1,
+      "evidence": 1,
+      "factRecall": 1,
+      "questionRecall": 1,
+      "forbidden": 0,
+      "partition": 0,
+      "duplicateRate": 0,
+      "emptyTopics": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "basic-01-timeout",
+      "status": "PASS",
+      "executionMode": "replay",
+      "recording": "evals/cases/standard-extract/basic-01-timeout/recordings/live-20261115-baseline.json",
+      "recordingSha256": "c9ef7235c3cbfa32600b3ea7a138beac9ce3971d96b8b31ce476c45294493feb",
+      "facts": {
+        "passed": 3,
+        "total": 3
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 0,
+        "total": 0
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 3
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "basic-02-cutoff",
+      "status": "PASS",
+      "executionMode": "replay",
+      "recording": "evals/cases/standard-extract/basic-02-cutoff/recordings/live-20261115-baseline.json",
+      "recordingSha256": "c196ff11e93c40987def15b483c75c3293353cc11a4ff894f32506d84691b942",
+      "facts": {
+        "passed": 3,
+        "total": 3
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 0,
+        "total": 0
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 3
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "basic-03-scope",
+      "status": "PASS",
+      "executionMode": "replay",
+      "recording": "evals/cases/standard-extract/basic-03-scope/recordings/live-20261115-baseline.json",
+      "recordingSha256": "1412e1f8614432fd2eea9b97fd3da4ee437c4130646b8dc2930a43528d7ee9b1",
+      "facts": {
+        "passed": 2,
+        "total": 2
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 0,
+        "total": 0
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 2
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "basic-04-repeat",
+      "status": "PASS",
+      "executionMode": "replay",
+      "recording": "evals/cases/standard-extract/basic-04-repeat/recordings/live-20261115-baseline.json",
+      "recordingSha256": "cb39cc3063a8942274dc0c2ea86305e3cbf04fff1058f5008be76bd57fff80f3",
+      "facts": {
+        "passed": 3,
+        "total": 3
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 0,
+        "total": 0
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 3
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "basic-05-reconcile",
+      "status": "PASS",
+      "executionMode": "live",
+      "recording": "evals/cases/standard-extract/basic-05-reconcile/recordings/live-20261115-baseline.json",
+      "recordingSha256": "5a8e7f1062a4d4197eda180c445427585bdf43e388432bd8cfa690e85f4cc0c3",
+      "facts": {
+        "passed": 3,
+        "total": 3
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 0,
+        "total": 0
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 3
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "basic-06-rate",
+      "status": "PASS",
+      "executionMode": "live",
+      "recording": "evals/cases/standard-extract/basic-06-rate/recordings/live-20261115-baseline.json",
+      "recordingSha256": "2744287c3283dbd08fac75fb135810a42c5449b3b26032f9151a6d749665b0bf",
+      "facts": {
+        "passed": 2,
+        "total": 2
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 1,
+        "total": 1
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 3
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "trap-01-forecast",
+      "status": "PASS",
+      "executionMode": "live",
+      "recording": "evals/cases/standard-extract/trap-01-forecast/recordings/live-20261115-baseline.json",
+      "recordingSha256": "1ce8ff3afca5c8c66c0db633369462964437b4bf483092b7738a284fc5f8daa1",
+      "facts": {
+        "passed": 3,
+        "total": 3
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 1,
+        "total": 1
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 3
+      },
+      "emptyTopics": 0
+    },
+    {
+      "id": "trap-02-units",
+      "status": "PASS",
+      "executionMode": "live",
+      "recording": "evals/cases/standard-extract/trap-02-units/recordings/live-20261115-baseline.json",
+      "recordingSha256": "d23022236c32cd461bdb3702af71dda8bc2a01245ce5c686dd85a6fad7a60272",
+      "facts": {
+        "passed": 2,
+        "total": 2
+      },
+      "evidence": {
+        "passed": 1,
+        "total": 1
+      },
+      "questions": {
+        "passed": 1,
+        "total": 1
+      },
+      "forbidden": 0,
+      "partitionViolations": 0,
+      "duplicates": {
+        "count": 0,
+        "total": 2
+      },
+      "emptyTopics": 0
+    }
+  ],
+  "replay": [
+    {
+      "node": "22.23.5",
+      "runId": "2026-11-15T11-09-17-402Z-97954db5",
+      "resultSha256": "d91a99397561a4bbb6cb4601c4c41a61c22750376a959bc23b34061491e3725c",
+      "passedCases": 8,
+      "totalCases": 8,
+      "providerRequests": 0,
+      "baselineDelta": {
+        "structure": 0,
+        "evidence": 0,
+        "factRecall": 0,
+        "questionRecall": 0,
+        "forbidden": 0,
+        "partition": 0,
+        "duplicateRate": 0,
+        "emptyTopics": 0
+      }
+    },
+    {
+      "node": "24.22.1",
+      "runId": "2026-11-15T11-09-17-912Z-924ce0b3",
+      "resultSha256": "f372254b1bf7298f090f253af7aabfd10ded087cd472d745c3defc810c03cdaa",
+      "passedCases": 8,
+      "totalCases": 8,
+      "providerRequests": 0,
+      "baselineDelta": {
+        "structure": 0,
+        "evidence": 0,
+        "factRecall": 0,
+        "questionRecall": 0,
+        "forbidden": 0,
+        "partition": 0,
+        "duplicateRate": 0,
+        "emptyTopics": 0
+      }
+    }
+  ],
+  "localCheck": {
+    "command": "npm run check",
+    "node": "22.23.5",
+    "exitCode": 0,
+    "tests": {
+      "passed": 904,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typecheckPassed": true,
+    "builtModules": 235,
+    "logSha256": "2620061f4b972b9ac20ebf0c55d32c31133955d7ef28efc7a21b826fa2095d0f"
+  }
+}

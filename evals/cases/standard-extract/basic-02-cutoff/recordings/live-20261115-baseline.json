@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "origin": "live",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "5a170bb6c3b52d4d6fc32564ff83f51699af1bcedf5d4ae9eff2bab8fe0c61c6",
+  "goldHash": "161ebe848b5e271ee03ba9c3198b7b582527a7a2905fb5250d2119e9bcd09865",
+  "bodyHash": "90e32ed0c135a4dbb500efbfbc30191bbe6b35fc77f849f647d6829340b7ccba",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "openai-compatible",
+    "model": "gpt-6.1-terra"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "a0e1aeffcdb0eed29d6ccfe26f9cfcb4e952bd34e0668f1727b57875412eab4b",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "792be802040cb06b7b5654e7c45010ea065c03b0acdea9ca2a4992177c9c85c7",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"ambiguous\"},{\"atomId\":\"c1-a0003\",\"kind\":\"ambiguous\"},{\"atomId\":\"c1-a0004\",\"kind\":\"fact\"}],\"questions\":[],\"sourceNotes\":[{\"atomId\":\"c1-a0001\"}]}",
+        "finishReason": "stop",
+        "bytes": 194,
+        "usage": {
+          "promptTokens": 2047,
+          "completionTokens": 649
+        },
+        "structuredOutputApplied": true
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "7b126f3cc4e7ad0390ca938fab31c16fdda56d851b25d61ce4c960f30a13ff06",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "3fc71de7085089eb452b2b2b32b66c3b2a8384828729ff0c0c754faa9a40790a",
+      "completion": {
+        "text": "{\n  \"version\": 3,\n  \"document\": {\n    \"title\": \"【合成】时点与口径\",\n    \"main_topic\": \"销售下降询问、门店日结回答及财务报表口径\",\n    \"source_level\": \"D\"\n  },\n  \"pages\": [\n    {\n      \"title\": \"2026-11-01销售下降询问及报表口径\",\n      \"type\": \"business_process\",\n      \"category\": \"sales\",\n      \"factUnitIds\": [\n        \"fu-17-54-ambiguous\",\n        \"fu-54-78-ambiguous\",\n        \"fu-78-98-fact\"\n      ],\n      \"templateFields\": {\n        \"one_line_explanation\": null,\n        \"definition\": null,\n        \"why_important\": null,\n        \"business_context\": null,\n        \"characteristics\": null,\n        \"common_categories\": null,\n        \"relationships\": null,\n        \"scenarios\": null,\n        \"business_goal\": null,\n        \"roles\": null,\n        \"trigger\": null,\n        \"inputs\": null,\n        \"steps\": {\n          \"text\": \"2026-11-02 10:00，有人询问2026-11-01销售为何下降；回答称已日结80/100店，含税出库额18万元。财务同事称报表为净签收额，暂未提供明细。\",\n          \"factUnitIds\": [\n            \"fu-17-54-ambiguous\",\n            \"fu-54-78-ambiguous\",\n            \"fu-78-98-fact\"\n          ]\n        },\n        \"outputs\": null,\n        \"systems\": null,\n        \"rules\": null,\n        \"human_judgement\": null,\n        \"exceptions\": null,\n        \"pain_points\": null,\n        \"ai_opportunities\": null,\n        \"metrics\": null,\n        \"related_knowledge\": null\n      },\n      \"questionUnitIds\": []\n    }\n  ]\n}",
+        "finishReason": "stop",
+        "bytes": 1502,
+        "usage": {
+          "promptTokens": 6318,
+          "completionTokens": 603
+        },
+        "structuredOutputApplied": true
+      }
+    }
+  ]
+}

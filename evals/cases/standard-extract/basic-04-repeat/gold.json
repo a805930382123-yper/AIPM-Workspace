@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "120店",
+          "TIMEOUT",
+          "30秒"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "20店",
+          "420行"
+        ]
+      ]
+    },
+    {
+      "id": "f3",
+      "variants": [
+        [
+          "只验证这一组请求"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "所有大范围请求",
+          "失败"
+        ]
+      ],
+      "exclude": [
+        "不证明所有大范围请求失败"
+      ],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}

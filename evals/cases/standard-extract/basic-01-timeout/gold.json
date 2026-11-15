@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "华东",
+          "120店",
+          "上周",
+          "SKU"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "未生成文件"
+        ]
+      ]
+    },
+    {
+      "id": "f3",
+      "variants": [
+        [
+          "TIMEOUT",
+          "30秒"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "已生成文件"
+        ]
+      ],
+      "exclude": [
+        "未生成文件"
+      ],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    },
+    {
+      "id": "b2",
+      "variants": [
+        [
+          "根因",
+          "确定"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    },
+    {
+      "id": "b3",
+      "variants": [
+        [
+          "成功率"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}

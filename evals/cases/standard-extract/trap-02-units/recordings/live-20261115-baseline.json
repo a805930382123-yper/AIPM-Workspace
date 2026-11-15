@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "origin": "live",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "3f14037735bd5cb61045779cd505c63070e443200901b8ff43067cb5f9e532fc",
+  "goldHash": "e96036e0952edeea28231ee0463ae727981fcf09a8f6a23fa10b44acfd33b013",
+  "bodyHash": "7c4743639dd9dc0ceb0af8eed561cbf4130b2dba76e447fd28d76e5434e7a8ba",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "openai-compatible",
+    "model": "gpt-6.1-terra"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "a1a13e7bf78e47a20ac8bf3b034dc4f80adaa719f32f068b537f282f40d57e35",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "993b37bd3ef19c9c7bfc8793baa85a69621f4d243e8e365df0ecf417b411f23d",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"fact\"}],\"questions\":[{\"atomId\":\"c1-a0004\"}],\"sourceNotes\":[{\"atomId\":\"c1-a0001\"}]}",
+        "finishReason": "stop",
+        "bytes": 169,
+        "usage": {
+          "promptTokens": 2025,
+          "completionTokens": 110
+        },
+        "structuredOutputApplied": true
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "6f2c419d57adece7c89c24c361eb0857b5178aa4ffc01ac48b9d6fa210117be4",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "60d3eddb05d7562b2ca70c98b56544d6513f0f6afd12f298b64ea3e0b28f8633",
+      "completion": {
+        "text": "{\"version\":3,\"document\":{\"title\":\"虚构门店销售数据样本\",\"main_topic\":\"虚构A店与B店在不同时期的销售额和销量\",\"source_level\":\"D\"},\"pages\":[{\"title\":\"虚构A店与B店的销售额和销量样本\",\"type\":\"metric\",\"category\":\"sales\",\"factUnitIds\":[\"fu-17-37-fact\",\"fu-37-58-fact\"],\"templateFields\":null,\"questionUnitIds\":[\"qu-58-68\"]}]}",
+        "finishReason": "stop",
+        "bytes": 358,
+        "usage": {
+          "promptTokens": 6238,
+          "completionTokens": 275
+        },
+        "structuredOutputApplied": true
+      }
+    }
+  ]
+}

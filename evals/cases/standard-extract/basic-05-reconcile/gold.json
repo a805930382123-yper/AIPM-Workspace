@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "2026-11-01",
+          "100/100店",
+          "22万元"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "20万元",
+          "差2万元",
+          "未附凭证"
+        ]
+      ]
+    },
+    {
+      "id": "f3",
+      "variants": [
+        [
+          "不能证明长期口径稳定"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "证明长期口径稳定"
+        ]
+      ],
+      "exclude": [
+        "不能证明长期口径稳定"
+      ],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "origin": "synthetic",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "1ab4fafb8c3886e104ac66bc4822895cd2520a11d05056c95e0829bfccfc3dd6",
+  "goldHash": "f7a1fea93a2c0be6b90dd6f12786b3c0afc47fffa4eb5fed23c1461b422d3284",
+  "bodyHash": "e73b0352af7a563c42284fc5429ed0b096a49e18080aa6c86ba514d2fdbf4fff",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "synthetic",
+    "model": "synthetic-v1"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "474d2980bb382244e2c1d69a530f6a6bc4062967664452ddc59ea442e618c293",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "f82bf1f0e80419050ff408d4441f4bbe2e25983875458974476e40d36b997281",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"fact\"}],\"questions\":[{\"atomId\":\"c1-a0004\"}],\"sourceNotes\":[]}",
+        "bytes": 148,
+        "finishReason": "stop"
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "9eaeadd6dceecc87fd509f03e3f44c1730abb56ecf6dad057a6ff4e40566ad42",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "3359bb7f68a569445d4bed49fca3c7cc5696a766ece29af5364bbd28b4f748f9",
+      "completion": {
+        "text": "{\"version\":3,\"document\":{\"source_level\":\"D\",\"title\":\"【合成】补充澄清验收\",\"main_topic\":\"合成业务\"},\"pages\":[{\"title\":\"合成业务\",\"type\":\"metric\",\"category\":\"metric\",\"factUnitIds\":[\"fu-17-60-fact\",\"fu-60-72-fact\"],\"questionUnitIds\":[\"qu-72-94\"]}]}",
+        "bytes": 264,
+        "finishReason": "stop"
+      }
+    }
+  ]
+}

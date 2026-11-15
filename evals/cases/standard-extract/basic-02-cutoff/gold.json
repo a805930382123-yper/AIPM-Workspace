@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "提问",
+          "2026-11-01",
+          "销售"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "80/100店",
+          "含税出库额",
+          "18万元"
+        ]
+      ]
+    },
+    {
+      "id": "f3",
+      "variants": [
+        [
+          "净签收额",
+          "未提供明细"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "含税出库额",
+          "净签收额",
+          "相同口径"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}

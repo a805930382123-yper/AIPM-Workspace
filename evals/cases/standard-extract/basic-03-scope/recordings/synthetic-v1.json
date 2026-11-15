@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "origin": "synthetic",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "1404108c4be2811b07068d07447163b99da77805d2797da78afcf010a3cee45e",
+  "goldHash": "8e7cf679c8c531a6ee31584be56d42e49d6662d42944e1d40608eda2dac4b27f",
+  "bodyHash": "1afaacf5f9241f4f2620ccc817b325d1476fe75ca49e9afba17c39c22d3c0991",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "synthetic",
+    "model": "synthetic-v1"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "79770de312f165e8d3169a4e2f392b8a8eca853b093c001e2fca005e7664b49b",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "be499d651110a3cd49237ea0e0a69b152b5283d10d72f264d242bc3d14d2e759",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0004\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0005\",\"kind\":\"fact\"}],\"questions\":[],\"sourceNotes\":[]}",
+        "bytes": 199,
+        "finishReason": "stop"
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "02f9a0a250ace441a2e5c0876dbabddc09c6779a27cef3b04287819d9ddf2732",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "85e90444b25d44e7bfc1936497f965168eaf253232b1330b3319ef6271104157",
+      "completion": {
+        "text": "{\"version\":3,\"document\":{\"source_level\":\"D\",\"title\":\"【合成】歧义与对照\",\"main_topic\":\"合成业务\"},\"pages\":[{\"title\":\"合成业务\",\"type\":\"metric\",\"category\":\"metric\",\"factUnitIds\":[\"fu-17-44-fact\",\"fu-44-61-fact\",\"fu-61-70-fact\",\"fu-70-101-fact\"],\"questionUnitIds\":[]}]}",
+        "bytes": 284,
+        "finishReason": "stop"
+      }
+    }
+  ]
+}

@@ -82,9 +82,10 @@ try {
     if (-not $node.HasExited) { Stop-Process -InputObject $node; $node.WaitForExit(5000) | Out-Null }
 }
 `);
-    const registration = spawnSync('powershell.exe', [...shellArgs, '-File', capture], {
+    // Hidden Windows PowerShell can stall before entering a script launched with -File.
+    const registration = spawnSync('powershell.exe', [...shellArgs, '-Command', '& $env:RUN01_CAPTURE_SCRIPT; exit $LASTEXITCODE'], {
       encoding: 'utf8', cwd: fixture, windowsHide: true, timeout: fixtureTimeout,
-      env: { ...process.env, RUN01_NODE_PATH: process.execPath, RUN01_FIXTURE_ID: fixtureId },
+      env: { ...process.env, RUN01_CAPTURE_SCRIPT: capture, RUN01_NODE_PATH: process.execPath, RUN01_FIXTURE_ID: fixtureId },
     });
     if (registration.error || registration.signal) {
       const cleanup = stopFixtureProcesses(fixtureId);
@@ -174,12 +175,13 @@ setTimeout(() => {
           HTTP_PROXY: 'http://proxy-fixture.invalid:9', HTTPS_PROXY: 'http://proxy-fixture.invalid:9',
         },
       });
-      if (launch.error || launch.signal) {
-        const cleanup = stopFixtureProcesses(config.Id);
-        assert.fail(`Launcher (${name}, fixture ${config.Id}) exited ${launch.status}, signal ${launch.signal ?? 'none'}, error ${launch.error ?? 'none'}.\n${launch.stderr ?? ''}\n${cleanup}`);
-      }
       const files = readdirSync(logs);
       const daily = files.find(name => /^autostart-\d{4}-\d{2}-\d{2}\.log$/.test(name) && name !== 'autostart-2000-01-01.log');
+      if (launch.error || launch.signal) {
+        const lifecycle = daily ? readFileSync(join(logs, daily), 'utf8') : '(no lifecycle log)';
+        const cleanup = stopFixtureProcesses(config.Id);
+        assert.fail(`Launcher (${name}, fixture ${config.Id}) exited ${launch.status}, signal ${launch.signal ?? 'none'}, error ${launch.error ?? 'none'}.\n${launch.stdout ?? ''}\n${launch.stderr ?? ''}\n${lifecycle}\n${cleanup}`);
+      }
       assert.ok(daily, launch.stderr);
       const lines = readFileSync(join(logs, daily), 'utf8');
       assert.equal(launch.status, exitCode, lines);

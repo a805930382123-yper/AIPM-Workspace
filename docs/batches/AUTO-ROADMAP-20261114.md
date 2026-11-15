@@ -2,7 +2,7 @@
 
 ## 当前进度（2026-11-15）
 
-ENG01整体PASS，工程提交23c434e的真实Windows Node22/24 CI通过；见[独验报告](../reports/ENG01-20261115-review.md)。RUN01亦整体PASS：工程提交ddba6a1真实Windows Node22/24各897项通过、类型检查与构建成功，见[RUN01独立验收](../reports/RUN01-20261115-review.md)。正式自启未安装。本批完成后停止等待用户明确确认；EVAL01、PIPE01未启动。
+ENG01整体PASS，工程提交23c434e的真实Windows Node22/24 CI通过；见[独验报告](../reports/ENG01-20261115-review.md)。RUN01亦整体PASS：工程提交ddba6a1真实Windows Node22/24各897项通过、类型检查与构建成功，见[RUN01独立验收](../reports/RUN01-20261115-review.md)。正式自启未安装。用户已确认RUN01完成并明确授权EVAL01，当前进入EVAL01规划与施工流程；完成独验、提交推送与真实CI后停止等待确认，PIPE01未启动。
 
 ## 用户决定（2026-11-14 冻结）
 

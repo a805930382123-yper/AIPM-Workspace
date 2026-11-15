@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "A店",
+          "本周",
+          "2万元",
+          "100箱"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "B店",
+          "上周",
+          "500元",
+          "200瓶"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [
+    {
+      "id": "q1",
+      "variants": [
+        [
+          "样本条件",
+          "待确认"
+        ]
+      ]
+    }
+  ],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "合计",
+          "2.05万元"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    },
+    {
+      "id": "b2",
+      "variants": [
+        [
+          "合计",
+          "300箱"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [
+    {
+      "id": "p1",
+      "variants": [
+        [
+          "合计300箱"
+        ]
+      ],
+      "exclude": [],
+      "scopes": [
+        "source_facts",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    },
+    {
+      "id": "p2",
+      "variants": [
+        [
+          "样本条件待确认"
+        ]
+      ],
+      "exclude": [],
+      "scopes": [
+        "source_facts"
+      ]
+    }
+  ],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}

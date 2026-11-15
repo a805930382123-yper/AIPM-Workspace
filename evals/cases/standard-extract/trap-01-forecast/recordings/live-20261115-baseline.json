@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "origin": "live",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "0deede3365487608cccea8c7efa9fb96bc31c5107f37101919c38620f52c5f5b",
+  "goldHash": "6d100ce83acf39a0c1acac7bcc2a13d3075e4a053ccfb69906636d6ea2297c31",
+  "bodyHash": "259e88ce1e5f41487a1b87dcd860dbb42d0562f3a2fe67fbdb225bd0c4bb9140",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "openai-compatible",
+    "model": "gpt-6.1-terra"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "8e816b695513666b3cb59a19e070e494479d969d5ead50f35a658e994aadfcc9",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "5cd8c27422fbcd85c204533577786c017204b55d6b7a4747926bbf1afcac6bbf",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"ambiguous\"},{\"atomId\":\"c1-a0004\",\"kind\":\"fact\"}],\"questions\":[{\"atomId\":\"c1-a0005\"}],\"sourceNotes\":[{\"atomId\":\"c1-a0001\"}]}",
+        "finishReason": "stop",
+        "bytes": 210,
+        "usage": {
+          "promptTokens": 2026,
+          "completionTokens": 154
+        },
+        "structuredOutputApplied": true
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "8537a9349deb5ecf1a6e4853f58c93cddebee67d5528271cee62d79f680cdd6e",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "bbe262010c90e11ae0a77f08f80d7853ce64c1e810400445fc12577fdebab7f7",
+      "completion": {
+        "text": "{\"version\":3,\"document\":{\"title\":\"【合成】trap-01-forecast\",\"main_topic\":\"虚构渠道本月销量、下月销量预计及AI上线状态\",\"source_level\":\"D\"},\"pages\":[{\"title\":\"虚构渠道销售情况\",\"type\":\"entity\",\"category\":\"sales\",\"factUnitIds\":[\"fu-17-30-fact\",\"fu-30-39-ambiguous\",\"fu-39-46-fact\"],\"templateFields\":null,\"questionUnitIds\":[\"qu-46-52\"]}]}",
+        "finishReason": "stop",
+        "bytes": 366,
+        "usage": {
+          "promptTokens": 6309,
+          "completionTokens": 182
+        },
+        "structuredOutputApplied": true
+      }
+    }
+  ]
+}

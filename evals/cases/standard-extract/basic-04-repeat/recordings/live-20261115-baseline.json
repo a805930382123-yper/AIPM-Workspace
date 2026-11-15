@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "origin": "live",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "0aeca635e4e21595f7074fde527e66e187e61047384488f004d2772305ee4ada",
+  "goldHash": "b729e9fd351d0d17cf7941d5016620f9dcc3b556b44e20980ea12b27dd76904c",
+  "bodyHash": "dfcb5420e35347f574b990d8f4d25926b79ba333a0c9dadd3fb21240119c2fc4",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "openai-compatible",
+    "model": "gpt-6.1-terra"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "fedf8ed3c98705ce30c58b054a389281ef9a52dba5e0d88ef06afa69331853d6",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "d358535b15322b2be85b11264a619a952f2ad533b03ef0ab9b03550f5f0ac866",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"ambiguous\"},{\"atomId\":\"c1-a0004\",\"kind\":\"fact\"}],\"questions\":[],\"sourceNotes\":[{\"atomId\":\"c1-a0001\"}]}",
+        "finishReason": "stop",
+        "bytes": 189,
+        "usage": {
+          "promptTokens": 2031,
+          "completionTokens": 282
+        },
+        "structuredOutputApplied": true
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "6e27842c231ef73b6365317d5bee8fc1bebb1a8c3ee1336851ac783d6bc9c427",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "9a3f4ca982f0a07e1d720a851217ecccdf887600d7611c112ababc3762982a51",
+      "completion": {
+        "text": "{\n  \"version\": 3,\n  \"document\": {\n    \"title\": \"【合成】补充失败复跑\",\n    \"main_topic\": \"模拟的门店查询复跑、缩小范围测试及验证范围\",\n    \"source_level\": \"D\"\n  },\n  \"pages\": [\n    {\n      \"title\": \"门店查询复跑与缩小范围测试（合成模拟）\",\n      \"type\": \"business_process\",\n      \"category\": \"store\",\n      \"factUnitIds\": [\n        \"fu-17-56-fact\",\n        \"fu-56-68-ambiguous\",\n        \"fu-68-90-fact\"\n      ],\n      \"templateFields\": {\n        \"one_line_explanation\": null,\n        \"definition\": null,\n        \"why_important\": null,\n        \"business_context\": null,\n        \"characteristics\": null,\n        \"common_categories\": null,\n        \"relationships\": null,\n        \"scenarios\": null,\n        \"business_goal\": null,\n        \"roles\": null,\n        \"trigger\": null,\n        \"inputs\": null,\n        \"steps\": {\n          \"text\": \"模拟记录中，2026-11-06 09:00，同一120店查询再次出现30秒TIMEOUT；缩至20店后成功，返回420行。\",\n          \"factUnitIds\": [\n            \"fu-17-56-fact\",\n            \"fu-56-68-ambiguous\"\n          ]\n        },\n        \"outputs\": null,\n        \"systems\": null,\n        \"rules\": null,\n        \"human_judgement\": null,\n        \"exceptions\": {\n          \"text\": \"仅验证了这一组请求，不能据此证明所有大范围请求都会失败。\",\n          \"factUnitIds\": [\n            \"fu-68-90-fact\"\n          ]\n        },\n        \"pain_points\": null,\n        \"ai_opportunities\": null,\n        \"metrics\": null,\n        \"related_knowledge\": null\n      },\n      \"questionUnitIds\": []\n    }\n  ]\n}",
+        "finishReason": "stop",
+        "bytes": 1605,
+        "usage": {
+          "promptTokens": 6267,
+          "completionTokens": 548
+        },
+        "structuredOutputApplied": true
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ jobs:
       matrix:
         node: [22.x, 24.x]
     steps:
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -23,4 +24,5 @@ jobs:
         env:
           FMCG_DATA_DIR: ${{ runner.temp }}/fmcg-data
           FMCG_LLM_CONFIG_FILE: ${{ runner.temp }}/fmcg-config.env
+      - run: npm run eval -- --chain standard-extract --recording live-20261115-baseline
       - run: npm run build

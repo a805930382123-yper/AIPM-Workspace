@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "origin": "synthetic",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "41eb9efbcb1a1dbc12d30abe000303d88c22dc7ca24de38e577fc34412e28183",
+  "goldHash": "911f96155bc9fe63d3099f72faefb94a3fd70d7849f36f65f4695eb9041fe3cf",
+  "bodyHash": "89389b2e964fca7df4e20d75d0de689711fdaa266ce566dc3519d6bbc3827ea0",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "synthetic",
+    "model": "synthetic-v1"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "67d3992d8394b03cee8ebca4abcbcccd813209e7760057a13fd96188e476aeb1",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "5e21787d8bb8bc5920372697749c91ddab2a6844c25282d4e7d4582564e28caa",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0004\",\"kind\":\"fact\"}],\"questions\":[],\"sourceNotes\":[]}",
+        "bytes": 163,
+        "finishReason": "stop"
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "80a87091574e52e3b85e61bb5629072cf4f43fa932de8f7a8e65c636daf31f06",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "b22bcf0593da3d98932b7cd6359f58791c6e8bc474b6c9f1c4b1152a5b35e6ad",
+      "completion": {
+        "text": "{\"version\":3,\"document\":{\"source_level\":\"D\",\"title\":\"【合成】补充日结和口径\",\"main_topic\":\"合成业务\"},\"pages\":[{\"title\":\"合成业务\",\"type\":\"metric\",\"category\":\"metric\",\"factUnitIds\":[\"fu-17-73-fact\",\"fu-73-106-fact\",\"fu-106-120-fact\"],\"questionUnitIds\":[]}]}",
+        "bytes": 276,
+        "finishReason": "stop"
+      }
+    }
+  ]
+}

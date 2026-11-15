@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "已售",
+          "100箱"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "下月",
+          "预计",
+          "120箱"
+        ]
+      ]
+    },
+    {
+      "id": "f3",
+      "variants": [
+        [
+          "AI",
+          "尚未上线"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [
+    {
+      "id": "q1",
+      "variants": [
+        [
+          "负责人",
+          "未知"
+        ]
+      ]
+    }
+  ],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "已售120箱"
+        ],
+        [
+          "已销售120箱"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    },
+    {
+      "id": "b2",
+      "variants": [
+        [
+          "AI",
+          "已上线"
+        ]
+      ],
+      "exclude": [],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [
+    {
+      "id": "p1",
+      "variants": [
+        [
+          "已售120箱"
+        ],
+        [
+          "已销售120箱"
+        ]
+      ],
+      "exclude": [],
+      "scopes": [
+        "source_facts",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    },
+    {
+      "id": "p2",
+      "variants": [
+        [
+          "负责人未知"
+        ]
+      ],
+      "exclude": [],
+      "scopes": [
+        "source_facts"
+      ]
+    }
+  ],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}

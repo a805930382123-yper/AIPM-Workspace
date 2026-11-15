@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "origin": "live",
+  "bodyNormalization": "lf-v1",
+  "caseHash": "41eb9efbcb1a1dbc12d30abe000303d88c22dc7ca24de38e577fc34412e28183",
+  "goldHash": "911f96155bc9fe63d3099f72faefb94a3fd70d7849f36f65f4695eb9041fe3cf",
+  "bodyHash": "89389b2e964fca7df4e20d75d0de689711fdaa266ce566dc3519d6bbc3827ea0",
+  "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
+  "provider": {
+    "name": "openai-compatible",
+    "model": "gpt-6.1-terra"
+  },
+  "calls": [
+    {
+      "stage": "extracting",
+      "requestSummary": {
+        "systemSha256": "86108e3e8f8da00274c66eb57c66029d9981421842cb20f7e175be0fd24361e1",
+        "userSha256": "67d3992d8394b03cee8ebca4abcbcccd813209e7760057a13fd96188e476aeb1",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "5e21787d8bb8bc5920372697749c91ddab2a6844c25282d4e7d4582564e28caa",
+      "completion": {
+        "text": "{\"version\":2,\"facts\":[{\"atomId\":\"c1-a0002\",\"kind\":\"fact\"},{\"atomId\":\"c1-a0003\",\"kind\":\"ambiguous\"},{\"atomId\":\"c1-a0004\",\"kind\":\"fact\"}],\"questions\":[],\"sourceNotes\":[{\"atomId\":\"c1-a0001\"}]}",
+        "finishReason": "stop",
+        "bytes": 189,
+        "usage": {
+          "promptTokens": 2066,
+          "completionTokens": 290
+        },
+        "structuredOutputApplied": true
+      }
+    },
+    {
+      "stage": "planning",
+      "requestSummary": {
+        "systemSha256": "ba1c35e5fa7a6626a19a9771d8254a0f9a379cfc4cdfebddc96f0dd8d8834ad3",
+        "userSha256": "0e561248b1a3a5dd3de8170fac9655efc04d2296d0638ed48c055eecf5335cef",
+        "purpose": "knowledge",
+        "structuredOutput": true
+      },
+      "requestHash": "3cf4af281732bae3a33f42e724b3d8578be6ee74fbf70e3a113b34a51779f674",
+      "completion": {
+        "text": "{\n  \"version\": 3,\n  \"document\": {\n    \"title\": \"【合成】补充日结和口径\",\n    \"main_topic\": \"模拟业务日的日结、出库及签收金额对账\",\n    \"source_level\": \"D\"\n  },\n  \"pages\": [\n    {\n      \"title\": \"2026-11-01模拟日结与金额对账补查\",\n      \"type\": \"metric\",\n      \"category\": \"metric\",\n      \"factUnitIds\": [\n        \"fu-17-73-fact\",\n        \"fu-73-106-ambiguous\",\n        \"fu-106-120-fact\"\n      ],\n      \"templateFields\": null,\n      \"questionUnitIds\": []\n    }\n  ]\n}",
+        "finishReason": "stop",
+        "bytes": 505,
+        "usage": {
+          "promptTokens": 6368,
+          "completionTokens": 288
+        },
+        "structuredOutputApplied": true
+      }
+    }
+  ]
+}

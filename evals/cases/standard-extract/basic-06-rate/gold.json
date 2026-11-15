@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "requiredFacts": [
+    {
+      "id": "f1",
+      "variants": [
+        [
+          "有销售门店数",
+          "有效门店数",
+          "上周"
+        ]
+      ]
+    },
+    {
+      "id": "f2",
+      "variants": [
+        [
+          "16/20",
+          "80%"
+        ]
+      ]
+    }
+  ],
+  "requiredQuestions": [
+    {
+      "id": "q1",
+      "variants": [
+        [
+          "附件",
+          "尚未",
+          "待核"
+        ]
+      ]
+    }
+  ],
+  "forbiddenAssertions": [
+    {
+      "id": "b1",
+      "variants": [
+        [
+          "附件",
+          "已交付"
+        ]
+      ],
+      "exclude": [
+        "尚未随反馈交付"
+      ],
+      "scope": [
+        "document",
+        "source_facts",
+        "open_questions",
+        "ai_organized",
+        "ai_inferences",
+        "templateFields.aiContent"
+      ]
+    }
+  ],
+  "partitionRules": [],
+  "requiredFields": {
+    "document": [
+      "title",
+      "main_topic",
+      "summary",
+      "source_level"
+    ],
+    "pages": [
+      "title",
+      "type",
+      "category",
+      "source_facts",
+      "source_evidence",
+      "open_questions",
+      "ai_organized",
+      "ai_inferences"
+    ]
+  }
+}
