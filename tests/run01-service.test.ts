@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import test from 'node:test';
 
 const project = process.cwd();
@@ -101,13 +101,18 @@ try {
     assert.equal(record.logon, 3); // InteractiveToken
     assert.equal(record.runLevel, 0); // Limited
     assert.equal(record.restartCount, 0);
-    assert.equal(record.workingDirectory, fixture);
+    const canonicalFixture = realpathSync.native(fixture);
+    assert.equal(realpathSync.native(record.workingDirectory), canonicalFixture);
     assert.match(record.arguments, /-WindowStyle Hidden -ExecutionPolicy Bypass -Command "& '/);
     assert.match(record.arguments, / -Settings '[A-Za-z0-9+/]+=*'; exit \$LASTEXITCODE"$/);
     assert.equal(record.payload.Port, 16431);
-    assert.equal(record.payload.DataDir, join(fixture, 'test data'));
-    assert.equal(record.payload.ConfigFile, join(fixture, 'absent-config'));
-    assert.equal(record.payload.NodePath, process.execPath);
+    // These targets need not exist at registration time. Resolve their parent
+    // to account for Windows short-path aliases and check each target name.
+    assert.equal(realpathSync.native(dirname(record.payload.DataDir)), canonicalFixture);
+    assert.equal(basename(record.payload.DataDir), 'test data');
+    assert.equal(realpathSync.native(dirname(record.payload.ConfigFile)), canonicalFixture);
+    assert.equal(basename(record.payload.ConfigFile), 'absent-config');
+    assert.equal(realpathSync.native(record.payload.NodePath), realpathSync.native(process.execPath));
     assert.equal(record.payload.UseProxy, true);
   } finally { rmSync(fixture, { recursive: true, force: true }); }
 });
