@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "chain": "standard-extract",
   "scoringSchemaVersion": 2,
+  "finalStatus": "PASS",
   "recordingId": "live-20261115-baseline",
   "baseCommit": "ed34d1b7032a4e819aa0a44aca02e61b7150622f",
   "rulesVersion": "b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf",
@@ -359,6 +360,35 @@
         "failed": 0,
         "skipped": 0,
         "logSha256": "a84bd45d4141073088fcf63239cf32287eb904451eeffd1e6010640b790eef06"
+      }
+    ]
+  },
+  "remoteCi": {
+    "engineeringCommit": "4bb88739c88211f1c40038308643820e1d0459f7",
+    "runId": 43709455049,
+    "runUrl": "https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/43709455049",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "jobId": 132797629873,
+        "node": "22.23.4",
+        "conclusion": "success",
+        "typecheckPassed": true,
+        "tests": { "passed": 904, "failed": 0, "skipped": 0 },
+        "officialReplay": { "passedCases": 8, "totalCases": 8, "factsPassed": 21, "factsTotal": 21 },
+        "builtModules": 235,
+        "buildSeconds": 2.75
+      },
+      {
+        "jobId": 132797629583,
+        "node": "24.22.2",
+        "conclusion": "success",
+        "typecheckPassed": true,
+        "tests": { "passed": 904, "failed": 0, "skipped": 0 },
+        "officialReplay": { "passedCases": 8, "totalCases": 8, "factsPassed": 21, "factsTotal": 21 },
+        "builtModules": 235,
+        "buildSeconds": 10.77
       }
     ]
   }
