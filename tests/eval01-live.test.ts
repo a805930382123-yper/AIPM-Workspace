@@ -18,6 +18,9 @@ test('EVAL01 isolated resume preflight, bounded calls and one-use permit',async(
  const frozen=['c9ef7235c3cbfa32600b3ea7a138beac9ce3971d96b8b31ce476c45294493feb','c196ff11e93c40987def15b483c75c3293353cc11a4ff894f32506d84691b942','1412e1f8614432fd2eea9b97fd3da4ee437c4130646b8dc2930a43528d7ee9b1','cb39cc3063a8942274dc0c2ea86305e3cbf04fff1058f5008be76bd57fff80f3'];
  try{
   for(const sub of ['services','rules','scripts/eval','evals/cases','evals/thresholds.json'])await cp(path.join(process.cwd(),sub),path.join(dir,sub),{recursive:true});
+  // A checkout may already contain all eight live recordings. The synthetic source run
+  // represents the earlier four-case stop, so clear only its temporary remaining copies.
+  for(const id of ids.slice(4)){const target=path.resolve(dir,'evals/cases/standard-extract',id,'recordings/live-20261115-baseline.json');assert(target.startsWith(path.resolve(dir)+path.sep));await rm(target,{force:true});}
   await mkdir(path.join(dir,'evals/results'),{recursive:true});let cases:any[]=[], recHashes:string[]=[];
   for(let i=0;i<ids.length;i++){const root=path.join(dir,'evals/cases/standard-extract',ids[i]!,'recordings'),rec=JSON.parse(await readFile(path.join(root,'synthetic-v1.json'),'utf8'));let row:any={id:ids[i],status:i<3?'PASS':i===3?'FAIL':'NOT_RUN',caseHash:rec.caseHash,goldHash:rec.goldHash,bodyHash:rec.bodyHash};if(i<4){rec.origin='live';rec.provider={name:'openai-compatible',model:'gpt-6.1-terra'};const bytes=JSON.stringify(rec,null,2)+'\n';await writeFile(path.join(root,'live-20261115-baseline.json'),bytes);recHashes.push(hash(bytes));row.recordingHash=hash(canonical(rec));row.provider=rec.provider;}cases.push(row);}
   const sample=JSON.parse(await readFile(path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/synthetic-v1.json'),'utf8'));const threshold=JSON.parse(await readFile(path.join(dir,'evals/thresholds.json'),'utf8'));

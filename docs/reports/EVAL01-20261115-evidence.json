@@ -305,8 +305,10 @@
     }
   ],
   "localCheck": {
+    "phase": "R1-before-all-live-recordings-were-imported",
     "command": "npm run check",
     "node": "22.23.5",
+    "evalLiveTestSha256": "bf3915fe92cf318f64ea5cc6b5689c26b5873b30c3083d78d212a54691fefd39",
     "exitCode": 0,
     "tests": {
       "passed": 904,
@@ -316,5 +318,48 @@
     "typecheckPassed": true,
     "builtModules": 235,
     "logSha256": "2620061f4b972b9ac20ebf0c55d32c31133955d7ef28efc7a21b826fa2095d0f"
+  },
+  "fixtureRepair": {
+    "initialCiCommit": "d107ee19d3dad5a8d5fab907d32ec2a89ba243ab",
+    "initialCiRun": "https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/43708014118",
+    "initialCiTestsPerNode": { "passed": 903, "failed": 1, "skipped": 0 },
+    "changedFile": "tests/eval01-live.test.ts",
+    "changedFileSha256": "8280a57f11d626afd52ffc8ff2d79034e680a77a8c2e99c2d1f15e53765481e3",
+    "officialRecordingsVerifiedBeforeAndAfter": 8,
+    "mixedResultSha256": "dfee62b7e12c5905d13b2ba8c7117c3ee3db9fd5083488f8356e5fc43d411cac",
+    "newRealProviderRequests": 0,
+    "fullLocalCheck": {
+      "command": "npm run check",
+      "node": "22.23.5",
+      "firstAttempt": {
+        "tests": { "passed": 903, "failed": 1, "skipped": 0 },
+        "failedTest": "tests/work01-http.test.ts",
+        "errorCode": "EPERM",
+        "logSha256": "ea3475981bb2a2ebb957c22f909f4e9ceb7783cf0e8ba256e70f0796dddb7d73"
+      },
+      "acceptedAttempt": {
+        "exitCode": 0,
+        "tests": { "passed": 904, "failed": 0, "skipped": 0 },
+        "typecheckPassed": true,
+        "builtModules": 235,
+        "logSha256": "2f028964e4f3ec84e6ab3edec9ad782299bbae0029b08f79f90312a9b99a73bd"
+      }
+    },
+    "independentTests": [
+      {
+        "node": "22.23.5",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "logSha256": "c2edf20eed0cef6207a281e257fa04136a9b2bed01289bf8138da7ca5e7aa81e"
+      },
+      {
+        "node": "24.22.1",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "logSha256": "a84bd45d4141073088fcf63239cf32287eb904451eeffd1e6010640b790eef06"
+      }
+    ]
   }
 }
