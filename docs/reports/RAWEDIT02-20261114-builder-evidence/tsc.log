@@ -1,0 +1,2 @@
+node node_modules/typescript/bin/tsc --noEmit --target ES2022 --lib ES2022,DOM,DOM.Iterable --module ESNext --moduleResolution Bundler --allowImportingTsExtensions --resolveJsonModule --isolatedModules --jsx react-jsx --strict --noUnusedLocals --noUnusedParameters --noFallthroughCasesInSwitch --skipLibCheck --types vite/client,node app/main.tsx server/index.ts vite.config.ts tests/rawedit01-ui.test.tsx
+exit=0

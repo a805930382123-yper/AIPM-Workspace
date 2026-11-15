@@ -1,0 +1,32 @@
+{
+  "success": true,
+  "checks": [
+    "仅链接空标题/来源/文件经真实HTTP重定向+静态HTML解析，正文、原/最终链接、时间、SHA持久读回，未创建原件",
+    "JS-only页面422无新增Raw，保留链接可粘贴补救，首尾空白和换行原样保存且没有第二次读取",
+    "文件、正文与坏URL同时存在时，跨标签显示文件优先，只请求文件导入，原件SHA与Raw正文保持，URL没有网络请求",
+    "解析失败只保留原件，无新增Raw、无URL回退；移除文件后才重新显示显式网页动作，三者空具体报错。全部浏览器动作未请求LLM"
+  ],
+  "screenshots": [
+    "review-url-only-form.png",
+    "review-url-reading.png",
+    "review-url-saved-source.png",
+    "review-url-failure-keeps-input.png",
+    "review-paste-no-fetch.png",
+    "review-file-priority-across-tabs.png",
+    "review-file-retained-source.png",
+    "review-file-parse-failure-no-url-fallback.png"
+  ],
+  "pageErrors": [],
+  "externalBrowserRequests": [],
+  "extractions": [],
+  "counters": {
+    "network": [
+      "/entry",
+      "/article",
+      "/script-only"
+    ],
+    "provider": 0,
+    "realProviderCalls": 0,
+    "configuration": "not-connected"
+  }
+}

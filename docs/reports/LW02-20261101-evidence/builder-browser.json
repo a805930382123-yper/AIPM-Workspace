@@ -1,0 +1,75 @@
+{
+  "success": true,
+  "checks": [
+    "真实Wiki引用打开及必要Raw原句精确定位，底源去重2份",
+    "选段/编辑/取消不写正式树；草稿存储失败保留预览，重试复用提议无重复模型调用",
+    "同Draft维护审核明确写入，推断标签/两底源/无假Raw和Source",
+    "刷新/回跳恢复正式已更状态，再提问实际命中新知识且底源仍2份"
+  ],
+  "screenshots": [
+    "builder-answer-raw-conflict.png",
+    "builder-wiki-citation-opened.png",
+    "builder-raw-citation-position.png",
+    "builder-selection-edited-preview.png",
+    "builder-draft-failure-keeps-preview.png",
+    "builder-qa-unified-draft.png",
+    "builder-formal-inference-both-sources.png",
+    "builder-ask-again-original-roots.png",
+    "builder-narrow-768.png"
+  ],
+  "pageErrors": [],
+  "mutations": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/answers"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/answers"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/answers/5ad087cd-42f7-4b6e-bd01-6199245437fc/save"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/answers/5ad087cd-42f7-4b6e-bd01-6199245437fc/save"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/drafts/ec7e1a40-7034-48a5-a0c0-033ed6cd897a/changes/review"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/drafts/ec7e1a40-7034-48a5-a0c0-033ed6cd897a/changes/review"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/drafts/ec7e1a40-7034-48a5-a0c0-033ed6cd897a/confirm"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/knowledge/answers"
+    }
+  ],
+  "result": {
+    "answerId": "5ad087cd-42f7-4b6e-bd01-6199245437fc",
+    "draftId": "ec7e1a40-7034-48a5-a0c0-033ed6cd897a",
+    "wikiId": "aea65ffb-f58a-4bb3-9a64-2f9e6af43a0b",
+    "operationId": "0692b639-0520-496b-99d7-30f56772babb",
+    "rawIds": [
+      "9d723e13-0ab5-4d96-af2a-fbd125c72d66",
+      "05cb3575-b041-4844-b552-191688b18dad"
+    ],
+    "againAnswerId": "1a7c3fad-ffd4-4662-9234-7dc801f45fce"
+  },
+  "before": {
+    "knowledge/logs/wiki.jsonl": "81dea14558644c5f04dfa1e9976f47411966b9e9a91b0898b562aa331df12f09",
+    "knowledge/raw/reports/05cb3575-b041-4844-b552-191688b18dad.md": "c927708b1c017e9d0d0a212e21fc6afb50db346710c180419109b606c182becc",
+    "knowledge/raw/reports/9d723e13-0ab5-4d96-af2a-fbd125c72d66.md": "e1c06b96dc60de34d0caa2bb04ac081186a3715404be4203b9cb674e0c994266",
+    "knowledge/wiki/35960fc1-d582-45d5-91d7-c4362b88ee87.md": "563a07ab7768d842c1461f28722254dd9e1686029415503b922aff4cdc275dcd",
+    "knowledge/wiki/9d0a42d6-3580-48da-b83b-51eeac39140f.md": "ba99c329b2dce628c1201627902eef5d25d70e60c5e76db57a2957de3b4abd3a",
+    "knowledge/wiki/d36101d0-f5bb-4d15-822e-b9cc54aa9cd1.md": "8dd5f0290ada70328a561b56e87137f7eb4275db52be30deb2c4317dc096470a",
+    "knowledge/wiki/index.md": "e74cb29eeb5681b8f3f9731c19bce7b703114db2cb4b21076a21d0026aa0d899"
+  }
+}

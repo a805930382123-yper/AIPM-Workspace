@@ -1,0 +1,85 @@
+{
+  "success": true,
+  "steps": [
+    "App edit prefilled; cancel makes zero HTTP mutations and zero writes",
+    "503 preserves edited input; retry updates parent immediately despite GET 503; reload and history match disk",
+    "Real 409 preserves input; explicit latest review permits retry; old draft cannot confirm or falsely mark matching text",
+    "Invalid deferred result can be explicitly dismissed; cancel keeps it; normal text processing is then available",
+    "PDF text clearly distinguished; stale page UI removed; original link returns unchanged PDF",
+    "Prior translation hidden; linked meeting edit unavailable; ordinary meeting editable; no AI, Wiki or external writes"
+  ],
+  "screenshots": [
+    "01-original-editor.png",
+    "02-original-history.png",
+    "03-conflict-preserves-text.png",
+    "04-pdf-original-remains-readable.png"
+  ],
+  "external": [],
+  "pageErrors": [],
+  "writes": [
+    [
+      "PATCH",
+      "/api/raw/f8632512-adee-4362-bf84-336522f2cb63/body"
+    ],
+    [
+      "PATCH",
+      "/api/raw/f8632512-adee-4362-bf84-336522f2cb63/body"
+    ],
+    [
+      "PATCH",
+      "/api/raw/f8632512-adee-4362-bf84-336522f2cb63/body"
+    ],
+    [
+      "PATCH",
+      "/api/raw/c48fcbca-c3f5-40b2-93f9-c66c4900eff3/body"
+    ],
+    [
+      "POST",
+      "/api/drafts/003e656c-bc9d-4b24-9c0e-cf7385b275e7/finish"
+    ],
+    [
+      "PATCH",
+      "/api/raw/52551c1d-f5bb-4490-a59b-51e6f4e9afd4/body"
+    ],
+    [
+      "PATCH",
+      "/api/raw/165af15c-dafa-4bf1-a1e7-e052afb3d006/body"
+    ],
+    [
+      "PATCH",
+      "/api/raw/001803ae-6307-4333-a5bb-4843d2f088dc/body"
+    ]
+  ],
+  "root": "<TEMP>\\rawedit02-mURe53",
+  "data": "<TEMP>\\rawedit02-mURe53\\data",
+  "config": "<TEMP>\\rawedit02-mURe53\\empty-provider.env",
+  "envDir": "<TEMP>\\rawedit02-mURe53\\empty-vite-env",
+  "fakeCalls": [
+    "knowledge_answer",
+    "knowledge_answer",
+    "raw_translation",
+    "pdf_page_understanding",
+    "pdf_page_understanding",
+    "pdf_page_understanding",
+    "pdf_cleanup",
+    "pdf_topic_index",
+    "pdf_topic_write"
+  ],
+  "fakeHttpCalls": [],
+  "fixtureExtractionCalls": 9,
+  "services": {
+    "apiOrigin": "http://127.0.0.1:53700",
+    "uiOrigin": "http://127.0.0.1:53831"
+  },
+  "emptyEnvBuild": true,
+  "providerConfigured": false,
+  "pdfOriginalSha256": "180ed0071c1e041b134f7e5bc4f57811aa65c9e846907c50200dcba95a6e2657",
+  "cleanup": {
+    "apiExited": true,
+    "fakeClosed": true,
+    "portReservationClosed": true,
+    "browserClosed": true,
+    "frontendClosed": true
+  },
+  "apiLog": "FMCG AI PM Workspace API: http://127.0.0.1:53700 (data: <TEMP>\\rawedit02-mURe53\\data)\n"
+}

@@ -1,0 +1,1911 @@
+{
+  "historical": {
+    "total": 734,
+    "pass": 652,
+    "fail": 82,
+    "byFile": {
+      "tests/app-navigation.test.tsx": 1,
+      "tests/kb02-classification-priority.test.ts": 1,
+      "tests/kb02-edge-extraction.test.ts": 1,
+      "tests/kb02-extraction-contract.test.ts": 1,
+      "tests/kb02-final-classification.test.ts": 1,
+      "tests/kb02-human-ui.test.tsx": 1,
+      "tests/kb02-planning-budget.test.ts": 2,
+      "tests/kb02-planning-fields.test.ts": 1,
+      "tests/kb02-semantic-review.test.ts": 3,
+      "tests/kb02-sr01-r1.test.ts": 3,
+      "tests/kb02-storage-ui.test.tsx": 2,
+      "tests/kb03-boundaries.test.ts": 4,
+      "tests/kb03-confirm.test.ts": 6,
+      "tests/kb03-planning-context.test.ts": 8,
+      "tests/kb03-quality-migration.test.ts": 5,
+      "tests/kb03-quality.test.ts": 6,
+      "tests/kb03-review-ui.test.tsx": 2,
+      "tests/kb03-structured-note.test.ts": 1,
+      "tests/llm-flow.test.ts": 9,
+      "tests/llm-http.test.ts": 7,
+      "tests/llm-repair.test.ts": 6,
+      "tests/llm-repair2.test.ts": 3,
+      "tests/llm-repair3.test.ts": 4,
+      "tests/ui-b04.test.tsx": 1,
+      "tests/ui.test.tsx": 3
+    }
+  },
+  "baseline": {
+    "total": 735,
+    "pass": 654,
+    "fail": 81,
+    "byFile": {
+      "tests/app-navigation.test.tsx": 1,
+      "tests/kb02-classification-priority.test.ts": 1,
+      "tests/kb02-edge-extraction.test.ts": 1,
+      "tests/kb02-extraction-contract.test.ts": 1,
+      "tests/kb02-final-classification.test.ts": 1,
+      "tests/kb02-human-ui.test.tsx": 1,
+      "tests/kb02-planning-budget.test.ts": 2,
+      "tests/kb02-planning-fields.test.ts": 1,
+      "tests/kb02-semantic-review.test.ts": 3,
+      "tests/kb02-sr01-r1.test.ts": 3,
+      "tests/kb02-storage-ui.test.tsx": 2,
+      "tests/kb03-boundaries.test.ts": 4,
+      "tests/kb03-confirm.test.ts": 6,
+      "tests/kb03-planning-context.test.ts": 8,
+      "tests/kb03-quality-migration.test.ts": 4,
+      "tests/kb03-quality.test.ts": 6,
+      "tests/kb03-review-ui.test.tsx": 2,
+      "tests/kb03-structured-note.test.ts": 1,
+      "tests/llm-flow.test.ts": 9,
+      "tests/llm-http.test.ts": 7,
+      "tests/llm-repair.test.ts": 6,
+      "tests/llm-repair2.test.ts": 3,
+      "tests/llm-repair3.test.ts": 4,
+      "tests/ui-b04.test.tsx": 1,
+      "tests/ui.test.tsx": 3
+    }
+  },
+  "failedFileCountDelta": {
+    "tests/kb03-quality-migration.test.ts": -1
+  },
+  "historyCaveat": "历史逐条 TEMP 原件位于前一机器路径，本机不可用；只可逐文件对照，不推断历史新增测试名。历史 KB03 quality migration 多一项，报告归因为旧R8 prepare预期，本轮未复现。",
+  "rootCauseGroups": {
+    "rule19": [
+      "陈旧规则版本断言",
+      "现行规划协议固定修订19；原历史检查点仍原版本且字节和调用数受保护。",
+      [
+        "services/llm/rules.ts"
+      ]
+    ],
+    "standardBudget": [
+      "陈旧调用计数／夹具",
+      "标准现行提取为逐块提取、一次规划、一次维护；失败、恢复与累计上限仍逐阶段检查。",
+      [
+        "services/llm/jobs.ts",
+        "services/llm/knowledge-maintenance.ts",
+        "tests/support/compat01-maintenance-reply.ts"
+      ]
+    ],
+    "semanticGate": [
+      "陈旧人工审核预期／历史夹具",
+      "当前维护草稿在无接受项时拒绝；历史非maintenance草稿走真实逐页审核并在零模型调用下确认。",
+      [
+        "services/wiki/maintenance.ts",
+        "services/wiki/drafts.ts"
+      ]
+    ],
+    "deepBudget": [
+      "陈旧调用计数／离线夹具",
+      "深度当前N+5；真实取消/重试检查点及后续维护精确计数。",
+      [
+        "services/llm/knowledge-deep.ts",
+        "services/llm/jobs.ts",
+        "tests/support/compat01-maintenance-reply.ts"
+      ]
+    ],
+    "distinctSourceNotes": [
+      "产品数据缺陷／旧计数先行遮蔽",
+      "不同来源说明原句共享粗定位区间时必须各自保留；相同原句同范围同类别仍合并。",
+      [
+        "services/llm/knowledge-deep.ts",
+        "tests/lw01-deep.test.ts"
+      ]
+    ],
+    "completedPayload": [
+      "产品兼容缺陷",
+      "同Raw已完成可比事务，同payload跨key复用；不同payload按key判409；无可比事务保护、未知页、标准空选及maintenance续批保留。",
+      [
+        "services/wiki/commits.ts",
+        "tests/llm-http.test.ts"
+      ]
+    ],
+    "compactWire": [
+      "陈旧实际适配器fake／断言",
+      "实际adapter在本地替身验证严格schema、当前wikiContext与维护阶段超时；历史17/18形状单独构造。",
+      [
+        "services/llm/knowledge-extraction.ts",
+        "tests/support/kb03-quality-runner.mjs"
+      ]
+    ],
+    "offlineLedger": [
+      "陈旧离线fake／阶段预算",
+      "离线预留覆盖维护第六阶段，先持久预留后发送、零配置读取、真实历史30/20/15政策不变。",
+      [
+        "tests/support/kb03-quality-runner.mjs",
+        "tests/acceptance/KB03-R5-20261030-real.mjs"
+      ]
+    ],
+    "maintenanceDigest": [
+      "历史fixture与摘要合同失配",
+      "历史非维护草稿保留旧摘要和深度门禁；当前维护摘要绑定候选、编辑清批准。",
+      [
+        "services/wiki/drafts.ts",
+        "services/wiki/maintenance.ts"
+      ]
+    ],
+    "httpFixture": [
+      "陈旧HTTP fake／审核动作",
+      "真实OpenAI兼容adapter发本地fake，识别实际维护阶段；正式写入前显式接受和当前摘要批准，保留选集、错误、取消、恢复、证据、权限及不变性原断言。",
+      [
+        "tests/support/fake-llm.ts",
+        "tests/support/compat01-maintenance-reply.ts",
+        "tests/support/compat01-draft-review.ts"
+      ]
+    ],
+    "historicalB04": [
+      "历史fixture形状失配",
+      "旧Source逐字节复用及人工合并断言使用真实持久化非maintenance形状与旧逐页审核；现行HTTP仍使用维护批准并检查只追加已确认链接。",
+      [
+        "tests/support/compat01-draft-review.ts",
+        "tests/llm-http.test.ts"
+      ]
+    ],
+    "currentUi": [
+      "陈旧界面交互断言",
+      "可见首页入口、Raw整理入口及实际维护审核动作以当前App为准。",
+      [
+        "docs/reports/COMPAT01-20261105-ui-builder.md"
+      ]
+    ],
+    "ssr": [
+      "产品SSR兼容缺陷",
+      "渲染期间不依赖浏览器全局；挂载进入和限制焦点，关闭后恢复。",
+      [
+        "app/components/useDialogFocus.ts",
+        "docs/reports/COMPAT01-20261105-ui-builder.md"
+      ]
+    ]
+  },
+  "failures": [
+    {
+      "id": "COMPAT01-01",
+      "file": "tests/app-navigation.test.tsx",
+      "originalTest": "App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw退出工作流且Raw选择保留",
+      "reporterLocation": "1:6598",
+      "baselineLogLine": 768,
+      "signature": "AssertionError [ERR_ASSERTION]: 等待超时：首页待审核工作流",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at waitFor (<REPO>\\tests\\app-navigation.test.tsx:74:10)",
+      "rootCauses": [
+        "currentUi"
+      ],
+      "finalTests": [
+        "App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw退出工作流且Raw选择保留"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        13
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-02",
+      "file": "tests/kb02-classification-priority.test.ts",
+      "originalTest": "KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes",
+      "reporterLocation": "1:11014",
+      "baselineLogLine": 783,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'kb02-atoms-planning-19'\n  - 'kb02-atoms-planning-18'\n                          ^",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-classification-priority.test.ts:126:12)",
+      "rootCauses": [
+        "rule19"
+      ],
+      "finalTests": [
+        "KB02 Q02 original revision4 six-chunk checkpoint is incompatible with zero calls and unchanged bytes"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        59
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-03",
+      "file": "tests/kb02-edge-extraction.test.ts",
+      "originalTest": "EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks",
+      "reporterLocation": "1:7933",
+      "baselineLogLine": 803,
+      "signature": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /kb02-atoms-planning-18-/u. Input:\n  \n  'b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-edge-extraction.test.ts:67:482)",
+      "rootCauses": [
+        "rule19"
+      ],
+      "finalTests": [
+        "EDGE genuine revision8 short checkpoint is HTTP409 without writes/calls; explicit restart uses no old chunks"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        76
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-04",
+      "file": "tests/kb02-extraction-contract.test.ts",
+      "originalTest": "KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact",
+      "reporterLocation": "1:9679",
+      "baselineLogLine": 820,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'kb02-atoms-planning-19'\n  - 'kb02-atoms-planning-18'\n                          ^",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-extraction-contract.test.ts:132:12)",
+      "rootCauses": [
+        "rule19"
+      ],
+      "finalTests": [
+        "KB02 Q01 previous prompt fingerprint is incompatible and unfinished checkpoint bytes remain intact"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        85
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-05",
+      "file": "tests/kb02-final-classification.test.ts",
+      "originalTest": "FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero calls/three-file writes; restart uses zero old chunks",
+      "reporterLocation": "1:8519",
+      "baselineLogLine": 840,
+      "signature": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /kb02-atoms-planning-18-/u. Input:\n  \n  'b04-b04-1-locator-v2-kb02-atoms-planning-19-7dfb242969dd-4991d5bf'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-final-classification.test.ts:100:129)",
+      "rootCauses": [
+        "rule19"
+      ],
+      "finalTests": [
+        "FINAL-01 genuine revision5 fourteen-chunk checkpoint returns HTTP409 zero calls/three-file writes; restart uses zero old chunks"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        104
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-06",
+      "file": "tests/kb02-human-ui.test.tsx",
+      "originalTest": "HUMAN React + real HTTP saves selection, resolves units, reviews every page, invalidates edits, refreshes then explicitly commits",
+      "reporterLocation": "1:2691",
+      "baselineLogLine": 857,
+      "signature": "AssertionError [ERR_ASSERTION]: Human UI timeout: two page review 审核知识变更虚构预算资料 · 标准整理 · 草稿 v1返回 Raw确认写入 Wiki（0）逐项接受、核对并确认后，才会写入正式知识。暂缓项保留在草稿；编辑会取消该项确认，需重新审核。来源笔记只记录本份资料，主题页积累跨来源知识。本次变更清单操作主题待核处理新建目标门店无新增问题暂缓新建铺货率无新增问题暂缓原文、来源笔记与事实目录打开 Raw目标100家，在售20家。铺货率20%，负责人未知。本份资料来源笔记## 来源信息\n  \n  - 来源类型：行业报告（report）\n  - 来源名称：隔离测试\n  - 作者：未提供（作者）\n  - 登记日期：未提供（登记日期）\n  - 登记链接：未提供（登记链接）\n  - 以上作者、日期和链接为登记线索，未经外部核验，不代表已核实单一作者全文。\n  - Raw：虚构预算资料（<redacted-historical-id>）\n  - 来源等级：D\n  \n  ## 摘要\n  \n  来源事实：\n  目标100家，在售20家。\n  铺货率20%，负责人未知。\n  \n  ## Key Takeaways\n  \n  - 暂无\n  \n  ## 涉及概念\n  \n  - 暂无\n  \n  ## 涉及实体\n  \n  - 暂无\n  \n  ## 涉及业务流程",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at tick (<REPO>\\tests\\kb02-human-ui.test.tsx:15:213)",
+      "rootCauses": [
+        "currentUi"
+      ],
+      "finalTests": [
+        "HUMAN React + real HTTP saves acceptance, resolves units, reviews each change, invalidates edits, refreshes then explicitly commits"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        126
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-07",
+      "file": "tests/kb02-planning-budget.test.ts",
+      "originalTest": "KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart",
+      "reporterLocation": "1:5048",
+      "baselineLogLine": 904,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-planning-budget.test.ts:96:12)",
+      "rootCauses": [
+        "standardBudget"
+      ],
+      "finalTests": [
+        "KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        142
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-08",
+      "file": "tests/kb02-planning-budget.test.ts",
+      "originalTest": "KB02 revision13 last single planning slot stays in the same job with successful chunks and cumulative attempts",
+      "reporterLocation": "1:6923",
+      "baselineLogLine": 923,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-planning-budget.test.ts:120:12)",
+      "rootCauses": [
+        "standardBudget"
+      ],
+      "finalTests": [
+        "KB02 last 1 slots preserve successful chunks and cumulative attempts on the same job",
+        "KB02 last 2 slots preserve successful chunks and cumulative attempts on the same job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        144,
+        143
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-09",
+      "file": "tests/kb02-planning-fields.test.ts",
+      "originalTest": "KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs",
+      "reporterLocation": "1:3294",
+      "baselineLogLine": 942,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'kb02-atoms-planning-19'\n  - 'kb02-atoms-planning-18'\n                          ^",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-planning-fields.test.ts:46:12)",
+      "rootCauses": [
+        "rule19"
+      ],
+      "finalTests": [
+        "KB02 planning prompt defines independent fields from current schema/FMCG data and uses valid illustrative pairs"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        160
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-10",
+      "file": "tests/kb02-semantic-review.test.ts",
+      "originalTest": "SEMANTIC schema fingerprint changes; production rejects old revision and undercount before calls or writes",
+      "reporterLocation": "1:8027",
+      "baselineLogLine": 962,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'kb02-atoms-planning-19'\n  - 'kb02-atoms-planning-18'\n                          ^",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-semantic-review.test.ts:95:109)",
+      "rootCauses": [
+        "rule19"
+      ],
+      "finalTests": [
+        "SEMANTIC schema fingerprint changes; production rejects old revision and undercount before calls or writes"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        192
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-11",
+      "file": "tests/kb02-semantic-review.test.ts",
+      "originalTest": "SEMANTIC current production uses N+1 calls, remains unreviewed across restart and cannot confirm",
+      "reporterLocation": "1:13398",
+      "baselineLogLine": 982,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  3 !== 2",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-semantic-review.test.ts:145:69)",
+      "rootCauses": [
+        "standardBudget",
+        "semanticGate"
+      ],
+      "finalTests": [
+        "SEMANTIC current production uses N+2 calls, remains unreviewed across restart and cannot confirm"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        198
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-12",
+      "file": "tests/kb02-semantic-review.test.ts",
+      "originalTest": "SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and explicitly confirms with zero outbound calls",
+      "reporterLocation": "1:16440",
+      "baselineLogLine": 999,
+      "signature": "Error: 请至少接受一项知识变更。",
+      "errorCode": "NO_SELECTION",
+      "stackTestSite": null,
+      "rootCauses": [
+        "semanticGate"
+      ],
+      "finalTests": [
+        "SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and explicitly confirms with zero outbound calls"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        200
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-13",
+      "file": "tests/kb02-sr01-r1.test.ts",
+      "originalTest": "F-SR01-01 old-bound restart recovers storage only, reboot=false",
+      "reporterLocation": "1:1251",
+      "baselineLogLine": 1010,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  5 !== 4",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-sr01-r1.test.ts:48:61)",
+      "rootCauses": [
+        "standardBudget"
+      ],
+      "finalTests": [
+        "F-SR01-01 old-bound restart recovers storage only, reboot=false"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        220
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-14",
+      "file": "tests/kb02-sr01-r1.test.ts",
+      "originalTest": "F-SR01-01 old-bound restart recovers storage only, reboot=true",
+      "reporterLocation": "1:1251",
+      "baselineLogLine": 1027,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  5 !== 4",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-sr01-r1.test.ts:48:61)",
+      "rootCauses": [
+        "standardBudget"
+      ],
+      "finalTests": [
+        "F-SR01-01 old-bound restart recovers storage only, reboot=true"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        221
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-15",
+      "file": "tests/kb02-sr01-r1.test.ts",
+      "originalTest": "F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger",
+      "reporterLocation": "1:4316",
+      "baselineLogLine": 1044,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  4 !== 3",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-sr01-r1.test.ts:96:96)",
+      "rootCauses": [
+        "standardBudget"
+      ],
+      "finalTests": [
+        "F-SR01-02 missing checkpoint fails closed on reboot and ordinary continue; restoring original resumes same ledger"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        225
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-16",
+      "file": "tests/kb02-storage-ui.test.tsx",
+      "originalTest": "SR01 start failure reload is actionable and late storage response cannot change a different Raw selection",
+      "reporterLocation": "1:6449",
+      "baselineLogLine": 1061,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + undefined\n  - true",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-storage-ui.test.tsx:90:84)",
+      "rootCauses": [
+        "currentUi"
+      ],
+      "finalTests": [
+        "SR01 start failure reload is actionable and late storage response cannot change a different Raw selection"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        258
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-17",
+      "file": "tests/kb02-storage-ui.test.tsx",
+      "originalTest": "SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review",
+      "reporterLocation": "1:8742",
+      "baselineLogLine": 1080,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  4 !== 3",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb02-storage-ui.test.tsx:119:75)",
+      "rootCauses": [
+        "standardBudget",
+        "currentUi"
+      ],
+      "finalTests": [
+        "SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        259
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-18",
+      "file": "tests/kb03-boundaries.test.ts",
+      "originalTest": "R9 fake wire and visible note preserve source boundaries and ambiguous original 1 even when model omits them",
+      "reporterLocation": "1:2415",
+      "baselineLogLine": 1097,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-boundaries.test.ts:34:153)",
+      "rootCauses": [
+        "deepBudget",
+        "distinctSourceNotes"
+      ],
+      "finalTests": [
+        "R9 fake wire and visible note preserve source boundaries and ambiguous original 1 even when model omits them"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        261
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-19",
+      "file": "tests/kb03-boundaries.test.ts",
+      "originalTest": "R9 fake wire and visible note preserve source boundaries and ambiguous original 2 even when model omits them",
+      "reporterLocation": "1:2415",
+      "baselineLogLine": 1114,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-boundaries.test.ts:34:153)",
+      "rootCauses": [
+        "deepBudget",
+        "distinctSourceNotes"
+      ],
+      "finalTests": [
+        "R9 fake wire and visible note preserve source boundaries and ambiguous original 2 even when model omits them"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        262
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-20",
+      "file": "tests/kb03-boundaries.test.ts",
+      "originalTest": "R9 excluded ambiguous fact still has visible exact pending-verification text without forging an included fact reference",
+      "reporterLocation": "1:5454",
+      "baselineLogLine": 1131,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-boundaries.test.ts:57:318)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R9 excluded ambiguous fact still has visible exact pending-verification text without forging an included fact reference"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        263
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-21",
+      "file": "tests/kb03-boundaries.test.ts",
+      "originalTest": "R9 failed quality resumes the same persisted boundary note in a real new process without duplicate additions",
+      "reporterLocation": "1:7351",
+      "baselineLogLine": 1148,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  2 !== 1",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-boundaries.test.ts:74:262)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R9 failed quality resumes the same persisted boundary note in a real new process without duplicate additions"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        265
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-22",
+      "file": "tests/kb03-confirm.test.ts",
+      "originalTest": "KB03 confirm HTTP Source-only still requires all pages, explicit note review, warning/report acknowledgment and current digest",
+      "reporterLocation": "1:989",
+      "baselineLogLine": 1165,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-confirm.test.ts:29:155)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "KB03 confirm HTTP Source-only still requires all pages, explicit note review, warning/report acknowledgment and current digest"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        270
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-23",
+      "file": "tests/kb03-confirm.test.ts",
+      "originalTest": "KB03 confirm selected subset, manual text/role/evidence/table special characters retained; all edits invalidate both approvals",
+      "reporterLocation": "1:3057",
+      "baselineLogLine": 1182,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n  + actual - expected\n  \n    Comparison {\n  +   code: 'DRAFT_ALREADY_COMMITTED'\n  -   code: 'CONFIRM_PAYLOAD_CHANGED'\n    }",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at async TestContext.<anonymous> (<REPO>\\tests\\kb03-confirm.test.ts:38:79)",
+      "rootCauses": [
+        "completedPayload"
+      ],
+      "finalTests": [
+        "KB03 confirm selected subset, manual text/role/evidence/table special characters retained; all edits invalidate both approvals"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        271
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-24",
+      "file": "tests/kb03-confirm.test.ts",
+      "originalTest": "KB03 real zero write failure resumes frozen transaction and logs exactly once",
+      "reporterLocation": "1:8154",
+      "baselineLogLine": 1204,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-confirm.test.ts:63:71)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "KB03 real zero write failure resumes frozen transaction and logs exactly once"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        274
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-25",
+      "file": "tests/kb03-confirm.test.ts",
+      "originalTest": "KB03 real pages write failure resumes frozen transaction and logs exactly once",
+      "reporterLocation": "1:8154",
+      "baselineLogLine": 1221,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-confirm.test.ts:63:71)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "KB03 real pages write failure resumes frozen transaction and logs exactly once"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        275
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-26",
+      "file": "tests/kb03-confirm.test.ts",
+      "originalTest": "KB03 real index write failure resumes frozen transaction and logs exactly once",
+      "reporterLocation": "1:8154",
+      "baselineLogLine": 1238,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-confirm.test.ts:63:71)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "KB03 real index write failure resumes frozen transaction and logs exactly once"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        276
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-27",
+      "file": "tests/kb03-confirm.test.ts",
+      "originalTest": "KB03 real log write failure resumes frozen transaction and logs exactly once",
+      "reporterLocation": "1:8154",
+      "baselineLogLine": 1255,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-confirm.test.ts:63:71)",
+      "rootCauses": [
+        "deepBudget"
+      ],
+      "finalTests": [
+        "KB03 real log write failure resumes frozen transaction and logs exactly once"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        277
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-28",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R6 actual adapter standard sends compact wire with unchanged source/schema/timeouts and N+1/N+4",
+      "reporterLocation": "1:6953",
+      "baselineLogLine": 1272,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:84:38)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R6 actual adapter standard sends compact wire with unchanged source/schema/timeouts and N+2/N+5"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        320
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-29",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R6 actual adapter deep sends compact wire with unchanged source/schema/timeouts and N+1/N+4",
+      "reporterLocation": "1:6953",
+      "baselineLogLine": 1291,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:84:38)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R6 actual adapter deep sends compact wire with unchanged source/schema/timeouts and N+2/N+5"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        321
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-30",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R6 explicit coverage retry retains source/policy/records/passages and exact diagnostic on the actual adapter path",
+      "reporterLocation": "1:10562",
+      "baselineLogLine": 1310,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:125:100)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R6 explicit coverage retry retains source/policy/records/passages and exact diagnostic on the actual adapter path"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        326
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-31",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R6 new-version failed planning explicitly resumes same job and reuses chunks; revision17 rejects with 409/zero writes",
+      "reporterLocation": "1:11553",
+      "baselineLogLine": 1329,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:134:50)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R6 new-version failed planning explicitly resumes same job and reuses chunks; revision17 rejects with 409/zero writes"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        327
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-32",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R9 completed revision17 standard draft remains readable, HUMAN reviewed and explicitly confirmable",
+      "reporterLocation": "1:12929",
+      "baselineLogLine": 1348,
+      "signature": "Error: ENOENT: no such file or directory, open '<TEMP>\\kb03-r6-vxzh3C\\drafts\\undefined.json'",
+      "errorCode": "ENOENT",
+      "stackTestSite": "at async TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:147:80)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R9 completed revision17 standard draft remains readable, HUMAN reviewed and explicitly confirmable"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        328
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-33",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R9 completed revision17 deep draft remains readable, HUMAN reviewed and explicitly confirmable",
+      "reporterLocation": "1:12929",
+      "baselineLogLine": 1362,
+      "signature": "Error: ENOENT: no such file or directory, open '<TEMP>\\kb03-r6-vlDyGL\\drafts\\undefined.json'",
+      "errorCode": "ENOENT",
+      "stackTestSite": "at async TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:147:80)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R9 completed revision17 deep draft remains readable, HUMAN reviewed and explicitly confirmable"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        329
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-34",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R9 completed revision18 standard draft remains readable, HUMAN reviewed and explicitly confirmable",
+      "reporterLocation": "1:12929",
+      "baselineLogLine": 1376,
+      "signature": "Error: ENOENT: no such file or directory, open '<TEMP>\\kb03-r6-XmRHYP\\drafts\\undefined.json'",
+      "errorCode": "ENOENT",
+      "stackTestSite": "at async TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:147:80)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R9 completed revision18 standard draft remains readable, HUMAN reviewed and explicitly confirmable"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        330
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-35",
+      "file": "tests/kb03-planning-context.test.ts",
+      "originalTest": "R9 completed revision18 deep draft remains readable, HUMAN reviewed and explicitly confirmable",
+      "reporterLocation": "1:12929",
+      "baselineLogLine": 1390,
+      "signature": "Error: ENOENT: no such file or directory, open '<TEMP>\\kb03-r6-m1Ebrg\\drafts\\undefined.json'",
+      "errorCode": "ENOENT",
+      "stackTestSite": "at async TestContext.<anonymous> (<REPO>\\tests\\kb03-planning-context.test.ts:147:80)",
+      "rootCauses": [
+        "compactWire",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R9 completed revision18 deep draft remains readable, HUMAN reviewed and explicitly confirmable"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        331
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-36",
+      "file": "tests/kb03-quality-migration.test.ts",
+      "originalTest": "R10 original history4/ten receipts preserved; actual new fake5+5 = total24/fixed14/counter10, restart zero",
+      "reporterLocation": "1:2524",
+      "baselineLogLine": 1404,
+      "signature": "Error: Fake N+4 failed: {\"sample\":\"fixed\",\"status\":\"failed\",\"callCount\":6,\"wires\":[{\"stage\":\"extracting\",\"strict\":true,\"nullableFields\":false},{\"stage\":\"planning\",\"strict\":true,\"nullableFields\":true},{\"stage\":\"outline\",\"strict\":false,\"nullableFields\":false},{\"stage\":\"writing\",\"strict\":false,\"nullableFields\":false},{\"stage\":\"quality\",\"strict\":false,\"nullableFields\":false}]}",
+      "errorCode": null,
+      "stackTestSite": "at fake (<REPO>\\tests\\acceptance\\KB03-R5-20261030-real.mjs:139:81)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R10 original history4/ten receipts preserved; actual new fake6+6 = total26/fixed15/counter11, restart zero"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        332
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-37",
+      "file": "tests/kb03-quality-migration.test.ts",
+      "originalTest": "R7 new root/session cannot reset a v2 sample or its failed same-job cumulative calls",
+      "reporterLocation": "1:7614",
+      "baselineLogLine": 1412,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  7 !== 6",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality-migration.test.ts:83:229)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R7 new root/session cannot reset a v2 sample or its failed same-job cumulative calls"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        336
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-38",
+      "file": "tests/kb03-quality-migration.test.ts",
+      "originalTest": "R10 independent quality stop prevents counter even after a completed five-call fixed job",
+      "reporterLocation": "1:16321",
+      "baselineLogLine": 1429,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality-migration.test.ts:134:113)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R10 independent quality stop prevents counter even after a completed six-call fixed job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        341
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-39",
+      "file": "tests/kb03-quality-migration.test.ts",
+      "originalTest": "R8 v3 summary tamper/loss, another ledger/session/root and a fresh job reject without adapter calls; explicit same-job continue works",
+      "reporterLocation": "1:19216",
+      "baselineLogLine": 1448,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality-migration.test.ts:173:89)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R8 v3 summary tamper/loss, another ledger/session/root and a fresh job reject without adapter calls; explicit same-job continue works"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        344
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-40",
+      "file": "tests/kb03-quality.test.ts",
+      "originalTest": "R5 actual adapter strict wire and optional-null decoding completes N+4; completed replay sends zero",
+      "reporterLocation": "1:614",
+      "baselineLogLine": 1467,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality.test.ts:17:10)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R5 actual adapter strict wire and optional-null decoding completes N+5; completed replay sends zero"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        345
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-41",
+      "file": "tests/kb03-quality.test.ts",
+      "originalTest": "R5 extracting invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job",
+      "reporterLocation": "1:1508",
+      "baselineLogLine": 1486,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality.test.ts:35:10)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R5 extracting invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        346
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-42",
+      "file": "tests/kb03-quality.test.ts",
+      "originalTest": "R5 planning invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job",
+      "reporterLocation": "1:1508",
+      "baselineLogLine": 1505,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality.test.ts:35:10)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R5 planning invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        347
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-43",
+      "file": "tests/kb03-quality.test.ts",
+      "originalTest": "R5 outline invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job",
+      "reporterLocation": "1:1508",
+      "baselineLogLine": 1524,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality.test.ts:35:10)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R5 outline invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        348
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-44",
+      "file": "tests/kb03-quality.test.ts",
+      "originalTest": "R5 writing invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job",
+      "reporterLocation": "1:1508",
+      "baselineLogLine": 1543,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality.test.ts:35:10)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R5 writing invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        349
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-45",
+      "file": "tests/kb03-quality.test.ts",
+      "originalTest": "R5 quality invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job",
+      "reporterLocation": "1:1508",
+      "baselineLogLine": 1562,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-quality.test.ts:35:10)",
+      "rootCauses": [
+        "offlineLedger",
+        "deepBudget"
+      ],
+      "finalTests": [
+        "R5 quality invalid JSON charged once; no automatic retry; explicit continue keeps ledger and job"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        350
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-46",
+      "file": "tests/kb03-review-ui.test.tsx",
+      "originalTest": "KB03 React real HTTP table editing/delete supplement/questions survives refresh, report stale and actual second offset highlighted",
+      "reporterLocation": "1:2391",
+      "baselineLogLine": 1581,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  6 !== 5",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-review-ui.test.tsx:27:232)",
+      "rootCauses": [
+        "deepBudget",
+        "currentUi"
+      ],
+      "finalTests": [
+        "KB03 React real HTTP table editing/delete supplement/questions survives refresh, report stale and actual second offset highlighted"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        356
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-47",
+      "file": "tests/kb03-review-ui.test.tsx",
+      "originalTest": "KB03 Raw React defaults/boundaries and explicit standard selection reset per Raw",
+      "reporterLocation": "1:5631",
+      "baselineLogLine": 1598,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert(button)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at click (<REPO>\\tests\\kb03-review-ui.test.tsx:16:58)",
+      "rootCauses": [
+        "currentUi"
+      ],
+      "finalTests": [
+        "KB03 Raw React defaults/boundaries and explicit standard selection reset per Raw"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        357
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-48",
+      "file": "tests/kb03-structured-note.test.ts",
+      "originalTest": "KB03 old draft compatible; new field strict read/preserve, digest binding and actual HTTP/service formal gates",
+      "reporterLocation": "1:6298",
+      "baselineLogLine": 1616,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'd2f2481e360cbb8454487e2d85e8109159de57c7be446320241caaf230fda59f'\n  - '779dedf0977311a0e85c7a7723c020963a7bfca20847f7030da94b04e851efe8'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\kb03-structured-note.test.ts:94:12)",
+      "rootCauses": [
+        "maintenanceDigest"
+      ],
+      "finalTests": [
+        "KB03 old draft compatible; new field strict read/preserve, digest binding and actual HTTP/service formal gates"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        388
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-49",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log",
+      "reporterLocation": "1:5281",
+      "baselineLogLine": 1635,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:104:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-02/03/04 成功链路：草稿零正式写入，确认只写选中项并生成 Source+Index+Log"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        414
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-50",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-04 复用既有 Source：只新增选中页，既有 Source 文件不变",
+      "reporterLocation": "5:3749",
+      "baselineLogLine": 1654,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:181:12)",
+      "rootCauses": [
+        "httpFixture",
+        "historicalB04"
+      ],
+      "finalTests": [
+        "E04-04 旧草稿复用既有 Source：只新增选中页，既有 Source 文件不变"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        415
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-51",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份",
+      "reporterLocation": "7:1411",
+      "baselineLogLine": 1668,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(draft)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:208:12)",
+      "rootCauses": [
+        "httpFixture",
+        "completedPayload"
+      ],
+      "finalTests": [
+        "E04-05 幂等：同 payload 任意 key 复用同一操作，payload 变化 409，并发确认只产生一份"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        416
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-52",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面",
+      "reporterLocation": "11:1357",
+      "baselineLogLine": 1685,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(draft)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:286:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-07 Index/Log 写入失败：如实报告部分提交，重启补齐同一操作且不重复页面"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        417
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-53",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值",
+      "reporterLocation": "13:2599",
+      "baselineLogLine": 1702,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:359:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-08 取消与放弃：晚到结果不落草稿，状态回到稳定值"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        418
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-54",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败",
+      "reporterLocation": "13:12818",
+      "baselineLogLine": 1716,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:483:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-09 十万字长文：分块全覆盖、末尾证据、汇总不丢块、超预算明确失败"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        422
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-55",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核",
+      "reporterLocation": "14:589",
+      "baselineLogLine": 1735,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(draft)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:568:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-08 重启对账：processing 中断转为可重试失败，完成态恢复为待审核"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        424
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-56",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突",
+      "reporterLocation": "14:2340",
+      "baselineLogLine": 1752,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(draft)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:590:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-04 审核编辑：部分选择、删除、合并、改名与证据重定位全部落草稿且可版本冲突"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        425
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-57",
+      "file": "tests/llm-flow.test.ts",
+      "originalTest": "E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑",
+      "reporterLocation": "16:4256",
+      "baselineLogLine": 1769,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(draft)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-flow.test.ts:678:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-04 标题冲突：既有页面占用标题时整体 409，零正式变化且草稿仍可编辑"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        426
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-58",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变",
+      "reporterLocation": "2:5046",
+      "baselineLogLine": 1786,
+      "signature": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"<redacted-historical-id>\",\"mode\":\"standard\",\"rawId\":\"<redacted-historical-id>\",\"status\":\"failed\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":1,\"chunksDone\":1,\"pagesFound\":2},\"draftId\":null,\"error\":{\"code\":\"LLM_PROVIDER_ERROR\",\"message\":\"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\",\"at\":\"2026-11-05T16:03:15.942Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"fake-model\"},\"callCount\":3,\"startedAt\":\"2026-11-05T16:03:15.826Z\",\"finishedAt\":\"2026-11-05T16:03:15.962Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-2\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":1,\"totalChunks\":1,\"resumable\":true,\"attempts\":3,\"reusedChunks\":0,\"reason\":\"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\"},\"execution\":\"settled\",\"recovery\":null}\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:150:12)",
+      "rootCauses": [
+        "httpFixture",
+        "completedPayload"
+      ],
+      "finalTests": [
+        "E04-02/03/04/05/10 HTTP 闭环：配置、提取、审核、确认、幂等、统计与 Raw 不变"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        427
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-59",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审核草稿时禁止删除 Raw",
+      "reporterLocation": "2:17817",
+      "baselineLogLine": 1806,
+      "signature": "AssertionError [ERR_ASSERTION]: {\"id\":\"<redacted-historical-id>\",\"title\":\"取消样本\",\"assetId\":null,\"assetRetained\":false,\"warnings\":[]}\n  \n  200 !== 409",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:364:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-08 HTTP 取消与删除门禁：晚到结果不落草稿，有待审核草稿时禁止删除 Raw"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        430
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-60",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串行且不留孤儿草稿",
+      "reporterLocation": "2:19978",
+      "baselineLogLine": 1824,
+      "signature": "AssertionError [ERR_ASSERTION]: 并发提取只能产生一份草稿\n  \n  0 !== 1",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:394:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串行且不留孤儿草稿"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        431
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-61",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据",
+      "reporterLocation": "2:22571",
+      "baselineLogLine": 1842,
+      "signature": "TypeError: Cannot read properties of undefined (reading 'every')",
+      "errorCode": null,
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:447:35)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-05/06 HTTP 复用 Source 的链接与元数据：新页链接既有标题，正式 Source 保留 Raw 元数据"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        432
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-62",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集",
+      "reporterLocation": "2:27004",
+      "baselineLogLine": 1850,
+      "signature": "TypeError: Cannot read properties of undefined (reading 'every')",
+      "errorCode": null,
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:510:30)",
+      "rootCauses": [
+        "httpFixture",
+        "completedPayload"
+      ],
+      "finalTests": [
+        "F04-04/05 HTTP 残留：未知 ID 的重试 400；Source 派生段落按本次确认选集"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        433
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-63",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验",
+      "reporterLocation": "2:31097",
+      "baselineLogLine": 1858,
+      "signature": "AssertionError [ERR_ASSERTION]: {\"jobId\":\"<redacted-historical-id>\",\"mode\":\"standard\",\"rawId\":\"<redacted-historical-id>\",\"status\":\"failed\",\"stage\":\"planning\",\"progress\":{\"chunksTotal\":4,\"chunksDone\":4,\"pagesFound\":4},\"draftId\":null,\"error\":{\"code\":\"LLM_PROVIDER_ERROR\",\"message\":\"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\",\"at\":\"2026-11-05T16:03:26.895Z\",\"retryable\":true},\"provider\":{\"name\":\"openai-compatible\",\"model\":\"fake-model\"},\"callCount\":6,\"startedAt\":\"2026-11-05T16:03:26.679Z\",\"finishedAt\":\"2026-11-05T16:03:26.924Z\",\"cancelRequested\":false,\"pipelineVersion\":\"kb02-2\",\"checkpoint\":{\"stage\":\"planning\",\"validatedChunks\":4,\"totalChunks\":4,\"resumable\":true,\"attempts\":6,\"reusedChunks\":0,\"reason\":\"Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\"},\"execution\":\"settled\",\"recovery\":null}\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:579:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-11 残留 HTTP：同标题同证据ID四块长文，真实汇总请求全块引用完整且可核验"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        434
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-64",
+      "file": "tests/llm-http.test.ts",
+      "originalTest": "E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志",
+      "reporterLocation": "2:35619",
+      "baselineLogLine": 1878,
+      "signature": "TypeError: Cannot read properties of undefined (reading 'map')",
+      "errorCode": null,
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-http.test.ts:628:66)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "E04-07 HTTP 部分提交与重启恢复：同 operationId、同名页面、无重复日志"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        435
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-65",
+      "file": "tests/llm-repair.test.ts",
+      "originalTest": "F04-07 合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断",
+      "reporterLocation": "1:8785",
+      "baselineLogLine": 1885,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair.test.ts:80:12)",
+      "rootCauses": [
+        "httpFixture",
+        "historicalB04"
+      ],
+      "finalTests": [
+        "F04-07 旧草稿合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        438
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-66",
+      "file": "tests/llm-repair.test.ts",
+      "originalTest": "F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿",
+      "reporterLocation": "1:15114",
+      "baselineLogLine": 1905,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-repair.test.ts:246:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        439
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-67",
+      "file": "tests/llm-repair.test.ts",
+      "originalTest": "F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全",
+      "reporterLocation": "1:18397",
+      "baselineLogLine": 1924,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair.test.ts:80:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        440
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-68",
+      "file": "tests/llm-repair.test.ts",
+      "originalTest": "F04-05 复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本",
+      "reporterLocation": "1:24627",
+      "baselineLogLine": 1944,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair.test.ts:80:12)",
+      "rootCauses": [
+        "httpFixture",
+        "historicalB04"
+      ],
+      "finalTests": [
+        "F04-05 旧草稿复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        441
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-69",
+      "file": "tests/llm-repair.test.ts",
+      "originalTest": "F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现",
+      "reporterLocation": "1:27552",
+      "baselineLogLine": 1964,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair.test.ts:80:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        442
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-70",
+      "file": "tests/llm-repair.test.ts",
+      "originalTest": "F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供",
+      "reporterLocation": "1:30479",
+      "baselineLogLine": 1984,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair.test.ts:80:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        443
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-71",
+      "file": "tests/llm-repair2.test.ts",
+      "originalTest": "F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功",
+      "reporterLocation": "1:4980",
+      "baselineLogLine": 2004,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair2.test.ts:74:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-04 残留：带未知选择 ID 的重试不会被静默缩减成成功"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        444
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-72",
+      "file": "tests/llm-repair2.test.ts",
+      "originalTest": "F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准",
+      "reporterLocation": "1:7309",
+      "baselineLogLine": 2024,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair2.test.ts:74:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-05 残留：正式 Source 的所有派生段落以本次确认选集为准"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        445
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-73",
+      "file": "tests/llm-repair2.test.ts",
+      "originalTest": "F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end",
+      "reporterLocation": "1:10790",
+      "baselineLogLine": 2044,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at Object.draftFor (<REPO>\\tests\\llm-repair2.test.ts:74:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-11 残留：Provider 省略可选位置时，汇总输入仍带规范化后的全局 start/end"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        446
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-74",
+      "file": "tests/llm-repair3.test.ts",
+      "originalTest": "F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved",
+      "reporterLocation": "2:5212",
+      "baselineLogLine": 2064,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-repair3.test.ts:141:14)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-11 残留（有位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        447
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-75",
+      "file": "tests/llm-repair3.test.ts",
+      "originalTest": "F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved",
+      "reporterLocation": "2:5212",
+      "baselineLogLine": 2083,
+      "signature": "AssertionError [ERR_ASSERTION]: Provider 服务错误（HTTP 500）。（Provider 说明：Error: fake provider could not read the chunk prompt）\n  + actual - expected\n  \n  + 'failed'\n  - 'completed'",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-repair3.test.ts:141:14)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-11 残留（无位置hint）：同标题/同证据ID跨块聚合后，额外汇总输入全块引用零 unresolved"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        448
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-76",
+      "file": "tests/llm-repair3.test.ts",
+      "originalTest": "F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总",
+      "reporterLocation": "2:8745",
+      "baselineLogLine": 2102,
+      "signature": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  undefined !== 4",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-repair3.test.ts:196:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-11 残留（对照）：无重复标题时汇总输入同样完整，单块不触发汇总"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        449
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-77",
+      "file": "tests/llm-repair3.test.ts",
+      "originalTest": "F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据",
+      "reporterLocation": "2:10729",
+      "baselineLogLine": 2119,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(draft)",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\llm-repair3.test.ts:224:12)",
+      "rootCauses": [
+        "httpFixture"
+      ],
+      "finalTests": [
+        "F04-11 残留（回归）：聚合后的清单可直接确认，页面正文含全部块的事实与证据"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        450
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-78",
+      "file": "tests/ui-b04.test.tsx",
+      "originalTest": "B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口",
+      "reporterLocation": "1:18524",
+      "baselineLogLine": 2136,
+      "signature": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n  \n    assert.ok(byText('AI 整理知识', mounted.container))",
+      "errorCode": "ERR_ASSERTION",
+      "stackTestSite": "at TestContext.<anonymous> (<REPO>\\tests\\ui-b04.test.tsx:243:12)",
+      "rootCauses": [
+        "currentUi"
+      ],
+      "finalTests": [
+        "B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        712
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-79",
+      "file": "tests/ui.test.tsx",
+      "originalTest": "粘贴导入对话框保留原有文本流程与字符上限",
+      "reporterLocation": "1:1666",
+      "baselineLogLine": 2153,
+      "signature": "ReferenceError: document is not defined",
+      "errorCode": null,
+      "stackTestSite": null,
+      "rootCauses": [
+        "ssr"
+      ],
+      "finalTests": [
+        "粘贴导入对话框保留原有文本流程与字符上限"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        731
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-80",
+      "file": "tests/ui.test.tsx",
+      "originalTest": "文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界",
+      "reporterLocation": "1:2337",
+      "baselineLogLine": 2167,
+      "signature": "ReferenceError: document is not defined",
+      "errorCode": null,
+      "stackTestSite": null,
+      "rootCauses": [
+        "ssr"
+      ],
+      "finalTests": [
+        "文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        732
+      ],
+      "passed": true
+    },
+    {
+      "id": "COMPAT01-81",
+      "file": "tests/ui.test.tsx",
+      "originalTest": "导入入口渲染出对话框，空列表也有导入按钮",
+      "reporterLocation": "1:4409",
+      "baselineLogLine": 2181,
+      "signature": "ReferenceError: document is not defined",
+      "errorCode": null,
+      "stackTestSite": null,
+      "rootCauses": [
+        "ssr"
+      ],
+      "finalTests": [
+        "导入入口渲染出对话框，空列表也有导入按钮"
+      ],
+      "finalLog": "npm-test-final.txt",
+      "finalLogLines": [
+        734
+      ],
+      "passed": true
+    }
+  ]
+}

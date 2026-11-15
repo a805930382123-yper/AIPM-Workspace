@@ -1,0 +1,61 @@
+node --import tsx --import ./tests/support/css-stub.mjs --test tests/raw.test.ts tests/raw-integrity.test.ts tests/rawedit01-ui.test.tsx tests/pdf01-ui.test.tsx tests/pdf02-ui.test.tsx tests/lw01-maintenance.test.ts tests/meeting-raw-m04.test.ts tests/app-m05-raw-navigation.test.tsx tests/pdf02-http.test.ts
+✔ explicitly linked Raw missing from refreshed list stays selected and never displays another Raw (207.1087ms)
+✔ missing explicit target survives a transport failure and reconnect, then ordinary Raw navigation clears it (292.6072ms)
+✔ a user Raw selection made during a pending refresh wins over the stale preferred target (189.8776ms)
+✔ Home recent Raw navigation preserves the clicked older Raw ID (89.0846ms)
+✔ deleting the selected Raw returns to the first remaining real item (187.3677ms)
+✔ a settled background job refresh follows the current Raw selection, not the poll closure selection (179.5775ms)
+✔ LW01 standard: actual runner reads Wiki, preserves human text and both sources; idempotent mixed commit (909.5871ms)
+✔ LW01 deep: actual runner reads Wiki, preserves human text and both sources; idempotent mixed commit (1035.9523ms)
+✔ LW01 editing invalidates approval; stale target revision and missing dependencies reject before formal writes (327.441ms)
+✔ M04 registers the selected original as immutable local-only Raw and retries idempotently (123.7634ms)
+✔ linked replay verifies the persisted Raw and refuses missing or mismatched origins without recreating it (92.267ms)
+✔ deleting a Raw after pending or failed partial registration leaves readable raw_deleted history without fake registered time (157.7623ms)
+✔ interrupted pending registration resumes without creating a duplicate Raw (80.7721ms)
+✔ Sensitive and Restricted are denied, forged fields fail, and ordinary Raw API cannot create Meeting Raw (62.9574ms)
+✔ active Raw projection follows the active imported version and clear preserves every Raw link (118.7683ms)
+✔ derived Raw metadata stays within schema for legal 195, 196, and 200 character titles (330.3914ms)
+✔ same registration retry tolerates a newer revision while retaining the fixed ID (82.9417ms)
+✔ legacy high-revision receipt retries by durable business identity, while inputs, authorization, source digest, and Raw are rechecked (260.2762ms)
+✔ failed bridge retry uses the same fixed Raw ID after meeting metadata changes (105.4817ms)
+✔ missing source records fail closed for explicit Wiki source links and shared policy checks (88.2361ms)
+✔ meeting registration HTTP contract enforces exact fields and stable errors (159.259ms)
+✔ all old AI/Wiki/Prompt/Audit entrypoints deny Meeting Raw before providers or writes (108.5569ms)
+✔ PDF01 scanned file saves the Raw and offers page reading without starting legacy extraction (109.7344ms)
+✔ mixed PDF import uses page reading even when the submitted filename did not signal PDF (27.867ms)
+✔ PDF01 scan details expose the page viewer and never the old extraction entry; navigation is read only (86.8322ms)
+✔ PDF01 marks a failed job as incomplete, preserves the page result, and continues only on click (59.3146ms)
+✔ public PDF cleanup preserves text/image provenance, keeps substantive preface and table continuation, edits and selectively commits (3347.4734ms)
+✔ cross-batch PDF continuation retains new columns, units, conflicting rows, unresolved shape and page citations (2273.5453ms)
+✔ one PDF unit contributes exact fragments to different topics while cross-page coverage consolidates (2305.4393ms)
+✔ range readiness, dropped or distinct merged units, durable restart, explicit retry and late cancellation (4391.8173ms)
+✔ PDF R1 result and asset changes block draft/confirm, with no formal Wiki writes (2020.4079ms)
+✔ PDF cleanup rejects restricted sources, known secret wire data and provider-supplied locator overrides (2024.8643ms)
+✔ PDF formal transaction resumes its frozen evidence after a disk-phase failure; manual updates retain the lineage (3441.8314ms)
+PDF02 62-page receipt {"understanding":62,"units":310,"batches":16,"batchMaxBytes":2353,"indexCalls":1,"indexMaxBytes":413,"tail":"p62-content-5","totalCalls":86}
+✔ 62-page real HTTP model chain classifies 310 distinct units in bounded page batches, keeps tail, then writes one reviewed theme (3046.518ms)
+✔ PDF cleanup explicitly selects an understood subset, opens reasons and the source page, then opens a separate draft (209.4802ms)
+✔ failed PDF cleanup preserves its range and reasons, and mounting does not restart it (48.3184ms)
+✔ Raw PDF prioritizes page processing and saved outcomes while preserving old extraction recovery (118.1658ms)
+✔ PDF table blocks render native rows and page citations while ordinary Markdown retains its rendering (42.6357ms)
+✔ PDF candidate summaries use their own facts when two topics cite the same original passage (21.3836ms)
+✔ Raw get/list reject missing, malformed, or mismatched bodySha256; restored bytes remain readable (87.9833ms)
+✔ first extraction rejects a corrupt Raw before reading state, jobs, drafts, or Provider (1.0825ms)
+✔ Raw 文本逐字符持久化，正文包含分隔线、中文和首尾空白 (46.3363ms)
+✔ 无效导入不会创建文件，标题不会影响文件路径 (30.405ms)
+✔ 首页六项统计从空目录返回零，Raw 导入后即时计数 (81.3669ms)
+✔ 本周新增只包含上海时间周一零点到下周周一零点 (217.1804ms)
+✔ Wiki统计只计页面，不把index.md计作知识条目 (59.0717ms)
+✔ 十万字符正文允许保存，超过上限会返回明确错误 (4.0749ms)
+✔ cancel preserves selection, while saving a topic clears only that topic and protects navigation during edits (120.8593ms)
+✔ a saved maintenance edit whose readback failed is recovered by GET only (51.0167ms)
+✔ cancelling a deep note restores the last saved note and review fields (22.1288ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 50
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23174.0928
+exit=0

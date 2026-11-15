@@ -1,6 +1,10 @@
 # 项目总控记录
 
 <!-- ENG01 summary -->
+## ENG01 当前裁决
+
+2026-11-15：Node22工程、文档及四页回归通过；真实CI Node24暴露HTTP代理产品兼容缺陷，ENG01整体未通过。未修改产品，待用户决定是否扩范围修复；本批结束后必须等待确认，不启动下一批。见[独验报告](reports/ENG01-20261115-review.md)。
+
 ## 历史归档
 
 [2026 年 10 月](archive/agent-control-2026-10.md) · [2026 年 11 月初](archive/agent-control-2026-11a.md)。现行协作规则见[协作规则](coordination.md)。

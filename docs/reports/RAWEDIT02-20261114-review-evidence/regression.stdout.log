@@ -1,0 +1,19 @@
+✔ LW01 standard: actual runner reads Wiki, preserves human text and both sources; idempotent mixed commit (577.6839ms)
+✔ LW01 deep: actual runner reads Wiki, preserves human text and both sources; idempotent mixed commit (621.1031ms)
+✔ LW01 editing invalidates approval; stale target revision and missing dependencies reject before formal writes (338.2616ms)
+✔ PDF cleanup explicitly selects an understood subset, opens reasons and the source page, then opens a separate draft (127.868ms)
+✔ failed PDF cleanup preserves its range and reasons, and mounting does not restart it (33.2524ms)
+✔ Raw PDF prioritizes page processing and saved outcomes while preserving old extraction recovery (107.6872ms)
+✔ PDF table blocks render native rows and page citations while ordinary Markdown retains its rendering (26.656ms)
+✔ PDF candidate summaries use their own facts when two topics cite the same original passage (12.5968ms)
+✔ cancel preserves selection, while saving a topic clears only that topic and protects navigation during edits (88.723ms)
+✔ a saved maintenance edit whose readback failed is recovered by GET only (23.1567ms)
+✔ cancelling a deep note restores the last saved note and review fields (8.0454ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2907.9989

@@ -1,0 +1,36 @@
+Public copy. Original test outcomes retained. Diagnostic bodies omitted.
+
+✔ KB02 exhausted explicit replanning rejects before writes, retains diagnostic on replay and allows explicit restart (477.3211ms)
+✔ KB02 last 2 slots preserve successful chunks and cumulative attempts on the same job (244.1307ms)
+✔ KB02 last 1 slots preserve successful chunks and cumulative attempts on the same job (395.9971ms)
+✖ R9 fake wire and visible note preserve source boundaries and ambiguous original 1 even when model omits them (214.7207ms)
+✖ R9 fake wire and visible note preserve source boundaries and ambiguous original 2 even when model omits them (135.1933ms)
+✔ R9 excluded ambiguous fact still has visible exact pending-verification text without forging an included fact reference (125.7404ms)
+✔ R9 boundary capacity exhaustion fails explicitly without truncating or saving a partial note (123.0696ms)
+✔ R9 failed quality resumes the same persisted boundary note in a real new process without duplicate additions (683.8826ms)
+✔ R9 revision18 unfinished checkpoint rejects without outbound or checkpoint modification (125.4895ms)
+✔ R6 overlapping/contained/adjacent windows merge; gaps and UTF16 boundaries remain exact (2.5359ms)
+✔ R6 exact units preserve cross-chunk members, distinct positions, ambiguity, questions and output roundtrip (3.502ms)
+✔ R6 actual adapter standard sends compact wire with unchanged source/schema/timeouts and N+2/N+5 (118.9034ms)
+✔ R6 actual adapter deep sends compact wire with unchanged source/schema/timeouts and N+2/N+5 (120.097ms)
+✔ R6 compact actual pipeline still rejects unknown unit without draft or automatic retry (69.6952ms)
+✔ R6 compact actual pipeline still rejects omitted unit without draft or automatic retry (61.5989ms)
+✔ R6 compact actual pipeline still rejects secret without draft or automatic retry (60.4266ms)
+✔ R6 compact actual wire still rejects a template field referencing another page unit (65.7507ms)
+✔ R6 explicit coverage retry retains source/policy/records/passages and exact diagnostic on the actual adapter path (145.6371ms)
+✔ R6 new-version failed planning explicitly resumes same job and reuses chunks; revision17 rejects with 409/zero writes (239.3721ms)
+✔ R9 completed revision17 standard draft remains readable, HUMAN reviewed and explicitly confirmable (177.0566ms)
+✔ R9 completed revision17 deep draft remains readable, HUMAN reviewed and explicitly confirmable (207.7055ms)
+✔ R9 completed revision18 standard draft remains readable, HUMAN reviewed and explicitly confirmable (151.628ms)
+✔ R9 completed revision18 deep draft remains readable, HUMAN reviewed and explicitly confirmable (155.3872ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 21
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2099.9954
+✖ failing tests:
+✖ R9 fake wire and visible note preserve source boundaries and ambiguous original 1 even when model omits them (214.7207ms)
+✖ R9 fake wire and visible note preserve source boundaries and ambiguous original 2 even when model omits them (135.1933ms)

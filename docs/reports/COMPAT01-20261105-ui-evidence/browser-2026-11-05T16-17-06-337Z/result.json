@@ -1,0 +1,91 @@
+{
+  "success": true,
+  "screenshots": [
+    "01-edited-approval-cleared.png",
+    "02-formal-wiki-after-refresh.png",
+    "03-dialog-initial-title-focus.png",
+    "04-dialog-reverse-tab-wrap.png",
+    "05-dialog-focus-restored.png",
+    "06-confirmation-conflict-retained.png"
+  ],
+  "pageErrors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "location": {
+        "url": "http://127.0.0.1:55931/api/drafts/4d221045-4260-4983-89ee-283afcfe89f5/confirm",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "HTTPFailures": [
+    {
+      "method": "POST",
+      "route": "/api/drafts/4d221045-4260-4983-89ee-283afcfe89f5/confirm",
+      "status": 409
+    }
+  ],
+  "externalRequests": [],
+  "session": {
+    "url": "http://127.0.0.1:55931",
+    "api": "http://127.0.0.1:55931",
+    "root": "<TEMP>\\compat01-ui-H6Pxhv",
+    "envDir": "<TEMP>\\compat01-ui-empty-env-VbH0bc",
+    "outDir": "<TEMP>\\compat01-ui-dist-0Ve147",
+    "fixtures": {
+      "a": "2cdc3ed8-f01e-4cb5-a11d-a24c80056a3a",
+      "b": "f3f7f8b8-5a0f-4954-9c0d-7f111edf6f17",
+      "theme": "渠道覆盖"
+    },
+    "provider": "fake-only",
+    "configLoader": "not-connected"
+  },
+  "browserVersion": "156.0.8078.80",
+  "focus": [
+    "title on entry",
+    "Shift+Tab first to last",
+    "Tab last to first",
+    "Escape unchanged",
+    "trigger restored",
+    "reopen title and cancel restore"
+  ],
+  "stages": [
+    "extraction",
+    "planning",
+    "maintenance",
+    "extraction",
+    "planning",
+    "maintenance"
+  ],
+  "counters": {
+    "provider": 6,
+    "configuration": "not-connected",
+    "realProviderCalls": 0
+  },
+  "rawBefore": {
+    "knowledge\\raw\\reports\\2cdc3ed8-f01e-4cb5-a11d-a24c80056a3a.md": "4498238cb29bb0e9c82e76a4d63044652c5192c30f3be68bf2847f64887d5e4c",
+    "knowledge\\raw\\reports\\f3f7f8b8-5a0f-4954-9c0d-7f111edf6f17.md": "387e9675b5f6aa8ba80442703fcbb0b53a2a197ed06b19bcb30e473dea0cd7b6"
+  },
+  "rawAfter": {
+    "knowledge\\raw\\reports\\2cdc3ed8-f01e-4cb5-a11d-a24c80056a3a.md": "4498238cb29bb0e9c82e76a4d63044652c5192c30f3be68bf2847f64887d5e4c",
+    "knowledge\\raw\\reports\\f3f7f8b8-5a0f-4954-9c0d-7f111edf6f17.md": "387e9675b5f6aa8ba80442703fcbb0b53a2a197ed06b19bcb30e473dea0cd7b6"
+  },
+  "successDraft": "15e9877b-62c2-4277-8616-84462b5a8036",
+  "operationId": "4fa2ee53-4608-45af-b245-422ce633f148",
+  "sourceId": "9ab5804b-6139-4ffe-ae73-55b53824de88",
+  "wikiId": "07b9c111-8614-4d6d-8916-2cc301e644fc",
+  "conflictDraft": "4d221045-4260-4983-89ee-283afcfe89f5",
+  "rejected": {
+    "status": 409,
+    "code": "WIKI_REVISION_CONFLICT"
+  },
+  "serverExit": [
+    null,
+    "SIGTERM"
+  ],
+  "browserClosed": true
+}

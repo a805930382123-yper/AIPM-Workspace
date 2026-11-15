@@ -1,0 +1,37 @@
+✔ App侧栏导航：草稿→Raw清除审核覆盖，工作流→首页/Raw退出工作流且Raw选择保留 (210.1688ms)
+✔ HUMAN React + real HTTP saves acceptance, resolves units, reviews each change, invalidates edits, refreshes then explicitly commits (659.4717ms)
+✔ HUMAN synthesis React + real HTTP shows immutable proposals, unresolved blocks, corrected content needs new single-page review (240.3808ms)
+✔ SR01 React and actual HTTP show persistent failure, retry only storage, and survive refresh (4057.7006ms)
+✔ SR01 App polls execution running despite disk failed until recovery button becomes actionable (3492.8448ms)
+✔ SR01 start failure reload is actionable and late storage response cannot change a different Raw selection (544.3732ms)
+✔ SR01 App recovers coverage storage failure then polls same-job explicit planning retry through draft review (3729.4837ms)
+✔ F-SR01-01 React refresh selects new recovery id over old failed job and saves without regenerating (524.6147ms)
+✔ KB03 React real HTTP table editing/delete supplement/questions survives refresh, report stale and actual second offset highlighted (577.6871ms)
+✔ KB03 Raw React defaults/boundaries and explicit standard selection reset per Raw (147.6865ms)
+✔ KB03 Raw React explicit continuation follows failed standard job mode despite short Raw deep default (3110.9149ms)
+A component is changing a controlled input to be uncontrolled. This is likely caused by the value changing from a defined to undefined, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components
+✔ B04 设置页：显示 Provider/模型/掩码，绝不显示 Key (37.7541ms)
+✔ B04 设置页：未配置时给出缺失项与手动链路提示 (13.3324ms)
+✔ B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口 (209.0178ms)
+✔ B04 审核页：分栏预览、选择与确认只提交选中项 (175.4651ms)
+✔ B04 审核页：Source 编辑与页面编辑一起持久化，且不丢 Raw 元数据 (67.3658ms)
+✔ B04 审核页：新草稿默认全不选，零选择不能确认 (118.8525ms)
+✔ B04 审核页：保存编辑、删除、合并与放弃都走明确的接口 (105.9725ms)
+✔ B04 审核页：冲突提示与部分提交面板 (92.5293ms)
+✔ B04 审核页：候选查询失败阻断提交，成功恢复后保留显式决策门禁 (96.5799ms)
+✔ B04 审核页：确认刷新候选期间锁定选择和编辑，提交仍使用可见快照 (478.3482ms)
+✔ B09 template concept: update click reaches service, preserves fields and displays review rejection before navigation (58.889ms)
+✔ B09 template business_process: update click reaches service, preserves fields and displays review rejection before navigation (51.7033ms)
+✔ 粘贴导入对话框保留原有文本流程与字符上限 (24.7678ms)
+✔ 文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界 (1.3691ms)
+✔ Raw 详情区分“原件已保留”和粘贴资料 (11.6631ms)
+✔ 导入入口渲染出对话框，空列表也有导入按钮 (3.5662ms)
+✔ 删除确认先检查引用，未确认前不能删除 (0.7013ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14232.7997

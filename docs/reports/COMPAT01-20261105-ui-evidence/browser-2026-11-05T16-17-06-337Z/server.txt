@@ -1,0 +1,29 @@
+vite v6.4.3 building for production...
+transforming...
+✓ 226 modules transformed.
+rendering chunks...
+computing gzip size...
+<TEMP>/compat01-ui-dist-0Ve147/index.html                   0.47 kB │ gzip:   0.34 kB
+<TEMP>/compat01-ui-dist-0Ve147/assets/index-DJrc_M8B.css   77.82 kB │ gzip:  14.76 kB
+<TEMP>/compat01-ui-dist-0Ve147/assets/index-7WJz4fYS.js   658.74 kB │ gzip: 195.59 kB
+✓ built in 1.36s
+{
+  "pid": <redacted-pid>,
+  "url": "http://127.0.0.1:55931",
+  "api": "http://127.0.0.1:55931",
+  "root": "C:\\Users\\80593\\AppData\\Local\\Temp\\compat01-ui-H6Pxhv",
+  "envDir": "C:\\Users\\80593\\AppData\\Local\\Temp\\compat01-ui-empty-env-VbH0bc",
+  "outDir": "C:\\Users\\80593\\AppData\\Local\\Temp\\compat01-ui-dist-0Ve147",
+  "fixtures": {
+    "a": "<redacted-test-id>",
+    "b": "<redacted-test-id>",
+    "theme": "渠道覆盖"
+  },
+  "provider": "fake-only",
+  "configLoader": "not-connected"
+}
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.

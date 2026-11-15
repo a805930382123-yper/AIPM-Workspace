@@ -1,0 +1,90 @@
+{
+  "success": true,
+  "root": "<TEMP>\\rawedit01-k0DE0L",
+  "envDir": "<TEMP>\\rawedit01-k0DE0L\\empty-vite-env",
+  "config": "<TEMP>\\rawedit01-k0DE0L\\empty-provider.env",
+  "steps": [
+    "PDF: cancel, navigation lock, multiline persistence, readback 503 then GET, original-page link and stale digest 409",
+    "Standard: actual 503, input retained, retry saved title/explanation/organized text; Source clears both choices; original quote opens",
+    "Deep: cancel with no write, real validation and 409 preserve input, reopen latest and save clears all choices and old approval",
+    "Explicit confirm: latest PDF, standard and deep edits committed; raw records, original bytes, PDF evidence directory and provider counts unchanged"
+  ],
+  "screenshots": [
+    "01-pdf-editor.png",
+    "02-pdf-readback-retry.png",
+    "03-deep-stale-input-retained.png",
+    "04-pdf-explicit-confirm.png"
+  ],
+  "pageErrors": [],
+  "external": [],
+  "fixtureCalls": {
+    "pdf": 6,
+    "raw": 9
+  },
+  "services": {
+    "url": "http://127.0.0.1:61556",
+    "apiOrigin": "http://127.0.0.1:61525"
+  },
+  "providerConfigured": false,
+  "originalPdfSha": "180ed0071c1e041b134f7e5bc4f57811aa65c9e846907c50200dcba95a6e2657",
+  "formalWikiIds": [
+    "1b569c75-38da-481a-a9bd-582734f77130",
+    "551b8e24-8472-46fb-ad50-9d534092ed53",
+    "57b45695-aa96-41fa-b198-9e15d75d4666",
+    "5e6be192-ba62-4bb7-adc9-174ee9d02df5",
+    "7af537dd-3216-49ac-adcf-4ef7f3217f34",
+    "86081ed4-cf66-4f72-a3e2-f8f2e55556cd"
+  ],
+  "browserMutations": [
+    [
+      "POST",
+      "/api/knowledge/drafts/43f91365-bbd2-4d33-9e3a-24403cd0a064/changes/review"
+    ],
+    [
+      "PATCH",
+      "/api/drafts/b48f2f4e-f572-46f5-bc74-068319853b57"
+    ],
+    [
+      "PATCH",
+      "/api/drafts/b48f2f4e-f572-46f5-bc74-068319853b57"
+    ],
+    [
+      "PATCH",
+      "/api/drafts/b48f2f4e-f572-46f5-bc74-068319853b57"
+    ],
+    [
+      "POST",
+      "/api/knowledge/drafts/38dfb723-d343-48bc-a940-541db818abe1/changes/review"
+    ],
+    [
+      "PATCH",
+      "/api/drafts/38dfb723-d343-48bc-a940-541db818abe1/structured-note"
+    ],
+    [
+      "PATCH",
+      "/api/drafts/38dfb723-d343-48bc-a940-541db818abe1/structured-note"
+    ],
+    [
+      "PATCH",
+      "/api/drafts/38dfb723-d343-48bc-a940-541db818abe1/structured-note"
+    ],
+    [
+      "POST",
+      "/api/drafts/43f91365-bbd2-4d33-9e3a-24403cd0a064/confirm"
+    ],
+    [
+      "POST",
+      "/api/drafts/b48f2f4e-f572-46f5-bc74-068319853b57/confirm"
+    ],
+    [
+      "POST",
+      "/api/drafts/38dfb723-d343-48bc-a940-541db818abe1/confirm"
+    ]
+  ],
+  "apiLog": "FMCG AI PM Workspace API: http://127.0.0.1:61525 (data: <TEMP>\\rawedit01-k0DE0L\\data)\n",
+  "cleanup": {
+    "browserClosed": true,
+    "frontendClosed": true,
+    "apiExited": true
+  }
+}

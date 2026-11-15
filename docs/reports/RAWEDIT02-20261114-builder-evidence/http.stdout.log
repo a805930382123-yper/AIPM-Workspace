@@ -1,0 +1,11 @@
+node --import tsx tests/acceptance/rawedit02-http.mjs docs/reports/RAWEDIT02-20261114-builder-evidence
+Warning: UnknownErrorException: Ensure that the `standardFontDataUrl` API parameter is provided.
+Warning: UnknownErrorException: Ensure that the `standardFontDataUrl` API parameter is provided.
+PASS Original text saved byte-for-byte; identity preserved; old Markdown preserved exactly; no-op creates no revision
+PASS Two competing old-version requests give exactly one success; restored SHA still rejects stale revision
+PASS Invalid version, empty/oversized/invalid Unicode, metadata and injected import revision rejected
+PASS Snapshot write failure and conflicting history preserve current text; legacy meeting editable; bridged meeting immutable
+PASS Prior draft confirmation, checkpoint, translation, and question citation reuse fail closed; existing formal Wiki unchanged
+PASS PDF original downloads unchanged; stale text ranges, page evidence, cleanup and PDF draft unusable after edits including restore
+PASS HTTP extraction and PDF understanding hold edits while active; cancel releases; edits issue no model calls or formal writes
+exit=0

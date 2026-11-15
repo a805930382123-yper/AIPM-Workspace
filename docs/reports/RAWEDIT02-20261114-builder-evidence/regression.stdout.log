@@ -1,0 +1,79 @@
+node --import tsx --import ./tests/support/css-stub.mjs --test tests/raw.test.ts tests/raw-integrity.test.ts tests/rawedit01-ui.test.tsx tests/pdf01-ui.test.tsx tests/pdf02-ui.test.tsx tests/lw01-maintenance.test.ts tests/meeting-raw-m04.test.ts tests/app-m05-raw-navigation.test.tsx tests/rawzh01-ui.test.tsx
+✔ explicitly linked Raw missing from refreshed list stays selected and never displays another Raw (199.1222ms)
+✔ missing explicit target survives a transport failure and reconnect, then ordinary Raw navigation clears it (279.3485ms)
+✔ a user Raw selection made during a pending refresh wins over the stale preferred target (173.2579ms)
+✔ Home recent Raw navigation preserves the clicked older Raw ID (91.6948ms)
+✔ deleting the selected Raw returns to the first remaining real item (187.3013ms)
+✔ a settled background job refresh follows the current Raw selection, not the poll closure selection (144.1427ms)
+✔ LW01 standard: actual runner reads Wiki, preserves human text and both sources; idempotent mixed commit (581.3916ms)
+✔ LW01 deep: actual runner reads Wiki, preserves human text and both sources; idempotent mixed commit (710.8109ms)
+✔ LW01 editing invalidates approval; stale target revision and missing dependencies reject before formal writes (299.3567ms)
+✔ M04 registers the selected original as immutable local-only Raw and retries idempotently (101.9333ms)
+✔ linked replay verifies the persisted Raw and refuses missing or mismatched origins without recreating it (59.8577ms)
+✔ deleting a Raw after pending or failed partial registration leaves readable raw_deleted history without fake registered time (112.2946ms)
+✔ interrupted pending registration resumes without creating a duplicate Raw (63.8241ms)
+✔ Sensitive and Restricted are denied, forged fields fail, and ordinary Raw API cannot create Meeting Raw (42.67ms)
+✔ active Raw projection follows the active imported version and clear preserves every Raw link (73.5601ms)
+✔ derived Raw metadata stays within schema for legal 195, 196, and 200 character titles (186.5695ms)
+✔ same registration retry tolerates a newer revision while retaining the fixed ID (87.2889ms)
+✔ legacy high-revision receipt retries by durable business identity, while inputs, authorization, source digest, and Raw are rechecked (122.5257ms)
+✔ failed bridge retry uses the same fixed Raw ID after meeting metadata changes (92.3669ms)
+✔ missing source records fail closed for explicit Wiki source links and shared policy checks (56.0646ms)
+✔ meeting registration HTTP contract enforces exact fields and stable errors (139.0796ms)
+✔ all old AI/Wiki/Prompt/Audit entrypoints deny Meeting Raw before providers or writes (100.2053ms)
+✔ PDF01 scanned file saves the Raw and offers page reading without starting legacy extraction (105.577ms)
+✔ mixed PDF import uses page reading even when the submitted filename did not signal PDF (27.549ms)
+✔ PDF01 scan details expose the page viewer and never the old extraction entry; navigation is read only (67.6902ms)
+✔ PDF01 marks a failed job as incomplete, preserves the page result, and continues only on click (59.4728ms)
+✔ PDF cleanup explicitly selects an understood subset, opens reasons and the source page, then opens a separate draft (115.839ms)
+✔ failed PDF cleanup preserves its range and reasons, and mounting does not restart it (34.9591ms)
+✔ Raw PDF prioritizes page processing and saved outcomes while preserving old extraction recovery (108.7405ms)
+✔ PDF table blocks render native rows and page citations while ordinary Markdown retains its rendering (35.4352ms)
+✔ PDF candidate summaries use their own facts when two topics cite the same original passage (10.7337ms)
+✔ Raw get/list reject missing, malformed, or mismatched bodySha256; restored bytes remain readable (63.5322ms)
+✔ first extraction rejects a corrupt Raw before reading state, jobs, drafts, or Provider (0.9947ms)
+✔ Raw 文本逐字符持久化，正文包含分隔线、中文和首尾空白 (47.0442ms)
+✔ 无效导入不会创建文件，标题不会影响文件路径 (29.4054ms)
+✔ 首页六项统计从空目录返回零，Raw 导入后即时计数 (57.6262ms)
+✔ 本周新增只包含上海时间周一零点到下周周一零点 (64.7064ms)
+✔ Wiki统计只计页面，不把index.md计作知识条目 (33.9269ms)
+✔ 十万字符正文允许保存，超过上限会返回明确错误 (3.0396ms)
+✔ cancel preserves selection, while saving a topic clears only that topic and protects navigation during edits (103.3315ms)
+✔ a saved maintenance edit whose readback failed is recovered by GET only (27.3335ms)
+✔ cancelling a deep note restores the last saved note and review fields (8.3046ms)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+Error: Transform failed with 1 error:
+<REPO>\tests\rawzh01-ui.test.tsx:1:0: ERROR: Unexpected "�"
+    at failureErrorWithLog (<REPO>\node_modules\esbuild\lib\main.js:1752:15)
+    at <REPO>\node_modules\esbuild\lib\main.js:1019:50
+    at responseCallbacks.<computed> (<REPO>\node_modules\esbuild\lib\main.js:886:9)
+    at handleIncomingPacket (<REPO>\node_modules\esbuild\lib\main.js:941:12)
+    at Socket.readFromStdout (<REPO>\node_modules\esbuild\lib\main.js:864:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23) {
+  name: 'TransformError'
+}
+
+Node.js v25.2.1
+✖ tests\rawzh01-ui.test.tsx (356.2534ms)
+ℹ tests 43
+ℹ suites 0
+ℹ pass 42
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3308.2973
+
+✖ failing tests:
+
+test at tests\rawzh01-ui.test.tsx:1:1
+✖ tests\rawzh01-ui.test.tsx (356.2534ms)
+  'test failed'
+exit=1

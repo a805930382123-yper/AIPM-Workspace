@@ -1,0 +1,70 @@
+{
+  "success": true,
+  "checks": [
+    "默认勾选经真实URL导入和持久翻译任务，一次假模型调用保存完整段落，自动中文，可切原文，刷新只GET，Raw原文/SHA/来源一致",
+    "取消勾选英文与主要中文页面均原文阅读，额外模型请求0",
+    "模型失败后原Raw可读且SHA一致，手动重试同ID，不再抓网页或新建Raw",
+    "取消翻译保留原文与显式继续入口。文件与粘贴覆盖此前默认框，额外模型及网页请求0",
+    "明确整理使用原文，真实维护成果证据点击强制切换英文并精确定位原句，原Raw与翻译前一致"
+  ],
+  "screenshots": [
+    "review-url-default-checked.png",
+    "review-translation-progress.png",
+    "review-chinese-default-reading.png",
+    "review-english-original-toggle.png",
+    "review-url-unchecked.png",
+    "review-chinese-skip-no-translation.png",
+    "review-failed-translation-raw-kept.png",
+    "review-retry-same-raw-completed.png",
+    "review-cancelled-original-available.png",
+    "review-evidence-forces-english-offset.png"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "posts": [
+    "/api/raw/import",
+    "/api/raw/import",
+    "/api/raw/import",
+    "/api/raw/import",
+    "/api/raw/cdcccd34-f391-44e1-a6de-465390c2c9de/translation/retry",
+    "/api/raw/import",
+    "/api/raw/4cd0e9d2-6e5d-4d08-ada5-b6329b9868ea/translation/cancel",
+    "/api/raw",
+    "/api/raw/import",
+    "/api/raw/e7bb292a-b69c-46bd-a43d-1b89ee876942/extract"
+  ],
+  "counters": {
+    "network": [
+      "/english",
+      "/opt-out",
+      "/chinese",
+      "/fail",
+      "/slow"
+    ],
+    "translation": [
+      {
+        "index": 0,
+        "total": 1,
+        "body": "Store channel report. Contracted locations increased by 56 this year.\n\nOnly newly signed stores are included. Previously signed stores are not included."
+      },
+      {
+        "index": 0,
+        "total": 1,
+        "body": "Failure exercise. The test article reports 24 stores in the northern region.\n\nOnline sales were not included in this count."
+      },
+      {
+        "index": 0,
+        "total": 1,
+        "body": "Failure exercise. The test article reports 24 stores in the northern region.\n\nOnline sales were not included in this count."
+      },
+      {
+        "index": 0,
+        "total": 1,
+        "body": "Cancellation exercise. This longer report has a deliberately delayed translation call. It covers the southern region only."
+      }
+    ],
+    "extraction": 3,
+    "realProviderCalls": 0,
+    "configuration": "not-connected"
+  }
+}

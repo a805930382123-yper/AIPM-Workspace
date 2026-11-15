@@ -1,0 +1,62 @@
+{
+  "success": true,
+  "steps": [
+    "Original text saved byte-for-byte; identity preserved; old Markdown preserved exactly; no-op creates no revision",
+    "Two competing old-version requests give exactly one success; restored SHA still rejects stale revision",
+    "Invalid version, empty/oversized/invalid Unicode, metadata and injected import revision rejected",
+    "Snapshot write failure and conflicting history preserve current text; legacy meeting editable; bridged meeting immutable",
+    "Prior draft confirmation, checkpoint, translation, and question citation reuse fail closed; existing formal Wiki unchanged",
+    "PDF original downloads unchanged; stale text ranges, page evidence, cleanup and PDF draft unusable after edits including restore",
+    "HTTP extraction and PDF understanding hold edits while active; cancel releases; edits issue no model calls or formal writes"
+  ],
+  "root": "<TEMP>\\rawedit02-Wt0TwV",
+  "data": "<TEMP>\\rawedit02-Wt0TwV\\data",
+  "config": "<TEMP>\\rawedit02-Wt0TwV\\empty-provider.env",
+  "envDir": "<TEMP>\\rawedit02-Wt0TwV\\empty-vite-env",
+  "fakeCalls": [
+    "knowledge_answer",
+    "knowledge_answer",
+    "raw_translation",
+    "pdf_page_understanding",
+    "pdf_page_understanding",
+    "pdf_page_understanding",
+    "pdf_cleanup",
+    "pdf_topic_index",
+    "pdf_topic_write"
+  ],
+  "fakeHttpCalls": [
+    {
+      "path": "/v1/chat/completions",
+      "stage": "extract"
+    },
+    {
+      "path": "/v1/chat/completions",
+      "stage": "pdf-page"
+    }
+  ],
+  "fixtureExtractionCalls": 9,
+  "fakePort": 53655,
+  "services": {
+    "apiOrigin": "http://127.0.0.1:53656"
+  },
+  "raw": {
+    "id": "5e3e4744-1321-44a2-9eea-800fdd2f97b4",
+    "before": "01cbc7bb21f87fe4cb070644197bf02aef8ec389f19055d6a15f7297db354c42",
+    "after": "f607cf82c6388439801010cd6981f2b83a5d6c560c9c8778917aaee35bd97450",
+    "currentBodySha256": "6a5c2dd3309b0056d2be99d61727c52ae2da3a3c47877ebfef5b968b67a5394e"
+  },
+  "asset": {
+    "pdfSha256": "180ed0071c1e041b134f7e5bc4f57811aa65c9e846907c50200dcba95a6e2657",
+    "txtSha256": "1f4e85f44307e41457cf9c534a9427e99f8977a1abed3c6c8556cd7f4d08cab2"
+  },
+  "wikiIds": [
+    "cf3899a7-d17a-404b-8380-120f5837bf79",
+    "41da7b82-da64-40bb-b73c-926cc6b61491"
+  ],
+  "cleanup": {
+    "apiExited": true,
+    "fakeClosed": true,
+    "portReservationClosed": true
+  },
+  "apiLog": "FMCG AI PM Workspace API: http://127.0.0.1:53656 (data: <TEMP>\\rawedit02-Wt0TwV\\data)\nRequest failed: EEXIST: file already exists, mkdir '<TEMP>\\rawedit02-Wt0TwV\\data\\knowledge\\raw\\history\\f4cd5432-ed9e-4782-99ec-5267fc22f6a5'\n"
+}

@@ -18,9 +18,9 @@ fresh隔离完整App：`node --import tsx scripts/rawzh01-isolated.ts`，TEMP ra
 
 实际Chrome10图：默认框/进度/中文默认/英文切换/刷新GET、取消框英文/中文跳过、失败保原文/同ID重试、取消、file/paste不翻译、显式整理后真实证据定位英文。review-browser.json success=true，pageErrors/outside为空，realProviderCalls=0/configuration=not-connected。已亲看独立默认框、中文完整阅读和英文原句高亮；可读、无逐段审批。假模型验证契约与工程，不冒称真实翻译质量。
 
-- [默认勾选](RAWZH01-20261106-evidence/review-url-default-checked.png)
-- [中文阅读](RAWZH01-20261106-evidence/review-chinese-default-reading.png)
-- [原文证据定位](RAWZH01-20261106-evidence/review-evidence-forces-english-offset.png)
+- [默认勾选（历史截图已损坏，见说明）](RAWZH01-20261106-evidence/unavailable-screenshots.md)
+- [中文阅读（历史截图已损坏，见说明）](RAWZH01-20261106-evidence/unavailable-screenshots.md)
+- [原文证据定位（历史截图已损坏，见说明）](RAWZH01-20261106-evidence/unavailable-screenshots.md)
 - [完整浏览器证据](RAWZH01-20261106-evidence/review-browser.json)
 
 最终冻结版`npm test`763/763，0fail/skip/cancel/todo，73912.5024ms；完整`npx tsc -b`exit0。独立读原日志TEMP/rawzh01-backend-e0c4ad6a-a25b-47c9-842b-a99ca18b3011/npm-test.txt并核同最终SHA，按同版复用全量，不称独立重跑763项。相关组合95/95、UI21/21及独立9项相互补充，无已知未关闭本批缺陷。
