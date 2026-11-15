@@ -141,6 +141,38 @@ export async function apiForm<T>(url: string, form: FormData): Promise<T> {
   return readResponse<T>(await fetch(url, { method: 'POST', body: form }));
 }
 
+export type {
+  AutomationList, AutomationPlan, AutomationRun, AutomationRunStatus, AutomationSchedule, AutomationStatus,
+} from '../services/automation/types';
+import type {
+  AutomationList, AutomationRun, AutomationRunStatus, AutomationSchedule, AutomationSchedulePatch, AutomationStatus,
+} from '../services/automation/types';
+
+const automationUrl = '/api/automation';
+const automationRunUrl = (id: string) => `${automationUrl}/runs/${encodeURIComponent(id)}`;
+const automationWrite = (method: 'POST' | 'PATCH', token: string, input: object): RequestInit => ({
+  method, headers: { 'X-FMCG-Automation-Token': token }, body: JSON.stringify(input),
+});
+export const automationStatus = (signal?: AbortSignal) => api<AutomationStatus>(`${automationUrl}/status`, { signal });
+export const automationSchedules = (signal?: AbortSignal) => api<AutomationList<AutomationSchedule>>(`${automationUrl}/schedules`, { signal });
+export const editAutomationSchedule = (type: string, input: AutomationSchedulePatch, token: string) =>
+  api<AutomationSchedule>(`${automationUrl}/schedules/${encodeURIComponent(type)}`, automationWrite('PATCH', token, input));
+export const changeAutomationPause = (paused: boolean, token: string) =>
+  api<AutomationStatus>(`${automationUrl}/${paused ? 'pause' : 'resume'}`, automationWrite('POST', token, { confirm: true }));
+export const runAutomationTask = (type: string, token: string) =>
+  api<AutomationRun>(`${automationUrl}/tasks/${encodeURIComponent(type)}/run`, automationWrite('POST', token, {}));
+export const automationRuns = ({ type, status, limit }: { type: string; status: AutomationRunStatus | ''; limit: number }, signal?: AbortSignal) => {
+  const query = new URLSearchParams({ limit: String(limit) });
+  if (type) query.set('type', type);
+  if (status) query.set('status', status);
+  return api<AutomationList<AutomationRun>>(`${automationUrl}/runs?${query}`, { signal });
+};
+export const automationRun = (id: string, signal?: AbortSignal) => api<AutomationRun>(automationRunUrl(id), { signal });
+export const cancelAutomationRun = (id: string, token: string) =>
+  api<AutomationRun>(`${automationRunUrl(id)}/cancel`, automationWrite('POST', token, {}));
+const shanghaiTime = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Shanghai' });
+export const automationTime = (time: string | null) => time ? shanghaiTime.format(new Date(time)) : '—';
+
 export type { WorkAnalysis, WorkAnalysisOutputV2, WorkAnalysisRun, WorkAnalysisRunWithReview, WorkHistory, WorkHistoryInput, WorkItem, WorkItemKind, WorkItemSummary, WorkItemUpdate, WorkStatus } from '../services/work-items/types';
 import type { WorkAnalysisRun, WorkAnalysisRunInput, WorkAnalysisRunWithReview, WorkBasisReview, WorkItem, WorkItemCreate, WorkItemSummary, WorkItemUpdate } from '../services/work-items/types';
 

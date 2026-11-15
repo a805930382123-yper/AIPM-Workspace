@@ -1,5 +1,6 @@
 import express from 'express';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { access } from 'node:fs/promises';
 import multer from 'multer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -49,6 +50,11 @@ import { WorkAnalysisRuns } from '../services/work-items/analysis-runs.ts';
 import { NewsService } from '../services/news/service.ts';
 import { readNewsSources } from '../services/news/sources.ts';
 import { registerNewsRoutes } from './news-api.ts';
+import { acquireInstanceLock } from '../services/automation/instance-lock.ts';
+import { meterAutomationProvider } from '../services/automation/context.ts';
+import { AutomationScheduler } from '../services/automation/scheduler.ts';
+import { createSelfcheck } from '../services/automation/selfcheck.ts';
+import { registerAutomationRoutes } from './automation-api.ts';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(process.env.FMCG_DATA_DIR || path.join(moduleDir, '..', 'workspace'));
@@ -57,6 +63,12 @@ const configFile = path.resolve(moduleDir, '..', process.env.FMCG_LLM_CONFIG_FIL
 
 const host = '127.0.0.1';
 const port = Number(process.env.FMCG_PORT || 4317);
+const production = process.argv.includes('--production');
+const dist = path.resolve(moduleDir, '..', 'dist');
+const uiEntry = path.join(dist, 'index.html');
+if (production) await access(uiEntry).catch(() => { throw new Error('生产启动需要构建产物。请先运行 npm run build。'); });
+const lock = await acquireInstanceLock(root, port, production ? 'production' : 'development');
+process.once('exit', lock.releaseMetadata);
 const store = new RawStore(root);
 const assetStore = new AssetStore(root);
 const wikiStore = new WikiStore(root, store);
@@ -94,7 +106,7 @@ const providerFactory = async (): Promise<LlmProvider | undefined> => {
     const secrets = [...new Set([config.apiKey, ...(config.knownSecrets ?? [])])];
     const containsSecret = (value: string) => containsKnownSecret(value, secrets);
     if (containsSecret(config.baseUrl) || containsSecret(config.model)) return undefined;
-    return new OpenAiCompatibleProvider(config);
+    return meterAutomationProvider(new OpenAiCompatibleProvider(config));
   } catch { return undefined; }
 };
 const runner = new ExtractionRunner({
@@ -161,6 +173,19 @@ registerRecoveryRoutes(app,recovery);
 app.disable('x-powered-by');
 // Minute imports authorize before either JSON parsing or multipart buffering reads the body.
 registerMeetingMinutesRoutes(app, meetings);
+const automation = new AutomationScheduler({
+  root, instance: lock.instance,
+  tasks: [createSelfcheck({
+    root, lockIsCurrent: lock.isCurrent, scanRecovery: () => recovery.scan(),
+    isProviderConfigured: async () => (await configManager.get()).configured,
+  })],
+  withProvider: async execute => {
+    const snapshot = await providerFactory();
+    await providerContext.run({ provider: snapshot }, () => execute(activeProvider));
+  },
+});
+await automation.initialize();
+registerAutomationRoutes(app, automation);
 app.use(express.json({ limit: '3mb', strict: true }));
 // Resolve a provider only for routes that actually start AI work. A broken optional config file
 // must not prevent the manual workspace or unrelated read APIs from starting/responding.
@@ -343,6 +368,12 @@ registerPromptRoutes(app, { store: prompts });
 registerPromptAiRoutes(app, promptAi);
 registerMeetingRoutes(app, meetings, meetingRawBridge);
 
+if (production) {
+  app.use('/api', (_req, res) => { res.status(404).json({ error: { code: 'NOT_FOUND', message: '没有找到这个 API。' } }); });
+  app.use(express.static(dist));
+  app.get('/{*uiPath}', (_req, res) => { res.sendFile('index.html', { root: dist }); });
+}
+
 app.use(meetingErrorMiddleware);
 app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   if (error instanceof ConfigError) { res.status(error.status).json({ error: { code: error.code, message: error.message } }); return; }
@@ -371,4 +402,21 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
   res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: '保存或读取失败，请重试。' } });
 });
 
-app.listen(port, host, () => console.log(`FMCG AI PM Workspace API: http://${host}:${port} (data: ${root})`));
+const server = app.listen(port, host);
+await new Promise<void>((resolve, reject) => { server.once('listening', resolve); server.once('error', reject); });
+automation.start();
+console.log(`FMCG AI PM Workspace API: http://${host}:${port} (data: ${root})`);
+
+const shutdown = async () => {
+  await Promise.all([automation.stop(), new Promise<void>(resolve => server.close(() => resolve()))]);
+  // Other workspace services may still be finishing accepted background work.
+  // The process exit hook releases the metadata once those writers have drained.
+};
+let stopping = false;
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => {
+    if (stopping) return;
+    stopping = true;
+    void shutdown().catch(() => { process.exitCode = 1; });
+  });
+}

@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "checks": [
+    "native RestartOnFailure absent; real launcher 60-second retry",
+    "uninstall while replacement Node running leaves no task, Node, listener",
+    "uninstall during backoff; no revival across next retry deadline"
+  ],
+  "cases": [
+    {
+      "differentPid": true,
+      "name": "real retry",
+      "elapsedSeconds": 62.06
+    }
+  ]
+}

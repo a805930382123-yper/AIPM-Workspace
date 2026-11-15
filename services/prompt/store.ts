@@ -6,6 +6,7 @@
 // The library is decoupled from the knowledge base: it only *reads* Wiki titles for the
 // "related Wiki" display and never writes to knowledge/, never appends to the knowledge log.
 import { mkdir, readFile, readdir, rename } from 'node:fs/promises';
+import { assertFormalWriteAllowed } from '../automation/context.ts';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
@@ -210,6 +211,7 @@ export class PromptStore {
    * failure instead of a bare I/O error, so the UI can say what happened and offer a retry.
    */
   private async write(record: PromptFile): Promise<void> {
+    assertFormalWriteAllowed();
     try {
       await writeJsonAtomic(recordPath(this.root, record.id), record);
     } catch (error) {
@@ -493,6 +495,7 @@ export class PromptStore {
   }
   async exportFeedback(id:string) {return {schemaVersion:1 as const,promptId:id,items:await this.getFeedback(id)};}
   async delete(id: string, baseVersion: number): Promise<{ id: string; deleted: true }> {
+    assertFormalWriteAllowed();
     return this.serialized(async () => {
       const record = await this.read(id);
       if (!record) throw new PromptError('NOT_FOUND', '没有找到这条 Prompt。', 404);

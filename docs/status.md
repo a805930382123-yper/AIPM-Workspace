@@ -3,7 +3,11 @@
 <!-- ENG01 summary -->
 ## 当前状态摘要
 
-当前为 AI 自动化阶段 0，ENG01 整体PASS：本地严格检查与双版本882项测试通过；工程提交23c434e的真实Windows Node22/24 CI均成功，独立验收确认代理兼容缺陷关闭。最近结论：ENG01通过；RAWEDIT02通过；RAWEDIT01通过；PDF01-GLOBAL的62页草稿待用户确认；PDF01 R3工程通过。开放事项：依赖审计7项告警及清点整理建议未执行，正式Wiki写入仍须用户明确操作。ENG01完成后停止，每批均等待用户明确确认才继续；RUN01、EVAL01、PIPE01未启动。见[独验报告](reports/ENG01-20261115-review.md)与[路线图](batches/AUTO-ROADMAP-20261114.md)。
+当前为 AI 自动化阶段 0，ENG01 整体PASS：本地严格检查与双版本882项测试通过；工程提交23c434e的真实Windows Node22/24 CI均成功，独立验收确认代理兼容缺陷关闭。最近结论：ENG01通过；RAWEDIT02通过；RAWEDIT01通过；PDF01-GLOBAL的62页草稿待用户确认；PDF01 R3工程通过。开放事项：依赖审计7项告警及清点整理建议未执行，正式Wiki写入仍须用户明确操作。用户已确认ENG01完成并明确授权RUN01；RUN01规划与施工进行中，完成后停下等待确认。EVAL01、PIPE01未启动。见[独验报告](reports/ENG01-20261115-review.md)与[路线图](batches/AUTO-ROADMAP-20261114.md)。
+
+## RUN01 获授权启动（2026-11-15）
+
+仅授权[RUN01任务卡](handoffs/RUN01-20261114-task.md)：按agent-router完成施工、独立验收、范围内返修、提交推送与真实CI。本批5分B模式，Astra规划及独验、Sol High施工。仅安装隔离测试名和测试数据根的验收任务，不安装正式自启；不调用模型或交付业务自动任务。完批停止等用户确认，超范围先汇报。ENG01已完成且最终b1695fb真实CI双版本通过。
 
 归档：[2026 年 10 月](archive/status-2026-10.md)、[2026 年 11 月初](archive/status-2026-11a.md)。
 

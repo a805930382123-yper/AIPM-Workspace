@@ -2,7 +2,7 @@
 
 ## 当前进度（2026-11-15）
 
-ENG01整体PASS，工程提交23c434e的真实Windows Node22/24 CI通过；见[独验报告](../reports/ENG01-20261115-review.md)。本批完成后停止，等待用户明确确认才开始下一批。RUN01、EVAL01、PIPE01尚未启动。
+ENG01整体PASS，工程提交23c434e的真实Windows Node22/24 CI通过；见[独验报告](../reports/ENG01-20261115-review.md)。用户已确认ENG01完成并授权RUN01。RUN01按任务卡施工、独验和真实CI验证，完成后停止等待确认；EVAL01、PIPE01未启动。
 
 ## 用户决定（2026-11-14 冻结）
 

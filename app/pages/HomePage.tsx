@@ -5,20 +5,31 @@ import type { Wiki, WorkItemSummary } from '../api';
 import { workKindLabel, workStatusLabel } from './WorkItemsPage';
 import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
-import type { Raw, Stats } from '../api';
-import { api, dateText, sourceLabels, workItems } from '../api';
+import type { AutomationStatus, Raw, Stats } from '../api';
+import { api, automationStatus, automationTime, dateText, sourceLabels, workItems } from '../api';
 import '../home.css';
 
 const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
 const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
 
-export function HomePage({ onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
+export function HomePage({ onOpenAutomation, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onOpenAutomation?: () => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [reviewFilter,setReviewFilter]=useState(false);
   const [dueItems, setDueItems] = useState<WorkItemSummary[] | null>(null);
   const [dueError, setDueError] = useState('');
   const [dueReload, setDueReload] = useState(0);
+  const [automation, setAutomation] = useState<AutomationStatus | null>(null);
+  const [automationError, setAutomationError] = useState(false);
+  const showAutomation = Boolean(onOpenAutomation);
+  useEffect(() => {
+    if (!showAutomation) return;
+    const controller = new AbortController();
+    void automationStatus(controller.signal)
+      .then(value => { if (!controller.signal.aborted) setAutomation(value); })
+      .catch(() => { if (!controller.signal.aborted) setAutomationError(true); });
+    return () => controller.abort();
+  }, [showAutomation]);
   const showDue = Boolean(onOpenWorkItem);
   useEffect(() => {
     if (!showDue) return;
@@ -77,6 +88,16 @@ export function HomePage({ onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOp
       </section>
     </section>
     <div className="home-workspace-side">
+    {onOpenAutomation && <section className="panel home-automation" aria-labelledby="home-automation-heading">
+      <div className="panel-heading"><h2 id="home-automation-heading">自动化</h2><button className="text-button" onClick={onOpenAutomation}>查看自动化 ›</button></div>
+      {automationError ? <p className="form-error" role="alert">无法读取自动化状态。</p> : automation ? <>
+        <p>{automation.paused ? '全局暂停' : '任务可触发'} · {automation.scheduler.healthy ? '调度器正常' : '调度器异常'}</p>
+        <dl className="automation-facts">
+          <div><dt>最近 24 小时失败</dt><dd>{automation.failuresLast24Hours} 次</dd></div>
+          <div><dt>下次运行（上海时间）</dt><dd>{automationTime(automation.nextRunAt)}</dd></div>
+        </dl>
+      </> : <p role="status">正在读取自动化状态…</p>}
+    </section>}
     {onOpenWorkItem && <section className="panel home-actions work-due" aria-labelledby="work-due-heading">
       <div className="panel-heading"><div><h2 id="work-due-heading">到期跟进</h2><p>工作事项 · 按上海日期</p></div><button className="text-button" onClick={() => setDueReload(value => value + 1)}>刷新到期跟进</button></div>
       {dueError ? <p className="form-error" role="alert">{dueError}</p> : dueItems === null ? <p role="status">正在读取到期跟进…</p> : dueItems.length === 0 ? <p>暂无到期的工作事项。</p> : <div className="home-action-list">{dueItems.map(item => <article className="home-action-row" key={item.id} aria-label={item.title}><div><b>{item.title}</b><p>{workKindLabel(item.kind)} · {item.followUpOn && <time dateTime={item.followUpOn}>{item.followUpOn}</time>} · {workStatusLabel(item.kind, item.status)}</p></div><button className="secondary-button" onClick={() => onOpenWorkItem(item.id)}>查看事项</button></article>)}</div>}

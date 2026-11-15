@@ -37,6 +37,23 @@ npm run dev
 
 若本机访问模型服务需要已有的 Windows HTTP 代理，可运行 `npm run dev:proxy`。脚本使用当前进程代理环境变量，或读取已启用的 Windows 手动代理；不读取 PAC，也不修改系统设置。
 
+### Windows 后台常驻
+
+在项目目录运行 `npm run build` 后，用 `npm run start` 启动生产模式。在浏览器打开 <http://127.0.0.1:4317/>，页面与 API 使用同一端口。生产与开发进程共用数据目录时须先停止已有进程。直接运行的进程可用 `Ctrl+C` 停止。
+
+如需当前 Windows 用户登录后自动启动，在 PowerShell 运行以下命令。安装脚本会列出配置并等待确认，`-Yes` 可跳过确认。任务通过 Windows PowerShell 5.1 隐藏运行，登录时触发，也可以手动启动。
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\service\install-autostart.ps1
+Start-ScheduledTask -TaskName 'AIPM Workspace'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\service\status-autostart.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\service\uninstall-autostart.ps1
+```
+
+安装可选 `-TaskName`、`-Port`、`-DataDir`、`-NodePath`、`-ConfigFile` 和 `-UseProxy`。状态与卸载命令使用同一个 `-TaskName`。代理沿用开发代理启动脚本。每次任务启动后，启动器遇到失败会等待 1 分钟再试，最多重试 3 次。工作台正常退出时本次任务结束。后台启动、退出和重试记录按天放在数据目录的 `state/runtime-logs/`，保留最近 14 天。卸载会停止启动器及其工作台进程并移除计划任务，工作区数据保留。
+
+在侧栏打开「自动化」可编辑计划、立即运行、查看记录或全局暂停。内置的系统自检每 60 分钟运行一次，检查本机运行条件，模型请求次数为 0。只有工作台进程运行时才会执行计划。启动时，启用补跑的任务最多补跑一次。
+
 ### 设置模型
 
 打开「设置」，填写服务商提供的 API Base URL、模型 ID 和 API Key，保存后再按需点击「测试连接」。产品通过你配置的 OpenAI-compatible Chat Completions 服务发送请求。设置页不会自动调用模型；连接测试会发送固定的非业务消息，服务商可能收费。

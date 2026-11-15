@@ -1,0 +1,44 @@
+{
+  "checks": [
+    "real install and registered task XML",
+    "scheduled action reached production health",
+    "two real scheduled selfchecks at 1 minute, zero model requests"
+  ],
+  "scheduledRuns": [
+    {
+      "scheduledAt": "2026-11-15T07:39:24.906Z",
+      "startedAt": "2026-11-15T07:39:25.469Z",
+      "endedAt": "2026-11-15T07:39:25.519Z",
+      "status": "succeeded",
+      "steps": 5,
+      "usage": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 0
+      }
+    },
+    {
+      "scheduledAt": "2026-11-15T07:38:24.906Z",
+      "startedAt": "2026-11-15T07:38:24.985Z",
+      "endedAt": "2026-11-15T07:38:25.037Z",
+      "status": "succeeded",
+      "steps": 5,
+      "usage": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 0
+      }
+    }
+  ],
+  "restartConfigured": {
+    "interval": "PT1M",
+    "count": 3
+  },
+  "restartObserved": false,
+  "launcherExitCode": -1,
+  "lastTaskResult": 4294967295,
+  "observationPolls": 100,
+  "taskAndProcessCleaned": true
+}

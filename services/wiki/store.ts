@@ -3,6 +3,7 @@ import type {AnswerDerivation} from './question-input.ts';
 import type { PdfDerivation } from './pdf-input.ts';
 import { randomUUID } from 'node:crypto';
 import { appendFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import { assertFormalWriteAllowed } from '../automation/context.ts';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
@@ -97,6 +98,7 @@ export class WikiStore {
   }
 
   async initialize() {
+    assertFormalWriteAllowed();
     await mkdir(wikiDir(this.root), { recursive: true });
     await mkdir(this.recycleDir, { recursive: true });
     await mkdir(path.dirname(this.logFile), { recursive: true });
@@ -280,11 +282,13 @@ export class WikiStore {
 
   /** Writes one formal page atomically without touching the Index or the Log. */
   async writePageLocked(record: WikiRecord): Promise<void> {
+    assertFormalWriteAllowed();
     await writeAtomic(recordPath(this.root, record.id), frontmatter(record));
   }
 
   /** Appends knowledge-log entries for one committed operation, deduplicated by operationId+id. */
   async appendLogLocked(entries: Array<{ operationId: string; action: ChangeAction; id: string; title: string; type: WikiType; revision: number; isDemo?: boolean }>): Promise<void> {
+    assertFormalWriteAllowed();
     if (!entries.length) return;
     const seen = new Set<string>();
     for (const line of (await readFile(this.logFile, 'utf8').catch(() => '')).split(/\r?\n/)) {
@@ -339,6 +343,7 @@ export class WikiStore {
   }
 
   async rebuildIndex(): Promise<void> {
+    assertFormalWriteAllowed();
     const records = await this.records();
     const lines = ['# FMCG Wiki Index', '', '> 此文件由工作台根据正式 Wiki Markdown 重建；请编辑原始页面。', '', '| ID | 标题 | 类型 | 分类 | 别名 |', '|---|---|---|---|---|'];
     for (const record of records) lines.push(`| ${record.id} | [[${mdCell(record.title)}]] | ${record.type} | ${mdCell(record.category)} | ${mdCell(record.aliases.join('、'))} |`);
@@ -348,6 +353,7 @@ export class WikiStore {
   private pendingPath(operationId: string) { return path.join(this.pendingDir, `${operationId}.json`); }
 
   private async commitChange(action: ChangeAction, record: WikiRecord, writeAsset: () => Promise<void>) {
+    assertFormalWriteAllowed();
     const operationId = randomUUID();
     const { body: _body, ...metadata } = record;
     const pending: PendingChange = { operationId, action, id: record.id, title: record.title, type: record.type, revision: record.revision, isDemo: record.isDemo === true, phase: 'prepared' };

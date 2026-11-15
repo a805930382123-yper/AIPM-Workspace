@@ -1,5 +1,15 @@
 # 工程方案
 
+## RUN01 本机运行与自动化底座
+
+生产入口先检查 `dist/index.html`，再用一个监听 `127.0.0.1` 的 Express 进程提供 API 和静态 UI。未知 `/api` 路径返回 JSON 404，普通页面深链接回退到 `index.html`。开发沿用现有 Vite 代理及 watch 命令。自动化 API 使用与模型配置相同的本机 Host/Origin 白名单判定，另外用独立进程令牌保护 JSON 写入。同源访问与显式 `FMCG_UI_ORIGIN` 按既有配置语义处理。
+
+生产和开发在任何 Store 初始化前都取得 `state/runtime/instance.lock`。以数据根的规范路径确定 Windows 本机命名管道的排他名称，并用 `wx` 写入进程记录。管道防止并发启动在读取同一把陈旧锁后误删对方的新记录。正常退出先停止调度和 HTTP listener，再释放本进程记录。强制退出由系统释放管道，后续启动确认 PID 已退出后接管。v1 备份继续包含 `state/`，根指纹让恢复到新数据根的服务识别复制来的实例记录。
+
+代码注册的任务、上海时区计划和用量账本位于 `services/automation/`。计划、revision、暂停和下一次时刻以原子 JSON 保存在 `state/automation/schedules.json`。运行文件按计划的 UTC 月份放入 `state/automation/runs/`。调度先记录已消费的时刻，再原子推进计划游标，启动时中断遗留队列或执行记录，每任务最多补跑最近一次未记录的触发。暂停和重叠的计划触发保留 skipped 记录。清理只移除超过 90 天且在最新 2000 条之外的终态记录。损坏文件留在原处，API 返回逐条问题。
+
+既有 Provider 请求快照继续由 AsyncLocalStorage 绑定。调度为任务建立独立运行上下文，统一 Provider 工厂在每次实际调用时按该上下文累计用量。Wiki 与 Prompt 的正式存储拒绝来自该上下文的写入。当前注册的唯一任务是 60 分钟间隔的工作台自检，检查数据目录、实例锁、恢复问题、Provider 配置状态和剩余磁盘空间。自检不调用 Provider。
+
 ## RAWEDIT02 人工正文修订边界（2026-11-14，独立验收通过）
 
 用户明确授权从 Raw 详情人工编辑正文，取代下文历史“Raw 不可变”对人工操作的限制；AI 仍不得改写 Raw。见 [RAWEDIT02 任务卡](handoffs/RAWEDIT02-20261114-task.md)及[独立验收](reports/RAWEDIT02-20261114-review.md)。稳定 Raw ID 和来源身份保持，PATCH正文校验预期SHA及bodyRevision（旧记录0），先将修改前完整Markdown原字节写入 knowledge/raw/history/<id>/<revision>.md，再原子替换正文；原件字节不修改。编辑与启动/确认复用Wiki锁，进行中处理及未完成确认阻止编辑。旧普通派生依据按正文SHA失效，已有正式Wiki不自动改写。PDF人工改的是提取文字，bodyRevision非零时旧页链与按页草稿不再用于当前正文，原PDF仍可打开；不能把改后文字冒充原PDF页内容。带Meeting来源身份的Raw仍保持桥接原件一致性，不开放直接正文修订；普通meeting分类不受此限制。

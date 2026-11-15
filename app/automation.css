@@ -1,0 +1,36 @@
+.automation-page .automation-panel { padding: 20px; margin-bottom: 16px; overflow-wrap: anywhere; }
+.automation-page .automation-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.automation-page h2 { margin: 0; font-size: 18px; }
+.automation-page h3 { margin: 16px 0 0; font-size: 15px; }
+.automation-page .automation-heading h3 { margin-top: 0; }
+.automation-page .automation-panel p, .home-automation p { font-size: 13px; line-height: 1.5; }
+.automation-page .automation-heading p { margin: 5px 0 0; color: var(--muted); }
+.automation-page .automation-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.automation-page .automation-actions .primary-button, .automation-page .automation-actions .secondary-button { white-space: normal; }
+.automation-page .automation-confirm { padding: 12px 16px; margin-top: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--canvas); }
+.automation-page .automation-confirm p { margin: 0 0 10px; }
+.automation-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(135px, 100%), 1fr)); gap: 10px 16px; margin: 16px 0 0; font-size: 13px; }
+.automation-facts dt { color: var(--muted); line-height: 1.5; }
+.automation-facts dd { margin: 2px 0 0; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.automation-page .automation-task { padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--line); }
+.automation-page .automation-editor, .automation-page .automation-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; margin-top: 16px; }
+.automation-page .automation-editor { padding: 12px; background: var(--canvas); border-radius: 8px; }
+.automation-page .automation-editor label, .automation-page .automation-filters label { display: grid; gap: 5px; max-width: 100%; font-size: 13px; font-weight: 600; }
+.automation-page .automation-editor .automation-check { display: flex; align-items: center; align-self: center; }
+.automation-page .automation-editor .automation-actions, .automation-page .automation-editor .form-error, .automation-page .automation-conflict { width: 100%; }
+.automation-page .automation-editor input:not([type='checkbox']), .automation-page select { min-height: 36px; min-width: 0; max-width: 100%; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font: inherit; }
+.automation-page .automation-list { list-style: none; margin: 12px 0 0; padding: 0; }
+.automation-page .automation-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.automation-page .automation-list li > div { min-width: 0; }
+.automation-page .automation-list li button { flex: 0 0 auto; }
+.automation-page .automation-list li p { margin: 4px 0 0; }
+.automation-page .automation-steps li { align-items: flex-start; }
+.home-page .home-workspace .home-automation { padding: 16px 20px; }
+.home-page .home-automation > p { margin: 6px 0 0; }
+.home-page .home-automation .panel-heading { padding: 0; }
+.home-page .home-automation .automation-facts { margin-top: 10px; }
+@media (max-width: 580px) {
+  .automation-page .automation-panel { padding: 14px; }
+  .automation-page .automation-editor label:not(.automation-check) { width: 100%; }
+  .automation-page .automation-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
