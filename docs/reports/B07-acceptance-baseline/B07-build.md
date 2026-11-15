@@ -18,31 +18,31 @@
 
 | 文件 | 作用 |
 |---|---|
-| [services/prompt/errors.ts](services/prompt/errors.ts) | `PromptError`（code/message/status/details），沿用统一 `{error:{code,message,details?}}` 契约 |
-| [services/prompt/limits.ts](services/prompt/limits.ts) | 长度上限的**唯一定义处**，服务端、界面文案、本报告同源引用 |
-| [services/prompt/variables.ts](services/prompt/variables.ts) | `{{变量}}` 扫描、提取与单次字面量渲染 |
-| [services/prompt/validate.ts](services/prompt/validate.ts) | 严格白名单校验、系统字段拒绝、变量值归一化 |
-| [services/prompt/store.ts](services/prompt/store.ts) | Prompt 存储：原子写入、版本快照、回收、搜索、导出、关联读取 |
-| [server/prompt-api.ts](server/prompt-api.ts) | Prompt HTTP 路由（静态路径先于 `:id` 注册） |
-| [app/pages/PromptLibraryPage.tsx](app/pages/PromptLibraryPage.tsx) | Library 界面：列表/筛选、编辑、变量填写与复制、版本页、删除确认、导出 |
-| [app/prompt.css](app/prompt.css) | Prompt 页面样式，复用既有按钮/错误/空态/加载样式 |
-| [rules/prompt-rules.yaml](rules/prompt-rules.yaml) | 冻结的六个分类 id 与显示名（服务端与界面同源读取） |
+| [services/prompt/errors.ts](../../../services/prompt/errors.ts) | `PromptError`（code/message/status/details），沿用统一 `{error:{code,message,details?}}` 契约 |
+| [services/prompt/limits.ts](../../../services/prompt/limits.ts) | 长度上限的**唯一定义处**，服务端、界面文案、本报告同源引用 |
+| [services/prompt/variables.ts](../../../services/prompt/variables.ts) | `{{变量}}` 扫描、提取与单次字面量渲染 |
+| [services/prompt/validate.ts](../../../services/prompt/validate.ts) | 严格白名单校验、系统字段拒绝、变量值归一化 |
+| [services/prompt/store.ts](../../../services/prompt/store.ts) | Prompt 存储：原子写入、版本快照、回收、搜索、导出、关联读取 |
+| [server/prompt-api.ts](../../../server/prompt-api.ts) | Prompt HTTP 路由（静态路径先于 `:id` 注册） |
+| [app/pages/PromptLibraryPage.tsx](../../../app/pages/PromptLibraryPage.tsx) | Library 界面：列表/筛选、编辑、变量填写与复制、版本页、删除确认、导出 |
+| [app/prompt.css](../../../app/prompt.css) | Prompt 页面样式，复用既有按钮/错误/空态/加载样式 |
+| [rules/prompt-rules.yaml](../../../rules/prompt-rules.yaml) | 冻结的六个分类 id 与显示名（服务端与界面同源读取） |
 
 **修改（产品代码）**
 
 | 文件 | 改动 |
 |---|---|
-| [server/index.ts](server/index.ts) | 构造 `PromptStore` 并 `initialize()`；把 store 传入首页统计；注册 Prompt 路由 |
-| [services/stats/index.ts](services/stats/index.ts) | 首页 `promptCount` 改为复用 `countActivePrompts` 的有效读取逻辑，修正原先递归计 JSON 的方式 |
-| [app/App.tsx](app/App.tsx) | Prompt 页面接入路由与导航 |
-| [app/api.ts](app/api.ts) | Prompt 请求封装与类型 |
-| [app/pages/HomePage.tsx](app/pages/HomePage.tsx) | Prompt 卡片可跳转 Library，文案更新为 Library 已可用 |
+| [server/index.ts](../../../server/index.ts) | 构造 `PromptStore` 并 `initialize()`；把 store 传入首页统计；注册 Prompt 路由 |
+| [services/stats/index.ts](../../../services/stats/index.ts) | 首页 `promptCount` 改为复用 `countActivePrompts` 的有效读取逻辑，修正原先递归计 JSON 的方式 |
+| [app/App.tsx](../../../app/App.tsx) | Prompt 页面接入路由与导航 |
+| [app/api.ts](../../../app/api.ts) | Prompt 请求封装与类型 |
+| [app/pages/HomePage.tsx](../../../app/pages/HomePage.tsx) | Prompt 卡片可跳转 Library，文案更新为 Library 已可用 |
 
 **新增（测试与自测工具，均不计入 `npm test` 的验收测试）**
 
 `tests/prompt.test.ts`（服务端单元测试）、`tests/prompt-ui.test.tsx`（jsdom 界面测试）、`tests/b07-harness.mjs`、`tests/b07-fault-hook.mjs`、`tests/b07-prompt-http.mjs`。
 
-**文档**：[README.md](README.md) 新增「B07 Prompt Library」章节（接口表、长度上限、变量语法、存储格式、回收与重试语义），并修正三处因 B07 落地而变为不准确的旧表述（首页统计口径、Prompt 工作台「仍属于后续批次」、`npm test` 覆盖范围）。
+**文档**：[README.md](../../../README.md) 新增「B07 Prompt Library」章节（接口表、长度上限、变量语法、存储格式、回收与重试语义），并修正三处因 B07 落地而变为不准确的旧表述（首页统计口径、Prompt 工作台「仍属于后续批次」、`npm test` 覆盖范围）。
 
 **未改动（受保护）**：`docs/handoffs/**`、`docs/batches/**`、`docs/status.md`、`docs/architecture.md`、`docs/coordination.md`、`docs/acceptance.md`、`docs/product-spec.md`、`tests/acceptance/**`、`workspace/**`、密钥与本地数据。
 
@@ -127,7 +127,7 @@
 | 规则 | `PROMPT_RULES_MISSING` | 500 | 分类规则文件缺失 |
 | 通用 | `NOT_FOUND` | 404 | 记录、版本或导出的 id 不存在 |
 
-### 1.4 长度上限（[services/prompt/limits.ts](services/prompt/limits.ts) 唯一定义）
+### 1.4 长度上限（[services/prompt/limits.ts](../../../services/prompt/limits.ts) 唯一定义）
 
 | 字段 | 上限 |
 |---|---|
@@ -177,7 +177,7 @@
 - 更新/删除必须带正整数 `baseVersion`，过期返回 409 且保留用户已编辑内容；并发的同 `baseVersion` 更新只有一个成功。
 - 创建重试：界面为一次显式「新建」会话生成一个 UUID `requestId`，重试沿用；同 requestId 且初始字段（归一化后）相同 → 返回当前对象、不加版本、不覆盖之后的手工编辑；初始字段不同 → 409；已回收的 id → 409，永不复活。
 - **B08 落地时的保存约定（已预留，本批未使用）**：
-  - 来源枚举已冻结在 [services/prompt/store.ts](services/prompt/store.ts)：`PromptSource = 'manual' | 'ai_generated' | 'optimized'`、`PromptChangeSource = 'manual' | 'ai_optimized'`。
+  - 来源枚举已冻结在 [services/prompt/store.ts](../../../services/prompt/store.ts)：`PromptSource = 'manual' | 'ai_generated' | 'optimized'`、`PromptChangeSource = 'manual' | 'ai_optimized'`。
   - 把 AI 预览保存为**新 Prompt**：走同一个 `POST /api/prompts`（新 requestId + `source: 'ai_generated'`），系统字段仍由服务端写。
   - 保存为**已有 Prompt 的新版本**：走同一个 `PUT /api/prompts/:id`（带 `baseVersion`，`changeSource` 由服务端置为 `ai_optimized`）。
   - 两条路径都由用户的显式保存动作触发；AI 结果本身只进入草稿，不会自动落盘。
@@ -194,9 +194,9 @@
 
 | 命令 | 退出码 | 耗时 | 结果 | 日志 |
 |---|---|---|---|---|
-| `npm run build` | **0** | 4,667 ms（vite 自身 977 ms，44 modules transformed） | 通过 | [docs/reports/B07-builder-build.log](docs/reports/B07-builder-build.log) |
-| `npm test` | **0** | 17,123 ms（node:test 汇总 16,516.82 ms） | **135 pass / 0 fail** / 0 cancelled / 0 skipped / 0 todo | [docs/reports/B07-builder-test.log](docs/reports/B07-builder-test.log) |
-| `node tests/b07-prompt-http.mjs` | **0** | 2,508 ms | **11 PASS / 0 FAIL / 1 NOT_RUN** | [docs/reports/B07-builder-http-evidence.json](docs/reports/B07-builder-http-evidence.json) |
+| `npm run build` | **0** | 4,667 ms（vite 自身 977 ms，44 modules transformed） | 通过 | [docs/reports/B07-builder-build.log](../B07-builder-build.log) |
+| `npm test` | **0** | 17,123 ms（node:test 汇总 16,516.82 ms） | **135 pass / 0 fail** / 0 cancelled / 0 skipped / 0 todo | [docs/reports/B07-builder-test.log](../B07-builder-test.log) |
+| `node tests/b07-prompt-http.mjs` | **0** | 2,508 ms | **11 PASS / 0 FAIL / 1 NOT_RUN** | [docs/reports/B07-builder-http-evidence.json](../B07-builder-http-evidence.json) |
 
 `npm test` 中与 B07 相关的测试：`tests/prompt.test.ts` 的 17 个服务端单元测试、`tests/prompt-ui.test.tsx` 的 5 个 jsdom 界面测试，例如：
 
@@ -227,7 +227,7 @@
 
 ### 2.1 E07 逐项结果
 
-证据文件：[docs/reports/B07-builder-http-evidence.json](docs/reports/B07-builder-http-evidence.json)（脚本自启隔离服务，`llmConfigured: false`，临时数据根 `C:\Users\80593\AppData\Local\Temp\fmcg-b07-builder-J2MJi2`）。
+证据文件：[docs/reports/B07-builder-http-evidence.json](../B07-builder-http-evidence.json)（脚本自启隔离服务，`llmConfigured: false`，临时数据根 `C:\Users\80593\AppData\Local\Temp\fmcg-b07-builder-J2MJi2`）。
 
 | ID | 项目 | 结果 | 关键证据 |
 |---|---|---|---|
@@ -294,7 +294,7 @@
 | `knowledge/raw/articles/daf6fde4-98e0-478d-8abe-f3abce1031ad.md` | `91ce67d21312797bf465bcbd2618e86b00b7f387c550f4ae662443bca6fb09d2` | 同左 |
 | `knowledge/wiki/index.md` | `6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733` | 同左 |
 
-快照文件：[docs/reports/B07-builder-workspace-before.json](docs/reports/B07-builder-workspace-before.json)（2026-10-07T07:53:33Z，2 files）与 [docs/reports/B07-builder-workspace-after.json](docs/reports/B07-builder-workspace-after.json)（2026-10-07T07:54:56Z，2 files）；两者内容逐字节相同，`npm test` 与 E07 自测跑完后再次复核仍相同。正式 workspace 未被自测写入，本批也没有创建任何正式 Prompt。
+快照文件：[docs/reports/B07-builder-workspace-before.json](../B07-builder-workspace-before.json)（2026-10-07T07:53:33Z，2 files）与 [docs/reports/B07-builder-workspace-after.json](../B07-builder-workspace-after.json)（2026-10-07T07:54:56Z，2 files）；两者内容逐字节相同，`npm test` 与 E07 自测跑完后再次复核仍相同。正式 workspace 未被自测写入，本批也没有创建任何正式 Prompt。
 
 ### 3.3 历史验收证据的恢复记录
 

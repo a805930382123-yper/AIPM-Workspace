@@ -1,0 +1,81 @@
+{
+  "success": true,
+  "screenshots": [
+    "docs/reports/PDF01-R3-20261112-ui-evidence/01-pdf-primary-entry.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/02-partial-understanding-and-missing-page.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/03-writing-failure-and-explicit-resume.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/04-page-two-and-return-link.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/05-back-to-original-evidence-focus.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/06-edited-one-topic-selected.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/07-formal-wiki-readback.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/08-scan-primary-entry.png",
+    "docs/reports/PDF01-R3-20261112-ui-evidence/09-scan-page-understood.png"
+  ],
+  "posts": [
+    "/api/raw/import",
+    "/api/raw/f0e33778-1f73-41f2-9c2d-5b7d4abe7fd7/pdf/understand",
+    "/api/raw/f0e33778-1f73-41f2-9c2d-5b7d4abe7fd7/pdf/understand",
+    "/api/raw/f0e33778-1f73-41f2-9c2d-5b7d4abe7fd7/pdf/cleanup",
+    "/api/raw/f0e33778-1f73-41f2-9c2d-5b7d4abe7fd7/pdf/cleanup",
+    "/api/raw/f0e33778-1f73-41f2-9c2d-5b7d4abe7fd7/pdf/cleanup/draft",
+    "/api/knowledge/drafts/b3a710da-8a53-49a9-a1f8-3e581b618d18/changes/review",
+    "/api/drafts/b3a710da-8a53-49a9-a1f8-3e581b618d18/confirm",
+    "/api/raw/import",
+    "/api/raw/55fc303a-6545-4b41-80ec-950f389b0ad0/pdf/understand"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "wikiBefore": {
+    "index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+  },
+  "wikiAfter": {
+    "3f6a2c1f-ac62-4783-b83c-2918b2bcc9c1.md": "133362dfaa98749942d7c01f68983602717ca1ee8b56611c21f385e826a1273d",
+    "f05324a6-c443-4d11-84e6-13238a43eb1c.md": "d10845e224e2bae6ad91b68f934d26dd35c0e5b0581cdbedbb2ff724c4525ef2",
+    "index.md": "9cb349078fc09aa60081862265a186a16a971eba779e33c84063f5459723875b"
+  },
+  "mixedAssetSha256": "180ed0071c1e041b134f7e5bc4f57811aa65c9e846907c50200dcba95a6e2657",
+  "scanAssetSha256": "8195e003f8d00a659187d0c78a1b79e18308dbc80bd6b1daa1510ed05205a0bf",
+  "modelCalls": [
+    {
+      "stage": "pdf_page_understanding",
+      "page": 1,
+      "bytes": 102
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 2,
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 3,
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 3,
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_cleanup",
+      "bytes": 776
+    },
+    {
+      "stage": "pdf_topic_index",
+      "bytes": 563
+    },
+    {
+      "stage": "pdf_topic_write",
+      "bytes": 1081
+    },
+    {
+      "stage": "pdf_topic_write",
+      "bytes": 1081
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 1,
+      "bytes": 68
+    }
+  ]
+}

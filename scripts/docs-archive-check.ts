@@ -1,0 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+type Entry={id:number;target:string;action:string;sha256:string};type Doc={source:string;sha256:string;blocks:number;report:Entry[]};
+const base=process.argv[2]??'docs', manifest=JSON.parse(readFileSync(path.join(base,'archive-manifest.json'),'utf8')) as Doc[];
+const sha=(v:string)=>createHash('sha256').update(v).digest('hex');
+const undo=(s:string)=>s.replace(/(\]\()([^\s)]+)(?=[\s)])/g,(m,a:string,b:string)=>{if(/^(?:[a-z]+:|\/|#)/i.test(b))return m;if(!b.startsWith('../'))throw Error('unexpected archived link '+b);return a+b.slice(3)});
+for(const doc of manifest){const name=path.basename(doc.source,'.md'),source=readFileSync(path.join(base,name+'.md'),'utf8'),marker='<!-- ENG01 '+name+':';const first=source.indexOf(marker);if(first<0)throw Error('no marker '+name);let prefix=source.slice(0,first);const summary=prefix.indexOf('<!-- ENG01 summary -->');if(summary>=0)prefix=prefix.slice(0,summary);let original=prefix;for(const e of doc.report){const contents=readFileSync(path.join(base,e.target),'utf8'),tag=`<!-- ENG01 ${name}:${e.id} -->\n`,start=contents.indexOf(tag);if(start<0||contents.indexOf(tag,start+tag.length)>=0)throw Error('missing/duplicate '+name+':'+e.id);const from=start+tag.length,next=contents.indexOf('<!-- ENG01 ',from),part=contents.slice(from,next<0?undefined:next),restored=e.action==='move'?undo(part):part;if(sha(restored)!==e.sha256)throw Error('block mismatch '+name+':'+e.id);original+=restored}if(doc.report.length!==doc.blocks||sha(original)!==doc.sha256)throw Error('document mismatch '+name);console.log(`${name}: ${doc.blocks} blocks, reconstructed SHA-256 ${doc.sha256} OK`)}

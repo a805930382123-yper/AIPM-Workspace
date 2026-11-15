@@ -1,0 +1,185 @@
+{
+  "success": true,
+  "checks": [
+    "正文一条代表合并双页，原件链接实际打开第1页和第2页。",
+    "不同年份、规模、样本条件和新增商户/消费者原样并列。",
+    "全部六条证据及清理决定仍可查看，选入前正式 Wiki、原件、Raw 和页理解不变。"
+  ],
+  "screenshots": [
+    "docs/reports/PDF01-R2-CONSOLIDATION-20261110-ui-evidence/final-check/builder-01-cleanup-original-decisions.png",
+    "docs/reports/PDF01-R2-CONSOLIDATION-20261110-ui-evidence/final-check/builder-02-draft-consolidated-content.png",
+    "docs/reports/PDF01-R2-CONSOLIDATION-20261110-ui-evidence/final-check/builder-03-dual-original-evidence.png"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "posts": [
+    "/api/raw/import",
+    "/api/raw/a8a554a4-c554-46d1-b9b1-3cebe07fbc83/pdf/understand",
+    "/api/raw/a8a554a4-c554-46d1-b9b1-3cebe07fbc83/pdf/cleanup",
+    "/api/raw/a8a554a4-c554-46d1-b9b1-3cebe07fbc83/pdf/cleanup/draft"
+  ],
+  "wiki": {
+    "index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+  },
+  "assetSha256": "84bdf009b6d33b96444dca586e6b7424053225673bff3180014ab5a7f04e26e2",
+  "calls": [
+    {
+      "stage": "pdf_page_understanding",
+      "page": 1,
+      "bytes": 97
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 2,
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 3,
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_cleanup",
+      "units": [
+        {
+          "id": "p1-text-1",
+          "page": 1,
+          "text": "2027 North pilot: 173 stores.",
+          "origin": "text",
+          "kind": "content"
+        },
+        {
+          "id": "p1-content-1",
+          "page": 1,
+          "text": "Decorative logo.",
+          "origin": "image",
+          "kind": "content"
+        },
+        {
+          "id": "p2-content-1",
+          "page": 2,
+          "text": "2027 North pilot covered 173 stores.",
+          "origin": "image",
+          "kind": "content"
+        },
+        {
+          "id": "p2-content-2",
+          "page": 2,
+          "text": "2028 North pilot: 181 stores.",
+          "origin": "image",
+          "kind": "content"
+        },
+        {
+          "id": "p3-content-1",
+          "page": 3,
+          "text": "2027 North pilot: 173 stores, urban only.",
+          "origin": "image",
+          "kind": "content"
+        },
+        {
+          "id": "p3-content-2",
+          "page": 3,
+          "text": "2027 active merchants: 43.",
+          "origin": "image",
+          "kind": "content"
+        },
+        {
+          "id": "p3-content-3",
+          "page": 3,
+          "text": "2027 active shoppers: 960.",
+          "origin": "image",
+          "kind": "content"
+        }
+      ],
+      "bytes": 757
+    },
+    {
+      "stage": "pdf_topic_index",
+      "topics": [
+        "覆盖规模",
+        "试点覆盖"
+      ],
+      "basis": [
+        {
+          "topic": "覆盖规模",
+          "samples": [
+            {
+              "id": "p1-text-1",
+              "page": 1,
+              "text": "2027 North pilot: 173 stores.",
+              "origin": "text",
+              "kind": "content"
+            }
+          ]
+        },
+        {
+          "topic": "试点覆盖",
+          "samples": [
+            {
+              "id": "p3-content-1",
+              "page": 3,
+              "text": "2027 North pilot: 173 stores, urban only.",
+              "origin": "image",
+              "kind": "content"
+            }
+          ]
+        }
+      ],
+      "bytes": 401
+    },
+    {
+      "stage": "pdf_presentation",
+      "units": [
+        {
+          "id": "p1-text-1",
+          "page": 1,
+          "text": "2027 North pilot: 173 stores.",
+          "origin": "text",
+          "kind": "content",
+          "topic": "北区试点覆盖"
+        },
+        {
+          "id": "p2-content-1",
+          "page": 2,
+          "text": "2027 North pilot covered 173 stores.",
+          "origin": "image",
+          "kind": "content",
+          "topic": "北区试点覆盖"
+        },
+        {
+          "id": "p2-content-2",
+          "page": 2,
+          "text": "2028 North pilot: 181 stores.",
+          "origin": "image",
+          "kind": "content",
+          "topic": "北区试点覆盖"
+        },
+        {
+          "id": "p3-content-1",
+          "page": 3,
+          "text": "2027 North pilot: 173 stores, urban only.",
+          "origin": "image",
+          "kind": "content",
+          "topic": "北区试点覆盖"
+        },
+        {
+          "id": "p3-content-2",
+          "page": 3,
+          "text": "2027 active merchants: 43.",
+          "origin": "image",
+          "kind": "content",
+          "topic": "北区试点覆盖"
+        },
+        {
+          "id": "p3-content-3",
+          "page": 3,
+          "text": "2027 active shoppers: 960.",
+          "origin": "image",
+          "kind": "content",
+          "topic": "北区试点覆盖"
+        }
+      ],
+      "bytes": 845
+    }
+  ]
+}

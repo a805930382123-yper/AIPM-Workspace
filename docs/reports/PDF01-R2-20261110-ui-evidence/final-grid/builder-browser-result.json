@@ -1,0 +1,75 @@
+{
+  "success": true,
+  "screenshots": [
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-01-missing-scope.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-02-explicit-page-range.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-03-index-failed.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-04-cleanup-summary.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-05-skipped-reasons.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-06-source-page.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-07a-compact-outcome.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-07-outcome-and-page-evidence.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-08-selected-and-edited.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-09-concurrent-conflict.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-10-confirmed.png",
+    "docs/reports/PDF01-R2-20261110-ui-evidence/final-grid/builder-11-formal-page-source.png"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "checks": [
+    "缺页阻止整份清理，显式选第 1–3 页；归并失败重载零调用，继续复用清理批次。",
+    "归属理由按需展开，扫描和矢量证据可回原页。",
+    "编辑改变草稿摘要；正式 Wiki 文件在生成、编辑、选择和冲突后保持原SHA；明确确认后仅写入所选。",
+    "409保留原稿，可结束选择并基于新目标版本重新生成；原件与Raw保持原样。"
+  ],
+  "hashes": {
+    "before": {
+      "febf3601-ff12-492f-a8fb-446b4a57d726.md": "ccc76a0672ba5106f60090961e196401d987c9da2ea7005eb05e9b813fa1c5d9",
+      "index.md": "4c54349b387aade9a295dde7214a477507defba724b743c85c0b255e3b71edeb"
+    },
+    "concurrent": {
+      "febf3601-ff12-492f-a8fb-446b4a57d726.md": "2a92bd3aec90b81f4a35f4808a042a83d085b20c43083fc6c4a81794297f2d19",
+      "index.md": "4c54349b387aade9a295dde7214a477507defba724b743c85c0b255e3b71edeb"
+    },
+    "after": {
+      "7e1189bd-39dc-4107-a999-905595c408de.md": "be725e142bdf931ce3f4ba28027daca50b0bdb937ddd3000374a66cad70578cd",
+      "febf3601-ff12-492f-a8fb-446b4a57d726.md": "d41f625c02d3aaff3dc3873dd003df51ff6b3bcce5fb3e2ad6f4fcdc92e24713",
+      "index.md": "0dda0f407011cf1c706ff79b954edd5587259de7f047d6712dfc5680d5667eb7"
+    },
+    "source": "65aec5134430b7f641f5be066dadec3e8a79fe33e699537703a058a7e44f484c"
+  },
+  "calls": [
+    {
+      "stage": "pdf_page_understanding",
+      "page": 1,
+      "imageSha": "01a3cf3da8eee9ea5d0fe9f433b9738c5a00784d1f9748bd81542bb86782dfc2"
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 2,
+      "imageSha": "f91ddabd99b8c2c5eb2d2fa943d6bde35e3a2337600435f0656de742effcfff0"
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 3,
+      "imageSha": "db4a03fff1edbbd062ed37dbeeb75641a93a462f5fc8607a17420b0c9eda5779"
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "page": 4,
+      "imageSha": "c4371f4b2896735d55e9466fbbc64ef5e32fff38aba51f4b77e2cb96daeea9bf"
+    },
+    {
+      "stage": "pdf_cleanup",
+      "units": 11
+    },
+    {
+      "stage": "pdf_topic_index",
+      "topics": 2
+    },
+    {
+      "stage": "pdf_topic_index",
+      "topics": 2
+    }
+  ]
+}

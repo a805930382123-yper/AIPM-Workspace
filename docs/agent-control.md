@@ -1,5 +1,11 @@
 # 项目总控记录
 
+<!-- ENG01 summary -->
+## 历史归档
+
+[2026 年 10 月](archive/agent-control-2026-10.md) · [2026 年 11 月初](archive/agent-control-2026-11a.md)。现行协作规则见[协作规则](coordination.md)。
+
+<!-- ENG01 agent-control:0 -->
 ## RAWEDIT02 Raw 原文人工编辑通过（2026-11-14）
 
 已实现Raw详情“编辑原文”与修改历史：保存保留完整修改前原文，稳定ID/来源，SHA+修订号防并发覆盖；取消零写、失败/409保输入并可核对重试。PDF只改提取文字，原件不改且仍可打开，旧页链/按页草稿失效；旧普通草稿、检查点、译文和问答引用沿版本门禁，不自动改正式Wiki或调用模型。会议登记Raw仍指引会议档案副本，普通meeting可编辑。新增暴露的旧暂缓草稿无法结束与旧引用SHA误绑已最小修复，RAWEDIT01成果编辑保留。
@@ -11,6 +17,7 @@
 证据：[冻结卡](handoffs/RAWEDIT02-20261114-task.md)、[施工报告](reports/RAWEDIT02-20261114-builder.md)、[独立验收](reports/RAWEDIT02-20261114-review.md)。
 
 
+<!-- ENG01 agent-control:1 -->
 ## RAWEDIT01 Raw 整理成果编辑收尾通过（2026-11-14）
 
 用户明确范围为Raw整理后的知识草稿，不是Raw正文/元数据，不迁移Karpathy。已完成普通standard、deep笔记及PDF/maintenance成果编辑收尾：主题编辑入口前置；保存实际内容变化后清受影响选择及旧确认请求；来源/深度笔记变化清整体选择；新增深度取消；本成果组件离开入口在编辑中受保护。maintenance保存成功但GET读回失败明确提示已保存、保留输入、仅GET恢复，恢复前阻断旧版本确认。现有后端revision/digest及来源门禁复用，未改存储或模型。
@@ -21,72 +28,89 @@ HEAD8264aba50b58be6c415be0124499a8977f3197fb加现工作树，18白名单基线�
 
 证据：[冻结卡](handoffs/RAWEDIT01-20261114-task.md)、[施工报告](reports/RAWEDIT01-20261114-builder.md)、[独立验收](reports/RAWEDIT01-20261114-review.md)。使用：Raw打开整理成果→编辑→保存→重新选择→明确确认入库，保存本身仅写草稿。
 
+<!-- ENG01 agent-control:2 -->
 ## PDF01-GLOBAL 完整62页待审草稿交付PASS（2026-11-13）
 
 62页读取、54清理、181标签归38主题、11写作全部完成，真实145/150，草稿a308bcd9-c4d0-44b2-87cd-99813e0ef1db待确认，Wiki确认0。工程PASS；独验全38正文+8页原图抽核及真实UI，质量26/30 PASS，2008非skip来源全保留、遗漏0。仍有薄待核题、页级旧问题及少量场景重复可人工精简，不新增付费。已知886803 tokens，5次usage未知、费用未知，余5未用。实际追溯明确到完整主题，非逐段精确。正常API5151/UI5173恢复。见[最终独验](reports/PDF01-GLOBAL-20261113-review.md)。未提交推送，正式入库由用户明确确认。
 
 
+<!-- ENG01 agent-control:3 -->
 ## 正式62页运行停止101/150（2026-11-12）
 
 本轮独立150预算与旧48/50不混。Astra核运行预算/完整性，Sol操作正式唯一API，root负责服务重启。62页理解完成；35/54清理保存后第101在120秒超时，已停止，无索引/写作/草稿/正式确认。两项窄工程修复独验PASS，整体处理目标未完成；现49余量少于至少90后续请求，不能承诺预算内成稿。root恢复正常API99769/UI24968，无自动模型任务；手动继续需重新核预算。详[报告](reports/PDF01-FORMAL-62-20261112-review.md)。本轮停写/停调用，无提交推送。
 
+<!-- ENG01 agent-control:4 -->
 ## PDF01 第三轮闭环完成（2026-11-12）
 
 Astra规划/独验、Sol High施工及Chrome，本轮B重大主链完整性。最终两产品文件/两UI测试冻结，独验9/9，复用46项必要自查、类型/构建与最终导入截图；R3 PASS。R1/R2真实质量已分别19/20与27/30 PASS。真实停48/50、223037 tokens，R3 fake/隔离，不再调用或扩施工，不提交推送。见[最终R3验收](reports/PDF01-R3-20261112-review.md)。
 
+<!-- ENG01 agent-control:5 -->
 ## PDF01 R2独立质量PASS，R3尚未施工（2026-11-12）
 
 Astra独验主题写作最终23候选，27/30，R1仍19/20；原FAIL历史保留。Sol七次真实写作42–48完成，累计48/50、223037 tokens、正式0；阶段误拒均保存响应后离线证据修复和原样复用，无盲重试。工程独验通过，保留局部重复/薄候选和收入措辞差异。详[独验](reports/PDF01-R2-SYNTHESIS-20261112-review.md)。停止本轮调用/施工，R3仅最小计划待root协调，不自动开工；无提交推送。
 
+<!-- ENG01 agent-control:6 -->
 ## PDF01本轮停止41/50，工程通过但真实目标未达（2026-11-12）
 
 root依据实证决定保留余9不再调用，R2质量FAIL、R3未启动。Astra独验revision4专项19/19，复用同版44/44与类型检查；Chrome精确子段、跨候选全证据及摘要修复通过。真实193777tokens，正式Wiki0，无提交推送。三处共同规模模型显式选择保留，非护栏误拒；Logo/页码源于keep父段拆分后余段全显，现选代表合同不能清除非重复元数据。下一步仅建议评审“有证据的主题级知识草稿整理”，允许AI草稿改写而Raw/全证据不变；没有新体系施工或调用授权。本轮未完成用户真实整理目标，不标批次完成。
 
+<!-- ENG01 agent-control:7 -->
 ## PDF01 内容归并机制返修（2026-11-10）
 
 本版21/50执行完成，独立R2质量25/30但归并轴2未达4，R1仍PASS；不以流水线成功替代质量PASS。root授权继续B模式Astra规划独验/Sol施工：有界内容辅助索引、代表单元展示与全依据保留，具体接口先冻结，不反复只改提示。原167单元/处置和历史结果不删改；工程通过后另报真实调用计划。当前真实暂停、R3未启动，无正式写/配置修改/提交推送。
 
+<!-- ENG01 agent-control:8 -->
 ## PDF01 同账50次授权继续（2026-11-10）
 
 用户明确总上限50，root给条件执行许可。Astra已followup派现Sol最小工具适配/执行，旧18账/R1/前两批/所有历史结果保留；#18已付费响应正常校验复用，不重复计费。版本/账本独审通过即可续至少3请求；失败先诊断，必要修复后独验，不盲试。R2质量仍按冻结gold，PASS后只报R3计划等root协调。禁止正式资料/配置写与提交推送。
 
+<!-- ENG01 agent-control:9 -->
 ## PDF01 本轮最终停止18/20（2026-11-10）
 
 B模式Astra规划独验/Sol High施工执行。已完成keyed覆盖及Unicode代码点计数修复，独验29/29、同版36/36回归和scope tsc0；全仓旧fixture损坏仍列，不扩修。真实R1 PASS19/20，R2旧质量FAIL尚未关闭，新版执行至#18因Unicode误拒；修后#18仅离线原样回放通过，三批18主题，余额2少于最低3请求。按root决定不再调用/扩预算，R3不开。累计78136tokens、无正式写/配置改/提交推送，报告[最终独验](reports/PDF01-REAL-REPAIR-20261110-review.md)与[执行](reports/PDF01-REAL-QUALITY-V2-20261110-execution.md)已收口。
 
+<!-- ENG01 agent-control:10 -->
 ## PDF01 20次累计额度续测（2026-11-10）
 
 用户新增明确授权总上限20，旧9条不清零。Astra已核最终产品/测试SHA与工程验收一致，followup派现Sol仅准备同账新工具和执行；需独立核freeze后才发请求。首批48及R1复用、预计剩4–5次，失败即停。R1/R2真实均PASS后只报R3范围等主审协调，暂不施工；禁止正式写/配置改/提交推送。
 
+<!-- ENG01 agent-control:11 -->
 ## PDF01 REAL 返修收口（2026-11-10）
 
 5分B，Astra规划独验、Sol High施工执行。结构输出/诊断/GET修正工程PASS；同账真实#8通过、#9中间topic命名拒绝后立即停止。按证据诊断再做最小标签/正式标题区分，独验6/6、最终相关13/13及scope tsc0。最终新版未真实调用，R1质量PASS/R2实际FAIL与质量未评保留；累计9/12、30028tokens，R3不启动。余3不足最低4；建议未来用户将总上限12调整为15（新增3、剩余可用6）并用最终指纹release，当前不调用。全部原失败与账本保全，无提交推送，详[独验](reports/PDF01-REAL-REPAIR-20261110-review.md)。
 
+<!-- ENG01 agent-control:12 -->
 ## PDF01 REAL 最小返修启动（2026-11-10）
 
 用户明确“进行下一步”，评分0/2/2/1=5 B。Astra kb03_r1_planner冻结[返修卡](handoffs/PDF01-REAL-REPAIR-20261110-task.md)，已以followup_task派Sol kb03_r1_builder施工；工程独验与真实质量分开裁决。只改清理接线/诊断/GET状态及定向测试；同TEMP账本7/12保留，真实续测待工程通过与主审放行，R3未启动。共享旧差异保留，不提交推送。
 
+<!-- ENG01 agent-control:13 -->
 ## PDF01 REAL 停止并交付失败证据（2026-11-10）
 
 Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权，主审按R1质量门放行R2；R1 PASS19/20，R2 #7 HTTP200/finish stop但PDF_CLEANUP_SCHEMA失败，未到归属校验、无草稿，真实整体未通过。总7/12，usage输入16721输出3638，费用未知；无重试/正式写/配置修改。具体坏字段因未留响应不可证，结构化输出缺接线及GET陈旧状态仅列最小后续建议。本轮到此停，R3不启动。实际freeze/HEAD/证据见[独验](reports/PDF01-REAL-20261110-review.md)。
 
+<!-- ENG01 agent-control:14 -->
 ## PDF01 R2 完成（2026-11-10）
 
 仅第二轮授权：Astra kb03_r1_planner规划独验、Sol High kb03_r1_builder后端/lw03_ui前端。B模式4分来源完整性直接升级。分批清理/跨页归并/现成果审核与事务接通，续表列表不足返修为真实原生网格后独验关闭；本轮缺陷及R2整体PASS。独立7核心+3UI、51根类型0、空env构建与Chrome12图；62页310单元末页入库。真实模型质量未测，全仓旧坏测试限制仍列，0付费/正式资料/用户配置操作，无提交推送。见[独验](reports/PDF01-R2-20261110-review.md)与22文件指纹；到此停止，不开R3。
 
+<!-- ENG01 agent-control:15 -->
 ## PDF01 第一轮完成（2026-11-09）
 
 用户仅授权第一轮；B模式（0/2/2/0=4来源完整性直接B），Astra Medium kb03_r1_planner规划/独验，Sol High kb03_r1_builder后端与lw03_ui前端。原PDF保留、页渲染/文字映射、真实HTTP图像Provider、页级结果/追溯、显式失败恢复交付。局部缺陷关闭及第一轮工程整体PASS；独立7核心+3UI、真实Chrome、53根文件类型检查与空env构建通过，同版回归复用40/40及17/17。全仓旧损坏测试仍导致tsc失败，真实模型质量未测，不自动第二轮。无付费/用户配置/正式资料操作，无提交推送，用户服务保留。基线234b5222加24指纹及实际命令见[独验](reports/PDF01-R1-20261109-review.md)。
 
+<!-- ENG01 agent-control:16 -->
 ## README 使用说明重写（2026-11-09）
 
 按用户审核的八部分结构重写 README：介绍、安装、功能用法、借鉴与许可、备份、限制、FAQ及详细文档。评分0/0/0/0，A轻量，沿用已审核方案；Luna High readme_builder施工，Sol High readme_review独立验收。初检文档事实问题已关闭，本轮文档范围PASS；产品整体验收未执行，既有批次结论不变。实际命令、基线956910b及最终README SHA见[独验报告](reports/README-20261109-review.md)。未运行产品服务或模型，未改业务数据。
 
+<!-- ENG01 agent-control:17 -->
 ## WORKREPLY 解决入口去重（2026-11-09）
 
 客户活动状态下拉只提供待整理/处理中/等待处理/待复测；已解决仅由快捷按钮进入，仍需说明并确认。进入后只读已解决选项显示正确，可回选活动状态取消；已保存后重开机制保持。产品分析不变。仅WorkItemsPage.tsx一行产品修改。施工customer_reply、独验delete_review；独立JSDOM入口/取消零请求/保存/重开与旧回复回归PASS，局部及本轮范围PASS。真实浏览器未测。基线b0afd2e078fbb5d4368b86f9c4b6566729848f73，文件SHA和命令见[独验](reports/WORKREPLY-ENTRY-20261109-review.md)。
 
 
+<!-- ENG01 agent-control:18 -->
 ## WORKREPLY 回复客户与解决入口通过（2026-11-09）
 
 客户处理记录新增customer_reply“回复客户”，仅本机记录不外发。客户closed显示已解决，新增“标记为已解决”切换并聚焦必填解决说明，保留其他未保存字段；确认保存后退出到期，可重开。回复客户不自动关闭，并抑制旧技术事件的过时建议。产品已完成和旧历史兼容。
@@ -94,6 +118,7 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 施工customer_reply与独验delete_review不同实例，本轮实现与WORKREPLY范围PASS。独立JSDOM回复/焦点/未保存字段/确认解决/重开通过，实际到期排除与重开恢复通过；主线程node --import tsx --import ./tests/support/css-stub.mjs --test tests/customer-reply.test.ts tests/work-delete.test.ts tests/work01-http.test.ts 4/4 PASS，含备份恢复。真实浏览器未测，无正式资料或外部消息操作。受验基线0de6935b9c0c77d6aef943992b3a1e30b1c6eaba加[独验报告](reports/WORKREPLY-20261109-review.md)3产品SHA。
 
 
+<!-- ENG01 agent-control:19 -->
 ## WORKDELETE 工作事项删除通过（2026-11-09）
 
 每条客户/产品事项及旧无kind事项详情新增删除入口与确认/取消。DELETE带baseRevision，在事项队列内校验版本并阻止运行中分析/复核；删除主记录及内嵌处理历史。成功退出详情刷新列表，到期不再出现。关联Raw保留，独立截图/分析/复核文件留本机但不再从事项访问；确认说明不可撤销和未保存修改丢失。
@@ -101,6 +126,7 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 施工work_delete、独验delete_review不同实例；本轮实现和WORKDELETE范围PASS，无待返修。独立node --import tsx --import ./tests/support/css-stub.mjs --test tests/work-delete.test.ts tests/work01-http.test.ts 3/3通过；JSDOM确认/取消/409失败/成功返回通过；实际RawStore关联后删除，完整Raw对象不变。真实浏览器未测，未操作正式事项或真实模型。基线bc2f3cff8274522800ace744625a6caa37b6191a加报告5文件SHA；详见[独验](reports/WORKDELETE-20261109-review.md)。
 
 
+<!-- ENG01 agent-control:20 -->
 ## WORK 合成两轮闭环验证（2026-11-09）
 
 用户要求模拟材料并验证事项→补料继续分析→自动化评估。已制作6条明确标注合成的反馈，真实隔离产品HTTP完成两轮各3条Raw逐字导入/关联、fake分析、显式阶段成果保存，第二轮承接首轮，回读历史及原文不变。材料日期歧义修正关闭，本轮HTTP合成闭环PASS。UI、真实模型质量、真实业务价值与WORK05自动接收NOT_RUN；阶段成果与模型响应是预写fixture，不证明推理质量。
@@ -108,11 +134,13 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 操作closed_loop、独验closed_review为不同实例。命令node --import tsx tests/acceptance/work-closed-20261109.mjs退出0；最终fake2、施工累计fake6、真实0。独验独立Node磁盘核对6原文/2轮/6关联/2成果/第二轮输入退出0，未重复跑操作脚本。基线09359d0fec9b931952a68a8298f533ce8d5c6405，无产品代码修改，正式数据/用户服务未动，自有进程已关闭。材料、两轮成果、自动化判断及独验见[交付目录](reports/WORK-CLOSED-20261109/README.md)、[独立验收](reports/WORK-CLOSED-20261109/review.md)。下一步需真实来源和使用观察再决定单来源自动补料。
 
 
+<!-- ENG01 agent-control:21 -->
 ## NEWS06 AIHOT直接展示（2026-11-09）
 
 按用户要求AI栏请求AIHOT selected/24h/limit=5，按源顺序取前5条，移除本地关键词、日期筛选、重新排序及历史/本期去重；保留必要格式检查。快消中国优先和5条、每日缓存与可选AI分析不变。今日缓存不重建，下次生成生效。施工news_five停写，主线程独立复验35/35 PASS；本轮及NEWS06范围PASS，无真实来源或模型调用、无正式数据变更。测试命令：node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts tests/news01-ui.test.tsx tests/news02-ui.test.tsx。受验基线05d709594f7cd0daacc878acbb38560921a32713加当前工作区；含之前NEWS04/05未提交修改。
 
 
+<!-- ENG01 agent-control:22 -->
 ## NEWS05 中国市场研报优先（2026-11-09）
 
 快消候选与最终精选按标题、URL路径、已取得正文中的中国/China线索优先，中文语言与域名不作为中国市场证据；非中国内容可补位。候选截断前排除365日外和未来日期，避免过期中国报告挤掉有效候选。保留两栏最多5条、AI排序、去重和当日缓存，下一次生成生效。关键词优先不等于语义地区分类。未新增来源或真实模型调用。
@@ -120,6 +148,7 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 施工news_five与主线程独立检查分离。施工31/31 PASS（node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts）；主线程独立news01及两份UI测试9/9、最终news03-repair测试20/20 PASS。本轮候选过期问题关闭，NEWS05范围整体PASS。真实来源刷新与浏览器交互未测，正式资料未改。受验基线05d709594f7cd0daacc878acbb38560921a32713，受验为当前工作区research-sources.ts/service.ts/NewsPage.tsx，包含上轮NEWS04数量调整。本轮暂存成功，但commit仍因unable to create temporary file: Invalid argument / Error building trees失败；未提交或推送。
 
 
+<!-- ENG01 agent-control:23 -->
 ## NEWS04 每日资讯数量调整（2026-11-09）
 
 用户要求快消研报与洞察、AI前沿各展示5条。服务端统一最多5条，快消页面说明同步；合格来源不足可少于5条。既有日期窗口、去重、来源抓取上限、今日缓存保持；下次生成生效。施工 news_five 与主线程独立检查均完成，本轮修改及数量调整范围 PASS。
@@ -127,6 +156,7 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 施工运行 node --import tsx --import ./tests/support/css-stub.mjs --test tests/news01.test.ts tests/news02.test.ts tests/news03-repair.test.ts，29/29通过。主线程独立运行同入口 tests/news01-ui.test.tsx tests/news02-ui.test.tsx，3/3通过；内联隔离 NewsService 断言验证两栏6选5、同日ensure复用，模型调用0。未运行真实浏览器或真实来源刷新。基线05d709594f7cd0daacc878acbb38560921a32713，受验产品为该基线工作区中的 services/news/service.ts 与 app/pages/NewsPage.tsx，仅各1行调整。未改正式数据。Git add 因 unable to create temporary file: Invalid argument 失败，本轮未提交、未推送，修改保留本地。
 
 
+<!-- ENG01 agent-control:24 -->
 ## WORK05 模拟资料与现有人工补料演练通过（2026-11-08）
 
 用户要求模拟资料验收，明确采用假设场景：每周智能参谋提问/回答导出补到同一能力缺口事项。两周6+6条均标合成，含成功对照、报告失败、时点、口径及歧义，另附重复/改稿/缺字段/停服样例。未将假设当真实来源授权。
@@ -135,6 +165,7 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 
 [材料和操作证据](reports/WORK05-SIM-20261108/README.md)、[独立复核](reports/WORK05-SIM-20261108-review.md)。后续需用户选定真实来源、目标事项、投递/运行条件和权限后才冻结试点开工；本演练不替代这些条件。
 
+<!-- ENG01 agent-control:25 -->
 ## HOMEUI01 首页双栏工作台通过（2026-11-08）
 
 首页采用继续处理工作的双栏布局：左侧主任务，右侧到期跟进与独立每日资讯；保留顶部四入口，底部去重后保留四项更多工具。手机按任务、到期、资讯排序。审核筛选后 Audit 可恢复可见，首次读取失败结束加载提示并支持手动刷新。
@@ -145,6 +176,7 @@ Astra规划/逐图独验，Sol工具/真实操作。用户6页抽样有限授权
 
 [任务卡](handoffs/HOMEUI01-20261108-task.md)、[施工](reports/HOMEUI01-20261108-builder.md)、[独验及截图](reports/HOMEUI01-20261108-review.md)。本批完成，待决策无。
 
+<!-- ENG01 agent-control:26 -->
 ## WORK04 B 事项推进建议通过（2026-11-07）
 
 客户事项按已保存的发送、技术回复、失败复测记录提供等待/复测/继续处理建议；预览后明确应用，保留未保存字段，状态同步、失败与版本冲突不自动重放。产品事项发现未用于完成轮次的可选Raw时提示继续，只聚焦资料选择，不选资料、不调用模型。首页沿原到期规则，WORK03P短摘要与A复核保持。
@@ -153,12 +185,14 @@ B本轮实现与W04-B1/B1-edit/B2工程整体PASS，无待返修；结合A既有
 
 [任务卡](handoffs/WORK04-20261107-task.md)、[施工](reports/WORK04B-20261107-builder.md)、[独验及截图](reports/WORK04B-20261107-review.md)。正式资料及用户服务未用于测试，未进入WORK05。本轮完成停写，下一步可实际试用事项建议。
 
+<!-- ENG01 agent-control:27 -->
 ## WORK04 A 单次真实合成复核通过（2026-11-07）
 
 用户确认后，对原模拟事项第二轮做一次真实依据复核，独立预算1/1已用完，无重试。现有gpt-6.1-terra耗时39.052秒，18项均supported、28条引文逐字匹配。独立Sol High逐项核对结论合理，原事项、原分析和Raw不变。工程PASS保持；本次仅单合成样例质量PASS，不代表真实客户质量或错误识别能力（原稿审慎，未覆盖明确错误候选）。
 
 操作work04a_real_operator、独验work04a_plan_review为不同Sol High实例；产品be41f5a、运行HEAD5b2e7a8。工作台API已加载新版本，复核可在原轮次查看。B和WORK05未启动，后续真实调用另定。见[操作记录](reports/WORK04A-REAL-20261107-operator.md)、[独立质量报告](reports/WORK04A-REAL-20261107-review.md)。
 
+<!-- ENG01 agent-control:28 -->
 ## WORK04 A 分析依据复核工程通过（2026-11-07）
 
 用户授权仅A已完成：已完成分析可先预览原轮输入与草稿，再主动检查依据；复核意见独立保存，可定位原文。刷新不重发，失败/中断显式重试，原草稿、人工结论与WORK03P摘要标签保持不变。B事项推进建议和WORK05未启动。
@@ -167,6 +201,7 @@ B本轮实现与W04-B1/B1-edit/B2工程整体PASS，无待返修；结合A既有
 
 详见[任务卡](handoffs/WORK04-20261107-task.md)、[施工](reports/WORK04A-20261107-builder.md)、[独验与截图](reports/WORK04A-20261107-review.md)。本批已停止施工，不自动进行真实复核或后续批次。
 
+<!-- ENG01 agent-control:29 -->
 ## MEETUI01 会议保存入口与删除按钮通过（2026-11-07）
 
 删除本地纪要按钮已修为清晰的正常/禁用状态，保留原确认操作。纪要上传、粘贴及工作副本编辑统一使用区域最下方“保存会议档案”；无改动禁用，成功明确反馈，失败保留输入。会议信息编辑弹窗采用同名保存并显示对应结果。仅前端改动，原接口、纪要原件及安全策略不变。
@@ -175,6 +210,7 @@ B本轮实现与W04-B1/B1-edit/B2工程整体PASS，无待返修；结合A既有
 
 受验产品提交 `03f5839`。评分 0/1/1/0=2，A 标准；Astra Medium `/root/qaui_plan` 规划、Terra High `/root/qaui_builder` 施工、Sol High `/root/qaui_review` 独验。自有验收服务已关闭；本次产品已推送，其他并行任务内容保留。见[任务卡](handoffs/MEETUI01-20261107-task.md)、[施工](reports/MEETUI01-20261107-builder.md)、[独验及截图](reports/MEETUI01-20261107-review.md)。本批交付完成，可刷新会议档案试用；待决策无。
 
+<!-- ENG01 agent-control:30 -->
 ## WORK03 承接阶段成果与主题分析工程通过（2026-11-07）
 
 WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮问题，预览实际发送内容后发起分析。结果展示本轮变化、主题、支持证据、反例、假设、下一步及已确认结论的冲突建议，能定位当轮原文；仍需人工编辑并保存阶段成果。v1 请求、历史及备份兼容，未保存编辑不混发、不被结果覆盖。
@@ -183,12 +219,14 @@ WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮�
 
 受验产品提交 `16aa1f4b28523908fcf34a89e3b1ae0e2ac5487c`，开工基线 `ab45c5e`；评分 0/2/2/0＝4，发送边界与兼容性按 B，沿已批准独立 Sol High 配置：`work03_builder` 施工、`work03_05_review` 独验。真实模型请求 0，真实续轮分析质量 NOT_RUN；未用正式资料或用户服务验证。见[任务卡](handoffs/WORK03-20261107-task.md)、[施工报告](reports/WORK03-20261107-builder.md)、[独立验收](reports/WORK03-20261107-review.md)。下一步可试用 WORK03 或明确材料与预算后做最小真实质量验收；WORK04/05 未启动。
 
+<!-- ENG01 agent-control:31 -->
 ## WORK03–WORK05 三阶段方案通过独立审查（2026-11-07）
 
 本轮授权为形成可施工方案，不含产品代码施工。已形成[总体方案](batches/WORK03-WORK05-plan-20261107.md)与[WORK03](handoffs/WORK03-20261107-task.md)、[WORK04](handoffs/WORK04-20261107-task.md)、[WORK05](handoffs/WORK05-20261107-task.md)三卡：先续轮上下文与主题结果，再显式依据复核与事项推进建议，最后经真实使用判断是否做单一外部补料试点。前两卡明确接口、兼容、文件所有权及关键验收；WORK05 来源与运行条件未定，不能立即派工。
 
 方案缺口修订及本次规划交付均通过独立方案审查；产品施工及运行验收均未执行，产品真实模型请求 0。已核对接口与代码、批间依赖、必要验收及 26 处相对链接。建议的后续质量调用数不是已授权预算，不重置历史账本。规划开始 HEAD 为 `9cc9e1a`，WORK02 功能基线为 `5fe56f0`；同期 QAUI01 交付不纳入本计划实现。独立 Sol High 实例 `work03_05_planner` 规划、`work03_05_review` 审查，主线程维护总览和状态。下一步可授权 WORK03 施工；WORK05 待真实使用与来源冻结。见[方案审查报告](reports/WORK03-WORK05-20261107-plan-review.md)。
 
+<!-- ENG01 agent-control:32 -->
 ## QAUI01 知识库问答双栏优化通过（2026-11-07）
 
 用户授权本次问答界面优化，沿 frontend-design 和既有紫白主题，左提问、右阅读，正文短编号与独立引用原句区分离。产品仅修改 WikiQuestionPanel.tsx 与 wiki.css；API、持久化、模型提示词及人工确认流程不变。
@@ -197,6 +235,7 @@ WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮�
 
 产品提交 `fe7aca0` 已推送并实时核验远端一致。失效本机代理仅作命令级直连覆盖；Git 自动维护仍报告既有对象 CRC 损坏，本次未维修历史。无关工作树保持。证据见[任务卡](handoffs/QAUI01-20261107-task.md)、[施工](reports/QAUI01-20261107-builder.md)、[独验](reports/QAUI01-20261107-review.md)。当前范围交付停止，无待决策；下一步为用户试用。
 
+<!-- ENG01 agent-control:33 -->
 ## WORK02 产品分析持续推进通过（2026-11-07）
 
 第二批已完成：工作事项支持产品分析，记录目标、数据范围与口径、已确认结论、未解问题及人工阶段成果。显式选择关联Raw发起独立AI分析，保留各轮实际输入/依据/建议/待核问题；等待数据后可回同事项继续。复用首页跟进与备份，明确分区保存并将客户按钮改为保存处理记录。未进入后台推送、飞书或通用流程配置。
@@ -205,6 +244,7 @@ WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮�
 
 受验产品提交5fe56f0，评分0/2/2/0=4，兼容与发送边界按B；独立Sol High实例work02_builder施工、work02_review规划验收。施工先在隔离源码完成，再合回；正式用户数据和配置未用于验证。[任务卡](handoffs/WORK02-20261107-task.md)、[施工报告](reports/WORK02-20261107-builder.md)、[独立报告](reports/WORK02-20261107-review.md)。下一步可创建真实能力缺口分析事项并整理第一批资料，真实调用需明确本轮资料范围；不自动进入后续批次。
 
+<!-- ENG01 agent-control:34 -->
 ## STARTUP01 本机启动故障修复（2026-11-07）
 
 本机六份 JSON 已变为不可解析的二进制内容，启动扫描发现其中四项，Raw 状态读取失败阻断 B04 对账。形成损坏的外部原因尚未确定，未发现可信完整副本。本次只维修本机数据，无产品代码修改，运行代码基线为7165978。
@@ -213,6 +253,7 @@ WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮�
 
 沿用户批准的独立Sol High分工，评分0/1/2/0=3，数据完整性按B；startup_repair施工、startup_review独验。服务已后台恢复，维修原件及启动日志仅在本机忽略目录node_modules/.cache/startup01-repair，未上传业务数据。[任务卡](handoffs/STARTUP01-20261107-task.md)、[独立报告](reports/STARTUP01-20261107-review.md)。WORK01与后续批次范围不变。
 
+<!-- ENG01 agent-control:35 -->
 ## WORK01 手动客户问题与基础跟进提醒通过（2026-11-06）
 
 第一批已完成，四项选择采用推荐方案。工作事项支持快速建卡、客户/项目/发生时间、等待对象/下一步、手工技术反馈与独立已发送记录、技术回复、复测、关闭/重开、Raw原文关联及PNG/JPEG截图。首页按上海自然日显示到期未关闭事项，延期或关闭后刷新更新。备份恢复包括事项历史与图片。未进入AI整理、Wiki沉淀、产品分析、后台提醒或后续批次。
@@ -221,6 +262,7 @@ WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮�
 
 受验产品提交f121382；评分0/2/2/0=4，记录和附件完整性按B，沿用户批准的独立Sol High配置，/root/work01_builder施工、/root/work01_review规划与独立验收。已有无关修改保留。[任务卡](handoffs/WORK01-20261106-task.md)、[施工报告](reports/WORK01-20261106-builder.md)、[独立验收](reports/WORK01-20261106-review.md)。本批完成后停止，下一步可使用一条真实客户问题试用。
 
+<!-- ENG01 agent-control:36 -->
 ## AUTO-REAL 最小真实目标切换验收通过（2026-11-06）
 
 用户授权最小真实质量验收；旧LW原账本/已批准样例在另一设备，本机核查缺失后，用户明确批准本次独立最多2次真实请求，保留旧10/12历史，不重置或续写旧账本。仅发送首例1次，实际使用1/2，已停止，无需第二次。当前api.openai.com / gpt-6.1-terra，直连响应8895ms，失败或中断占额、无自动重试。
@@ -228,6 +270,7 @@ WORK03 已完成：在原产品事项选择一条已保存成果，填写本轮�
 工具/执行门禁PASS；真实目标切换单个合成样例PASS。实际runner.prepareChange→reprepareMaintenance，保留新目标2025数据/两条人工约束/双来源，准确加入2026数据与否定未知、待核问题，旧目标专属内容不混入，正文证据标引支持对应主张。隔离7个knowledge文件SHA不变、正式事务0→0。questions有同一待核问题的两种表述，正文无重复，记录为非阻断细节。完整真实提取/规划、deep/长文及正式入库不在本次范围。
 
 Sol High独立实例施工工具与规划/验收；评分0/1/2/1=4，发送/账本边界按B。产品基线5717c95未改，工具及证据SHA见[独立报告](reports/AUTO-REAL-20261106-review.md)，[任务卡](handoffs/AUTO-REAL-20261106-task.md)、[施工记录](reports/AUTO-REAL-20261106-builder.md)。原始账本保留在gitignored node_modules/.cache/auto-real-20261106，合成请求/响应/候选已归档。真实配置读取共2次，仅安全摘要输出，正式workspace/用户配置/用户服务未改。当前验收完成停写，后续试用或新的质量范围另行决定。
+<!-- ENG01 agent-control:37 -->
 ## AUTO02 第二阶段首页与暂缓闭环通过（2026-11-06）
 
 已完成用户授权的首页同一整理任务一张卡、整个原草稿显式稍后处理、跨页面继续原草稿。首页覆盖运行/恢复/待审/部分入库/提交恢复/暂缓；首页和Raw均回原draft，明确恢复后才可新确认，已入库成果保持原版本与operationId，结束与全部不采纳仍留历史。沿原job/checkpoint/Draft/事务，不新增任务引擎或真实模型调用。
@@ -237,6 +280,7 @@ Sol High独立实例施工工具与规划/验收；评分0/1/2/1=4，发送/账�
 B模式1/2/2/0=5；Astra持续pending_init后，用户明确批准本批由独立Sol High实例规划/验收与施工，分别/root/auto02_review和/root/auto02_builder。基线main 4a92d63，实际提交号见独验收尾。正式workspace、用户服务与真实凭据未接触；自有验证服务已关闭。当前授权范围完成停写。
 
 主线程处理了本机既有Git索引/对象包读错：main对象图和索引已恢复，原文件与元数据备份保留；本地Codex历史检查点仍有损坏对象，不宣称全仓fsck通过。无关AGENTS/product-spec/RAWZH历史差异及历史未跟踪证据保留，不纳入本批。证据：[任务卡](handoffs/AUTO02-20261106-task.md)、[施工](reports/AUTO02-20261106-builder.md)、[独验](reports/AUTO02-20261106-review.md)、[Git恢复及遗留](reports/AUTO02-20261106-git-recovery.md)。下一步建议试用新流程；不自动启动新批次。
+<!-- ENG01 agent-control:38 -->
 ## AUTO01 第一阶段自动整理闭环通过（2026-11-06）
 
 已完成用户授权的第一阶段 A01–A08：复用 LW01/RAWUX01，按目标归并多主题、调整动作及目标、同页编辑审核、一次确认沿原事务入库、原页分次提交、无需变更零正式写入与全部不采纳历史出口。保留来源、人工内容、版本和真实依赖；首页聚合与专门暂缓入口属于第二阶段，未启动。
@@ -247,6 +291,7 @@ B模式0/2/2/1=5；Astra Medium规划及独立验收，Sol High施工。取消�
 
 用户明确授权一并同步必要已完成前置成果；提交号与同步证据见独立报告收尾。交付：[任务卡](handoffs/AUTO01-20261106-task.md)、[施工](reports/AUTO01-20261106-builder.md)、[独验](reports/AUTO01-20261106-review.md)。第一阶段完成停写，不进入第二阶段。
 
+<!-- ENG01 agent-control:39 -->
 ## PROVIDER01 正式入口Provider接线修复通过（2026-11-06）
 
 已补server/index.ts现有AI判定漏掉的四个POST：knowledge/answers、answers/:id/save、inspections、inspections/:id/draft。产品仅增加一个正则分支，沿现请求级Provider快照/AsyncLocalStorage，不重构业务。旧入口真实子进程红测400 LLM_NOT_CONFIGURED，修后通过真实server/index+TEMP配置+本地fake HTTP依次完成问答、回存、检查、生成维护草稿四阶段。
@@ -255,6 +300,7 @@ B模式0/2/2/1=5；Astra Medium规划及独立验收，Sol High施工。取消�
 
 HEAD275067c加未提交工作树；本轮无真实模型、用户配置/正式资料操作，不操作当前用户服务，隔离进程已关闭；无提交推送。真实模型由用户试用，未冒称已实测。交付：[任务卡](handoffs/PROVIDER01-20261106-task.md)、[施工记录](reports/PROVIDER01-20261106-builder.md)、[独立验收](reports/PROVIDER01-20261106-review.md)。当前授权已完成停写。
 
+<!-- ENG01 agent-control:40 -->
 ## RAWZH01 英文链接默认中文阅读通过（2026-11-06）
 
 用户选择已实现：URL-only导入默认勾选翻译并告知调用已配置模型，可取消；英文启动翻译，主要中文/文件/粘贴不自动调用。先保存原Raw，独立state/raw-translations阅读层完成后默认中文，可切英文；失败保同Raw可重试，刷新不重复请求，原文证据点击强制切原文定位，后续整理仍用原文。原文/来源SHA保持不变，译文不是事实来源。
@@ -263,6 +309,7 @@ HEAD275067c加未提交工作树；本轮无真实模型、用户配置/正式�
 
 HEAD275067c未提交工作树，真实模型/公网/配置/正式资料读写0，fake不声称真实翻译质量。只关闭自有隔离服务，用户正在使用的proxy服务未操作；无提交推送，当前授权已完成停写。证据：[任务卡](handoffs/RAWZH01-20261106-task.md)、[独立验收](reports/RAWZH01-20261106-review.md)、[后端施工](reports/RAWZH01-20261106-backend-builder.md)、[UI施工](reports/RAWZH01-20261106-ui-builder.md)。
 
+<!-- ENG01 agent-control:41 -->
 ## RAWURL01 单条链接原文导入通过（2026-11-06）
 
 文件不再必填，统一按文件>非空粘贴正文>仅URL导入；有文件绝不抓URL，文件失败不静默回退。URL-only服务端真实获取静态网页/纯文本保存Raw，原链接/最终地址/抓取时间/正文SHA可追溯，之后用户可显式整理，不自动模型调用。登录或JS不可读站提示上传/粘贴并保留输入。现有代理入口、有限跳转/超时/体积及公网DNS目标约束均有实际测试。
@@ -271,6 +318,7 @@ HEAD275067c未提交工作树，真实模型/公网/配置/正式资料读写0�
 
 B评分0/2/2/1=5，Astra规划独验、Sol后端/UI施工；HEAD275067c未提交工作树。无真实模型/配置/正式资料读写，历史账本不变；自有服务关闭，无提交推送。证据：[任务卡](handoffs/RAWURL01-20261106-task.md)、[独立验收](reports/RAWURL01-20261106-review.md)、[后端施工](reports/RAWURL01-20261106-backend-builder.md)、[UI施工](reports/RAWURL01-20261106-ui-builder.md)。当前授权已完成停写。
 
+<!-- ENG01 agent-control:42 -->
 ## RAWUX01 Raw成果审核与全链体验验收通过（2026-11-06）
 
 已完成用户授权：旧标准、旧深度、新维护Raw草稿统一成果预览、可选入库内容、整体价值/重大遗漏检查与一次明确确认；不后台补造逐页审批。默认紧凑主题清单，正文/证据可展开、编辑可保存，顶部确认滚动可见；旧十主题32单元仅2历史审批无noteApproval及Source-only均可用。来源权限、内容摘要/revision、明确正式写入、并发/恢复持久性保留；问答/主动检查原语义保持。
@@ -281,6 +329,7 @@ B评分0/2/2/1=5，Astra规划独验、Sol后端/UI施工；HEAD275067c未提交
 
 交付：[任务卡](handoffs/RAWUX01-20261106-task.md)、[独立验收](reports/RAWUX01-20261106-review.md)、[后端施工](reports/RAWUX01-20261106-backend-builder.md)、[UI施工](reports/RAWUX01-20261106-ui-builder.md)。当前授权范围已完成并停写。
 
+<!-- ENG01 agent-control:43 -->
 ## COMPAT01 全仓失败归因与兼容修复通过（2026-11-06）
 
 已完成用户授权的全仓失败归因与兼容修复，现已停写等待下一步。评分0/2/2/1=5、B模式；Astra Medium /root/compat_planner规划及独立验收，Sol High /root/compat_builder与/root/compat_ui分工施工。main / HEAD 275067c7d120b15051dedc3981b49c64a05c3f9b加未提交工作树，保留此前UI及LW01–LW03成果，不提交、推送或部署。
@@ -293,6 +342,7 @@ B评分0/2/2/1=5，Astra规划独验、Sol后端/UI施工；HEAD275067c未提交
 
 证据：[任务卡](handoffs/COMPAT01-20261105-task.md)、[施工及81项归因](reports/COMPAT01-20261105-builder.md)、[UI返修](reports/COMPAT01-20261105-ui-builder-repair.md)、[独立验收](reports/COMPAT01-20261105-review.md)。下一步建议用户试用，或另行授权LW03最小真实质量验收；不自动开展。
 
+<!-- ENG01 agent-control:44 -->
 ## LW03主动知识检查工程验收通过（2026-11-05）
 
 用户已授权第三阶段；B模式评分0/2/2/1=5，Astra规划/独立验收，Sol后端与UI分工施工。仅主动选页及有限相关范围：重复、冲突/口径、可能过时与有快照的来源影响，证据定位、缺口/无发现、查看/暂缓去重、多选生成现维护草稿、逐项人工确认。未自动删页合并或后台运行。来源影响实际支持Wiki快照对比，不是Raw正文修订监控；有界检查未运行全库Lint，旧Lint/Audit入口保留。
@@ -301,968 +351,12 @@ B评分0/2/2/1=5，Astra规划独验、Sol后端/UI施工；HEAD275067c未提交
 
 真实模型NOT_RUN；本轮Provider/config0、正式workspace读写0，前次真实LW8账本不动，知识275/500、Prompt20/24不变。自有服务/浏览器已关闭，TEMP证据保留；按本次要求未提交推送。交付：[独立报告](reports/LW03-20261105-review.md)、[施工报告](reports/LW03-20261105-builder.md)、[冻结卡](handoffs/LW03-20261105-task.md)、[最终21SHA](reports/LW03-20261105-builder-fingerprints.json)。现已完成本批范围并停写。
 
-## LW02：Wiki问答与成果回存工程验收通过（2026-11-01）
-
-已完成第二阶段：用户提问→有限检索并阅读Wiki→必要时补读Raw→带逐段引用的回答→选段/编辑预览→用户明确生成现有知识变更草稿→人工审核入库→再次提问可追溯底层来源。仅单问题及必要回存状态，不是通用聊天；未开展第三阶段维护、自动巡检/回存、联网搜索或全站重构。现已停止等待用户确认。
-
-main / `275067c7d120b15051dedc3981b49c64a05c3f9b` 未提交工作树；实际版本以 [最终26文件SHA](reports/LW02-20261101-builder-fingerprints.json) 为准，相对 [376文件基线](handoffs/LW02-20261101-baseline.json) 保留UI01–UI04与LW01成果。评分0/2/2/1=5、B：Astra Medium `/root/lw01_reviewer`规划及独验，独立Sol High `/root/lw01_builder`施工，主线程协调。原LW01工程PASS与真实模型NOT_RUN边界保留。
-
-主要实现：复用LW01有界检索，最多8 Wiki/48,000 JSON字符；必要补读最多3份Raw/24,000字符，每次显式回答或重试最多2次调用，历史次数累计。服务端校验引用实读成员、版本、原句与当前权限，Wiki/Raw可点击正确定位；同Raw多页不重复计独立证据。答案区分事实、推断、建议和不足/分歧，保存与再次引用不把推断自动升格。状态保存在knowledge-answers，不是原始证据。
-
-新增兼容QuestionDraft输入保存问答版本、选文/人工编辑、实际Wiki/Raw依据，JSON无伪rawId/rawSha/rawMeta/source；共用现Draft维护审核与Commit事务，不创建问答Source或修改Raw/RawState。保存支持create/update/no_change，同结果重复保存返回同草稿；选文/段落类别/完整引用绑定，编辑重审，依据过期拒绝，当前来源限制沿派生链检查。自身update后的恢复仅豁免精确匹配本事务冻结新内容，其他依据/权限仍核验；前快照、索引与日志沿现机制维护。
-
-**本轮缺陷关闭PASS，LW02第二阶段工程整体验收PASS；真实模型质量与真实Provider集成NOT_RUN。** 独验主链未发现未关闭的数据缺陷；主线程看图发现F-LW02-01（QA审核仍称来源笔记），原施工者仅修QA两处条件文字，Raw原文保持，独验实图与真实Raw草稿组件复验关闭。初冻26与最终26仅该UI文件变化，首轮证据和最终修后图分版保留。
-
-施工最终新增15/15、相关默认LW01与旧兼容回归通过，tsc、空envDir构建225模块、detect和diff检查通过。独立核心8/8、边界3/3、公开HTTP1/1、受影响LW01及旧门禁71/71；fresh真实Chrome完整提问→Wiki/Raw引用→选段编辑取消→保存故障保留并重试→统一草稿审核提交→再次查询闭环成功，无pageerror。读盘核正式推断/两底源/无新增Raw和Source/RawState不变/index正确，再查仍两底源且推断不升格；另实测无依据、no_change、引用伪造、版本过期、受限衍生、恢复/幂等等六组标准。构建/类型/detect按同SHA复用施工证据，未冒称全部独立重跑。
-
-最终26SHA一致，376基线非授权零变化，旧UI/LW01报告、证据及四保护保持。所有验证为TEMP合成数据+fake，真实模型调用/费用0，未访问正式workspace、凭据或真实配置。施工及独验自有服务全部关闭，隔离数据与截图保留。未提交、推送、发布或部署。
-
-证据：[任务卡](handoffs/LW02-20261101-task.md)、[施工/接口/数据结构与命令](reports/LW02-20261101-builder.md)、[独立验收与完整演示](reports/LW02-20261101-review.md)、[实际截图与JSON](reports/LW02-20261101-evidence/)。剩余验证是实际模型检索相关性、回答质量、语义支撑和回存价值；如需真实调用，先提出最小方案与预计消耗，等待另行确认。历史真实质量/预算问题未由本批关闭，不自动进入第三阶段。以下历史记录保持。
-## LW01：LLM＋Wiki 第一阶段工程验收通过（2026-11-01）
-
-已完成用户授权的第一阶段：新 Raw→提取→有限检索并阅读相关 Wiki→统一知识变更草稿→逐项人工审核→新建或更新主题。标准/深度共用维护链，来源笔记与跨来源主题分工保持；同 Raw 复用来源身份。只到第一阶段，等待用户确认，不启动问答回存或全站维护。
-
-main / `275067c7d120b15051dedc3981b49c64a05c3f9b` 未提交工作树；本批相对 [287文件基线](handoffs/LW01-20261101-baseline.json) 交付，保留此前 UI01–UI04 成果。最终版本为 [30产品/测试文件SHA及辅助产物](reports/LW01-20261101-builder-fingerprints.json)，不是仅以HEAD代替实际版本。评分0/2/2/0，数据完整性重大风险直接B；Astra Medium `/root/phase1_planner` 冻结方案，恢复后Sol High `/root/lw01_builder`施工，另一Astra Medium `/root/lw01_reviewer`独立验收，主线程协调。中断前原实例已结束，恢复实查287SHA一致后继续。
-
-主要改造：共享有界检索（最多8页/48,000 JSON字符）在主题规划前读真实ID/正文/来源/版本；在现Draft/Commit中新增create/update/link/noop变更、完整候选正文和确定性增删对比、依赖与逐项接受/编辑/暂缓。更新保留ID、有效旧内容/人工补充/双来源，年份口径与冲突分列；前快照和变更保存在manifest/log，正式正文不堆审核章节。分次确认、来源累计真实链接、版本冲突与幂等恢复沿现链；深度原句按可靠同来源/位置/类别归并，原因并存，无额外去重调用。Raw显示整理并融入知识库入口、阶段及真实受影响主题。旧资料兼容，无历史批量清洗或新依赖。
-
-**本轮缺陷关闭PASS，第一阶段工程整体PASS；真实模型质量及真实Provider集成NOT_RUN。** 首次独验发现未归属事实绕过审核、同幂等键换选集可创建新事务两项FAIL，均由原施工实例修复并独立复验关闭；另补Raw入口/主题摘要。深度复用既有覆盖/质量报告/双告知，归属修改使确认失效。同key同payload复用、异payload409，新key可续处理暂缓项。首次FAIL与脚本准备错误证据均保留，不回写历史为一次通过。
-
-施工新链及相关UI34/34、旧服务50/50、tsc、空envDir构建、detect与diff检查通过。最终独立核心+deep9/9、返修3/3、旧门禁及恢复57/57；真实Chrome两路A建主题→人工补充→B同ID更新，读盘核双来源/2025与2026/有效与签约口径/120与90待核矛盾/人工内容/暂缓不写。最终浏览器另验未归属阻断、深度覆盖与双告知、Raw主题摘要和实际409保人工内容。独验复用同SHA构建结果并明确范围；不将fake证明为真实模型语义质量。
-
-最终30SHA前后一致；287基线仅授权文件及主线程状态记录变化，四保护与旧UI证据保持。所有测试使用TEMP合成资料与fake，真实模型调用/费用0，未访问正式workspace、凭据或真实配置；旧真实质量FAIL与预算问题未由本批关闭。施工及独验自有服务均已关闭，隔离数据和截图保留。未提交、推送、发布或部署。
-
-证据：[冻结任务卡](handoffs/LW01-20261101-task.md)、[施工与返修报告](reports/LW01-20261101-builder.md)、[最终独立验收](reports/LW01-20261101-review.md)、[截图与原始JSON](reports/LW01-20261101-evidence/)、[主线程保护核证](reports/LW01-20261101-evidence/main-boundaries.json)。下一步仅建议用户试用本阶段；如需真实模型质量验收，另给最小方案与预计消耗，待明确授权后执行。以下历史记录保持原样。
-## UI04：完整使用链收尾通过，可进入限定范围用户试用（2026-11-01）
-
-沿前三批及导航小修的未提交工作树走查，HEAD仍main / 275067c7d120b15051dedc3981b49c64a05c3f9b，222文件基线区分本批增量。评分0/2/1/0=3 A标准：Astra规划、Sol先审/独验、Terra走查施工。仅修实际UI问题，未换风格。用户明确禁止提交、推送、发布部署与新功能，现已停止等待确认。
-
-修复四项：F04-01 Raw粘贴保存生成成功后弹窗未关闭/未定位进度（成功进入真实Raw，失败留输入同Raw重试）；F04-02 已正式写入的审核摘要仍要求确认（按真实终态显示）；F04-03 首页快速新会议目录迟到造成视觉假默认/提交空类型（显式空选项及既有required）；F04-04 保存并上传后纪要details仍隐藏（仅明确上传意图成功后展开）。产品仅RawPage、DraftReviewPage、MeetingPage变化，审批/隐私/接口/存储/模型/依赖无变更；四保护与旧证据保持。
-
-施工19/19定向、tsc、空envDir构建、detect与diff检查通过。独验在fresh隔离工作区完成：首页新Raw实际runner+fake生成、编辑失效/重审明确入Wiki/来源回跳/Home事项消失；Prompt变量实际复制、生成预览不写、明确v1保存及同ID优化v2、反馈版本和失败重试；会议录入搜索编辑、粘贴纪要/Raw登记与来源、DOCX失败保文件同ID重试、详情PDF上传和原件下载字节一致；workflow真实重审确认201/正式Wiki revision读回/Home状态，Settings内存保存失败/重入/锁定/清除确认。六导航1536/768及焦点/加载/空/错误matrix14组通过，四修复独立关闭，无未解决本轮UI缺陷。分段脚本定位/响应wrapper准备错误及一次隔离会话失效如实保留，不称首次单脚本全过。
-
-历史会议MI02/MI03的三项浏览器上传证据缺口已由本轮真实UI补齐：新建同会议DOCX上传、失败保留重试无重复、详情PDF上传。仅据具体证据关闭这些UI缺口，不覆盖旧报告、不冒称全部历史业务问题消失。通用会议导出不存在（NOT_AVAILABLE），现有原文件下载已验。真实模型效果/真实配置落盘与重启持久化/真实Provider连接未验；Settings仅同一服务内存替身，模型仅fake，真实调用/费用及外发0。历史模型收据/质量问题不属本轮签闭。
-
-结论：本轮限定UI工程收尾PASS，可进入用户实际使用体验确认；不可宣称真实模型和配置链全部通过。正式workspace/凭据/配置未访问，确认前正式业务集合SHA及只读段不变，明确写入按对象核证。自有ui04服务1864/12924/19672及包装已关闭，测试数据与证据保留；无提交同步。
-
-证据：[任务卡](handoffs/UI04-20261101-task.md)、[基线](handoffs/UI04-20261101-baseline.json)、[施工](reports/UI04-20261101-builder.md)、[独立收尾报告](reports/UI04-20261101-review.md)、[实际截图与JSON](reports/UI04-20261101-evidence/)。最终SHA及逐链实测/模拟/未验结论以独立报告为准。以下为历史记录。
-## UI03：审核、工作流、设置与共用交互技术通过（2026-11-01）
-
-用户已确认前两批效果，沿UI02及Prompt导航小修的未提交工作树执行本批。评分0/2/1/0=3、A标准：Astra Medium /root/lifeos_planner规划，Sol High /root/lifeos_reviewer先审与独立验收，Terra High /root/ui01_builder施工。HEAD仍main / 275067c7d120b15051dedc3981b49c64a05c3f9b，本批增量对照166文件工作树基线；禁止提交、推送、发布或部署，完成停效果确认，不启动UI04。
-
-统一DraftReview、KnowledgeWorkflow、Settings及b04共用样式；审核中文状态与技术详情分开、复选框同排、来源可定位；工作流来源并排和内容分类；设置保存/费用/锁定提示外露，高级帮助折叠，读取失败不再冒充加载。新增小型useDialogFocus，仅接Raw现导入对话框的初始焦点、Tab限定与关闭返回，不新增Esc/遮罩关闭。未新增工作流功能或配置项，未改审批/请求/存储/模型/依赖。
-
-施工27/27定向、tsc、空envDir构建、detect及diff检查通过；旧测试仅中文定位与既有checkpoint桩适配，提交门禁断言保持。独立实际Chrome五段均success=true：布局19组、Settings1组、workflow1组、draft明确正式写入1组、焦点与受影响回归10组。未解决项阻断正式写入，编辑保存后旧审查失效，重新逐页与笔记确认后明确写入并读回；工作流dirty与冲突条件保持。设置仅内存替身验证UI保存/失败保留/锁定/确认，不签真实配置落盘或Provider连接质量。技术范围PASS，无确认产品缺陷；用户实际效果待确认。
-
-只读业务树SHA保持，明确写入仅预期测试数据；fake初始5次用于fixture，验收未增，真实Provider与费用0。正式workspace、配置、凭据未访问；四保护与旧UI成果保持，会议上传历史BLOCKED及真实质量缺口不由本批签闭。自有服务16192及包装12316/6088已关闭，5174/62120无监听。未提交或同步。
-
-证据：[冻结卡](handoffs/UI03-20261101-task.md)、[基线](handoffs/UI03-20261101-baseline.json)、[施工](reports/UI03-20261101-builder.md)、[独立验收](reports/UI03-20261101-review.md)、[截图和JSON](reports/UI03-20261101-evidence/)。最终SHA见独立报告。以下为历史记录。
-## UI02：第二阶段界面统一技术通过，待用户确认效果（2026-10-31）
-
-用户已确认UI01实际效果满意，授权沿其未提交工作树推广Raw、Prompt库/生成/优化、会议及Wiki未统一列表/编辑样式；不重做首页/Wiki阅读，不全面改造工作流、设置和草稿专页。禁止提交、推送、发布和部署，完成后停止，不启动UI03。基线HEAD仍为main / 275067c7d120b15051dedc3981b49c64a05c3f9b，实际增量依据73文件工作树SHA清单。
-
-评分0/2/1/0=3，A标准：Astra Medium /root/lifeos_planner规划；Sol High /root/lifeos_reviewer先审与独立验收；Terra High /root/ui01_builder施工。产品增量仅8文件：RawPage、PromptLibraryPage、MeetingPage及styles/raw/prompt/meeting/wiki五份CSS。复用第一阶段颜色、Icon及现有页面/编辑/反馈组件，补常用样式变量；Prompt正文/变量前置，次级说明/历史折叠；会议安全摘要前置并保留挂载的纪要/来源区；Raw列表明确上次保存状态，恢复含义不变。
-
-施工36/36定向、tsc与空envDir构建、detect及diff检查通过。独验42组布局/只读检查，Raw真实保存恢复fake计数5→5、反馈当前/历史版本及实际写失败保留重试、fake生成优化预览/明确保存、会议安全/折叠输入、Wiki取消和保存读回等分段通过。未确认产品缺陷，技术范围PASS，UI02实际效果待用户确认。原生控件定位等验收脚本准备错误分别记录，不宣称全部脚本首次整程通过。模拟验证不代表真实模型质量；真实Provider调用与费用0，正式资料未访问。
-
-与冻结工作树比较，UI01 Home/App/阅读组件与旧证据保持；服务、规则、依赖未变，四保护文件SHA保持。会议上传UI历史BLOCKED及其他历史质量缺口不由本批签闭。自有服务28324及包装3588/23972已关闭，5174/60714无监听，隔离数据保留；未提交或同步。
-
-证据：[冻结卡](handoffs/UI02-20261031-task.md)、[基线SHA](handoffs/UI02-20261031-baseline.json)、[施工报告](reports/UI02-20261031-builder.md)、[独立报告](reports/UI02-20261031-review.md)、[实际截图及JSON](reports/UI02-20261031-evidence/)。最终文件指纹以独立报告为准。以下为历史记录。
-## UI01：界面第一批技术验收通过，待用户确认效果（2026-10-31）
-
-用户授权共用视觉基础、首页工作台与 Wiki 列表/详情，明确本轮不提交、推送、发布或部署；完成后停止，不自动开始第二批。基线 main / `275067c7d120b15051dedc3981b49c64a05c3f9b`，本轮保留未提交。评分0/2/1/0=3、A标准；Astra Medium /root/lifeos_planner 规划，Sol High /root/lifeos_reviewer 计划准入及独立验收，Terra High /root/ui01_builder 施工，实例分离。
-
-实现紫白基础变量、统一导航图标与交互状态，首页四入口/真实待办/最近知识与最近更新，Wiki 安全阅读与 Markdown 原文切换、来源及折叠纠错；保留原业务规则和各模块入口。施工25/25定向、深度链30/30、tsc和空envDir构建通过；独立定向25/25，实际Chrome三宽截图、真实入口、来源/空错/冲突、选段Audit、编辑及共享模块回归通过。中途视觉调整已复看；测试脚本准备错误保留为分段记录，不宣称首次整程通过。无确认产品缺陷，技术范围PASS；用户视觉效果尚待确认。
-
-全部操作使用TEMP隔离数据，模型计数0；只读业务SHA保持，明确编辑/纠错仅产生预期写入。服务18120及包装进程已关闭，5173/64340无监听。原有四文件保持，不改服务/存储/模型；历史未关闭事项不由本批签闭。git diff --check通过，无提交或同步。
-
-证据：[任务卡](handoffs/UI01-20261031-task.md)、[施工报告](reports/UI01-20261031-builder.md)、[独立报告](reports/UI01-20261031-review.md)、[实际截图及JSON](reports/UI01-20261031-evidence/)。最终文件SHA以独立报告为准。下方为历史记录。
-## LIFEOS L6：只读周期回顾独立通过（2026-10-31）
-
-用户明确授权仅阶段6周期回顾，通过后提交同步，不扩大范围。评分0/2/1/0=3、A标准：跨Wiki、待办、反馈及只读导航，风险在口径/漏读/定位，无持久化变更；Astra Medium /root/lifeos_planner规划，Sol High /root/lifeos_reviewer先审准入，Terra High /root/lifeos_builder施工，原Sol独立验收。基线69dff0b9e84a588828aecb684eb0db31cc0bce2f；最终指纹见独立报告，本记录与交付文件由同一提交绑定。
-
-首页新增主动打开/关闭的周期回顾，不增加导航项或后台请求。上海时区开始日包含、结束日不含；Wiki按created汇总期间新增且当前仍保留的记录，无有效时间单列；反馈按用户usedOn归属并展示原使用版本/完整明细；当前待办直接复用homeActions快照，明确不按周期筛选。严格读取、各源独立报错，不把失败转零；Wiki/待办导航沿既有身份和版本预检。反馈明细为本次读取快照，刷新反映修改/删除，不新增持久化、AI报告、定时通知或效果评分。
-
-施工定向9/9、tsc与空envDir构建通过；独立定向9/9通过。实际Chrome初验已过6组，发现F6-01长反馈换行丢失且横向溢出；Terra仅改局部文本class/CSS，组件2/2通过，独立视觉5组确认1440/1024换行原文完整且无横溢。剩余来源故障、恢复、反馈修改删除、Prompt回收、真正空源等9组独立通过；另补枚举后消失的Wiki/Prompt服务反例，分别来源error且另一源正常。F6-01关闭，L6-01–03整体独立PASS。结论基于初验有效段、剩余段和返修复验，不称初次整程成功；脚本route同步准备错误及初验视觉FAIL保留。
-
-健康、错误及空源读取前后业务文件集合/字节SHA保持，模型计数0，无自动业务POST或外发；配置加载器未接隔离入口，不将固定字段冒充运行探针。真实Provider/config/正式workspace访问0，历史知识287/500、Prompt20/24、KB03 24/30沿原记录未重核且未消耗。KB03限定范围PASS、会议上传UI独立BLOCKED与旧收据缺口不变，不由本轮签闭。
-
-本轮服务28084及包装15144/31648已退出，5173/57122无监听，TEMP证据保留；原AGENTS、两份JSON及包装报告未纳入提交。授权范围已完成，未追加功能或长期监控。证据：[冻结任务](handoffs/LIFEOS-L6-20261031-task.md)、[施工](reports/LIFEOS-L6-20261031-builder.md)、[独立验收](reports/LIFEOS-L6-20261031-review.md)。下方为历史记录。
-
-## LIFEOS L5：Prompt使用反馈独立通过（2026-10-31）
-
-用户明确授权阶段5使用反馈，完成后提交同步即停。评分0/2/2/0=4，新增持久数据涉及Prompt版本、删除和备份完整性，直接B：Astra Medium /root/lifeos_planner规划兼独立验收，Sol High /root/lifeos_reviewer本批施工，两个实例职责独立。基线67e136268b1eaf1b63b3baa868f6a69e00296a6d；冻结卡及最终文件指纹见报告，本记录与交付文件由同一提交绑定。
-
-新增当前/历史版本的手动使用反馈CRUD与独立JSON导出，记录日期、场景、效果、问题/有效部分及改进建议。反馈存同Prompt文件顶层，绑定使用版本，不改current/versions或Prompt更新时间；复用队列与原子写。创建重试、编辑修订冲突、删除后重放按冻结规则处理，旧无反馈数据读取不迁移，损坏反馈明确报错而不污染有效Prompt计数。Prompt删除连反馈与历史移入原回收路径；现有v1备份格式与白名单不变，原Markdown导出不夹带反馈。
-
-施工组合40/40、AI确认保全定向2/2、tsc及空envDir构建通过。首次6个旧UI回归失败源于fake fetch缺新反馈GET，仅补一行空items stub后全过，未改旧断言。独立定向7/7、真实Chrome完整App/API/Store整程7组及恢复根浏览器读回通过：版本CRUD、原子写失败保留输入/原文件、下载、迟到响应隔离、父Prompt回收、真实备份恢复字节一致均有实证。1440/1024布局及键盘焦点实看通过；保留已回收fixture误选和恢复harness缺测试元数据两项准备错误，不计产品失败。无待关闭产品缺陷；L5-01–03本批整体独立PASS。
-
-反馈操作前后Prompt核心快照、统计、Wiki搜索与知识日志保持；模型调用0，配置加载器未接隔离入口，真实Provider/config/正式workspace访问0。反馈不自动外发、不自动优化或创建Prompt版本。历史知识287/500、Prompt20/24、KB03 24/30沿既有记录，未重新核账或消耗；KB03限定范围PASS、会议上传UI独立BLOCKED及旧收据缺口保持。
-
-本轮隔离服务均已关闭，相关端口无监听；TEMP测试证据保留，原AGENTS、两份JSON及包装报告不纳入提交。阶段6未启动。证据：[冻结任务](handoffs/LIFEOS-L5-20261031-task.md)、[施工](reports/LIFEOS-L5-20261031-builder.md)、[独立验收](reports/LIFEOS-L5-20261031-review.md)。下方为历史记录。
-
-## LIFEOS L4：快消场景填写引导独立通过（2026-10-31）
-
-用户明确授权仅推进正式方案阶段4，通过后提交同步即停。评分0/1/1/0=2、A标准：需求清楚，工作台字段与既有请求链少量耦合，主要风险为误覆盖输入或误注入模型请求；Astra Medium /root/lifeos_planner规划，Terra High /root/lifeos_builder施工，Sol High /root/lifeos_reviewer独立验收并核卡准入。基线223f1cc0245121bc14aa93514cc2d570f8ec27f3；最终文件指纹见独立报告，本记录与交付文件由同一提交绑定。
-
-复用customer_interview、business_process、requirements、industry_learning四个ID，展示经销商访谈、门店补货、业务问题转AI需求、材料阅读的输入、预期产出、事实与缺项约束。保留原七模板及手动Brief默认值，选择场景只更新帮助，不覆盖用户文本或Wiki勾选；不改服务模板、模型提示、请求构造和Optimizer。独立浏览器发现帮助区被旧CSS覆盖导致文本挤成一段，F4-01局部样式返修后独立关闭；L4-01/02和L4-03提示边界核验PASS，本卡界面引导工程范围整体独立PASS。
-
-施工定向27/27、强化请求体组件2/2、tsc及空envDir构建通过；独立定向14/14通过，同版未变部分复用施工证据。实际Chrome完整App/真实Prompt API与存储、仅Provider fake，11组功能检查整程exit0：四场景与旧模板兼容、手动编辑、显选Wiki、预览编辑后明确保存、版本1/favorite=false、旧版本及Optimizer、原AI Brief路径和受限会议来源拒绝。最终仅CSS变化，另对1440/1024分行、12px帮助、焦点和无横溢补验PASS，fake计数3→3；保留首次脚本定位失败记录，未计产品失败。
-
-服务/server/rules差异为空，实际API及fake Provider请求确认未附加指导文本且只含显选背景。因此L4-03真实质量条件未触发（N/A），真实模型质量未测，不签质量PASS。未选Wiki不发送，受限来源在Provider前拒绝，知识树SHA不变；本轮真实Provider/config/正式workspace访问0，隔离入口未接配置加载器。历史知识287/500、Prompt20/24、KB03 24/30保持且未重新核账。KB03限定范围PASS、会议上传UI独立BLOCKED及旧收据缺口不变。
-
-本轮隔离服务及包装进程已退出，端口无监听，TEMP证据保留；原AGENTS、两份JSON及包装报告不纳入提交。阶段5及后续未启动。证据：[冻结任务](handoffs/LIFEOS-L4-20261031-task.md)、[施工](reports/LIFEOS-L4-20261031-builder.md)、[独立验收](reports/LIFEOS-L4-20261031-review.md)。下方记录为历史时间点。
-
-## LIFEOS L3：首页行动事项独立通过（2026-10-31）
-
-用户在阶段2交付后授权继续，本轮仅执行正式方案阶段3，独立通过后提交同步即停。评分0/2/1/0=3、A标准：目标清楚，跨四来源与导航，主要风险为漏报或错定位；Astra Medium /root/lifeos_planner规划，Sol High /root/lifeos_reviewer先审准入，Terra High /root/lifeos_builder施工，原Sol独立验收。基线806b27096dce32d6ab5ddae5c590a7d31523a3cd；最终文件指纹见独立报告，本记录与交付文件由同一提交绑定。
-
-首页聚合当前Raw失败/恢复任务、待审草稿、更新/综合工作流和Open Audit；保留独立事项，阻断优先，分来源显示读取失败。点击前核对当前对象、版本和依赖，复用现有详情入口，精确定位Audit。首页读取不触发恢复、模型或正式写入。初验发现的来源隔离、缺失job漏报、恢复job漏报、1024布局和Audit状态结构验证五项缺陷均经返修独立关闭；L3-01–04整体独立PASS。
-
-施工初始26/26、第一轮返修定向12/12、最后受影响服务5/5及tsc通过，空envDir构建通过；独立初验11/11、最后受影响服务5/5通过，未受影响证据按文件指纹复用。最终真实Chrome完整App/API/stores/runner（仅Provider fake）浏览器20组整程exit0；另补验统计接口故障仍可读事项、关联Wiki删除后点击明确失效，两项PASS。实际检查1440/1024长标题、焦点、精确导航、版本变化、源故障/恢复、处理返回和真空状态；保留早期失败及测试准备错误，不以其冒充最终通过。
-
-重复首页/预检读取的隔离业务目录文件集合及字节SHA不变，Provider计数0，配置加载器未接入隔离入口；真实Provider、产品配置及正式workspace访问0。历史知识287/500、Prompt20/24、KB03 24/30沿既有记录，未重新核账且无新增消耗。KB03原限定范围PASS、会议上传UI独立BLOCKED和旧收据缺口保持。隔离服务已关闭，TEMP原始证据保留；其他任务的AGENTS、两份JSON及包装报告不纳入提交。阶段4及后续未启动。
-
-证据：[冻结任务](handoffs/LIFEOS-L3-20261031-task.md)、[施工](reports/LIFEOS-L3-20261031-builder.md)、[独立验收](reports/LIFEOS-L3-20261031-review.md)。下方记录为历史时间点。
-
-## LIFEOS L2：Raw 状态与恢复表达独立通过（2026-10-31）
-
-用户授权仅执行正式优化方案阶段2，验收通过后提交同步并停止。评分0/1/1/0=2、A标准：Astra Medium /root/lifeos_planner规划，Terra High /root/lifeos_builder施工，Sol High /root/lifeos_reviewer独立验收。基线f0f7630b4b1bec0d63fcd58dd88a349d1e1481ac；最终受验产品指纹见独立报告，本条与交付文件由同一提交绑定。
-
-Raw详情按对象、当前阶段、已保留结果、问题和下一步组织；继续/重规划/重新生成/保存恢复说明与动作相邻，沿用原模式与累计账本语义。只改RawPage与3条Raw局部CSS，不改服务、API、Prompt或恢复引擎。实际截图发现的保存失败仍显示运行及区块紧贴两项缺陷已返修独立关闭；L2-01–04本批整体独立PASS，不代签全产品或真实模型质量。
-
-独立初验34/34、返修后受影响组件3/3通过，未受影响31项复用；同版施工tsc及空envDir构建通过。真实headless Chrome完整App/API/stores/runner（仅Provider fake）完成1440/1024状态、焦点、刷新、迟到隔离及动作检查；保存恢复fake计数17→17、原草稿SHA不变。三次脚本异步/导航预期错误保留，浏览器按分段实际证据与完成补验pass=true签收，不称完整脚本整程exit0。
-
-真实Provider/config/正式workspace访问0，历史知识287/500、Prompt20/24、KB03 24/30仅沿既有记录、未重新核账且未消耗。KB03原PASS及会议上传UI独立BLOCKED、旧收据缺口保持。自有隔离服务已关闭，TEMP证据保留；原AGENTS及两份JSON、包装报告未纳入提交。阶段3及后续未启动。
-
-证据：[冻结任务](handoffs/LIFEOS-L2-20261031-task.md)、[施工](reports/LIFEOS-L2-20261031-builder.md)、[独立验收](reports/LIFEOS-L2-20261031-review.md)。
-
-## KB03 R10：两例真实重验与本批独立通过（2026-10-31）
-
-用户明确批准累计total30/fixed20/counter15、历史已用照扣、同一已授权Raw/虚构反例发送OpenAI当前模型，任何失败停止全轮。沿B评分0/2/2/2=6，Sol High /root/r7_builder施工、Astra Medium /root/r7_reviewer规划/独立验收，主线程批准具体release。工具v4在同一本机账本追加R10会话，保留原history4及05–14十条收据；产品仍R9 revision19，参数/timeout不改。
-
-本轮工程与真实准备独立PASS：23/23测试、actual run坏SHA/continue负例、4SHA一致，复用同版tsc及CLI fake。预审发现旧R8根可作输出子目录的问题已关闭，原31账本文件/R8旧根24文件/三正式原件SHA均不变。新15–24各阶段均有成功result；固定执行及独立质量PASS后才获准counter，没有失败、重试或额外诊断。
-
-固定独立33/40（事实5、边界5；结构/可读性/关系解释各3），18事实项及S01–05全部PASS，缺图/五处转录待核/登记来源边界已关闭。反例主体、年份、数值、渠道、金额、未知负责人、AI未上线和缺图逐项PASS。原稿未经人工改写；模型自评不代替独立评分。结合R1–R4有效工程/UI/正式确认恢复证据及R6/R9兼容门禁，KB03本批整体独立PASS，限冻结验收范围，不代表所有输入均正确。
-
-本轮真实新增10，累计24/30、fixed14/20、counter10/15；知识287/500、Prompt20/24。配置读取主线程1+两次run各1=3。全部调用已停止，账面余总6/fixed6/counter5不自动授权诊断或重试。原4次仅报告汇总、缺原收据的证据缺口保持；R5超时/R8质量失败保留历史记录，会议上传UI等独立范围遗留不由KB03签闭。
-
-非阻断不足：固定五节重复追加11条待核原句、反例有重复来源/口径和偏宽ambiguous标注，已实际扣分/记录。后续可在不丢原句/定位/边界的前提下优化去重与标注精度；本轮不追加产品施工。证据：[R10任务](handoffs/KB03-R10-20261031-task.md)、[施工](reports/KB03-R10-20261031-builder.md)、[独立验收](reports/KB03-R10-20261031-review.md)、[交付说明](delivery.md)。提交标识见独立报告绑定。下方为历史时间点。
-
-## KB03 R9：边界信息离线修复独立通过，真实待重验（2026-10-30）
-
-用户授权先离线修复缺图、转录疑点和来源边界遗漏，独立验收后报告真实重验预算。沿B评分0/2/2/2=6，Sol High /root/r7_builder施工、Astra Medium /root/r7_reviewer规划/独立验收。深度后三阶段独立传递sourceNotes/登记metadata/evidence，标准业务planning不混入来源声明；已选择sourceNotes和已识别ambiguous通过现needs_verification保留原句及定位，模型遗漏或大纲排除不能静默丢失。疑似转录采用通用提示，不硬编码真实样例疑词；未被抽取识别的语义问题仍待真实验证。Source改为登记日期/登记链接并说明登记线索，原字段值保留。
-
-本轮离线工程独立PASS，无待返修项。施工核心51/51、来源渲染3/3、tsc及空envDir build通过；独立实际边界6/6、新虚构样例保全/遗漏拒绝/5次fake及不含R9附加块的旧18完成草稿读回、未审拒绝、全审后Source-only确认/0新增调用通过，11文件SHA一致。revision19，旧18未完成检查点409/0请求且不改盘；旧完成兼容，未新增模型阶段。无UI布局变化或新浏览器结论；不重跑无关全量。
-
-本轮真实请求0、产品配置读取0，正式workspace及R8真实原稿/收据未改。R8两例真实质量FAIL保持，KB03整体未通过；旧原收据证据缺口继续单列。预算仍累计14/20（fixed9/12、counter5/7），知识277/500、Prompt20/24。
-
-真实重验最低需要两个fresh单块任务各5、合计新增10次：累计total24/fixed14/counter10。须将现授权总额20→至少24（+4）、fixed12→至少14（+2）、counter7→至少10（+3），无失败余量。旧版本阶段不能凭旧完成草稿或remaining复用，新release/freeze及验收工具预算/新轮会话门禁还需按获批额度另行适配；本轮未改账本、上限或释放。预算仅建议，等待用户批准真实重验及具体额度，不自动调用。
-
-证据：[R9任务](handoffs/KB03-R9-20261030-task.md)、[施工](reports/KB03-R9-20261030-builder.md)、[独立验收](reports/KB03-R9-20261030-review.md)。交付提交绑定见独立报告。下方为历史时间点。
-
-## KB03 R8：本机真实执行完成，质量未通过（2026-10-30）
-
-用户明确批准本机新轮真实复验、历史4次照扣并单列旧收据缺口，随后明确允许指定Raw及虚构反例发送至OpenAI API https://api.openai.com/v1、模型gpt-6.1-terra。沿B评分0/2/2/2=6，Sol High /root/r7_builder施工、Astra Medium /root/r7_reviewer规划/独立验收。工具v3使用本机唯一持久账本，旧4次仅历史汇总，新收据05起，不伪造01–04。
-
-工程与真实准备独立PASS：定向19/19、actual run入口10项负例通过，4文件SHA一致，复用同版tsc/CLI fake。真实prepare只读指定Raw、输入及业务元数据一致、初始无job/checkpoint。读取次数探针因named import未覆盖而不作计数证明；原三文件前后SHA3/3一致。产品、Provider参数/timeout、正式workspace未改。
-
-两例实际五阶段均完成，新增10次均有成功result；固定先5次、反例后5次。此前规划超时本轮未复现，但不保证以后不会超时。固定真实质量32/40，边界透明3/5未达>=4：缺图、疑似转录待核及来源边界不足。反例主体/年份/数值/渠道/未知负责人等正确，但遗漏原文提图未提供图片，反例质量FAIL。模型qualityReport自报通过不替代独立裁决。固定失败后由主线程明确批准单独完成原授权反例诊断，不重跑固定，不以反例补偿失败。KB03整体未通过，已停止所有真实调用。
-
-预算：KB03累计14/20（历史4+本轮10），fixed9/12、counter5/7；知识累计277/500、Prompt20/24。总剩6，受单例限制实际剩fixed3/counter2，不能完整再跑两例各5。配置读取主线程2+真实run2=4；审批前两次命令被拒未创建进程、不计请求，用户具体授权后正常执行。原收据缺失及旧迁移完整性未验证继续单列，不否定本轮新收据。
-
-下一步先离线定位并修复缺图/疑似转录/来源边界在生成正文与待核项中的承载和遗漏检查；新产品版本及重验范围确定后再评预算，当前不追加请求、不扩大上限。实际原稿、请求和账本只留本机隔离目录，不提交。证据：[R8任务](handoffs/KB03-R8-20261030-task.md)、[施工](reports/KB03-R8-20261030-builder.md)、[独立验收](reports/KB03-R8-20261030-review.md)。交付提交绑定见独立报告。下方为历史时间点。
-
-## KB03 R7：离线工程独立通过，原机资料待恢复（2026-10-30）
-
-用户在状态检查后明确继续，并确认原始资料未迁移、仍在另一台电脑。本轮完成已授权R7离线工具，实际Sol High `/root/r7_builder` 施工、Astra Medium `/root/r7_reviewer` 规划确认与独立验收，沿B评分0/2/2/2=6。工具v2统一total20/fixed12/counter7/minimum5，固定原真实账本路径、保留旧收据与任务摘要，补齐freeze清单校验；无产品/UI/Provider参数修改。
-
-本轮离线工程独立PASS，无待返修项：施工与独立定向各17/17，独立实际run入口8负例全部config0/network0；4文件SHA一致，freeze为b851f9a7aea2b59c52abab7b1e4f2611c66a884cfbb56024d2d6d9cf39de35ad（116文件）。同版复用施工tsc通过和CLI fake两例各5次、含合成旧4次共14/fixed9/counter5。未重跑全量/build/UI，fake不代表真实迁移或质量。
-
-真实prepare、原件核验、approved release和真实复验均未执行：卡内DAVID旧root与ledger本机均不存在，用户确认留在原机。新增真实请求/config读取0、正式workspace未用；历史已用4/20、知识267/500、Prompt20/24保持记录值，本机未重新核账。R5真实FAIL、质量NOT_EVALUATED及KB03整体未通过保持，会议上传UI遗留另列不变。
-
-下一步优先原机保全两完整目录并沿原路径继续；恢复旧输入、manifest/freeze/job及attempt01–04全部收据后先完成真实R7-01核验，再绑定最终版本的新release并按fixed→counter复验。不得重建账本或改旧manifest规避路径绑定；跨机路径适配需明确实际映射。总预算无需重批，正常两例最低新增10次；完成后单例限制下诊断余量最多5。
-
-证据：[任务卡](handoffs/KB03-R7-20261030-task.md)、[施工](reports/KB03-R7-20261030-builder.md)、[独立验收](reports/KB03-R7-20261030-review.md)。交付提交标识见独立报告的主线程提交绑定。下方为历史时间点。
-
-## KB03 R7：已授权扩大预算并准备真实复验（2026-10-30）
-
-用户明确将KB03总预算调整至20次、固定样例累计上限调整至12次；已用4次仍计入，当前余16，知识累计267/500、Prompt20/24。反例原有单例上限7保持。沿B模式Astra Medium规划/独立验收、Sol High施工，先迁移版本释放与预算门禁，保留旧账本全部收据，按revision18新任务运行两例。当前尚未新增真实请求，R6工程PASS和R5真实FAIL/KB03整体未通过保持。
-
-## KB03 R6：上下文去重工程独立通过，真实待复验（2026-10-30）
-
-用户授权下一步范围内返修，实际Astra Medium规划/独立验收、Sol High施工，B评分0/2/2/2=6。产品提交 39c57690f15712e12f0db3af7658f2d0f732deb7。仅在planning发送边界合并重复原文，保留32个原窗口及全部事实/问题/单元/原文位置，内部证据及人审结构不变。固定样例HTTP正文93093→61039字节，减少34.43%；逐窗口无损恢复。60秒限时、Provider参数及严格输出schema保持。
-
-R6-01–05工程独立PASS：新增核心12+补充36=48项，12份SHA匹配；核原日志复用最终全量625/625、tsc与隔离build。首轮4项旧wire测试断言失配已按原语义适配并复验，未放宽门禁。revision17升18，旧未完成job409/0请求且检查点不改；旧标准/deep草稿仍可读、完整人审后显式确认，旧deep再次start的既存冲突保持。无UI变更或新增浏览器结论。
-
-真实超时未重验，R5真实FAIL、质量NOT_EVALUATED、KB03整体未通过保持。本轮真实/config/正式workspace读写均0，KB03仍4/12、知识267/500、Prompt20/24。新版本两例须从头各5次，最低10次，当前余8至少缺2；最低总预算需14且无失败余量。原工具fixed上限7亦不足历史4+新5=9，旧freeze/release失效；后续需明确批准总额/单例额度及释放迁移，保留旧4次收据，不能新账本清零。本轮未改工具、未追加真实授权。
-
-证据：[任务卡](handoffs/KB03-R6-20261030-task.md)、[施工](reports/KB03-R6-20261030-builder.md)、[独立验收](reports/KB03-R6-20261030-review.md)。下方为历史时间点。
-
-## KB03 第五轮验收：工程PASS，真实FAIL（2026-10-30）
-
-用户授权第五轮，评分1/2/2/1=6，B模式；实际Astra Medium规划及独立验收、两位Sol High分工施工。工程提交 2853a636165e272aec9f85ac6103f8fdd810a89e，本轮仅测试、验收工具与交付文档，无产品代码修改。默认测试613/613、tsc和隔离build通过；独立工具10/10、施工38份SHA匹配，既有失败fixture及TEMP/config隔离问题已关闭。
-
-真实验收FAIL：首次网络失败，复用已有代理后抽取32条事实成功，规划连续两次60000ms超时。无真实草稿，质量NOT_EVALUATED，反例未执行；R5及KB03整体未通过。已停止全部真实调用，KB03已用4/12（失败计入），知识累计267/500，Prompt20/24。余8次不足固定剩4阶段及反例5阶段至少9次；未扩大预算、重置任务或盲目重试。规划超时根因未证实，下一步先离线诊断上下文与耗时，再确定有边界的返修/重验方案。
-
-正式Raw、参考笔记及asset前后3份SHA不变，未写正式workspace。施工早期旧测试曾读本机配置，次数未知，已修复隔离，不能声明整轮配置读取为0；独立读取4次。完整测试/build证据按同版复用，R5未新增UI验收。证据：[独立验收](reports/KB03-R5-20261030-review.md)、[施工记录](reports/KB03-R5-20261030-builder.md)、[冻结任务](handoffs/KB03-R5-20261030-task.md)。下方各轮为历史时间点。
-
-## KB03 第四轮独立通过（2026-10-30）
-
-用户授权第四轮及范围内返修；B模式Astra Medium规划/独立验收、Sol High施工，评分0/2/2/0=4。产品3499b6e73867975f0ea8a1ab22168cf138fefe7b，R4-01–06工程和完整App独立PASS；成功状态UI缺陷关闭。全页及笔记摘要审核后显式Source-only/部分选卡，正式网格和冻结事务恢复通过。施工72项及最后15项、build，独立16项/19SHA，主线程tsc及实际浏览器/37文件备份恢复新根/两次幂等/3导出SHA均通过。真实/config0，预算与正式workspace不动，服务及标签已关、TEMP保留，外部AGENTS/包装报告排除。KB03整体仍待R5，未启动。见[独立报告](reports/KB03-R4-20261030-review.md)、[实际UI](reports/KB03-R4-20261030-main-ui.md)；主线程统一提交同步。
-
-## KB03 第三轮独立通过（2026-10-30）
-
-实际Astra Medium规划/独立验收、Sol High施工，评分0/2/2/0=4沿B。产品a9d3107334e33e9ec151ae2dcf1b5b7b4942d3da，R3-01–06工程与完整App实际浏览器PASS。施工88/88、build及最后文案定点UI/tsc通过；独立9/9、16产品指纹及6落盘SHA一致。模式/进度、结构化编辑、覆盖/定位、人审失效与旧报告过期通过，R4正式门禁保持。额外旧synthesis UI失败经56fbe7a基线复现，保留历史FAIL，不称全仓通过。真实/config0、预算及正式数据不变；自有服务/标签已关。KB03整体未完成，不启动R4/R5。见[独立报告](reports/KB03-R3-20261030-review.md)，外部AGENTS/包装报告排除。
-
-## KB03 第二轮独立通过（2026-10-30）
-
-用户明确授权第二轮及范围内返修。实际Astra Medium规划/独立验收、Sol High施工，评分0/2/2/0=4，完整性风险及用户确认采用B。产品351fef29ff9fccf82f1046011d3fbea55d7a5ab3，R2-01–06工程PASS，done缺草稿重起账本缺口独立关闭；KB03整体未完成。施工94/94及隔离build，独立30/30+44/44，新增独立测试后主线程tsc通过。单块5、多块N+4；真实进程重启0自动新增请求、显式继续原账本。真实/config0，预算和正式workspace不变，R1正式门禁保持，不启动R3/R4/R5。见[独立报告](reports/KB03-R2-20261030-review.md)。外部AGENTS与包装报告排除。
-
-## KB03 第一轮独立通过（2026-10-30）
-
-用户确认五轮方案，仅明确授权第一轮及范围内返修。实际 Astra Medium `/root/kb03_r1_planner` 规划/独立验收，Sol High `/root/kb03_r1_builder` 施工；0/1/2/0=3，完整性边界及用户确认采用B。产品提交200f8b039586f0bd303d5f1b68077d7908c53b9b，第一轮R1-01–06 PASS，无返修遗留。独立43/43、八文件指纹一致、同版隔离build复用、静态Chrome视觉和HTML同SHA核验通过。见[独立报告](reports/KB03-R1-20261030-review.md)。KB03整体未完成，不启动第二轮、深度流水线/UI/正式写入。真实调用0，KB03历史独立12次预算保持；外部 AGENTS.md 与包装报告保全排除。自有静态服务/标签已关。
-
-## 会议备注与文件上传（2026-10-30）
-
-用户明确授权多行备注修复及DOCX/PDF/MD/TXT上传。A标准4分（0/2/2/0），实际Astra Medium规划、Sol High先审、Terra High施工、Sol High独立验收。基线d3d3caa。工程覆盖项通过，Raw响应附件遗漏已返修关闭；独立40/40及定点1/1、负面/容量/重启恢复通过，施工build通过。主线程UI验证备注创建与本地授权，但浏览器文件选择受工具权限限制、CUA回退被停止；MI02/MI03实际上传和失败重试未测。本轮整体BLOCKED待UI验证，B09既有109 PASS单列。真实API0、预算不变、隔离服务已关闭。详见[独立报告](reports/MEETING-INPUT-20261030-review.md)及[任务卡](handoffs/MEETING-INPUT-20261030-task.md)。后续仅补上述UI证据，不重复已通过工程检查。
-
-
-## 本机试用交接独立通过（2026-10-30）
-
-用户授权本机试用交接；评分0/1/1/0=2，A标准，实际Astra Medium确认计划、Terra High施工、Sol High独立验收。仅文档与隔离脚本；产品53c1691、验收HEAD648872f。独立两次运行exit0，正文/引用、同根重启及6文件SHA备份新根恢复通过；备份路径文档缺陷已返修独立关闭。本轮交接PASS，B09整体沿用历史109 PASS；UI未测、真实API0，原预算不变，不触及正式workspace或部署。证据及最终指纹见[独立报告](reports/LOCAL-HANDOVER-20261030-review.md)，运行入口见[交付说明](delivery.md)。本轮止于交接，后续功能范围待用户指定。
-
-
-## 最新结论：R13修复独立通过，B09当前109项通过（2026-10-29）
-
-用户授权修复R13、独立验收并同步GitHub。本批B评分0/2/2/1=5，实际Sol High施工、Astra Medium规划与独立验收、独立矩阵实例核适用性。产品提交 53c16918a9c284a1c18fd7e47f468d9b960a1c89。同型/跨型/再次合并以原页字段组保留人工说明、AI内容、原类型及引用；合并/编辑清除全部审批，正式渲染及后续update快照保全。类型切换未扩范围。
-
-M01–M06独立PASS。本轮施工组合52/52、另补1/1、build通过；独立定向9/9。主线程实际完整App同型→跨型→编辑→保存刷新→重审→正式确认及Source/Wiki/Raw回读完成，独立核102冻结文件、8落盘文件SHA及Raw/3unit目录保持。原108项依受影响边界补验和未变版本复用，最终109 PASS / 0 FAIL / 0 WAIT；不是109项本轮全部重跑。
-
-本轮真实API0、配置读取0；知识263/500、Prompt20/24不变。原模型语义/格式失败和Prompt17保留，不声称自动草稿永远正确；既有综合引文尾词局限不追改。最低Node/跨平台未新增实测，当前R13为Windows/Node25.2.1。隔离5182/63995已停，证据保留，未动正式workspace。未启动新批次或部署。
-
-证据：[任务卡](handoffs/R13-MERGE-20261029-task.md)、[施工](reports/R13-MERGE-20261029-builder.md)、[主线程UI](reports/R13-MERGE-20261029-main.md)、[独立验收](reports/R13-MERGE-AUDIT-20261029.md)、[矩阵适用性](reports/R13-MERGE-20261029-matrix-audit.md)、[当前109项](reports/B09-RESUME-20261029-matrix.md)。外部AGENTS/包装报告排除；下方为历史时间点。
-
-
-## 最新结论：本轮两处缺陷与四链恢复通过，B09剩R13合并缺口（2026-10-29）
-
-用户授权继续B09集成，并明确批准公开/虚构隔离资料送现有OpenAI API，以及18–20补验3次、阶段增加1次而全局24保持。B模式0/2/2/1=5，实际Sol High施工、Astra Medium独立工程/阶段验收与独立矩阵审查，主线程实际CUA操作。产品提交 c6474fe98c63440d7b9cbdb7fe15e98eb8b6aba8：关闭模板更新UI旧阻断，以及Prompt仅发送标题遗漏必要Wiki正文两处缺陷。
-
-I01–I06独立PASS：知识创建/更新、Audit明确接受、Prompt生成保存与优化为原ID第2版、无Provider手工路径、同根重启/新空根恢复。四链23文件逐SHA一致，UI读回Raw/Wiki/Audit/Prompt；失败提交恢复复用同版安全故障测试。Prompt11/11与build、独立3/3；模板更新18/18与独立2/2分别为实际运行或同版复用，未重跑全量。最新账本知识263/500、Prompt20/24（本阶段2+5请求，包含失败17），连接历史1单列；无自动重试，真实配置读取次数未计。
-
-最终109项统计108 PASS / 1 FAIL / 0 WAIT。R13仍未满足：带模板字段的候选合并被明确拒绝；原字段、人工说明和引用不能以清空方式绕过。B09整体未通过。本轮代码缺陷已关闭不等于该历史合并缺口已实现。下一步针对R13制定并执行最小字段保全合并及人审失效验证，不继续模型抽样。原模型质量FAIL与17上下文失败保留，综合旧引文缺尾词的局限不宣称自动修复。
-
-证据：[主线程记录](reports/B09-INTEGRATION-20261029-main.md)、[阶段独立验收](reports/B09-INTEGRATION-AUDIT-20261029-stages.md)、[上下文独立工程](reports/B09-CONTEXT-AUDIT-20261029-prepare.md)、[当前109项](reports/B09-RESUME-20261029-matrix.md)、[独立逐行审查](reports/B09-INTEGRATION-AUDIT-20261029-matrix.md)。隔离服务5179/5180/5181已正常关闭，临时证据保留；未改正式workspace或用户服务。外部AGENTS与包装报告排除提交。旧段落均保留为历史时间点。
-
-
-## 最新结论：R22来源等级工程、界面及真实验证通过（2026-10-29）
-
-用户授权B09遗留验收修复持续推进。R22按0/2/2/0=4、确认完整性门禁采用B，Astra规划/独立验收、Sol High施工。AI来源初判进入planning与综合，未知默认D；用户显选等级保存确认，改级使审批失效；已有Source与旧资产保持。独立发现数组等级String强转缺陷后最小返修关闭。工程E01–04 PASS；主线程完整App隔离实际E05经独立核验PASS；新版公开官方短原文+未知来源E06真实259–261全部独立PASS。
-
-本轮真实3请求/config2，知识261/500、Prompt15/24，连接历史1单列，无重试。[任务卡](handoffs/R22-20261029-task.md)、[施工](reports/R22-20261029-builder.md)、[工程独立验收](reports/R22-AUDIT-20261029-engineering.md)、[UI实操](reports/R22-MAIN-20261029-ui.md)、[真实执行](reports/R22-MAIN-20261029-real.md)、[真实独立验收](reports/R22-AUDIT-20261029-real.md)。基线91acd27332553a2fc6ae9fbeeb0e953e5e9b148c加报告最新SHA对应差异，提交关联Git历史。独立R22 18/18、前轮35/35与同版施工24/24/build及适用旧回归已分别记录；不合并虚报为一次全量运行。
-
-R22局部最终PASS，B09整体仍未通过。完整App四链、重启/备份恢复与109项证据适用性依[集成卡](handoffs/B09-INTEGRATION-20261029-task.md)继续；综合引文尾词截断记录列为集成待核，未签逐引文语义完整性。工程测试隔离5178/63991已关闭、数据保留，用户5173/4317持续运行；未改用户正式资料。外部AGENTS与AGENT-ROUTER报告排除。
-
-## 最新结论：OpenAI严格结构适配及O/Q真实验证通过（2026-10-29）
-
-用户明确授权补齐B09遗留验收与修复。B评分0/2/2/2=6，Astra规划/独立验收，Sol High施工。KB02抽取/规划在精确官方OpenAI Terra路径传strict schema，仅原可选null按契约省略，原业务校验保留；revision16阻止旧未完成检查点混用。独立45/45、同版build通过，S01–05 PASS。旧纯问题Q准备缺陷已在任何真实请求前改为独立事实＋原两问题，新fixture单列，历史原文未改。
-
-主线程经代理入口实际O255–256、独立通过后Q257–258；O安排单已编制未发货、Q两未知question-only及草稿渲染保真均独立PASS。实际4请求/config2，知识258/500、Prompt15/24，历史连接1单列；本轮请求额度用满，无重试。[任务卡](handoffs/OPENAI-STRUCTURED-20261029-task.md)、[施工](reports/OPENAI-STRUCTURED-20261029-builder.md)、[准备验收](reports/OPENAI-STRUCTURED-AUDIT-20261029-prepare.md)、[真实验收](reports/OPENAI-STRUCTURED-AUDIT-20261029-real.md)、[主线程](reports/B09-RESUME-20261029-main.md)、[B09缺口](reports/B09-RESUME-20261029-gap-map.md)。基线2fe5318e70e188cf28c15af7867aacf460213d66加报告SHA对应差异，提交关联Git历史。
-
-本轮工程与两个质量目标通过；旧P自动FAIL和历史O失败保留，HUMAN人工纠偏通过可复用，R16/R18不能仅凭本轮自动联签，B09整体仍未通过。剩余R22来源等级政策实现、完整App四链、恢复及证据版本收口；按本轮用户授权继续推进。最新工作台首页实际可用，用户原始库未作为本轮测试数据。外部AGENTS/AGENT-ROUTER报告不提交。
-
-## 最新结论：OpenAI Terra本机接入两项修复通过（2026-10-29）
-
-用户批准代理入口及temperature兼容修复，Astra规划/独立验收，Sol High施工；B评分0/2/2/1=5。精确api.openai.com+gpt-6.1-terra省略temperature，新增npm run dev:proxy读取已有环境/Windows手动代理并检查Node原生代理能力。普通入口及其它Provider保持；无密钥/本机端口提交。
-
-[任务卡](handoffs/OPENAI-CONNECT-20261029-task.md)、[施工](reports/OPENAI-CONNECT-20261029-builder.md)、[主线程真实记录](reports/OPENAI-CONNECT-20261029-main.md)、[独立验收](reports/OPENAI-CONNECT-AUDIT-20261029.md)。C01–04 PASS：定向7/7、build exit0，六文件SHA一致；主线程经交付入口+Provider一次真实连接返回OK，26输入/4输出token、约4.8秒。真实连接1/config1单列，知识254/500、Prompt15/24不变。基线5f135a62689cc70e5529409c7c83fc1c3db51814加六文件差异，提交关联Git历史。
-
-两项接入缺陷已关闭，不等于严格结构输出或业务验收通过；O失败/Q未执行、R16/R18/B09整体仍未通过。无参dev/UI及旧Node实机未测，未重启既有服务；用户应以npm run dev:proxy重启获得代理环境。下一步另批适配严格结构输出并限定业务验证预算。外部AGENTS/AGENT-ROUTER报告排除。
-
-
-## 最新结论：结构化输出契约检查通过，无明确遗漏（2026-10-29）
-
-用户授权下一步零调用检查，Sol High诊断、Astra medium独立审查；本批0/1/0/1=2。指定官方host/model/purpose路径已有json_object，规划提示含完整schema并在返回后严格验证；既有契约未承诺wire strict schema。未找到明确配置遗漏，停止自动修复和重复诊断，不过滤非法页、不追加抽样。
-
-[检查报告](reports/R1618-CONTRACT-20261029.md)、[独立审查](reports/R1618-CONTRACT-AUDIT-20261029.md)。基线f496ef7c1f11f69f5d3b1d4f53321380db510287；既有adapter请求定向测试2/2 exit0，复用同版原254严格拒绝证据。历史request254非HTTP抓包，未读真实配置，不能断言当时host/model或JSON模式。真实/config/network0，知识254/500、Prompt15/24不变；产品未改，O失败/Q未执行及R16/R18/B09整体未通过保持。
-
-后续需用户选择Provider方向：保留当前及失败状态、更换已支持Provider，或另行评估外部strict schema能力。没有本批可执行的已证遗漏修复；不自动推进真实验证或R22/四链。外部AGENTS/AGENT-ROUTER报告排除。
-
-
-## 最新结论：O结构失败零调用诊断通过（2026-10-29）
-
-用户批准下一建议，Sol High诊断、Astra medium独立验收；本轮文档诊断评分0/1/0/1=2。原253/254均为合法JSON，254 pages含object/string/string，实际schema拒绝pages[1]/[2]字符串，LLM_SCHEMA_INVALID正确。上轮预期INVALID_JSON是人工阅读误判，非产品解析或原证据不一致。本轮不改产品/原报告，补充澄清。
-
-[诊断](reports/R1618-OQ-DIAG-20261029.md)、[独立验收](reports/R1618-OQ-DIAG-AUDIT-20261029.md)。受测基线33e95f9247297cb992accb8f579c5afa8c580da4；完整pipeline离线重放exit0精确捕获预期失败，独立最小解析/validator核验一致，66项冻结/11份公开证据SHA一致。真实/config/network0，知识254/500、Prompt15/24不变。诊断PASS不等于产品修复或O通过；O失败、Q未执行、R16/R18/B09整体未通过保持。
-
-下一建议零调用核对结构化输出契约和必要定向回归；只在发现明确契约遗漏后提出最小修复，无遗漏则停止自动修复，不重复抽样、不放宽schema。上一提交33e95f9已实时核本地与远端一致。外部AGENTS/AGENT-ROUTER报告排除。
-
-
-## 最新结论：O/Q准备通过，O真实验证失败即停（2026-10-29）
-
-用户授权最多4请求。Astra规划与独立准备审查、Sol High施工，B评分0/2/2/2=6。收敛文档经Sol独立审查通过；入口与两fixture准备通过，同版唯一smoke 4fake/0real。主线程随后执行O253–254，exit1、LLM_SCHEMA_INVALID；实际2请求、配置读取1，知识254/500、Prompt15/24。触发首失败停，Q255–256未放行、不重试。
-
-[收敛方案](reports/R1618-CLOSURE-20261029-plan.md)、[收敛审查](reports/R1618-CLOSURE-AUDIT-20261029-final.md)、[任务卡](handoffs/R1618-OQ-20261029-task.md)、[施工](reports/R1618-OQ-20261029-builder.md)、[准备验收](reports/R1618-OQ-AUDIT-20261029-prepare.md)、[真实独立验收](reports/R1618-OQ-AUDIT-20261029-real.md)。基线c5456428ca870a4ab3cf9a7b087aeddd642a61a6加本轮入口/fixture，产品revision15未改。准备PASS不等于真实缺陷关闭；R16/R18、B09及全产品整体仍未通过，历史FAIL及HUMAN PASS保留。下一步建议基于原响应零调用诊断schema失败，不追加抽样或提示特例。外部AGENTS与AGENT-ROUTER报告排除。
-
-
-## 最新结论：真实P人审闭环通过，批次整体未通过（2026-10-28）
-
-用户“继续”授权本机续接。沿Astra既有HUMAN方案，Sol High human_prepare准备、主Agent实际IAB操作、Astra medium human_audit独立验收，B评分0/2/2/1=5。**H01–H04 PASS：人工纠偏保存刷新、审批1→0→1、隔离正式确认及Source/Process回读完成。** 本轮无产品或测试代码修改，不等于自动质量缺陷已由代码修复；旧浏览器阻塞本机未复现。
-
-[准备](reports/R1618-HUMAN-RESUME-20261028-builder.md)、[实际操作](reports/R1618-HUMAN-RESUME-MAIN-20261028.md)、[独立验收](reports/R1618-HUMAN-RESUME-AUDIT-20261028-final.md)、[最终导出](reports/R1618-HUMAN-RESUME-20261028-evidence/final-export.json)。受测代码5ed727128b12e5bb5c004f1205a2cf4a69f532ed；原Raw/Draft摘要保持，6事实/1完整证据/7unit及归属不变，仅隔离草稿痛点人工改写，humanEdited=true。Source/Process各1页revision1。首次sandbox TEMP不共享导致准备/启动失败已保留，随后真实TEMP成功；本轮tab关闭，服务Ctrl+C后无5176/63988监听。
-
-**R16/R18、B09及全产品整体仍未通过。** 旧P自动FAIL、outputs自动改善未覆盖、question-only真实分支缺证保留。Wiki辅助Audit提示由lab未挂路由造成，本轮不签Audit链；正式Wiki unreviewed与草稿主题审批为不同元数据，不追认知识真实性审核。真实/config0，知识252/500、Prompt15/24保持。下一步单独收敛剩余覆盖及B09门槛，不自动追加模型调用、推进R22/四链。外部AGENTS/AGENT-ROUTER报告排除。
-
-## 最新结论：HUMAN隔离准备完成，实际UI环境阻塞（2026-10-28）
-
-用户继续授权真实P草稿人审闭环。Astra规划、Sol准备、Astra独立核查，B评分0/2/2/1=5；无产品代码修改。TEMP副本Raw/Draft与原始字节完全一致，原归档未动。主Agent启动既有lab首次加载无准备上限，四HTTP均200，browser模块2.977秒；但Chrome导航两次超时留在about:blank，IAB webview连接超时且无可用tab。**H01–04实际UI NOT_RUN，本轮整体BLOCKED；不是已确认产品故障。**
-
-[方案](reports/R1618-HUMAN-20261028-plan.md)、[准备交接](reports/R1618-HUMAN-20261028-builder.md)、[实际尝试](reports/R1618-HUMAN-MAIN-20261028-blocked.md)、[独立结论](reports/R1618-HUMAN-AUDIT-20261028-final.md)。基线c55b30a，Draft保持v1未审，无Source/Process正式页。自有Chrome空白tab已关，服务Ctrl+C退出1，后续只读端口5176/63994无监听。TEMP保留用于续接。
-
-真实/config0，知识252/500、Prompt15/24保持。下一步恢复浏览器控制后续同一已授权P人审闭环，无需重新准备模型数据或重复矩阵；不得用API操作替代实际UI证据。旧自动FAIL与R16/R18/B09整体未通过保持。外部AGENTS/AGENT-ROUTER报告排除。
-
-## 最新结论：栏目争议诊断完成，停止特例提示返修（2026-10-28）
-
-用户继续授权零调用核查。Sol High r1618_retest_build诊断、Astra medium r1618_retest_plan独立审查接受不改产品/不追加pain_points特例提示，沿B6。基线332e68464a7909c7fa6c2f34091f879f48c2515f。252原句保留未知/尚未上线，没有明说业务损失；争议是痛点栏目的隐含评价，不是原事实改写或已证程序故障。PRD仅给痛点结构标签，不事后增加量化/因果门槛。旧冻结栏目语义FAIL保留并限定其解释边界，outputs省略合法但旧改善目标缺证。
-
-[诊断](reports/R1618-FIELD-DIAG-20261028-plan.md)、[独立审查](reports/R1618-FIELD-DIAG-AUDIT-20261028-plan.md)。本轮仅文档，无产品/tests修改，无测试/真实调用/配置读取，知识252/500、Prompt15/24保持。当前HUMAN要求允许合法AI候选经人工纠偏，自动原稿全完美不是进入人审的前置条件。
-
-下一建议另定HUMAN收尾小批，复用已有C/P真实草稿及同版历史证据，补必要实际人工栏目纠偏、逐页确认、修改失效及正式回读；不重跑矩阵或追加模型抽样。本轮诊断通过不等于新的人审闭环或R16/R18/B09整体通过，旧结论不追改。外部AGENTS/AGENT-ROUTER排除，提交后停止。
-
-## 最新结论：COVER概念通过，流程栏目语义未通过（2026-10-28）
-
-用户批准最多4次真实请求，基线d6cbb73。主Agent先249–250概念，Astra medium独立C01/共同标准PASS后才放行251–252流程；均exit0成功保存原稿。**C概念质量PASS；P基本流程有据，但pain_points把AI未上线/收益未知归为现有痛点，缺少业务问题依据，语义FAIL；outputs省略，旧完成性措辞改善未覆盖。C/P真实Draft与文本渲染保真PASS，不代表内容整体正确。** 本轮整体未通过，旧FAIL及R16/R18/B09未通过保持。
-
-[独立报告](reports/R1618-COVER-AUDIT-20261028-real.md)、[实际执行记录](reports/R1618-COVER-MAIN-20261028-real.md)、[C结果](reports/R1618-COVER-20261028-real-evidence/concept/result.json)、[P结果](reports/R1618-COVER-20261028-real-evidence/process/result.json)。实际请求4、配置读取2，知识252/500、Prompt15/24；预算用尽停，无重试/额外抽样，未改产品或输入，未浏览器/正式Wiki提交。
-
-下一步建议基于现有原稿核查栏目归类要求与最小改进，不盲目追加生成；outputs改善及question-only真实分支仍缺证，不能用省略签通过。本轮结束不自动施工/调用或推进R22/四链。外部AGENTS与AGENT-ROUTER报告排除。
-
-## 最新结论：独立概念与动作状态验证准备通过（2026-10-28）
-
-用户继续授权零调用准备，B模式0/2/2/2=6。Astra medium r1618_retest_plan冻结两独立样本及标准，Sol High r1618_retest_build实现既有入口固定concept/process配置和新概念资料，Astra独立验收PASS。唯一smoke exit0、1.349秒、4fake/0real/config0，独立复用同版结果；两未放行会话各66项冻结无漂移，含两fixture/卡/计划，无release/attempt/run-started。产品revision15未改。
-
-[任务卡](handoffs/R1618-COVER-20261028-task.md)、[冻结方案](reports/R1618-COVER-20261028-plan.md)、[施工与会话路径](reports/R1618-COVER-20261028-builder.md)、[独立验收](reports/R1618-COVER-AUDIT-20261028-final.md)。基线a77bcff加入口/新fixture差异，交付提交关联Git历史。真实/config0，知识248/500、Prompt15/24保持；准备通过不改变旧Q02 FAIL、真实覆盖缺证及R16/R18/B09未通过。
-
-下一建议一次授权最多4请求：Concept249–250、通过后Process251–252，累计最高252/500；任一失败/目标缺证停，不重试。每样本只验自身目标类型，outputs省略仅表示该目标未覆盖，不追改旧标准。预算待确认，当前不真实调用，不推进R22/四链。外部AGENTS与AGENT-ROUTER报告排除。
-
-## 最新结论：动作状态提示工程独立验收通过（2026-10-28）
-
-用户“继续”授权，沿已审DIAG2方案及B模式6分，Sol High r1618_retest_build施工，Astra medium r1618_retest_plan独立验收。仅字段提示增加动作阶段/结果口径要求、revision14→15及既有定向用例最小更新。唯一受影响测试1/1通过（exit0、2.170秒），独立核diff/实际请求断言/三SHA一致后复用，不重复测试。**本轮工程PASS；真实遵从未证，旧Q02 FAIL、Concept及question-only真实覆盖缺证、R16/R18/B09整体未通过保持。**
-
-[任务卡](handoffs/R1618-STATE-20261028-task.md)、[施工](reports/R1618-STATE-20261028-builder.md)、[独立验收](reports/R1618-STATE-AUDIT-20261028-final.md)。受测基线051784b加三文件冻结差异，交付提交关联Git历史。真实/config0，知识248/500、Prompt15/24不变。不改拆页规则/协议/存储，无浏览器/全矩阵。下一步建议明确独立概念资料及动作状态质量标准后安排必要真实验证，具体预算另定；本轮完成停止，不自动调用或推进R22/四链。外部AGENTS和AGENT-ROUTER报告排除。
-
-## 最新结论：R16/R18覆盖与动作状态零调用诊断完成（2026-10-28）
-
-用户批准下一建议。Sol High r1618_retest_build完成诊断，Astra medium r1618_retest_plan独立审查方案可接受；评分0/2/2/2=6，B模式。基线bb31abc535bef51c1b3cab392121d903c977ae92。本轮仅文档，无产品/测试修改，无测试/真实调用/配置读取；知识248/500、Prompt15/24保持。
-
-PRD§13/15要求两类页面能力及模板，§20按知识问题拆页，不要求每份资料同时两型。248缺Concept是冻结QUALITY覆盖未达，尚不足认定产品拆页违约；旧Q02 FAIL不追改。outputs动作完成性措辞仍有歧义，建议只明确既有字段提示的动作阶段/证据强度约束，revision14→15并调整既有定向验证，不修改拆页/页数/协议。未来以专门概念资料验证缺失能力，不人工强拆当前输出。
-
-[诊断及精确建议](reports/R1618-DIAG2-20261028-plan.md)、[独立审查](reports/R1618-DIAG2-AUDIT-20261028-plan.md)。方案通过不等于施工或真实质量通过；R16/R18/B09整体未通过保持。下一步建议上述最小提示工程小批，本轮结束，不自动调用或推进R22/四链。外部AGENTS和AGENT-ROUTER报告排除。
-
-## 最新结论：R16/R18真实复验生成成功，内容质量仍未通过（2026-10-28）
-
-用户明确同意本轮最多2次真实请求，基线99215280a04e81071a6d1abacf4108c250effde1。主Agent执行唯一247抽取+248规划，exit0，成功保存原始草稿；实际调用2、配置读取1，知识248/500、Prompt15/24。未重试、未新增调用、未改产品或补原稿。Astra medium r1618_retest_plan独立核原响应及草稿：**Q02 FAIL：仅Process、无Concept，两型覆盖未达；outputs将安排发货写为偏完成性措辞，来源支持不足。Q03单Process真实Draft及文本渲染PASS：9字段保真、Raw/六句事实/证据不变。** 本样本上次层级/混型格式阻断未复现，未知负责人及AI未上线/未来/收益未知保留；不是R16/R18或B09整体通过。
-
-[独立质量报告](reports/R1618-RETEST-AUDIT-20261028-real.md)、[实际命令及授权](reports/R1618-RETEST-MAIN-20261028-real.md)、[原始结果](reports/R1618-RETEST-20261028-real-evidence/result.json)。产品未改，历史工程证据复用；未浏览器/审核/正式Wiki提交，不重跑旧矩阵。旧246失败保留。本轮完成停止，下一建议零调用核对规划拆页与既有两型覆盖验收要求，并收敛安排/完成措辞的最小改进方案；不靠重复抽样签通过，不自动施工、放宽标准或推进R22/四链。外部AGENTS及AGENT-ROUTER报告排除。
-
-## 最新结论：R16/R18修复后真实复验准备通过（2026-10-28）
-
-用户批准下一步工作；B模式0/2/2/1=5，Astra medium r1618_retest_plan规划及独立验收，Sol High r1618_retest_build施工。仅既有入口9行更新本轮任务/隔离目录/247–248序号与246起账，产品和固定六句资料不变。独立唯一fake smoke exit0、1.176秒、3检查通过；64项冻结无漂移，真实会话无release/attempt/run-started。P01–03零调用准备PASS；seq246真实质量FAIL、真实草稿未验及R16/R18/B09整体未通过保持。
-
-[本轮任务卡](handoffs/R1618-RETEST-20261028-task.md)、[施工报告](reports/R1618-RETEST-20261028-builder.md)、[独立验收](reports/R1618-RETEST-AUDIT-20261028-final.md)。基线eb93a30加入口差异，交付提交关联Git历史。真实/config0，知识246/500、Prompt15/24不变。建议下一步用当前配置唯一完整流程最多2次实际请求（247抽取、248规划，累计最高248）；失败也计且首失败停，不自动重试，具体预算待用户确认。旧余量不自动放行，不推进R22/四链。不重复tsc/旧矩阵/浏览器。AGENTS及AGENT-ROUTER报告排除。
-
+<!-- ENG01 agent-control:86 -->
 ## 通用调度规则更新（2026-10-27）
 
 用户批准采用通用 Agent Router：按当前批次评分，A 模式分为 Luna High 轻量施工及 Terra High 标准施工，Sol 独立验收；B 模式 Sol 施工、Astra 独立验收，均由 Astra 规划标准。现行规则见 [coordination](coordination.md#通用-agent-router-现行规则2026-10-27) 和 [Skill](../.agents/skills/agent-router/SKILL.md)。本记录下方较早的固定 A 模式及旧调度为历史；任务进度、实际模型身份、预算和产品验收结论不变。本次仅更新规则，不启动产品任务。
 
-## R16/R18最小提示工程闭环PASS（2026-10-27）
-
-用户批准已审方案施工/定向测试/独立验收且禁止真实调用。基线4c27037，0/2/2/1=5、B模式；实际Sol High `r1618_quality_prepare`两产品落点加一测试增量，Astra medium `r1618_quality_audit`核最终差异、三SHA与新增定向1/1（0.591秒）通过。[最终独立报告](reports/R1618-FIX-AUDIT-20261027-final.md)。不扩接口/校验器/存储，提示revision14沿既有检查点版本机制。施工首跑证据断言包含非Draft存储的occurrences，修正为六字段精确比较且保留fact/Raw/quote/checkpoint断言，经独立审查合理；失败记录保留。
-
-本轮提示工程PASS不等于真实遵从已修复，seq246 Q02 FAIL/Q03 NOT_RUN及整项/B09未通过保持。真实/config0，知识246/500、Prompt15/24，247不消费。下一建议B模式真实复验准备，需新版本/资料/实际预算及原稿独立验收；当前不自动推进。主Agent仅提交本轮文件，外部工作保留。
-
-## R16/R18零调用诊断及方案审查完成（2026-10-27）
-
-用户批准仅诊断+最小方案+独立审查。基线c23b536，0/2/2/1=5、沿B模式，Sol High `r1618_quality_prepare`和Astra medium `r1618_quality_audit`完成并停写。[方案](reports/R1618-DIAG-20261027-plan.md)、[独立审查](reports/R1618-DIAG-AUDIT-20261027-plan.md)。两产品落点仅作为待启动建议：字段提示澄清与既有revision13→14；一项定向测试增量，原拒坏/未知问题正文/存储机制保持。方案审查可接受不等于真实修复，未施工产品；Q02 FAIL/Q03 NOT_RUN及整体未通过不变。
-
-真实/config0，知识246/500、Prompt15/24，247未用。一次内存探针核实际schema及语义支持边界，独立审查核源码/版本依赖复用已证失败，未重复全矩阵。文案“所有模板栏目”建议已采纳；请求核新说明/原schema，bundle另核revision14，不新增请求字段。下一步建议B模式按此范围施工与独立工程验收；真实复验后续另定，不自动推进。仅提交本轮文档，外部工作排除。
-
-## R16/R18固定资料真实验证FAIL（2026-10-27）
-
-用户新授权最多3次，主Agent只放行已审245/246两请求，247不安排；基线86c9c58、入口不变。245抽取后246规划schema失败，进程exit1立即停止，无重试。Astra medium `r1618_quality_audit`独立读取实际请求/原响应并离线复现：页面多余metrics/related_knowledge首阻断、Process含definition后续约束错误、异常负责人引用AI事实、未生成Concept。见[真实独立报告](reports/R1618-QUALITY-AUDIT-20261027-real.md)。Q02 FAIL/Q03 NOT_RUN，Q01准备PASS保持，整项/B09未通过。
-
-实耗2次、实际配置读取1，知识246/500、Prompt15/24，247未用。无产品修改、无草稿/正式化、Raw不变，原响应归档。下一建议暂B模式0/2/2/1=5，先按固定失败证据零调用定位格式与来源最小方案；未授权自动修复或再调用，不通过消耗余额重试。主Agent本轮收尾同步后停止。
-
-## R16/R18质量准备独立验收通过（2026-10-27）
-
-本轮B模式Sol High `r1618_quality_prepare`完成fixture/窄入口，Astra medium `r1618_quality_audit`停写后独立核实物与一次smoke，exit0、0.782秒，64项冻结一致。[独立验收](reports/R1618-QUALITY-AUDIT-20261027-final.md)。Q01准备通过；Q02/Q03真实质量未执行，整项/B09未通过。真实/config0、知识244/500、Prompt15/24；未放行会话无attempt，不自动消费。下一步需明确本轮2次实际请求预算245–246，首失败停止，固定原稿独立审查；不复用旧SYN01额度。施工与验收均已停写，主Agent收尾同步，外部工作排除。
-
-## R16/R18固定样本质量验证准备（2026-10-27）
-
-用户已要求开始预检建议的下一步，按[任务卡](handoffs/R1618-QUALITY-20261027-task.md)进入零调用准备。基线130e440；需求0/耦合2/风险2/历史1=5，B模式，实际Sol High `r1618_quality_prepare`与Astra medium `r1618_quality_audit`分离施工/审查。固定六句门店补货资料，只做窄入口及必要fake smoke；历史工程/F04证据复用，产品不改。
-
-提出两次实际Provider请求预算245–246（244→最高246/500），待用户明确具体上限；不挪用SYN01余量、不外发、不读实际配置。当前知识244/500、Prompt15/24保持。先交可审阅准备与独立结论，再申请具体真实预算；样本通过也不自动关闭R18历史负例失败或B09。其他文件所有权和停止条件见任务卡。
-
-## A 模式配置更新（2026-10-27）
-
-用户指定后续 A 模式改由 GPT-6.1 Terra High 施工，GPT-6.1 Sol 继续独立审查验收；实际参数及现行路由见 [协作规则](coordination.md#当前总控规则2026-10-22-起) 与 [agent-router](../.agents/skills/agent-router/SKILL.md)。下方 Luna 调度为历史记录，不再作为新 A 模式施工配置。评分、B 模式、预算与批次验收结论不变；本次仅更新协作规则，未派发产品施工。
-
-## 最新结论：AI自动字段工程连接通过（2026-10-27）
-
-本轮按用户批准B模式0/2/2/1=5，由Sol High auto_fields_build施工、Astra medium auto_fields_audit独立验收。9产品文件接通同次规划的语义字段→原事实ID/证据→检查点→草稿→编辑/正式正文；AI与人工来源分开，人工改AI文字由服务端保留修改标记。**新增定向4项测试通过、tsc通过，一次新控件保存刷新/标签实操通过，本轮工程小批PASS。真实自动内容质量未测，R16/R18整项、B09及全产品仍未通过。**
-
-[任务卡](handoffs/R1618-AUTO-20261027-task.md)、[施工及冻结](reports/R1618-AUTO-20261027-builder.md)、[独立验收](reports/R1618-AUTO-AUDIT-20261027-final.md)、[主Agent实操](reports/R1618-AUTO-MAIN-20261027-final.md)。基线6581884加本轮差异，最终提交关联Git历史。复用旧人工F04，不重复两类型全流程；本次UI未正式提交，既有3页是fake工程产物。首次编译继续不设准备上限，入口模块完整响应11.385秒，不冒称整页就绪时间。
-
-真实/config0，知识244/500、Prompt15/24保持；旧自动FAIL与配置读取历史偏差保留。自有浏览器/服务关闭，外部AGENTS/.agents/AGENT-ROUTER改动排除提交。下一步固定一份代表性资料、明确调用预算后验证真实AI是否把内容放对栏目；不重复工程矩阵，不自动推进R22/四链。本轮完成停止。
-
-
-## 当前执行：AI自动字段工程连接（2026-10-27）
-
-用户已批准下一步工作；按[本轮任务卡](handoffs/R1618-AUTO-20261027-task.md)，基线6581884，B模式0/2/2/1=5。Sol High auto_fields_build施工，Astra medium auto_fields_audit独立审查。已定位真实新链规划协议/组装/Draft转换缺字段，方案审查采纳同次规划可选字段与原事实ID引用，AI内容独立于人工说明；人工改AI文字后明确标记。仅9产品落点及一组定向新测试，复用人工功能验收；一次新增控件保存刷新，不重跑全矩阵。真实/config0，知识244/500、Prompt15/24保持；自动质量另行验证，当前不称通过。外部改动排除，不推进R22/四链。
-
-
-## 最新结论：人工字段浏览器闭环通过（2026-10-27）
-
-按用户最新指令，首次模块加载不设准备上限、直接计时，复用旧工程证据，不重跑测试矩阵。Sol High `f04_timing`仅调整隔离入口计时及Windows polling监听，Astra medium `f04_timing_audit`独立核实，主Agent完成一次实际Chrome两类型闭环。**F04 PASS，结合历史同版F01/F02/F03/F05，R1618-FIELDS人工字段功能任务卡PASS；R16/R18自动质量、整项及B09/全产品仍未通过。**
-
-首次成功测量入口模块完整响应28.780秒，四项HTTP响应墙钟44.923秒（含间隙），均200；不等同全依赖图编译或UI就绪，8秒不是产品门槛。此前一次无上限运行暴露Windows文件监听原生断言崩溃，lab polling后完成；旧失败保留。实际编辑保存刷新、审核后修改失效、重审、正式新建刷新回读通过，审批2→0→2，Source+Concept+Process共3正式页，原Raw/4事实/4证据不变。
-
-[独立验收](reports/R1618-TIMING-AUDIT-20261027-final.md)、[操作证据](reports/R1618-TIMING-MAIN-20261027-final.md)、[施工与计时](reports/R1618-TIMING-20261027-builder.md)。基线b70a2f1，lab SHA93ECD26190924ED4CBE1E0F6E1B32903253038A14786A8920392B5999E5EEFAB。辅助Audit报错为隔离入口未挂载路由，未验完整App；历史配置读取偏差保留。真实调用0，知识244/500、Prompt15/24不变；自有浏览器/服务已关闭，外部AGENTS/.agents/AGENT-ROUTER修改排除提交。
-
-下一步另行收敛R16/R18自动字段质量或R22来源等级职责，再做必要四链集成。建议沿B模式按实际下一小批评分；本轮完成即停止，不自动启动新批次。下方保留历史。
-
-
-
-## 最新结论：F04入口隔离改进保留，浏览器验收仍阻塞（2026-10-27）
-
-本轮用户授权续接F04，B模式0/2/2/1=5。最终Sol High `r1618_entry_finish`施工、Astra medium `r1618_final_audit`独立验收。仅lab加入Windows路径解析规避、TEMP独立缓存、明确隔离TSX扫描入口；产品/browser组件未改。独立语法和差异检查通过，三项配置可保留，但最后提升权限原8秒smoke仍超时，底层编译等待原因未证，入口问题未完全解决。**F04 BLOCKED，人工字段整批及R16/R18/B09未通过。** CUA初始化可用，实际产品UI编辑/审核/正式回读本轮未执行；旧工程测试为历史证据，不替代浏览器验收。
-
-[施工诊断](reports/R1618-RESUME-20261027-builder-entry-diagnosis.md)、[独立验收](reports/R1618-RESUME-AUDIT-20261027-final.md)、[主Agent记录](reports/R1618-RESUME-MAIN-20261027-final.md)。基线a6c1f6d，最终lab冻结AE9341E108CD559700EA72072C9718C39734DADDDE67077C814334478C64E2FF。自有测试服务已退出，最后TEMP夹具保留；真实调用0，知识244/500、Prompt15/24不变，历史配置读取偏差保留。外部AGENTS/.agents/AGENT-ROUTER改动排除提交。
-
-下一步先专项定位Vite/esbuild编译等待，再补同卡F04，建议沿B模式；不靠增加超时宣称修复，不推进R22/四链。本轮封存诊断并停止自动参数试验。下方为历史过程。
-
-
-
-## 2026-10-27 人工字段F04续接
-
-用户批准继续建议，沿原任务卡B模式0/2/2/1=5。实际Sol High r1618_resume_sol负责隔离入口定点诊断及必要最小修复，Astra medium r1618_resume_audit负责独立核差异/最终证据；主Agent实际Chrome/状态/Git。基线a6c1f6d，11文件同SHA，服务7项等证据复用不重跑。新TEMP虚构夹具、envDir隔离、Provider禁用，真实/config上限0，旧偏差不抹除。门槛F04实际编辑/刷新/修改失审/重审/正式新建回读；未满足不得整体通过。已实查CUA初始化成功；尚未进行产品UI。结束后停止，不扩R22/四链。
-
-## 最新结论：人工字段服务工程通过，浏览器闭环阻塞（2026-10-26）
-
-**R1618-FIELDS局部F01/F02/F03服务工程与F05定向检查PASS；F04实际UI闭环BLOCKED，本轮整体及R16/R18/B09未通过。** Sol High完成8处产品落点，实现字段证据引用/独立人工说明、完整正文预览、保存与审批失效、引用完整性与新建正式页回读；合并/切型/旧Wiki更新含字段时明确拒绝保全，沿已审方案不扩模型协议。Astra独立新增7项全部通过；施工同版模板3项、公共渲染1项、tsc通过复用，未全回归。[施工交接及续接命令](reports/R1618-FIELDS-20261026-handoff.md)、[独立验收](reports/R1618-FIELDS-AUDIT-20261026-final.md)。受测基线439ae52加本轮差异，交付提交以Git历史及聊天交付关联。
-
-两项阻塞：主Agent CUA初始化及一次reset均报Windows sandbox setup refresh错误，未操作Chrome；隔离lab多次在不同位置超时，独立最终版shell/browser模块200后DraftReviewPage模块8秒超时，未定位根因，不判为已确认产品缺陷、不标HTTP全链通过。全部自有服务关闭，隔离夹具保留。现有服务测试不能替代实际UI编辑/刷新/重审/保存回读，续接先定点解决入口及浏览器，不重跑已通过矩阵。
-
-真实模型调用0，知识244/500、Prompt15/24保持。**本轮实际配置零读取不能证明**：施工最初两轮Vite默认envDir可能读项目.env.local；未主动查看/打印/外发内容，Provider禁用。最终入口已将envDir指向隔离TEMP并独立运行，但不能追溯抹去历史偏差；元数据configReads:0不是审计证据。后续禁止使用其证明整轮零读取。
-
-自动字段内容质量仍缺证，R18历史FAIL保留；本轮不声称模型自动填充、整项需求或全产品通过。下一步仍是本卡未完成的F04零调用验收，授权延续，无需重新批准同一范围；先修隔离入口超时并恢复CUA。外部AGENTS/.agents/AGENT-ROUTER修改保留排除，不进入其他批次。
-
-
-## 当前执行：R16/R18人工字段编辑（2026-10-26）
-
-用户已明确批准[施工卡](handoffs/R1618-FIELDS-20261026-task.md)实现与离线浏览器验收。基线439ae52，B模式0/2/2/1=5；复用实际Sol High r1618_sol施工和Astra medium r1618_audit独立验收，主Agent实际Chrome与同步。按已审查方案实现来源摘录归位、独立人工说明、审批失效和新建正式页回读，保留不支持操作的明确阻断。真实/config0，知识244/500、Prompt15/24保持；未实测不声称通过。外部改动及旧证据保留，不跑无关全回归。
-
-
-## 最新进展：R16/R18人工字段方案已审查（2026-10-26）
-
-本轮完成用户批准的下一步最小方案，未施工产品、未运行测试。Sol High方案经Astra medium独立审查，四项修订已落实，主Agent准备[待启动施工卡](handoffs/R1618-FIELDS-20261026-task.md)。[方案](reports/R1618-FIELDS-20261026-plan.md)与[独立审查](reports/R1618-FIELDS-AUDIT-20261026-plan.md)明确：字段引用本页完整来源摘录、人工说明/AI分析建议独立、复用审批失效和存储、新建正式页保存回读；不改模型协议。
-
-带非空字段的合并/切型及旧Wiki更新本批明确拒绝并保全原稿；清空为删除而非无损迁移。Concept启用字段后旧一句话独立展示，全清空回退旧表现但不代表解释质量通过。核心7处产品落点加既有更新入口最小拒绝，必要服务测试和一次真实浏览器离线闭环；重复UI单测可省，无全回归。
-
-基线bf8041c，真实/config0，知识244/500、Prompt15/24保持。方案审查可采用不等于功能PASS；此前结构修复PASS保持，R16/R18整项及B09仍未通过，自动质量缺证/历史FAIL保留。下一步按该卡以B模式施工及独立验收，仍零调用；本轮汇报后等待启动确认。外部AGENTS/.agents/AGENT-ROUTER改动排除。
-
-
-## 最新结论：R16/R18分型字段结构修复通过（2026-10-26）
-
-**本轮模板结构缺陷修复PASS；R16/R18整项与全产品/B09仍未通过。** 按用户批准B模式，Sol High诊断发现手动模板齐备，但知识草稿公共渲染缺少分型字段。仅修改render.ts，Concept新增7个字段段落并调整一句话标签，Process新增14个字段段落；复用来源/问题栏，分别覆盖10/15正文项。缺少对应内容的字段显示待确认，AI机会明确“分析建议”，不机械映射或改写事实。
-
-[施工交接](reports/R1618-20261026-handoff.md)、[独立验收](reports/R1618-AUDIT-20261026-final.md)、[任务卡](handoffs/R1618-20261026-task.md)。独立新3项全通过：字段对应、草稿编辑/显审/正式保存/新Store回读、Raw及事实证据保真；施工既有渲染1项与tsc通过复用，无全回归/浏览器/真实模型调用。基线0a6d27f加本轮render/test差异为受测版本，最终交付提交在Git历史及聊天交付关联。
-
-真实/config0，知识244/500、Prompt15/24保持。既有KB02 HUMAN、SYN01与R12历史结论不追改；R18历史自动FAIL保留。字段占位不是内容质量，当前新链仍无逐字段语义归位，现有一句话内容可能只是标题。下一步建议B模式先明确有来源支持的字段归位与人工编辑最小方案，继续零调用；通过后再单独安排真实质量验收。R22及四链仍后续，本轮结束不自动推进。外部AGENTS/.agents/AGENT-ROUTER改动排除保全。
-
-
-## 当前执行：R16/R18模板字段零调用核查（2026-10-26）
-
-用户已批准按B模式核查Concept/Business Process模板字段，确认缺陷后最小修复与定向独立验收。按[任务卡](handoffs/R1618-20261026-task.md)执行T01–04；需求0/耦合2/风险1/历史1=4，沿用户明确B选择。实际Sol High r1618_sol诊断施工、Astra medium r1618_audit独立验收，主Agent负责范围与同步。基线0a6d27f；真实/config0，知识244/500、Prompt15/24保持。不重跑SYN01、不扩大R22/四链；外部改动保留。尚未作修复或验收通过声明。
-
-
-## 最新结论：R12人工问题独立显示通过（2026-10-26）
-
-用户授权的R12已按B模式0/2/2/1=5完成Sol High诊断/施工自查、Astra独立方案/工程/最终验收及主Agent实际Chrome。**本轮人工纠正→独立问题显示→重新显审→正式保存回读PASS，人工能力缺口关闭。原C09/10自动分类FAIL保留，不声称模型自动修复；全产品/B09仍未通过。** 见[最终独立验收](reports/R12-AUDIT-20261026-final.md)、[工程实测](reports/R12-AUDIT-20261026-engineering.md)、[主Agent操作](reports/R12-MAIN-20261026-final.md)。
-
-六产品文件新增显式人工引用标记；Raw/原54unit/事实/证据不变。实际Chrome撤销/刷新/审批失效、逐14页重新审查后只保存09/10与Source，3正式页和3日志一致。受测11项冻结4477a4e433e7ea8a2aefe9d0f92f32d5ac2325a09dde07687885e210bf9bacb2；独立原C脚本及最终落盘核通过，新增3/HUMAN核心19/知识UI1、tsc通过。联合测试24项23通过/1既存综合fake缺版本字段失败，原测试未改、不称全绿。实际命令与版本证据见报告。
-
-本轮真实/config0，知识244/500、Prompt15/24保持。自有Chrome关闭，lab中断退出1且5174/53629均closed；隔离证据保留。外部AGENTS/.agents/AGENT-ROUTER工作排除保全。下一建议独立小批先零调用核R16/R18概念/流程模板字段证据，暂定B模式（先核范围再评分），R22等级与当前四链集成仍后续；旧综合fixture维护列入后续测试准备。本轮结束，不自动推进。下方保留历史。
-
-
-## 2026-10-26 R12诊断与最小施工启动
-
-用户明确授权启动R12，阶段为全产品缺口收敛。依据C09/10已证未知复合句未独立open_questions，需求0/耦合2/风险2/历史1=5，B模式；详见[本轮卡](handoffs/R12-20261026-task.md)。Sol High实际角色 `/root/r12_diagnosis` 先零调用诊断；指定GPT-6 Astra medium `/root/r12_review` 审方案并在施工停写后独立验收，主Agent负责范围/状态/Git。
-
-门槛为原件忠实复现、最小落点、原fact/question与Raw不变、必要受影响测试及双层结论，不将工程/人工纠正当自动模型质量通过。产品施工待方案确认，同核心修后再失败停止重试转Astra裁定。真实/config0、知识244/500和Prompt15/24保持。外部AGENTS/.agents/AGENT-ROUTER修改排除，结束后不自动下批。
-
-## 最新结论：SYN01真实综合闭环通过（2026-10-26）
-
-B模式0/2/2/1=5，Sol High新入口施工自查、Astra独立工程/原稿/落盘验收均通过，主Agent完成真实Chrome操作。**局部V01–05通过；SYN01本机固定双Raw原稿→显式主题归属审查→正式保存→刷新回读闭环PASS。** 两类原稿语义缺陷在本次244样本未再现，重要限定进入正文、8条事实逐条单源支持；不推定所有输入永久遵从，历史242/243失败保留。[最终独立验收](reports/SYN01-VERIFY-AUDIT-20261026-final.md)、[主Agent操作证据](reports/SYN01-VERIFY-MAIN-20261026-final.md)。
-
-本轮最多3次授权实际仅用244一次，累计244/500、Prompt15/24；245–246未用，不自动抽样。原稿无人工补写，12单元/1个内容摘要绑定确认；2 Source+1 synthesis共3页和同操作3创建日志，正文/8证据/两Raw SHA均一致。自有Chrome及API/Vite已关闭。产品与受测提交fcd0e23953e872d3f2bf733ef6d71617b7c98045未变，新入口108冻结0abd0b2cf140a3a0f0c8e44daa23346ae420373a18cc5e83a387822f5bf51a3f；实际命令与SHA见报告。工程仅新精简smoke，未重复旧矩阵。
-
-全产品/B09仍未通过：R12独立问题显示、R16/R18模板字段、R22来源等级职责及组合版本四链集成证据仍待收敛。Wiki的review_status仍unreviewed，属于独立元数据；本次通过的是草稿主题/归属显审，不冒称Wiki已verified或来源等级已验证。下一建议独立小批先零调用定位R12的C09/10未知内容未单列open_questions缺口，暂定B模式，复用现有证据后确定最小落点，不重诊断SYN01。当前未建下一任务卡、未启动施工，等待用户确认。外部AGENTS/.agents/AGENT-ROUTER修改保留排除；同步提交与实时远端核对见交付汇报。下方为历史过程。
-
-
-## 当前执行：SYN01-VERIFY新提示真实验证（2026-10-26）
-
-用户授权按建议执行并开放本轮最多3次，累计起243/500、最高246/500。Astra确认[VERIFY卡](handoffs/SYN01-VERIFY-20261026-task.md)：当前仅安排唯一244，首成功闭环即停止，245–246保留不自动使用；失败先停，同核心语义再失败不得加提示抽签。Prompt15/24不变，工程阶段真实/config0。
-
-阶段为SEM提示工程通过后的真实验证，0/2/2/1=5，B模式：固定需求明确、Provider/App/证据耦合、外发正式化风险、旧语义失败。Sol High适配受控入口并自查，Astra独立核新差异/冻结与原稿质量，主Agent放行Chrome。原稿必须通过才人审保存回读，三层结果分列。不改产品、不重复旧矩阵；主Agent已确认浏览器控制可用。外部AGENTS/.agents/AGENT-ROUTER保留排除，收尾后停止不自动下批。
-
-
-## 最新结论：SYN01-SEM提示改善工程通过（2026-10-26）
-
-已完成用户批准的B模式闭环：Sol High零调用诊断→Astra确认最小方案→Sol施工自查→Astra读取实际差异并独立验收。只加强createSynthesis的system提示：重要限定必须进入正文、未来/未知保留、单Raw断言正反例及输出前自检；保留v1、自由概括、机械校验、存储及人审。未采用逐字全覆盖或新证据框架。[施工卡](handoffs/SYN01-SEM-20261026-task.md)、[独立验收](reports/SYN01-SEM-AUDIT-20261026-acceptance.md)。
-
-**局部提示明确性工程SM01–05通过；两项真实语义缺陷尚未证明修复，不能CLOSED；seq243原稿质量FAIL、R04真实NOT_RUN、SYN01及全产品/B09仍未通过。** 独立新增检查、指定2项兼容测试、tsc及diff检查通过。原稿回放仍机械接受且文本不变，两个正例为人工合成，不代表模型遵从。基线9622d9b98172b04eba9b52b2c833b958a4f757ef，受测产品SHA eab0d663fb83835474f65fbaecd26df1a503d773dd26f2a7138c8dc7635a2032；命令与冻结见独立报告。
-
-本轮真实/实际配置读取0，知识243/500、Prompt15/24保持，旧原稿及Raw未改。下一验证门槛明确为：另获授权的新冻结唯一244最多一次真实原稿验证，失败即停；原稿通过才人审保存确认回读。不重复同一零调用诊断，若同核心再次真实失败，暂停加提示重试并审视策略/需求取舍。下一建议B模式，当前不自动执行。本轮收尾提交范围排除外部AGENTS/.agents/AGENT-ROUTER改动，交付提交及实时远端核对由最终汇报给出。以下为历史过程。
-
-
-## 当前执行：SYN01-SEM零调用语义返修（2026-10-26）
-
-用户明确批准B模式Sol诊断→Astra确认最小方案→Sol施工自查→Astra独立验收；中断后已要求继续。基线9622d9b98172b04eba9b52b2c833b958a4f757ef。只处理seq243必要语义遗漏、单来源复合断言；已通过结构/分类/定位成果复用。Sol诊断完成，Astra已独立确认[最小施工卡](handoffs/SYN01-SEM-20261026-task.md)：仅加强综合提示明确性，保留v1、自由概括及现有校验/人审。已派原Sol施工SM01–05；不采用逐字全覆盖或多证据框架。工程通过也不能关闭真实语义失败。
-
-需求1（缺陷明确，通用修复机制待核）、耦合1（综合请求/解析及相关证据契约）、风险2（事实支持与旧数据兼容）、历史1（真实语义失败）=5，沿用明确批准B模式。施工Sol High syn01_diagnosis_sol、独立确认及验收Astra syn01_review_astra。门槛：证据支持最小方案、定向离线测试、旧证据不变、独立检查实际差异；不得以fake通过签真实质量。若方案涉及需求取舍或同一核心修复再失败，暂停该施工并交Astra重规划。真实/config读取0，知识243/500、Prompt15/24保持；不跑全量旧矩阵、不自动新真实调用或推进下批。AGENTS/.agents/AGENT-ROUTER外部改动保留排除。
-
-
-## 最新结论：RECHECK工程通过，seq243原稿未通过（2026-10-26）
-
-Sol High新增入口施工自查、Astra独立工程验收通过。真实八字段/metric分类/9条来源定位通过；但遗漏未来AI建议的未上线/收益未知语义，三条复合断言超出单一引用支持。**局部工程通过；R03原稿质量FAIL，R04正式保存回读NOT_RUN；SYN01及全产品/B09仍未通过。** 详见[独立质量报告](reports/SYN01-RECHECK-AUDIT-20261026-quality.md)。
-
-Chrome真实仅1次243，无重试；知识243/500、Prompt15/24。候选revision1/pending_confirmation/approvals0/Wiki0，未人工补写或正式保存。原稿、Raw及旧242保留，自有Chrome/API/Vite均已关闭。产品提交d0553163a09f3ac5f4681430e398e7ef2b2d934a未变。新增smoke施工及独立通过，未重跑旧矩阵。见[收尾记录](reports/SYN01-RECHECK-MAIN-20261026-final.md)。
-
-下一建议B模式零调用诊断243固定原稿，由Astra确认最小方案再决定施工。本轮一次额度已耗尽，不自动调用或推进下一批。下方为历史过程，旧“尚未实测/起242”已被本结论取代。
-
-
-## 2026-10-26 RECHECK新冻结与一次真实授权
-
-用户确认上一建议，已授权最多一次新协议综合及成功后人审保存回读。阶段SYN01工程修复后的真实闭环，0/2/2/1=5：固定需求明确；Provider/App/存储耦合；外发/正式化风险；旧协议一次失败。B模式Sol High施工入口自查、Astra独立工程及真实质量审查、主Agent放行/Chrome/Git。门槛为新冻结/固定双Raw/唯一243先记账、无重试、实际原稿与确认回读、来源与秘密保护。失败停止不扩大，关键新问题另诊断；旧已过测试复用不重复。真实起242/500、最多243/500，本轮工程前0；详见RECHECK任务卡。外部改动保留排除，完成后停止不自动下一批。
-
-## 2026-10-26 SYN01-FIX收尾
-
-B模式诊断/方案确认/施工自查/独立验收完成，沿用需求1/耦合2/风险2/历史1=6。Sol High `/root/syn01_diagnosis_sol` 施工、Astra medium `/root/syn01_review_astra` 独立核实际diff/7项冻结及运行必要验收，F01–F05工程通过。13受影响test、33技术检查、3独立绑定核验与tsc通过，必要门槛满足即停止；首沙箱/测试假设失败如实保留，未扩大回归。
-
-单产品文件的综合v1契约解决请求缺必填/分类约束和模型计算偏移责任问题，严格绑定Raw/SHA/定位ID、派生引用与秘密检查；不改旧失败证据、不补JSON/猜引用、不改UI或存储。独立报告SYN01-FIX-AUDIT-20261026-acceptance.md。局部工程PASS，SYN01及全产品仍未通过：R03真实FAIL/R04未运行不变，合成测试不替代真实质量。真实0，知识242/500、Prompt15/24，当前新增真实授权0。
-
-主Agent统一状态与指定文件提交同步，外部AGENTS/.agents/AGENT-ROUTER修改保留不提交。下一建议仍B：新冻结受控入口后明确最多一次真实综合授权，首失败停止，成功再人工确认回读；不解锁旧242，不自动派发下一批。
-
-## 2026-10-26 SYN01诊断—施工—独立验收调度
-
-诊断闭环已完成：Sol原稿回放先缺字段，合成隔离后依次分类/引用拒绝；Astra独立核源码与原证据，冻结SYN01-FIX卡SHA `5caac7e5350aeef71a6797353df9cd6fb98f20e618e9fb236f493b31e633f0e9`。主Agent已批准原Sol按F01–F05施工自查，Astra `/root/syn01_review_astra` 独立验收。单产品文件及4个默认fake适配范围，无Provider/locator公共算法/UI修改，不运行无关回归，真实0。
-
-阶段为SYN01真实综合契约返修，证据为seq242缺suggestedAdditions及8条引用end偏差，R03失败/R04未执行。用户明确B模式。当前四维：需求1（问题明确、修复协议待诊断确认）、耦合2（模型请求/schema/来源绑定与综合服务）、风险2（引用准确性和旧契约兼容）、历史1（本样本一次实测失败）=6/8。Sol High `/root/syn01_diagnosis_sol` 已派零调用诊断；Astra随后独立核原证据和实际代码、冻结最小方案，原Sol按确认方案施工自查，Astra独立验收。主Agent状态/Git/范围门禁。
-
-验收门槛：原失败忠实离线复现、修订契约正反例及受影响安全/兼容定向测试、实际diff独立审查；不以合成样本代真实质量通过。禁止默认补JSON、机械end+1、首匹配quote或弱化校验；关键歧义先Astra裁定，同核心修后再次失败暂停重试转根因诊断。真实0、累计242/500不变，不读真实配置；必要检查满足即结束，不扩大回归或其它批次。状态已更新，旧失败证据保留。
-
-## 最新结论：SYN01真实尝试失败并封账（2026-10-25）
-
-**R01/R02工程PASS保持；R03真实输出FAIL，R04保存回读NOT_RUN，SYN01整体未通过，全产品/B09仍未通过。** 浏览器控制已恢复，主Agent在实际Chrome选中固定双Raw并仅单击一次生成。序号242返回`LLM_SCHEMA_INVALID`：缺少必填`suggestedAdditions`；脱敏原稿的8个引用end均少1，不符合UTF-16左闭右开要求。原稿保留共同100、20%/30%冲突及未知/未来内容，但不能以语义部分正确代替有效草稿通过。
-
-本轮真实1次、无重试，知识累计242/500，Prompt15/24不变；本轮额度用尽，后续新增调用授权0。无合法candidate、无人工改写、无正式Wiki写入；两Raw保持不变。Chrome错误截图与脱敏请求/响应已保留，自有标签及API/Vite服务已关闭。复用工程提交d09fd7b、产品60f83ad；未重复旧11+6/445/build。
-
-证据：[独立最终验收](reports/SYN01-REAL-AUDIT-20261025-final.md)、[主Agent执行记录](reports/SYN01-REAL-MAIN-20261025-final.md)、[脱敏导出](reports/SYN01-REAL-20261025-export-1792936917825.json)。下一步建议B模式围绕本次原始失败输出做零调用的结构/引用契约修复，先离线验收，再单独确定是否需要新真实额度。本轮不自动扩大施工。下方为历史记录，旧浏览器阻塞及尚可调用242已被本结论取代。
-
-
-## 最新结论：SYN01受控入口通过，Chrome工具阻塞（2026-10-25）
-
-**新增R01/R02工程PASS；真实R03/R04未执行，SYN01整体BLOCKED，全产品未通过。** 受控Provider装配、固定双Raw/冻结release绑定、先落pending的唯一242额度与实际App/Vite/API路由已完成。独立仅复跑新增smoke（3个顺序组）及pending/failed零调用微断言，未重复旧11+6/H/445/build；107项冻结aggregate f6455c07eb2150260f15165ea9c22be2901dcd76a6620007e02087ec9f249df0不变，产品仍60f83ad。
-
-[独立报告](reports/SYN01-REAL-AUDIT-20261025-acceptance.md) SHA d52e9165c76a943a128ea2709fe847d1e1f32710570a430f8c32431cff7386b3；[交接与续接命令](reports/SYN01-REAL-20261025-handoff.md)。CLI重启控制文件问题已修并针对变更重跑，未发现产品缺陷。所有自有服务关闭。独立fake1/config0/real0，知识241/500、Prompt15/24保持，未签实际release、未消耗242。
-
-主Agent的CUA及备用Node/Computer Use均报kernel assets路径不存在，一次reset重建仍失败；浏览器动作未执行。阻塞来自本机控制工具，不是产品或真实模型失败；不以组件/HTTP代替Chrome，不因工具失败消耗唯一真实机会。详见[主Agent记录](reports/SYN01-REAL-MAIN-20261025-release.md)。
-
-用户本轮已经授权完整真实验收，授权持续有效，无需重复确认：工具恢复后复用本冻结入口，主Agentprepare/serve→bindings→唯一release/arm→Chrome触发最多1次→原稿质量核验→明确审查/保存/刷新回读→交付；失败即停，不重试、不重复旧测试。当前等待恢复Codex浏览器控制工具（可重启应用后继续），不自动推进其他批次。
-
-## 当前执行：SYN01受控真实入口及最多一次验收（2026-10-25）
-
-用户在明确最多1次真实综合、Chrome审查保存回读、失败即停及不重复旧测试后批准“好的，开始下一步计划”。沿用B模式0/2/2/1=5；原Sol High施工、Astra medium独立审查、主Agent负责真实放行/Chrome/Git。按[本轮卡](handoffs/SYN01-REAL-20261025-task.md)只新增受控真实/Chrome接线及必要新smoke，复用旧11+6/H/445，禁止无关回归。
-
-基线9bd732c、产品60f83ad。本轮实际调用尚0，知识241/500，Prompt15/24。工程通过后唯一release绑定双Raw/会话/冻结，最多序号242一次synthesis，失败亦计、无重试；未放行前不读取实际配置。主Agent发现浏览器控制CUA及备用Node运行器均无法初始化，一次会话reset后仍报kernel assets路径不存在；Chrome依赖步骤待恢复，不改变产品或伪称已验收。先完成不依赖浏览器的工程工作。旧证据/正式数据/外部任务改动保留。
-
-## 最新结论：SYN01零调用工程准备通过（2026-10-25）
-
-**本轮SP01–06工程准备PASS；SYN01真实样本综合闭环仍BLOCKED/NOT_RUN，全产品/B09未通过。** Sol施工11组自查、Astra冻结复跑11组与自有6组核验通过（计数存在层级，不合称17个业务场景）。未发现需产品返修的缺陷。实际RawPage→KnowledgeWorkflowPage→生产HTTP/Store闭环，2 Source+1 synthesis落盘；未审/未解决/陈旧阻断、来源拒坏、修改失效、重启/故障恢复/23文件幂等通过。
-
-[独立验收](reports/SYN01-AUDIT-20261025-acceptance.md) SHA e42a6f420e3706006d69e8a30b456d4902dfcece3fe58e419f9dd29ea502790b；[施工交接与命令](reports/SYN01-PREP-20261025-handoff.md)。102项受测冻结aggregate 141c302d43fe0b2a7b0ff81b7df73f23c08dfad348f7caa7b0ee8eed70ef1985无漂移，产品仍60f83ad。H188/C213同冻结历史证据有效，本轮未重跑445/build。B模式实际Sol High施工/Astra medium独立审查，评分0/2/2/1=5。
-
-新增真实调用0，知识241/500、Prompt15/24保持；6次内存fake仅为独立工程模拟，不计真实预算。没有加载实际配置、创建真实Provider或真实release；默认fake/offline，真实/未知模式及非本轮模型路由拒绝。全部自有服务关闭，未运行Chrome。接口serve只有fake API，没有真实/静态UI入口，不能把组件jsdom证据称Chrome验收。
-
-下一步建议继续B模式，以新卡交付受控真实/Chrome入口，先工程审查与唯一release/账本，再经明确授权最多1次synthesis，首失败停止、无重试。当前真实授权仍0，不自动执行。A18/R20/R07真实综合缺证以及R12/模板/等级/四链集成保持，KB02既有HUMAN PASS不变。保护/提交见[主Agent收尾](reports/SYN01-MAIN-20261025-release.md)。下方为历史过程。
-
-## 当前执行：SYN01零调用工程准备（2026-10-25）
-
-用户明确批准B模式启动双来源综合零调用工程准备，真实调用上限0，禁止读取实际模型配置。按[工程卡](handoffs/SYN01-PREP-20261025-task.md)SP01–06执行：固定双Raw、fake生产综合/HTTP/实际React、来源和人工审查门禁、正式化/回读/幂等、默认拒绝真实外发。评分0/2/2/1=5，实际Sol High施工syn01_prep_sol、Astra medium独立审查syn01_prep_audit，主Agent负责范围/保护/入口/Git。
-
-基线ba2d854，产品60f83ad，知识241/500、Prompt15/24保持。仅新增隔离工具与证据，不改产品/旧证据/实际配置/正式workspace。原外部AGENTS/.agents/AGENT-ROUTER改动保留。施工交接停写后独立验收；工程准备不等于SYN01真实质量或全产品通过，未来真实阶段需另行授权。下方为此前结论。
-
-## 最新结论：剩余验收准备完成（2026-10-24）
-
-用户批准上一建议，已按B模式完成NEXT-PREP：Sol High施工、Astra medium独立验收，P01–P04 PASS。配置阶段边界/证据字段的最小修正已复验；P05已由主Agent完成：交付提交ded4042d53c0fb1e9f5b85bb400b4be07337f3b1，实时远端main同SHA；后续文档关联不改变冻结。准备评分0/2/1/1=4，沿用用户明确B选择，不冒称阈值强制B。
-
-[缺口清单](reports/NEXT-PREP-20261024-gap-map.md)覆盖109个需求ID及会议边界，31个历史非通过逐项续接；旧78/3/28统计仍仅历史快照。PA01的Prompt/恢复问题已关闭，KB02 HUMAN整体PASS保持；全产品/B09仍未通过：R12独立问题显示原子偏差保留，Synthesis、模板字段/来源等级、当前四链桌面集成仍缺证。PA01旧96项24已变，不能整冻结签当前通过；H188/C213无漂移。
-
-[独立验收](reports/NEXT-PREP-AUDIT-20261024-acceptance.md) SHA faafa9e98dfe5ebda0c7de09b813538da0c697c68486e4ba019b74dac9092393；本轮只做离线引用/哈希/标准/代码契约核验，未跑产品测试或服务，真实调用0。知识241/500、Prompt15/24不变，产品60f83ad未改，旧矩阵/证据和外部任务改动保留。
-
-[下一最小卡：SYN01双来源综合](handoffs/NEXT-PREP-20261024-next-task.md)已准备，尚未执行：建议B模式先零调用工程准备，另获明确放行后才最多1次真实synthesis（失败亦计、无重试）；当前调用授权0，不能使用旧余量自动外发。通过最多补A18/R20/R07综合子项，不自动关闭全产品缺口。保护/同步见[主Agent记录](reports/NEXT-PREP-MAIN-20261024-release.md)。下方为历史过程。
-
-## 最新结论：阶段C与KB02按HUMAN要求通过（2026-10-24）
-
-**本轮阶段C PASS；KB02按现行HUMAN修订要求K2-01–04整体PASS。** 原长文14块+规划真实227–241共15次全部完成，无重试；知识累计241/500，Prompt15/24保持。本轮额度封账，后续模型调用当前授权0。
-
-原106400字符长文完整处理，14页/54unit/96member保全，无跨区域拼接。Chrome逐页审至v16，明确确认Source+14页各v1，刷新后全14页及Source回读；独立重复确认73文件字节不变。工程施工/独立各15组通过；本轮未重跑历史445全回归，复用同产品冻结有效证据。
-
-[独立最终验收](reports/KB02-K204-C-AUDIT-20261024-final.md)逐项关联HUMAN、A、BR、C证据，JSON SHA 2507bb3001b26d0b2c550c25aaa19d53f3d1befda773b35dd07e9841d9cf1053。原A2/B自动主题FAIL保留；HUMAN通过不等于无人审自动质量或全产品/B09通过。重复句、09/10未知陈述分类等展示局限如实保留。
-
-B模式实际Sol High施工/Astra medium独立验收/主Agent放行与Chrome；评分0/2/2/2=6。产品提交60f83ad，C冻结213项无漂移，未改产品/正式workspace/旧A/B/BR证据。自有服务与Chrome已关闭，保护/调用及提交关联见[主Agent交付](reports/KB02-K204-C-MAIN-20261024-release.md)。
-
-下一步建议先用B模式准备全产品剩余验收缺口清单及下一张最小任务卡，新增模型上限0；本次不自动启动下一批。以下为历史过程，旧“C未授权/KB02阻塞”不代表当前状态。
-
-## 当前执行：阶段C原长文补证（2026-10-24）
-
-用户明确“开始阶段C”，按已确认B模式执行原106400字符长文，最多15次真实请求（14块+规划），序号227–241，知识226→最多241/500，Prompt15/24不变。首失败停止新增请求，最多2个在途仍计账；无重试/诊断余量，不换样本。工程通过后才由主Agent签唯一C release及Chrome触发。当前尚未真实外发。
-
-[阶段C卡](handoffs/KB02-K204-C-20261024-task.md) SHA 66127c6c699602945dbdcf959fddca233cf4074a0f9c07c6927c3a79f70de7f2 已核准并放行Sol施工。实际生产链顺序提取（并发1），配置上限2不改。
-
-基线a9479b3，产品60f83ad。Sol High /root/stage_b_sol 负责新C隔离接线/自查；Astra medium /root/stage_a_audit_resume 冻结卡、独立工程/质量验收；主Agent负责保护/台账/Chrome/Git。按冻结卡沿用0/2/2/2=6，长文分块并发、持久账本及全页审查风险，历史结构/归属失败保留；最终评分以本轮卡为准。原A/B/BR资产和正式workspace不改，外部AGENTS/.agents/AGENT-ROUTER保留。C与KB02整体分别裁决，不提前称通过。
-
-
-## 最新结论：阶段B接线修复与人工审查全链通过（2026-10-24）
-
-**本轮接线缺陷修复PASS，阶段B按HUMAN要求PASS；KB02整体仍BLOCKED。** F-K204-B-ADAPTER-DUPLICATES-01已关闭：生产duplicates/必要decision接线及实际DraftReviewPage链由Sol/Astra各11组验证，Chrome实际查询/保存/全页审查/确认/刷新重开完成。见[独立最终报告](reports/KB02-K204-BR-AUDIT-20261024-final.md)，JSON SHA c003ab3f28c4bb602be69394a8c911b3336312f2328daf00d59743cda0ce9b83。
-
-精确复用原225–226结果，新增模型0，知识226/500、Prompt15/24保持。第二页显式人工并列资料组织，不证明同一流程/因果；原自动主题FAIL保留，不称模型修复。5原unit/事实/未知完整，v5全2页已审，仅创建Source+metric各v1，人工资料组defer保留草稿。独立同确认幂等reused:true、20文件字节不变，13原始只读文件不变。
-
-基线c35a350，BR冻结a6345e9dbcd1742515c88662f0ab03765a4b485364be86b5f1151f672d2d1da6共207项，产品60f83ad/旧B失败资产不改。原session仅明确人审/确认产生受控业务变更；自有服务和Chrome已关闭，正式workspace不动。保护/同步见[主Agent收尾](reports/KB02-K204-BR-MAIN-20261024-release.md)。
-
-下一步建议B模式安排C原长文剩余补证，先核旧冻结与调用门禁；原建议上限15次（14块+规划，累计最多241/500），只是建议，当前C仍未授权/NOT_RUN，不自动调用。下方均为历史过程。
-
-
-## 当前执行：阶段B隔离接线修复与浏览器验收（2026-10-24）
-
-用户明确授权B模式修复隔离接线、复用现有结果完成浏览器验收，新增模型调用0，不进入C。按修复卡评分0/2/1/2=5：缺陷已定、跨路由/前端/持久化、零模型但有隔离数据写入、历史接线失败。Sol High /root/stage_b_sol 负责新BR前缀离线恢复工具；Astra medium /root/stage_a_audit_resume 冻结最小卡并独立验收；主Agent负责保护、Chrome、台账/Git。
-
-[修复卡](handoffs/KB02-K204-BR-20261024-task.md) SHA a5116f4081abaf1ba927b59d10b4111cf684a6276c29784b1e60128ada4a4bbe 已核准，Sol已获正式施工放行。
-
-基线c35a350；产品/旧B冻结/Raw原文/原候选/225–226账本不改。知识226/500、Prompt15/24保持。原session .scratch-KB02-K204-B-20261024-J5hCNy只在工程通过后由主AgentChrome显式操作；施工测试用副本，Provider与配置加载及全部模型入口禁止。先分别验接线缺陷关闭与阶段B全过程，不凭HTTP200签PASS；KB02整体BLOCKED及自动主题历史FAIL保持。外部AGENTS/.agents/AGENT-ROUTER保留。
-
-
-## 最新结论：K2-04阶段B未通过（2026-10-24）
-
-**本轮隔离接线FAIL，阶段B FAIL；KB02整体仍BLOCKED。** 实际Chrome发现重复候选查询404（F-K204-B-ADAPTER-DUPLICATES-01），因此停止人审/确认，未创建正式记录。B服务移除模型更新路由时遗漏了非模型duplicates及必要decision接线；离线17组及独立工程漏查前端依赖，旧工程PASS原样保留，由本轮实际失败覆盖。见[独立最终报告](reports/KB02-K204-B-AUDIT-20261024-final.md)。
-
-真实225–226共2次完成，无重试；知识累计226/500，Prompt15/24，本轮真实额度封账。4事实+1问题完整保留；原AI未来边界/未知独立主题问题仍未解决，不把提取完整称自动主题通过。原候选与隔离session保留，人工纠正/逐页确认/正式回读/幂等NOT_RUN。服务与自有Chrome已关闭，产品/正式workspace/旧冻结未改，C未授权。
-
-下一步建议仍用B模式，仅修复隔离接线，新增模型调用上限0；精确复用现session/Raw/候选/225–226账本，关闭全部模型入口，补实际前端查询/保存/确认覆盖后再做Chrome人工整理与正式回读。当前只记录建议，不自动启动修复或C。基线d2176eca，B冻结12dad741181e7e74a95d58d2f49a24774343c6f11903b1083d7bbb4d4f6f2463；提交/保护见[主Agent收尾](reports/KB02-K204-B-MAIN-20261024-release.md)。下方均为历史过程。
-
-
-## 当前执行：K2-04阶段B原混合短文（2026-10-24）
-
-用户接受上一轮建议并明确“好的，继续”。仅B原混合短文最多2次真实调用，序号225–226，知识累计224→最多226/500，Prompt15/24保持；C未授权。沿用B模式0/2/2/2=6/8，输入冻结、跨提取/人审/持久化、真实调用风险及历史失败。
-
-[本轮任务卡](handoffs/KB02-K204-B-20261024-task.md) SHA 252f13c7e63306967e326b1b1736d8ab0b5ac9e50bfd479c38a87b7a6d5b0b0a。Sol High /root/stage_b_sol 施工新B隔离接线并fake自查；Astra medium /root/stage_a_audit_resume 冻结卡及独立验收；主Agent负责放行、Chrome、台账和Git。工程通过后才签唯一B release；首失败停止、不重试、不重复update、不换样本。当前真实0，尚未放行。
-
-基线d2176eca，产品60f83ad；阶段A PASS与自动主题历史FAIL保留，KB02整体BLOCKED。产品、正式workspace及旧冻结不改；外部AGENTS/.agents/AGENT-ROUTER变更保留。完成或首失败后汇报，不自动启动C。下方旧授权由本条覆盖。
-
-
-## 2026-10-24 K204-A完成与封账
-
-B模式0/2/2/2=6沿用。原Sol High完成四模块并冻结；原Astra独立16组测试完成后会话中断，本轮实际重新创建gpt-6-astra/medium `/root/stage_a_audit_resume`，复核同字节既有证据并补必要边界探针，独立工程PASS。主Agent逐段持久release、Chrome触发及明确人审；Astra分别签A1/A2/A3。详见[最终报告](reports/KB02-K204-A-AUDIT-20261023-resume-final.md)。
-
-阶段A PASS，KB02 BLOCKED；A2原自动主题FAIL保留，人工作为明确资料分组处理，不宣称自动修复。真实5/5、220–224无重试，累计224/500；Prompt15/24。A3原始预览质量与确认回读/幂等PASS。新接线工程通过，产品未改；B/C未授权，不推进。下一建议B模式先B短文2次，依据仍为跨来源/人审、真实数据持久化与历史质量风险。自有服务已停；主Agent仅提交本轮文件，外部AGENTS/.agents/AGENT-ROUTER排除。
-
-
-## 2026-10-23 K204-A授权与调度
-
-最新用户授权按B模式仅推进阶段A，覆盖旧准备阶段“真实授权0”的范围限制，但不授权B/C或22次总额。A1/A2/A3各2/2/1，共至多5，知识219→最多224/500，Prompt15/24不变。新调用接线经Sol离线自查、Astra独立工程审查及主Agent正式放行后执行；阶段通过才逐步放行，不自动连跑，不重试/换样本。基线41ee786，产品60f83ad。
-
-正式评分0/2/2/2=6/8，B：需求已由PREP卡/spec冻结，跨生产提取/人审/目标更新，真实网络与持久化风险2，历史相关失败2。复用实际创建的Astra/medium `/root/human_closure_audit` 冻结新增A卡、独立工程与真实质量裁定；原Sol High `/root/k204_prep_sol` 新A前缀施工和fake自查，禁止其真实外发；主Agent状态/control/acceptance/Git与阶段放行。Astra拥有A卡及A-AUDIT脚本报告，Sol拥有A施工脚本报告，主Agent另有A-MAIN保护证据。不是独自工作，旧PREP/产品/配置/正式workspace和并行外部工作均保留。
-
-门槛：真实请求由现行生产链构建，动态请求逐次send前冻结并持久记账、无oracle泄漏；A1真实metric候选不能手改type过测；人审逐页/全覆盖后才正式隔离写入；A2决策清审及A3预览重新审查；阶段许可/版本/预算不符即停止、首失败不继续，已发送失败同样计账。浏览器实际证据与jsdom分列，不能冒称；无工程签收前外发，不启动B/C。当前真实本轮0，预算219。
-
-## 2026-10-23 K204-PREP收尾
-
-本轮B模式6/8按实际指定实例完成：Astra/medium冻结方案，Sol High施工，Astra独立发现P04网络白名单绕过，原Sol仅返修support与定向回归，再由Astra独立网络及完整入口复验。**准备工具PASS、KB02仍BLOCKED/真实质量NOT_RUN**，见[独立结论](reports/KB02-K204-PREP-AUDIT-20261023-acceptance.md)。本机独立正常22fake、12项/6模拟回调、两原绕过均拒绝且sink0；最终24施工冻结及188源前后不变，没有产品改动或445/build重跑。
-
-先前P04失败及首探针判据不足保留，修复后不引用旧externalSent常量作传输证明。审批/账本只是fake模拟，不是已实现的真实transport。建议未来22（5+2+15）硬上限，累计最多241/500；本轮真实0、当前219/500和15/24保持，所有阶段真实approved=false。下一步可在用户明确授权后准备并审查真实接线，按阶段质量证据执行；本轮不外发、不自动推进。主Agent统一范围/保护/秘密扫描、提交及同步，外部AGENTS/.agents/AGENT-ROUTER工作保留。
-
-## 2026-10-23 K204-PREP授权与B模式调度
-
-用户明确授权“K2-04最小补证卡和离线验证，先不做真实模型调用”。目标为准备验收而非产品返修或真实质量签收。准备批评分：需求1（剩余门槛明确，精确样本/阶段待冻结）、耦合2（提取→人工审查→metric目标→更新→再次审查及长文）、风险1（仅隔离执行器/fake，不改产品/正式数据）、历史2（相关质量多轮失败）=6/8，B模式。
-
-复用已实际创建的Astra/medium `/root/human_closure_audit` 冻结任务卡及独立预期，另实际创建 `sol_repair`（GPT-6.1 Sol High）`/root/k204_prep_sol`，当前仅只读准备。任务卡冻结后由Sol编制执行器/自查并停写，Astra检查实际差异及必要离线重测，不自签施工。主Agent拥有status/control/acceptance/Git；Astra拥有任务卡及K204-PREP-AUDIT资产；Sol拥有K204-PREP施工脚本/报告；主Agent另有K204-PREP-MAIN保护证据。所有人保留外部AGENTS/.agents/AGENT-ROUTER工作，不提交其他任务。
-
-基线 `5de67e33e19d4dce3ca650c8c5ee9f1c472970ba`，产品60f83ad。门槛：固定来源/SHA与独立预期、按实际chunk/工作流计算调用上限、外发前记账/首失败停止/阶段审批、默认及本轮真实门禁关闭、隔离fake验证证据完整/预算不绕过/无正式数据变化。出现产品失败只报告，不扩展产品施工；同核心失败按既有升级规则处理。真实0、219/500及15/24保持；准备PASS与KB02整体结论分开，真实执行待后续明确授权。
-
-方案冻结并正式派工：任务卡SHA `bb1ff979a164a01c93d5439326b1137dc75ce51b23472c28cd7eb242e08abca2`，spec SHA `d722f40b885c2ebd02142ba530153fae672b57b38c9bc0167c62a44a59ee49f9`。Sol按P01–P06实现offline-only工具，禁止真实入口；Astra后续独立验收。实际chunk测算建议真实上限22（metric/补充/update共5、原混合短文2、原长文14+1=15），当前阶段批准全false；动态请求未来按实际持久输入临发送前冻结，不把fake请求当真实请求。已记录4045路径主Agent保护基线。
-
-首轮冻结后独立P04 FAIL：Astra用已登记localhost A与未登记B实测fetch自动302及http.request(A,{port:B})均命中B，证据 `KB02-K204-PREP-AUDIT-20261023-network-permitted.json`。没有外部/模型连接，问题属于离线工具白名单限制；常量externalSent0不能作为完整传输证明。主Agent交原Sol最小修support guard与定向回归，保留原19文件freeze及失败，新增repair1 freeze；Astra停跑已知失败整链，修复冻结后独立网络/22fake整链复验。产品、卡、spec不变，真实授权0。
-
-## 2026-10-23 HUMAN独立验收收尾
-
-用户在只读预检后明确“继续”，本轮执行范围为既有HUMAN门禁验收收尾、台账与提交同步，不扩展真实调用或下一批。沿用B模式7/8（需求1、耦合2、风险2、历史2）；既有Sol施工保持冻结，主Agent明确以 `gpt-6-astra / medium` 创建 `/root/human_closure_audit` 独立验收子Agent，该实例没有施工产品。主Agent负责范围核对、台账及Git，未用配置文件冒称当前宿主身份。
-
-结论：**本轮HUMAN门禁PASS，KB02整体BLOCKED/未结批**。本机Node25.2.1核心21/21、独立React/HTTP五步及长文14主体/55unit/101ID离线核验通过；43/188源码冻结一致，复用历史独立445/64/build，不重复全量。首轮沙箱失败保留，获准后同字节通过。见[独立收尾报告](reports/KB02-HUMAN-CLOSE-20261023-acceptance.md)。无需Sol返修；主Agent另核3954保护项无范围外漂移及提交文件已知秘密扫描。
-
-剩余K2-04新链真实质量/明确metric更新及完整更新UI证据待补，不改写历史模型FAIL。真实0，知识219/500、Prompt15/24保持。下一步只建议最小补证卡，真实调用须按新卡明确放行，不借旧余额执行；汇报后停止，不启动下一批。外部AGENTS/.agents/AGENT-ROUTER资产不纳入本轮提交。
-
-## 2026-10-23 HUMAN需求调整授权与调度
-
-施工中所有权补充：主Sol报告完整回归首轮355/436，主要旧审查前置/调用计数适配；已派同角色Sol High `/root/human_ui_tests_sol` 仅负责 `tests/ui-b04.test.tsx` 的旧UI测试前置适配和定向自查，保留原业务安全断言，不改产品或其它测试。主Sol继续其它文件并统一冻结；Astra独立验收职责不变，不以任何施工自查代签。
-
-用户明确接受全部候选逐页人工确认主题与归属并授权施工。阶段KB02真实质量返修，依据PROTOCOL两协议均误放与批次尚未满足验收。暂定评分需求1（方向已批、具体契约待冻结）、耦合2（候选/存储/前后端/正式更新）、风险2（完整unit、版本失效与旧数据兼容）、历史2（多轮核心失败）=7，B。Astra `/root/region_review_astra` 冻结最小方案/规范后独立验收；Sol High `/root/human_builder_sol` 负责产品施工与自查，当前先只读准备；主Agent状态/Git与派发门禁。
-
-目标为全部候选人工审主题/归属、可纠正或未解决阻断、正式写入服务端强门禁，不能仅依赖模型uncertain；Raw与fact/ID不改。门槛含未审绕过拒绝、全unit覆盖、版本绑定/编辑失效、重启/旧草稿/更新兼容、定向与完整测试/build及独立HTTP/UI证据。关键歧义由Astra先裁定，重复核心失败转Sol诊断，跨范围扩展先主Agent裁决。真实预算本轮0（累计219/500）；只用隔离虚构/历史失败数据，不动正式数据。验收分开报告新范围与KB02整体，保留历史FAIL，不自动启动下一批。
-
-## 2026-10-23 固定10次对照收尾
-
-协作B执行完毕：Sol High隔离runner自查20/20，Astra独立代码/探针审查、真实10格及逐页裁定完成，主Agent已核原响应和报告。执行器工程通过；产品缺陷未修复，KB02整体未通过，阶段仍真实质量返修。现行/简化均误放原AI反例，不部署简化协议；非AI简化uncertain不是误放但未达预期。新增归属对照oracle有业务关系歧义，保留原预期及独立限定，不追改答案。
-
-实际仅210–219，无重试，累计219/500、Prompt15/24；门禁关闭，3914保护0变，34份报告/响应秘密扫描通过。命令、首失败、实际runner/hash与局限见[独立报告](reports/KB02-PROTOCOL-AUDIT-20261023-acceptance.md)。主Agent在独立保护收尾后更新既有状态与验收入口，统一提交同步；不启动下一批。
-
-下一步需明确需求取舍：继续原自动质量要求则保留FAIL且停止同类追加试验；若选择所有候选人工逐页确认主题/归属，属需求变化，暂定需求1/耦合2/风险2/历史2=7、B，必须重新冻结范围/兼容/确认门禁后再施工。当前未批准此变化，未派发。不能仅审核uncertain，不能以人工验收代替模型质量通过。
-
-## 2026-10-23 固定10次对照授权与调度
-
-阶段仍KB02真实质量返修，原语义误放/格式失败未关闭。用户将提案8次明确批准为10次固定实验；Astra在任何调用前保留原8请求并新增第5固定案例的A/B两请求，固定顺序/原文/预期/hash。协作评分沿用需求1（实验明确修复未证）、耦合1（精确复用Provider）、风险1（隔离外发及判断风险）、历史2=5，B：Sol High `/root/protocol_runner_sol` 编写隔离runner自查，Astra `/root/region_review_astra` 冻结样本、独立审runner后执行和裁定，主Agent状态/Git/门禁。
-
-门槛：原请求/hash一致、预期不外发、每次预记账、仅一次首结果、无修补重试/配置变化、严格结构与独立语义分评、保护及密钥安全。普通失败继续预定矩阵但不追加；安全/秘密/预算问题立即终止。真实起209/500、至多219/500，Prompt15/24；准备阶段零调用，新增两次不是失败余量。工程核验后主Agent放行，不再询问已授权10次。所有权PROTOCOL施工前缀与PROTOCOL-AUDIT独立前缀，历史REPLAN保留；不改产品/状态契约，不启动下一施工。
-
-## REPLAN收尾：8次鉴别提案待批准
-
-Astra独立重评已完成，主Agent读报告/四份冻结原文与预期/精确两协议。没有已证有效的产品修复机制，保持现行B1研究基线但不继续盲跑；两条失败分开判断。下一建议仅最多8次固定矩阵，四份完整候选分别现行/简化返回协议、同内容规则和Provider参数、固定顺序、无重试或挑选结果；结构与语义独立计分，任一简化样本失败不进入产品，全部通过仍不代替端到端验收。冻结SHA及路径见status；原文/请求已具体可审阅，不待授权后再补样本。
-
-建议实验协作评分需求1（研究问题明确、修复未证）/耦合1（Provider精确复用）/风险1（隔离外发和错误结论风险）/历史2=5，B；授权后Sol High写隔离执行器，Astra复核请求并独立判定，主Agent预算放行。当前无施工/实验Agent派发，预算209/500不变，最多8提案未执行。普通错误照固定矩阵保留首结果，安全/秘密/预算异常立即停止，不自动扩研究或改产品。若转Providerwire/人工主题/存储路径须新范围与评分，不能永久锁B。
-
-本轮只有方案资产及离线冻结检查，计划评审完成但缺陷未修复、KB02未通过。主Agent更新现有台账并同步，等待用户实验决定，未改变自动质量门槛或历史裁决。
-
-## 2026-10-23 Astra替代方案评估调度
-
-阶段KB02真实质量返修，依据SEMANTIC真实误放与正例结构失败及已完成Sol离线定位。用户授权先评估下一方案，Astra `/root/region_review_astra` 负责比较、明确可验证机制/试验和必要取舍，主Agent核实范围与记录；当前无施工Agent，不外发，不全量测试。目标为两条失败分别给证据支持的方案与门槛，不叠审核器或以结构/理由自证语义。四维评分和模式须随实际候选确定，暂按B复杂度评估不是永久锁定。重大协议/恢复/需求改变须明确再审；证据不足则提出有界鉴别实验，不承诺根治。状态已更新，当前209/500及Prompt15/24，未修复/未整体验收通过，方案汇报后待用户确认，不自动施工。
-
-## B1最终验收收尾：工程通过，真实与批次未通过
-
-本轮受测代码与证据提交：`bb0f814ed1e360cdf1ceed517d2c80d8db0510c5`；主Agent统一保存失败结果，未标记批次通过。
-
-本轮沿用0/1/2/2=5的B模式，Sol施工自查及Astra独立验收完成，主Agent读实际diff、原schema/response和Chrome证据。默认424/build/独立旧Node245/新增5/历史18工程通过；seq206合法结构的错误pass仍发布边界-only页，seq209正例审核结构违规被正确拒绝，无有效草稿，故本轮真实修复未通过、KB02整体未通过。原补充P1未关闭，新增SEMANTIC-POSITIVE-01/P1；后续原短长文/通用更新/新增metric链均未运行，不能用历史或工程结果代签。
-
-同核心修后再失效已依规停止重试，原Sol只作有限离线定位，Astra比对原trace/schema/请求/实际结果独立复核；未发现接线或后处理问题，模型内部原因未知。产品冻结899保持；真实新增6，累计209/500、Prompt15/24。门禁关闭、服务浏览器关闭，无正式确认，两Raw不变；最终3543保护、42审查证据密钥扫描通过。报告见SEMANTIC-AUDIT acceptance及SEMANTIC-DIAG diagnosis，命令/首败/保护限制完整保留，主Agent补提交标识。
-
-下一步只建议Astra重新评估语义支持与审核契约可靠性方案，暂按B复杂度评估，需方案明确后再评分，不盲叠提示或第二审核链；无下一施工派发。本轮授权闭环已执行但质量目标未达，汇报后等待用户确认，不推进依赖批次。
-
-## B1阶段一失败后停止推进
-
-阶段一6/6结束，累计209/500；seq206语义误放原坏页，seq209审核结构非法导致正例无草稿。Astra关闭真实，主Agent明确不放行阶段二20/三4、不重试不改产品。按同核心修后再失效规则，原Sol仅离线复现请求/schema/Provider责任，独占SEMANTIC-DIAG-20261023新前缀；Astra独立核其结论并最终收尾，未启动下一批。工程通过保持有限含义，本轮缺陷及KB02整体未通过。当前状态已更新，冻结899与历史资产不可修改，下一施工待后续明确方案/用户确认。
-
-## B1独立工程通过与阶段一放行
-
-主Agent已读Astra工程报告/closure及实物审查，独立424默认/build/旧Node245/新增5/历史18通过；899冻结与3543保护一致。仅验收runner构建产物误分类已解释，未重跑全部。阶段一预算6从203/500起已放行，冻结补充与独立AI正例各3，语义失败不得自动重试或推进依赖阶段；阶段二20及三4仍关闭。程序工程通过不等于语义缺陷关闭，必须独立审核全量原文/unit/响应与合规草稿，真实审核pass本身不代签。当前B模式保持，产品停写。
-
-## B1施工交接与工程放行
-
-Sol已停写，主Agent读实际5产品变更、施工报告与首失败/副作用处置，批准Astra独立工程实测，未放行真实。899文件冻结SHA见status，自查424/424/build/旧Node223+51/历史18通过待独立复核；5448保护项无变更。根测试B04报告副作用按baseline与HEAD双核恢复、初始两新文件先创建后基线限制如实记录。沿用B模式5/8及SEMANTIC任务卡，当前203/500，局部缺陷和批次仍未验收通过；工程过关后另放阶段1六次，不自动跳门槛。
-
-## 2026-10-23 B1施工授权与调度
-
-样本冻结已完成，主Agent读取SEMANTIC-AUDIT fixtures.md并于当前会话明确放行Sol写入产品。五样本固定SHA见status，后续不得按模型结果改样本；203/500不变，工程/真实均待独立验收。
-
-用户确认后启动已审SEMANTIC施工卡。阶段KB02真实质量返修，目标seq202边界-only独立页；评分需求0/耦合1/风险2/历史2=5，B，sol_repair/GPT-6.1 Sol High施工自查，Astra独立验收。Astra先冻结正例/metric样本，Sol已派发先读代码，主Agent随后放行写入，不重复已审方案。必要门槛和升级条件均见任务卡：工程全量/恢复安全兼容、真实正反样本/长文/Chrome更新；同核心失败或范围扩展停止重审。当前203/500不变，工程前禁止真实，6+20+4阶段须分别放行。状态已更新，尚未声明修复或批次通过，结束后不自动启动下一批。
-
-## SUPPLEMENT诊断收尾：B1方案与下一轮门槛
-
-阶段仍KB02真实质量返修，原长文有限通过、补充K2-02未过。Sol诊断后Astra独立重放确认请求/上下文/规则完整，偏差在模型原plan且机械门禁不检查独立主题支撑；内部模型原因未知。正式评分0/1/2/2=5，B模式，下一施工sol_repair/GPT-6.1 Sol High，独立验收Astra。批准候选仅保存plan前一次有界语义审核、规则/revision12、两次预算预留及pipeline/jobs恢复下界、窄模块/schema/直接测试；不改v3/Draft、不自动重试或补写。具体契约/允许文件/测试/升级条件见KB02-SUPPLEMENT-AUDIT-20261023-review.md，尚未施工。
-
-用户选定前瞻明确metric样本补能力门槛，保留原分类与历史失败；不存在必须将原混合短文强制metric的新需求。新metric样本及真正独立AI机制正例须Astra预先冻结原文/逐unit预期。预算建议6+20+4分阶段共30，仅为计划，不是外发放行；当前203/500及Prompt15/24不变。工程、fail-closed/恢复/预算、安全兼容、原长文与补充语义、正例可通过、真实Chrome指标更新链均为必要门槛。同类坏页再获审核pass、扩大持久/公共接口、需专用UI或自动修订均停止并重审，不叠审核链。
-
-Sol和Astra实际离线命令/结果已分别记录，3711/3719保护无变更，真实0。诊断方案通过不等于缺陷修复；本轮缺陷仍未修复，批次未通过。主Agent更新状态并提交同步，汇报后等待下一施工确认，不自动派发。
-
-## 2026-10-23 SUPPLEMENT诊断调度
-
-阶段KB02真实质量返修，依据补充边界独立页违反K2-02及metric特定目标门槛未达。用户确认先诊断再定方案/模式；Sol High `/root/supplement_diagnosis_sol` 负责seq202离线复现与候选方案，Astra `/root/region_review_astra` 独立核实实物后评分裁定。正式施工四维评分待诊断，不以暂定B代替实际决定。诊断门槛是请求/响应/上下文/组装责任证据、最小方案与兼容回归风险、精确命令及零外发保护；同类失败禁止盲叠提示、扩大契约先由Astra裁定。主Agent状态/Git，子Agent仅各自新诊断前缀；真实203/500不变。当前无施工Agent派发，汇报方案后等待用户确认，不推进下一批。
-
-## REGION验收收尾：原长文有限通过，批次未通过
-
-本轮代码与验收证据提交：`17121be7ec20f73b367750d281a4e1dd2c742a76`；主Agent仅追加版本关联，未修改审查结论。
-
-本轮沿用Astra0/1/1/2=4分A模式，Sol诊断及计划审查、Luna两产品指令/revision施工自查、Astra独立工程与真实验收已执行。主Agent读取实际diff、工程/长文逐主体矩阵、补充反例与更新实物。默认393/393及必要构建/回归通过；原长文55unit/101ID全覆盖无拆分，14主体数值日期和边界归属通过，局部F-KB02-FIELDS-LONG-01仅本样本关闭。
-
-KB02整体未通过：F-KB02-REGION-SUPPLEMENT-01/P1仍将无独立依据的AI未来边界独立成页；原短文concept合法但本卡metric特定目标门槛未达到，通用concept更新链独立通过不能抵消。旧搜索竞态仍属旁支。真实seq184–203共20次，累计203/500、Prompt15/24；门禁关闭余4封账，三Raw不变，自有服务浏览器关闭。证据统一KB02-REGION-AUDIT-20261023前缀；主Agent补提交绑定并统一同步，不推进依赖批次。
-
-下一步只建议Sol离线诊断补充反例、Astra对同类边界归属再失效重规划。暂定升级B评估，正式四维评分待方案和耦合范围明确，不据本轮A永久锁模式、不凭总额500开启重试。用户确认后再派发，本轮汇报后停止。
-
-## REGION独立工程通过与真实验收放行
-
-主Agent读取Astra独立engineering.md及冻结/测试证据后，放行同一审查Agent进行已审任务卡真实验收。当前阶段KB02真实质量返修；沿用0/1/1/2=4分A模式、Luna施工/Astra独立验收，不重规划。工程393/393与构建、历史/边界及旧Node相关通过；语义缺陷和批次整体尚未通过。用户累计额度500，183起、本阶段24，预计必要20，额外4须明确用途另放行；不自动重试。门槛为原长文主体归属与原短文→Chrome创建→补充更新预览语义审核→明确确认/刷新持久回读/幂等。同核心真实再失败停止盲试、交Astra重规划；不启动下一批。当前状态文件记录放行，最终结论须待实测证据。
-
-## REGION冻结交接与独立工程放行
-
-Luna已完成施工自查、局部测试修正并停写，交接KB02-REGION-20261023-builder-handoff.md及当前180路径frozen.json。主Agent读实际两产品diff，确认scope限定instruction/revision与测试；自查393/393/build/Node24相关通过待独立复验。874副本比较只存计数和差异，历史逐文件哈希缺失已在报告披露，不冒充完整冻结证据。当前Astra接续实例 `/root/region_review_astra` 获工程放行，从当前冻结独立核对/运行，真实仍禁用。已有Astra根因裁定和Sol计划通过不代签产品修复；累计183/500，阶段24，Prompt15/24。
-
-## 2026-10-23 REGION正式调度：A模式
-
-Sol最终卡核对已通过（KB02-REGION-PLAN-20261023-review.md），主Agent已派发 `/root/region_builder_luna`（gpt-6-luna/high）施工。Astra根因裁定实例为 `/root/region_review_astra_resume`，后续承担独立验收。Luna仅按任务卡所有权改动，自查与冻结后交接；当前工程/真实验收均未通过，累计183/500不变。
-
-Astra独立根因裁定已落盘，见[报告](reports/KB02-REGION-AUDIT-20261023-review.md)。需求0（K2-02和原例明确）、耦合1（规划instruction/revision）、风险1（模型行为影响全规划需实测）、历史2（长文主题链多次失败），总4/8，A模式。Sol先审最终卡，Luna负责2产品文件及必要测试，自查冻结后Astra独立审查（按用户本轮指定）。[任务卡](handoffs/KB02-REGION-20261023-task.md)约束主体优先步骤/正反例，不改机械门禁和数据契约。阶段仍KB02真实质量返修；当前缺陷和批次均未通过。
-
-工程/恢复/安全/默认完整及真实长文主体质量与短文更新Chrome链为必选门槛；500累计上限已用183，本轮24、预估20，Prompt15/24。工程前禁外发，施工零调用。同核心再失败停止提示叠加并交Astra重规划；扩展协议/存储/自动语义机制重评B。现已完成诊断→Astra裁定，等待Sol计划核对后派发Luna，未启动其它批次。
-
-## 2026-10-23 当前授权：区域语义缺陷闭环，先诊断再选模式
-
-用户已明确追加KB02累计真实总额至500（已用183），本轮仍最多24次，工程过关后按明确用途放行，不自动重试、不改变产品单任务预算。Prompt15/24独立不变；下方183/200为授权前记录。
-
-接续检查：FIELDS字段返修已完成，当前F-KB02-FIELDS-LONG-01/P1尚只有建议，未发现可接续的新施工；本轮从Sol离线诊断开始。阶段仍KB02真实质量返修，依据K2-02区域主题语义未过，不按百分比判定。目标限定seq180跨区域未知/未来陈述泛化合页，区分上下文缺失与规划选择；不把15页本身或旧同unit拆分作为本轮根因。
-
-Sol `/root/region_diagnosis_sol`（sol_repair/GPT-6.1 Sol High）负责离线证据与最小方案；Astra `/root/region_review_astra`（gpt-6-astra/medium）独立确认可证根因并四维评分、裁定A/B。A由Luna施工，B由Sol High施工；本轮按用户最新指令最终均由Astra独立验收，施工者自查不能代签。原4/8仅预评分，等待诊断后正式裁定。重复核心失败或跨模块范围变化须暂停试修、升级诊断/重规划。
-
-当前HEAD5be0602、产品a836270，保护既有未提交AGENTS/coordination/github-sync预检增量。诊断新前缀KB02-REGION-DIAG-20261023；独立审查KB02-REGION-AUDIT-20261023；主Agent管理状态和最终提交。真实183/200剩17，Prompt15/24，诊断零外发；工程后核定必要验收与预算，不放宽门槛、不擅自追加总额。分别报告局部缺陷与批次整体，实际命令/结果关联代码提交。尚未派发产品施工，未改变历史验收结论。
-
-本轮代码与验收证据提交：`a836270f53f0fc5bb802695e3f4101cf182ee3b9`；本次附注补齐提交关联，不改变验收结论。
-## FIELDS 验收收尾：局部通过，批次未通过
-
-本轮A模式Luna施工已停写，Sol独立验收及主Agent实物复核完成。阶段仍KB02真实质量返修，以尚未满足K2-02语义归属门槛判定，不用完成百分比。原type/category缺陷在短文与本轮真实请求范围内通过；原短文到补充更新的Chrome明确确认/回读/幂等完整链通过。默认389/389、tsc/Vite、Node24 51/110、历史8及独立7探针通过；主Agent检查差异、真实更新双方语义、长文第15页截图和保护结果后分别裁定。
-
-批次未通过原因：长文固定55unit/100原ID完整且无拆分，但泛化负责人未知/AI未来建议被抽出为独立页面，跨区域语义归属不合格。固定14页是探针过严，不能将15页本身作失败理由；实物质量失败独立成立。完整更新通过不抵消长文失败，搜索竞态旁支仍未修。详见本轮独立报告与closure证据。
-
-累计真实183/200，本轮20/24，余4封账，Prompt15/24；门禁关闭，服务浏览器清理，Raw/正式数据/config及3236保护资产无变化。首轮施工日志不完整和历史报告副作用恢复均如实披露，独立隔离复跑证据完整。主Agent统一更新状态和提交同步，不推进依赖批次。
-
-下一步仅提出离线seq180语义归属诊断及最小返修建议，未派发。预评分需求0（区域语义/泛化问题边界明确）、耦合1（规划与来源上下文）、风险1（拟局部且须长文验证）、历史2（主题归属多轮出现质量失败），共4/8，优先A并Sol先审计划；根因涉及跨模块数据/兼容机制则重评B、交Astra规划。若同核心返修再失败，停止盲试升级诊断。当前不永久锁定任一模式，等待用户确认。
-
-## FIELDS 施工交接与独立工程门禁
-
-阶段仍为KB02真实质量返修，依据是短文规划质量及完整更新链尚未验收。目标、评分和角色沿用已审任务卡：需求0（字段枚举及严格拒绝明确）、耦合1（规划system与规则指纹）、风险1（局部提示须回归长文/恢复/更新）、历史1（该字段缺陷首次针对性修复），总3/8；A模式，Luna施工、Sol先审计划并独立验收。Luna已冻结停写，自查389/389；Sol独立工程门禁开放，真实门禁关闭。必要门槛为独立工程、安全兼容、原短文/长文及真实Chrome更新闭环；同核心修后再失败停止重试并诊断、必要时Astra重规划。当前仅更新交接状态，不认定缺陷或批次通过，不启动下一批。
-
-
-## 2026-10-22 用户确认A模式实施当前字段返修
-
-当前阶段KB02真实质量返修，阻塞F-KB02-EDGE-PLAN-01/P1与完整更新链。用户明确沿用已审最小方案，评分0/1/1/1=3/8与A模式不重做；Sol先审计划，Luna施工自查，Sol独立验收。已复用Sol实例为审查角色，本轮不改产品/default tests；Luna待计划审通过后派发，施工与验收文件所有权隔离。任务卡为[KB02-FIELDS](handoffs/KB02-FIELDS-20261022-task.md)，主Agent状态/Git统一管理。
-
-范围2产品及6必要revision测试适配/1新增测试，禁止扩大Provider/schema/存储/自动重试/UI。门槛原例、完整工程/恢复/安全、原长文及真实更新Chrome闭环；局部与批次结论分开。阶段预算24从163最多187/200，Prompt15/24，工程独立通过前禁外发；同核心修后再失败停止并升级诊断/交Astra重评。当前未修复、整体未通过，完成后状态/提交同步，不启动下一批。
-
-## 2026-10-22 诊断独立裁定完成：下一施工A模式，尚未启动
-
-用户要求Sol先诊断后Astra确认根因再定模式已完成。Astra独立重跑原wire/响应/schema与恢复探针，确认单一type枚举错误、请求与服务端枚举正确、Provider无字段改写；json_object不强制schema。提示缺少字段语义和合法配对例是可见缺口，但模型内部原因未获唯一证明。详见[独立裁定](reports/KB02-TYPE-AUDIT-20261022-review.md)，代码HEAD b852904、产品420e123，实际命令exit0且3404保护文件无漂移。
-
-独立四维评分及主Agent决定：需求0（枚举/严格失败标准明确）、耦合1（规划Prompt和既有revision恢复门禁）、风险1（局部提示但须真实长文/更新回归）、历史1（精确type/category缺陷首次观察，尚无针对性修复后复发），总3/8，采用A模式：Sol先审计划、Luna施工、Sol独立验收。此前广义规划链4/8背景保留，两者均优先A，不沿用旧B。当前没有新Provider/存储/完整性机制变更理由直接B。
-
-候选范围2产品文件（knowledge-extraction规划system、rules revision），禁止修补响应/放宽schema/自动重试；测试revision最多6个实际必要文件及新字段测试，具体施工卡待确认后按该裁定收敛。恢复/秘密/预算/原ID、完整工程和真实短文→原全文→补充更新Chrome闭环为门槛，必要真实估算20从163到183，未放行。若同核心修复后真实再次失败，或方案扩展共享Provider六链/schema/存储/兼容机制，停止并重新评分、交Astra重规划，重大完整性风险转B。
-
-按新增AGENTS分别裁决：本轮诊断完成但缺陷未修复；KB02整体未通过，原短文无草稿和更新链NOT_RUN仍在。产品/default tests零改、真实0，累计163/200、Prompt15/24，历史/UI旁支不纳范围。状态与诊断资产统一同步后汇报，等待用户确认施工，不自动派发下一步或新批。
-
-## 2026-10-22 用户授权先诊断再确定A/B
-
-当前KB02仍受F-KB02-EDGE-PLAN-01/P1及更新链缺失阻断。用户指定Sol先离线诊断seq148，之后Astra独立核实根因证据再确定模式，未授权新施工。已复用GPT-6.1 Sol High实例，仅写KB02-TYPE-DIAG-20261022前缀资产；Astra审查采用独立前缀，主Agent拥有状态/Git。候选范围及四维评分须由实际诊断证据确定，不预先锁B，不把既有4/8预评估当最终裁定。
-
-基线HEAD b852904、产品变更提交420e123，诊断报告附实际命令/结果/提交标识；原请求响应、schema和恢复机制只读核查，明确证实与假设。累计163/200、Prompt15/24不变，零真实调用；产品/默认测试/正式数据/config和历史证据不改。完成后更新状态并同步，只汇报诊断与模式决策，不自动施工或启动下一批。
-
-## 2026-10-22 EDGE闭环：原两项关闭，KB02整体未通过
-
-已按用户B模式完成Sol诊断→Astra方案评审→3产品最小施工/自查→冻结→Astra独立工程与真实验收。见[最终报告](reports/KB02-EDGE-AUDIT-20261022-acceptance.md)。工程385/385、构建、旧Node51/106、历史2+2/新边界4及完整性通过；原空白提取、Wiki重复点击在所列有限回归范围内关闭。全文重新实测14页79事实27问题、56unit106ID及Chrome审核通过，未以旧长文证据代签。
-
-当前阶段仍KB02真实质量返修：新F-KB02-EDGE-PLAN-01/P1为短文规划type/category混淆，seq148严格拒绝，无草稿；已保留提取检查点，完整更新链依赖失败NOT_RUN。原问题已修不等于整批通过，不用正确拒绝坏响应代签模型质量。独立搜索乱序F-KB02-EDGE-DIAG-UI-02/P2仍为未纳范围旁支。累计163/200、本轮17/24、Prompt15/24，余7封存；真实门禁关闭，全部自有服务浏览器清理、Raw/历史/正式数据/config保护通过。主Agent统一提交同步，不启动新施工或下一批。
-
-下一步只建议离线重放seq148并审规划type/category字段约束、合法示例及最小方案；不放宽schema、不静默映射错误type、不无依据重试。新工作单元预评分需求0（正确枚举及严格失败标准明确）、耦合1（规划提示/规则与兼容）、风险1（拟局部但须长文回归）、历史2（模型质量多次返修后出现失败），共4/8，按通用规则建议A并由Sol先审计划；若诊断涉及跨模块完整性或用户继续指定B，则据实际重新裁定。此为待确认计划，未派发，不永久沿用本批B。
-
-## 2026-10-22 用户确认两项返修，B模式诊断启动
-
-进展：Sol诊断完成，Astra已正式通过[最小方案评审](reports/KB02-EDGE-AUDIT-20261022-plan-review.md)，主Agent按任务卡批准3产品/5测试适配/2新增入口施工。额外搜索乱序F-KB02-EDGE-DIAG-UI-02/P2独立登记，不自动扩大施工。真实阶段批准24次硬上限（必要估算20），从146至最多170/200，工程通过前仍禁外发；冻结后独立验收，不自签通过。
-
-阶段仍为KB02真实质量返修：短文P1及Wiki重复点击P2未关闭，更新完整链未验证。用户明确指定本轮B模式；合并范围预评分需求0（原例和预期明确）、耦合1（提取目录/校验与单页选择状态两个窄模块）、风险1（完整性/恢复和异步读取需回归）、历史2（提取质量多轮失败），共4/8。用户明确B覆盖此前优先A建议，不据此永久锁定后续模式。
-
-已复用实际 `/root/sol_repair` GPT-6.1 Sol High离线诊断、`/root/astra_review` GPT-6 Astra Medium方案审查及独立验收。施工仅先写KB02-EDGE-20261022诊断资产；Astra准备独立KB02-EDGE-AUDIT-20261022资产，产品暂未放行。最小方案裁定后施工，冻结交接后独立审查；主Agent管理状态/Git。任务、验收门槛和升级规则见[本轮任务卡](handoffs/KB02-EDGE-20261022-task.md)。累计146/200、Prompt15/24不重置，本轮真实预算另按必要验收裁定。用户要求完成后状态、提交同步及汇报，不启动下一批。
-
-## 2026-10-22 用户授权Playwright后的同批浏览器补验
-
-本次仅补齐原B模式验收，Sol保持停写，Astra实际Playwright/Chrome审查；不新增施工或重设批次评分。用户明确允许替代浏览器，工具回退限制已解决。长文14页/06-07-14及刷新、短文真实失败状态刷新、补充单页明确确认与刷新回读完成。新增既有旁支UI缺陷F-KB02-SOURCE-UI-01/P2：重复点击已选Wiki清空详情，切换再回可恢复；无产品变更。见[补验报告](reports/KB02-SOURCE-AUDIT-20261022-browser-acceptance.md)。
-
-短文F-KB02-SOURCE-01/P1仍阻断完整更新链，单来源新页创建不能替代双来源更新验证；KB02未通过，不推进下一批。新增模型0，累计146/200，原数据/Raw/正式workspace/config和冻结完整性保持，所有自有服务浏览器关闭。主Agent统一状态与提交同步。
-
-后续仅预评估不派发：短文任务保持4/8优先A并Sol审计划，诊断后再定；Wiki重复点击若独立小修预评分需求0（同项可持续阅读）、耦合0（单页面选择状态）、风险1（异步详情切换回归）、历史1（首次实测发现），总2/8适用A（Luna施工/Sol独立审查）。不因当前B模式而永久锁定B，任何新施工另按用户授权确定。
-
-## 2026-10-22 同源返修最终裁决：KB02未通过
-
-本批B模式施工Sol High已交接，Astra Medium独立工程及真实验收完成，见[最终报告](reports/KB02-SOURCE-AUDIT-20261022-acceptance.md)。工程通过；seq128原例与seq129–143新全文在104原ID/56unit、14区域日期数值及同源归属上通过。新增F-KB02-SOURCE-01/P1短文seq144选入纯换行sourceNotes，严格拒绝无草稿；补充仅独立提取规划通过。更新完整链依赖短文前置失败NOT_RUN，实际浏览器通道不可用且替代方式尚未获明确授权，NOT_RUN。整体未通过，不能推进依赖批次。
-
-已停止外发，20/24阶段、146/200累计、Prompt15/24；原网络失败及授权拒绝历史保留，用户后来明确外发授权已解决该阻塞。三份Raw不变、正式数据/config/冻结/历史保护核对通过，自有服务关闭，无浏览器标签。主Agent统一状态与同步，不启动新返修或下一批。
-
-下一任务仅作预评估：需求0（空白不可选且保留非空来源声明标准明确）、耦合1（atom目录与提取规则/校验）、风险1（拟最窄输入约束但尚未诊断）、历史2（提取质量已有多轮真实失败），共4/8。按用户规则优先A并由Sol先审计划；不能仅因本批曾采用B而永久沿用B。待离线诊断揭示实际影响面后重新定分；若跨模块数据完整性/恢复兼容风险升高则改B，有关键需求歧义交Astra重规划。审查者提出继续B的建议仅保留为建议，主Agent尚未派发或授权下一施工。入口为[最小诊断建议](reports/KB02-SOURCE-AUDIT-20261022-short-failure-diagnosis.md)，禁止静默删除模型选择、放宽校验或盲目真实重试。
-
-## 2026-10-22 具体外发获用户直接授权，继续同批验收
-
-用户对包含数据范围、open.bigmodel.cn目的地和剩23次额度的授权问题明确回复“授权按上述范围继续”。恢复 `/root/astra_review` 同批真实验收，产品保持已提交同步的ce00ada及原冻结指纹，工程证据复用适用版本，不重复施工/评分或重置预算。当前累计127/200、本轮1/24、Prompt15/24；剩23次用于原失败诊断→原全文→短文→补充更新实际浏览器链路。仍沿用6/8、B模式，Sol已交接停写；同核心失败停止盲试，真实门槛完成前KB02不签通过，结束后主Agent更新状态并提交同步，不启动下一批。
-
-## 2026-10-22 B模式接手推进与工程独立验收
-
-最新裁决：工程门禁通过，真实质量阻塞待验证，KB02整体仍未通过。seq127诊断网络失败已计入累计127/200、本轮1/24；提权重执行被自动审批拒绝且未执行，需用户直接确认隔离虚构资料向open.bigmodel.cn外发，剩23次阶段额度不自动使用。已向用户提交具体授权问题，等待期间完成报告、状态及代码交付，不以换工具绕过。F-04未关闭，不启动下一批；正式数据/config和历史证据完整性保持，未启动自有真实服务。详见[真实阻塞](reports/KB02-SOURCE-AUDIT-20261022-real-blocker.md)。
-
-用户明确要求继续当前KB02同源错归返修，Sol完成交接、Astra独立验收，必要检查后更新状态并提交同步，不启动下一批。阶段依据为K2-02/04真实质量未过，非主观完成百分比。目标仍限定F-KB02-FINAL-REPAIR-04/P1及其必要回归。
-
-本批四维证据评分：需求明确度0（原ID完整、区域独立、来源可追溯已有标准）；模块耦合度2（规划wire、原ID持久plan及恢复校验相联）；修改风险2（归属错误影响知识完整性，规则升级涉及检查点兼容）；历史失败2（同核心区域错归返修后复发），总6/8，采用B模式。实际新施工 `/root/sol_repair` 为GPT-6.1 Sol High，新独立审查 `/root/astra_review` 为GPT-6 Astra Medium，不冒称复用历史实例。主Agent负责范围与最终推进，不并行修改相同产品文件。
-
-Sol已冻结交接，独立工程358/358、0skip及tsc/Vite、旧Node51/51与79/79、历史/独立探针各2/2通过；施工首败与契约迁移均保留，批准增加storage-recovery精确missing-unit断言适配，产品仍4文件。参见[独立工程报告](reports/KB02-SOURCE-AUDIT-20261022-engineering.md)。主Agent已放行真实验收，起点126/200、本轮最多24，Prompt15/24独立。
-
-验收门槛保持原失败记录、106400字符14区域全文逐页质量、所有ID覆盖、不同位置/kind/分栏边界、恢复兼容、安全/预算、短文及补充更新实际浏览器明确确认刷新回读、Raw与正式资料完整性。同核心再失败停止盲试，由Sol诊断后决定Astra重规划；仅拒绝坏规划不能关闭质量缺陷。当前KB02尚未通过，完成验收后更新本记录并统一提交同步；任何下一批必须重新评估且本次不启动。
-
-## 2026-10-22 用户批准同源错归下一轮返修
-
-阶段：KB02真实质量返修，依据K2-02/04未通过及seq121同源区域07的17%事实跨页错归。目标限定F-KB02-FINAL-REPAIR-04/P1，保留前轮关闭项。模式沿用已批准B，不重复评分；施工 `/root/source_repair_sol`（GPT-6.1 Sol High），主Agent独立审查。先离线诊断重复核心失败并提交窄方案，主Agent裁定后施工。门槛包括真实原例、全部ID覆盖、区域事实独立、同文异位置/事实问题语义边界、恢复兼容、安全及完整回归；不能仅拒绝坏规划即称真实质量通过。再次同核心失败停止盲目重试，必要时重新规划。
-
-真实预算起点126/200，Prompt15/24；施工禁止真实外发。新施工证据前缀KB02-SOURCE-20261022，主Agent独立证据使用不同前缀。不得改正式资料/实际配置/历史证据或扩张无关模块；主Agent统一验收、状态更新及GitHub提交同步。当前处诊断中，未启动其他批次。
-
-## 2026-10-22 规划返修闭环：未通过
-
-已按用户批准B模式完成 `/root/sol_repair`（GPT-6.1 Sol High）施工、自查、冻结，以及主Agent独立实际差异/测试/真实浏览器验收。本次沿用既定模式，不重新评分。目标为F-03覆盖遗漏及F-04区域错归；范围为规划输入上下文、规则及必要测试，主Agent管理范围与验收状态。[最终报告](reports/KB02-PLAN-AUDIT-20261022-acceptance.md)。
-
-Sol与独立完整341/341、0skip及tsc/Vite均通过，独立旧Node51/51、62/62与历史探针2/2通过。真实覆盖遗漏及原分类、更新语义在本轮样本关闭；F-04仍未解决/P1，seq121把同源区域07的17%事实分别分配区域06和07，错误进入隔离待确认草稿，未写长文正式Wiki。验收门槛全量覆盖已达、区域独立未达，KB02整体未通过，不能推进依赖批次。
-
-本轮真实22次，累计126/200剩74，阶段22/30剩8不自动使用，Prompt15/24。产品/tests及2864保护文件完整性通过，正式工作区/config未变，隔离服务和浏览器关闭。下一步建议B模式；同核心缺陷再次失败触发暂停试修，先Sol基于seq121诊断同源分裂，再由主Agent裁定窄方案与独立验收。禁止补塞/删除ID或仅以拒绝坏规划代替质量通过。下一施工尚未派发，等待用户确认。以下为历史记录。
-
-## 2026-10-22 用户确认推进规划返修
-
-用户已确认“执行下一步”，授权按既定B模式处理F-03规划遗漏与F-04区域错归。本轮已创建专用角色 `/root/sol_repair`（GPT-6.1 Sol High），先依据seq100/104进行离线有界诊断，提交窄实现方案由主Agent裁定后施工、自查及交接，再独立验收。无需再次向用户确认已授权范围内的实施细节，不自动推进其它批次。
-
-当前仍为KB02真实质量返修阶段，旧整体未通过保持。接手真实预算104/200、Prompt15/24；诊断施工零真实调用。文件所有权：sol_repair负责本轮诊断/后续核准的产品测试与报告，主Agent负责状态/范围/验收。新方案不得放宽覆盖、补塞ID、改变Raw或扩大存储/Provider等无关范围；原失败证据保留。
-
-## 2026-10-22 最新闭环约定与待确认计划
-
-已同步用户最新主Agent—子Agent闭环至[coordination](coordination.md)：Astra主Agent负责审查、方案、派发、等待与独立验收；已确认方案/模式直接沿用；B模式施工角色指定 `sol_repair`（GPT-6.1 Sol High）。历史实际执行仍为kb02_repair_sol施工和kb02_review_astra独立复审，不追溯改名或虚构新施工。验收采用“通过 / 未通过 / 阻塞待验证”，验收汇报后等待用户确认下一项施工。
-
-当前裁决为**未通过**，项目仍在KB02真实质量返修阶段。施工及Astra独立证据见下节及原报告，当前无新增产品修改、测试或真实调用；预算104/200、Prompt15/24保持。
-
-下一步建议继续B模式，目标限定规划遗漏与区域错归F-03/F-04。沿用独立报告已有诊断范围：以seq100/104完整请求响应及checkpoint为夹具，先定位全部事实/问题归属、跨chunk同主题合并、重叠记录和区域隔离的根因，再由Astra确认窄实现方案，交sol_repair实施与自查；之后主Agent独立复核原全文和补充更新完整链。现有报告提供诊断范围，尚未给出这两项新问题的确定代码修改方案，不能将其称为已批准具体施工方案。保持严格覆盖、原文不可变、预算与显式恢复约束；不能仅补漏ID后忽略主题质量。
-
-该计划待用户确认后执行，本轮仅更新协作约定并汇报上一轮已完成闭环，不启动新施工。
-
-## 2026-10-22 B模式返修独立复审结束：FAIL
-
-已完成用户要求的Sol High实际施工→冻结→独立Astra medium复审，未重新规划或A/B评分。最终以[Astra独立报告](reports/KB02-FINAL-REPAIR-AUDIT-20261022-acceptance.md)为准，KB02整体FAIL，未启动下一批。
-
-- 独立同冻结完整328/328、0skip、tsc/Vite通过；Node24.19原SR01 51/51及返修49/49，另独立边界2/2通过。K2-03 PASS（工程及实况），不代替真实质量。
-- F-KB02-FINAL-01原分类症状在原块与全文未复现：81事实均已读，原非业务拼接未入facts；但完整长文草稿门禁未达，登记分类子项PASS、整体未关闭。
-- F-KB02-FINAL-02单/双边真实诊断PASS；补充资料规划失败，真实更新浏览器全链NOT_RUN，未关闭。
-- 新F-KB02-FINAL-REPAIR-03/P1：seq100全文规划漏q-c6-1/q-c6-2，seq104补充规划漏业务口径事实f-c1-2；两次严格拒绝、无草稿。新F-KB02-FINAL-REPAIR-04/P2：seq100被拒响应按chunk把相邻区域事实放入单区域页，未落为正式草稿/Wiki。K2-02/04 FAIL，K2-01仅部分通过。
-- 真实累计104/200、剩96；本阶段22/30，剩8不自动使用；Prompt15/24不变。原文/99产品/72测试支持冻结及2761保护文件核对通过，正式workspace/config不变，自有服务及浏览器已关闭。
-
-推进决策：本轮返修交付与独立复审均已执行，但验收未通过，保持产品/tests冻结与原失败证据；不将新的规划遗漏/区域归属问题混入原两项施工范围自动续修。下一执行入口是依据seq100/104失败夹具进行有界规划根因诊断并裁定窄范围，详见独立报告；本轮未派发该新工作单元，未签整体PASS。
-
-## 2026-10-22 施工冻结，Astra独立复审已启动
-
-Sol已完成[施工交接](reports/KB02-FINAL-REPAIR-20261022-builder-handoff.md)，北京时间12:31:54冻结停写。3产品文件修改，4旧测试迁移、2新增默认测试；施工实测完整328/328、0skip与tsc/Vite通过，Node24.19受影响51/51与定向49/49通过，完整性保护2731文件无变化。上述是施工证据，非独立裁决。
-
-已实际创建独立审查子Agent `/root/kb02_review_astra`，模型 `gpt-6-astra`、推理 `medium`，要求读取原审查/方案、实际差异及冻结实物，独立工程验证后执行有界真实与浏览器复验。审查者不修改产品/tests，不能仅凭Sol自述签PASS。复验预算从82/200接续，本阶段最多30次；当前尚无新独立裁决，KB02 FAIL保持，不推进下一批。
-
-## 2026-10-22 已批准B模式返修启动
-
-用户最新明确批准按Astra既定[返修方案](reports/KB02-FINAL-AUDIT-20261022-repair-plan.md)施工，不重新规划或评分。已实际创建施工子Agent `/root/kb02_repair_sol`，模型 `gpt-6.1-sol`、推理 `high`；范围仅F-KB02-FINAL-01/02与必要局部调整及测试。派发含完整问题、方案、文件边界、验收与测试要求。施工完成冻结后，由新建独立Astra读取实际差异及原标准复审，不能仅凭施工自述通过。最新授权覆盖下文“尚未派发/仅基线”的历史状态。
-
-当前阶段仍为KB02真实质量返修，B模式沿用既定决定，不重新评估。施工仅隔离fake，真实复验在独立工程门禁后按既定方案最多30次阶段控制执行，累计82/200起记、Prompt15/24独立。未通过不得推进下一批；局部可定位缺陷允许原施工者修复，同核心重复失败按既定升级规则处理。主Agent维护状态，施工者负责代码/测试/交接，Astra负责独立证据与裁决。当前未有新PASS。
-
+<!-- ENG01 agent-control:165 -->
 ## 2026-10-22 状态基线与调度规则生效
 
 本记录依据用户本轮总控指令、status、KB02任务卡、acceptance及独立报告建立。当前仅建立基线与调度约定，未开始新一轮产品施工、诊断执行或真实调用。历史报告中的模型安排与预算保留原文，后续调度适用本记录及用户最新指令。

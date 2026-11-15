@@ -1,0 +1,78 @@
+{
+  "success": true,
+  "screenshots": [
+    "docs/reports/PDF01-R2-SPANS-20261112-ui-evidence/01-coverage-once-two-pages.png",
+    "docs/reports/PDF01-R2-SPANS-20261112-ui-evidence/02-users-with-full-parent-evidence.png",
+    "docs/reports/PDF01-R2-SPANS-20261112-ui-evidence/03-merchant-counts-with-parent-evidence.png"
+  ],
+  "posts": [
+    "/api/raw/import",
+    "/api/raw/dae6aedb-4d4c-4c56-8a4b-278aa0d73bcf/pdf/understand",
+    "/api/raw/dae6aedb-4d4c-4c56-8a4b-278aa0d73bcf/pdf/cleanup",
+    "/api/raw/dae6aedb-4d4c-4c56-8a4b-278aa0d73bcf/pdf/cleanup/draft"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "fragments": [
+    {
+      "id": "p2-content-1-s1",
+      "unitId": "p2-content-1",
+      "start": 0,
+      "end": 45,
+      "topic": "北区试点覆盖",
+      "text": "🧭 Pilot covered 173 stores in North in 2027;",
+      "origin": "image"
+    },
+    {
+      "id": "p2-content-1-s2",
+      "unitId": "p2-content-1",
+      "start": 45,
+      "end": 69,
+      "topic": "新增用户",
+      "text": " new users totalled 875.",
+      "origin": "image"
+    },
+    {
+      "id": "p2-content-1-s3",
+      "unitId": "p2-content-1",
+      "start": 69,
+      "end": 99,
+      "topic": "商户规模",
+      "text": " Active merchants totalled 43.",
+      "origin": "image"
+    }
+  ],
+  "parentEvidence": {
+    "page": 2,
+    "resultSha256": "728004d1dec77cf7da08d5176d9a4b7e0c296abdbabb40263f96121071254924",
+    "unitId": "p2-content-1",
+    "kind": "image",
+    "text": "🧭 Pilot covered 173 stores in North in 2027; new users totalled 875. Active merchants totalled 43."
+  },
+  "wiki": {
+    "index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+  },
+  "assetSha256": "7b855f310a7efb7b4a540f856dfc9e51897f281f303a173e8179b9f222ba75c3",
+  "calls": [
+    {
+      "stage": "pdf_page_understanding",
+      "bytes": 132
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_cleanup",
+      "bytes": 435
+    },
+    {
+      "stage": "pdf_topic_index",
+      "bytes": 1278
+    },
+    {
+      "stage": "pdf_presentation",
+      "bytes": 755
+    }
+  ]
+}

@@ -11,6 +11,8 @@
     "dev:proxy": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_with_proxy.ps1",
     "dev:api": "tsx watch server/index.ts",
     "dev:ui": "vite --host 127.0.0.1",
+    "typecheck": "tsc -b",
+    "check": "npm run typecheck && npm test && npm run build",
     "build": "tsc -b && vite build",
     "test": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/*.test.ts tests/*.test.tsx"
   },

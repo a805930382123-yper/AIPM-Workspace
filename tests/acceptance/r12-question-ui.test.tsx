@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {writeFile} from 'node:fs/promises';
 import {JSDOM} from 'jsdom';
-import {r12Fixture,questionUnitIds,markedText} from './acceptance/R12-20261026-fixture.ts';
-import {approveDraft} from './support/human-review.ts';
+import {r12Fixture,questionUnitIds,markedText} from './R12-20261026-fixture.ts';
+import {approveDraft} from '../support/human-review.ts';
 const dom=new JSDOM('<html><body><div id="root"></div></body></html>',{url:'http://localhost/',pretendToBeVisual:true}),w=dom.window;
 for(const [name,value]of Object.entries({window:w,document:w.document,navigator:w.navigator,HTMLElement:w.HTMLElement,HTMLInputElement:w.HTMLInputElement,HTMLTextAreaElement:w.HTMLTextAreaElement,HTMLSelectElement:w.HTMLSelectElement,MouseEvent:w.MouseEvent,Event:w.Event,Node:w.Node,IS_REACT_ACT_ENVIRONMENT:true}))Object.defineProperty(globalThis,name,{value,writable:true,configurable:true});
-const {act,createElement}=await import('react'),{createRoot}=await import('react-dom/client'),{DraftReviewPage}=await import('../app/pages/DraftReviewPage.tsx');
+const {act,createElement}=await import('react'),{createRoot}=await import('react-dom/client'),{DraftReviewPage}=await import('../../app/pages/DraftReviewPage.tsx');
 const nativeFetch=globalThis.fetch;
 async function tick(check:()=>boolean,label:string){const deadline=performance.now()+6000;while(performance.now()<deadline){await act(async()=>{await new Promise(r=>setTimeout(r,20));});if(check())return;}assert.fail(label);}
 test('R12 React explicit checkbox reaches production HTTP, invalidates review and survives remount',async()=>{

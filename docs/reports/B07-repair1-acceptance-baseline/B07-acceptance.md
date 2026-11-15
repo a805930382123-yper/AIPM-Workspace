@@ -4,7 +4,7 @@
 
 ## 依据与独立性
 
-- 按 `docs/status.md`、B07 任务卡、冻结的 [施工交接](../handoffs/B07-deepseek-prompt.md) 检查 E07-01–12、A37–A43/A59、R33/R34/R39/R40 的手动部分。
+- 按 `docs/status.md`、B07 任务卡、冻结的 [施工交接](../../handoffs/B07-deepseek-prompt.md) 检查 E07-01–12、A37–A43/A59、R33/R34/R39/R40 的手动部分。
 - 用户指定 Claude Code / DeepSeek V4.1 Flash 施工；施工报告声明运行模型为 `deepseek-flash`。本报告不替外部 harness 核实更细模型版本。
 - 先冻结 65 个产品/规则/配置/脚本文件，核对施工报告 20 项 SHA 全部一致。独立测试只增加验收脚本、隔离资料、证据与工程状态；产品文件前后完全一致。
 - 使用 TEMP 下独立资料目录和自有 localhost 服务；真实 HTTP、实物 SHA、真实浏览器点击、普通文本目标中的键盘粘贴、浏览器原生下载。受控代理只延迟真实产品响应，不替换其正文或状态码；文件故障由隔离进程实际 `writeFile`/`rename` 抛 EIO 注入。
@@ -14,12 +14,12 @@
 
 | 检查 | 实际结果 | 证据 |
 |---|---|---|
-| 独立构建 | PASS；TypeScript + Vite，44 modules，981 ms | [build log](B07-acceptance-build.log) |
-| 仓库测试 | 135/135 PASS，0 fail/skip，17.564 s | [test log](B07-acceptance-test.log) |
+| 独立构建 | PASS；TypeScript + Vite，44 modules，981 ms | [build log](../B07-acceptance-build.log) |
+| 仓库测试 | 135/135 PASS，0 fail/skip，17.564 s | [test log](../B07-acceptance-test.log) |
 | 新编独立 B07 HTTP / 实物 | 10 个主要场景 PASS；损坏记录附加场景 FAIL，进程退出 1 | [HTTP JSON](B07-acceptance-http.json) |
-| B06 独立回归 | 15/15 PASS，14.344 s，自有服务已关闭 | [回归 JSON](B07-regression-b06-http.json) |
+| B06 独立回归 | 15/15 PASS，14.344 s，自有服务已关闭 | [回归 JSON](../B07-regression-b06-http.json) |
 | 实际浏览器 | 正常链路通过；5 个前端缺陷复现 | [浏览器 JSON](B07-acceptance-browser.json) |
-| 下载文件独立读取 | PASS；版本 3 的元数据、变量、正文逐字符保留 | [浏览器下载](B07-browser-export.md)、[文件核对](B07-browser-file-checks.json) |
+| 下载文件独立读取 | PASS；版本 3 的元数据、变量、正文逐字符保留 | [浏览器下载](../B07-browser-export.md)、[文件核对](../B07-browser-file-checks.json) |
 | 最终完整性 | 65 产品文件及正式 workspace 全部 2 文件集合/SHA 不变；3 份受保护历史证据原件未变 | [完整性 JSON](B07-acceptance-final-integrity.json) |
 
 上述独立 HTTP 脚本不是施工方自测脚本。HTTP 十个主要场景通过不等于 E07 全部通过；浏览器发现的缺陷仍阻止签批。
@@ -52,7 +52,7 @@
 | F07-05 | P1 | 甲的 PUT 已成功，响应延迟期间点新建并输入新名称/正文，释放旧响应后新表单消失，内容未保存。`:153/:160` 在身份检查前清 form/baseVersion。 |
 | F07-06 | P2 | 延迟“B07模板乙”搜索，随后“浏览器”已得到甲；释放旧响应，搜索框仍为浏览器，列表却变乙。`:74` `refreshList` 在 effect 的 active 检查前写 items。 |
 
-截图：[旧变量复制](B07-stale-values.png)、[历史串页](B07-late-history.png)、[按钮锁死](B07-stuck-busy.png)、[新表单丢失](B07-late-save.png)、[旧搜索覆盖](B07-late-filter.png)。完整延迟请求 URL/真实状态码、前后 DOM 及复制文本保存在浏览器 JSON。
+截图：[旧变量复制](../B07-stale-values.png)、[历史串页](../B07-late-history.png)、[按钮锁死](../B07-stuck-busy.png)、[新表单丢失](../B07-late-save.png)、[旧搜索覆盖](../B07-late-filter.png)。完整延迟请求 URL/真实状态码、前后 DOM 及复制文本保存在浏览器 JSON。
 
 ## 限制与收尾
 
@@ -60,7 +60,7 @@
 - HTTP/浏览器 Provider 均为空；本批无 LLM 依赖，不需要为 B07 新增 Key。B08、AI来源保存、Optimizer 和真实 AI 质量均未实施/未验收。
 - 浏览器过程被一次会话切换中断，原隔离资料保留并恢复服务继续检查；没有因此重跑或冒称重复构建。恢复前真实复制及截图证据保留，后续场景独立落盘。
 - 浏览器文件核对脚本首次误把既有 Wiki 回收目录写成 `wiki/recycle`；按实际 `knowledge/recycle/wiki` 修正断言后通过，仅修改验收脚本，未列为产品缺陷。
-- 删除关联 Wiki 是 E07-08 明确的隔离资料操作。之前所有 Prompt 操作的整个 knowledge SHA 不变；之后另冻结删除后的基线，后续 Prompt 保存/渲染/复制/检索/导出没有附加知识写入。Raw 全程 SHA 不变。见 [删除后基线](B07-browser-after-explicit-wiki-delete.json)、[最终核对](B07-browser-missing-link-final.json)。
+- 删除关联 Wiki 是 E07-08 明确的隔离资料操作。之前所有 Prompt 操作的整个 knowledge SHA 不变；之后另冻结删除后的基线，后续 Prompt 保存/渲染/复制/检索/导出没有附加知识写入。Raw 全程 SHA 不变。见 [删除后基线](../B07-browser-after-explicit-wiki-delete.json)、[最终核对](../B07-browser-missing-link-final.json)。
 - 仓库测试重写的 B04 自测输出，以及本轮 B06 回归输出，保留 B07 前缀并恢复历史原件；收尾 SHA 已确认。原施工报告留存，未改写其自测结论。
 - HTTP 与浏览器 API/Vite/代理/辅助服务已关闭；有效测试标签已关闭。连接失败的临时错误页被浏览器 URL 策略阻止绑定清理，未绕过策略，按临时标签生命周期自动关闭。
 - 当前范围停在 B07 返修。不存在“整批 PASS”或 B08 开工授权。

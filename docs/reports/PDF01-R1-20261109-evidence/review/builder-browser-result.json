@@ -1,0 +1,66 @@
+{
+  "success": true,
+  "url": "http://127.0.0.1:63176",
+  "checks": [
+    "扫描件保存原始字节，正文空，原页可读，旧整理和模型调用均为零",
+    "混合 PDF 单页切换可读原生文字、扫描像素和真实矢量图，浏览不请求模型",
+    "第 2 页失败后重载零调用，显式继续只请求剩余两页，三页全部完成",
+    "模型收到同一页的真实 PNG 和文字，图表与推断独立展示，原文和原件保持原样"
+  ],
+  "screenshots": [
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-01-import-scan.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-02-scan-saved.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-03-scan-page-original.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-04-mixed-raster-page.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-05-vector-before-ai.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-06-running.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-07-failed-retained.png",
+    "docs/reports/PDF01-R1-20261109-evidence/review/builder-08-complete-vector-and-ai.png"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "posts": [
+    "/api/raw/import",
+    "/api/raw/import",
+    "/api/raw/92ef758e-6d62-4eee-aa79-3521256a56a1/pdf/understand",
+    "/api/raw/92ef758e-6d62-4eee-aa79-3521256a56a1/pdf/understand"
+  ],
+  "raws": {
+    "scan": "5456055b-b294-40b1-a25f-b1296a6214ed",
+    "mixed": "92ef758e-6d62-4eee-aa79-3521256a56a1"
+  },
+  "counters": {
+    "modelCalls": [
+      {
+        "page": 1,
+        "totalPages": 3,
+        "text": "Mixed PDF - native text page\nSigned stores: 56.",
+        "imageSha": "57a21be4b7e23baf9314b7816433c8be152402755bcd6fedb8bec549a0f79e22",
+        "imageBytes": 18967
+      },
+      {
+        "page": 2,
+        "totalPages": 3,
+        "text": "",
+        "imageSha": "52579a372d4e1ae95f625e20019cb12ffbb5914786971506a830e38a87ad5c89",
+        "imageBytes": 5960
+      },
+      {
+        "page": 2,
+        "totalPages": 3,
+        "text": "",
+        "imageSha": "52579a372d4e1ae95f625e20019cb12ffbb5914786971506a830e38a87ad5c89",
+        "imageBytes": 5960
+      },
+      {
+        "page": 3,
+        "totalPages": 3,
+        "text": "Vector channel chart",
+        "imageSha": "1e7c140cd55946583f931184fedf29cf18b49c6ffeb71914df2720271e5a992d",
+        "imageBytes": 9805
+      }
+    ],
+    "legacyCalls": [],
+    "realProviderCalls": 0
+  }
+}

@@ -1,6 +1,6 @@
 # B07 返修卡（2026-10-07）
 
-独立验收 **FAIL**。施工方可按本卡修复 F07-01–06；本次验收方未修产品代码。原范围、字段、版本/原子写、存储、变量替换及 B08 禁用约束沿用 [B07 冻结交接](../handoffs/B07-deepseek-prompt.md)。独立报告：[B07-acceptance.md](B07-acceptance.md)。六项当前均 **OPEN**，由后续独立复验关闭。
+独立验收 **FAIL**。施工方可按本卡修复 F07-01–06；本次验收方未修产品代码。原范围、字段、版本/原子写、存储、变量替换及 B08 禁用约束沿用 [B07 冻结交接](../../handoffs/B07-deepseek-prompt.md)。独立报告：[B07-acceptance.md](B07-acceptance.md)。六项当前均 **OPEN**，由后续独立复验关闭。
 
 只返修本批，不启动 B08，不改 Raw/Wiki 产品逻辑来掩盖 Prompt 缺陷，不删除旧断言或改写独立证据。重点文件 `app/pages/PromptLibraryPage.tsx`、`services/prompt/store.ts`；如接口调整确有必要需保持冻结语义兼容。验收脚本、报告和工程状态由主 Agent 维护，施工自测写 `B07-repair-*` 前缀。
 

@@ -262,6 +262,7 @@ test('B04 Raw 详情：五种状态与 AI 整理/取消/继续审核入口', asy
     assert.ok(stub.calls.some(call => call.url.endsWith('/cancel')), '取消必须调用 cancel 接口');
   } finally { await stopped.unmount(); }
 
+  stub.setDraft(makeDraft({ id: 'draft-1' }));
   let openedDraftId: string | undefined;
   const pending = await mount(<RawPage {...rawPageProps({
     onOpenDraft: (id: string) => { openedDraftId = id; },

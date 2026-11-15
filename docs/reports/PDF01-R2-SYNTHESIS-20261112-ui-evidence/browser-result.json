@@ -1,0 +1,121 @@
+{
+  "success": true,
+  "screenshots": [
+    "docs/reports/PDF01-R2-SYNTHESIS-20261112-ui-evidence/01-written-paragraph-and-distinct-forecast.png",
+    "docs/reports/PDF01-R2-SYNTHESIS-20261112-ui-evidence/02-all-source-material.png",
+    "docs/reports/PDF01-R2-SYNTHESIS-20261112-ui-evidence/03-new-users-kept.png"
+  ],
+  "posts": [
+    "/api/raw/import",
+    "/api/raw/8ad15c09-58d6-465c-b155-c28fa805b5a6/pdf/understand",
+    "/api/raw/8ad15c09-58d6-465c-b155-c28fa805b5a6/pdf/cleanup",
+    "/api/raw/8ad15c09-58d6-465c-b155-c28fa805b5a6/pdf/cleanup/draft"
+  ],
+  "pageErrors": [],
+  "outside": [],
+  "wiki": {
+    "index.md": "6ec470440a759e0459dd79b1c7e7e218d5513c1b5c1fd94711bab3133f81d733"
+  },
+  "assetSha256": "180ed0071c1e041b134f7e5bc4f57811aa65c9e846907c50200dcba95a6e2657",
+  "writing": [
+    {
+      "topics": {
+        "t1": {
+          "blocks": [
+            {
+              "kind": "fact",
+              "text": "In 2027, North recorded a total of 173 stores."
+            },
+            {
+              "kind": "fact",
+              "text": "The 2028 forecast for South was 181 stores."
+            }
+          ],
+          "coverage": {
+            "p1-text-1": {
+              "action": "included",
+              "blockIndex": 0,
+              "reason": null
+            },
+            "p2-content-1": {
+              "action": "duplicate",
+              "blockIndex": 0,
+              "reason": "相同地区、年度与实际门店数"
+            },
+            "p2-content-2": {
+              "action": "included",
+              "blockIndex": 1,
+              "reason": null
+            },
+            "p3-content-1": {
+              "action": "duplicate",
+              "blockIndex": 0,
+              "reason": "相同地区、年度与实际门店数"
+            }
+          }
+        },
+        "t2": {
+          "blocks": [],
+          "coverage": {
+            "p1-content-1": {
+              "action": "metadata",
+              "blockIndex": null,
+              "reason": "页面标识或页码"
+            },
+            "p2-content-3": {
+              "action": "metadata",
+              "blockIndex": null,
+              "reason": "页面标识或页码"
+            },
+            "p3-content-3": {
+              "action": "promotion",
+              "blockIndex": null,
+              "reason": "纯品牌致意"
+            }
+          }
+        },
+        "t3": {
+          "blocks": [
+            {
+              "kind": "fact",
+              "text": "In 2027, the total number of new users was 875."
+            }
+          ],
+          "coverage": {
+            "p3-content-2": {
+              "action": "included",
+              "blockIndex": 0,
+              "reason": null
+            }
+          }
+        }
+      }
+    }
+  ],
+  "calls": [
+    {
+      "stage": "pdf_page_understanding",
+      "bytes": 102
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_page_understanding",
+      "bytes": 68
+    },
+    {
+      "stage": "pdf_cleanup",
+      "bytes": 893
+    },
+    {
+      "stage": "pdf_topic_index",
+      "bytes": 564
+    },
+    {
+      "stage": "pdf_topic_write",
+      "bytes": 1222
+    }
+  ]
+}

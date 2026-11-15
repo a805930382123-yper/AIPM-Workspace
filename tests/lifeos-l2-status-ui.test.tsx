@@ -11,7 +11,7 @@ const view = (status: RawProcessingState['status'], job: ExtractionJob | null, e
 test('状态与保留结果根据实际证据显示，段数不是整项进度',()=>{
  const running=view('processing',base); assert.ok(running.indexOf('虚构资料甲') < running.indexOf('当前阶段')); assert.match(running,/写作/); assert.match(running,/已验证 2\/2 提取段/); assert.match(running,/不是整项完成比例/); assert.doesNotMatch(running,/草稿已保存/);
  const standard=view('processing',{...base,mode:'standard',stage:'extracting'}); assert.match(standard,/当前阶段/); assert.match(standard,/提取/);
- const pending=view('pending_confirmation',{...base,status:'completed',stage:'done'}, {draftId:'draft-a'}); assert.match(pending,/草稿已保存，待你审核/); assert.match(pending,/继续审核/); assert.doesNotMatch(pending,/已确认写入/);
+ const pending=view('pending_confirmation',{...base,status:'completed',stage:'done'}, {draftId:'draft-a'}); assert.match(pending,/暂无可确认的已保存结果/); assert.doesNotMatch(pending,/继续审核/); assert.doesNotMatch(pending,/已确认写入/);
  const generated=view('generated',null,{generatedWikiIds:['wiki-a']}); assert.match(generated,/已确认写入/); assert.match(generated,/wiki-a/);
  const legacy=view('failed',null); assert.match(legacy,/暂无可确认的已保存结果/); assert.doesNotMatch(legacy,/已验证/);
 });

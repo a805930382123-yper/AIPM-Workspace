@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {readFile,writeFile} from 'node:fs/promises';
 import test from 'node:test';
-import {r12Fixture,questionUnitIds,markedText} from './acceptance/R12-20261026-fixture.ts';
-import {DraftStore} from '../services/wiki/drafts.ts';
-import {WikiStore} from '../services/wiki/store.ts';
-import {WikiCommitService} from '../services/wiki/commits.ts';
-import {approveDraft} from './support/human-review.ts';
-import {isExtractionDraft} from '../services/storage/record-validators.ts';
+import {r12Fixture,questionUnitIds,markedText} from './R12-20261026-fixture.ts';
+import {DraftStore} from '../../services/wiki/drafts.ts';
+import {WikiStore} from '../../services/wiki/store.ts';
+import {WikiCommitService} from '../../services/wiki/commits.ts';
+import {approveDraft} from '../support/human-review.ts';
+import {isExtractionDraft} from '../../services/storage/record-validators.ts';
 
 test('R12 original C explicit question references preserve source records, invalidate approvals, persist and formally render',async()=>{
  const f=await r12Fixture();try{
