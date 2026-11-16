@@ -1,6 +1,6 @@
 import { readFile, readdir, rm, rmdir } from 'node:fs/promises';
 import path from 'node:path';
-import { clearStorageScanIssue, reportStorageIssue, StorageError, writeJsonAtomic } from '../storage/files.ts';
+import { clearStorageScanIssue, reportStorageIssue, SerialQueue, StorageError, writeJsonAtomic } from '../storage/files.ts';
 import { automationRunStatuses, type AutomationIssue, type AutomationRun } from './types.ts';
 
 export const runIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
@@ -28,13 +28,17 @@ function isStoredRun(value: unknown, id: string, month: string): value is Automa
     && stepStatuses.includes(String(step.status)) && isIsoDate(step.startedAt)
     && (step.endedAt === null || isIsoDate(step.endedAt)) && (step.durationMs === null || nonnegative(step.durationMs))
     && string(step.summary) && optionalText(step.error))) return false;
-  if (!object(value.usage) || !['requests', 'inputTokens', 'outputTokens', 'unknownUsageCount'].every(key => nonnegative((value.usage as Record<string, unknown>)[key]))) return false;
+  if (!object(value.usage) || !['requests', 'inputTokens', 'outputTokens', 'unknownUsageCount'].every(key => nonnegative((value.usage as Record<string, unknown>)[key]))
+    || (value.sourceRequests !== undefined && !nonnegative(value.sourceRequests)) || !optionalText(value.candidateId)) return false;
   const artifacts = value.artifacts;
   return object(artifacts) && ['rawIds', 'jobIds', 'draftIds'].every(key => Array.isArray(artifacts[key]) && artifacts[key].every(string));
 }
 
 export class AutomationLedger {
   private readonly dir: string;
+  // On Windows a read handle can deny replacement of the same file. Polling and
+  // per-request accounting both touch the live ledger, so share one file access queue.
+  private readonly io = new SerialQueue();
   private readonly files = new Map<string, string>();
   private readonly runs = new Map<string, AutomationRun>();
   private readonly issues = new Map<string, AutomationIssue>();
@@ -78,7 +82,7 @@ export class AutomationLedger {
         const file = path.join(folder, entry.name);
         if (!entry.isFile() || !runIdPattern.test(id) || this.files.has(id)) { this.issue(file, 'shape'); continue; }
         this.files.set(id, file);
-        const run = await this.read(file, id);
+        const run = await this.io.run(() => this.read(file, id));
         if (run) this.runs.set(id, run);
       }
     }
@@ -88,20 +92,24 @@ export class AutomationLedger {
   listIssues() { return [...this.issues.values()]; }
 
   async get(id: string) {
-    const file = this.files.get(id);
-    if (!file) return undefined;
-    const run = await this.read(file, id);
-    if (!run) throw new StorageError('AUTOMATION_RUN_CORRUPT', '运行记录无法读取，原文件已保留。', 500);
-    return run;
+    return this.io.run(async () => {
+      const file = this.files.get(id);
+      if (!file) return undefined;
+      const run = await this.read(file, id);
+      if (!run) throw new StorageError('AUTOMATION_RUN_CORRUPT', '运行记录无法读取，原文件已保留。', 500);
+      return run;
+    });
   }
 
   async save(run: AutomationRun) {
     const file = path.join(this.dir, run.scheduledAt.slice(0, 7), `${run.id}.json`);
     const snapshot = structuredClone(run);
-    await writeJsonAtomic(file, snapshot);
-    this.files.set(run.id, file);
-    this.runs.set(run.id, snapshot);
-    return snapshot;
+    return this.io.run(async () => {
+      await writeJsonAtomic(file, snapshot);
+      this.files.set(snapshot.id, file);
+      this.runs.set(snapshot.id, snapshot);
+      return snapshot;
+    });
   }
 
   async prune(now: number) {
@@ -110,13 +118,15 @@ export class AutomationLedger {
     const changed = new Set<string>();
     for (const run of oldest) {
       if (isActiveRun(run) || Date.parse(runTimestamp(run)) >= cutoff) continue;
-      const file = this.files.get(run.id)!;
-      // Keep records damaged since startup for diagnosis rather than cleaning over them.
-      if (!await this.read(file, run.id)) continue;
-      await rm(file, { force: true });
-      this.files.delete(run.id);
-      this.runs.delete(run.id);
-      changed.add(path.dirname(file));
+      await this.io.run(async () => {
+        const file = this.files.get(run.id);
+        // Keep records damaged since startup for diagnosis rather than cleaning over them.
+        if (!file || !await this.read(file, run.id)) return;
+        await rm(file, { force: true });
+        this.files.delete(run.id);
+        this.runs.delete(run.id);
+        changed.add(path.dirname(file));
+      });
     }
     for (const dir of changed) {
       try { await rmdir(dir); }

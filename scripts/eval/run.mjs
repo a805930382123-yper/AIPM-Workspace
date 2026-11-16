@@ -234,6 +234,12 @@ export async function run(options, synthetic = false) {
     console.log(markdown, `Result: ${file}`);
     return result;
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve('scripts/eval/run.mjs'))
-    run(parseArgs(process.argv.slice(2))).then(r => { if (!r.summary.pass)
-        process.exitCode = 1; }).catch(e => { console.error(e.message); process.exitCode = 1; });
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve('scripts/eval/run.mjs')) {
+    const args = process.argv.slice(2);
+    const chain = args[args.indexOf('--chain') + 1];
+    const execute = async () => chain === 'news-relevance'
+        ? (await import('./news-relevance.mjs')).runNewsRelevance(args)
+        : run(parseArgs(args));
+    execute().then(r => { if (!r.summary.pass) process.exitCode = 1; })
+        .catch(e => { console.error(e.message); process.exitCode = 1; });
+}

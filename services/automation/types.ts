@@ -37,6 +37,8 @@ export type AutomationUsage = {
 export type AutomationRun = AutomationRunSummary & {
   steps: AutomationStep[];
   usage: AutomationUsage;
+  sourceRequests?: number;
+  candidateId?: string;
   artifacts: { rawIds: string[]; jobIds: string[]; draftIds: string[] };
   budget: null;
 };

@@ -170,6 +170,20 @@ export const automationRuns = ({ type, status, limit }: { type: string; status: 
 export const automationRun = (id: string, signal?: AbortSignal) => api<AutomationRun>(automationRunUrl(id), { signal });
 export const cancelAutomationRun = (id: string, token: string) =>
   api<AutomationRun>(`${automationRunUrl(id)}/cancel`, automationWrite('POST', token, {}));
+export type { CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, PipelineSettings } from '../services/automation/pipeline/service';
+import type { CandidateList, ConfirmCandidates, PipelineSettings } from '../services/automation/pipeline/service';
+const candidatesUrl = `${automationUrl}/candidates`;
+export const automationCandidates = (date?: string, signal?: AbortSignal) =>
+  api<CandidateList>(date ? `${candidatesUrl}?date=${encodeURIComponent(date)}` : candidatesUrl, { signal });
+export const readPipelineSettings = (signal?: AbortSignal) => api<PipelineSettings>(`${automationUrl}/pipeline/settings`, { signal });
+export const savePipelineSettings = (settings: PipelineSettings, token: string) =>
+  api<PipelineSettings>(`${automationUrl}/pipeline/settings`, automationWrite('PATCH', token, settings));
+export const confirmCandidates = (input: ConfirmCandidates, token: string) =>
+  api(`${candidatesUrl}/confirm`, automationWrite('POST', token, input));
+export const changeCandidateDisposition = (id: string, action: 'ignore' | 'later' | 'restore', token: string) =>
+  api(`${candidatesUrl}/${encodeURIComponent(id)}/disposition`, automationWrite('POST', token, { action }));
+export const retryCandidate = (id: string, stage: 'save' | 'organize', token: string) =>
+  api(`${candidatesUrl}/${encodeURIComponent(id)}/retry-${stage}`, automationWrite('POST', token, {}));
 const shanghaiTime = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Shanghai' });
 export const automationTime = (time: string | null) => time ? shanghaiTime.format(new Date(time)) : '—';
 

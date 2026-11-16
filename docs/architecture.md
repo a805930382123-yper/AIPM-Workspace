@@ -8,7 +8,15 @@
 
 代码注册的任务、上海时区计划和用量账本位于 `services/automation/`。计划、revision、暂停和下一次时刻以原子 JSON 保存在 `state/automation/schedules.json`。运行文件按计划的 UTC 月份放入 `state/automation/runs/`。调度先记录已消费的时刻，再原子推进计划游标，启动时中断遗留队列或执行记录，每任务最多补跑最近一次未记录的触发。暂停和重叠的计划触发保留 skipped 记录。清理只移除超过 90 天且在最新 2000 条之外的终态记录。损坏文件留在原处，API 返回逐条问题。
 
-既有 Provider 请求快照继续由 AsyncLocalStorage 绑定。调度为任务建立独立运行上下文，统一 Provider 工厂在每次实际调用时按该上下文累计用量。Wiki 与 Prompt 的正式存储拒绝来自该上下文的写入。当前注册的唯一任务是 60 分钟间隔的工作台自检，检查数据目录、实例锁、恢复问题、Provider 配置状态和剩余磁盘空间。自检不调用 Provider。
+既有 Provider 请求快照继续由 AsyncLocalStorage 绑定。调度为任务建立独立运行上下文，统一 Provider 工厂在每次实际调用时按该上下文累计用量。Wiki 与 Prompt 的正式存储拒绝来自该上下文的写入。60 分钟间隔的工作台自检检查数据目录、实例锁、恢复问题、Provider 配置状态和剩余磁盘空间。自检不调用 Provider。
+
+## PIPE01 资讯流水线
+
+`news.daily` 默认上海时间 07:30 触发，启用补跑。进程内调用 `NewsService.ensure(true)`，与每日资讯页共享当日版次和来源配额，自动任务发起的抓取等待来源材料就绪，预筛由独立开关控制。每批最多十条，校验输出结构、凭证、分数、枚举和 ID 集合，失败批保留未预筛候选及原因。候选与确认授权按上海日期原子写在 `state/automation/news-candidates/<date>.json`。关注主题、独立预筛开关与并发数经 revision 校验，写在同目录上一级的 `pipeline-settings.json`。
+
+候选 HTTP 接口复用自动化 Origin/JSON/token 门禁。显式授权落盘后，队列才从快照原样保存材料，并仅为该授权拥有的来源收据发起整理。资讯页与队列共享 `NewsRawSave` 串行实例，沿规范 URL 复用同一 Raw ID。在 Wiki 锁内预先写入整理启动状态和任务 ID，调用既有 ExtractionRunner。启动时回收排队项，已发起整理关联原作业并等待显式继续，已完整落盘的草稿从既有 job 对账。全局暂停时保留确认授权。整理草稿进入既有首页待审，使用原人工确认事务。
+
+每条 `pipeline.organize` 独立记录候选、Raw、整理任务、草稿及执行步骤。来源 HTTP 计数与 Provider 请求/Token 分开。发送前先记录请求及未知用量，收到响应后更新 Token，符合原 RUN01 账本兼容规则。实时列表及首页数字投影使用持久候选、来源收据、整理作业和草稿。阶段及契约见 [PIPE01 任务卡](handoffs/PIPE01-20261114-task.md)。
 
 ## RAWEDIT02 人工正文修订边界（2026-11-14，独立验收通过）
 

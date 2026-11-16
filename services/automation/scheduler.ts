@@ -10,10 +10,11 @@ import type {
   AutomationSchedule, AutomationSchedulePatch, AutomationStatus, AutomationStep, AutomationTrigger,
 } from './types.ts';
 
-type TaskContext = {
+export type TaskContext = {
   runId: string;
   signal: AbortSignal;
   provider: () => LlmProvider | undefined;
+  link(artifacts: Partial<AutomationRun['artifacts']>): Promise<void>;
   step(name: string, check: () => string | Promise<string>): Promise<void>;
 };
 
@@ -23,6 +24,7 @@ export type TaskDefinition = {
   defaultPlan: AutomationPlan;
   allowsCatchUp: boolean;
   mayCallModel: boolean;
+  tracksSourceRequests?: boolean;
   execute(context: TaskContext): Promise<void>;
 };
 
@@ -58,6 +60,7 @@ export class AutomationScheduler {
   private readonly queue = new SerialQueue();
   private readonly definitions: Map<string, TaskDefinition>;
   private readonly active = new Map<string, ActiveRun>();
+  private readonly authorized = new Map<string, Promise<void>>();
   private readonly writeToken = randomBytes(24).toString('base64url');
   private settings: Settings = { paused: false, schedules: [] };
   private scheduler: AutomationStatus['scheduler'] = { healthy: false, lastTickAt: null };
@@ -65,7 +68,7 @@ export class AutomationScheduler {
   private timer: ReturnType<typeof setInterval> | undefined;
   private stopping = false;
 
-  constructor(private readonly options: { root: string; instance: AutomationInstance; tasks: readonly TaskDefinition[]; clock?: () => number; withProvider?: ProviderScope }) {
+  constructor(private readonly options: { root: string; instance: AutomationInstance; tasks: readonly TaskDefinition[]; authorizedTypes?: readonly string[]; clock?: () => number; withProvider?: ProviderScope }) {
     this.file = path.join(options.root, 'state', 'automation', 'schedules.json');
     this.ledger = new AutomationLedger(options.root);
     this.clock = options.clock ?? Date.now;
@@ -111,6 +114,7 @@ export class AutomationScheduler {
       for (const { controller } of this.active.values()) controller.abort();
     });
     await Promise.all([...this.active.values()].map(item => item.done));
+    await Promise.allSettled(this.authorized.values());
   }
 
   async tick(startup = false) {
@@ -144,6 +148,28 @@ export class AutomationScheduler {
   }
 
   matchesWriteToken(value: string | undefined) { return value === this.writeToken; }
+
+  canStartAuthorized() { return !this.settings.paused && !this.stopping; }
+
+  async runAuthorized(type: string, id: string, candidateId: string, work: TaskDefinition['execute']) {
+    const { done } = await this.queue.run(async () => {
+      if (!this.canStartAuthorized()) return { done: undefined };
+      if (!this.options.authorizedTypes?.includes(type)) throw new StorageError('AUTOMATION_TASK_NOT_FOUND', '没有找到这个自动化任务。', 404);
+      const active = this.authorized.get(id);
+      if (active) return { done: active };
+      const run: AutomationRun = {
+        id, type, candidateId, trigger: 'manual', scheduledAt: iso(this.clock()), startedAt: null, endedAt: null,
+        status: 'queued', steps: [], usage: { requests: 0, inputTokens: 0, outputTokens: 0, unknownUsageCount: 0 },
+        artifacts: { rawIds: [], jobIds: [], draftIds: [] }, budget: null,
+      };
+      await this.ledger.save(run);
+      const done = this.execute({ mayCallModel: false, execute: work }, run, new AbortController().signal)
+        .finally(() => { this.authorized.delete(id); });
+      this.authorized.set(id, done);
+      return { done };
+    });
+    await done;
+  }
 
   private view(schedule: StoredSchedule, task: TaskDefinition): AutomationSchedule {
     let last: AutomationRun | undefined;
@@ -246,6 +272,7 @@ export class AutomationScheduler {
       id: randomUUID(), type: task.type, trigger, scheduledAt: iso(scheduled), startedAt: null,
       endedAt: reason ? iso(this.clock()) : null, status: reason ? 'skipped' : 'queued',
       ...(reason ? { error: reason } : {}), steps: [], usage: { requests: 0, inputTokens: 0, outputTokens: 0, unknownUsageCount: 0 },
+      ...(task.tracksSourceRequests ? { sourceRequests: 0 } : {}),
       artifacts: { rawIds: [], jobIds: [], draftIds: [] }, budget: null,
     };
     return this.ledger.save(run);
@@ -261,16 +288,17 @@ export class AutomationScheduler {
     this.active.set(task.type, { id: run.id, controller, done });
   }
 
-  private async execute(task: TaskDefinition, run: AutomationRun, signal: AbortSignal) {
+  private async execute(task: Pick<TaskDefinition, 'mayCallModel' | 'execute'>, run: AutomationRun, signal: AbortSignal) {
+    const save = () => this.ledger.save(run);
     run.status = 'running';
     run.startedAt = iso(this.clock());
-    await this.ledger.save(run);
+    await save();
     const step: TaskContext['step'] = async (name, work) => {
       signal.throwIfAborted();
       const start = this.clock();
       const entry: AutomationStep = { name, status: 'running', startedAt: iso(start), endedAt: null, durationMs: null, summary: '' };
       run.steps.push(entry);
-      await this.ledger.save(run);
+      await save();
       try {
         entry.summary = await work();
         signal.throwIfAborted();
@@ -283,13 +311,18 @@ export class AutomationScheduler {
         const ended = this.clock();
         entry.endedAt = iso(ended);
         entry.durationMs = Math.max(0, ended - start);
-        await this.ledger.save(run);
+        await save();
       }
     };
     try {
       signal.throwIfAborted();
-      await runInAutomationContext({ runId: run.id, usage: run.usage }, async () => {
-        const execute = (provider: TaskContext['provider']) => task.execute({ runId: run.id, signal, step, provider });
+      await runInAutomationContext({ runId: run.id, usage: run.usage, save, countSource: async () => {
+        run.sourceRequests = (run.sourceRequests ?? 0) + 1;
+        await save();
+      } }, async () => {
+        const execute = (provider: TaskContext['provider']) => task.execute({ runId: run.id, signal, step, provider,
+          link: async artifacts => { Object.assign(run.artifacts, artifacts); await save(); },
+        });
         if (task.mayCallModel && this.options.withProvider) await this.options.withProvider(execute);
         else await execute(() => undefined);
       });
@@ -300,11 +333,11 @@ export class AutomationScheduler {
     if (run.status === 'cancelled') run.error = '已取消。';
     if (run.status === 'failed') run.error = run.steps.find(entry => entry.status === 'failed')?.error ?? '自动化任务执行失败。';
     run.endedAt = iso(this.clock());
-    await this.ledger.save(run);
+    await save();
   }
 
   async listRuns(filters: { type?: string; status?: AutomationRunStatus; limit: number }): Promise<AutomationList<AutomationRun>> {
-    if (filters.type) this.getTask(filters.type);
+    if (filters.type && !this.options.authorizedTypes?.includes(filters.type)) this.getTask(filters.type);
     const indexed = [...this.ledger.values()].filter(run => (!filters.type || run.type === filters.type)
       && (!filters.status || run.status === filters.status)).sort(newestRunFirst).slice(0, filters.limit);
     const items = (await Promise.all(indexed.map(run => this.ledger.get(run.id).catch(error => {
@@ -325,6 +358,7 @@ export class AutomationScheduler {
     const { run, active } = await this.queue.run(async () => {
       this.ensureRunning();
       const run = await this.getRun(id);
+      if (isActiveRun(run) && this.authorized.has(id)) throw new StorageError('AUTOMATION_AUTHORIZED_RUN', '请在 Raw 详情管理已经开始的整理。', 409);
       const active = this.active.get(run.type);
       if (!isActiveRun(run) || active?.id !== id) return { run };
       active.controller.abort();

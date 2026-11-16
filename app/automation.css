@@ -29,6 +29,18 @@
 .home-page .home-automation > p { margin: 6px 0 0; }
 .home-page .home-automation .panel-heading { padding: 0; }
 .home-page .home-automation .automation-facts { margin-top: 10px; }
+.automation-page .news-candidate { border-top: 1px solid var(--line); margin-top: 12px; padding: 12px 0 0; }
+.automation-page .news-candidate summary, .automation-page .candidate-low > summary { color: var(--muted); font-size: 13px; cursor: pointer; }
+.automation-page .news-candidate details { margin-top: 8px; }
+.automation-page .candidate-excerpt { white-space: pre-wrap; padding: 10px; background: var(--canvas); border-radius: 6px; }
+.automation-page .candidate-low { margin: 16px 0 0; }
+.automation-page .candidate-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.automation-page .candidate-topics { width: 100%; }
+.automation-page .candidate-topics textarea { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--surface); font: inherit; }
+.automation-page .candidate-modal { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 16px; background: rgb(22 32 48 / 55%); }
+.automation-page .candidate-dialog { width: min(560px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 20px; }
+.automation-page .candidate-dialog li { margin: 6px 0; font-size: 14px; }
+.automation-page .candidate-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; }
 @media (max-width: 580px) {
   .automation-page .automation-panel { padding: 14px; }
   .automation-page .automation-editor label:not(.automation-check) { width: 100%; }

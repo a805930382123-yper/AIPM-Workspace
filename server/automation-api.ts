@@ -4,6 +4,8 @@ import { isAutomationPlan } from '../services/automation/schedule.ts';
 import type { AutomationScheduler } from '../services/automation/scheduler.ts';
 import { automationRunStatuses, type AutomationSchedulePatch } from '../services/automation/types.ts';
 import { StorageError } from '../services/storage/files.ts';
+import { isConcurrency, isRevision, isTopics, type NewsPipeline } from '../services/automation/pipeline/service.ts';
+import { isNewsMode } from '../services/automation/pipeline/screen.ts';
 
 const badInput = (message: string) => new StorageError('AUTOMATION_INVALID_INPUT', message, 400);
 
@@ -34,7 +36,7 @@ function runId(id: string): string {
   return id;
 }
 
-export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler): void {
+export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline): void {
   app.use('/api/automation', (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!localOrigin(req)) return next(new StorageError('AUTOMATION_ORIGIN_FORBIDDEN', '仅允许本机可信页面访问自动化。', 403));
@@ -84,4 +86,40 @@ export function registerAutomationRoutes(app: express.Express, scheduler: Automa
     bodyFields(req.body, []);
     res.json(await scheduler.cancel(runId(req.params.id)));
   });
+  if (!pipeline) return;
+  app.get('/api/automation/candidates', async (req, res) => {
+    const date = req.query.date;
+    if (date !== undefined && typeof date !== 'string') throw badInput('日期无效。');
+    res.json(await pipeline.list(date));
+  });
+  app.get('/api/automation/pipeline/settings', async (_req, res) => { res.json(await pipeline.settings()); });
+  app.patch('/api/automation/pipeline/settings', async (req, res) => {
+    const input = bodyFields(req.body, ['revision', 'preScreenEnabled', 'topics', 'concurrency']);
+    const { revision, preScreenEnabled, topics, concurrency } = input;
+    if (!isRevision(revision) || Object.keys(input).length < 2 || (preScreenEnabled !== undefined && typeof preScreenEnabled !== 'boolean')
+      || (topics !== undefined && !isTopics(topics)) || (concurrency !== undefined && !isConcurrency(concurrency))) {
+      throw badInput('请提交有效的设置版本、预筛开关、关注主题或并发数。');
+    }
+    res.json(await pipeline.updateSettings({ revision, ...(preScreenEnabled === undefined ? {} : { preScreenEnabled }),
+      ...(topics === undefined ? {} : { topics }), ...(concurrency === undefined ? {} : { concurrency }) }));
+  });
+  app.post('/api/automation/candidates/confirm', async (req, res) => {
+    const { requestId, candidateIds, organize, mode } = bodyFields(req.body, ['requestId', 'candidateIds', 'organize', 'mode']);
+    if (typeof requestId !== 'string' || !runIdPattern.test(requestId) || !Array.isArray(candidateIds) || candidateIds.length > 100
+      || candidateIds.some(id => typeof id !== 'string') || typeof organize !== 'boolean' || !isNewsMode(mode)) {
+      throw badInput('请提交有效的候选条目、整理选项及请求 ID。');
+    }
+    res.status(202).json(await pipeline.confirm({ requestId, candidateIds, organize, mode }));
+  });
+  app.post('/api/automation/candidates/:id/disposition', async (req, res) => {
+    const { action } = bodyFields(req.body, ['action']);
+    if (action !== 'ignore' && action !== 'later' && action !== 'restore') throw badInput('候选操作无效。');
+    res.json(await pipeline.disposition(req.params.id, action));
+  });
+  for (const [action, stage] of [['retry-save', 'raw'], ['retry-organize', 'organize']] as const) {
+    app.post(`/api/automation/candidates/:id/${action}`, async (req, res) => {
+      bodyFields(req.body, []);
+      res.status(202).json(await pipeline.retry(req.params.id, stage));
+    });
+  }
 }

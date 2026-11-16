@@ -1,3 +1,4 @@
+import { fetchNewsSource } from '../automation/context.ts';
 import { readResearchSources } from './research-sources.ts';
 import { createHash } from 'node:crypto';
 import { JSDOM, VirtualConsole } from 'jsdom';
@@ -13,7 +14,7 @@ async function get(url:string):Promise<string> {
   let target = new URL(url);
   for (let i=0;i<=3;i++) {
     if (!allowed(target)) throw Error('来源地址不在允许范围');
-    const response = await fetch(target,{redirect:'manual',signal:AbortSignal.timeout(12000),headers:{'Accept':'text/html,application/json'}});
+    const response = await fetchNewsSource(target,{redirect:'manual',signal:AbortSignal.timeout(12000),headers:{'Accept':'text/html,application/json'}});
     if ([301,302,303,307,308].includes(response.status)) { const location=response.headers.get('location'); if(!location || i===3) throw Error('来源跳转无效'); target=new URL(location,target); continue; }
     if (!response.ok) throw Error(`来源返回 HTTP ${response.status}`);
     const type=response.headers.get('content-type') || ''; if(!/^(text\/html|application\/json)/iu.test(type)) throw Error('来源响应类型不支持');

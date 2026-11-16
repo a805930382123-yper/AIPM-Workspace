@@ -54,6 +54,8 @@ import { acquireInstanceLock } from '../services/automation/instance-lock.ts';
 import { meterAutomationProvider } from '../services/automation/context.ts';
 import { AutomationScheduler } from '../services/automation/scheduler.ts';
 import { createSelfcheck } from '../services/automation/selfcheck.ts';
+import { NewsPipeline, organizeType } from '../services/automation/pipeline/service.ts';
+import { createDailyNews } from '../services/automation/tasks/news-daily.ts';
 import { registerAutomationRoutes } from './automation-api.ts';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -173,19 +175,34 @@ registerRecoveryRoutes(app,recovery);
 app.disable('x-powered-by');
 // Minute imports authorize before either JSON parsing or multipart buffering reads the body.
 registerMeetingMinutesRoutes(app, meetings);
+const news = new NewsService({ root, clock: () => new Date(), readSources: readNewsSources, rawStore: store,
+  aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory });
+const pipeline: NewsPipeline = new NewsPipeline({
+  root, news, runner, wiki: wikiStore, states: rawStates, drafts,
+  scheduler: {
+    canStartAuthorized: () => automation.canStartAuthorized(),
+    runAuthorized: (...args) => automation.runAuthorized(...args),
+  },
+  withProvider: async work => {
+    const snapshot = await providerFactory().catch(() => undefined);
+    return providerContext.run({ provider: snapshot }, work);
+  },
+});
 const automation = new AutomationScheduler({
   root, instance: lock.instance,
+  authorizedTypes: [organizeType],
   tasks: [createSelfcheck({
     root, lockIsCurrent: lock.isCurrent, scanRecovery: () => recovery.scan(),
     isProviderConfigured: async () => (await configManager.get()).configured,
-  })],
+  }), createDailyNews(news, pipeline)],
   withProvider: async execute => {
-    const snapshot = await providerFactory();
+    const snapshot = await providerFactory().catch(() => undefined);
     await providerContext.run({ provider: snapshot }, () => execute(activeProvider));
   },
 });
+await pipeline.initialize();
 await automation.initialize();
-registerAutomationRoutes(app, automation);
+registerAutomationRoutes(app, automation, pipeline);
 app.use(express.json({ limit: '3mb', strict: true }));
 // Resolve a provider only for routes that actually start AI work. A broken optional config file
 // must not prevent the manual workspace or unrelated read APIs from starting/responding.
@@ -196,7 +213,7 @@ app.use((...args) => {
   if (!ai) { next(); return; }
   void providerFactory().then(snapshot => providerContext.run({ provider: snapshot }, next)).catch(next);
 });
-registerNewsRoutes(app, new NewsService({ root, clock: () => new Date(), readSources: readNewsSources, rawStore: store, aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory }));
+registerNewsRoutes(app, news);
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/stats', async (_req, res, next) => {
   try { res.json(await getStats(root, store, new Date(), prompts)); } catch (error) { next(error); }
@@ -405,9 +422,11 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
 const server = app.listen(port, host);
 await new Promise<void>((resolve, reject) => { server.once('listening', resolve); server.once('error', reject); });
 automation.start();
+pipeline.start();
 console.log(`FMCG AI PM Workspace API: http://${host}:${port} (data: ${root})`);
 
 const shutdown = async () => {
+  pipeline.stop();
   await Promise.all([automation.stop(), new Promise<void>(resolve => server.close(() => resolve()))]);
   // Other workspace services may still be finishing accepted background work.
   // The process exit hook releases the metadata once those writers have drained.

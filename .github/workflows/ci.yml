@@ -25,4 +25,5 @@ jobs:
           FMCG_DATA_DIR: ${{ runner.temp }}/fmcg-data
           FMCG_LLM_CONFIG_FILE: ${{ runner.temp }}/fmcg-config.env
       - run: npm run eval -- --chain standard-extract --recording live-20261115-baseline
+      - run: npm run eval -- --chain news-relevance --recording synthetic-v1
       - run: npm run build

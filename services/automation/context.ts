@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { LlmError, type LlmCompletion, type LlmProvider } from '../llm/provider.ts';
 import type { AutomationUsage } from './types.ts';
 
-type AutomationContext = { runId: string; usage: AutomationUsage };
+type AutomationContext = { runId: string; usage: AutomationUsage; save?: () => Promise<unknown>; countSource?: () => Promise<unknown> };
 const context = new AsyncLocalStorage<AutomationContext>();
 
 export function runInAutomationContext<T>(value: AutomationContext, execute: () => T): T {
@@ -19,14 +19,22 @@ export function assertFormalWriteAllowed(): void {
   }
 }
 
+export async function fetchNewsSource(...args: Parameters<typeof fetch>): ReturnType<typeof fetch> {
+  await getAutomationContext()?.countSource?.();
+  return fetch(...args);
+}
+
 export function meterAutomationProvider(provider: LlmProvider): LlmProvider {
   const { name, model, cacheIdentity, secrets } = provider;
   return {
     name, model, cacheIdentity, secrets,
     async complete(request) {
-      const usage = getAutomationContext()?.usage;
+      const run = getAutomationContext();
+      const usage = run?.usage;
       if (!usage) return provider.complete(request);
       usage.requests++;
+      usage.unknownUsageCount++;
+      await run.save?.();
       let tokens: LlmCompletion['usage'];
       let completed = false;
       try {
@@ -44,7 +52,8 @@ export function meterAutomationProvider(provider: LlmProvider): LlmProvider {
         const hasOutput = typeof output === 'number' && Number.isFinite(output) && output >= 0;
         if (hasInput) usage.inputTokens += input;
         if (hasOutput) usage.outputTokens += output;
-        if (!completed || !hasInput || !hasOutput) usage.unknownUsageCount++;
+        if (completed && hasInput && hasOutput) usage.unknownUsageCount--;
+        await run.save?.();
       }
     },
   };
