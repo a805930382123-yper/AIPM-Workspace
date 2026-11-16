@@ -1,8 +1,8 @@
 # AI 自动化路线图：阶段 0 与阶段 1（2026-11-14）
 
-## 当前进度（2026-11-15）
+## 当前进度（2026-11-16）
 
-ENG01、RUN01、EVAL01均已完成。EVAL01工程提交4bb8873的真实Windows Node22/24各904项通过，正式replay8/8、事实21/21；见[EVAL01独立验收](../reports/EVAL01-20261115-review.md)。正式Windows自启仍未安装。本批完成后停止等待用户明确确认；PIPE01未启动。
+ENG01、RUN01、EVAL01均已完成。EVAL01工程提交4bb8873的真实Windows Node22/24各904项通过，正式replay8/8、事实21/21；见[EVAL01独立验收](../reports/EVAL01-20261115-review.md)。PIPE01于2026-11-16获授权并完成，工程提交c090077的Windows Node22/24 CI通过；见[PIPE01独验](../reports/PIPE01-20261116-review.md)。正式Windows自启仍未安装，当前用户工作台未重启加载新版本。本批完成停止，阶段2未授权。
 
 ## 用户决定（2026-11-14 冻结）
 
