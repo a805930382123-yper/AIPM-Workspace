@@ -15,6 +15,7 @@ import { MeetingPage } from './pages/MeetingPage';
 import { WorkItemsPage } from './pages/WorkItemsPage';
 import { AutomationPage } from './pages/AutomationPage';
 import { Icon } from './components/Icon';
+import { Brand } from './components/Brand';
 import { RecoveryNotice } from './components/RecoveryNotice';
 
 type Page = 'news' | 'home' | 'wiki' | 'raw' | 'prompt' | 'settings' | 'meeting' | 'work' | 'automation';
@@ -137,7 +138,7 @@ export function App() {
   const processingById: Record<string, RawProcessingState> = Object.fromEntries(processing.map(state => [state.rawId, state]));
   return <div className="shell">
     <aside className="sidebar">
-      <div className="brand"><span className="brand-mark">F</span><span>快消 AI 工作台<small>FMCG PM WORKSPACE</small></span></div>
+      <Brand />
       <div className="nav-caption">工作空间</div>
       <nav aria-label="主导航">
         <button className={`nav-item ${page === 'home' ? 'active' : ''}`} onClick={() => nav('home')}><Icon name="home" />首页</button>

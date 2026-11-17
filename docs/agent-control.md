@@ -1,5 +1,10 @@
 # 项目总控记录
 
+## Logo 品牌展示完成（2026-11-17）
+
+用户授权侧栏Logo优化。0/1/0/0=1，因组件/样式/资源协作按A标准；Astra Medium确认计划、Terra High施工、Sol High独立验收。仅Brand组件、独立CSS、SVG及favicon，build与桌面视觉/窄屏布局通过。原生标签图标视觉未测，窄屏截图超时，具体边界见[独立报告](reports/LOGO-20261117-review.md)。品牌本轮通过，不改变PIPE01及其他任务状态；主线程仅提交本轮增量。
+
+
 ## PIPE01 完成（2026-11-16）
 
 PIPE01本轮缺陷关闭，工程与真实端到端独验通过；工程提交 `c09007742b2d2ad208ec84ea23a4d4fca337478f` 的[Windows Node22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/43802763665)两作业全部成功，批次整体PASS。6分/B：Astra Medium规划独验、Sol High施工；独立22/22，同版本本地913/913及构建通过，标准回放8/8、新闻回放12/12。真实验收完成10候选预筛、UI两栏目确认、2Raw/2草稿首页待审、显式审核确认1份TEMP Wiki。累计来源66请求、模型8尝试，已知输入25137/输出3394 tokens，未知1；失败证据保留。见[施工](reports/PIPE01-20261116-builder.md)、[独验](reports/PIPE01-20261116-review.md)。本批停止，下一批未授权。正式4317工作台仍是原进程/原构建，未安装自启，正式启用计划需另行操作。
