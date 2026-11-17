@@ -1,5 +1,9 @@
 # 工程状态
 
+## NEWS11 第一轮完成（2026-11-17）
+
+每日资讯两栏增加手动检查更新，快消可仅补抓失败及部分失败来源；已有条目、分析和Raw关联保留，新条目仅补空位。来源诊断区分请求失败、重复、正文不合格和无新增，显示阶段、耗时及最近读取成功。0/2/1/0=3，A标准；Astra规划、Sol先审，Terra因实例容量停写后升级Sol施工，另一Sol独立操作验证、Astra最终独验。范围缺陷PASS、NEWS11整体PASS：核心5/5、相关回归61/61、类型检查、隔离构建237模块、真实Edge桌面/手机及HTTP通过，11文件指纹一致。见[任务卡](handoffs/NEWS11-20261117-task.md)、[施工](reports/NEWS11-20261117-builder.md)、[独立实测](reports/NEWS11-20261117-review.md)、[最终裁决](reports/NEWS11-20261117-final-review.md)。真实官网/模型请求0；未改正式workspace或重启4317，新功能需服务加载新版本。后续批次未启动。
+
 ## Logo 品牌展示完成（2026-11-17）
 
 用户授权按所给AIPM Logo及frontend-design技能优化。范围仅侧栏Brand组件、独立样式、SVG和favicon；Astra Medium确认设计标准、Terra High施工、Sol High独立验收，按A标准执行。施工build通过，独立Chrome桌面视觉与窄屏布局测量通过，favicon构建/HTTP资源通过；窄屏截图超时，原生标签栏图标被受控浏览器覆盖，未签该视觉。见[施工](reports/LOGO-20261117-builder.md)、[独立验收](reports/LOGO-20261117-review.md)。本轮品牌交付通过，PIPE01历史结论不变；其他未提交工作排除。未重启正式服务，预览进程已关闭。

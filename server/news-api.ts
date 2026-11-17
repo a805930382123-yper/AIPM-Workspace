@@ -9,5 +9,14 @@ export function registerNewsRoutes(app:express.Express,service:NewsService){
  app.get('/api/news/editions/:date/saved-raws',handle(req=>service.savedRaws(String(req.params.date))));
  app.post('/api/news/editions/:date/items/save-raw',guard,handle(req=>{if(!req.body||typeof req.body!=='object'||Array.isArray(req.body)||!['fmcg','ai'].includes(req.body.section)||typeof req.body.itemId!=='string'||!req.body.itemId||Object.keys(req.body).some(k=>!['section','itemId'].includes(k)))throw new NewsError('请求格式无效。',400);return service.saveRaw(String(req.params.date),req.body.section,req.body.itemId);}));
  app.post('/api/news/today/ensure',guard,handle(req=>{if(!req.body||typeof req.body!=='object'||Array.isArray(req.body)||Object.keys(req.body).length)throw new NewsError('请求格式无效。',400);return service.ensure();}));
+ app.post('/api/news/today/check',guard,handle(req=>{
+  const body=req.body;
+  if(!body||typeof body!=='object'||Array.isArray(body)||!['fmcg','ai'].includes(body.section)||
+   !['all','failed'].includes(body.mode)||(body.mode==='failed'&&body.section!=='fmcg')||
+   !Number.isSafeInteger(body.attempt)||body.attempt<0||Object.keys(body).some(key=>!['section','mode','attempt'].includes(key))) {
+   throw new NewsError('请求格式无效。',400);
+  }
+  return service.check(body.section,body.mode,body.attempt);
+ }));
  app.post('/api/news/today/retry',guard,handle(req=>{if(!req.body||!['fmcg','ai'].includes(req.body.section)||!Number.isInteger(req.body.attempt)||Object.keys(req.body).some(k=>!['section','attempt'].includes(k)))throw new NewsError('请求格式无效。',400);return service.retry(req.body.section as NewsSectionName,req.body.attempt);}));
 }

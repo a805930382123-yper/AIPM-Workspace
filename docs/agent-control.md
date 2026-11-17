@@ -1,5 +1,9 @@
 # 项目总控记录
 
+## NEWS11 第一轮完成（2026-11-17）
+
+本轮按[冻结任务卡](handoffs/NEWS11-20261117-task.md)完成手动更新、失败补抓与诊断。0/2/1/0=3，A标准；Astra /root/news07_plan规划及最终独验，Sol /root/news11_review先审及独立操作验证。Terra /root/news11_build因实例上下文容量停写后升级Sol /root/news11_sol_build接续，范围标准不变。局部缺陷与NEWS11整体均PASS，核心5/5、回归61/61、类型/隔离构建及真实桌面/手机HTTP通过，11SHA一致。见[独立实测](reports/NEWS11-20261117-review.md)、[最终裁决](reports/NEWS11-20261117-final-review.md)。旧AI retry保留原分析语义，新check按钮零模型；PIPE01原stageEdition语义不改。正式workspace/4317不变，其他批次不推进。
+
 ## Logo 品牌展示完成（2026-11-17）
 
 用户授权侧栏Logo优化。0/1/0/0=1，因组件/样式/资源协作按A标准；Astra Medium确认计划、Terra High施工、Sol High独立验收。仅Brand组件、独立CSS、SVG及favicon，build与桌面视觉/窄屏布局通过。原生标签图标视觉未测，窄屏截图超时，具体边界见[独立报告](reports/LOGO-20261117-review.md)。品牌本轮通过，不改变PIPE01及其他任务状态；主线程仅提交本轮增量。

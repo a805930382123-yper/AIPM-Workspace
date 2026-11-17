@@ -1,6 +1,20 @@
 export type NewsSectionName = 'fmcg' | 'ai';
 export type NewsItem = {id:string;title:string;sourceId:string;sourceName:string;url:string;publishedAt:string|null;fetchedAt:string;excerpt:string;evidenceKind:'article_excerpt'|'source_summary';research?:{kind:string;dataPeriod:string|null;pdfUrl?:string;pageRange?:string};analysis?:{fact:string;whyItMatters:string;possibleImpact:string}};
-export type SourceHealth = {name:string;checkedAt:string;status:'ok'|'empty'|'failed';error?:string};
-export type NewsSection = {contentVersion?:'research-v1';status:'running'|'ready'|'source_only'|'empty'|'failed'|'interrupted';attempt:number;startedAt:string;finishedAt?:string;error?:string;sources:SourceHealth[];items:NewsItem[];shortageReasons?:string[]};
+export type NewsCheckMode = 'all' | 'failed';
+export type SourceExclusions = {urls:Set<string>;titles:Set<string>;pdfs?:Set<string>};
+export type SourceError = {
+  type:'timeout'|'network'|'tls'|'http'|'parse'|'unknown';
+  stage:'list'|'detail'|'pdf'|'parse';
+  message:string;
+  httpStatus?:number;
+};
+export type SourceDiagnosis = {
+  startedAt:string;finishedAt:string;elapsedMs:number;lastSuccessAt?:string;
+  outcome:'ok'|'empty'|'partial'|'failed';
+  counts:{candidates:number;qualified:number;duplicates:number;rejected:number;failed:number};
+  error?:SourceError;
+};
+export type SourceHealth = {name:string;checkedAt:string;status:'ok'|'empty'|'failed';error?:string;sourceId?:string;diagnosis?:SourceDiagnosis};
+export type NewsSection = {contentVersion?:'research-v1';status:'running'|'ready'|'source_only'|'empty'|'failed'|'interrupted';attempt:number;startedAt:string;finishedAt?:string;error?:string;sources:SourceHealth[];items:NewsItem[];shortageReasons?:string[];checkMessage?:string};
 export type NewsEdition = {schemaVersion:1;date:string;updatedAt:string;sections:Partial<Record<NewsSectionName,NewsSection>>;legacyFmcg?:NewsSection};
 export type SourceResult = {items:NewsItem[];sources:SourceHealth[];shortageReasons?:string[]};
