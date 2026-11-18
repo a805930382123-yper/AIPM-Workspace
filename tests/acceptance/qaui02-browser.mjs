@@ -8,7 +8,7 @@ const session = JSON.parse(await readFile(process.argv[2], 'utf8'));
 assert.equal(session.provider, 'fake-only');
 assert.equal(session.configuration, 'not-connected');
 for (const url of [session.url, session.api]) assert.equal(new URL(url).hostname, '127.0.0.1');
-const output = path.join(session.root, 'qaui02-evidence');
+const output = path.join(session.root, 'qaui03-answer-evidence');
 await mkdir(output, { recursive: true });
 const { chromium } = createRequire(import.meta.url)(process.env.QAUI02_PLAYWRIGHT ?? 'playwright');
 const browser = await chromium.launch({ executablePath: process.env.QAUI02_BROWSER, args: ['--no-proxy-server'] });
@@ -19,6 +19,7 @@ page.on('pageerror', error => pageErrors.push(error.message));
 const panel = page.locator('.wiki-question');
 const question = page.getByRole('textbox', { name: '知识库问题' });
 const button = (name, target = page) => target.getByRole('button', { name, exact: true });
+const askTab = target => target.getByRole('tab', { name: '向知识库提问', exact: true });
 const status = panel.locator('.answer-status-summary');
 const responseFor = (target, pathname, method = 'GET') => target.waitForResponse(response =>
   new URL(response.url()).pathname === pathname && response.request().method() === method
@@ -35,7 +36,7 @@ const open = async target => {
   await target.goto(session.url);
   await target.getByRole('navigation', { name: '主导航' }).getByRole('button', { name: '知识库' }).click();
   const loaded = responseFor(target, answers + '/current');
-  await button('向知识库提问', target).click();
+  await askTab(target).click();
   assert.equal((await loaded).status(), 200);
 };
 const readPreview = async target => {
@@ -56,7 +57,10 @@ try {
   await status.getByText('正在依据已读资料生成回答', { exact: true }).waitFor();
   assert.equal(await button('提问中').isDisabled(), true);
   assert.equal(await button('提问中').locator('.answer-spinner').count(), 1);
+  await page.getByRole('tab', { name: '知识总览' }).click();
+  assert.equal(await panel.isVisible(), false);
   const actual = await (await pending).json();
+  await askTab(page).click();
   await status.getByText('回答完成', { exact: true }).waitFor();
   assert.equal(actual.attempts, 2);
   assert.match(await status.innerText(), /模型调用 2 次.*底层 Raw 2 份/su);
@@ -91,13 +95,17 @@ try {
     assert.equal((await verified.json()).recordId, citation.recordId);
     if (kind === 'wiki') {
       await page.locator('.wiki-detail').getByRole('heading', { name: citation.title, exact: true }).waitFor();
+      assert.equal(await page.getByRole('tab', { name: '知识总览' }).getAttribute('aria-selected'), 'true');
+      assert.equal(await page.locator('.wiki-detail-panel').evaluate(node => node === document.activeElement), true);
+      await askTab(page).click();
+      assert.equal(await question.inputValue(), session.fixtures.question);
     } else {
       const mark = page.locator('mark[data-citation-start]');
       assert.equal(await mark.innerText(), citation.quote);
       assert.equal(Number(await mark.getAttribute('data-citation-start')), citation.start);
       assert.equal(Number(await mark.getAttribute('data-citation-end')), citation.end);
+      await open(page);
     }
-    await open(page);
     await status.getByText('回答完成', { exact: true }).waitFor();
   }
   console.log('Citations anchor to evidence and open real isolated Wiki and Raw records after API validation');
@@ -106,6 +114,7 @@ try {
   visual.on('pageerror', error => pageErrors.push(error.message));
   const names = ['安心', '补给', '尝鲜', '犒赏', '分享', '欢聚', '便利', '焕新'];
   const commonIds = actual.citations.slice(0, 2).map(citation => citation.id);
+  const uniqueId = actual.citations[2].id;
   const cards = names.map((name, index) => {
     const separator = index % 2 ? ':' : '：';
     return `【建议】${index + 1}. ${name}时刻${separator}消费者在${name}时刻有不同的需求。营销上可把这一场景放进陈列与文案。`;
@@ -113,10 +122,11 @@ try {
   const sections = [
     { id: 'fact', kind: 'fact', text: '【来源事实】合成资料记录了八类消费时刻。', citationIds: [commonIds[0]] },
     { id: 'intro', kind: 'advice', text: '【建议】以下是结合已读资料提出的经营建议。', citationIds: [] },
-    ...cards.slice(0, 2).map((text, index) => ({ id: 'card-' + index, kind: 'advice', text, citationIds: [commonIds[index]] })),
-    { id: 'cards', kind: 'advice', text: cards.slice(2).join('\n'), citationIds: commonIds },
+    ...cards.slice(0, 4).map((text, index) => ({ id: 'card-' + index, kind: 'advice', text, citationIds: index === 3 ? [...commonIds, uniqueId] : commonIds })),
+    { id: 'cards', kind: 'advice', text: cards.slice(4).join('\n'), citationIds: commonIds },
   ];
-  await visual.route('**' + answers + '/current', async route => route.fulfill({ json: { ...actual, sections } }));
+  let displayedSections = sections;
+  await visual.route('**' + answers + '/current', async route => route.fulfill({ json: { ...actual, sections: displayedSections } }));
   await open(visual);
   const grid = visual.locator('.answer-advice-grid');
   const items = grid.locator('.answer-advice-card');
@@ -127,6 +137,10 @@ try {
   assert.equal(await items.getByText('营销动作', { exact: true }).count(), 8);
   assert.doesNotMatch(await visual.locator('.answer-prose').innerText(), /【(?:来源事实|建议)】/u);
   assert.equal(await visual.getByText('对应问题：', { exact: false }).count(), 0);
+  const publicEvidence = visual.locator('.answer-public-citations');
+  assert.deepEqual(await publicEvidence.getByRole('link').allTextContents(), ['[1]', '[2]']);
+  assert.deepEqual(await items.getByRole('link').allTextContents(), ['[3]']);
+  assert.deepEqual(await items.nth(3).getByRole('link').allTextContents(), ['[3]']);
   for (const [width, columns] of [[1440, 2], [390, 1]]) {
     await visual.setViewportSize({ width, height: 1000 });
     await visual.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
@@ -165,8 +179,30 @@ try {
   assert.equal(selected.text, expected);
   assert.deepEqual(answerSelection(sections, selected.text).sectionIds, ['card-0', 'card-1']);
   assert.deepEqual(answerSelection(sections, selected.text).citationIds, commonIds);
-  assert.match(await selected.preview.innerText(), /保留依据：/u);
-  console.log('Eight structured cards, desktop/mobile grids and real drag-selection preserve canonical text and both citation IDs');
+  assert.ok((await selected.preview.innerText()).includes('保留依据：' + actual.citations.slice(0, 2).map(citation => citation.title).join('、')));
+  for (const [link, index] of [[publicEvidence.getByRole('link').first(), 0], [items.nth(3).getByRole('link'), 2]]) {
+    await link.click();
+    const row = visual.locator('#answer-citation-' + index);
+    assert.equal(await row.evaluate(node => node === document.activeElement), true);
+    assert.equal(new URL(visual.url()).hash, '#answer-citation-' + index);
+  }
+  console.log('Eight structured cards, public/unique anchors, desktop/mobile grids and real drag-selection preserve canonical text and citations');
+
+  displayedSections = [
+    { ...sections[2], citationIds: commonIds },
+    { ...sections[3], citationIds: commonIds },
+    { id: 'inference', kind: 'inference', text: '这是两组建议之间的独立推断。', citationIds: commonIds },
+    { ...sections[4], citationIds: [commonIds[0], uniqueId] },
+    { id: 'incomplete', kind: 'advice', text: '【建议】4. 格式不完整：', citationIds: [uniqueId] },
+  ];
+  await open(visual);
+  const separatedCards = visual.locator('.answer-advice-card');
+  await separatedCards.last().waitFor();
+  assert.equal(await separatedCards.count(), 3);
+  assert.deepEqual(await publicEvidence.getByRole('link').allTextContents(), ['[1]']);
+  assert.deepEqual(await separatedCards.getByRole('link').allTextContents(), ['[2]', '[2]', '[3]']);
+  await visual.locator('.answer-paragraph').filter({ hasText: '4. 格式不完整：' }).waitFor();
+  console.log('Public citations use every advice card across separated groups; incomplete advice stays readable as prose');
 
   await control('delay', { ms: 0 });
   await control('fail-provider', { count: 1 });
@@ -178,10 +214,40 @@ try {
   await panel.getByRole('heading', { name: '保留的已有答案' }).waitFor();
   const recovered = askResponse();
   await button('明确重试本次问题').click();
-  assert.equal((await (await recovered).json()).status, 'completed');
+  const retryAnswer = await (await recovered).json();
+  assert.equal(retryAnswer.status, 'completed');
   await status.getByText('回答完成', { exact: true }).waitFor();
+  console.log('Failed request retained the previous answer and explicit retry recovered');
+
+  const persistedParagraph = page.locator('.answer-paragraph').first();
+  const selectedLine = retryAnswer.sections[0].text.split('\n')[0];
+  await persistedParagraph.scrollIntoViewIfNeeded();
+  const startOfLine = await point(persistedParagraph, selectedLine);
+  const endOfLine = await point(persistedParagraph, selectedLine, true);
+  await page.mouse.move(startOfLine.x, startOfLine.y);
+  await page.mouse.down();
+  await page.mouse.move(endOfLine.x, endOfLine.y, { steps: 16 });
+  await page.mouse.up();
+  await button('保存选段预览').click();
+  const draftPreview = await readPreview(page);
+  assert.equal(draftPreview.text, selectedLine);
+  const beforeWiki = await (await fetch(session.api + '/api/wiki')).json();
+  const beforeRaw = await (await fetch(session.api + '/api/raw')).json();
+  const saved = responseFor(page, answers + '/' + retryAnswer.id + '/save', 'POST');
+  await button('生成维护草稿').click();
+  const savedResponse = await saved;
+  assert.equal(savedResponse.status(), 200);
+  const payload = savedResponse.request().postDataJSON();
+  assert.equal(payload.preview.selectedText, selectedLine);
+  const expectedSelection = answerSelection(retryAnswer.sections, selectedLine);
+  assert.deepEqual(payload.preview.selectedSectionIds, expectedSelection.sectionIds);
+  assert.deepEqual(payload.preview.citationIds, expectedSelection.citationIds);
+  assert.ok((await savedResponse.json()).draftId);
+  await panel.getByText('维护草稿已生成，正式知识尚未改变。', { exact: true }).waitFor();
+  assert.deepEqual(await (await fetch(session.api + '/api/wiki')).json(), beforeWiki);
+  assert.deepEqual(await (await fetch(session.api + '/api/raw')).json(), beforeRaw);
   assert.deepEqual(pageErrors, []);
-  console.log('Failed request retained the previous answer, explicit retry recovered, zero page errors');
+  console.log('Real save posts the selected source text and IDs, creates only a maintenance draft, and reports zero page errors');
   console.log(output);
 } finally {
   await browser.close();

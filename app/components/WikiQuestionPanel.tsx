@@ -7,7 +7,7 @@ import {parseWikiAnswer} from './wiki-answer-display';
 export type RawCitationTarget={rawId:string;start:number;end:number;quote:string;bodySha256:string};
 const stages={retrieving:'正在检索并读取知识页',answering:'正在依据已读资料生成回答',reading_raw:'正在补读必要原文',saving_draft:'正在生成维护草稿',completed:'回答完成',failed:'本次操作失败',insufficient:'没有足够依据'};
 const proseLabels:Partial<Record<KnowledgeAnswer['sections'][number]['kind'],string>>={inference:'综合推断',insufficient:'依据不足',conflict:'分歧待核'};
-export function WikiQuestionPanel({onOpenWiki,onOpenRaw,onOpenDraft,onClose}:{onOpenWiki:(id:string)=>void;onOpenRaw:(id:string,target?:RawCitationTarget)=>void;onOpenDraft:(id:string)=>void;onClose:()=>void}){
+export function WikiQuestionPanel({onOpenWiki,onOpenRaw,onOpenDraft}:{onOpenWiki:(id:string)=>void;onOpenRaw:(id:string,target?:RawCitationTarget)=>void;onOpenDraft:(id:string)=>void}){
   const [question,setQuestion]=useState(''),[answer,setAnswer]=useState<KnowledgeAnswer|null>(null),[attempt,setAttempt]=useState<KnowledgeAnswer|null>(null),[activity,setActivity]=useState<KnowledgeAnswer|null>(null),[busy,setBusy]=useState<'ask'|'save'|''>(''),[error,setError]=useState(''),[notice,setNotice]=useState(''),[preview,setPreview]=useState<QuestionPreview|null>(null),[saveKey,setSaveKey]=useState('');
   const [openTrace,setOpenTrace]=useState('');
   const prose=useRef<HTMLDivElement>(null),generation=useRef(0),typed=useRef(false),askedId=useRef('');
@@ -42,7 +42,7 @@ export function WikiQuestionPanel({onOpenWiki,onOpenRaw,onOpenDraft,onClose}:{on
     {ids.map(id=>{const index=answer.citations.findIndex(c=>c.id===id);return index>=0?<a key={id} href={'#answer-citation-'+index} aria-label={'查看引用依据 '+(index+1)}>[{index+1}]</a>:null;})}
   </span>;
   return <section className="panel wiki-question" aria-label="向知识库提问" aria-busy={busy!==''}>
-    <div className="panel-heading"><div><h2>向知识库提问</h2><p>先读已有知识与必要原文。回答可选择整理成草稿，正式写入仍需审核。</p></div><button className="text-button" disabled={busy!==''} onClick={onClose}>收起问答</button></div>
+    <div className="panel-heading"><div><h2>向知识库提问</h2><p>先读已有知识与必要原文。回答可选择整理成草稿，正式写入仍需审核。</p></div></div>
     <div className="wiki-question-body">
       <form className="wiki-question-prompt" onSubmit={e=>{e.preventDefault();if(!submitDisabled)void ask();}}>
         <textarea aria-label="知识库问题" rows={3} maxLength={8000} value={question} disabled={busy!==''}
@@ -89,7 +89,10 @@ export function WikiQuestionPanel({onOpenWiki,onOpenRaw,onOpenDraft,onClose}:{on
         <div ref={prose} className="knowledge-answer-prose answer-prose" tabIndex={0}>
           {groups.map((group,index)=><div key={index} className={'answer-group answer-group-'+group.layout}>
             {group.layout==='fact'&&<h4 data-answer-citations="true"><span aria-hidden="true">📄</span> 来源事实</h4>}
-            {group.kind==='advice'&&groups[index-1]?.kind!=='advice'&&<h4 data-answer-citations="true"><span aria-hidden="true">💡</span> 延伸经营建议</h4>}
+            {group.kind==='advice'&&groups[index-1]?.kind!=='advice'&&<div className="answer-advice-heading" data-answer-citations="true">
+              <h4><span aria-hidden="true">💡</span> 延伸经营建议</h4>
+              {!!group.publicCitationIds?.length&&<span className="answer-public-citations">公共依据{citationLinks(group.publicCitationIds)}</span>}
+            </div>}
             {group.layout==='prose'&&<h4 data-answer-citations="true">{proseLabels[group.kind]}</h4>}
             <div className={group.layout==='advice-card'?'answer-advice-grid':undefined}>
               {group.paragraphs.map(({sectionId,before,text,advice,citationIds},paragraphIndex)=><Fragment key={paragraphIndex}>

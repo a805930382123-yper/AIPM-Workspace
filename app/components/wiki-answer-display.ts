@@ -3,7 +3,7 @@ import { answerText } from '../../services/wiki/question-display';
 
 type Advice = { index: string; title: string; lead: string; colon: string; meaning: string; action: string };
 type Paragraph = { sectionId: string; before: string; text: string; advice?: Advice; citationIds: string[] };
-type Group = { kind: AnswerSection['kind']; layout: 'fact' | 'advice-copy' | 'advice-card' | 'prose'; paragraphs: Paragraph[] };
+type Group = { kind: AnswerSection['kind']; layout: 'fact' | 'advice-copy' | 'advice-card' | 'prose'; paragraphs: Paragraph[]; publicCitationIds?: string[] };
 
 export function parseWikiAnswer(sections: AnswerSection[]): Group[] {
   const groups: Group[] = [];
@@ -19,7 +19,7 @@ export function parseWikiAnswer(sections: AnswerSection[]): Group[] {
       const text = part.slice(leading.length);
       const numbered = kind === 'advice' ? text.match(/^(\s*(\d+)\.\s*)([^：:\r\n]+)([：:])([\s\S]*)$/u) : null;
       let advice: Advice | undefined;
-      if (numbered) {
+      if (numbered && numbered[3].trim() && numbered[5].trim()) {
         const body = numbered[5];
         const firstSentence = body.match(/^[\s\S]*?(?:[。！？!?]+|\.(?=\s|$))[”’」』]*/u)?.[0] ?? body;
         advice = { index: numbered[2], title: numbered[3], lead: numbered[1], colon: numbered[4], meaning: firstSentence, action: body.slice(firstSentence.length) };
@@ -29,6 +29,15 @@ export function parseWikiAnswer(sections: AnswerSection[]): Group[] {
       const last = groups.at(-1);
       if (last?.kind === kind && last.layout === layout) last.paragraphs.push(paragraph);
       else groups.push({ kind, layout, paragraphs: [paragraph] });
+    }
+  }
+  const firstAdvice = groups.find(group => group.kind === 'advice');
+  const cards = groups.filter(group => group.layout === 'advice-card').flatMap(group => group.paragraphs);
+  if (firstAdvice && cards.length > 1) {
+    const common = new Set(cards[0].citationIds.filter(id => cards.every(card => card.citationIds.includes(id))));
+    if (common.size) {
+      firstAdvice.publicCitationIds = [...common];
+      for (const card of cards) card.citationIds = card.citationIds.filter(id => !common.has(id));
     }
   }
   return groups;
