@@ -177,6 +177,7 @@
 .wiki-question-prompt { border: 1px solid #dce2e9; border-radius: 12px; background: #fff; }
 .wiki-question-prompt:focus-within { border-color: var(--answer-accent); box-shadow: 0 0 0 3px #4f46e51a; }
 .wiki-question-prompt textarea { display: block; width: 100%; min-height: 78px; padding: 12px 14px 4px; border: 0; border-radius: 12px; outline: 0; resize: vertical; color: var(--ink); line-height: 1.6; background: transparent; }
+.wiki-question-prompt textarea:focus-visible { outline: none; }
 .wiki-question-prompt-action { display: flex; justify-content: flex-end; padding: 4px 10px 10px; }
 .wiki-question-prompt-action .primary-button { min-width: 88px; background: var(--answer-accent); border-color: var(--answer-accent); }
 .wiki-question-prompt-action .primary-button:hover:not(:disabled) { background: #4338ca; }
