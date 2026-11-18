@@ -36,10 +36,10 @@ flowchart LR
 
 ## 交给 Codex 的执行方式
 
-施工通过 [agent-router](../../.agents/skills/agent-router/SKILL.md) 的“已授权执行闭环”进行：
+施工按[项目 Agent Router 入口](../coordination.md#agent-router-现行规则)调用用户级 `$agent-router` 的“已授权执行闭环”：
 
 1. Codex 主线程作为协调者，先读 `AGENTS.md`、`docs/status.md` 顶部条目、本路线图及当前任务卡；不重读全量历史。
-2. 按卡内评分选择模式与角色（模型映射见 [roles.md](../../.agents/skills/agent-router/references/roles.md)）。规划者可在不改变目标/必做/验收项的前提下细化接口，并把细化写回任务卡“规划补充”节后冻结。
+2. 按卡内评分和当前技能规则选择模式与角色。规划者可在不改变目标/必做/验收项的前提下细化接口，并把细化写回任务卡“规划补充”节后冻结。
 3. 施工者与最终验收者必须是不同实例；验收者独立复现，不仅凭施工报告签收。
 4. 每批交付：施工报告 `docs/reports/<ID>-<日期>-builder.md`、独立验收报告 `docs/reports/<ID>-<日期>-review.md`、`docs/status.md` 顶部新条目；主线程按 AGENTS.md 提交并推送，只提交本批文件。
 5. 遇到卡内“需用户决定”事项、超出范围或同核心缺陷修后再失败，暂停并向用户汇报。

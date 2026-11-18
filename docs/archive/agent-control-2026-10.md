@@ -385,7 +385,7 @@ PRD§13/15要求两类页面能力及模板，§20按知识问题拆页，不要
 <!-- ENG01 agent-control:92 -->
 ## A 模式配置更新（2026-10-27）
 
-用户指定后续 A 模式改由 GPT-6.1 Terra High 施工，GPT-6.1 Sol 继续独立审查验收；实际参数及现行路由见 [协作规则](../coordination.md#当前总控规则2026-10-22-起) 与 [agent-router](../../.agents/skills/agent-router/SKILL.md)。下方 Luna 调度为历史记录，不再作为新 A 模式施工配置。评分、B 模式、预算与批次验收结论不变；本次仅更新协作规则，未派发产品施工。
+用户指定后续 A 模式改由 GPT-6.1 Terra High 施工，GPT-6.1 Sol 继续独立审查验收；实际参数及现行路由见 [当时的协作规则](https://github.com/a805930382123-yper/AIPM-Workspace/blob/130e440/docs/coordination.md#当前总控规则2026-10-22-起) 与 [当时的 agent-router](https://github.com/a805930382123-yper/AIPM-Workspace/blob/130e440/.agents/skills/agent-router/SKILL.md)。下方 Luna 调度为历史记录，不再作为新 A 模式施工配置。评分、B 模式、预算与批次验收结论不变；本次仅更新协作规则，未派发产品施工。
 
 <!-- ENG01 agent-control:93 -->
 ## 最新结论：AI自动字段工程连接通过（2026-10-27）

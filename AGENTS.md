@@ -3,7 +3,7 @@
 开发采用逐批交付。先读 `docs/status.md`，再读当前 `docs/batches/Bxx.md`；只读取任务所需模块。完整需求是 `docs/product-spec.md`，有歧义时按章节查询，不在每轮复制全文。
 
 - 工程边界与存储约定：`docs/architecture.md`。
-- 模型、职责、升级、交接与验收门禁：`docs/coordination.md`。
+- Agent 调度入口、交接与项目验收门禁：`docs/coordination.md`。
 - 验收依据：`docs/acceptance.md`，按本批 ID 阅读。
 - 主 Agent 决定范围与接口；施工 Agent 改产品代码；验收 Agent 独立检验并写报告。
 - 每批只交付当前任务卡；PASS 后才可推进已获用户授权的下一批。当前授权范围以用户最新指令和 docs/status.md 为准。
@@ -12,9 +12,9 @@
 - 产品运行独立于 Codex、Agent CLI、Obsidian。开发协作 Agent 不进入产品运行时。
 - 本地数据与密钥不提交。修改已有文件前先检查；多人共享工作区时遵守任务卡的文件所有权。
 
-## 项目状态预检入口
+## Agent Router 入口
 
-用户明确要求“检查项目状态”“切换电脑后恢复进度”等状态检查时，由主 Agent 按 [协作规则中的项目状态预检](docs/coordination.md#项目状态预检) 执行。预检原则上不调用子 Agent、不运行全量测试，只读取与汇报；不派发施工、不修改状态、不自动同步或修复。沿用本项目现有规则、状态和验收记录，不创建重复台账。汇报后停止，后续操作按用户授权另行执行。
+在本项目办理状态检查、恢复进度或已授权批次时，使用 Codex 用户级 `$agent-router`。按[项目协作规则](docs/coordination.md#agent-router-现行规则)定位并读取当前安装版本，再结合项目任务卡执行。状态检查走[只读预检](docs/coordination.md#项目状态预检)，执行入口以用户明确授权的目标和范围为准。
 
 ## 独立验收结论与证据
 

@@ -383,7 +383,7 @@ B评分0/2/2/1=5，Astra规划独验、Sol后端/UI施工；HEAD275067c未提交
 <!-- ENG01 agent-control:86 -->
 ## 通用调度规则更新（2026-10-27）
 
-用户批准采用通用 Agent Router：按当前批次评分，A 模式分为 Luna High 轻量施工及 Terra High 标准施工，Sol 独立验收；B 模式 Sol 施工、Astra 独立验收，均由 Astra 规划标准。现行规则见 [coordination](coordination.md#通用-agent-router-现行规则2026-10-27) 和 [Skill](../.agents/skills/agent-router/SKILL.md)。本记录下方较早的固定 A 模式及旧调度为历史；任务进度、实际模型身份、预算和产品验收结论不变。本次仅更新规则，不启动产品任务。
+用户批准采用通用 Agent Router：按当前批次评分，A 模式分为 Luna High 轻量施工及 Terra High 标准施工，Sol 独立验收；B 模式 Sol 施工、Astra 独立验收，均由 Astra 规划标准。[当时的协作规则](https://github.com/a805930382123-yper/AIPM-Workspace/blob/eb93a30c4559800dd143e13a055834727100facd/docs/coordination.md#通用-agent-router-现行规则2026-10-27) · [当时的技能](https://github.com/a805930382123-yper/AIPM-Workspace/blob/eb93a30c4559800dd143e13a055834727100facd/.agents/skills/agent-router/SKILL.md)。本记录下方较早的固定 A 模式及旧调度为历史；任务进度、实际模型身份、预算和产品验收结论不变。本次仅更新规则，不启动产品任务。
 
 <!-- ENG01 agent-control:165 -->
 ## 2026-10-22 状态基线与调度规则生效
