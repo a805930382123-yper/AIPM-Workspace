@@ -160,38 +160,75 @@
 .audit-panel .audit-row span{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:800px){.wiki-editor{padding:22px 18px 0}.wiki-form-grid{grid-template-columns:minmax(0,1fr)}.wiki-form-grid .span-two{grid-column:auto}}
 
-/* Knowledge question: a compact prompt beside the reading surface. */
-.wiki-question { margin-bottom: 24px; }
+.wiki-question { --answer-accent: #4f46e5; margin-bottom: 24px; }
+.wiki-question .panel-heading { gap: 12px; padding-block: 14px; }
 .wiki-question .panel-heading > .text-button { flex-shrink: 0; white-space: nowrap; }
-.wiki-question-body { display: grid; grid-template-columns: minmax(280px, 320px) minmax(0, 1fr); padding: 0; border-top: 1px solid var(--line); }
-.wiki-question-input { min-width: 0; padding: 24px; background: #f8f7ff; border-right: 1px solid var(--line); }
-.wiki-question-input .heading-actions { margin-top: 16px; }
-.wiki-question-input .review-overview { margin-top: 20px; }
-.wiki-question-reading { min-width: 0; padding: 24px; overflow-wrap: anywhere; }
-.wiki-question-reading h3 { margin-top: 0; }
-.answer-empty { padding: 12px 0; color: #667085; }
-.answer-empty h3 { color: #172033; }
+.wiki-question-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 20px 24px 24px; overflow-wrap: anywhere; container-type: inline-size; }
+.wiki-question-body > .form-error, .wiki-question-body > .notice-success { margin: 0; }
+.wiki-question-prompt { border: 1px solid #dce2e9; border-radius: 12px; background: #fff; }
+.wiki-question-prompt:focus-within { border-color: var(--answer-accent); box-shadow: 0 0 0 3px #4f46e51a; }
+.wiki-question-prompt textarea { display: block; width: 100%; min-height: 78px; padding: 12px 14px 4px; border: 0; border-radius: 12px; outline: 0; resize: vertical; color: var(--ink); line-height: 1.6; background: transparent; }
+.wiki-question-prompt-action { display: flex; justify-content: flex-end; padding: 4px 10px 10px; }
+.wiki-question-prompt-action .primary-button { min-width: 88px; background: var(--answer-accent); border-color: var(--answer-accent); }
+.wiki-question-prompt-action .primary-button:hover:not(:disabled) { background: #4338ca; }
+.answer-status-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 10px 12px; background: #f6f5ff; border-radius: 8px; color: var(--ink); font-size: 13px; }
+.answer-status-summary { display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; }
+.answer-status-summary strong { font-weight: 650; }
+.answer-status-check { color: #166534; background: #dcfce7; width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; }
+.answer-status-badge { padding: 3px 8px; border-radius: 999px; background: #fff; color: #475569; font-size: 12px; }
+.answer-status-help { display: inline-grid; place-items: center; margin-inline-start: 6px; width: 16px; height: 16px; border-radius: 50%; background: #e2e8f0; color: #334155; font-weight: 650; cursor: help; }
+.answer-trace-toggle { text-align: left; color: var(--answer-accent); line-height: 1.5; }
+.answer-trace-toggle span { white-space: nowrap; }
+.answer-reading-trace { display: grid; gap: 10px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; color: #475569; font-size: 13px; line-height: 1.6; }
+.answer-reading-trace h4, .answer-reading-trace p { margin: 0; }
+.answer-reading-trace ul { margin: 4px 0 0; padding-inline-start: 20px; }
+.answer-spinner { flex: none; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: answer-rotate .8s linear infinite; }
+@keyframes answer-rotate { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .answer-spinner { animation: none; } }
+.answer-result { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 12px; }
+.answer-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.answer-toolbar h3, .answer-evidence h3 { margin: 0; font-size: 17px; color: var(--ink); }
+.answer-toolbar .heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.answer-toolbar .answer-save-all { background: #eef2ff; border-color: #dfe4ff; color: var(--answer-accent); }
+.answer-toolbar .answer-save-all:hover:not(:disabled) { background: #e0e7ff; border-color: #c7d2fe; }
 .knowledge-answer-prose { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 16px; line-height: 1.75; max-width: 75ch; margin: 16px 0 24px; }
-.wiki-question-reading .extract-note { font-size: 13px; line-height: 1.6; }
-.answer-inline-citations { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-inline-start: 6px; user-select: none; }
-.answer-inline-citations a { color: #5b42d6; font-size: .85em; font-weight: 600; text-decoration: none; }
-.answer-inline-citations a:hover { text-decoration: underline; }
-.answer-inline-citations a:focus-visible, .answer-citations button:focus-visible { outline: 2px solid #5b42f5; outline-offset: 2px; }
-.answer-evidence { margin-top: 28px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: #f8f7ff; }
-.answer-citations { list-style: none; padding: 0; margin: 0 0 16px; }
-.answer-citations li { display: flex; gap: 10px; margin: 14px 0; scroll-margin-top: 24px; }
-.answer-citations li:target, .answer-citations li:focus-visible { outline: 2px solid #8b7bf1; outline-offset: 4px; border-radius: 2px; }
-.answer-citations li > div { min-width: 0; }
-.answer-citation-number { flex-shrink: 0; white-space: nowrap; color: #5b42d6; font-weight: 600; }
-.answer-citations button { text-align: left; overflow-wrap: anywhere; }
-.answer-citations blockquote { margin: 8px 0 0; padding-left: 12px; border-left: 2px solid #d7d0fa; color: #475467; white-space: pre-wrap; }
-.answer-save-preview { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
-.wiki-question textarea[aria-label="知识库问题"] { min-height: 104px; height: 104px; resize: vertical; }
-@media (max-width: 900px) {
-  .wiki-question-body { grid-template-columns: minmax(0, 1fr); }
-  .wiki-question-input { border-right: 0; border-bottom: 1px solid var(--line); }
+.answer-prose { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; max-width: none; margin: 16px 0 0; color: var(--ink); }
+.answer-group h4 { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
+.answer-paragraph { margin: 0; max-width: 75ch; }
+.answer-paragraph + span[hidden] + .answer-paragraph { margin-top: 8px; }
+.answer-group-fact { background: #f8fafc; border-inline-start: 4px solid var(--answer-accent); border-radius: 8px; padding: 12px 16px; }
+.answer-group-fact h4 { color: #3730a3; }
+.answer-group-advice-copy .answer-paragraph { font-size: 13px; color: #475569; }
+.answer-advice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.answer-advice-card { padding: 12px; min-width: 0; border: 1px solid var(--line); border-radius: 8px; }
+.answer-advice-card header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.answer-advice-card h5 { flex: 1; margin: 0; font-size: 15px; }
+.answer-advice-index { border-radius: 999px; padding: 2px 8px; background: var(--answer-accent); color: white; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.answer-advice-card p { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 0; font-size: 14px; }
+.answer-advice-card p > :last-child { min-width: 0; }
+.answer-advice-label { flex: none; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; color: #475569; font-size: 12px; }
+.answer-inline-citations { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-inline-start: 6px; vertical-align: middle; user-select: none; }
+.answer-inline-citations a { padding: 2px 6px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 12px; font-weight: 650; line-height: 1.25; text-decoration: none; }
+.answer-inline-citations a:hover { background: var(--answer-accent); color: #fff; }
+.answer-inline-citations a:focus-visible, .answer-citations button:focus-visible, .answer-status-help:focus-visible { outline: 2px solid var(--answer-accent); outline-offset: 2px; }
+.answer-evidence { display: grid; gap: 10px; }
+.answer-citations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+.answer-citations li { padding: 10px 12px; border: 1px solid var(--line); border-inline-start: 3px solid #dfe4ff; border-radius: 8px; scroll-margin-top: 24px; }
+.answer-citations li:target, .answer-citations li:focus-visible { outline: 2px solid #8b7bf1; outline-offset: 2px; }
+.answer-citation-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.answer-citation-number { color: var(--answer-accent); font-size: 12px; font-weight: 650; }
+.answer-source-tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 650; }
+.answer-source-wiki { background: #eef2ff; color: #3730a3; }
+.answer-source-raw { background: #fef3c7; color: #92400e; }
+.answer-citations button { flex: 1 1 130px; min-width: 0; text-align: left; overflow-wrap: anywhere; }
+.answer-citations blockquote { margin: 8px 0 0; color: #475569; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+.answer-verification { display: flex; gap: 8px; margin: 0; padding: 8px 10px; border-radius: 8px; background: #f8fafc; color: #475569; font-size: 12px; line-height: 1.6; }
+.answer-save-preview { padding-top: 16px; border-top: 1px solid var(--line); }
+@container (max-width: 620px) {
+  .answer-advice-grid, .answer-citations { grid-template-columns: minmax(0, 1fr); }
+  .answer-result { padding: 12px; }
 }
-@media (max-width: 780px) { .wiki-question-input, .wiki-question-reading { padding: 16px; } }
+@media (max-width: 780px) { .wiki-question-body { padding: 16px; } }
 
 /* LW03: bounded, explicitly initiated inspection alongside existing reading tools. */
 .wiki-inspection { margin-bottom: 20px; }
