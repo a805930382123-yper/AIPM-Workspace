@@ -86,6 +86,7 @@ export function SettingsPage({ onOpenExampleTask = () => undefined, onImported =
           <p className="field-help">已配置时，API Key 留空会保留旧值；新 Key 仅在点击保存后发送到本机服务端，保存后输入框会清空。</p>
           <p className="field-help">连接测试会向此 Provider 发送固定的非业务消息，可能产生少量 API 费用。不会发送 Raw、Wiki、Prompt、会议内容或草稿，也不会写入业务资产。</p>
           <div className="settings-config-actions"><button className="primary-button" onClick={() => void saveConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked}>{configBusy ? '处理中…' : '保存配置'}</button><button className="secondary-button" onClick={() => void testConfig()} disabled={!config?.configured || configLoading || configBusy || changed}>测试连接</button><button className="secondary-button settings-danger" onClick={() => void clearConfig()} disabled={!config || configLoading || configBusy || config?.environmentLocked || (!config.keyConfigured && config.source !== 'local-file')}>清除本机配置</button></div>
+          {changed && !configLoading && !configBusy && <p role="status" className="field-help settings-unsaved-hint">有未保存的修改，请先点击「保存配置」后再测试连接。</p>}
           {configMessage && <p role="status" className="notice-ok">{configMessage}</p>}{testMessage && <p role="status" className="notice-ok">连接测试成功：{testMessage}</p>}{configError && <p role="alert" className="form-error">{configError}</p>}
         </div>
         {config && !config.configured && <p className="notice-warn">尚未配置：{config.missing.join('、')}。未配置时导入、手动 Wiki、搜索与导出仍可用；点击「AI 整理知识」会返回明确的缺配置错误。</p>}

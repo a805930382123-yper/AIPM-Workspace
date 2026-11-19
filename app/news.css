@@ -8,3 +8,12 @@
 .news-diagnosis ul{margin:8px 0 0;padding:0;list-style:none}
 .news-diagnosis li{padding:8px 0;border-top:1px solid #e7eaf3}
 .news-diagnosis p{margin:4px 0;line-height:1.5}
+.news-toolbar{gap:12px 24px;min-width:0}
+.news-toolbar label{display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px;max-width:100%}
+.news-toolbar select{margin-left:0;max-width:100%}
+.news-jump{display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px;max-width:100%;font-size:13px}
+.news-jump a{color:#4531c4;text-decoration:none;text-underline-offset:3px}
+.news-jump a:hover{text-decoration:underline}
+.news-section{scroll-margin-top:16px}
+.news-article,.news-article a{overflow-wrap:anywhere}
+@media(max-width:600px){.news-toolbar{gap:10px 16px}}

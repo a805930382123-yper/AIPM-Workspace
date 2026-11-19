@@ -6,6 +6,7 @@ import type { Audit, AuditConflict, AuditDraft, ExtractionJob, KnowledgeWorkflow
 import { api, dateText, drafts, knowledgeWorkflows, sourceLabels, startExtract } from '../api';
 import '../wiki.css';
 import {FormalNoteReader} from '../components/FormalNoteReader';
+import { useDialogFocus } from '../components/useDialogFocus';
 
 const statusLabels: Record<string, string> = { verified: '已核实', source_supported: '有来源支持', ai_organized: 'AI整理', inferred: '推断', needs_verification: '待验证', reviewed: '已人工审核', unreviewed: '未审核' };
 const typeLabel = (schema: WikiSchema | null, type: WikiType) => schema?.types.find(item => item.id === type)?.label ?? type;
@@ -236,13 +237,18 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
     finally { setBusy(false); }
   };
 
+  const deleteCheckInFlight = useRef(false);
   const requestDelete = async (item: Wiki) => {
-    setError(''); setNotice(''); setBusy(true);
+    if (busy || deleteCheckInFlight.current) return;
+    deleteCheckInFlight.current = true;
+    const selectionAtRequest = selectionVersion.current;
+    setError(''); setNotice('');
     try {
       const result = await api<{items: Array<{id: string; title: string}>}>(`/api/wiki/${item.id}/references`);
+      if (selectionVersion.current !== selectionAtRequest) return;
       setDeleteReferences(result.items); setDeleteTarget(item);
-    } catch (e) { setError(e instanceof Error ? e.message : '读取关联页面失败。'); }
-    finally { setBusy(false); }
+    } catch (e) { if (selectionVersion.current === selectionAtRequest) setError(e instanceof Error ? e.message : '读取关联页面失败。'); }
+    finally { deleteCheckInFlight.current = false; }
   };
   const confirmDelete = async () => {
     if (!deleteTarget) return;
@@ -335,7 +341,33 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
         </div>
       </section>
     </div>
-    {deleteTarget && <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !busy) setDeleteTarget(null); }}><section className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title"><div className="dialog-header"><div><p className="eyebrow">移到回收区</p><h2 id="delete-title">删除“{deleteTarget.title}”</h2><p>被关联的页面会保留原文；删除后这些链接可能变为未找到。</p></div><button className="icon-button" aria-label="关闭" onClick={() => setDeleteTarget(null)}>×</button></div><div className="delete-reference-list"><b>入链影响 · {deleteReferences.length} 页</b>{deleteReferences.length ? deleteReferences.map(reference => <div className="delete-reference" key={reference.id}><span>[[{deleteTarget.title}]]</span><button className="text-button" onClick={() => { setDeleteTarget(null); chooseItem(reference.id); }}>{reference.title}</button></div>) : <p>没有其他 Wiki 页面链接到此页。</p>}</div><div className="dialog-footer"><span>Raw 与其他知识资产不会删除</span><div><button className="secondary-button" onClick={() => setDeleteTarget(null)} disabled={busy}>取消</button><button className="danger-button" onClick={() => void confirmDelete()} disabled={busy}>{busy ? '正在删除…' : '确认删除'}</button></div></div></section></div>}
+    {deleteTarget && <WikiDeleteDialog item={deleteTarget} references={deleteReferences} busy={busy} onClose={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} onOpenReference={id => { setDeleteTarget(null); chooseItem(id); }} />}
+  </div>;
+}
+
+function WikiDeleteDialog({ item, references, busy, onClose, onConfirm, onOpenReference }: {
+  item: Wiki; references: Array<{id: string; title: string}>; busy: boolean;
+  onClose: () => void; onConfirm: () => void; onOpenReference: (id: string) => void;
+}) {
+  const dialog = useDialogFocus<HTMLElement>();
+  return <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose(); }}>
+    <section ref={dialog} tabIndex={-1} className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title" onKeyDown={event => { if (event.key === 'Escape' && !busy) onClose(); }}>
+      <div className="dialog-header">
+        <div><p className="eyebrow">移到回收区</p><h2 id="delete-title">删除“{item.title}”</h2><p>被关联的页面会保留原文；删除后这些链接可能变为未找到。</p></div>
+        <button type="button" className="icon-button" aria-label="关闭" disabled={busy} onClick={onClose}>×</button>
+      </div>
+      <div className="delete-reference-list">
+        <b>入链影响 · {references.length} 页</b>
+        {references.length ? references.map(reference => <div className="delete-reference" key={reference.id}><span>[[{item.title}]]</span><button className="text-button" onClick={() => onOpenReference(reference.id)}>{reference.title}</button></div>) : <p>没有其他 Wiki 页面链接到此页。</p>}
+      </div>
+      <div className="dialog-footer">
+        <span>Raw 与其他知识资产不会删除</span>
+        <div>
+          <button type="button" className="secondary-button" onClick={onClose} disabled={busy}>取消</button>
+          <button type="button" className="danger-button" onClick={onConfirm} disabled={busy}>{busy ? '正在删除…' : '确认删除'}</button>
+        </div>
+      </div>
+    </section>
   </div>;
 }
 

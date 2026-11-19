@@ -41,8 +41,8 @@ function TemplateFieldsEditor({type,fields,evidence,disabled,onChange}:{type:str
   </fieldset>;})}</>;
 }
 
-export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpenWorkflow,onOpenWiki }: {
-  draftId: string; onBack: () => void; onCommitted: () => Promise<void>; onOpenRaw: (id: string,target?:RawCitationTarget) => void;onOpenWiki?:(id:string)=>void; onOpenWorkflow?: (id: string) => void;
+export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpenWorkflow, onOpenWiki, backLabel }: {
+  draftId: string; onBack: () => void; onCommitted: () => Promise<void>; onOpenRaw: (id: string,target?:RawCitationTarget) => void;onOpenWiki?:(id:string)=>void; onOpenWorkflow?: (id: string) => void; backLabel?: string;
 }) {
   const [noteDirty,setNoteDirty]=useState(false),[showCards,setShowCards]=useState(false);
   const loadGeneration=useRef(0);
@@ -230,10 +230,10 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
     await onCommitted();
   });
 
-  if (!view) return <div className="page draft-page"><div className="page-heading"><div><h1>{error ? '无法读取草稿' : '正在读取草稿…'}</h1></div><button className="secondary-button" onClick={onBack}>返回</button></div>
+  if (!view) return <div className="page draft-page"><div className="page-heading"><div><h1>{error ? '无法读取草稿' : '正在读取草稿…'}</h1></div><button className="secondary-button" onClick={onBack}>{backLabel ?? '返回'}</button></div>
     {error && <div className="form-error" role="alert"><p>{error}</p></div>}</div>;
 
-  if (view.input) return <KnowledgeMaintenanceReview view={view} body={body} onView={applyView} onBack={onBack} onOpenRaw={onOpenRaw} onOpenWiki={onOpenWiki} onCommitted={onCommitted}/>;
+  if (view.input) return <KnowledgeMaintenanceReview view={view} body={body} onView={applyView} onBack={onBack} backLabel={backLabel} onOpenRaw={onOpenRaw} onOpenWiki={onOpenWiki} onCommitted={onCommitted}/>;
   const outcomeMode = !!view.outcomeDigest;
   const assignmentEditor = !readOnly&&<section className="panel draft-card-body" aria-label="主题与归属人工审查">
       <h2>{outcomeMode?'来源事实与问题标注':'逐页确认主题与完整归属'}</h2>{!outcomeMode&&<p>所有候选页（包括未选中及暂不处理的页面）都需逐页确认；没有明确关系的条目可保留未解决，并会阻止整份草稿正式写入。</p>}
@@ -347,12 +347,12 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         {(page.mergedFrom?.length ?? 0) > 0 && <p className="extract-note">由合并生成：{page.mergedFrom?.join('、')}</p>}
       </article>)}
     </section>;
-  if (outcomeMode) return <RawOutcomeReview view={view} body={body} onView={applyView} onBack={onBack} onOpenRaw={onOpenRaw} onOpenWiki={onOpenWiki} onOpenWorkflow={onOpenWorkflow} onCommitted={onCommitted} advancedDirty={legacyDirty} advancedBusy={!!busy} advanced={<>
+  if (outcomeMode) return <RawOutcomeReview view={view} body={body} onView={applyView} onBack={onBack} backLabel={backLabel} onOpenRaw={onOpenRaw} onOpenWiki={onOpenWiki} onOpenWorkflow={onOpenWorkflow} onCommitted={onCommitted} advancedDirty={legacyDirty} advancedBusy={!!busy} advanced={<>
     {error&&<p className="form-error" role="alert">{error}</p>}
     {!readOnly&&assignmentEditor&&<details><summary>标注来源问题</summary>{assignmentEditor}</details>}
     {!view.maintenance&&<><button className="secondary-button" disabled={readOnly||!!busy||!legacyDirty} onClick={()=>void saveEdits()}>保存草稿</button>{pageEditors}</>}
   </>} />;
-  if(view.maintenance)return <KnowledgeMaintenanceReview view={view} body={body} onView={applyView} onBack={onBack} onOpenRaw={onOpenRaw} onOpenWiki={onOpenWiki} onCommitted={onCommitted}/>;
+  if(view.maintenance)return <KnowledgeMaintenanceReview view={view} body={body} onView={applyView} onBack={onBack} backLabel={backLabel} onOpenRaw={onOpenRaw} onOpenWiki={onOpenWiki} onCommitted={onCommitted}/>;
 
   return <div className="page draft-page">
     <div className="page-heading">
@@ -365,7 +365,7 @@ export function DraftReviewPage({ draftId, onBack, onCommitted, onOpenRaw, onOpe
         <details className="review-technical"><summary>规则与提供方信息</summary><p>提供方 {view.provider.name}/{view.provider.model} · 规则 {view.rulesVersion} · {view.extraction ? `${view.extraction.chunkCount} 段 / ${view.extraction.callCount} 次调用` : ''}</p></details>
       </div>
       <div className="heading-actions">
-        <button className="secondary-button" onClick={onBack}>返回 Raw</button>
+        <button className="secondary-button" onClick={onBack}>{backLabel ?? '返回 Raw'}</button>
         <button className="secondary-button" disabled={readOnly || busy !== ''||noteDirty} onClick={() => void saveEdits()}>{busy === 'save' ? '正在保存…' : '保存草稿'}</button>
         <button className="secondary-button danger-quiet" disabled={readOnly || busy !== ''} onClick={() => setConfirmingDiscard(true)}>放弃草稿</button>
         <button className="primary-button" disabled={(!!view.structuredNote&&view.noteApproval?.digest!==view.reviewContentDigest)||readOnly || busy !== '' || (!view.structuredNote&&selectedIds.length === 0) || dirty || !reviewComplete} onClick={() => void confirm()}>{busy === 'confirm' ? '正在保存并提交…' : `确认写入 Wiki（${selectedIds.length}）`}</button>

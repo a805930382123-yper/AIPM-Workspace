@@ -66,7 +66,7 @@ function useToday(ensure:boolean){
 }
 export function NewsHome({onOpen}:{onOpen:()=>void}){const {view,error,refresh}=useToday(true);return <section className="panel news-home"><div><h2>每日资讯</h2><p>{view?`${view.date} · AI 分析${view.aiEnabled?'已启用':'未启用'}`:'正在读取资讯状态'}</p>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}<div className="news-home-status">{(['fmcg','ai'] as const).map(n=><span key={n}>{labels[n]}：{view?.edition?.sections[n]?status[view.edition.sections[n]!.status]:'等待准备'}</span>)}</div></div><button className="secondary-button" onClick={onOpen}>阅读资讯</button></section>;}
 type Saved={section:NewsSectionName;itemId:string;rawId:string;status:'saved'|'missing'|'pending'};
-export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{}}:{onRawChanged?:()=>void|Promise<void>;onOpenRaw?:(id:string)=>void}){const {view,error,setView,setError,refresh}=useToday(false);const [history,setHistory]=useState<{items:Array<{date:string}>;errors:string[]}|null>(null),[selected,setSelected]=useState<string|null>(null),[edition,setEdition]=useState<NewsEdition|null>(null),[readError,setReadError]=useState('');
+export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawChanged?:()=>void|Promise<void>;onOpenRaw?:(id:string)=>void;onBack?:()=>void}){const {view,error,setView,setError,refresh}=useToday(false);const [history,setHistory]=useState<{items:Array<{date:string}>;errors:string[]}|null>(null),[selected,setSelected]=useState<string|null>(null),[edition,setEdition]=useState<NewsEdition|null>(null),[readError,setReadError]=useState('');
  useEffect(()=>{let active=true;api<{items:Array<{date:string}>;errors:string[]}>('/api/news/history').then(x=>{if(active)setHistory(x)}).catch(()=>{if(active)setReadError('历史记录读取失败。')});return()=>{active=false}},[]);
  useEffect(()=>{let active=true;setEdition(null);setReadError('');if(selected)void api<NewsEdition>(`/api/news/editions/${selected}`).then(x=>{if(active)setEdition(x)}).catch(()=>{if(active)setReadError('这期记录读取失败。')});return()=>{active=false}},[selected]);
  const [saved,setSaved]=useState<Record<string,Saved[]>>({}),[busy,setBusy]=useState<Record<string,boolean>>({}),[saveErrors,setSaveErrors]=useState<Record<string,string>>({});
@@ -76,10 +76,10 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{}}:{onRawChanged?:(
  const dates=[...new Set([selected||view?.date,...(!selected?[...(view?.fallbacks.ai?[view.fallbacks.ai.date]:[]),...(view?.recentFmcg||[]).map(x=>x.date)]:[])].filter((x):x is string=>!!x))].join(',');
  useEffect(()=>{let active=true;for(const date of dates.split(',').filter(Boolean)){const version=projectionVersion.current[date]||0;void api<{items:Saved[]}>(`/api/news/editions/${date}/saved-raws`).then(x=>{if(active&&version===(projectionVersion.current[date]||0)){setSaved(prev=>({...prev,[date]:x.items}));setSaveErrors(prev=>({...prev,[date]:''}));}}).catch(()=>{if(active)setSaveErrors(prev=>({...prev,[date]:'保存状态读取失败，请重新读取。'}))});}return()=>{active=false}},[dates,view?.edition?.updatedAt,edition?.updatedAt,projectionReload]);
  const save=async(date:string,section:NewsSectionName,itemId:string)=>{const key=`${date}:${section}:${itemId}`;setBusy(prev=>({...prev,[key]:true}));setSaveErrors(prev=>({...prev,[key]:''}));try{const result=await api<{rawId:string;status:'saved';created:boolean}>(`/api/news/editions/${date}/items/save-raw`,{method:'POST',body:JSON.stringify({section,itemId})});if(alive.current){projectionVersion.current[date]=(projectionVersion.current[date]||0)+1;setSaved(prev=>({...prev,[date]:[...(prev[date]||[]).filter(x=>x.section!==section||x.itemId!==itemId),{section,itemId,rawId:result.rawId,status:'saved'}]}));}void onRawChanged();}catch(e){if(alive.current)setSaveErrors(prev=>({...prev,[key]:e instanceof Error?e.message:'保存失败，请重试。'}));}finally{if(alive.current)setBusy(prev=>({...prev,[key]:false}));}};
- const [checking,setChecking]=useState<Partial<Record<NewsSectionName,boolean>>>({});
+ const [checking,setChecking]=useState<Partial<Record<NewsSectionName,NewsCheckMode>>>({});
  const [checkNotices,setCheckNotices]=useState<Partial<Record<NewsSectionName,string>>>({});
  const check=async(section:NewsSectionName,mode:NewsCheckMode,attempt:number)=>{
-  setChecking(previous=>({...previous,[section]:true}));
+  setChecking(previous=>({...previous,[section]:mode}));
   setCheckNotices(previous=>({...previous,[section]:undefined}));
   try {
    const result=await api<View&{checkNotice?:{section:NewsSectionName;message:string}}>('/api/news/today/check',{
@@ -95,24 +95,25 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{}}:{onRawChanged?:(
     refresh();
    }
   } finally {
-   if(alive.current) setChecking(previous=>({...previous,[section]:false}));
+   if(alive.current) setChecking(previous=>({...previous,[section]:undefined}));
   }
  };
  const controls=(section:NewsSectionName,current?:NewsSection)=>{
-  const disabled=!view||checking[section]||current?.status==='running';
+  const activeMode=checking[section];
+  const disabled=!view||Boolean(activeMode)||current?.status==='running';
   return <div className="news-check-actions">
-   <button className="secondary-button" disabled={disabled} onClick={()=>void check(section,'all',current?.attempt??0)}>检查更新</button>
-   {section==='fmcg'&&<button className="secondary-button" disabled={disabled} onClick={()=>void check(section,'failed',current?.attempt??0)}>仅补抓失败来源</button>}
+   <button className="secondary-button" disabled={disabled} onClick={()=>void check(section,'all',current?.attempt??0)}>{activeMode==='all'?'正在检查更新…':'检查更新'}</button>
+   {section==='fmcg'&&<button className="secondary-button" disabled={disabled} onClick={()=>void check(section,'failed',current?.attempt??0)}>{activeMode==='failed'?'正在补抓失败来源…':'仅补抓失败来源'}</button>}
   </div>;
  };
  const renderItem=(item:NewsItem,n:NewsSectionName,date:string)=>{const key=`${date}:${n}:${item.id}`,entry=saved[date]?.find(x=>x.section===n&&x.itemId===item.id);return <article className="news-article" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3><p className="news-meta">{item.sourceName}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d$/.test(item.publishedAt)?item.publishedAt+'（仅知月份）':/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {item.research?.kind||(item.evidenceKind==='source_summary'?'AIHOT 来源摘要，未核验原文':'来源正文摘录')}{item.research&&<> · 数据时期：{item.research.dataPeriod||'请以原文为准'}{item.research.pdfUrl&&<> · <a href={item.research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF</a>（{item.research.pageRange}）</>}</>}</p><p>{item.excerpt.slice(0,280)}{item.excerpt.length>280?'…':''}</p>{item.excerpt.length>280&&<details><summary>展开完整摘录</summary><p>{item.excerpt}</p></details>}{item.analysis?<div className="news-analysis"><p><b>事实：</b>{item.analysis.fact}</p><p><b>值得关注：</b>{item.analysis.whyItMatters}</p><p><b>可能影响（推断）：</b>{item.analysis.possibleImpact}</p></div>:n==='ai'?<p className="news-meta">为何值得关注 / 可能影响：未生成分析</p>:null}<div className="news-save"><p className="news-meta">仅保存已取得的摘录或来源摘要；后续 AI 整理需在 Raw 中另行操作。</p>{entry?.status==='saved'?<span>已保存 · <button className="text-button" onClick={()=>onOpenRaw(entry.rawId)}>查看 Raw</button></span>:entry?.status==='missing'?<span>原 Raw 已删除</span>:<button className="secondary-button" disabled={!!busy[key]} onClick={()=>void save(date,n,item.id)}>{busy[key]?'正在保存…':entry?.status==='pending'?'核对保存状态':'保存来源摘录到 Raw'}</button>}{saveErrors[key]&&<p className="form-error" role="alert">{saveErrors[key]}</p>}</div></article>};
- const shown=selected?edition:view?.edition;return <div className="page news-page"><div className="page-heading"><div><h1>每日资讯</h1><p className="subheading">来源摘录与分析分开保存，日期以来源为准。</p></div></div><div className="news-toolbar"><label>阅读日期 <select value={selected||''} onChange={e=>setSelected(e.target.value||null)}><option value="">今天 {view?.date||''}</option>{history?.items.filter(x=>x.date!==view?.date).map(x=><option key={x.date}>{x.date}</option>)}</select></label><span>{!view?.aiEnabled?'AI 分析未启用':'AI 分析已启用'}</span></div>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}{readError&&<p className="form-error" role="alert">{readError}</p>}{history?.errors.map(e=><p className="form-error" key={e}>{e}</p>)}{selected&&!edition&&!readError&&<p>正在读取历史…</p>}
+ const shown=selected?edition:view?.edition;return <div className="page news-page"><div className="page-heading"><div><h1>每日资讯</h1><p className="subheading">来源摘录与分析分开保存，日期以来源为准。</p></div>{onBack&&<button type="button" className="secondary-button" onClick={onBack}>返回工作台</button>}</div><div className="news-toolbar"><label>阅读日期 <select value={selected||''} onChange={e=>setSelected(e.target.value||null)}><option value="">今天 {view?.date||''}</option>{history?.items.filter(x=>x.date!==view?.date).map(x=><option key={x.date}>{x.date}</option>)}</select></label><span>{!view?.aiEnabled?'AI 分析未启用':'AI 分析已启用'}</span><nav className="news-jump" aria-label="栏目定位"><a href="#news-section-fmcg">快消研报与洞察</a><span aria-hidden="true">·</span><a href="#news-section-ai">AI 前沿</a></nav></div>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}{readError&&<p className="form-error" role="alert">{readError}</p>}{history?.errors.map(e=><p className="form-error" key={e}>{e}</p>)}{selected&&!edition&&!readError&&<p>正在读取历史…</p>}
  {(['fmcg','ai'] as const).map(n=>{
   const current=shown?.sections[n];
   if(n==='fmcg'&&!selected) {
    const items=current?.contentVersion==='research-v1'?current.items.slice(0,5):[];
    const recent=view?.recentFmcg||[];
-   return <section className="news-section" key={n}>
+   return <section id={`news-section-${n}`} className="news-section" key={n}>
     <div className="news-section-heading">
      <div><h2>{labels.fmcg}</h2><p>{sectionStatus(current,'今日尚未准备')}</p></div>
      {controls(n,current)}
@@ -132,7 +133,7 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{}}:{onRawChanged?:(
   }
   const fallback=!selected&&current&&!current.items.length&&['failed','interrupted'].includes(current.status)?view?.fallbacks[n]:undefined;
   const section=fallback?.section||current,date=fallback?.date||selected||view?.date||'';
-  return <section className="news-section" key={n}>
+  return <section id={`news-section-${n}`} className="news-section" key={n}>
    <div className="news-section-heading">
     <div>
      <h2>{n==='fmcg'&&selected&&section&&!section.contentVersion?'旧版快消新闻':labels[n]}</h2>

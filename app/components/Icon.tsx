@@ -6,6 +6,8 @@ const paths: Record<string, ReactNode> = {
  calendar:<><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></>,
  code:<><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></>,
  settings:<><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4.9a7 7 0 0 0-1.7-1L14.4 3h-4.8l-.4 3a7 7 0 0 0-1.7 1l-2.4-.9-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-.9a7 7 0 0 0 1.7 1l.4 3h4.8l.4-3a7 7 0 0 0 1.7-1l2.4.9 2-3.4-2-1.5c.1-.3.1-.7.1-1z"/></>,
- upload:<><path d="M12 16V3M7 8l5-5 5 5M4 15v5h16v-5"/></>
+ upload:<><path d="M12 16V3M7 8l5-5 5 5M4 15v5h16v-5"/></>,
+ work:<><path d="M10 6h10M10 12h10M10 18h10"/><path d="m4 6 1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17"/></>,
+ automation:<><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/><path d="M12 7v5l3 2"/></>
 };
 export function Icon({name}:{name:string}) { return <svg className="nav-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>; }

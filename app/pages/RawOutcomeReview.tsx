@@ -13,6 +13,7 @@ type Props = {
   body: string;
   onView: (view: DraftView) => void;
   onBack: () => void;
+  backLabel?: string;
   onOpenRaw: (id: string, target?: RawCitationTarget) => void;
   onOpenWiki?: (id: string) => void;
   onOpenWorkflow?: (id: string) => void;
@@ -52,7 +53,7 @@ function pdfOutcomeExcerpt(body: string) {
   }
 }
 
-export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenWiki, onOpenWorkflow, onCommitted, advanced, advancedDirty, advancedBusy}: Props) {
+export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenRaw, onOpenWiki, onOpenWorkflow, onCommitted, advanced, advancedDirty, advancedBusy}: Props) {
   const [selection, setSelection] = useState(() => {
     if (view.deferredAt) return [];
     const remaining=view.maintenance?.changes.filter(c=>!c.committedOperationId);
@@ -300,7 +301,7 @@ export function RawOutcomeReview({view, body, onView, onBack, onOpenRaw, onOpenW
   return <div className="page draft-page raw-outcome" aria-busy={!!busy || advancedBusy || noteSaving}>
     <div className="page-heading">
       <div><h1>整理成果</h1><p className="subheading">{view.rawTitle} · {modeLabel} · {view.maintenance&&view.discardedAt?(view.status==='discarded'?'全部不采纳':'选择已结束'):deferred?'稍后处理':recovering||pendingRecovery?statusLabels.committing:operation?.noChanges&&readOnly?'已检查，无需变更':statusLabels[view.status]} · 草稿 v{view.revision}</p></div>
-      <div className="heading-actions"><button className="secondary-button" onClick={onBack} disabled={navigationDisabled}>返回</button><button className="text-button" onClick={() => onOpenRaw(view.rawId)} disabled={navigationDisabled}>查看原始资料</button></div>
+      <div className="heading-actions"><button className="secondary-button" onClick={onBack} disabled={navigationDisabled}>{backLabel ?? '返回'}</button><button className="text-button" onClick={() => onOpenRaw(view.rawId)} disabled={navigationDisabled}>查看原始资料</button></div>
     </div>
     {error && !edit && <div className="form-error" role="alert">{error}</div>}
     {notice && <div className="notice-success" role="status">{notice}</div>}

@@ -37,11 +37,14 @@ export function RawPage({ initialOriginal, initialCitation,items, selectedId, on
   const startGeneration=useRef(0);
   useEffect(()=>{startGeneration.current++;setAiBusy(false);setAiError('');},[selected?.id]);
   const [synthesisOpen, setSynthesisOpen] = useState(false);
-  const [synthesisIds, setSynthesisIds] = useState<string[]>([]);
-  const [synthesisSourceIds, setSynthesisSourceIds] = useState<string[]>([]);
   const [sourcePages, setSourcePages] = useState<Wiki[]>([]);
   const [pendingWorkflows, setPendingWorkflows] = useState<KnowledgeWorkflowSummary[]>([]);
-  const [synthesisError, setSynthesisError] = useState('');
+  const synthesisOpening = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
   useEffect(() => {
     let active = true;
     knowledgeWorkflows().then(items => { if (active) setPendingWorkflows(items.filter(item => item.status === 'pending_confirmation' || item.status === 'conflict')); }).catch(() => undefined);
@@ -78,7 +81,19 @@ export function RawPage({ initialOriginal, initialCitation,items, selectedId, on
     await onRefresh();
   };
   return <div className="page raw-page">
-    <div className="page-heading raw-heading"><div><h1>Raw 原始资料</h1><p className="subheading">保存文章、报告与业务记录的原文。保存后不会被 AI 改写。</p></div><div className="action-group"><button className="secondary-button" disabled={items.length < 2} onClick={async () => { setSynthesisIds([]); setSynthesisSourceIds([]); setSynthesisError(''); const result = await api<{items:Wiki[]}>('/api/wiki'); setSourcePages(result.items.filter(item => item.type === 'source')); setSynthesisOpen(true); }}>多来源综合</button><button className="primary-button" onClick={onOpenImport}><span>＋</span> 导入资料</button></div></div>
+    <div className="page-heading raw-heading"><div><h1>Raw 原始资料</h1><p className="subheading">保存文章、报告与业务记录的原文。保存后不会被 AI 改写。</p></div><div className="action-group"><button className="secondary-button" disabled={items.length < 2} onClick={async () => {
+      if (synthesisOpening.current) return;
+      synthesisOpening.current = true;
+      try {
+        const result = await api<{items:Wiki[]}>('/api/wiki');
+        if (mountedRef.current) setSourcePages(result.items.filter(item => item.type === 'source'));
+      } catch {
+        if (mountedRef.current) setSourcePages([]);
+      } finally {
+        synthesisOpening.current = false;
+      }
+      if (mountedRef.current) setSynthesisOpen(true);
+    }}>多来源综合</button><button className="primary-button" onClick={onOpenImport}><span>＋</span> 导入资料</button></div></div>
     {pendingWorkflows.length > 0 && <section className="panel pending-knowledge-workflows"><div className="panel-heading"><div><h2>待审核知识草稿</h2><p>保存后可以刷新或重启，再从这里继续审核。</p></div></div><div className="raw-list">{pendingWorkflows.map(item => <button className="raw-list-item" key={item.id} onClick={() => onOpenWorkflow?.(item.id)}><span className="file-icon">{item.kind === 'update' ? '更' : '综'}</span><span className="recent-copy"><b>{item.title}</b><small>{item.kind === 'update' ? '旧 Wiki 更新' : '多来源综合'} · v{item.revision} · {item.status === 'conflict' ? '提交冲突' : '待确认'}</small>{item.lastCommitError && <small className="form-error">{item.lastCommitError}</small>}</span></button>)}</div></section>}
     <div className="raw-workspace">
       <section className="panel raw-list-panel"><div className="list-title"><div><h2>所有资料</h2><span>{items.length} 条</span></div></div>{items.length ? <div className="raw-list">{items.map(item => {
@@ -89,7 +104,65 @@ export function RawPage({ initialOriginal, initialCitation,items, selectedId, on
     </div>
     {dialogOpen && <ImportDialog prefill={reimport} onClose={closeDialogs} onCommitted={onCommitted} onOpen={openCommitted} onGenerate={generateImported} />}
     {deletingItem && <DeleteDialog item={deletingItem} onClose={() => setDeletingItem(null)} onDeleted={handleDeleted} />}
-    {synthesisOpen && <div className="modal-backdrop"><section className="panel confirm-dialog"><div className="panel-heading"><div><h2>选择综合来源</h2><p>Raw 与 Source 可混合选择，最终按其真实 Raw ID 去重，至少两条。</p></div><button className="icon-button" onClick={() => setSynthesisOpen(false)}>×</button></div>{synthesisError && <p className="form-error" role="alert">{synthesisError}</p>}<div className="raw-list">{items.map(item => <label className="raw-list-item" key={item.id}><input type="checkbox" checked={synthesisIds.includes(item.id)} onChange={event => setSynthesisIds(current => event.target.checked ? [...current, item.id] : current.filter(id => id !== item.id))} /><span className="recent-copy"><b>Raw · {item.title}</b><small>{item.sourceName} · {item.id}</small></span></label>)}{sourcePages.map(item => <label className="raw-list-item" key={item.id}><input type="checkbox" checked={synthesisSourceIds.includes(item.id)} onChange={event => setSynthesisSourceIds(current => event.target.checked ? [...current, item.id] : current.filter(id => id !== item.id))} /><span className="recent-copy"><b>Source · {item.title}</b><small>{item.sources[0]} · {item.id}</small></span></label>)}</div><div className="dialog-actions"><button className="secondary-button" onClick={() => setSynthesisOpen(false)}>取消</button><button className="primary-button" disabled={new Set([...synthesisIds, ...synthesisSourceIds.map(id => sourcePages.find(source => source.id === id)?.sources[0]).filter(Boolean)]).size < 2} onClick={async () => { try { const workflow = await startSynthesisWorkflow({ rawIds: synthesisIds, sourceIds: synthesisSourceIds }); setSynthesisOpen(false); onOpenWorkflow?.(workflow.id); } catch (error) { setSynthesisError(error instanceof Error ? error.message : '综合草稿生成失败。'); } }}>生成 Synthesis 草稿</button></div></section></div>}
+    {synthesisOpen && <SynthesisDialog items={items} sourcePages={sourcePages} onClose={() => setSynthesisOpen(false)} onCreated={workflowId => { setSynthesisOpen(false); onOpenWorkflow?.(workflowId); }} />}
+  </div>;
+}
+
+function SynthesisDialog({ items, sourcePages, onClose, onCreated }: {
+  items: Raw[]; sourcePages: Wiki[]; onClose: () => void; onCreated: (workflowId: string) => void;
+}) {
+  const dialog = useDialogFocus<HTMLElement>();
+  const [synthesisIds, setSynthesisIds] = useState<string[]>([]);
+  const [synthesisSourceIds, setSynthesisSourceIds] = useState<string[]>([]);
+  const [synthesisBusy, setSynthesisBusy] = useState(false);
+  const [synthesisError, setSynthesisError] = useState('');
+  const busyRef = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+  const selectedCount = new Set([
+    ...synthesisIds,
+    ...synthesisSourceIds.map(id => sourcePages.find(source => source.id === id)?.sources[0]).filter((id): id is string => Boolean(id)),
+  ]).size;
+  const submit = async () => {
+    if (busyRef.current || selectedCount < 2) return;
+    busyRef.current = true;
+    setSynthesisBusy(true);
+    setSynthesisError('');
+    try {
+      const workflow = await startSynthesisWorkflow({ rawIds: synthesisIds, sourceIds: synthesisSourceIds });
+      onCreated(workflow.id);
+    } catch (error) {
+      if (mountedRef.current) setSynthesisError(error instanceof Error ? error.message : '综合草稿生成失败。');
+    } finally {
+      busyRef.current = false;
+      if (mountedRef.current) setSynthesisBusy(false);
+    }
+  };
+  return <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !synthesisBusy) onClose(); }}>
+    <section ref={dialog} tabIndex={-1} className="panel import-dialog synthesis-dialog" role="dialog" aria-modal="true" aria-labelledby="synthesis-dialog-title" aria-busy={synthesisBusy} onKeyDown={event => { if (event.key === 'Escape' && !synthesisBusy) onClose(); }}>
+      <div className="dialog-header">
+        <div>
+          <h2 id="synthesis-dialog-title">选择综合来源</h2>
+          <p>Raw 与 Source 可混合选择，最终按其真实 Raw ID 去重，至少两条。</p>
+        </div>
+        <button type="button" className="icon-button" aria-label="关闭" disabled={synthesisBusy} onClick={onClose}>×</button>
+      </div>
+      {synthesisError && <p className="form-error" role="alert">{synthesisError}</p>}
+      <div className="raw-list">
+        {items.map(item => <label className="raw-list-item" key={item.id}><input type="checkbox" disabled={synthesisBusy} checked={synthesisIds.includes(item.id)} onChange={event => setSynthesisIds(current => event.target.checked ? [...current, item.id] : current.filter(id => id !== item.id))} /><span className="recent-copy"><b>Raw · {item.title}</b><small>{item.sourceName} · {item.id}</small></span></label>)}
+        {sourcePages.map(item => <label className="raw-list-item" key={item.id}><input type="checkbox" disabled={synthesisBusy} checked={synthesisSourceIds.includes(item.id)} onChange={event => setSynthesisSourceIds(current => event.target.checked ? [...current, item.id] : current.filter(id => id !== item.id))} /><span className="recent-copy"><b>Source · {item.title}</b><small>{item.sources[0]} · {item.id}</small></span></label>)}
+      </div>
+      <div className="dialog-footer">
+        <span className="footer-note">已选 {selectedCount} 条不同来源（至少 2 条）</span>
+        <div>
+          <button type="button" className="secondary-button" disabled={synthesisBusy} onClick={onClose}>取消</button>
+          <button type="button" className="primary-button" disabled={synthesisBusy || selectedCount < 2} onClick={() => void submit()}>{synthesisBusy ? '正在生成…' : '生成 Synthesis 草稿'}</button>
+        </div>
+      </div>
+    </section>
   </div>;
 }
 
@@ -557,6 +630,7 @@ function PartialPanel({ failure, raw, onClose, onOpen, onAgain }: {
 }
 
 export function DeleteDialog({ item, onClose, onDeleted }: { item: Raw; onClose: () => void; onDeleted: (id: string) => Promise<void> }) {
+  const dialog = useDialogFocus<HTMLElement>();
   const [references, setReferences] = useState<RawReference[] | null>(null);
   const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
@@ -583,15 +657,15 @@ export function DeleteDialog({ item, onClose, onDeleted }: { item: Raw; onClose:
     }
   };
   const blocked = references !== null && references.length > 0;
-  return <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <section className="import-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+  return <div className="modal-scrim" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget && !deleting) onClose(); }}>
+    <section ref={dialog} tabIndex={-1} className="import-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title" onKeyDown={event => { if (event.key === 'Escape' && !deleting) onClose(); }}>
       <div className="dialog-header">
         <div>
           <p className="eyebrow">删除 Raw</p>
           <h2 id="delete-title">删除「{item.title}」</h2>
           <p>删除前会重新检查这条资料是否被正式 Wiki 引用。</p>
         </div>
-        <button className="icon-button" aria-label="关闭" onClick={onClose}>×</button>
+        <button type="button" className="icon-button" aria-label="关闭" disabled={deleting} onClick={onClose}>×</button>
       </div>
       {references === null && !loadError && <div className="delete-copy">正在检查引用关系…</div>}
       {loadError && <div className="form-error" role="alert"><p>{loadError}</p></div>}

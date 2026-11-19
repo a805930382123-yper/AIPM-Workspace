@@ -135,6 +135,14 @@ export function App() {
   };
   const clearPendingWikiId = useCallback(() => setPendingWikiId(null), []);
   const pageTitle = page === 'news' ? '每日资讯' : page === 'home' ? '首页' : page === 'raw' ? 'Raw 原始资料' : page === 'prompt' ? 'Prompt 工作台' : page === 'settings' ? '设置' : page === 'meeting' ? '会议档案' : page === 'work' ? '工作事项' : page === 'automation' ? '自动化' : '知识库';
+  const currentBreadcrumb = workflowId ? '更新与综合审阅' : reviewDraftId ? 'AI 知识整理预览' : pageTitle;
+  const canBreadcrumbBack = Boolean(workflowId || reviewDraftId || page === 'news');
+  const handleBreadcrumbBack = () => {
+    if (workflowId) setWorkflowId(null);
+    else if (reviewDraftId) setReviewDraftId(null);
+    else if (page === 'news') nav('home');
+  };
+  const draftBackLabel = page === 'home' ? '返回工作台' : page === 'automation' ? '返回自动化' : page === 'wiki' ? '返回知识库' : '返回 Raw';
   const processingById: Record<string, RawProcessingState> = Object.fromEntries(processing.map(state => [state.rawId, state]));
   return <div className="shell">
     <aside className="sidebar">
@@ -142,8 +150,8 @@ export function App() {
       <div className="nav-caption">工作空间</div>
       <nav aria-label="主导航">
         <button className={`nav-item ${page === 'home' ? 'active' : ''}`} onClick={() => nav('home')}><Icon name="home" />首页</button>
-        <button className={`nav-item ${page === 'work' ? 'active' : ''}`} onClick={() => nav('work')}><Icon name="file" />工作事项</button>
-        <button className={`nav-item ${page === 'automation' ? 'active' : ''}`} onClick={() => nav('automation')}><Icon name="calendar" />自动化</button>
+        <button className={`nav-item ${page === 'work' ? 'active' : ''}`} onClick={() => nav('work')}><Icon name="work" />工作事项</button>
+        <button className={`nav-item ${page === 'automation' ? 'active' : ''}`} onClick={() => nav('automation')}><Icon name="automation" />自动化</button>
         <button className={`nav-item ${page === 'wiki' ? 'active' : ''}`} onClick={() => nav('wiki')}><Icon name="book" />知识库</button>
         <button className={`nav-item ${page === 'raw' ? 'active' : ''}`} onClick={() => nav('raw')}><Icon name="file" />Raw 原始资料</button>
         <button className={`nav-item ${page === 'meeting' ? 'active' : ''}`} onClick={() => nav('meeting')}><Icon name="calendar" />会议档案</button>
@@ -152,14 +160,14 @@ export function App() {
       <div className="sidebar-bottom"><div className="nav-caption">偏好</div><button className={`nav-item ${page === 'settings' ? 'active' : ''}`} onClick={() => nav('settings')}><Icon name="settings" />设置</button><div className="local-state"><i />数据保存在本机</div></div>
     </aside>
     <main className="main"><RecoveryNotice />
-      <header className="topbar"><div className="breadcrumb">工作空间 <span>/</span> {reviewDraftId ? 'AI 知识整理预览' : pageTitle}</div><div className="local-badge"><i />本地工作区</div></header>
+      <header className="topbar"><div className="breadcrumb">{canBreadcrumbBack ? <button type="button" className="text-button breadcrumb-back" onClick={handleBreadcrumbBack}>工作空间</button> : '工作空间'} <span>/</span> {currentBreadcrumb}</div><div className="local-badge"><i />本地工作区</div></header>
       {loadError && <div className="global-error" role="alert">{loadError}<button onClick={() => void refresh()}>重新连接</button></div>}
       {workflowId ? <KnowledgeWorkflowPage workflowId={workflowId} onBack={() => setWorkflowId(null)} onDone={async () => { setWorkflowId(null); await refresh(); }} /> : reviewDraftId
-        ? <DraftReviewPage key={reviewDraftId} draftId={reviewDraftId} onBack={() => setReviewDraftId(null)} onCommitted={refresh} onOpenWorkflow={setWorkflowId} onOpenWiki={id=>{setPendingWikiId(id);nav('wiki');}} onOpenRaw={(id,target) => { setReviewDraftId(null); nav('raw', id);setRawCitation(target??null); }} />
+        ? <DraftReviewPage key={reviewDraftId} draftId={reviewDraftId} backLabel={draftBackLabel} onBack={() => setReviewDraftId(null)} onCommitted={refresh} onOpenWorkflow={setWorkflowId} onOpenWiki={id=>{setPendingWikiId(id);nav('wiki');}} onOpenRaw={(id,target) => { setReviewDraftId(null); nav('raw', id);setRawCitation(target??null); }} />
         : <>
           {page === 'home' && <HomePage onOpenAutomation={() => nav('automation')} onOpenPipeline={filter => { nav('automation'); setPipelineEntry(filter); }} onOpenNews={() => nav('news')} actionsRevision={homeActionsRevision} workItemsRevision={workItemsRevision} onOpenWorkItem={id => { nav('work'); setWorkItemId(id); }} onOpenAction={openHomeAction} onCreateMeeting={() => { nav('meeting'); setMeetingCreate(true); }} stats={stats} items={raws} onOpenRaw={id => nav('raw', id)} onOpenWiki={id => { setPendingWikiId(id ?? null); nav('wiki'); }} onOpenPrompt={() => nav('prompt')} onImport={() => { nav('raw'); setOpenImport(true); }} onCreateWiki={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:new')), 0); }} onCreatePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:new')), 0); }} onGeneratePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:generator')), 0); }} onLint={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:lint')), 0); }} onOpenWorkflow={setWorkflowId} onGenerateFromRaw={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:generate')), 0); }} />}
-          {page === 'automation' && <AutomationPage candidateFilter={pipelineEntry} onOpenRaw={id => nav('raw', id)} onOpenDraft={id => { nav('home'); setReviewDraftId(id); }} />}
-          {page === 'news' && <NewsPage onRawChanged={refresh} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} />}
+          {page === 'automation' && <AutomationPage candidateFilter={pipelineEntry} onOpenRaw={id => nav('raw', id)} onOpenDraft={id => setReviewDraftId(id)} />}
+          {page === 'news' && <NewsPage onBack={() => nav('home')} onRawChanged={refresh} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} />}
           {page === 'work' && <WorkItemsPage key={pageGeneration.current} initialId={workItemId} raws={raws} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} onChanged={() => setWorkItemsRevision(value => value + 1)} />}
           {page === 'raw' && <RawPage initialOriginal={rawOriginal} initialCitation={rawCitation} items={raws} selectedId={selectedRawId} onSelected={id=>{setRawCitation(null);setRawOriginal(false);selectRaw(id);}} onOpenImport={() => setOpenImport(true)} onCommitted={async raw => { setRaws(previous => previous.some(item => item.id === raw.id) ? previous : [raw, ...previous]); await refresh(); }} onBodySaved={raw => { setRaws(previous => previous.map(item => item.id === raw.id ? raw : item)); void refresh(); }} openImport={openImport} onCloseImport={() => setOpenImport(false)} onDeleted={async id => { setRaws(previous => previous.filter(item => item.id !== id)); if (selectedRawId === id) selectRaw(null); await refresh(); }} processing={processingById} job={job} onJobStarted={handleJobStarted} navigationGeneration={pageGeneration.current} selectionGeneration={rawSelectionGeneration.current} onOpenDraft={setReviewDraftId} onOpenWorkflow={setWorkflowId} onRefresh={refresh} />}
           {page === 'wiki' && <WikiPage onInitialAuditHandled={()=>setPendingAudit(null)} initialAudit={pendingAudit} onOpenRaw={(id,target)=>{nav('raw',id);setRawCitation(target??null);}} onChanged={refresh} initialOpenId={pendingWikiId} onInitialOpenHandled={clearPendingWikiId} processing={processingById} onJobStarted={handleJobStarted} navigationGeneration={pageGeneration.current} onOpenDraft={setReviewDraftId} onOpenWorkflow={setWorkflowId} onImport={() => { nav('raw'); setOpenImport(true); }} />}
