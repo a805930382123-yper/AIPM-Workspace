@@ -2,7 +2,7 @@ import type {RawCitationTarget} from '../components/WikiQuestionPanel';
 import { useEffect, useRef, useState } from 'react';
 import { PdfPages } from '../PdfPages';
 import { useDialogFocus } from '../components/useDialogFocus';
-import type { ExtractionJob, Raw, RawImportResult, RawUrlImportResult, RawTranslation, RawProcessingState, RawReference, SourceType, Wiki, KnowledgeWorkflowSummary } from '../api';
+import type { ExtractionJob, Raw, RawImportResult, RawUrlImportResult, RawTranslation, RawProcessingState, RawReference, RawStatus, SourceType, Wiki, KnowledgeWorkflowSummary } from '../api';
 import { ApiError, api, apiForm, bytesText, changeRawTranslation, dateText, deleteRaw, formatLabels, getRaw, getRawBodyHistory, jobStageLabels, knowledgeWorkflows, pdfOriginalPageUrl, rawReferences, rawStatusLabels, rawTranslation, saveRawBody, sourceLabels, extractionJob, draftView, startExtract, reconcileExtractionStorage, startSynthesisWorkflow } from '../api';
 import { MAX_BODY_CHARS, MAX_UPLOAD_BYTES } from '../../services/raw/limits.ts';
 
@@ -19,7 +19,7 @@ type ImportFailure = {
   code: string; message: string; retained?: boolean; committed?: boolean; recoverable?: boolean;
   assetId?: string; rawId?: string; raw?: Raw; byteSize?: number; sha256?: string; fileName?: string; format?: string;
 };
-type Mode = 'paste' | 'file';
+type Mode = 'paste' | 'file' | 'url';
 
 export function RawPage({ initialOriginal, initialCitation,items, selectedId, onSelected, onOpenImport, onCommitted, onBodySaved, openImport, onCloseImport, onDeleted, processing, job, onJobStarted, navigationGeneration = 0, selectionGeneration = 0, onOpenDraft, onOpenWorkflow, onRefresh }: {
   initialOriginal?:boolean;initialCitation?:RawCitationTarget|null;items: Raw[]; selectedId: string | null; onSelected: (id: string) => void; onOpenImport: () => void;
@@ -29,6 +29,17 @@ export function RawPage({ initialOriginal, initialCitation,items, selectedId, on
   onJobStarted: (job: ExtractionJob, pageGeneration?: number, selectionGeneration?: number) => void; navigationGeneration?: number; selectionGeneration?: number; onOpenDraft: (draftId: string) => void; onOpenWorkflow?: (id: string) => void; onRefresh: () => Promise<void>;
 }) {
   const selected = items.find(item => item.id === selectedId) ?? (selectedId ? null : items[0] ?? null);
+  const [rawQuery, setRawQuery] = useState('');
+  const [rawStatusFilter, setRawStatusFilter] = useState<'all' | RawStatus>('all');
+  const normalizedRawQuery = rawQuery.trim().toLowerCase();
+  const hasRawFilter = Boolean(normalizedRawQuery) || rawStatusFilter !== 'all';
+  const filteredItems = items.filter(item => {
+    const itemStatus = processing[item.id]?.status ?? 'unprocessed';
+    if (rawStatusFilter !== 'all' && itemStatus !== rawStatusFilter) return false;
+    if (!normalizedRawQuery) return true;
+    return [item.title, item.sourceName, sourceLabels[item.sourceType] ?? item.sourceType, ...item.tags]
+      .some(value => value.toLowerCase().includes(normalizedRawQuery));
+  });
   const [reimport, setReimport] = useState<Raw | null>(null);
   const [deletingItem, setDeletingItem] = useState<Raw | null>(null);
   const [aiError, setAiError] = useState('');
@@ -96,10 +107,29 @@ export function RawPage({ initialOriginal, initialCitation,items, selectedId, on
     }}>多来源综合</button><button className="primary-button" onClick={onOpenImport}><span>＋</span> 导入资料</button></div></div>
     {pendingWorkflows.length > 0 && <section className="panel pending-knowledge-workflows"><div className="panel-heading"><div><h2>待审核知识草稿</h2><p>保存后可以刷新或重启，再从这里继续审核。</p></div></div><div className="raw-list">{pendingWorkflows.map(item => <button className="raw-list-item" key={item.id} onClick={() => onOpenWorkflow?.(item.id)}><span className="file-icon">{item.kind === 'update' ? '更' : '综'}</span><span className="recent-copy"><b>{item.title}</b><small>{item.kind === 'update' ? '旧 Wiki 更新' : '多来源综合'} · v{item.revision} · {item.status === 'conflict' ? '提交冲突' : '待确认'}</small>{item.lastCommitError && <small className="form-error">{item.lastCommitError}</small>}</span></button>)}</div></section>}
     <div className="raw-workspace">
-      <section className="panel raw-list-panel"><div className="list-title"><div><h2>所有资料</h2><span>{items.length} 条</span></div></div>{items.length ? <div className="raw-list">{items.map(item => {
+      <section className="panel raw-list-panel">
+        <div className="list-title"><div><h2>所有资料</h2><span>{filteredItems.length === items.length ? `${items.length} 条` : `${filteredItems.length} / ${items.length} 条`}</span></div></div>
+        {items.length > 0 && <div className="raw-list-filters">
+          <input type="search" aria-label="搜索原始资料" placeholder="搜索标题、来源或标签…" value={rawQuery} onChange={event => setRawQuery(event.target.value)} />
+          <div className="raw-list-filter-row">
+            <select aria-label="筛选资料处理状态" value={rawStatusFilter} onChange={event => setRawStatusFilter(event.target.value as 'all' | RawStatus)}>
+              <option value="all">全部状态</option>
+              <option value="unprocessed">未处理</option>
+              <option value="processing">AI 处理中</option>
+              <option value="pending_confirmation">待确认草稿</option>
+              <option value="generated">已入库</option>
+              <option value="failed">处理失败</option>
+            </select>
+            {hasRawFilter && <button type="button" className="text-button" onClick={() => { setRawQuery(''); setRawStatusFilter('all'); }}>重置筛选</button>}
+          </div>
+        </div>}
+        {items.length === 0 ? <div className="list-empty"><div className="empty-symbol">▧</div><b>还没有原始资料</b><span>导入第一份文章或业务记录。</span><button className="secondary-button" onClick={onOpenImport}>导入资料</button></div>
+          : filteredItems.length === 0 ? <p className="raw-filter-empty" role="status">没有匹配的原始资料。</p>
+          : <div className="raw-list">{filteredItems.map(item => {
         const state = processing[item.id];
         return <button key={item.id} className={`raw-list-item ${selected?.id === item.id ? 'selected' : ''}`} onClick={() => onSelected(item.id)}><span className="file-icon">文</span><span className="recent-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{sourceLabels[item.sourceType]} · {item.sourceName}{item.origin ? ' · 本机专用' : ''}</small><small>{dateText(item.importedAt)}{state && state.status !== 'unprocessed' ? ` · ${state.status === 'processing' ? '上次保存状态：' : ''}${rawStatusLabels[state.status]}` : ''}</small></span></button>;
-      })}</div> : <div className="list-empty"><div className="empty-symbol">▧</div><b>还没有原始资料</b><span>导入第一份文章或业务记录。</span><button className="secondary-button" onClick={onOpenImport}>导入资料</button></div>}</section>
+      })}</div>}
+      </section>
       <section className="panel raw-detail-panel">{selected ? <RawDetail initialOriginal={initialOriginal} initialCitation={initialCitation} initialTranslation={importTranslation?.rawId === selected.id ? importTranslation : null} key={selected.id} item={selected} state={selectedState} job={job} onStorageReconciled={value => { onJobStarted(value, navigationGeneration, selectionGeneration); void onRefresh(); }} busy={aiBusy} error={aiError} onStartAi={(restart, planningRetry,mode) => void startAi(selected.id, restart, planningRetry,mode)} onReimport={() => setReimport(selected)} onDelete={() => setDeletingItem(selected)} onOpenDraft={onOpenDraft} onBodySaved={onBodySaved ?? (() => { void onRefresh(); })} /> : selectedId ? <div className="detail-empty" role="status"><span className="empty-symbol">▤</span><b>所选 Raw 不存在或已删除</b><span>服务端未返回 ID {selectedId} 对应的资料。请选择列表中的其他 Raw。</span></div> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>选择一条资料开始阅读</b><span>导入后，正文和来源信息会显示在这里。</span></div>}</section>
     </div>
     {dialogOpen && <ImportDialog prefill={reimport} onClose={closeDialogs} onCommitted={onCommitted} onOpen={openCommitted} onGenerate={generateImported} />}
@@ -451,8 +481,8 @@ export function ImportDialog({ onClose, onCommitted, onOpen, onGenerate, prefill
   const savingRef = useRef(false);
   const [generationFailure, setGenerationFailure] = useState('');
   const [generationRaw, setGenerationRaw] = useState<Raw | null>(null);
-  const material = file ? 'file' : form.body.trim() ? 'paste' : form.url.trim() ? 'url' : null;
-  const urlOnly = material === 'url';
+  const material = mode === 'url' ? (form.url.trim() ? 'url' : null) : file ? 'file' : form.body.trim() ? 'paste' : form.url.trim() ? 'url' : null;
+  const urlOnly = mode === 'url' || material === 'url';
   const pdfFile = !!file && /\.pdf$/iu.test(file.name);
   const update = (key: keyof typeof form, value: string) => {
     if (key === 'tags') setTagsTouched(true);
@@ -480,7 +510,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, onGenerate, prefill
     savingRef.current = true;
     setFailure(null); setGenerationFailure(''); setSaving(true);
     try {
-      if (file) {
+      if (mode !== 'url' && file) {
         if (file.size > MAX_UPLOAD_BYTES) { setFailure({ code: 'FILE_TOO_LARGE', retained: false, fileName: file.name, byteSize: file.size, message: `文件为 ${bytesText(file.size)}，超过 ${MAX_UPLOAD_MIB} MiB 上限，未上传。` }); return; }
         const payload = new FormData();
         payload.append('metadata', JSON.stringify(metadata()));
@@ -495,7 +525,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, onGenerate, prefill
         const raw = await api<Raw>('/api/raw', { method: 'POST', body: JSON.stringify({ ...metadata(), body: form.body }) });
         await onCommitted(raw);
         if (generateAfterSave) { setGenerationRaw(raw); try { await onGenerate(raw); setGenerationRaw(null); onOpen(raw); } catch (problem) { setGenerationFailure(problem instanceof Error ? problem.message : 'Wiki 草稿未生成，可用同一 Raw 重试。'); } } else onOpen(raw);
-      } else if (urlOnly) {
+      } else if (material === 'url') {
         const {raw, translation} = await api<RawUrlImportResult>('/api/raw/import', {method: 'POST', body: JSON.stringify({metadata: metadata(), translateToChinese})});
         await onCommitted(raw);
         onOpen(raw, translation);
@@ -530,6 +560,7 @@ export function ImportDialog({ onClose, onCommitted, onOpen, onGenerate, prefill
         <div className="dialog-tabs" role="tablist">
           <button type="button" role="tab" aria-selected={mode === 'paste'} disabled={saving} className={`dialog-tab ${mode === 'paste' ? 'active' : ''}`} onClick={() => setMode('paste')}>粘贴文本<small>从文章或笔记复制全文</small></button>
           <button type="button" role="tab" aria-selected={mode === 'file'} disabled={saving} className={`dialog-tab ${mode === 'file' ? 'active' : ''}`} onClick={() => setMode('file')}>上传文件<small>Markdown / TXT / DOCX / PDF</small></button>
+          <button type="button" role="tab" aria-selected={mode === 'url'} disabled={saving} className={`dialog-tab ${mode === 'url' ? 'active' : ''}`} onClick={() => { setMode('url'); removeFile(); }}>网页链接<small>从公开网页读取原文</small></button>
         </div>
         <form onSubmit={event => { event.preventDefault(); void submit(false); }}>
           {failure && !failure.committed && <div className="form-error" role="alert">
@@ -545,12 +576,11 @@ export function ImportDialog({ onClose, onCommitted, onOpen, onGenerate, prefill
             <label className="field"><span>来源名称 {material === 'paste' && <em>*</em>}</span><input value={form.sourceName} onChange={event => update('sourceName', event.target.value)} required={material === 'paste'} maxLength={300} placeholder="例如：客户访谈 / 公众号名称" /></label>
             <label className="field">作者<input value={form.author} onChange={event => update('author', event.target.value)} maxLength={200} placeholder="可选" /></label>
             <label className="field">原发布日期<input type="date" value={form.publishedAt} onChange={event => update('publishedAt', event.target.value)} /></label>
-            <label className="field span-two">原始链接<input type="url" value={form.url} onChange={event => update('url', event.target.value)} placeholder="https://…（可选）" /><span className="field-hint">没有文件或粘贴正文时，可从公开网页读取原文。标题和来源可从网页取得。</span></label>
+            <label className="field span-two"><span>原始链接 {mode === 'url' && <em>*</em>}</span><input type="url" value={form.url} onChange={event => update('url', event.target.value)} required={mode === 'url'} placeholder={mode === 'url' ? 'https://…' : 'https://…（可选）'} /><span className="field-hint">没有文件或粘贴正文时，可从公开网页读取原文。标题和来源可从网页取得。</span></label>
             {urlOnly && <label className="raw-translate-choice span-two"><input type="checkbox" checked={translateToChinese} onChange={event => setTranslateToChinese(event.target.checked)} />翻译成中文（会调用已配置模型）</label>}
             <label className="field span-two">标签<input value={form.tags} onChange={event => update('tags', event.target.value)} placeholder="用逗号或顿号分隔，例如：渠道、库存" /><span className="field-hint">分隔符：中文/英文逗号、顿号、分号 · 当前 {commitTags().length} 项{tagsTouched ? '' : '（未修改，按原标签保存）'}</span></label>
-            {mode === 'paste'
-              ? <label className="field span-two body-field">原始正文<textarea value={form.body} onChange={event => update('body', event.target.value)} maxLength={MAX_BODY_CHARS} placeholder="粘贴文章、会议纪要或业务资料原文。前后空白和换行会原样保留。" /><span className="field-hint">最多 {MAX_BODY_CHARS.toLocaleString()} 字符 · {form.body.length.toLocaleString()} 字符</span></label>
-              : <div className="field span-two file-picker">
+            {mode === 'paste' && <label className="field span-two body-field">原始正文<textarea value={form.body} onChange={event => update('body', event.target.value)} maxLength={MAX_BODY_CHARS} placeholder="粘贴文章、会议纪要或业务资料原文。前后空白和换行会原样保留。" /><span className="field-hint">最多 {MAX_BODY_CHARS.toLocaleString()} 字符 · {form.body.length.toLocaleString()} 字符</span></label>}
+            {mode === 'file' && <div className="field span-two file-picker">
                 <span>原文件（可选）</span>
                 <input ref={fileInput} type="file" accept={ACCEPTED_FILES} onChange={event => chooseFile(event.target.files?.[0] ?? null)} />
                 <span className="field-hint">支持 Markdown（.md/.markdown）、TXT（.txt，严格 UTF-8）、DOCX、PDF；单个文件上限 {MAX_UPLOAD_MIB} MiB，提取正文上限 {MAX_BODY_CHARS.toLocaleString()} 字符。扫描版 PDF 可以逐页阅读，加密 PDF 暂不支持。</span>

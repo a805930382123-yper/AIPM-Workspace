@@ -116,6 +116,10 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
   const blockedSource = !view.preview?.rawExists || !view.preview.rawSha256Matches || (!noChanges&&!!view.preview.sourceAmbiguous);
   const disabled = !!busy || readOnly || !!recovering || pendingRecovery || deferred || advancedDirty || advancedBusy || noteSaving;
   const editing = !!edit || noteDirty;
+  const selectablePageIds = cards
+    .filter(({ page, change }) => !disabled && !editing && !adjustment && !change?.committedOperationId && (change || page.reviewDecision !== 'update'))
+    .map(({ page }) => page.pageId);
+  const allSelectableChosen = selectablePageIds.length > 0 && selectablePageIds.every(id => chosen.includes(id));
   const navigationDisabled = !!busy || editing || noteSaving;
   const missingDependencies=cards.filter(({page,change})=>chosen.includes(page.pageId)&&change?.dependsOn.some(id=>cards.some(other=>other.change?.changeId===id&&!other.change.committedOperationId&&!chosen.includes(other.page.pageId))));
   const canConfirm = !busy && !editing && !adjustment && !noteSaving && !advancedDirty && !advancedBusy && !blockedSource && !pendingRecovery && !deferred && (recovering || (!readOnly && !missingDependencies.length && (chosen.length > 0 || allowsSourceOnly)));
@@ -358,7 +362,21 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
       </>}
     </section>
     <section className="outcome-cards" aria-label="选择入库成果">
-      <div><h2>知识主题</h2><p>阅读整理结果，选择值得加入知识库的主题。</p></div>
+      <div className="outcome-cards-heading">
+        <div>
+          <h2>知识主题</h2>
+          <p>阅读整理结果，选择值得加入知识库的主题。</p>
+        </div>
+        {selectablePageIds.length > 0 && !(view.maintenance && view.discardedAt) && (
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => setSelection(ids => allSelectableChosen ? ids.filter(id => !selectablePageIds.includes(id)) : [...new Set([...ids, ...selectablePageIds])])}
+          >
+            {allSelectableChosen ? '取消全选主题' : `全选可选主题（${selectablePageIds.length} 项）`}
+          </button>
+        )}
+      </div>
       {cards.map(({page, change,topics}) => {
         const title = change?.candidate.title ?? page.title;
         const target = view.maintenance?.context.find(wiki => wiki.id === change?.targetWikiId);

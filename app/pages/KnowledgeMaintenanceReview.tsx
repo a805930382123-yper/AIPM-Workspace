@@ -24,13 +24,27 @@ export function KnowledgeMaintenanceReview({view,body,onView,onBack,backLabel,on
   });
   const unresolved=Object.values(view.humanReview?.assignments??{}).filter(id=>id===null).length;
   const complete=unresolved===0&&accepted.length>0&&accepted.every(c=>c.approval?.digest===view.changeDigests?.[c.changeId]&&c.dependsOn.every(id=>changes.some(other=>other.changeId===id&&(other.committedOperationId||other.decision==='accept'))));
+  const editingCount=Object.keys(editing).length;
+  const noteUnapproved=!view.input&&!!view.structuredNote&&view.noteApproval?.digest!==view.reviewContentDigest;
+  const missingDeps=accepted.some(c=>c.dependsOn.some(id=>!changes.some(other=>other.changeId===id&&(other.committedOperationId||other.decision==='accept'))));
+  const unapprovedCount=accepted.filter(c=>c.approval?.digest!==view.changeDigests?.[c.changeId]).length;
+  const gateHint=readOnly||(!!view.input&&view.questionBasisChanged)?''
+    :editingCount>0?`有 ${editingCount} 项候选正文正在编辑中，请先保存编辑并重新审核。`
+    :noteDirty?'深度整理笔记有未保存修改，请先保存。'
+    :unresolved>0?''
+    :noteUnapproved?'请先在下方深度整理笔记区域勾选核对确认。'
+    :accepted.length===0?'请至少接受 1 项知识变更后再确认写入。'
+    :missingDeps?'已接受变更存在未一并接受的依赖项，请先接受对应依赖项。'
+    :unapprovedCount>0?`尚有 ${unapprovedCount} 项已接受变更未勾选底部「我已核对」复选框。`
+    :'';
   const confirm=()=>run(async()=>{
     const result=await confirmDraft(view.id,{baseRevision:view.revision,selectedPageIds:accepted.map(c=>view.pages[c.pageIndex].pageId),idempotencyKey:crypto.randomUUID()});
     setSaved(view.input?.kind==='inspection'?`已保存本次 ${accepted.length} 项审核变更。`:`已保存本次 ${accepted.length} 项变更；Source ${result.sourceId??'已复用'}。`);onView(await draftView(view.id));await onCommitted();
   });
   return <div className="page draft-page" aria-busy={busy}>
-    <div className="page-heading"><div><h1>审核知识变更</h1><p className="subheading">{view.input?.kind==='inspection'?'知识检查：'+view.input.findings.map(f=>f.summary).join('；'):view.input?'问答成果：'+view.input.question:view.rawTitle} · {view.input?.kind==='inspection'?'检查维护':view.input?'问答维护':view.structuredNote?'深度整理':'标准整理'} · 草稿 v{view.revision}</p></div><div className="heading-actions"><button className="secondary-button" onClick={onBack}>{backLabel ?? (view.input ? '返回知识库' : '返回 Raw')}</button><button className="primary-button" disabled={busy||readOnly||(!!view.input&&view.questionBasisChanged)||!complete||noteDirty||Object.keys(editing).length>0||(!!view.structuredNote&&view.noteApproval?.digest!==view.reviewContentDigest)} onClick={()=>void confirm()}>确认写入 Wiki（{accepted.length}）</button></div></div>
+    <div className="page-heading"><div><h1>审核知识变更</h1><p className="subheading">{view.input?.kind==='inspection'?'知识检查：'+view.input.findings.map(f=>f.summary).join('；'):view.input?'问答成果：'+view.input.question:view.rawTitle} · {view.input?.kind==='inspection'?'检查维护':view.input?'问答维护':view.structuredNote?'深度整理':'标准整理'} · 草稿 v{view.revision}</p></div><div className="heading-actions"><button className="secondary-button" onClick={onBack}>{backLabel ?? (view.input ? '返回知识库' : '返回 Raw')}</button><button className="primary-button" disabled={busy||readOnly||(!!view.input&&view.questionBasisChanged)||!complete||noteDirty||editingCount>0||noteUnapproved} onClick={()=>void confirm()}>确认写入 Wiki（{accepted.length}）</button></div></div>
     {view.input&&view.questionBasisChanged&&<p className="notice-warn" role="alert">{view.input?.kind==='inspection'?'检查依据已变化，请重新检查核验。正式写入已阻断。':'问答依据已变化，请保留此草稿并重新提问核验。正式写入已阻断。'}</p>}
+    {gateHint&&<p className="notice-warn maintenance-gate-hint" role="status">{gateHint}</p>}
     <p className="notice-warn">逐项接受、核对并确认后，才会写入正式知识。暂缓项保留在草稿；编辑会取消该项确认，需重新审核。{view.input?.kind==='inspection'?'检查结论是待核建议，不构成新来源；请核对所选问题、全部依据与候选差异。':view.input?'问答成果基于既有资料，回答不构成新来源；请核对全部真实依据。':'来源笔记只记录本份资料，主题页积累跨来源知识。'}</p>
     {error&&<div className="form-error" role="alert">{error}</div>}{saved&&<div className="notice-success" role="status">{saved}</div>}
     <section className="panel draft-card-body"><h2>本次变更清单</h2><table className="maintenance-change-table"><thead><tr><th>操作</th><th>主题</th><th>待核</th><th>处理</th></tr></thead><tbody>{changes.map(c=><tr key={c.changeId}><td>{({create:'新建',update:'更新',link:'关联',noop:'无变化'})[c.action]}</td><td><a href={'#'+c.changeId}>{c.candidate.title}</a></td><td>{c.questions.length?c.questions.join('；'):'无新增问题'}</td><td>{c.committedOperationId?'已提交':c.decision==='accept'?'已接受':'暂缓'}</td></tr>)}</tbody></table></section>

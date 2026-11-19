@@ -40,6 +40,9 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
   const [goal, setGoal] = useState('');
   const [createError, setCreateError] = useState('');
   const [creating, setCreating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [kindFilter, setKindFilter] = useState<'all' | WorkItemKind>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'closed'>('all');
 
   useEffect(() => {
     if (mode === 'create' || (mode === 'detail' && item?.id === id)) return;
@@ -85,6 +88,15 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
     setMode('create');
   };
   const product = createKind === 'product_analysis';
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const hasFilters = Boolean(normalizedQuery) || kindFilter !== 'all' || statusFilter !== 'all';
+  const filteredItems = items ? items.filter(entry => {
+    if (kindFilter !== 'all' && (entry.kind ?? 'customer_issue') !== kindFilter) return false;
+    if (statusFilter === 'active' && entry.status === 'closed') return false;
+    if (statusFilter === 'closed' && entry.status !== 'closed') return false;
+    if (normalizedQuery && !entry.title.toLowerCase().includes(normalizedQuery)) return false;
+    return true;
+  }) : null;
   return <div className="page work-page">
     <div className="page-heading">
       <div>
@@ -112,10 +124,26 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
     {mode !== 'create' && (loadError ? <div className="panel work-section">
       <p className="form-error" role="alert">{loadError}</p>
       <button className="secondary-button" onClick={() => setReload(value => value + 1)}>重新读取</button>
-    </div> : mode === 'detail' || items === null ? <p role="status">正在读取工作事项…</p> : <section className="panel work-section" aria-labelledby="work-list-heading">
-      <div className="work-section-heading"><h2 id="work-list-heading">事项列表</h2><span className="work-note">{items.length} 项</span></div>
-      {items.length === 0 ? <p className="work-note">还没有工作事项。可先记录一条客户反馈或产品分析目标。</p> : <ul className="work-list">
-        {items.map(entry => <li key={entry.id}>
+    </div> : mode === 'detail' || items === null || filteredItems === null ? <p role="status">正在读取工作事项…</p> : <section className="panel work-section" aria-labelledby="work-list-heading">
+      <div className="work-section-heading"><h2 id="work-list-heading">事项列表</h2><span className="work-note">{filteredItems.length === items.length ? `${items.length} 项` : `${filteredItems.length} / ${items.length} 项`}</span></div>
+      {items.length > 0 && <div className="work-list-filters">
+        <input type="search" aria-label="搜索工作事项" placeholder="搜索事项标题…" value={searchQuery} onChange={event => setSearchQuery(event.target.value)} />
+        <select aria-label="筛选事项类型" value={kindFilter} onChange={event => setKindFilter(event.target.value as 'all' | WorkItemKind)}>
+          <option value="all">全部类型</option>
+          <option value="customer_issue">客户问题</option>
+          <option value="product_analysis">产品分析</option>
+        </select>
+        <select aria-label="筛选进展状态" value={statusFilter} onChange={event => setStatusFilter(event.target.value as 'all' | 'active' | 'closed')}>
+          <option value="all">全部状态</option>
+          <option value="active">进行中（未关闭）</option>
+          <option value="closed">已解决或已完成</option>
+        </select>
+        {hasFilters && <button type="button" className="text-button" onClick={() => { setSearchQuery(''); setKindFilter('all'); setStatusFilter('all'); }}>重置筛选</button>}
+      </div>}
+      {items.length === 0 ? <p className="work-note">还没有工作事项。可先记录一条客户反馈或产品分析目标。</p>
+        : filteredItems.length === 0 ? <p className="work-note" role="status">没有匹配筛选条件的工作事项。</p>
+        : <ul className="work-list">
+        {filteredItems.map(entry => <li key={entry.id}>
           <button className="work-list-row" onClick={() => open(entry.id)}>
             <span className="work-list-title">{entry.title}</span>
             <span className="work-note">{workKindLabel(entry.kind)}</span>
@@ -159,6 +187,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
   const [busy, setBusy] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [leaveConfirm, setLeaveConfirm] = useState(false);
   const remove = async () => {
     setBusy(true); setDeleteError('');
     try {
@@ -238,25 +267,50 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
         ? { title: '继续处理', reason: '最近一次复测未通过。', status: 'in_progress' as const, waitingFor: '', nextStep: '核对失败原因并继续处理' }
         : undefined;
   const savedContext = contextOf(saved);
+  const savedAnalysis = analysisOf(saved.analysis);
+  const analysisDirty = (Object.keys(savedAnalysis) as Array<keyof typeof savedAnalysis>).some(field => analysis[field] !== savedAnalysis[field]);
+  const currentDirty = (Object.keys(savedContext) as Array<keyof typeof savedContext>).some(field => context[field] !== savedContext[field])
+    || (closing && Boolean(closureReason.trim()))
+    || (product && analysisDirty);
+  const historyDirty = Boolean(historyText.trim());
+  const reportDirty = report !== (saved.reportDraft ?? '') || sent !== null;
+  const anyDirty = currentDirty || (!product && (historyDirty || reportDirty));
+  useEffect(() => {
+    if (!anyDirty) setLeaveConfirm(false);
+  }, [anyDirty]);
   const suggestionFields = ['waitingFor', 'nextStep', 'followUpOn'] as const;
 
   return <div className="page work-page work-detail">
     <div className="page-heading">
-      <div><button className="text-button work-back" onClick={onBack}>返回工作事项</button><h1>{saved.title}</h1>
+      <div><button type="button" className="text-button work-back" onClick={() => { if (!anyDirty) onBack(); else setLeaveConfirm(true); }}>返回工作事项</button><h1>{saved.title}</h1>
         <div className="work-detail-meta"><span>{workKindLabel(saved.kind)}</span><Status kind={saved.kind} value={saved.status} /><span>最近保存 {formatTime(saved.updatedAt)}</span></div>
         <p className="work-note work-save-hint">各区独立保存。修改后，请使用该区的保存按钮。</p>
       </div>
+      <div className="work-buttons">
+        <button type="button" className="secondary-button" disabled={busy} onClick={() => setDeleteConfirm(true)}>删除事项</button>
+      </div>
     </div>
-    <section className="panel work-section" aria-label="删除工作事项">
-      {!deleteConfirm ? <button className="secondary-button" disabled={busy} onClick={() => setDeleteConfirm(true)}>删除事项</button> : <>
+    {leaveConfirm && anyDirty && <section className="panel work-section work-leave-confirm" role="alert" aria-label="未保存修改确认">
+      <p>当前事项有未保存的修改，确定放弃修改并返回工作事项列表？</p>
+      <div className="work-buttons">
+        <button type="button" className="secondary-button" onClick={() => setLeaveConfirm(false)}>继续编辑</button>
+        <button type="button" className="primary-button" onClick={onBack}>放弃修改并返回</button>
+      </div>
+    </section>}
+    {(deleteConfirm || deleteError) && <section className="panel work-section" aria-label="删除工作事项">
+      {deleteConfirm && <>
         <p>确定删除“{saved.title}”及其处理记录？删除无法撤销，未保存的修改也将丢失。关联 Raw 原文保留。</p>
         <p className="work-note">已有截图、分析及复核文件保留在本机，但不再从事项入口访问。</p>
-        <div className="work-buttons"><button className="secondary-button" disabled={busy} onClick={() => { setDeleteConfirm(false); setDeleteError(''); }}>取消删除</button><button className="primary-button" disabled={busy} onClick={() => void remove()}>{busy ? '正在删除…' : '确认删除事项'}</button></div>
+        <div className="work-buttons"><button type="button" className="secondary-button" disabled={busy} onClick={() => { setDeleteConfirm(false); setDeleteError(''); }}>取消删除</button><button type="button" className="primary-button" disabled={busy} onClick={() => void remove()}>{busy ? '正在删除…' : '确认删除事项'}</button></div>
       </>}
       {deleteError && <p className="form-error" role="alert">{deleteError} 请重新打开事项后核对并重试。</p>}
-    </section>
+    </section>}
     <section className="panel work-section" aria-labelledby="work-current">
-      <div className="work-section-heading"><h2 id="work-current">当前情况</h2>
+      <div className="work-section-heading">
+        <div className="work-section-title-group">
+          <h2 id="work-current">当前情况</h2>
+          {currentDirty && <span className="work-dirty-badge" role="status">有未保存修改</span>}
+        </div>
         {!product && saved.status !== 'closed' && <button className="primary-button" disabled={busy} onClick={() => { changeContext('status', 'closed'); setFocusClosure(true); }}>标记为已解决</button>}
         {saved.status === 'closed' && <button className="secondary-button" disabled={busy} onClick={() => void update('current', { reopen: true }, '事项已重开。', next => changeContext('status', next.status))}>重开事项</button>}
       </div>
@@ -330,7 +384,12 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
     </section>
 
     {!product && <section className="panel work-section" aria-labelledby="work-history">
-      <div className="work-section-heading"><h2 id="work-history">处理记录</h2></div>
+      <div className="work-section-heading">
+        <div className="work-section-title-group">
+          <h2 id="work-history">处理记录</h2>
+          {(historyDirty || reportDirty) && <span className="work-dirty-badge" role="status">有未保存修改</span>}
+        </div>
+      </div>
       <ol className="work-history-list">
         <li><div><h3>原客户反馈</h3><time dateTime={saved.createdAt}>{formatTime(saved.createdAt)}</time></div><p className="work-prose">{saved.feedback}</p></li>
         {saved.history.map((entry, index) => <li key={`${entry.at}:${index}`}>
@@ -463,7 +522,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
       item={saved}
       rawById={rawById}
       busy={busy}
-      analysisDirty={Object.entries(analysisOf(saved.analysis)).some(([field, value]) => analysis[field as keyof WorkAnalysis] !== value)}
+      analysisDirty={analysisDirty}
       reloadItem={() => readLatest('analysis')}
       analysisNotice={renderNotice('analysis')}
       saveStage={(body, analysisRunId, onSaved) => void update('stage', { history: { kind: 'stage_result', body, analysisRunId } }, '阶段成果已保存。', onSaved)}
