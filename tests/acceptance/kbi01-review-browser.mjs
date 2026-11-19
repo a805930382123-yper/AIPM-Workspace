@@ -25,7 +25,7 @@ const hashes=async()=>{
 };
 const before=await hashes();
 const {chromium}=createRequire(import.meta.url)(path.join(os.homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));
-const browser=await chromium.launch({executablePath:path.join(os.homedir(),'AppData/Local/Google/Chrome/Application/chrome.exe'),headless:true});
+const browser=await chromium.launch({executablePath:process.env.QAUI02_BROWSER??path.join(os.homedir(),'AppData/Local/Google/Chrome/Application/chrome.exe'),headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:900}});
 page.setDefaultTimeout(12000);
 const requests=[];
@@ -94,7 +94,8 @@ try{
   assert(await lint.evaluate(element=>element===document.activeElement&&element.matches(':focus-visible')));
   const [lintResult]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname==='/api/wiki-lint'),page.keyboard.press('Enter')]);
   assert(lintResult.ok());
-  await page.getByText(/Lint 检查完成/).waitFor();
+  const lintPanel=page.getByRole('region',{name:'结构检查结果'});
+  await lintPanel.getByRole('status').filter({hasText:'Lint 检查完成'}).waitFor();
   assert.equal(await page.getByRole('tab',{name:'结构检查（Lint）',exact:true}).getAttribute('aria-selected'),'true');
   assert.deepEqual(await hashes(),before);
   await writeFile(path.join(root,'review.json'),JSON.stringify({before,requests,draftId,reopened:existing.url(),lintStatus:lintResult.status(),keyboard:'Tab + Enter'},null,2));

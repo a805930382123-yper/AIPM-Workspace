@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';import test from 'node:test';import {JSDOM} from 'jsdom';
+import type { WikiLintResult } from '../app/api.ts';
 const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>',{url:'http://localhost/',pretendToBeVisual:true}),{window}=dom;
 for(const [name,value]of Object.entries({window,document:window.document,navigator:window.navigator,HTMLElement:window.HTMLElement,HTMLInputElement:window.HTMLInputElement,HTMLTextAreaElement:window.HTMLTextAreaElement,HTMLSelectElement:window.HTMLSelectElement,Event:window.Event,MouseEvent:window.MouseEvent,CustomEvent:window.CustomEvent,Node:window.Node,IS_REACT_ACT_ENVIRONMENT:true}))Object.defineProperty(globalThis,name,{value,writable:true,configurable:true});
 const {act,createElement}=await import('react'),{createRoot}=await import('react-dom/client'),{WikiPage}=await import('../app/pages/WikiPage.tsx');
@@ -46,4 +47,116 @@ test('EDGE Wiki selected click invalidates an older save/readback and returns fr
 });
 for(const id of ['wiki-b','missing-wiki'])test(`EDGE Wiki recent-open ${id} remains readable or reports missing explicitly`,async()=>{
  const f=await harness({initialOpenId:id});try{if(id==='wiki-b'){await wait(()=>f.details().includes(b.body),'recent B');await wait(()=>!!f.item(b.title),'B listed');await click(f.item(b.title));assert(f.details().includes(b.body));}else{await wait(()=>/已不存在或无法读取|隔离未知页面/u.test(f.container.querySelector('[role="alert"]')?.textContent??''),'missing recent');await wait(()=>f.container.querySelectorAll('.wiki-list-item').length===2,'list after missing recent');assert(f.calls.some(c=>c.url==='/api/wiki/missing-wiki'));assert.equal(f.details(),'');assert(!f.details().includes(a.body));}}finally{await f.clean();}
+});
+
+test('LINT02 renders the scan states, all rule filters and precise grouped locations', async () => {
+  const f = await harness();
+  try {
+    const scan = f.defer();
+    const finding = (code: string, id: string | null, location: WikiLintResult['findings'][number]['location'], message = '合成检查说明。') => ({
+      code, objectId: id, pageTitle: id ? '两页同名' : null,
+      file: id ? `knowledge/wiki/${id}.md` : 'knowledge/audit/missing-wiki.json', message, location,
+    });
+    const line = '  - 文件中的原行 [[缺失目标]]';
+    const shared = '这条事实没有可定位的证据。';
+    const brokenMessage = '链接“缺失目标”没有可打开的 Wiki。';
+    const result: WikiLintResult = {
+      generatedAt: '2026-11-19', wikiFilesSha256: 'fixture-only',
+      findings: [
+        finding('SOURCE_MISSING', 'wiki-b', { scope: 'page', line: 5 }),
+        finding('BROKEN_WIKI_LINK', 'wiki-a', { scope: 'line', line: 18, text: line }, brokenMessage),
+        finding('BROKEN_WIKI_LINK', 'wiki-a', { scope: 'line', line: 19, text: line }, brokenMessage),
+        finding('SOURCE_MISSING', 'wiki-a', { scope: 'page', line: 5 }),
+        finding('UNSOURCED_FACT', 'wiki-a', { scope: 'line', line: 20, text: '- 合成事实一' }, shared),
+        finding('UNSOURCED_FACT', 'wiki-a', { scope: 'line', line: 21, text: '- 合成事实二' }, shared),
+        finding('OPEN_AUDIT', null, { scope: 'page', line: 1 }),
+      ],
+      summary: { SOURCE_MISSING: 2, BROKEN_WIKI_LINK: 2, UNSOURCED_FACT: 2, OPEN_AUDIT: 1 },
+    };
+    const byText = (value: string) => [...f.container.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === value);
+    const panel = f.container.querySelector('#wiki-view-lint')!;
+    const groups = () => [...panel.querySelectorAll<HTMLElement>('.lint-page-group')];
+    f.intercept(url => url === '/api/wiki-lint' ? scan.promise : undefined);
+    await click(byText('结构检查（Lint）'));
+    assert.match(panel.textContent!, /正在检查知识库/u);
+    assert.equal(byText('重新检查')?.disabled, true);
+    await act(async () => { scan.resolve(reply(result)); await tick(); });
+    assert.match(panel.textContent!, /共 7 个问题 · 涉及 2 个 Wiki 页面/u);
+    assert.deepEqual(groups().map(group => group.dataset.wikiId), ['wiki-a', 'wiki-b', undefined]);
+    assert.ok(groups().every(group => group.querySelector('[aria-expanded]')?.getAttribute('aria-expanded') === 'false'));
+    assert.equal(groups()[0].querySelector('.lint-page-count')?.textContent, '5 条');
+    assert.deepEqual([...groups()[0].querySelectorAll('.lint-type-count')].map(badge => badge.textContent), ['断开的 Wiki 链接 2', '缺少有效来源 1', '事实缺少可定位证据 2']);
+    assert.ok(groups()[0].querySelector('.lint-edit-button'));
+    assert.equal(groups()[2].querySelector('.lint-edit-button'), null);
+    assert.match(groups()[2].textContent!, /无法编辑/u);
+    const ruleFilters = [...panel.querySelectorAll<HTMLButtonElement>('.lint-filters button')];
+    assert.equal(ruleFilters.length, 12);
+    for (const button of ruleFilters.slice(1)) {
+      await click(button);
+      assert.equal(button.getAttribute('aria-pressed'), 'true');
+      assert.ok(panel.querySelector('.lint-rule-guide')?.textContent?.includes('修复建议'));
+    }
+    assert.match(panel.textContent!, /显示 0 \/ 7 条问题/u);
+    await click(ruleFilters.find(button => button.textContent?.startsWith('断开的 Wiki 链接')));
+    assert.match(panel.textContent!, /显示 2 \/ 7 条问题/u);
+    assert.deepEqual(groups().map(group => group.dataset.wikiId), ['wiki-a']);
+    await click(groups()[0].querySelector<HTMLButtonElement>('.lint-page-toggle'));
+    assert.equal(groups()[0].querySelector('pre')?.textContent, line);
+    assert.match(groups()[0].textContent!, /L18.*断开的 Wiki 链接/u);
+    assert.match(groups()[0].querySelector('.lint-finding-meta')?.textContent ?? '', /knowledge\/wiki\/wiki-a\.md.*BROKEN_WIKI_LINK/u);
+    assert.deepEqual([...groups()[0].querySelectorAll('.lint-findings li p')].map(row => row.textContent), [brokenMessage, brokenMessage]);
+    await click(ruleFilters[0]);
+    assert.match(groups()[0].textContent!, /页面属性.*缺少有效来源/u);
+    assert.match(groups()[0].querySelector('.lint-group-notes')?.textContent ?? '', /这条事实没有可定位的证据。/u);
+    assert.equal(groups()[0].textContent!.split(shared).length - 1, 1);
+    assert.deepEqual([...groups()[0].querySelectorAll('.lint-findings pre')].map(row => row.textContent), [line, line, '- 合成事实一', '- 合成事实二']);
+
+    f.intercept(url => url === '/api/wiki-lint' ? Promise.resolve(reply({ error: { message: '合成读取失败。' } }, 503)) : undefined);
+    await click(byText('重新检查'));
+    assert.match(panel.querySelector('[role="alert"]')?.textContent ?? '', /结构检查失败.*合成读取失败/u);
+    assert.match(panel.textContent!, /上次检查结果.*共 7 个问题/u);
+    f.intercept(url => url === '/api/wiki-lint' ? Promise.resolve(reply({ ...result, findings: [], summary: {} })) : undefined);
+    await click(byText('重新检查'));
+    assert.equal(panel.querySelector('[role="alert"]'), null);
+    assert.match(panel.querySelector('.lint-notice-clean')?.textContent ?? '', /没有发现结构问题/u);
+    assert.equal(groups().length, 0);
+  } finally { await f.clean(); }
+});
+
+test('LINT02 collapsed same-title cards open the correct fresh editor and save only on submit', async () => {
+  const f = await harness();
+  try {
+    await wait(() => f.details().includes(a.body), 'initial Wiki');
+    const lintResult: WikiLintResult = {
+      generatedAt: '2026-11-19', wikiFilesSha256: 'fixture-only', summary: { DUPLICATE_TITLE: 2 },
+      findings: [a, b].map(item => ({
+        code: 'DUPLICATE_TITLE', objectId: item.id, pageTitle: a.title, file: `knowledge/wiki/${item.id}.md`,
+        message: '测试同名', location: { scope: 'page', line: 1 },
+      })),
+    };
+    const freshA = { ...a, revision: 3, body: '点击 Lint 编辑用的甲最新版。' };
+    const freshB = { ...b, title: a.title, revision: 6, body: '同名页乙正文。' };
+    f.intercept((url, method) => {
+      if (url === '/api/wiki-lint') return Promise.resolve(reply(lintResult));
+      if (url === '/api/wiki/wiki-a') return Promise.resolve(reply(freshA));
+      if (url === '/api/wiki/wiki-b') return Promise.resolve(reply({ ...freshB, revision: method === 'PUT' ? 7 : 6 }));
+    });
+    const editor = () => f.container.querySelector<HTMLFormElement>('.wiki-editor');
+    const tab = f.container.querySelector<HTMLButtonElement>('#wiki-tab-lint');
+    const cardButton = (id: string) => f.container.querySelector<HTMLButtonElement>(`.lint-page-group[data-wiki-id="${id}"] .lint-edit-button`);
+    const writes = () => f.calls.filter(call => call.method !== 'GET');
+    await click(tab);
+    await click(cardButton(a.id));
+    await wait(() => editor()?.querySelector('textarea')?.value === freshA.body, 'fresh editor A');
+    assert.equal(window.document.activeElement, editor()?.closest('.wiki-detail-panel'));
+    await click(editor()?.querySelector<HTMLButtonElement>('[aria-label="取消编辑"]'));
+    assert.equal(editor(), null);
+    assert.deepEqual(writes(), []);
+    await click(tab);
+    await click(cardButton(b.id));
+    await wait(() => editor()?.querySelector('textarea')?.value === freshB.body, 'same title editor B');
+    assert.deepEqual(writes(), []);
+    await act(async () => { editor()!.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true })); await tick(); });
+    assert.deepEqual(writes(), [{ url: '/api/wiki/wiki-b', method: 'PUT' }]);
+  } finally { await f.clean(); }
 });

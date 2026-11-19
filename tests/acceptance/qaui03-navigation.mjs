@@ -91,9 +91,22 @@ try {
   await show(lint);
   const findings = await (await lintResponse).json();
   const finding = findings.findings.find(item => item.objectId === session.fixtures.wc);
-  const findingLink = button(`${finding.code} · ${finding.file}:${finding.location.line} · ${finding.message}`);
-  await findingLink.click();
-  await assertWiki('旧年份历史参考');
+  assert(finding);
+  const findingGroup = visiblePanel.locator(`.lint-page-group[data-wiki-id="${finding.objectId}"]`);
+  const findingLink = findingGroup.getByRole('button', { name: '前往编辑', exact: true });
+  const openLintEditor = async () => {
+    assert.equal(await findingGroup.locator('[aria-expanded]').getAttribute('aria-expanded'), 'false');
+    await findingLink.click();
+    await assertView(overview);
+    const editor = detailPanel.locator('form.wiki-editor');
+    await editor.waitFor();
+    assert.equal(await editor.getByRole('textbox', { name: /标题/u }).inputValue(), finding.pageTitle);
+    await page.waitForFunction(() => document.activeElement?.classList.contains('wiki-detail-panel'));
+    const cancel = editor.getByRole('button', { name: '取消编辑', exact: true });
+    await cancel.click();
+    await detailPanel.locator('.wiki-detail').getByRole('heading', { name: finding.pageTitle, exact: true }).waitFor();
+  };
+  await openLintEditor();
   await show(lint);
   assert.ok(await findingLink.isVisible());
   assert.equal(await button('关闭').count(), 0);
@@ -110,7 +123,7 @@ try {
   await nav.getByRole('button', { name: '首页', exact: true }).click();
   await page.locator('.recent-row').filter({ hasText: title }).first().click();
   await assertWiki(title);
-  console.log('Lint findings, independent manual create/save and home deep link open the proper overview detail');
+  console.log('Collapsed Lint groups open the correct editor; manual create/save and home deep links remain available');
 
   await page.setViewportSize({ width: 390, height: 844 });
   for (const name of [ask, check, raw, lint, overview]) {
@@ -126,8 +139,7 @@ try {
   await button('检查知识库').click();
   await assertView(lint);
   assert.equal((await homeLintResponse).status(), 200);
-  await findingLink.click();
-  await assertWiki('旧年份历史参考');
+  await openLintEditor();
   assert.deepEqual(errors, []);
   console.log('All five views exclusive and fit 390px, home shortcuts open the correct tabs, zero page errors');
   console.log(output);

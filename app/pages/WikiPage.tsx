@@ -1,6 +1,7 @@
 import type {AnswerCitation} from '../../services/wiki/question-input';
 import {WikiInspectionPanel} from '../components/WikiInspectionPanel';
 import {WikiQuestionPanel,type RawCitationTarget} from '../components/WikiQuestionPanel';
+import {WikiLintPanel} from '../components/WikiLintPanel';
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { Audit, AuditConflict, AuditDraft, ExtractionJob, KnowledgeWorkflowSummary, RawProcessingState, RawSummary, Wiki, WikiInput, WikiLintResult, WikiSchema, WikiType } from '../api';
 import { api, dateText, drafts, knowledgeWorkflows, sourceLabels, startExtract } from '../api';
@@ -35,7 +36,8 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
   const [hasOpenedAsk, setHasOpenedAsk] = useState(false);
   const [hasOpenedInspection, setHasOpenedInspection] = useState(false);
   const [inspectionCitation, setInspectionCitation] = useState<AnswerCitation | null>(null);
-  const [detailTarget, setDetailTarget] = useState<{ id: string } | null>(null);
+  const [detailTarget, setDetailTarget] = useState<{ id: string; edit?: boolean } | null>(null);
+  const [detailReload, setDetailReload] = useState(0);
   const detailPanel = useRef<HTMLElement>(null);
   const [schema, setSchema] = useState<WikiSchema | null>(null);
   const [raws, setRaws] = useState<RawSummary[]>([]);
@@ -111,9 +113,16 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
     if (!selectedId) { setSelected(null); return; }
     let active = true;
     setSelected(null);
-    api<Wiki>(`/api/wiki/${selectedId}`).then(value => { if (active) setSelected(value); }).catch(e => { if (active) setError(e instanceof Error ? e.message : '无法读取 Wiki 页面。'); });
+    api<Wiki>(`/api/wiki/${encodeURIComponent(selectedId)}`).then(value => {
+      if (active) setSelected(value);
+    }).catch(e => {
+      if (active) {
+        setDetailTarget(null);
+        setError(e instanceof Error ? e.message : '无法读取 Wiki 页面。');
+      }
+    });
     return () => { active = false; };
-  }, [selectedId]);
+  }, [selectedId, detailReload]);
 
   useEffect(() => { let active = true; const refreshSelected = () => { if (selectedId) { const version = selectionVersion.current; void api<Wiki>(`/api/wiki/${selectedId}`).then(value => { if (active && version === selectionVersion.current) setSelected(value); }).catch(() => undefined); } }; window.addEventListener('wiki:refresh', refreshSelected); return () => { active = false; window.removeEventListener('wiki:refresh', refreshSelected); }; }, [selectedId]);
 
@@ -154,7 +163,9 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
 
   useEffect(() => {
     const panel = detailPanel.current;
-    if (activeSubView !== 'overview' || !detailTarget || selected?.id !== detailTarget.id || form || !panel) return;
+    if (activeSubView !== 'overview' || !detailTarget || selected?.id !== detailTarget.id || !panel) return;
+    if (detailTarget.edit && !form) { startEdit(selected); return; }
+    if (!detailTarget.edit && form) return;
     panel.focus({ preventScroll: true });
     const evidence = panel.querySelector('[data-inspection-evidence]');
     if (evidence) evidence.scrollIntoView({ block: 'center' });
@@ -204,6 +215,12 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
     setInspectionCitation(citation ?? null);
     setDetailTarget({ id });
     setActiveSubView('overview');
+  };
+  const openLintEditor = (id: string) => {
+    openWiki(id);
+    setDetailTarget({ id, edit: true });
+    setSelected(null);
+    setDetailReload(previous => previous + 1);
   };
   const switchSubView = (view: WikiSubView) => {
     setActiveSubView(view);
@@ -292,25 +309,7 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
       {hasOpenedInspection && <WikiInspectionPanel items={items} currentWikiId={selectedId} onOpenWiki={openWiki} onOpenRaw={onOpenRaw} onOpenDraft={id => onOpenDraft?.(id)} />}
     </div>
     <div role="tabpanel" id="wiki-view-lint" aria-labelledby="wiki-tab-lint" hidden={activeSubView !== 'lint'}>
-      <section className="panel wiki-lint">
-        <div className="panel-heading">
-          <div><h2>结构检查（Lint）</h2><p>检查全库 Markdown 文件和知识页关联。</p></div>
-          <button className="secondary-button" disabled={lintBusy} onClick={() => void runLint()}>重新检查</button>
-        </div>
-        <div className="wiki-lint-body">
-          {lintError && <p className="form-error" role="alert">{lintError}</p>}
-          {lintBusy && <p role="status">正在检查…</p>}
-          {!lintBusy && lintResult && <p role="status">{lintError ? '以下为上次检查结果' : `Lint 检查完成 · ${lintResult.findings.length} 个问题`}</p>}
-          {lintResult && <ul className="lint-findings">{lintResult.findings.map((finding, index) => {
-            const label = `${finding.code} · ${finding.file}:${finding.location.line} · ${finding.message}`;
-            const id = finding.objectId;
-            return <li key={`${finding.code}-${finding.file}-${index}`}>{id
-              ? <button className="text-button" onClick={() => openWiki(id)}>{label}</button>
-              : label}</li>;
-          })}</ul>}
-          {lintResult?.findings.length === 0 && <p>没有发现问题。</p>}
-        </div>
-      </section>
+      <WikiLintPanel result={lintResult} busy={lintBusy} error={lintError} editingDisabled={busy} onRun={() => void runLint()} onEdit={openLintEditor} />
     </div>
     <div role="tabpanel" id="wiki-view-overview" aria-labelledby="wiki-tab-overview" hidden={activeSubView !== 'overview'}>
     {error && <div className="wiki-message error-message" role="alert">{error}<button onClick={() => setError('')}>关闭</button></div>}{notice && <div className="wiki-message success-message" role="status">{notice}<button onClick={() => setNotice('')}>关闭</button></div>}
@@ -321,7 +320,7 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
     <div className="wiki-map"><div className="map-title"><div><h2>学习地图</h2><span>按业务主题浏览</span></div><span className="map-total">{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)} 页</span></div><div className="category-grid"><button className={`category-chip ${category === '' ? 'chosen' : ''}`} onClick={() => updateCategory('')}>全部<span>{Object.values(categoryCounts).reduce((sum, count) => sum + count, 0)}</span></button>{schema?.categories.map(item => <button className={`category-chip ${category === item.id ? 'chosen' : ''}`} key={item.id} onClick={() => updateCategory(category === item.id ? '' : item.id)}>{item.label}<span>{categoryCounts[item.id] ?? 0}</span></button>)}</div></div>
         <div className="wiki-list-content">{loading ? <div className="list-empty">正在读取知识库…</div> : items.length ? items.map(item => <button key={item.id} className={`wiki-list-item ${selectedId === item.id ? 'selected' : ''}`} onClick={() => chooseItem(item.id)}><span className="wiki-type-mark">{typeLabel(schema, item.type).slice(0, 1)}</span><span className="wiki-list-copy"><b>{item.title}{item.isDemo && <span className="demo-badge">演示数据</span>}</b><small>{typeLabel(schema, item.type)} · {schema?.categories.find(value => value.id === item.category)?.label ?? item.category}</small><small>{item.aliases.length ? `别名：${item.aliases.join('、')}` : statusLabels[item.knowledge_status] ?? item.knowledge_status}</small></span></button>) : <div className="list-empty"><span className="empty-symbol">▤</span><b>没有匹配的知识页</b><span>换个关键词，或为当前主题创建一页。</span><button className="secondary-button" onClick={startCreate}>新建 Wiki</button></div>}</div>
       </section>
-      <section className="panel wiki-detail-panel" ref={detailPanel} tabIndex={-1}>{form ? <WikiEditor schema={schema} raws={raws} form={form} busy={busy} baseRevision={baseRevision} template={activeTemplate} onField={setField} onCancel={() => { setForm(null); setError(''); }} onSave={save} onOpenRaw={onOpenRaw} /> : selected ? <WikiDetail citation={inspectionCitation} key={selected.id} initialAudit={initialAudit?.wikiId===selected.id ? initialAudit : null} item={selected} schema={schema} raws={raws} busy={busy} onEdit={() => startEdit(selected)} onDelete={() => void requestDelete(selected)} onOpenRaw={onOpenRaw} onOpenWiki={openWiki} onChanged={onChanged} /> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>从学习地图开始整理知识</b><span>创建六类 Wiki 页面，并关联保存过的 Raw 来源。</span><button className="primary-button" onClick={() => setActiveSubView('raw-to-wiki')}>从 Raw 生成 Wiki 草稿</button><button className="secondary-button" onClick={startCreate}>手动创建 Wiki</button></div>}</section>
+      <section className="panel wiki-detail-panel" ref={detailPanel} tabIndex={-1}>{form ? <WikiEditor schema={schema} raws={raws} form={form} busy={busy} baseRevision={baseRevision} template={activeTemplate} onField={setField} onCancel={() => { setForm(null); setError(''); }} onSave={save} onOpenRaw={onOpenRaw} /> : detailTarget?.edit ? <div className="detail-empty" role="status">正在打开 Wiki 编辑器…</div> : selected ? <WikiDetail citation={inspectionCitation} key={selected.id} initialAudit={initialAudit?.wikiId===selected.id ? initialAudit : null} item={selected} schema={schema} raws={raws} busy={busy} onEdit={() => startEdit(selected)} onDelete={() => void requestDelete(selected)} onOpenRaw={onOpenRaw} onOpenWiki={openWiki} onChanged={onChanged} /> : <div className="detail-empty"><span className="empty-symbol">▤</span><b>从学习地图开始整理知识</b><span>创建六类 Wiki 页面，并关联保存过的 Raw 来源。</span><button className="primary-button" onClick={() => setActiveSubView('raw-to-wiki')}>从 Raw 生成 Wiki 草稿</button><button className="secondary-button" onClick={startCreate}>手动创建 Wiki</button></div>}</section>
     </div>
     </div>
     <div role="tabpanel" id="wiki-view-raw-to-wiki" aria-labelledby="wiki-tab-raw-to-wiki" hidden={activeSubView !== 'raw-to-wiki'}>
