@@ -1,0 +1,102 @@
+import assert from 'node:assert/strict';
+import {readFile,readdir,realpath,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+import {createRequire} from 'node:module';
+
+const session=JSON.parse(await readFile(process.argv[2],'utf8'));
+const root=await realpath(session.root);
+assert.equal(path.dirname(root).toLowerCase(),(await realpath(os.tmpdir())).toLowerCase());
+assert.equal(session.provider,'fake-only');
+for(const url of [session.api,session.url]) assert.equal(new URL(url).hostname,'127.0.0.1');
+const hashes=async()=>{
+  const result={};
+  for(const folder of ['knowledge/wiki','knowledge/raw']){
+    const base=path.join(root,folder);
+    for(const entry of await readdir(base,{recursive:true,withFileTypes:true})){
+      if(!entry.isFile()) continue;
+      const file=path.join(entry.parentPath,entry.name);
+      result[path.relative(root,file)]=createHash('sha256').update(await readFile(file)).digest('hex');
+    }
+  }
+  assert(Object.keys(result).length>0);
+  return result;
+};
+const before=await hashes();
+const {chromium}=createRequire(import.meta.url)(path.join(os.homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));
+const browser=await chromium.launch({executablePath:path.join(os.homedir(),'AppData/Local/Google/Chrome/Application/chrome.exe'),headless:true});
+const page=await browser.newPage({viewport:{width:1440,height:900}});
+page.setDefaultTimeout(12000);
+const requests=[];
+page.on('request',request=>{if(request.method()==='POST'&&new URL(request.url()).pathname==='/api/knowledge/inspections') requests.push(request.postDataJSON());});
+const panel=page.getByRole('region',{name:'主动知识检查',exact:true});
+const check=async(button)=>{
+  const [response]=await Promise.all([page.waitForResponse(response=>response.request().method()==='POST'&&new URL(response.url()).pathname==='/api/knowledge/inspections'),button.click()]);
+  assert.equal(response.status(),202);
+  await page.waitForFunction(()=>document.querySelector('.wiki-inspection')?.getAttribute('aria-busy')==='false');
+};
+try{
+  await page.goto(session.url);
+  await page.locator('.nav-item').filter({hasText:'知识库'}).click();
+  await page.getByRole('tab',{name:'主动知识检查',exact:true}).click();
+  const picker=panel.locator('fieldset');
+  for(const box of await picker.getByRole('checkbox').all()) await box.uncheck();
+  await picker.getByLabel('渠道签约口径A',{exact:true}).check();
+  await picker.getByText(/只做单页自检/).waitFor();
+  const mode=await fetch(session.api+'/__control/inspection-mode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'empty'})});
+  assert(mode.ok);
+  await check(panel.getByRole('button',{name:'开始本次检查'}));
+  await panel.getByText(/未对正式知识页做任何修改/).waitFor();
+  assert.equal(await panel.locator('dt').count(),4);
+  const details=panel.locator('details').filter({has:page.locator('summary').filter({hasText:'查看本次检查范围与技术说明'})});
+  assert.equal(await details.count(),1);
+  assert.equal(await details.getAttribute('open'),null);
+  assert.deepEqual(await hashes(),before);
+  await page.screenshot({path:path.join(root,'single.png'),fullPage:true});
+  assert((await fetch(session.api+'/__control/inspection-mode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'normal'})})).ok);
+  await picker.getByLabel('渠道签约口径B',{exact:true}).check();
+  await check(panel.getByRole('button',{name:/重新检查/}));
+  assert.equal(requests.length,2);
+  assert.equal(requests[1].includeRelated,true);
+  assert.deepEqual(requests[1].wikiIds,[session.fixtures.wa]);
+  assert.deepEqual(await hashes(),before);
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:path.join(root,'rerun-mobile.png'),fullPage:true});
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await panel.getByRole('checkbox',{name:/选择问题/}).first().check();
+  const [draft]=await Promise.all([page.waitForResponse(response=>response.request().method()==='POST'&&new URL(response.url()).pathname.endsWith('/draft')),panel.getByRole('button',{name:/生成维护草稿/}).click()]);
+  assert(draft.ok());
+  const {draftId}=await draft.json();
+  assert(draftId);
+  await page.getByRole('heading',{name:'审核知识变更'}).waitFor();
+  assert.deepEqual(await hashes(),before);
+  await page.getByRole('button',{name:'返回知识库',exact:true}).click();
+  const inspectionTab=page.getByRole('tab',{name:'主动知识检查',exact:true});
+  await inspectionTab.click();
+  const reopen=panel.getByRole('button',{name:'打开已有维护草稿',exact:true});
+  await reopen.waitFor();
+  const [existing]=await Promise.all([page.waitForResponse(response=>response.request().method()==='GET'&&new URL(response.url()).pathname==='/api/drafts/'+draftId),reopen.click()]);
+  assert(existing.ok());
+  await page.getByRole('heading',{name:'审核知识变更'}).waitFor();
+  assert.deepEqual(await hashes(),before);
+  await page.getByRole('button',{name:'返回知识库',exact:true}).click();
+  await inspectionTab.click();
+  await reopen.waitFor();
+  const summary=details.locator('summary');
+  for(let count=0;count<100&&!await summary.evaluate(element=>element===document.activeElement);count++) await page.keyboard.press('Tab');
+  assert(await summary.evaluate(element=>element===document.activeElement&&element.matches(':focus-visible')));
+  await page.screenshot({path:path.join(root,'keyboard-summary.png')});
+  await page.keyboard.press('Enter');
+  assert.equal(await details.getAttribute('open'),'');
+  const lint=details.getByRole('button',{name:/前往结构检查/});
+  for(let count=0;count<30&&!await lint.evaluate(element=>element===document.activeElement);count++) await page.keyboard.press('Tab');
+  assert(await lint.evaluate(element=>element===document.activeElement&&element.matches(':focus-visible')));
+  const [lintResult]=await Promise.all([page.waitForResponse(response=>new URL(response.url()).pathname==='/api/wiki-lint'),page.keyboard.press('Enter')]);
+  assert(lintResult.ok());
+  await page.getByText(/Lint 检查完成/).waitFor();
+  assert.equal(await page.getByRole('tab',{name:'结构检查（Lint）',exact:true}).getAttribute('aria-selected'),'true');
+  assert.deepEqual(await hashes(),before);
+  await writeFile(path.join(root,'review.json'),JSON.stringify({before,requests,draftId,reopened:existing.url(),lintStatus:lintResult.status(),keyboard:'Tab + Enter'},null,2));
+  console.log('PASS',root,draftId);
+}finally{await browser.close();}

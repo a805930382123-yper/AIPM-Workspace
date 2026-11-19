@@ -245,6 +245,16 @@
 
 /* LW03: bounded, explicitly initiated inspection alongside existing reading tools. */
 .wiki-inspection { margin-bottom: 20px; }
+.inspection-summary { padding: 14px 18px; border-inline-start: 4px solid; overflow-wrap: anywhere; }
+.inspection-summary.clean { background: #eef6ef; color: #28553a; }
+.inspection-summary.review { background: #fff3db; color: #714c13; }
+.inspection-summary.limited { background: #eef2f5; color: #364c5b; }
+.inspection-summary h3, .inspection-dimensions dd { margin: 0; }
+.inspection-summary p { margin: 5px 0 0; }
+.inspection-dimensions { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,17rem),1fr)); gap: 12px 24px; }
+.inspection-dimensions dt { font-weight: 600; }
+.inspection-dimensions small { display: block; color: #566168; }
+.wiki-inspection details summary { cursor: pointer; }
 .inspection-body { padding: 20px 24px; display: grid; gap: 16px; }
 .inspection-body fieldset { border: 1px solid var(--border, #e1e4e8); border-radius: 10px; padding: 16px; min-width: 0; }
 .inspection-scope-picker { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 8px; max-height: 240px; overflow: auto; }
