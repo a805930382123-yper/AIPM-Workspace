@@ -1,5 +1,11 @@
 # 工程状态
 
+## UIFIX01 全局壳层、导航闭环与弹窗交互完成（2026-11-19）
+
+工程提交 `88926cb034e93521a47f8759c39b78f0dae3b341`（`88926cb`）。修复与优化 5 项全站壳层及共性交互：`U1-01` 补齐 `workflowId` 面包屑（`更新与综合审阅`）与可点击“工作空间”逐层返回，修复自动化打开草稿返回错位并经 `DraftReviewPage`、`RawOutcomeReview` 与 `KnowledgeMaintenanceReview` 透传上下文 `backLabel`；`U1-02` 为“工作事项”和“自动化”补充专属 SVG 图标，侧栏 8 项图标互不重复；`U1-03` 修复 Raw“多来源综合”弹窗缺失样式（`.modal-scrim` + `.import-dialog.synthesis-dialog`）并统一 Raw/Wiki/Prompt 删除与综合弹窗的 `useDialogFocus` 及 `Escape` 关闭与焦点还原；`U1-04` 为每日资讯增加“返回工作台”、栏目快速锚点与手动检查加载态文案（`正在检查更新…` / `正在补抓失败来源…`）；`U1-05` 为设置页未保存修改时禁用测试连接增加显式提示。
+
+Agent Router 评分 0/1/1/0，共 2 分，A 标准。主会话规划协调，施工子 Agent（`d50ed3c6-60f9-4830-886e-ddfb90c08b22`，`inherit`）实现，独立验收子 Agent（`fcaf6a9a-4fc2-4832-aae4-20e5464c9aba`，`inherit`）独立复验。首轮独验在真实隔离后端暴露 `DraftStore.view` 必返 `outcomeDigest` 导致 `RawOutcomeReview` 硬编码“返回”缺陷（Round 1 FAIL）；扩充范围返修后，Round 2 裁决：**本轮缺陷修复 PASS、UIFIX01 整体 PASS**。12 个修改产品文件及 `tests/uifix01-ui.test.tsx` SHA-256 与施工报告 100% 一致；15 个 JSDOM/回归测试文件 58/58 通过、`npm.cmd run typecheck` 通过、`npm.cmd run build` 238 模块通过；隔离 Edge `157.0.4341.60` 在 `1440x900`（8/8）与 `390x844`（5/5，无水平溢出，`pageErrors: []`）全部通过，零真实外网/模型请求，正式 `workspace/` 与 4317/5151/5173 服务未改动。见[任务卡](handoffs/UIFIX01-20261119-task.md)、[施工报告](reports/UIFIX01-20261119-builder.md)、[独立验收](reports/UIFIX01-20261119-review.md)。本批停止，待用户确认后推进 `UIFIX02`。
+
 ## QAUI03 知识库五视图切换与公共依据完成（2026-11-18）
 
 工程提交 `2ab578d`。五个视图互斥切换，问答与检查结果可在切回后继续使用。Wiki 引用和 Lint 条目可返回总览定位详情，独立的新建入口沿用原编辑流程。问答按整份回答的建议卡片提取公共依据，跨卡选段可保留原文和引用并生成维护草稿。
