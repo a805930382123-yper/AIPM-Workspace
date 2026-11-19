@@ -1,5 +1,11 @@
 # 工程状态
 
+## UIFIX03 Raw 资料库、草稿成果审核与工作事项体验完成（2026-11-19）
+
+工程提交 `77e987f710d749fc160d4df14598ec5f2e3b8376`（`77e987f`）。优化 5 项核心数据工作流体验：`U3-01` 为 Raw 左侧列表增加关键词搜索、处理状态筛选（`unprocessed`/`processing`/`pending_confirmation`/`generated`/`failed`）、筛选计数、空态与重置按钮，保持 `selected` 从全量解析并为桌面端 `.raw-list` 增加 `max-height: 680px; overflow-y: auto`；`U3-02` 在 `ImportDialog` 新增显式第 3 个「网页链接」Tab（隐藏正文域与文件框、标记链接必填并清掉隐藏文件），同时 100% 兼容原有 `'paste'` / `'file'` 模式 URL 自动判定契约与表单内容保留；`U3-03` 紧凑化 `RawOutcomeReview` 吸顶状态、保留 `.outcome-cards > div:first-child` 跨双列规则增加「全选可选主题（N 项）/ 取消全选主题」，并在 `KnowledgeMaintenanceReview` 顶部计算汇总未就绪门禁原因 `gateHint`；`U3-04` 为 `WorkItemsPage` 列表增加标题搜索、事项类型与进展状态筛选、计数及空态；`U3-05` 将 `WorkItemDetail` 的「删除事项」按钮收拢到头部操作区并隐藏首屏删除大面板，计算 `currentDirty`/`historyDirty`/`reportDirty`/`anyDirty` 展现局部「有未保存修改」标示并在点击「返回工作事项」时弹出内联确认防丢面板（保存或撤销后自动复位）。
+
+Agent Router 评分 0/1/1/0，共 2 分，A 标准。主会话规划协调，施工子 Agent（`6982b921-c9bb-41df-be71-25c2a6c20b4a`，`inherit`）实现，独立验收子 Agent（`0503a0d3-e9d9-42e1-8cc3-2c1d8d2dba66`，`inherit`）独立复验。双项结论：**本轮施工范围内的缺陷（`U3-01` ～ `U3-05`）修复 PASS、`UIFIX03` 当前批次整体 PASS**。7 个产品文件与 `tests/uifix03-ui.test.tsx` 的 SHA-256 与施工报告 100% 一致；11 个测试文件定向回归 36/36 通过、`npm.cmd run typecheck` 通过、`npm.cmd run build` 238 模块通过；隔离 TEMP 目录（随机端口 `64336`/`64337`，零真实外网/模型请求，不触碰 `workspace/` 与 `4317/5151/5173` 服务）真实 Edge `157.0.4341.60` 在 `1440x900` 与 `390x844`（9 个关键态均 `scrollWidth === 390`，`pageErrors: []`）全部实测通过。见[任务卡](handoffs/UIFIX03-20261119-task.md)、[施工报告](reports/UIFIX03-20261119-builder.md)、[独立验收](reports/UIFIX03-20261119-review.md)与[浏览器脚本](../tests/acceptance/uifix03-review-browser.mjs)。本批停止，待用户确认后推进 `UIFIX04`。
+
 ## UIFIX02 首页工作台、周期回顾与自动化工作流交互完成（2026-11-19）
 
 工程提交 `47a03f537a09164c5899d70091bf10d48535b028`（`47a03f5`）。优化 5 项高频工作流交互：`U2-01` 统一首页底部“待审核”统计卡与顶部“审核草稿”筛选行为，并在 `#home-actions` 副标题区分筛选计数（`当前筛选待审草稿与工作流 N 项（共 M 项） · 稍后处理 K 项`）与全量视图计数；`U2-02` 在首页“最近更新”中禁用 `action === 'delete'` 的 Wiki 日志行、追加“删除 Wiki（已移至回收区）”提示与禁用态样式，阻断点击跳转 404；`U2-03` 为 `PeriodReview` 补齐 `loading` 与 `invalidRange` 状态，保留修改日期不自动发请求的测试契约的同时提供改期操作提示与“开始日期需早于结束日期。”校验，消除空白面板；`U2-04` 在 `AutomationPage` 收件箱补充“全选可确认项（N 条）/ 取消全选”切换按钮并与低分折叠展开状态同步；`U2-05` 为运行详情打开增加视口内滚动与 `#automation-run-detail` 聚焦，并在“关闭详情”时将焦点精确恢复到原触发按钮。
