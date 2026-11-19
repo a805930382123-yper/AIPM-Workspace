@@ -1,13 +1,18 @@
 import os from 'node:os';
 import assert from 'node:assert/strict';
+import { once } from 'node:events';
 import { mkdtemp, readFile, readdir, rm, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
+import express from 'express';
 import { RawStore } from '../services/raw/store.ts';
 import { WikiStore, type WikiInput } from '../services/wiki/store.ts';
+import { renderPageBody } from '../services/wiki/render.ts';
 import { AuditError, AuditService, locateAnchor } from '../services/audit/service.ts';
 import { WikiLint } from '../services/audit/lint.ts';
 import type { LlmProvider } from '../services/llm/provider.ts';
+import type { WikiLintResult } from '../app/api.ts';
+import { registerAuditRoutes } from '../server/audit-api.ts';
 
 const baseInput = (title:string, sources:string[] = [], body='正文段落需要核对。'):WikiInput => ({title,type:'concept',category:'industry_basics',sources,tags:[],aliases:[],knowledge_status:'needs_verification',confidence:'low',source_level:'D',review_status:'reviewed',body});
 function provider(rawId:string, quote:string, delay?:Promise<void>):LlmProvider { return {name:'fake-audit',model:'fixture',secrets:[],complete:async()=>{if(delay) await delay;return {text:JSON.stringify({replacement:'已确认的修订内容。',rationale:'反馈指出原表述不够准确。',evidence:[{rawId,quote}]}),finishReason:'stop',bytes:180};} }; }
@@ -140,4 +145,167 @@ test('B06 Wiki Lint reads disk directly and reports all 11 frozen codes without 
     assert.equal(await readFile(path.join(wikiDir,`${duplicateA.id}.md`),'utf8'),await wiki.readPageFile(duplicateA.id));
     assert.equal(await readFile(path.join(wikiDir,'index.md')).catch(()=>''),'');
   } finally { await rm(root,{recursive:true,force:true}); }
+});
+
+test('LINT01 validates the renderer’s exact multiline evidence and keeps uncited list items and subheadings in scope', async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-lint01-render-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const raws = new RawStore(root);
+  await raws.initialize();
+  const long = '原文首行\r\n\r\n  - 原文列表\r\n## 原文同级标题\r\n' + '符合当前实际筛选条件的门店已完成盘点。'.repeat(7);
+  const short = '完整原文\n\n- 原文下一项\n### 原文三级标题';
+  const raw = await raws.create({ title: 'Markdown Raw', sourceType: 'report', sourceName: 'Fixture', tags: [], body: `${long}\n${short}` });
+  const wiki = new WikiStore(root, raws);
+  await wiki.initialize();
+
+  const rendered = renderPageBody({
+    pageId: 'fixture', title: '生成页', type: 'concept', category: 'industry_basics', one_line_definition: '夹具',
+    source_facts: [
+      { text: '生成事实，引用留在下一行。\n', evidenceIds: ['long'] },
+      { text: '生成事实使用完整多行证据。', evidenceIds: ['full'] },
+    ],
+    ai_organized: [], ai_inferences: [], open_questions: [], related_pages: [],
+    source_evidence: [
+      { id: 'full', rawId: raw.id, quote: short, start: long.length + 1, end: raw.body.length, chunkIndex: 0 },
+      { id: 'long', rawId: raw.id, quote: long, start: 0, end: long.length, chunkIndex: 0 },
+    ],
+    knowledge_status: 'source_supported', confidence: 'medium', source_level: 'B', selected: true, provenance: [],
+  }, { sourceTitle: '来源', rawId: raw.id, createdTitles: new Set() });
+  assert.ok(rendered.includes(`原文 [0, ${long.length})：${long.slice(0, 90)}…`));
+  assert.ok(rendered.includes(`原文 [${long.length + 1}, ${raw.body.length})：${short}`));
+  const generated = await wiki.create(baseInput('生成页', [raw.id], rendered));
+  const expanded = rendered.replace('## AI 整理', [
+    '- 需保留列表标记的独立漏引事实。',
+    '- 列表事实的正文续行',
+    '  仍属本条。（证据 long）',
+    '  - 有依据的子项目。（证据 long）',
+    '  - 漏引子项目。',
+    '- 引用只属于下一条嵌套事实。',
+    '  1. 子项目有引文。（证据 full）',
+    '',
+    '- 引用被空行隔开的事实。',
+    '',
+    '（证据 long）',
+    '### 小标题',
+    '- 子标题下漏引。',
+    '- 子标题下有引文。（证据 full）',
+    '#### 更深标题',
+    '小标题下普通段落漏引。',
+    '## AI 整理',
+  ].join('\n'));
+  const mixed = await wiki.create(baseInput('混合页', [raw.id], expanded));
+  const forged = await wiki.create(baseInput('伪造证据', [raw.id], rendered.replace('原文列表', '伪造列表')));
+  const wrongEnd = await wiki.create(baseInput('越界证据', [raw.id], rendered.replace(`[0, ${long.length})`, `[0, ${raw.body.length + 1})`)));
+  const missing = await wiki.create(baseInput('缺失 Raw', [raw.id], rendered));
+  const missingRawId = '11111111-1111-4111-8111-111111111111';
+  const missingFile = path.join(root, 'knowledge', 'wiki', `${missing.id}.md`);
+  await writeFile(missingFile, (await readFile(missingFile, 'utf8')).replaceAll(raw.id, missingRawId));
+
+  const result = await new WikiLint(root, raws, new AuditService(root, wiki, raws)).inspect();
+  const facts = (id: string) => result.findings.filter(f => f.objectId === id && f.code === 'UNSOURCED_FACT').map(f => f.location.text);
+  assert.deepEqual(facts(generated.id), []);
+  assert.deepEqual(facts(mixed.id), [
+    '- 需保留列表标记的独立漏引事实。', '  - 漏引子项目。', '- 引用只属于下一条嵌套事实。',
+    '- 引用被空行隔开的事实。', '- 子标题下漏引。', '小标题下普通段落漏引。',
+  ]);
+  assert.deepEqual(facts(forged.id), ['- 生成事实，引用留在下一行。']);
+  assert.deepEqual(facts(wrongEnd.id), ['- 生成事实，引用留在下一行。']);
+  assert.equal(facts(missing.id).length, 2);
+  assert.ok(result.findings.some(f => f.code === 'SOURCE_MISSING' && f.objectId === missing.id));
+});
+
+test('LINT01 preserves citation formats and exposes the real disk line and degraded Audit over HTTP', async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), '.test-lint01-http-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const raws = new RawStore(root);
+  await raws.initialize();
+  const quote = '同一资料中可验证的原文。';
+  const paddedQuote = ' 含首尾空格的真实原文。 ';
+  const firstPart = `${quote}另一条确定的原文。`;
+  const paddedStart = firstPart.length + 2;
+  const raw = await raws.create({ title: '原始资料', sourceType: 'note', sourceName: 'Fixture', tags: [], body: `${firstPart}  ${paddedQuote}` });
+  const other = await raws.create({ title: '外页资料', sourceType: 'note', sourceName: 'Fixture', tags: [], body: quote });
+  const wiki = new WikiStore(root, raws);
+  await wiki.initialize();
+  const expectedUnsourced = [
+    `- 空白内联引文 [[raw:${raw.id}]]“  ”`,
+    `- 内联引文的首尾空格与原文不同 [[raw:${raw.id}]]“ ${paddedQuote} ”`,
+    `- 空引文。来源 Raw ${raw.id}，原文 [0, ${quote.length})：`,
+    `- 空白坐标引文。来源 Raw ${raw.id}，原文 [0, ${quote.length})：“  ”`,
+    `- 坐标引文的首尾空格与原文不同。来源 Raw ${raw.id}，原文 [0, ${quote.length})：“ ${quote} ”`,
+    `- 只能定位到空白的坐标。来源 Raw ${raw.id}，原文 [${firstPart.length}, ${paddedStart})`,
+    '- 不能把别页 Raw 算作出处。（unlisted）',
+    '- 超过 Raw 原文。（overflow）',
+    '- 同名坐标有冲突。（collision）',
+    '- 证据 ID 存在但无引文。（证据 empty）',
+    '- 原文区间只有空白。（证据 whitespace）',
+    '- 书目坐标只能定位到空白。（legacy-space）',
+    '- 仅页级书目，无逐条引用。' + '长'.repeat(120),
+    '- 裸 ID 无书目坐标。（missing）',
+    '- B04 的证据 ID 需要引用标记。（plain）',
+  ];
+  const factsBody = [
+    '## Source Facts',
+    `- 可核验的内联引文 [[raw:${raw.id}]]“${quote}”`,
+    `- 可核验的带空格内联引文 [[raw:${raw.id}]]“${paddedQuote}”`,
+    `- 可核验的行内坐标。来源 Raw ${raw.id}，原文 [0, ${quote.length})`,
+    `- 可核验的行内精确引文。来源 Raw ${raw.id}，原文 [0, ${quote.length})：“${quote}”`,
+    `- 可核验的带空格行内坐标引文。来源 Raw ${raw.id}，原文 [${paddedStart}, ${raw.body.length})：“${paddedQuote}”`,
+    '- 历史书目带坐标的引用。（legacy1）',
+    '- 历史书目的多坐标引用。（legacy1、legacy2）',
+    ...expectedUnsourced,
+    '## Source Evidence',
+    `- 《原始资料》，Raw ${raw.id}，证据 legacy1（原文 [0, ${quote.length})）、legacy2（原文 [${quote.length}, ${raw.body.length})）。`,
+    `- 《外页资料》，Raw ${other.id}，证据 unlisted（原文 [0, ${quote.length})）。`,
+    `- 《原始资料》，Raw ${raw.id}，证据 overflow（原文 [0, ${raw.body.length + 1})）。`,
+    `- 《原始资料》，Raw ${raw.id}，证据 collision（原文 [0, ${quote.length})）。`,
+    `- 《原始资料》，Raw ${raw.id}，证据 collision（原文 [${quote.length}, ${raw.body.length})）。`,
+    `- 《原始资料》，Raw ${raw.id}，证据 legacy-space（原文 [${firstPart.length}, ${paddedStart})）。`,
+    `- empty｜原文 [0, ${quote.length})：`,
+    `- whitespace｜原文 [${firstPart.length}, ${paddedStart})：  `,
+    `- plain｜原文 [0, ${quote.length})：${quote}`,
+    '## 其它内容',
+    '有断链 [[不存在页]]。',
+  ].join('\r\n');
+  const page = await wiki.create(baseInput('来源匹配页', [raw.id], factsBody));
+  const lostPage = await wiki.create(baseInput('即将移除的页面', [raw.id]));
+  const audits = new AuditService(root, wiki, raws);
+  const open = await audits.create({ wikiId: lostPage.id, scope: 'page', severity: 'warning', comment: '目标缺页仍可定位 Audit。' });
+  await unlink(path.join(root, 'knowledge', 'wiki', `${lostPage.id}.md`));
+  const app = express();
+  registerAuditRoutes(app, { root, wiki, raws, audits, provider: () => undefined });
+  const server = app.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const address = server.address();
+  assert.ok(address && typeof address !== 'string');
+  try {
+    const response = await fetch(`http://127.0.0.1:${address.port}/api/wiki-lint`);
+    assert.equal(response.status, 200);
+    const result = await response.json() as WikiLintResult;
+    assert.match(result.wikiFilesSha256, /^[\da-f]{64}$/);
+    const file = `knowledge/wiki/${page.id}.md`;
+    const rows = (await readFile(path.join(root, file), 'utf8')).split(/\r?\n/u);
+    const findings = result.findings.filter(f => f.objectId === page.id && f.code === 'UNSOURCED_FACT');
+    assert.deepEqual(findings.map(f => f.location.text), expectedUnsourced.map(line => line.slice(0, 120)));
+    for (const finding of findings) {
+      assert.equal(finding.pageTitle, page.title);
+      assert.equal(finding.file, file);
+      assert.equal(finding.location.scope, 'line');
+      assert.equal(finding.location.text, rows[finding.location.line - 1]!.slice(0, 120));
+      assert.ok(finding.message.length);
+    }
+    const broken = result.findings.find(f => f.code === 'BROKEN_WIKI_LINK' && f.objectId === page.id);
+    assert.equal(broken?.location.text, '有断链 [[不存在页]]。');
+    const orphan = result.findings.find(f => f.code === 'ORPHAN_WIKI' && f.objectId === page.id);
+    assert.equal(orphan?.location.scope, 'page');
+    assert.equal(orphan?.location.line, 1);
+    const degraded = result.findings.find(f => f.code === 'OPEN_AUDIT');
+    assert.deepEqual(degraded, {
+      code: 'OPEN_AUDIT', objectId: null, pageTitle: null, file: `knowledge/audit/${open.id}.json`,
+      message: `Audit ${open.id} 尚未处理：${open.comment}`, location: { scope: 'page', line: 1 },
+    });
+    assert.equal(result.summary['UNSOURCED_FACT'], findings.length);
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  }
 });
