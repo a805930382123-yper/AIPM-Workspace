@@ -58,6 +58,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [detail, setDetail] = useState<AutomationRun | null>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
+  const runTriggerRef = useRef<HTMLElement | null>(null);
   const [editor, setEditor] = useState<ReturnType<typeof createEditor> | null>(null);
   const [pauseConfirmation, setPauseConfirmation] = useState<boolean | null>(null);
   const [pending, setPending] = useState(false);
@@ -99,7 +100,11 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
       }
     });
   }, [selectedRunId, refresh]);
-  useEffect(() => { if (selectedRunId) detailHeading.current?.focus(); }, [selectedRunId]);
+  useEffect(() => {
+    if (!selectedRunId) return;
+    detailHeading.current?.scrollIntoView?.({ block: 'nearest' });
+    detailHeading.current?.focus();
+  }, [selectedRunId]);
 
   const write = async (area: string, operation: (token: string) => Promise<void>) => {
     if (!status || pending) return;
@@ -115,7 +120,9 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
       setPending(false);
     }
   };
-  const chooseRun = (id: string, run: AutomationRun | null = null) => {
+  const chooseRun = (id: string, run: AutomationRun | null = null, trigger?: HTMLElement | null) => {
+    const active = document.activeElement;
+    runTriggerRef.current = trigger ?? (active instanceof HTMLElement && active !== document.body ? active : null);
     if (id !== selectedRunId) setDetail(run);
     setSelectedRunId(id);
     setReadErrors(current => ({ ...current, detail: '' }));
@@ -180,7 +187,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
     </section>
 
     {hasPipeline && <NewsInbox initialFilter={candidateFilter} token={status?.writeToken} paused={status?.paused}
-      refresh={refresh} onOpenRaw={onOpenRaw} onOpenDraft={onOpenDraft} onOpenRun={chooseRun} />}
+      refresh={refresh} onOpenRaw={onOpenRaw} onOpenDraft={onOpenDraft} onOpenRun={(id, trigger) => chooseRun(id, null, trigger)} />}
 
     <section className="panel automation-panel" aria-labelledby="automation-tasks">
       <div className="automation-heading"><div><h2 id="automation-tasks">任务计划</h2><p>计划时间采用 Asia/Shanghai。</p></div></div>
@@ -194,16 +201,19 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
           <div><h3>{task.name}</h3><p>{task.enabled ? '已启用' : '已停用'} · {task.plan.kind === 'interval' ? `每 ${task.plan.minutes} 分钟` : `每天 ${task.plan.time}`} · {task.mayCallModel ? '可能调用模型' : '无需模型调用'}</p></div>
           <div className="automation-actions">
             <button className="secondary-button" disabled={pending} onClick={() => { setEditor(createEditor(task)); setActionError(null); }}>编辑计划</button>
-            <button className="primary-button" disabled={pending || !status || Boolean(task.lastRun && isActive(task.lastRun.status))} onClick={() => void write('run', async token => {
-              const run = await runAutomationTask(task.type, token);
-              chooseRun(run.id, run);
-            })}>立即运行</button>
+            <button className="primary-button" disabled={pending || !status || Boolean(task.lastRun && isActive(task.lastRun.status))} onClick={event => {
+              const trigger = event.currentTarget;
+              void write('run', async token => {
+                const run = await runAutomationTask(task.type, token);
+                chooseRun(run.id, run, trigger);
+              });
+            }}>立即运行</button>
           </div>
         </div>
         <dl className="automation-facts">
           <div><dt>下次运行</dt><dd>{automationTime(task.nextRunAt)}</dd></div>
           <div><dt>补跑</dt><dd>{task.catchUp ? '已开启' : '已关闭'}</dd></div>
-          <div><dt>最近结果</dt><dd>{task.lastRun ? <button className="text-button" onClick={() => chooseRun(task.lastRun!.id)}>{statusLabels[task.lastRun.status]} · {automationTime(task.lastRun.scheduledAt)}</button> : '暂无运行'}</dd></div>
+          <div><dt>最近结果</dt><dd>{task.lastRun ? <button className="text-button" onClick={event => chooseRun(task.lastRun!.id, null, event.currentTarget)}>{statusLabels[task.lastRun.status]} · {automationTime(task.lastRun.scheduledAt)}</button> : '暂无运行'}</dd></div>
         </dl>
         {editor?.type === task.type && <form className="automation-editor" aria-label="编辑计划" onSubmit={event => submitSchedule(event, task)}>
           <label className="automation-check"><input type="checkbox" checked={editor.enabled} disabled={pending} onChange={event => setEditor({ ...editor, enabled: event.target.checked })} />启用计划</label>
@@ -246,7 +256,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
       <ul className="automation-list">
         {history?.items.map(run => <li key={run.id}>
           <div><strong>{taskName(run.type)}</strong><p>{automationTime(run.scheduledAt)} · {triggerLabels[run.trigger]} · {statusLabels[run.status]}</p></div>
-          <button className="secondary-button" disabled={pending} aria-pressed={selectedRunId === run.id} onClick={() => chooseRun(run.id, run)}>查看详情</button>
+          <button className="secondary-button" disabled={pending} aria-pressed={selectedRunId === run.id} onClick={event => chooseRun(run.id, run, event.currentTarget)}>查看详情</button>
         </li>)}
       </ul>
     </section>
@@ -258,7 +268,13 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
           {currentDetail && !currentDetail.candidateId && isActive(currentDetail.status) && <button className="secondary-button" disabled={pending || !status} onClick={() => void write('cancel', async token => {
             setDetail(await cancelAutomationRun(currentDetail.id, token));
           })}>取消运行</button>}
-          <button className="text-button" disabled={pending} onClick={() => { setSelectedRunId(null); setDetail(null); }}>关闭详情</button>
+          <button className="text-button" disabled={pending} onClick={() => {
+            const trigger = runTriggerRef.current;
+            runTriggerRef.current = null;
+            setSelectedRunId(null);
+            setDetail(null);
+            if (trigger?.isConnected) trigger.focus();
+          }}>关闭详情</button>
         </div>
       </div>
       {readErrors.detail && <p className="form-error" role="alert">运行详情读取失败：{readErrors.detail}</p>}
@@ -313,7 +329,7 @@ const isFailed = (row: CandidateView) => row.saveIssue || (!row.draftPending && 
 
 function NewsInbox({ initialFilter, token, paused, refresh, onOpenRaw, onOpenDraft, onOpenRun }: {
   initialFilter?: CandidateFilter; token?: string; paused?: boolean; refresh: number;
-  onOpenRaw: (id: string) => void; onOpenDraft: (id: string) => void; onOpenRun: (id: string) => void;
+  onOpenRaw: (id: string) => void; onOpenDraft: (id: string) => void; onOpenRun: (id: string, trigger?: HTMLElement | null) => void;
 }) {
   const [date, setDate] = useState<string>();
   const [filter, setFilter] = useState<CandidateFilter>(initialFilter ?? 'all');
@@ -390,6 +406,8 @@ function NewsInbox({ initialFilter, token, paused, refresh, onOpenRaw, onOpenDra
   }).sort((a, b) => (candidateScore(b)?.relevance ?? -1) - (candidateScore(a)?.relevance ?? -1));
   const low = items.filter(row => candidateScore(row)?.relevance === 0);
   const visible = items.filter(row => candidateScore(row)?.relevance !== 0);
+  const confirmableVisible = [...visible, ...(expandedLow ? low : [])].filter(canConfirm);
+  const allConfirmableSelected = confirmableVisible.length > 0 && confirmableVisible.every(row => selected.includes(row.id));
   const batch = items.filter(row => selected.includes(row.id) && canConfirm(row) && (expandedLow || candidateScore(row)?.relevance !== 0));
   const renderCandidate = (row: CandidateView) => {
     const score = candidateScore(row);
@@ -431,7 +449,7 @@ function NewsInbox({ initialFilter, token, paused, refresh, onOpenRaw, onOpenDra
             onClick={() => void write(value => retryCandidate(row.id, phase === 'raw_failed' ? 'save' : 'organize', value).then(() => undefined))}>
             {phase === 'raw_failed' ? '重试保存 Raw' : phase === 'interrupted' ? '继续整理' : '重试整理'}
           </button>}
-        {row.execution && phase !== 'queued_raw' && phase !== 'queued_organize' && <button className="text-button" onClick={() => onOpenRun(row.execution!.runId)}>查看运行</button>}
+        {row.execution && phase !== 'queued_raw' && phase !== 'queued_organize' && <button className="text-button" onClick={event => onOpenRun(row.execution!.runId, event.currentTarget)}>查看运行</button>}
       </div>
     </article>;
   };
@@ -468,6 +486,11 @@ function NewsInbox({ initialFilter, token, paused, refresh, onOpenRaw, onOpenDra
       <label>候选状态<select value={filter} onChange={event => { setFilter(event.target.value as CandidateFilter); setSelected([]); setExpandedLow(false); }}>
         {candidateViews.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select></label>
+      {confirmableVisible.length > 0 && <button type="button" className="secondary-button" disabled={pending || !token}
+        onClick={() => setSelected(current => allConfirmableSelected
+          ? current.filter(id => !confirmableVisible.some(row => row.id === id))
+          : [...new Set([...current, ...confirmableVisible.map(row => row.id)])]
+        )}>{allConfirmableSelected ? '取消全选' : `全选可确认项（${confirmableVisible.length} 条）`}</button>}
       {batch.length > 0 && <button className="primary-button" disabled={pending || !token} onClick={() => begin(batch)}>批量确认入库（{batch.length} 条）</button>}
     </div>
     {readError && <p className="form-error" role="alert">收件箱读取失败 · {readError}</p>}
