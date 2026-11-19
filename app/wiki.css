@@ -257,3 +257,14 @@
 .inspection-finding .field { max-width: 680px; }
 .inspection-evidence-position mark { background: #fff0ae; outline: 2px solid #dcc776; }
 @media(max-width:800px) { .inspection-body,.inspection-finding { padding: 14px; } .inspection-scope-picker { grid-template-columns: 1fr; } .inspection-finding .panel-heading { flex-wrap: wrap; } }
+
+/* UIFIX04: Audit 段落绑定提示、待审提示前置间距、主动检查范围搜索工具栏 */
+.wiki-page .pending-knowledge-workflows,
+.wiki-page .pending-wiki-drafts { margin-bottom: 14px; }
+.audit-bound-anchor { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 10px 12px; border: 1px solid #d5ddf0; border-radius: 8px; background: #f4f6ff; color: #34435e; font-size: 13px; overflow-wrap: anywhere; }
+.audit-bound-anchor span { min-width: 0; flex: 1 1 200px; line-height: 1.5; }
+.audit-bound-anchor .text-button { flex: none; padding: 0; font-size: 13px; }
+.audit-create-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.inspection-scope-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 10px; }
+.inspection-scope-toolbar input[type="search"] { flex: 1 1 220px; min-width: 0; max-width: 100%; height: 36px; padding: 0 10px; border: 1px solid #dce2e9; border-radius: 8px; background: #fff; color: var(--ink); font-size: 13px; }
+.inspection-scope-toolbar .text-button { flex: none; padding: 0; white-space: nowrap; }

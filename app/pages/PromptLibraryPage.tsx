@@ -428,7 +428,15 @@ export function PromptLibraryPage({ onChanged, onOpenWiki }: { onChanged: () => 
     <nav className="prompt-tabs" aria-label="Prompt 工作台功能">
       {([['library','模板库'],['generator','生成'],['optimizer','优化']] as const).map(([id,label]) => <button key={id} className={`prompt-tab ${workbench === id ? 'active' : ''}`} aria-current={workbench === id ? 'page' : undefined} onClick={() => setWorkbench(id)}>{label}</button>)}
     </nav>
-    {workbench !== 'library' ? <PromptAiWorkbench key={`${workbench}-${taskSeed}`} mode={workbench} initialTask={taskSeed} onLibrary={() => setWorkbench('library')} onSaved={refreshCommittedPrompt} categories={categories} /> : <>
+    {workbench !== 'library' ? <PromptAiWorkbench key={`${workbench}-${taskSeed}`} mode={workbench} initialTask={taskSeed} onLibrary={promptId => {
+      setWorkbench('library');
+      if (promptId) {
+        setQuery(''); setCategory(''); setTag(''); setFavoriteOnly(false);
+        conditionsRef.current = { q: '', category: '', tag: '', favorite: false };
+        selectId(promptId);
+        void refreshList();
+      }
+    }} onSaved={refreshCommittedPrompt} categories={categories} /> : <>
     {error && <div className="prompt-message error-message" role="alert">{error}<button onClick={() => setError('')}>关闭</button></div>}
     {notice && <div className="prompt-message success-message" role="status">{notice}<button onClick={() => setNotice('')}>关闭</button></div>}
     <div className="prompt-workspace">

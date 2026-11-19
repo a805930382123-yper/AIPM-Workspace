@@ -20,6 +20,7 @@ import { RecoveryNotice } from './components/RecoveryNotice';
 
 type Page = 'news' | 'home' | 'wiki' | 'raw' | 'prompt' | 'settings' | 'meeting' | 'work' | 'automation';
 const emptyStats: Stats = { rawCount: 0, wikiCount: 0, thisWeekNewCount: 0, pendingConfirmationCount: 0, openAuditCount: 0, promptCount: 0, weekStartsOn: '' };
+const MEETING_QUERY_KEYS = ['meeting', 'mq', 'mt', 'mg', 'mc', 'mp', 'ml', 'mo'] as const;
 
 export function App() {
   const [rawCitation,setRawCitation]=useState<RawCitationTarget|null>(null);
@@ -107,6 +108,20 @@ export function App() {
   }, [observedJobId, page, jobPollGeneration]);
 
   const nav = (destination: Page, preferredRawId?: string) => {
+    if (destination !== 'meeting' && typeof window !== 'undefined' && window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+      let changed = false;
+      for (const key of MEETING_QUERY_KEYS) {
+        if (params.has(key)) {
+          params.delete(key);
+          changed = true;
+        }
+      }
+      if (changed) {
+        const nextQuery = params.toString();
+        window.history.replaceState({}, '', `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`);
+      }
+    }
     setPipelineEntry(undefined);
     setRawCitation(null);
     setRawOriginal(false);
