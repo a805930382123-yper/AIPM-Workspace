@@ -1,5 +1,11 @@
 # 工程状态
 
+## UIFIX02 首页工作台、周期回顾与自动化工作流交互完成（2026-11-19）
+
+工程提交 `47a03f537a09164c5899d70091bf10d48535b028`（`47a03f5`）。优化 5 项高频工作流交互：`U2-01` 统一首页底部“待审核”统计卡与顶部“审核草稿”筛选行为，并在 `#home-actions` 副标题区分筛选计数（`当前筛选待审草稿与工作流 N 项（共 M 项） · 稍后处理 K 项`）与全量视图计数；`U2-02` 在首页“最近更新”中禁用 `action === 'delete'` 的 Wiki 日志行、追加“删除 Wiki（已移至回收区）”提示与禁用态样式，阻断点击跳转 404；`U2-03` 为 `PeriodReview` 补齐 `loading` 与 `invalidRange` 状态，保留修改日期不自动发请求的测试契约的同时提供改期操作提示与“开始日期需早于结束日期。”校验，消除空白面板；`U2-04` 在 `AutomationPage` 收件箱补充“全选可确认项（N 条）/ 取消全选”切换按钮并与低分折叠展开状态同步；`U2-05` 为运行详情打开增加视口内滚动与 `#automation-run-detail` 聚焦，并在“关闭详情”时将焦点精确恢复到原触发按钮。
+
+Agent Router 评分 0/1/1/0，共 2 分，A 标准。主会话规划协调，施工子 Agent（`7ae1d5bc-cea4-4484-83e2-c2e2d946e9de`，`inherit`）实现，独立验收子 Agent（`c0c66e98-3ce4-4ce6-8268-f19483dd2461`，`inherit`）独立复验。双项结论：**本轮施工范围内的缺陷（`U2-01` ～ `U2-05`）修复 PASS、`UIFIX02` 当前批次整体 PASS**。5 个产品文件与 `tests/uifix02-ui.test.tsx` 的 SHA-256 与施工报告 100% 一致；定向回归测试 26/26（8 文件）、补充 UI 回归 12/12（5 文件）、`npm.cmd run typecheck`、`npm.cmd run build`（238 模块）全部退出码 0；隔离 TEMP 目录（随机端口 `52156`/`52157`，零真实外网/模型请求，不触碰 `workspace/` 与 `4317/5151/5173` 服务）真实 Edge `157.0.4341.60` 在 `1440x900` 与 `390x844`（6 个关键态 `scrollWidth === 390`，`pageErrors: []`）全部实测通过。见[任务卡](handoffs/UIFIX02-20261119-task.md)、[施工报告](reports/UIFIX02-20261119-builder.md)、[独立验收](reports/UIFIX02-20261119-review.md)与[浏览器脚本](../tests/acceptance/uifix02-review-browser.mjs)。本批停止，待用户确认后推进 `UIFIX03`。
+
 ## UIFIX01 全局壳层、导航闭环与弹窗交互完成（2026-11-19）
 
 工程提交 `88926cb034e93521a47f8759c39b78f0dae3b341`（`88926cb`）。修复与优化 5 项全站壳层及共性交互：`U1-01` 补齐 `workflowId` 面包屑（`更新与综合审阅`）与可点击“工作空间”逐层返回，修复自动化打开草稿返回错位并经 `DraftReviewPage`、`RawOutcomeReview` 与 `KnowledgeMaintenanceReview` 透传上下文 `backLabel`；`U1-02` 为“工作事项”和“自动化”补充专属 SVG 图标，侧栏 8 项图标互不重复；`U1-03` 修复 Raw“多来源综合”弹窗缺失样式（`.modal-scrim` + `.import-dialog.synthesis-dialog`）并统一 Raw/Wiki/Prompt 删除与综合弹窗的 `useDialogFocus` 及 `Escape` 关闭与焦点还原；`U1-04` 为每日资讯增加“返回工作台”、栏目快速锚点与手动检查加载态文案（`正在检查更新…` / `正在补抓失败来源…`）；`U1-05` 为设置页未保存修改时禁用测试连接增加显式提示。
