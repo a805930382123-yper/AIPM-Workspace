@@ -1,5 +1,9 @@
 # 工程状态
 
+## KBI01 主动知识检查结果区完成（2026-11-19）
+
+工程提交 `39c8e0f`。单页/跨页、来源快照、待核建议和正式页修改说明分开呈现。A 标准，施工及独立验收均通过；主会话定向回归 21/21、类型检查及构建通过。真实桌面及窄屏浏览器验证了快捷重跑、草稿生成与重开、键盘和 Lint 跳转，正式文件校验值不变。见[任务卡](handoffs/KBI01-task.md)、[施工交接](reports/KBI01-builder.md)、[独立验收](reports/KBI01-review.md)。
+
 ## UIFIX04 知识库、会议档案与 Prompt 工作台优化完成（全站 UI 优化 4 批全部收官，2026-11-19）
 
 工程提交 `98e18b90cb703988467f5503f8075e0b190cfcc9`（`98e18b9`）。完成全站分批 UI 交互优化收官批次 5 项交付：`U4-01` 让 `WikiPage` `AuditPanel` 在折叠且反馈为空时点击「对选中段落提交 Audit」不报错而是自动展开、聚焦反馈框、展示绑定段落与「改为整页 Audit」并支持「提交选中段落 Audit」；`U4-02` 将总览 `pendingWorkflows` 与 `pendingDrafts` 移至 `.wiki-workspace` 上方，并在 `WikiInspectionPanel` 增加范围搜索框与「清空已选（N）」且保持既有复选框索引契约；`U4-03` 为桌面端 `.meeting-list` 增加 `max-height: 680px; overflow-y: auto;`，含本地纪要的会议默认展开 `<details>`、为 `MeetingEditor`/`PolicyDialog`/`CatalogDialog` 接入 `useDialogFocus` 与 `Escape`/遮罩关闭，并在 `App.tsx` 离开会议页时精准清理 8 个会议查询参数；`U4-04` 在 `MeetingMinutes` 编辑工作副本就近增加「保存工作副本」并保留底部「保存会议档案」；`U4-05` 在 `PromptAiWorkbench` 保存草稿后增加直达「在模板库中查看」并清理筛选直达定位选中详情，且修正 `app/prompt.css` `.prompt-page .field.prompt-tag-filter input` 优先级确保 `height: 36px`。
