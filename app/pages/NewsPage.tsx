@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
+import { newsEvidenceLabel } from '../../services/news/evidence';
 import { evaluateResearchValue } from '../../services/news/research-value';
 import type { NewsCheckMode, NewsEdition, NewsItem, NewsSection, NewsSectionName, SourceHealth } from '../../services/news/types';
 import '../news.css';
@@ -14,8 +15,9 @@ const stageLabel={list:'来源列表',detail:'详情',pdf:'PDF',parse:'内容解
 
 function sectionStatus(section:NewsSection|undefined,missing:string) {
  if(!section) return missing;
- if(section.status==='running') return section.items.length?'正在检查更新，已收录内容可继续阅读':'正在检查更新';
- if(section.status==='interrupted'&&section.items.length) return '上次检查中断，保留已收录内容';
+ const hasContent=section.items.length||section.sourceItems?.length;
+ if(section.status==='running') return hasContent?'正在检查更新，已收录内容可继续阅读':'正在检查更新';
+ if(section.status==='interrupted'&&hasContent) return '上次检查中断，保留已收录内容';
  return status[section.status];
 }
 
@@ -33,6 +35,7 @@ function SectionDiagnosis({section}:{section?:NewsSection}) {
      const diagnosis=source.diagnosis;
      return <li key={source.sourceId||source.name}>
       <strong>{source.name}</strong> · {diagnosis?outcomeLabel[diagnosis.outcome]:source.status==='ok'&&source.error?'部分读取失败':outcomeLabel[source.status]}
+      {source.homepage&&<> · <a href={source.homepage} target="_blank" rel="noopener noreferrer" aria-label={`${source.name} 官方入口`}>官方入口</a></>}
       {diagnosis?<div>
        <p>开始 {time(diagnosis.startedAt)} · 完成 {time(diagnosis.finishedAt)} · 耗时 {diagnosis.elapsedMs} 毫秒</p>
        <p>候选 {diagnosis.counts.candidates} · 合格 {diagnosis.counts.qualified} · 重复 {diagnosis.counts.duplicates} · 正文不合格 {diagnosis.counts.rejected} · 读取失败 {diagnosis.counts.failed}</p>
@@ -107,12 +110,13 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
    {section==='fmcg'&&<button className="secondary-button" disabled={disabled} onClick={()=>void check(section,'failed',current?.attempt??0)}>{activeMode==='failed'?'正在补抓失败来源…':'仅补抓失败来源'}</button>}
   </div>;
  };
- const renderItem=(item:NewsItem,n:NewsSectionName,date:string)=>{
+ const renderItem=(item:NewsItem,n:NewsSectionName,date:string,displayKey=item.id)=>{
   const key=`${date}:${n}:${item.id}`,entry=saved[date]?.find(x=>x.section===n&&x.itemId===item.id);
   const value=n==='fmcg'?evaluateResearchValue(item):undefined;
-  return <article className="news-article" key={item.id}>
+  const evidence=n==='ai'?(item.sourceId==='aihot'&&item.evidenceKind==='source_summary'?'AIHOT ':'')+newsEvidenceLabel(item):item.research?.kind||(item.evidenceKind==='source_summary'?'来源摘要':'来源正文摘录');
+  return <article className="news-article" key={displayKey}>
    <h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3>
-   <p className="news-meta">{item.sourceName}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d$/.test(item.publishedAt)?item.publishedAt+'（仅知月份）':/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {item.research?.kind||(item.evidenceKind==='source_summary'?(n==='ai'?'AIHOT 来源摘要，未核验原文':'来源摘要'):'来源正文摘录')}{item.research&&<> · 数据时期：{item.research.dataPeriod||'请以原文为准'}{item.research.pdfUrl&&<> · <a href={item.research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF</a>{item.research.pageRange&&<>（{item.research.pageRange}）</>}</>}</>}</p>
+   <p className="news-meta">{item.sourceName}{item.author&&<> · {item.author}</>}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d$/.test(item.publishedAt)?item.publishedAt+'（仅知月份）':/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {evidence}{item.research&&<> · 数据时期：{item.research.dataPeriod||'请以原文为准'}{item.research.pdfUrl&&<> · <a href={item.research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF</a>{item.research.pageRange&&<>（{item.research.pageRange}）</>}</>}</>}</p>
    {value?.eligible&&<div className="news-analysis">
     <p><b>推荐理由</b> {value.reason}</p>
     {value.application&&<p><b>应用建议</b> {value.application}</p>}
@@ -152,8 +156,14 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
      saveErrors[date]&&<p key={date} className="form-error" role="alert">{saveErrors[date]} <button className="text-button" onClick={()=>setProjectionReload(value=>value+1)}>重新读取保存状态</button></p>)}
    </section>;
   }
-  const fallback=!selected&&current&&!current.items.length&&['failed','interrupted'].includes(current.status)?view?.fallbacks[n]:undefined;
+  const fallback=!selected&&current&&!current.items.length&&!current.sourceItems?.length&&['failed','interrupted'].includes(current.status)?view?.fallbacks[n]:undefined;
   const section=fallback?.section||current,date=fallback?.date||selected||view?.date||'';
+  const bySource=new Map<string,NewsItem[]>();
+  if(n==='ai') for(const item of section?.sourceItems??[]) {
+   const items=bySource.get(item.sourceId);
+   if(items) items.push(item);
+   else bySource.set(item.sourceId,[item]);
+  }
   return <section id={`news-section-${n}`} className="news-section" key={n}>
    <div className="news-section-heading">
     <div>
@@ -170,7 +180,14 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
    {section?.status==='empty'&&!section.checkMessage&&!section.sources.some(hasSourceFailure)&&<p>{n==='fmcg'?'暂无新的可核验研报':'近期没有足够的可核验内容。'}</p>}
    {!section&&<p>{n==='fmcg'&&shown?.legacyFmcg?'等待更新快消研报。':'暂无可阅读内容。'}</p>}
    {n==='fmcg'&&selected&&section&&<p>本期收录</p>}
-   {section?.items.map(item=>renderItem(item,n,date))}
+   {!!bySource.size&&<div className="news-source-items">
+    <h3>按来源浏览</h3>
+    {[...bySource].map(([sourceId,items])=><details key={sourceId}>
+     <summary>{items[0].sourceName}（{items.length} 条）</summary>
+     {items.map(item=>renderItem(item,n,date))}
+    </details>)}
+   </div>}
+   {section?.items.map((item,index)=>renderItem(item,n,date,`${item.id}:${index}`))}
    {saveErrors[date]&&<p className="form-error" role="alert">{saveErrors[date]} <button className="text-button" onClick={()=>setProjectionReload(value=>value+1)}>重新读取保存状态</button></p>}
   </section>;
  })}

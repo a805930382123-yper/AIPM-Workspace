@@ -1,14 +1,5 @@
 import { fetchNewsSource } from '../automation/context.ts';
-import type { NewsSectionName, SourceDiagnosis, SourceError, SourceHealth } from './types.ts';
-
-const enabledSources = {
-  fmcg: {worldpanel:'Worldpanel by Numerator', niq:'NIQ', nbs:'国家统计局', pwc:'PwC', kpmg:'KPMG', mintel:'Mintel'},
-  ai: {aihot:'AIHOT'},
-};
-
-export function enabledSourceId(section:NewsSectionName, source:SourceHealth) {
-  return Object.entries(enabledSources[section]).find(([id,name])=>source.sourceId ? id===source.sourceId : name===source.name)?.[0];
-}
+import type { SourceDiagnosis, SourceError, SourceHealth } from './types.ts';
 
 export const sourceNeedsRetry=(source:SourceHealth)=>source.diagnosis
   ? ['partial','failed'].includes(source.diagnosis.outcome)

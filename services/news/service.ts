@@ -1,7 +1,8 @@
 import { normalizedUrl, normalizedTitle } from './normalize.ts';
 export { normalizedUrl } from './normalize.ts';
 import { evaluateResearchValue } from './research-value.ts';
-import { enabledSourceId, sourceNeedsRetry } from './source-health.ts';
+import { sourceNeedsRetry } from './source-health.ts';
+import { enabledSourceId } from './sources.ts';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { SerialQueue, writeJsonAtomic } from '../storage/files.ts';
@@ -12,7 +13,7 @@ import type { NewsCheckMode, NewsEdition, NewsItem, NewsSection, NewsSectionName
 
 const names:NewsSectionName[]=['fmcg','ai'];
 export const validNewsDate=(date:string)=>{if(!/^\d{4}-\d\d-\d\d$/u.test(date))return false;const time=Date.parse(`${date}T00:00:00Z`);return Number.isFinite(time)&&new Date(time).toISOString().slice(0,10)===date;};
-const validItem=(item:NewsItem)=>{if(!item||typeof item!=='object'||typeof item.id!=='string'||typeof item.title!=='string'||typeof item.sourceId!=='string'||typeof item.sourceName!=='string'||typeof item.url!=='string'||typeof item.fetchedAt!=='string'||typeof item.excerpt!=='string'||(item.publishedAt!==null&&typeof item.publishedAt!=='string')||!['article_excerpt','source_summary'].includes(item.evidenceKind))return false;try{const url=new URL(item.url);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password;}catch{return false;}};
+const validItem=(item:NewsItem)=>{if(!item||typeof item!=='object'||typeof item.id!=='string'||typeof item.title!=='string'||typeof item.sourceId!=='string'||typeof item.sourceName!=='string'||typeof item.url!=='string'||typeof item.fetchedAt!=='string'||typeof item.excerpt!=='string'||(item.author!==undefined&&typeof item.author!=='string')||(item.publishedAt!==null&&typeof item.publishedAt!=='string')||!['article_excerpt','source_summary'].includes(item.evidenceKind))return false;try{const url=new URL(item.url);return ['http:','https:'].includes(url.protocol)&&!url.username&&!url.password;}catch{return false;}};
 const publishedTime=(value:string|null)=>value?Date.parse(/^\d{4}-\d\d$/u.test(value)?value+'-01T00:00:00+08:00':/^\d{4}-\d\d-\d\d$/u.test(value)?value+'T00:00:00+08:00':value):NaN;
 const compareResearch=(a:{priority:number;published:number},b:{priority:number;published:number})=>
   b.priority-a.priority||b.published-a.published;
@@ -22,7 +23,7 @@ export class NewsService {
   private queue=new SerialQueue();
   private active=new Set<string>();
   private launched=new Map<string,Promise<void>>();
-  private pending=new Map<string,{section:Pick<NewsSection,'status'|'finishedAt'|'sources'|'items'|'error'|'shortageReasons'|'checkMessage'>;researchOverflow:NewsItem[]}>();
+  private pending=new Map<string,{section:Pick<NewsSection,'status'|'finishedAt'|'sources'|'items'|'sourceItems'|'error'|'shortageReasons'|'checkMessage'>;researchOverflow:NewsItem[]}>();
   constructor(private deps:{root:string;clock:()=>Date;readSources:(section:NewsSectionName,now:Date, exclusions?:SourceExclusions,sourceIds?:ReadonlySet<string>)=>Promise<SourceResult>;aiEnabled:boolean;providerFactory:()=>Promise<LlmProvider|undefined>;rawStore?:RawStore;stageResearchOverflow?:(edition:NewsEdition)=>Promise<unknown>}) {}
   private dir(){return path.join(this.deps.root,'state','news');}
   private file(date:string){if(!validNewsDate(date)) throw new NewsError('日期无效。',400); return path.join(this.dir(),`${date}.json`);}
@@ -34,13 +35,23 @@ export class NewsService {
     if(x?.legacyFmcg&&(!Array.isArray(x.legacyFmcg.items)||!x.legacyFmcg.items.every(validItem)||!Array.isArray(x.legacyFmcg.sources)||!Number.isInteger(x.legacyFmcg.attempt)||!['running','ready','source_only','empty','failed','interrupted'].includes(x.legacyFmcg.status)))throw new NewsError('旧版资讯结构无效，原文件已保留。');
     if(!x||x.schemaVersion!==1||x.date!==date||!x.sections||typeof x.sections!=='object'||names.some(n=>x.sections[n]&&(!Array.isArray(x.sections[n]!.items)||!Array.isArray(x.sections[n]!.sources)||!x.sections[n]!.items.every(validItem)||!Number.isInteger(x.sections[n]!.attempt)||!['running','ready','source_only','empty','failed','interrupted'].includes(x.sections[n]!.status)))) throw new NewsError('资讯记录结构无效，原文件已保留。');
     if(x.researchOverflow!==undefined&&(!Array.isArray(x.researchOverflow)||!x.researchOverflow.every(validItem))) throw new NewsError('研报候选结构无效，原文件已保留。');
+    const sourceItems=x.sections.ai?.sourceItems;
+    if(sourceItems!==undefined&&(!Array.isArray(sourceItems)||!sourceItems.every(validItem))) throw new NewsError('AI 来源条目结构无效，原文件已保留。');
     return x;
   }
   private async write(x:NewsEdition){x.updatedAt=this.deps.clock().toISOString();if(Buffer.byteLength(JSON.stringify(x,null,2)+'\n')>2*1024*1024)throw new NewsError('资讯记录超过大小限制，原文件已保留。');await writeJsonAtomic(this.file(x.date),x);}
   private project(x:NewsEdition|null){if(!x)return null;const copy=structuredClone(x);if(copy.date===shanghaiDate(this.deps.clock())&&copy.sections.fmcg&&!copy.sections.fmcg.contentVersion){copy.legacyFmcg=copy.sections.fmcg;delete copy.sections.fmcg;}for(const n of names)if(copy.sections[n]?.status==='running'&&!this.active.has(`${copy.date}:${n}`))copy.sections[n]!.status='interrupted';return copy;}
   private saves?:NewsRawSave;
   rawSaves(){if(!this.deps.rawStore)throw new NewsError('资讯保存不可用。',500);return this.saves??=new NewsRawSave(this.deps.root,this.deps.rawStore,()=>this.deps.clock());}
-  async saveRaw(date:string,section:NewsSectionName,itemId:string){const edition=await this.edition(date),part=edition?.sections[section];if(!part&&!edition?.legacyFmcg)throw new NewsError('没有找到资讯。',404);const current=part?.items.find(x=>x.id===itemId),legacy=section==='fmcg'?edition?.legacyFmcg:undefined;const item=current||legacy?.items.find(x=>x.id===itemId);if(!item)throw new NewsError('没有找到资讯。',404);if(!current&&!['ready','source_only'].includes(legacy!.status))throw new NewsError('该期资讯当前不能保存。',409);return this.rawSaves().save(date,section,item);}
+  async saveRaw(date:string,section:NewsSectionName,itemId:string){
+    const edition=await this.edition(date),part=edition?.sections[section];
+    const current=part?.items.find(x=>x.id===itemId)??(section==='ai'?part?.sourceItems?.find(x=>x.id===itemId):undefined);
+    const legacy=section==='fmcg'?edition?.legacyFmcg:undefined;
+    const item=current??legacy?.items.find(x=>x.id===itemId);
+    if(!item) throw new NewsError('没有找到资讯。',404);
+    if(!current&&legacy&&!['ready','source_only'].includes(legacy.status)) throw new NewsError('该期资讯当前不能保存。',409);
+    return this.rawSaves().save(date,section,item);
+  }
   async savedRaws(date:string){const edition=await this.edition(date);if(!edition)throw new NewsError('没有找到这期资讯。',404);return this.rawSaves().projection(edition);}
   async edition(date:string){return this.project(await this.read(date));}
   async history(){let files:string[];try{files=await readdir(this.dir());}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return {items:[],errors:[]};throw e;} const items:Array<{date:string;sections:Partial<Record<NewsSectionName,NewsSection['status']>>}>=[],errors:string[]=[];for(const file of files.filter(x=>/^\d{4}-\d\d-\d\d\.json$/u.test(x)).sort().reverse()){const date=file.slice(0,10);try{const x=await this.edition(date);if(x)items.push({date,sections:Object.fromEntries(names.filter(n=>x.sections[n]).map(n=>[n,x.sections[n]!.status]))});}catch{errors.push(`${date} 的记录不可读取，原文件已保留。`);}}return {items,errors};}
@@ -50,7 +61,7 @@ export class NewsService {
     const history=await this.history();
     for(const row of history.items.filter(x=>x.date<date)) {
       for(const n of names) {
-        if(fallbacks[n]||edition?.sections[n]?.items.length||!['failed','interrupted'].includes(edition?.sections[n]?.status||'')) continue;
+        if(fallbacks[n]||edition?.sections[n]?.items.length||edition?.sections[n]?.sourceItems?.length||!['failed','interrupted'].includes(edition?.sections[n]?.status||'')) continue;
         const s=(await this.edition(row.date))?.sections[n];
         if(s?.items.length&&(n!=='fmcg'||s.contentVersion==='research-v1')) fallbacks[n]={date:row.date,section:s};
       }
@@ -123,7 +134,8 @@ export class NewsService {
 
   private runningSection(section:NewsSectionName,attempt:number,previous?:NewsSection):NewsSection {
     return {...(section==='fmcg'?{contentVersion:'research-v1'}:{}),status:'running',attempt,
-      startedAt:this.deps.clock().toISOString(),sources:previous?.sources??[],items:previous?.items??[]};
+      startedAt:this.deps.clock().toISOString(),sources:previous?.sources??[],items:previous?.items??[],
+      ...(previous?.sourceItems?{sourceItems:previous.sourceItems}:{})};
   }
 
   async check(section:NewsSectionName,mode:NewsCheckMode,attempt:number) {
@@ -195,6 +207,8 @@ export class NewsService {
     const edition=await this.read(date),previous=edition?.sections[section];
     if(!previous) return;
     const retained=previous.items;
+    const sourceItems=section==='ai'?[...(previous.sourceItems??[])]:[];
+    const retainedSourceCount=sourceItems.length;
     const now=new Date(previous.startedAt);
     let status:NewsSection['status']='failed',items=retained,sources=previous.sources,error:string|undefined,checkMessage:string|undefined;
     let shortageReasons:string[]=[];
@@ -202,7 +216,7 @@ export class NewsService {
     try {
       const urls=new Set<string>(),titles=new Set<string>(),pdfs=new Set<string>();
       const counts=new Map<string,number>(),ids=new Set<string>();
-      for(const item of retained) {
+      for(const item of [...retained,...sourceItems]) {
         ids.add(item.id);
         urls.add(normalizedUrl(item.url));
         titles.add(normalizedTitle(item.title));
@@ -238,13 +252,34 @@ export class NewsService {
           ? {...source,diagnosis:{...source.diagnosis,lastSuccessAt}} : source;
       });
       const slots=Math.max(0,5-retained.length);
-      let fresh:NewsItem[];
-      if(section==='ai'&&!manual) fresh=result.items.slice(0,slots);
-      else {
-        let duplicates=0,limited=0;
+      let duplicates=0,limited=0;
+      const claim=(item:NewsItem,allowDuplicate=false)=>{
+        const url=normalizedUrl(item.url),title=normalizedTitle(item.title),pdf=item.research?.pdfUrl?normalizedUrl(item.research.pdfUrl):undefined;
+        if(!allowDuplicate&&(ids.has(item.id)||urls.has(url)||titles.has(title)||(pdf&&pdfs.has(pdf)))) {
+          duplicates++;
+          const index=attempted.findIndex(source=>source.sourceId===item.sourceId);
+          const source=attempted[index],diagnosis=source?.diagnosis;
+          if(diagnosis) attempted[index]={...source,diagnosis:{...diagnosis,counts:{...diagnosis.counts,duplicates:diagnosis.counts.duplicates+1}}};
+          return false;
+        }
+        ids.add(item.id);
+        urls.add(url);
+        titles.add(title);
+        if(pdf) pdfs.add(pdf);
+        return true;
+      };
+      const fresh:NewsItem[]=[];
+      if(section==='ai') {
+        for(const item of result.items) {
+          // Preserve AIHOT's initial selection, including duplicates supplied by AIHOT.
+          if(!claim(item,!manual&&item.sourceId==='aihot'&&fresh.length<slots)) continue;
+          if(fresh.length<slots) fresh.push(item);
+          else sourceItems.push(item);
+        }
+      } else {
         const cutoff=Date.parse(date+'T00:00:00+08:00')-364*86400000;
         let outsideFocus=0;
-        const candidates=section==='ai'?result.items:result.items.flatMap(item=>{
+        const candidates=result.items.flatMap(item=>{
           const published=publishedTime(item.publishedAt);
           if(!Number.isFinite(published)||published<cutoff||published>now.getTime()) return [];
           const value=evaluateResearchValue(item);
@@ -255,27 +290,11 @@ export class NewsService {
           a.item.url.localeCompare(b.item.url)||a.item.title.localeCompare(b.item.title)||a.item.excerpt.localeCompare(b.item.excerpt)
         ).map(row=>row.item);
         if(outsideFocus&&candidates.length<slots) shortageReasons.push('部分候选缺少符合经营问题的研究依据。');
-        const claim=(item:NewsItem)=>{
-          const url=normalizedUrl(item.url),title=normalizedTitle(item.title),pdf=item.research?.pdfUrl?normalizedUrl(item.research.pdfUrl):undefined;
-          if(ids.has(item.id)||urls.has(url)||titles.has(title)||(pdf&&pdfs.has(pdf))) {
-            duplicates++;
-            const index=attempted.findIndex(source=>source.sourceId===item.sourceId);
-            const source=attempted[index],diagnosis=source?.diagnosis;
-            if(diagnosis) attempted[index]={...source,diagnosis:{...diagnosis,counts:{...diagnosis.counts,duplicates:diagnosis.counts.duplicates+1}}};
-            return false;
-          }
-          ids.add(item.id);
-          urls.add(url);
-          titles.add(title);
-          if(pdf) pdfs.add(pdf);
-          return true;
-        };
-        fresh=[];
         const unplaced:NewsItem[]=[];
         for(const item of candidates) {
           const sourceCount=counts.get(item.sourceId)||0;
-          if(section==='fmcg'&&(fresh.length>=slots||sourceCount>=2)) unplaced.push(item);
-          else if(claim(item)&&fresh.length<slots) {
+          if(fresh.length>=slots||sourceCount>=2) unplaced.push(item);
+          else if(claim(item)) {
             fresh.push(item);
             counts.set(item.sourceId,sourceCount+1);
           }
@@ -285,9 +304,9 @@ export class NewsService {
           researchOverflow.push(item);
           if((counts.get(item.sourceId)||0)>=2) limited++;
         }
-        if(fresh.length<slots&&duplicates) shortageReasons.push('历史或重复条目已排除。');
-        if(fresh.length<slots&&limited) shortageReasons.push('单一来源最多展示两条，其他合格来源不足。');
       }
+      if(fresh.length<slots&&duplicates) shortageReasons.push('历史或重复条目已排除。');
+      if(fresh.length<slots&&limited) shortageReasons.push('单一来源最多展示两条，其他合格来源不足。');
       sources=[...previous.sources];
       for(const source of attempted) {
         const id=enabledSourceId(section,source);
@@ -299,9 +318,9 @@ export class NewsService {
       const incomplete=attempted.some(sourceNeedsRetry);
       if(allFailed&&!fresh.length&&!researchOverflow.length) {
         status='failed';
-        error=retained.length?'本次检查失败，保留上次内容。':'所有来源读取失败。';
+        error=retained.length||retainedSourceCount?'本次检查失败，保留上次内容。':'所有来源读取失败。';
       } else if(!fresh.length) {
-        status=retained.length?(retained.every(item=>item.analysis)?'ready':'source_only'):'empty';
+        status=retained.length?(retained.every(item=>item.analysis)?'ready':'source_only'):sourceItems.length?'source_only':'empty';
       } else if(section==='fmcg'||!analyze) {
         items=[...retained,...fresh];
         status='source_only';
@@ -315,7 +334,10 @@ export class NewsService {
         const added=fresh.length?`本次新增 ${fresh.length} 条。`:!slots?'已检查，本期已满5条，保留已收录内容。':'';
         checkMessage=`${added}${researchOverflow.length} 条合格研报已送至自动化的资讯候选收件箱。`;
       } else if(manual&&status!=='failed') {
-        if(!slots) checkMessage=section==='fmcg'?'已检查，本期已满5条，保留已收录内容。':'已检查，本期已满5条，新内容未加入。';
+        if(sourceItems.length>retainedSourceCount) {
+          const added=fresh.length?`本期新增 ${fresh.length} 条，已满5条。`:'已检查，本期已满5条。';
+          checkMessage=`${added}按来源浏览新增 ${sourceItems.length-retainedSourceCount} 条。`;
+        } else if(!slots) checkMessage='已检查，本期已满5条，保留已收录内容。';
         else if(fresh.length) checkMessage='本次新增 '+fresh.length+' 条。';
         else if(incomplete) checkMessage='部分来源未能完整读取。';
         else if(shortageReasons.some(reason=>reason.includes('重复'))||attempted.some(source=>source.diagnosis?.counts.duplicates)) checkMessage='本次检查已排除重复条目。';
@@ -324,7 +346,7 @@ export class NewsService {
       }
     } catch {
       status='failed';
-      error=retained.length?'本次检查失败，保留上次内容。':'资讯读取或分析失败，请重试。';
+      error=retained.length||retainedSourceCount?'本次检查失败，保留上次内容。':'资讯读取或分析失败，请重试。';
       items=retained;
       researchOverflow.length=0;
     }
@@ -332,7 +354,8 @@ export class NewsService {
       shortageReasons=[section==='ai'?'本次来源或分析最终提供 '+items.length+' 条可展示内容。':'合格候选不足。'];
     }
     if(scopeNotice) checkMessage=[scopeNotice,checkMessage].filter(Boolean).join(' ');
-    this.pending.set(key,{section:{shortageReasons,status,finishedAt:this.deps.clock().toISOString(),sources,items,error,checkMessage},researchOverflow});
+    this.pending.set(key,{section:{shortageReasons,status,finishedAt:this.deps.clock().toISOString(),sources,items,
+      ...(sourceItems.length?{sourceItems}:{}),error,checkMessage},researchOverflow});
     return this.persistResult(date,section);
   }
 }

@@ -1,11 +1,22 @@
 import { readSourceBytes, sourceAttempt } from './source-health.ts';
 import { readResearchSources } from './research-sources.ts';
+import { editorialSources } from './ai-editorial.ts';
+import { karpathySources } from './ai-karpathy.ts';
 import { createHash } from 'node:crypto';
-import type { NewsItem, NewsSectionName, SourceExclusions, SourceResult } from './types.ts';
+import type { NewsItem, NewsSectionName, SourceExclusions, SourceHealth, SourceResult } from './types.ts';
 
-const aihot={id:'aihot',name:'AIHOT',url:'https://aihot.news/api/v1/items?mode=selected&window=24h&limit=5'};
+const aihot={id:'aihot',name:'AIHOT',homepage:'https://aihot.news/',url:'https://aihot.news/api/v1/items?mode=selected&window=24h&limit=5'};
 const allowed=(url:URL)=>url.origin==='https://aihot.news'&&url.pathname==='/api/v1/items'&&!url.username&&!url.password;
 const id=(url:string)=>createHash('sha256').update(url).digest('hex').slice(0,24);
+const aiSources=[{...aihot,read:readAihot},...editorialSources,...karpathySources];
+const enabledSources = {
+  fmcg: Object.entries({worldpanel:'Worldpanel by Numerator', niq:'NIQ', nbs:'国家统计局', pwc:'PwC', kpmg:'KPMG', mintel:'Mintel'}),
+  ai: aiSources.map(({id,name})=>[id,name]),
+};
+
+export function enabledSourceId(section:NewsSectionName, source:SourceHealth) {
+  return enabledSources[section].find(([id,name])=>source.sourceId ? id===source.sourceId : name===source.name)?.[0];
+}
 
 export function matchesNewsFocus(section:NewsSectionName,title:string,summary:string):boolean {
   const text=title+' '+summary;
@@ -27,8 +38,22 @@ function safeOriginal(value:unknown):string|null { if(typeof value!=='string') r
 
 export async function readNewsSources(section:NewsSectionName,now:Date,exclusions?:SourceExclusions,sourceIds?:ReadonlySet<string>):Promise<SourceResult> {
   if(section==='fmcg') return readResearchSources(now,exclusions,sourceIds);
+  const results=await Promise.all(aiSources.filter(source=>!sourceIds||sourceIds.has(source.id)).map(async (source):Promise<SourceResult>=>{
+    const attempt=sourceAttempt(source,now);
+    try {
+      const result=await source.read(now);
+      return {...result,sources:result.sources.map(health=>({...health,homepage:source.homepage}))};
+    } catch(error) {
+      attempt.fail(error,attempt.stage);
+      return {items:[],sources:[{...attempt.finish(0),homepage:source.homepage}]};
+    }
+  }));
+  return {items:results.flatMap(result=>result.items),sources:results.flatMap(result=>result.sources),
+    shortageReasons:results.flatMap(result=>result.shortageReasons??[])};
+}
+
+async function readAihot(now:Date):Promise<SourceResult> {
   const items:NewsItem[]=[];
-  if(sourceIds&&!sourceIds.has(aihot.id)) return {items,sources:[]};
   const attempt=sourceAttempt(aihot,now);
   try {
     const bytes=await readSourceBytes(aihot.url,allowed,'text/html,application/json',/^(text\/html|application\/json)/iu,2*1024*1024,12000);
