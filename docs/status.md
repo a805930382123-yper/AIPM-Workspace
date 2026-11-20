@@ -1,5 +1,9 @@
 # 工程状态
 
+## NEWS14 AI 前沿按来源展示（2026-11-20）
+
+工程提交 `9fd8892`。今日、历史和失败回退统一按来源显示近期资讯，每源去重后最多五条。保留既有期刊与 Raw 关联。Sol High 施工、Astra Medium 独立验收，本轮改动与整批均通过。正式页面已提供新构建，隔离浏览器回放当日数据得到五个来源、21 条。相关回归 89/89、类型检查及生产构建通过。见[独立验收](reports/NEWS14-review.md)。
+
 ## NEWS13 AI 前沿新增八个渠道（2026-11-20）
 
 工程提交 `c7d7fa3`。保留 AIHOT 的前五条规则，增加 OpenAI Cookbook、Anthropic Engineering、Hugging Face 官方博客、Simon Willison 提示词专题及 Karpathy 的 GitHub、Bear Blog、YouTube、X。今日已有期刊时通过「检查更新」发现材料，超出五条的内容在「按来源浏览」中查看和保存。
