@@ -1,0 +1,81 @@
+{
+  "node": "v22.23.5",
+  "platform": "win32",
+  "invalidToken": 403,
+  "staleRevision": 409,
+  "foreignOrigin": 403,
+  "testNotification": {
+    "deliveryStatus": "delivered"
+  },
+  "scan": {
+    "id": "86ef7713-2808-4f69-8375-40ab980a0c17",
+    "type": "work.reminders",
+    "trigger": "manual",
+    "scheduledAt": "2026-11-20T16:55:21.797Z",
+    "startedAt": "2026-11-20T16:55:21.800Z",
+    "endedAt": "2026-11-20T16:55:23.670Z",
+    "status": "succeeded",
+    "steps": [
+      {
+        "name": "扫描工作事项与投递提醒",
+        "status": "succeeded",
+        "startedAt": "2026-11-20T16:55:21.803Z",
+        "endedAt": "2026-11-20T16:55:23.668Z",
+        "durationMs": 1865,
+        "summary": "识别 4 条提醒，新增 4 条，消解 0 条。桌面通知已投递 1 次、失败 0 次，静默或无法投递 0 条。读取问题 0 项。"
+      }
+    ],
+    "usage": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "unknownUsageCount": 0
+    },
+    "artifacts": {
+      "rawIds": [],
+      "jobIds": [],
+      "draftIds": []
+    },
+    "budget": null
+  },
+  "items": [
+    {
+      "kind": "due_follow_up",
+      "status": "unread",
+      "deliveryStatus": "delivered"
+    },
+    {
+      "kind": "due_follow_up",
+      "status": "unread",
+      "deliveryStatus": "delivered"
+    },
+    {
+      "kind": "new_raw_ready",
+      "status": "unread",
+      "deliveryStatus": "delivered"
+    },
+    {
+      "kind": "stale_item",
+      "status": "unread",
+      "deliveryStatus": "delivered"
+    }
+  ],
+  "businessHashes": {
+    "work-items\\1e2375e1-e2d4-478b-bc6f-a5cb628aea93.json": "9c06c619ed4c6ee6e7d7515179779825b646f06c76fe441f063c0e06e0e8b12c",
+    "work-items\\2b1f112e-9b72-44ed-b61c-939505accbb8.json": "c732d0ff550a1a34856dca7580d2ce5b041b48e9a424700900790449b0974976",
+    "work-items\\8840b5a3-9c8a-4689-af1f-cde4a0ea1cbb.json": "20b6dac9049540ed9850b51ead5661787069682703831d8681a1eb7f0218e01c",
+    "work-items\\8f02dbe0-fa40-4d3a-aed0-312e719759b2.json": "818dd7d6bc6b466c05a247254b6c11904163f5cf3186cb10933a2e32bbb841f5",
+    "knowledge\\raw\\reports\\8fbc0123-c682-4017-9686-944498a42c89.md": "7c5c5d28d4d43631e52aff59d0a2672ad11528b913743bd504dc5aa0ed54ab4f"
+  },
+  "powershell": [
+    {
+      "code": 0,
+      "signal": null
+    },
+    {
+      "code": 0,
+      "signal": null
+    }
+  ],
+  "externalRequests": 0
+}

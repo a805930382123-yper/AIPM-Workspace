@@ -1,0 +1,86 @@
+{
+  "node": "v22.23.5",
+  "platform": "win32",
+  "invalidToken": 403,
+  "staleRevision": 409,
+  "foreignOrigin": 403,
+  "testNotification": {
+    "deliveryStatus": "failed",
+    "deliveryError": "Windows 通知调用失败（HRESULT 0x80131501）。"
+  },
+  "scan": {
+    "id": "1feb1288-1a96-45f1-b605-d09cde8f99b1",
+    "type": "work.reminders",
+    "trigger": "manual",
+    "scheduledAt": "2026-11-20T16:52:28.707Z",
+    "startedAt": "2026-11-20T16:52:28.712Z",
+    "endedAt": "2026-11-20T16:52:30.850Z",
+    "status": "succeeded",
+    "steps": [
+      {
+        "name": "扫描工作事项与投递提醒",
+        "status": "succeeded",
+        "startedAt": "2026-11-20T16:52:28.716Z",
+        "endedAt": "2026-11-20T16:52:30.846Z",
+        "durationMs": 2130,
+        "summary": "识别 4 条提醒，新增 4 条，消解 0 条。桌面通知已投递 0 次、失败 1 次，静默或无法投递 0 条。读取问题 0 项。"
+      }
+    ],
+    "usage": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "unknownUsageCount": 0
+    },
+    "artifacts": {
+      "rawIds": [],
+      "jobIds": [],
+      "draftIds": []
+    },
+    "budget": null
+  },
+  "items": [
+    {
+      "kind": "due_follow_up",
+      "status": "unread",
+      "deliveryStatus": "failed",
+      "deliveryError": "Windows 通知调用失败（HRESULT 0x80131501）。"
+    },
+    {
+      "kind": "due_follow_up",
+      "status": "unread",
+      "deliveryStatus": "failed",
+      "deliveryError": "Windows 通知调用失败（HRESULT 0x80131501）。"
+    },
+    {
+      "kind": "new_raw_ready",
+      "status": "unread",
+      "deliveryStatus": "failed",
+      "deliveryError": "Windows 通知调用失败（HRESULT 0x80131501）。"
+    },
+    {
+      "kind": "stale_item",
+      "status": "unread",
+      "deliveryStatus": "failed",
+      "deliveryError": "Windows 通知调用失败（HRESULT 0x80131501）。"
+    }
+  ],
+  "businessHashes": {
+    "work-items\\13d0807e-11e0-4c22-9219-d1d6e1e51a8c.json": "1a22a07df0f16c76ccd3bf377f11c70ea5caab63d8846f6352db24393dccc500",
+    "work-items\\6fadcf57-cb54-4742-a8ef-a9eab96591a5.json": "5f6abf6d6418a216ccdb54be99ae62ab675bcdad072640897389976ab43423c1",
+    "work-items\\a8ac081a-8171-4da0-8977-8af765f820b3.json": "7be1214704535cb2c921997c0c688e3e893e64653f6bbbc2ca5961d805af55d2",
+    "work-items\\cfa03c70-6858-43c0-8aba-7b498a1b86b2.json": "8939e098a2b0d9eb2f6c2241901bfea2a35f6dd843e0091a3d5e32fb0e5f3bfd",
+    "knowledge\\raw\\reports\\f868c825-b89b-4652-9648-a1df99649a22.md": "f7b064459e639d4500361f0ded2fdca9eefd580b90d54c5c36faeada0d5b2aad"
+  },
+  "powershell": [
+    {
+      "code": 1,
+      "signal": null
+    },
+    {
+      "code": 1,
+      "signal": null
+    }
+  ],
+  "externalRequests": 0
+}
