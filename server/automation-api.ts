@@ -8,6 +8,8 @@ import { isConcurrency, isRevision, isTopics, type NewsPipeline } from '../servi
 import { isNewsMode } from '../services/automation/pipeline/screen.ts';
 import type { WikiHealth } from '../services/automation/wiki-health.ts';
 import { isReminderTime, isStaleDays, isToastLimit, reminderSettingKeys, type RemindersStore } from '../services/automation/reminders.ts';
+import { weeklyReviewType, type createWeeklyReview } from '../services/automation/tasks/weekly-review.ts';
+import { weeklyReviewMarkdown, type WeeklyReviewStore } from '../services/automation/weekly-review-store.ts';
 
 const badInput = (message: string) => new StorageError('AUTOMATION_INVALID_INPUT', message, 400);
 
@@ -38,7 +40,8 @@ function runId(id: string): string {
   return id;
 }
 
-export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline, knowledge?: WikiHealth, reminders?: RemindersStore): void {
+export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline, knowledge?: WikiHealth,
+  reminders?: RemindersStore, weekly?: { store: WeeklyReviewStore; task: ReturnType<typeof createWeeklyReview> }): void {
   app.use('/api/automation', (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!localOrigin(req)) return next(new StorageError('AUTOMATION_ORIGIN_FORBIDDEN', '仅允许本机可信页面访问自动化。', 403));
@@ -129,6 +132,40 @@ export function registerAutomationRoutes(app: express.Express, scheduler: Automa
     app.post('/api/automation/reminders/test-notification', async (req, res) => {
       bodyFields(req.body, []);
       res.json(await reminders.testNotification());
+    });
+  }
+  if (weekly) {
+    const { store, task } = weekly;
+    app.get('/api/automation/weekly-reviews', async (_req, res) => { res.json(await store.list()); });
+    app.patch('/api/automation/weekly-reviews/settings', async (req, res) => {
+      const { revision, aiSummaryEnabled } = bodyFields(req.body, ['revision', 'aiSummaryEnabled']);
+      if (!isRevision(revision) || typeof aiSummaryEnabled !== 'boolean') throw badInput('请填写有效的设置版本和 AI 总结开关。');
+      res.json(await store.updateSettings(revision, aiSummaryEnabled));
+    });
+    app.get('/api/automation/weekly-reviews/:weekKey', async (req, res) => { res.json(await store.get(req.params.weekKey)); });
+    app.patch('/api/automation/weekly-reviews/:weekKey', async (req, res) => {
+      const { baseRevision, userMarkdown, status } = bodyFields(req.body, ['baseRevision', 'userMarkdown', 'status']);
+      if (!isRevision(baseRevision) || (userMarkdown === undefined && status === undefined)
+        || (userMarkdown !== undefined && (typeof userMarkdown !== 'string' || userMarkdown.length > 100_000))
+        || (status !== undefined && status !== 'draft' && status !== 'reviewed')) throw badInput('请填写有效的周报版本、人工正文或审阅状态。');
+      res.json(await store.patch(req.params.weekKey, baseRevision, {
+        ...(userMarkdown === undefined ? {} : { userMarkdown }), ...(status === undefined ? {} : { status }),
+      }));
+    });
+    app.post('/api/automation/weekly-reviews/:weekKey/regenerate', async (req, res) => {
+      const { weekKey } = req.params;
+      const { baseRevision, overwriteEdited } = bodyFields(req.body, ['baseRevision', 'overwriteEdited']);
+      if ((baseRevision !== 0 && !isRevision(baseRevision)) || typeof overwriteEdited !== 'boolean') {
+        throw badInput('请填写有效的周报版本和覆盖确认。');
+      }
+      task.validateWeek(weekKey);
+      const input = { weekKey, baseRevision, overwriteEdited };
+      await store.prepare(weekKey, input);
+      res.status(202).json(await scheduler.runNow(weeklyReviewType, context => task.execute(context, input)));
+    });
+    app.get('/api/automation/weekly-reviews/:weekKey/export', async (req, res) => {
+      const record = await store.get(req.params.weekKey);
+      res.attachment('weekly-review-' + record.weekKey + '.md').type('text/markdown').send(weeklyReviewMarkdown(record));
     });
   }
   if (!pipeline) return;

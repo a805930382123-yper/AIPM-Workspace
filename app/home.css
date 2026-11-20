@@ -17,6 +17,52 @@
 .home-page .recent-row:disabled { cursor: not-allowed; opacity: 0.68; }
 .home-page .recent-row:disabled:hover .recent-copy b { color: var(--ink); }
 .period-review .review-status-hint { margin: 14px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--canvas); color: #566176; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.period-review .period-review-tabs { width: fit-content; max-width: 100%; margin-bottom: 16px; }
+.period-review .weekly-review-layout { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); align-items: start; gap: 20px; overflow-wrap: anywhere; }
+.period-review .weekly-review-sidebar { background: var(--canvas); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.period-review .weekly-review-sidebar h3, .period-review .weekly-review-heading h3 { margin: 0; font-size: 16px; }
+.period-review .weekly-review-sidebar p:not(.form-error), .period-review .weekly-review-context { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.period-review .weekly-review-list { max-height: 22rem; overflow: auto; list-style: none; padding: 2px; margin: 8px -2px 12px; }
+.period-review .weekly-review-list li + li { margin-top: 4px; }
+.period-review .weekly-review-list button { display: grid; gap: 5px; width: 100%; text-align: start; background: transparent; border: 1px solid transparent; border-radius: 6px; color: var(--ink); padding: 8px; cursor: pointer; }
+.period-review .weekly-review-list button[aria-current] { background: var(--surface); border-color: var(--line); }
+.period-review .weekly-review-list button:hover:enabled { border-color: var(--accent); }
+.period-review .weekly-review-badges, .period-review .weekly-review-actions, .period-review .weekly-review-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.period-review .weekly-review-badges .tag { padding: 2px 5px; font-size: 11px; white-space: normal; }
+.period-review .weekly-review-failure { color: #a63136; background: #fff2f1; }
+.period-review .weekly-review-week-picker { display: grid; gap: 8px; margin-top: 12px; }
+.period-review .weekly-review-week-picker input { width: 100%; min-width: 0; }
+.period-review .weekly-review-week-picker button { justify-self: start; }
+.period-review .weekly-review-setting { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.period-review .weekly-review-setting label { display: flex; gap: 6px; align-items: center; }
+.period-review .weekly-review-heading, .period-review .weekly-review-fact-heading { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+.period-review .weekly-review-heading .weekly-review-badges { margin-top: 6px; }
+.period-review .weekly-review-actions :is(button, a) { max-width: 100%; white-space: normal; }
+.period-review .weekly-review-section { border-top: 1px solid var(--line); padding-top: 14px; }
+.period-review .weekly-review-section h3 { margin: 0 0 10px; }
+.period-review .weekly-review-section h4 { margin: 0; font-size: 14px; }
+.period-review .weekly-review-fact-section + .weekly-review-fact-section { margin-top: 14px; }
+.period-review .weekly-review-fact-heading small { color: var(--muted); }
+.period-review .weekly-review-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(118px, 100%), 1fr)); gap: 8px 12px; margin: 8px 0; font-size: 13px; }
+.period-review .weekly-review-metrics dt { color: var(--muted); }
+.period-review .weekly-review-metrics dd { margin: 2px 0 0; font-weight: 650; font-variant-numeric: tabular-nums; }
+.period-review .weekly-review-fact-list { list-style: none; padding: 0; }
+.period-review .weekly-review-fact-list li { display: flex; align-items: start; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); }
+.period-review .weekly-review-fact-list .text-button, .period-review .weekly-review-sources .text-button { padding: 4px 0; text-align: start; }
+.period-review .weekly-review-fact-list .text-button { flex: 0 0 auto; }
+.period-review .weekly-review-fact-list p { margin: 4px 0 0; }
+.period-review .weekly-review-draft-group { max-width: 75ch; margin-top: 14px; }
+.period-review .weekly-review-draft-group p { margin: 6px 0; }
+.period-review .weekly-review-draft-group ul { padding-inline-start: 20px; margin: 6px 0 0; }
+.period-review .weekly-review-draft-group li + li { margin-top: 8px; }
+.period-review .weekly-review-section textarea { max-width: 100%; resize: vertical; }
+.period-review .weekly-review-section .weekly-review-actions { margin-top: 10px; }
+.period-review .weekly-review-generate { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 12px; }
+.period-review .weekly-review-notice { color: var(--ink); font-size: 13px; }
+@media (max-width: 650px) {
+ .period-review .weekly-review-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+ .period-review .weekly-review-list { max-height: 12rem; }
+}
 .home-page .home-entry-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .home-page .home-entry { min-height: 0; padding: 12px 14px; gap: 10px; }
 .home-page .home-entry > span:nth-child(2) { gap: 3px; }

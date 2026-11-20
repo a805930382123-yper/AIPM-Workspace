@@ -44,7 +44,8 @@ export async function run(options, synthetic = false) {
     if (options.case && !ids.includes(options.case))
         throw Error('Unknown case');
     let selected = options.case ? [options.case] : ids;
-    const threshold = await json(path.join(root, 'evals/thresholds.json')), bundle = await loadExtractionRules(rulesDir), cases = [];
+    const { weeklyReview, ...threshold } = await json(path.join(root, 'evals/thresholds.json'));
+    const bundle = await loadExtractionRules(rulesDir), cases = [];
     for (const id of selected) {
         let dir = path.join(base, id), c = await json(path.join(dir, 'case.json')), g = await json(path.join(dir, 'gold.json'));
         if (c.id !== id || c.chain !== options.chain || !['synthetic', 'own'].includes(c.license) || c.bodyNormalization !== 'lf-v1' || c.input.mode !== 'standard' || c.input.bodyFile !== 'body.txt')
@@ -239,7 +240,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve('scripts/e
     const chain = args[args.indexOf('--chain') + 1];
     const execute = async () => chain === 'news-relevance'
         ? (await import('./news-relevance.mjs')).runNewsRelevance(args)
-        : run(parseArgs(args));
+        : chain === 'weekly-review' ? (await import('./weekly-review.mjs')).runWeeklyReview(args) : run(parseArgs(args));
     execute().then(r => { if (!r.summary.pass) process.exitCode = 1; })
         .catch(e => { console.error(e.message); process.exitCode = 1; });
 }

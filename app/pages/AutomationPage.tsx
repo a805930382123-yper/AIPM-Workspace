@@ -52,12 +52,14 @@ function createEditor(schedule: AutomationSchedule) {
   };
 }
 
-export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspection, onOpenWorkItem, focusReminders, candidateFilter }: {
+export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspection, onOpenWorkItem, onOpenWeeklyReview, initialRunId, focusReminders, candidateFilter }: {
   onOpenRaw: (id: string) => void;
   onOpenDraft: (id: string) => void;
   onOpenLint?: () => void;
   onOpenInspection?: (id?: string) => void;
   onOpenWorkItem?: (id: string, focusMaterials?: boolean) => void;
+  onOpenWeeklyReview?: (weekKey: string) => void;
+  initialRunId?: string;
   focusReminders?: boolean;
   candidateFilter?: CandidateFilter;
 }) {
@@ -70,7 +72,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspe
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<AutomationRunStatus | ''>('');
   const [limit, setLimit] = useState(50);
-  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(initialRunId ?? null);
   const [detail, setDetail] = useState<AutomationRun | null>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
   const runTriggerRef = useRef<HTMLElement | null>(null);
@@ -180,6 +182,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspe
   const hasPipeline = tasks.some(task => task.type === 'news.daily');
   const showError = (area: string) => actionError?.area === area && <p className="form-error" role="alert">{actionError.message}</p>;
   const currentDetail = detail?.id === selectedRunId ? detail : null;
+  const weeklyReviewWeekKey = currentDetail?.artifacts.weeklyReviewWeekKey;
   const lint = health?.lint;
   const inspection = health?.inspection;
 
@@ -373,7 +376,8 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspe
           {currentDetail.artifacts.rawIds.map(id => <button key={id} className="text-button" onClick={() => onOpenRaw(id)}>Raw {id}</button>)}
           {currentDetail.artifacts.draftIds.map(id => <button key={id} className="text-button" onClick={() => onOpenDraft(id)}>草稿 {id}</button>)}
           {currentDetail.artifacts.jobIds.map(id => <a key={id} href={`/api/extraction-jobs/${encodeURIComponent(id)}`} target="_blank" rel="noreferrer">任务 {id}</a>)}
-          {!currentDetail.artifacts.lintSnapshotId && !Object.values(currentDetail.artifacts).some(value => Array.isArray(value) && value.length) && <p>无产物。</p>}
+          {weeklyReviewWeekKey && (onOpenWeeklyReview ? <button className="text-button" onClick={() => onOpenWeeklyReview(weeklyReviewWeekKey)}>打开周报 {weeklyReviewWeekKey}</button> : <p>周报 {weeklyReviewWeekKey}</p>)}
+          {!weeklyReviewWeekKey && !currentDetail.artifacts.lintSnapshotId && !Object.values(currentDetail.artifacts).some(value => Array.isArray(value) && value.length) && <p>无产物。</p>}
         </div>
         {currentDetail.artifacts.lintSnapshotId && <LintRunDetails key={currentDetail.artifacts.lintSnapshotId} id={currentDetail.artifacts.lintSnapshotId} onOpenLint={onOpenLint} />}
         {currentDetail.artifacts.inspectionIds?.map(id => <InspectionRunDetails key={id} id={id} onOpenInspection={onOpenInspection} />)}

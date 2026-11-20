@@ -12,6 +12,7 @@ import type {
 
 export type TaskContext = {
   runId: string;
+  scheduledAt?: string;
   signal: AbortSignal;
   provider: () => LlmProvider | undefined;
   link(artifacts: Partial<AutomationRun['artifacts']>): Promise<void>;
@@ -256,12 +257,12 @@ export class AutomationScheduler {
     }
   }
 
-  async runNow(type: string) {
+  async runNow(type: string, execute?: TaskDefinition['execute']) {
     return this.queue.run(async () => {
       this.ensureRunning();
       const task = this.getTask(type);
       const run = await this.recordRun(task, 'manual', this.clock());
-      this.launch(task, run);
+      this.launch(execute ? { ...task, execute } : task, run);
       return run;
     });
   }
@@ -321,7 +322,7 @@ export class AutomationScheduler {
         run.sourceRequests = (run.sourceRequests ?? 0) + 1;
         await save();
       } }, async () => {
-        const execute = (provider: TaskContext['provider']) => task.execute({ runId: run.id, signal, step, provider,
+        const execute = (provider: TaskContext['provider']) => task.execute({ runId: run.id, scheduledAt: run.scheduledAt, signal, step, provider,
           link: async artifacts => { Object.assign(run.artifacts, artifacts); await save(); },
         });
         if (task.mayCallModel && this.options.withProvider) await this.options.withProvider(execute);
@@ -337,15 +338,21 @@ export class AutomationScheduler {
     await save();
   }
 
-  async listRuns(filters: { type?: string; status?: AutomationRunStatus; limit: number }): Promise<AutomationList<AutomationRun>> {
+  async listRuns(filters: { type?: string; status?: AutomationRunStatus; limit: number; from?: string; until?: string }): Promise<AutomationList<AutomationRun>> {
     if (filters.type && !this.options.authorizedTypes?.includes(filters.type)) this.getTask(filters.type);
-    const indexed = [...this.ledger.values()].filter(run => (!filters.type || run.type === filters.type)
-      && (!filters.status || run.status === filters.status)).sort(newestRunFirst).slice(0, filters.limit);
+    const indexed = [...this.ledger.values()].filter(run => {
+      const at = run.startedAt ?? run.scheduledAt;
+      return (!filters.type || run.type === filters.type) && (!filters.status || run.status === filters.status)
+        && (!filters.from || at >= filters.from) && (!filters.until || at < filters.until);
+    }).sort(newestRunFirst).slice(0, filters.limit);
     const items = (await Promise.all(indexed.map(run => this.ledger.get(run.id).catch(error => {
       if (error instanceof StorageError && error.code === 'AUTOMATION_RUN_CORRUPT') return undefined;
       throw error;
     })))).filter((run): run is AutomationRun => run !== undefined && (!filters.status || run.status === filters.status));
-    const issues = this.ledger.listIssues();
+    const issues = this.ledger.listIssues().filter(issue => {
+      const month = issue.file.split('/')[3];
+      return !month || ((!filters.from || month >= filters.from.slice(0, 7)) && (!filters.until || month <= filters.until.slice(0, 7)));
+    });
     return { items, ...(issues.length ? { issues } : {}) };
   }
 

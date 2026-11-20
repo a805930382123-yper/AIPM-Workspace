@@ -140,6 +140,14 @@ export class WorkItemStore {
     return { items, issues, partial };
   }
 
+  async scanForWeeklyReview() {
+    const { records, issues } = await scanJsonRecords(this.directory,
+      (value, file): value is WorkItem => validStoredItem(value, path.basename(file, '.json')), this.root);
+    const items = records.map(({ value: { id, kind = 'customer_issue', title, status, followUpOn, createdAt, rawIds, history } }) =>
+      ({ id, kind, title, status, followUpOn, createdAt, rawIds, closedAt: history.flatMap(event => event.kind === 'closed' ? [event.at] : []) }));
+    return { items, issues };
+  }
+
   private async save(item: WorkItem) {
     if (Buffer.byteLength(`${JSON.stringify(item, null, 2)}\n`) > JSON_SCAN_BUDGET.fileBytes) {
       throw new StorageError('WORK_ITEM_TOO_LARGE', '这条事项的文字记录过大，无法继续保存。', 413);

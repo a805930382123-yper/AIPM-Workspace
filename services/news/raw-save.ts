@@ -1,21 +1,29 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { SerialQueue, writeJsonAtomic } from '../storage/files.ts';
+import { scanJsonRecords, SerialQueue, writeJsonAtomic } from '../storage/files.ts';
 import { RawIntegrityError, type RawInput, type RawStore } from '../raw/store.ts';
 import { NewsError, normalizedUrl } from './service.ts';
 import { newsEvidenceLabel } from './evidence.ts';
 import type { NewsEdition, NewsItem, NewsSavedRaw, NewsSectionName } from './types.ts';
 
 type Receipt={schemaVersion:1; date:string; section:NewsSectionName; itemId:string; sourceId:string; fetchedAt:string; evidenceKind:NewsItem['evidenceKind']; normalizedUrl:string; rawId:string; input:RawInput; status:'pending'|'linked'; createdAt:string; updatedAt:string; registrationId?:string};
+function validReceipt(value:unknown,url:string):value is Receipt {
+  const x=value as Receipt|null;
+  return !!x&&x.schemaVersion===1&&x.normalizedUrl===url&&/^[-a-f0-9]{36}$/i.test(x.rawId)&&['pending','linked'].includes(x.status)
+    &&!!x.input&&typeof x.input.body==='string'&&typeof x.input.title==='string'&&Array.isArray(x.input.tags)
+    &&['fmcg','ai'].includes(x.section)&&['article_excerpt','source_summary'].includes(x.evidenceKind)
+    &&typeof x.date==='string'&&typeof x.itemId==='string'&&typeof x.sourceId==='string'&&typeof x.fetchedAt==='string';
+}
 export class NewsRawSave {
   private queue=new SerialQueue();
   constructor(private root:string,private raws:RawStore,private clock:()=>Date){}
-  private file(url:string){return path.join(this.root,'state','news-saves',createHash('sha256').update(url).digest('hex')+'.json');}
+  private directory(){return path.join(this.root,'state','news-saves');}
+  private file(url:string){return path.join(this.directory(),createHash('sha256').update(url).digest('hex')+'.json');}
   private async read(url:string):Promise<Receipt|null>{
     let data:string;try{data=await readFile(this.file(url),'utf8');}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return null;throw e;}
     let x:Receipt;try{x=JSON.parse(data);}catch{throw new NewsError('保存收据损坏，原文件已保留。',409);}
-    if(!x||x.schemaVersion!==1||x.normalizedUrl!==url||!/^[-a-f0-9]{36}$/i.test(x.rawId)||!['pending','linked'].includes(x.status)||!x.input||typeof x.input.body!=='string'||typeof x.input.title!=='string'||!Array.isArray(x.input.tags)||!['fmcg','ai'].includes(x.section)||!['article_excerpt','source_summary'].includes(x.evidenceKind)||typeof x.date!=='string'||typeof x.itemId!=='string'||typeof x.sourceId!=='string'||typeof x.fetchedAt!=='string')throw new NewsError('保存收据无效，原文件已保留。',409);
+    if(!validReceipt(x,url))throw new NewsError('保存收据无效，原文件已保留。',409);
     return x;
   }
   private async check(receipt:Receipt){
@@ -43,6 +51,16 @@ export class NewsRawSave {
     const receipt = await this.read(normalizedUrl(item.url));
     // A receipt represents an existing source registration even after a user edits the Raw.
     return receipt && await this.raws.get(receipt.rawId) ? receipt.rawId : undefined;
+  }
+  async confirmedBetween(from:string, until:string) {
+    const scan = await scanJsonRecords(this.directory(), (value, file): value is Receipt => {
+      const url = (value as Partial<Receipt>|null)?.normalizedUrl;
+      return typeof url === 'string' && this.file(url) === file && validReceipt(value, url)
+        && typeof value.updatedAt === 'string' && Number.isFinite(Date.parse(value.updatedAt))
+        && new Date(value.updatedAt).toISOString() === value.updatedAt;
+    }, this.root);
+    if (scan.issues.length) throw new NewsError('无法核实部分资讯保存收据。',409);
+    return new Set(scan.records.flatMap(({ value }) => value.status === 'linked' && value.updatedAt >= from && value.updatedAt < until ? [value.rawId] : [])).size;
   }
   async projection(edition:NewsEdition){
     const items:NewsSavedRaw[]=[];

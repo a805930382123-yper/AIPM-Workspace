@@ -40,7 +40,7 @@ export type AutomationRun = AutomationRunSummary & {
   usage: AutomationUsage;
   sourceRequests?: number;
   candidateId?: string;
-  artifacts: { rawIds: string[]; jobIds: string[]; draftIds: string[]; lintSnapshotId?: string; inspectionIds?: string[] };
+  artifacts: { rawIds: string[]; jobIds: string[]; draftIds: string[]; lintSnapshotId?: string; inspectionIds?: string[]; weeklyReviewWeekKey?: string };
   budget: null;
 };
 

@@ -150,9 +150,14 @@ import type {
 import type { KnowledgeHealth } from '../services/automation/wiki-health';
 import type { WikiLintSnapshot } from '../services/automation/tasks/wiki-lint';
 import type { ReminderSettings, ReminderView, WorkReminder } from '../services/automation/reminders';
+import type { ReviewSection } from '../services/automation/weekly-review-snapshot';
+import type { WeeklyReview, WeeklyReviewList, WeeklyReviewSettings } from '../services/automation/weekly-review-store';
 export type { KnowledgeHealth } from '../services/automation/wiki-health';
 export type { WikiLintSnapshot } from '../services/automation/tasks/wiki-lint';
 export type { ReminderSettings, ReminderView, WorkReminder } from '../services/automation/reminders';
+export type { ReviewSection } from '../services/automation/weekly-review-snapshot';
+export type { WeeklyReview, WeeklyReviewList, WeeklyReviewSettings, WeeklyReviewSummary } from '../services/automation/weekly-review-store';
+export type WeeklyReviewTarget = NonNullable<ReviewSection['entries'][number]['target']>;
 
 const automationUrl = '/api/automation';
 const automationRunUrl = (id: string) => `${automationUrl}/runs/${encodeURIComponent(id)}`;
@@ -189,6 +194,21 @@ export const snoozeReminder = (id: string, token: string) =>
   api<ReminderView>(`${remindersUrl}/${encodeURIComponent(id)}/snooze`, automationWrite('POST', token, {}));
 export const testReminderNotification = (token: string) =>
   api<Pick<WorkReminder, 'deliveryStatus' | 'deliveryError'>>(`${remindersUrl}/test-notification`, automationWrite('POST', token, {}));
+const weeklyReviewsUrl = `${automationUrl}/weekly-reviews`;
+const weeklyReviewUrl = (weekKey: string) => `${weeklyReviewsUrl}/${encodeURIComponent(weekKey)}`;
+export const weeklyReviews = (signal?: AbortSignal) => api<WeeklyReviewList>(weeklyReviewsUrl, { signal });
+export const getWeeklyReview = (weekKey: string, signal?: AbortSignal) => api<WeeklyReview>(weeklyReviewUrl(weekKey), { signal });
+export const saveWeeklyReview = (weekKey: string, input: { baseRevision: number; userMarkdown?: string; status?: WeeklyReview['status'] }, token: string) =>
+  api<WeeklyReview>(weeklyReviewUrl(weekKey), automationWrite('PATCH', token, input));
+export const regenerateWeeklyReview = (weekKey: string, input: { baseRevision: number; overwriteEdited: boolean }, token: string) =>
+  api<AutomationRun>(`${weeklyReviewUrl(weekKey)}/regenerate`, automationWrite('POST', token, input));
+export const updateWeeklyReviewSettings = (input: WeeklyReviewSettings, token: string) =>
+  api<WeeklyReviewSettings>(`${weeklyReviewsUrl}/settings`, automationWrite('PATCH', token, input));
+export const weeklyReviewExportUrl = (weekKey: string) => `${weeklyReviewUrl(weekKey)}/export`;
+export const weeklyReviewMarkdown = async (weekKey: string) => {
+  const response = await fetch(weeklyReviewExportUrl(weekKey));
+  return response.ok ? response.text() : readResponse<string>(response);
+};
 export type { CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, PipelineSettings } from '../services/automation/pipeline/service';
 import type { CandidateList, ConfirmCandidates, PipelineSettings } from '../services/automation/pipeline/service';
 const candidatesUrl = `${automationUrl}/candidates`;

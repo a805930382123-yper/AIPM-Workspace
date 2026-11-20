@@ -33,7 +33,10 @@ test('EVAL01 isolated resume preflight, bounded calls and one-use permit',async(
   for(const id of ids.slice(4)){const target=path.resolve(dir,'evals/cases/standard-extract',id,'recordings/live-20261115-baseline.json');assert(target.startsWith(path.resolve(dir)+path.sep));await rm(target,{force:true});}
   await mkdir(path.join(dir,'evals/results'),{recursive:true});let cases:any[]=[], recHashes:string[]=[];
   for(let i=0;i<ids.length;i++){const root=path.join(dir,'evals/cases/standard-extract',ids[i]!,'recordings'),rec=JSON.parse(await readFile(path.join(root,'synthetic-v1.json'),'utf8'));let row:any={id:ids[i],status:i<3?'PASS':i===3?'FAIL':'NOT_RUN',caseHash:rec.caseHash,goldHash:rec.goldHash,bodyHash:rec.bodyHash};if(i<4){rec.origin='live';rec.provider={name:'openai-compatible',model:'gpt-6.1-terra'};const bytes=JSON.stringify(rec,null,2)+'\n';await writeFile(path.join(root,'live-20261115-baseline.json'),bytes);recHashes.push(hash(bytes));row.recordingHash=hash(canonical(rec));row.provider=rec.provider;}cases.push(row);}
-  const sample=JSON.parse(await readFile(path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/synthetic-v1.json'),'utf8'));const threshold=JSON.parse(await readFile(path.join(dir,'evals/thresholds.json'),'utf8'));
+  const sample=JSON.parse(await readFile(path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/synthetic-v1.json'),'utf8'));
+  const thresholdsFile = path.join(dir, 'evals/thresholds.json');
+  const thresholdBytes = await readFile(thresholdsFile);
+  const { weeklyReview, ...threshold } = JSON.parse(thresholdBytes.toString('utf8'));
   const source={runId:'2026-11-15T10-34-38-191Z-832c444a',schemaVersion:1,scoringSchemaVersion:1,mode:'live',chain:'standard-extract',rulesVersion:sample.rulesVersion,thresholdHash:hash(canonical(threshold)),cases,ledger:Array.from({length:8},(_,i)=>({caseId:ids[Math.floor(i/2)],stage:i%2?'planning':'extracting',status:'success',unknownUsage:false,usage:{promptTokens:i?0:33295,completionTokens:i?0:3865}}))};
   const sourceBytes=JSON.stringify(source,null,2)+'\n',sourcePath=path.join(dir,'evals/results/source.json'),sourceHash=hash(sourceBytes);await writeFile(sourcePath,sourceBytes);
   const runner=path.join(dir,'scripts/eval/run.mjs');
@@ -48,6 +51,12 @@ test('EVAL01 isolated resume preflight, bounded calls and one-use permit',async(
   async function invoke(a:string[],extra:Record<string,string>={}){const child=spawn(process.execPath,['--import','tsx','--import','./fake.mjs','scripts/eval/run.mjs',...a],{cwd:dir,env:{...process.env,FMCG_LLM_BASE_URL:'http://127.0.0.1:1',FMCG_LLM_MODEL:'gpt-6.1-terra',FMCG_LLM_API_KEY:'synthetic-test-key',FMCG_LLM_CONFIG_FILE:path.join(dir,'none'),EVAL01_CALL_LOG:log,...extra},stdio:['ignore','pipe','pipe']});let out='';child.stdout.on('data',b=>out+=b);child.stderr.on('data',b=>out+=b);const status=await new Promise<number|null>(resolve=>child.on('close',resolve));return {status,out};}
   const count=async()=>{try{return (await readFile(log,'utf8')).split('\n').filter(Boolean).length}catch{return 0}};
   for(const bad of [args.filter((_,i)=>i!==2&&i!==3),args.filter((_,i)=>i!==3),args.filter((_,i)=>i!==4),[...args,'--case','basic-01-timeout'],args.map(x=>x===sourceHash?'0'.repeat(64):x)]){let r=await invoke(bad);assert.equal(r.status,1,r.out);assert.equal(await count(),0);}
+  await writeFile(thresholdsFile, JSON.stringify({ ...threshold, factRecallPerCase: 0.95, weeklyReview }));
+  const changedThreshold = await invoke(args);
+  assert.equal(changedThreshold.status, 1, changedThreshold.out);
+  assert.match(changedThreshold.out, /Incompatible resume source/u);
+  assert.equal(await count(), 0);
+  await writeFile(thresholdsFile, thresholdBytes);
   const service = path.join(dir, 'services/storage/files.ts');
   const serviceBytes = await readFile(service);
   await writeFile(service, Buffer.concat([serviceBytes, Buffer.from('\n// Change the fixture fingerprint.\n')]));

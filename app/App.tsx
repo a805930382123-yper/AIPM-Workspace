@@ -1,7 +1,7 @@
 import type {RawCitationTarget} from './components/WikiQuestionPanel';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { HomeAction } from '../services/home/actions';
-import type { CandidateFilter, ExtractionJob, Raw, RawProcessingState, Stats } from './api';
+import type { CandidateFilter, ExtractionJob, Raw, RawProcessingState, Stats, WeeklyReviewTarget } from './api';
 import { api, extractionJob, rawProcessing } from './api';
 import { HomePage } from './pages/HomePage';
 import { NewsPage } from './pages/NewsPage';
@@ -47,6 +47,8 @@ export function App() {
   const [workItemsRevision, setWorkItemsRevision] = useState(0);
   const [workItemTarget, setWorkItemTarget] = useState<{ id: string; focusMaterials: boolean } | null>(null);
   const [focusReminders, setFocusReminders] = useState(false);
+  const [weeklyReviewWeekKey, setWeeklyReviewWeekKey] = useState<string>();
+  const [automationRunEntry, setAutomationRunEntry] = useState<string>();
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const refreshGeneration = useRef(0);
@@ -148,6 +150,8 @@ export function App() {
     setRawOriginal(false);
     setWorkItemTarget(null);
     setFocusReminders(false);
+    setWeeklyReviewWeekKey(undefined);
+    setAutomationRunEntry(undefined);
     pageGeneration.current += 1;
     setPendingAudit(null);
     setWikiCheckEntry(null);
@@ -171,6 +175,17 @@ export function App() {
   const openReminders = () => {
     nav('automation');
     setFocusReminders(true);
+  };
+  const openWeeklyReview = (weekKey: string) => {
+    nav('home');
+    setWeeklyReviewWeekKey(weekKey);
+  };
+  const openReviewReference = ({ kind, id }: WeeklyReviewTarget) => {
+    if (kind === 'wiki') { nav('wiki'); setPendingWikiId(id); }
+    else if (kind === 'work') openWorkItem(id);
+    else if (kind === 'raw') nav('raw', id);
+    else if (kind === 'inspection') openWikiInspection(id);
+    else if (kind === 'run' || kind === 'lint') { nav('automation'); setAutomationRunEntry(id); }
   };
   const handleJobStarted = (started: ExtractionJob, requestedPageGeneration = pageGeneration.current, requestedSelectionGeneration?: number) => {
     setJobPollGeneration(value => value + 1);
@@ -224,8 +239,8 @@ export function App() {
       {workflowId ? <KnowledgeWorkflowPage workflowId={workflowId} onBack={() => setWorkflowId(null)} onDone={async () => { setWorkflowId(null); await refresh(); }} /> : reviewDraftId
         ? <DraftReviewPage key={reviewDraftId} draftId={reviewDraftId} backLabel={draftBackLabel} onBack={() => setReviewDraftId(null)} onCommitted={refresh} onOpenWorkflow={setWorkflowId} onOpenWiki={id=>{setPendingWikiId(id);nav('wiki');}} onOpenRaw={(id,target) => { setReviewDraftId(null); nav('raw', id);setRawCitation(target??null); }} />
         : <>
-          {page === 'home' && <HomePage onQuickCapture={() => setQuickCaptureOpen(true)} onOpenAutomation={() => nav('automation')} onOpenReminders={openReminders} onOpenPipeline={filter => { nav('automation'); setPipelineEntry(filter); }} onOpenNews={() => nav('news')} actionsRevision={homeActionsRevision} workItemsRevision={workItemsRevision} onOpenWorkItem={openWorkItem} onOpenAction={openHomeAction} onCreateMeeting={() => { nav('meeting'); setMeetingCreate(true); }} stats={stats} items={raws} onOpenRaw={id => nav('raw', id)} onOpenWiki={id => { setPendingWikiId(id ?? null); nav('wiki'); }} onOpenPrompt={() => nav('prompt')} onImport={() => { nav('raw'); setOpenImport(true); }} onCreateWiki={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:new')), 0); }} onCreatePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:new')), 0); }} onGeneratePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:generator')), 0); }} onLint={openWikiLint} onOpenInspection={openWikiInspection} onOpenWorkflow={setWorkflowId} onGenerateFromRaw={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:generate')), 0); }} />}
-          {page === 'automation' && <AutomationPage candidateFilter={pipelineEntry} onOpenRaw={id => nav('raw', id)} onOpenDraft={id => setReviewDraftId(id)} onOpenLint={openWikiLint} onOpenInspection={openWikiInspection} onOpenWorkItem={openWorkItem} focusReminders={focusReminders} />}
+          {page === 'home' && <HomePage initialWeekKey={weeklyReviewWeekKey} onOpenReviewReference={openReviewReference} onQuickCapture={() => setQuickCaptureOpen(true)} onOpenAutomation={() => nav('automation')} onOpenReminders={openReminders} onOpenPipeline={filter => { nav('automation'); setPipelineEntry(filter); }} onOpenNews={() => nav('news')} actionsRevision={homeActionsRevision} workItemsRevision={workItemsRevision} onOpenWorkItem={openWorkItem} onOpenAction={openHomeAction} onCreateMeeting={() => { nav('meeting'); setMeetingCreate(true); }} stats={stats} items={raws} onOpenRaw={id => nav('raw', id)} onOpenWiki={id => { setPendingWikiId(id ?? null); nav('wiki'); }} onOpenPrompt={() => nav('prompt')} onImport={() => { nav('raw'); setOpenImport(true); }} onCreateWiki={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:new')), 0); }} onCreatePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:new')), 0); }} onGeneratePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:generator')), 0); }} onLint={openWikiLint} onOpenInspection={openWikiInspection} onOpenWorkflow={setWorkflowId} onGenerateFromRaw={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:generate')), 0); }} />}
+          {page === 'automation' && <AutomationPage initialRunId={automationRunEntry} onOpenWeeklyReview={openWeeklyReview} candidateFilter={pipelineEntry} onOpenRaw={id => nav('raw', id)} onOpenDraft={id => setReviewDraftId(id)} onOpenLint={openWikiLint} onOpenInspection={openWikiInspection} onOpenWorkItem={openWorkItem} focusReminders={focusReminders} />}
           {page === 'news' && <NewsPage onBack={() => nav('home')} onRawChanged={refresh} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} />}
           {page === 'work' && <WorkItemsPage key={pageGeneration.current} initialId={workItemTarget?.id ?? null} initialFocusMaterials={workItemTarget?.focusMaterials} raws={raws} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} onChanged={() => setWorkItemsRevision(value => value + 1)} />}
           {page === 'raw' && <RawPage initialOriginal={rawOriginal} initialCitation={rawCitation} items={raws} selectedId={selectedRawId} onSelected={id=>{setRawCitation(null);setRawOriginal(false);selectRaw(id);}} onOpenImport={() => setOpenImport(true)} onCommitted={onRawCaptured} onBodySaved={raw => { setRaws(previous => previous.map(item => item.id === raw.id ? raw : item)); void refresh(); }} openImport={openImport} onCloseImport={() => setOpenImport(false)} onDeleted={async id => { setRaws(previous => previous.filter(item => item.id !== id)); if (selectedRawId === id) selectRaw(null); await refresh(); }} processing={processingById} job={job} onJobStarted={handleJobStarted} navigationGeneration={pageGeneration.current} selectionGeneration={rawSelectionGeneration.current} onOpenDraft={setReviewDraftId} onOpenWorkflow={setWorkflowId} onRefresh={refresh} />}

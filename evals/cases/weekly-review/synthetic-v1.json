@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "origin": "synthetic",
+  "cases": [
+    {
+      "id": "active-week",
+      "snapshot": {
+        "hasActivity": true,
+        "sections": [
+          {"key":"knowledge","title":"新增 Wiki","scope":"period","status":"ok","metrics":[{"ref":"metric:knowledge:created","label":"本周新增 Wiki","count":1}],"entries":[{"ref":"wiki:synthetic-guide","title":"统一渠道口径指南","date":"2026-11-20"}]},
+          {"key":"work","title":"工作事项进展","scope":"period","status":"ok","metrics":[{"ref":"metric:work:closed","label":"本周关闭事项","count":1}],"entries":[{"ref":"work:synthetic-review:closed","title":"样本口径核对","date":"2026-11-21","status":"关闭"}]}
+        ]
+      },
+      "recording": {
+        "executiveSummary":"新增一页渠道指南并关闭一项口径核对。",
+        "highlights":[{"text":"新增《统一渠道口径指南》一页。","refs":["wiki:synthetic-guide"]},{"text":"样本口径核对已关闭。","refs":["work:synthetic-review:closed"]}],
+        "risksAndBlockers":[],
+        "nextWeekFocus":[{"text":"建议回访指南使用情况","reason":"等待人工确认是否安排。"}],
+        "openQuestions":[]
+      },
+      "gold":{"requests":1,"refs":["wiki:synthetic-guide","work:synthetic-review:closed"],"facts":["统一渠道口径指南","样本口径核对已关闭"],"forbidden":["新增两页","节约10万元","已批准"],"suggestions":["建议回访指南使用情况"]}
+    },
+    {
+      "id": "overdue-and-failures",
+      "snapshot": {
+        "hasActivity": true,
+        "sections":[
+          {"key":"work-active","title":"未结与到期事项","scope":"current","status":"ok","metrics":[{"ref":"metric:work-active:due","label":"当前到期与逾期事项","count":2}],"entries":[{"ref":"work:synthetic-overdue","title":"门店口径确认","status":"到期","date":"2026-11-19"}]},
+          {"key":"automation","title":"自动化运行与用量","scope":"period","status":"ok","metrics":[{"ref":"metric:automation:failed","label":"本周失败运行","count":1}],"entries":[{"ref":"run:synthetic-failure","title":"每日资讯","status":"failed","date":"2026-11-20"}]}
+        ]
+      },
+      "recording": {
+        "executiveSummary":"当前到期与逾期事项共2项，本周1次自动化运行失败。",
+        "highlights":[],
+        "risksAndBlockers":[{"text":"门店口径确认已到期。","refs":["work:synthetic-overdue"]},{"text":"1次自动化运行失败，涉及每日资讯。","refs":["metric:automation:failed","run:synthetic-failure"]}],
+        "nextWeekFocus":[{"text":"建议优先核对逾期事项","reason":"跟进顺序待人工确认。"}],
+        "openQuestions":["失败原因仍需查看运行记录。"]
+      },
+      "gold":{"requests":1,"refs":["work:synthetic-overdue","run:synthetic-failure","metric:automation:failed"],"facts":["门店口径确认已到期","1次自动化运行失败"],"forbidden":["3项","已全部完成","系统已重试成功"],"suggestions":["建议优先核对逾期事项"]}
+    },
+    {
+      "id": "restricted-source-filtered",
+      "snapshot": {
+        "hasActivity": true,
+        "sections":[
+          {"key":"knowledge","title":"新增 Wiki","scope":"period","status":"ok","metrics":[{"ref":"metric:knowledge:created","label":"本周新增 Wiki","count":2},{"ref":"metric:knowledge:hidden","label":"来源受限或无法核实，已隐藏明细","count":1}],"entries":[{"ref":"wiki:synthetic-open","title":"公开经营清单","date":"2026-11-20","sourceBody":"RAW_BODY_PRIVATE_SENTINEL","target":{"kind":"wiki","id":"LOCAL_TARGET_SENTINEL"}}],"excludedSourceTitle":"RESTRICTED_MEETING_TITLE_SENTINEL"},
+          {"key":"pending","title":"待处理","scope":"current","status":"error","message":"CUSTOMER_PRIVATE_SENTINEL","metrics":[],"entries":[]}
+        ]
+      },
+      "recording":{
+        "executiveSummary":"有一项 Wiki 明细未展示，待处理数据源无法核实。",
+        "highlights":[{"text":"公开经营清单可查，另有1项新增明细隐藏。","refs":["wiki:synthetic-open","metric:knowledge:hidden"]}],
+        "risksAndBlockers":[],
+        "nextWeekFocus":[],
+        "openQuestions":["待处理数据源读取失败，无法确认其数量。"]
+      },
+      "gold":{"requests":1,"refs":["wiki:synthetic-open","metric:knowledge:hidden"],"facts":["公开经营清单","1项新增明细隐藏"],"forbidden":["RAW_BODY_PRIVATE_SENTINEL","LOCAL_TARGET_SENTINEL","RESTRICTED_MEETING_TITLE_SENTINEL","CUSTOMER_PRIVATE_SENTINEL","待处理数为0"],"suggestions":[]}
+    },
+    {
+      "id": "empty-week",
+      "snapshot": {
+        "hasActivity": false,
+        "sections":[{"key":"knowledge","title":"新增 Wiki","scope":"period","status":"ok","metrics":[{"ref":"metric:knowledge:created","label":"本周新增 Wiki","count":0}],"entries":[]}]
+      },
+      "recording": null,
+      "gold":{"requests":0,"refs":[],"facts":[],"forbidden":["已完成新增","新增计划已批准"],"suggestions":[]}
+    }
+  ]
+}

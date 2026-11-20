@@ -1,0 +1,441 @@
+{
+  "weekKey": "2026-W46",
+  "period": {
+    "weekKey": "2026-W46",
+    "start": "2026-11-09",
+    "end": "2026-11-16",
+    "from": "2026-11-08T16:00:00.000Z",
+    "until": "2026-11-15T16:00:00.000Z",
+    "partialWeek": false
+  },
+  "revision": 2,
+  "status": "draft",
+  "aiStatus": "ready",
+  "snapshot": {
+    "sections": [
+      {
+        "key": "knowledge",
+        "title": "新增 Wiki",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:knowledge:created",
+            "label": "本周新增 Wiki",
+            "count": 2
+          },
+          {
+            "ref": "metric:knowledge:hidden",
+            "label": "来源受限或无法核实，已隐藏明细",
+            "count": 1
+          }
+        ],
+        "entries": [
+          {
+            "ref": "wiki:c7358678-ef14-428b-966b-b1b30794822d",
+            "title": "合成门店陈列指引",
+            "date": "2026-11-12",
+            "target": {
+              "kind": "wiki",
+              "id": "c7358678-ef14-428b-966b-b1b30794822d"
+            }
+          }
+        ]
+      },
+      {
+        "key": "feedback",
+        "title": "Prompt 使用反馈",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:feedback:feedback",
+            "label": "本周 Prompt 反馈",
+            "count": 1
+          },
+          {
+            "ref": "metric:feedback:helpful",
+            "label": "反馈类型 · helpful",
+            "count": 1
+          }
+        ],
+        "entries": [
+          {
+            "ref": "prompt:220bfb4e-6717-43d2-9d23-aeaefd6ade78:5fcb13ce-4d41-4a64-99a0-e901137bb8df",
+            "title": "合成陈列反馈模板",
+            "date": "2026-11-12",
+            "status": "helpful",
+            "target": {
+              "kind": "prompt",
+              "id": "220bfb4e-6717-43d2-9d23-aeaefd6ade78"
+            }
+          }
+        ]
+      },
+      {
+        "key": "pending",
+        "title": "待处理",
+        "scope": "current",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:pending:open",
+            "label": "当前待处理",
+            "count": 0
+          }
+        ],
+        "entries": []
+      },
+      {
+        "key": "work",
+        "title": "工作事项进展",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:work:created",
+            "label": "本周新建事项",
+            "count": 2
+          },
+          {
+            "ref": "metric:work:closed",
+            "label": "本周关闭事项",
+            "count": 0
+          }
+        ],
+        "entries": [
+          {
+            "title": "合成陈列跟进",
+            "target": {
+              "kind": "work",
+              "id": "e6b16056-6211-4d9c-8e5c-95f8f24e2e42"
+            },
+            "ref": "work:e6b16056-6211-4d9c-8e5c-95f8f24e2e42:created",
+            "status": "新建 · customer_issue",
+            "date": "2026-11-12"
+          },
+          {
+            "title": "合成渠道产品评估",
+            "target": {
+              "kind": "work",
+              "id": "e6c1f374-da6f-4a2f-b516-0d90413b92e3"
+            },
+            "ref": "work:e6c1f374-da6f-4a2f-b516-0d90413b92e3:created",
+            "status": "新建 · product_analysis",
+            "date": "2026-11-12"
+          }
+        ]
+      },
+      {
+        "key": "work-active",
+        "title": "未结与到期事项",
+        "scope": "current",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:work-active:open",
+            "label": "当前未结事项",
+            "count": 2
+          },
+          {
+            "ref": "metric:work-active:due",
+            "label": "当前到期与逾期事项",
+            "count": 1
+          }
+        ],
+        "entries": [
+          {
+            "ref": "work:e6b16056-6211-4d9c-8e5c-95f8f24e2e42",
+            "title": "合成陈列跟进",
+            "status": "到期 · waiting · customer_issue",
+            "date": "2026-11-12",
+            "target": {
+              "kind": "work",
+              "id": "e6b16056-6211-4d9c-8e5c-95f8f24e2e42"
+            }
+          },
+          {
+            "ref": "work:e6c1f374-da6f-4a2f-b516-0d90413b92e3",
+            "title": "合成渠道产品评估",
+            "status": "triage · product_analysis",
+            "target": {
+              "kind": "work",
+              "id": "e6c1f374-da6f-4a2f-b516-0d90413b92e3"
+            }
+          }
+        ]
+      },
+      {
+        "key": "news",
+        "title": "资讯抓取",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:news:fetched",
+            "label": "本周抓取可用资讯条目",
+            "count": 0
+          },
+          {
+            "ref": "metric:news:editions",
+            "label": "有抓取结果的资讯版次",
+            "count": 0
+          }
+        ],
+        "entries": []
+      },
+      {
+        "key": "news-saves",
+        "title": "资讯确认入库",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:news-saves:confirmed",
+            "label": "本周确认保存资讯 Raw",
+            "count": 0
+          }
+        ],
+        "entries": []
+      },
+      {
+        "key": "lint",
+        "title": "本周 Wiki 结构变化",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:lint:added",
+            "label": "本周结构问题新增",
+            "count": 0
+          },
+          {
+            "ref": "metric:lint:resolved",
+            "label": "本周结构问题消除",
+            "count": 0
+          },
+          {
+            "ref": "metric:lint:net",
+            "label": "本周结构问题净增减",
+            "count": 0
+          }
+        ],
+        "entries": []
+      },
+      {
+        "key": "lint-current",
+        "title": "最近一次 Wiki 结构巡检",
+        "scope": "current",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:lint-current:total",
+            "label": "最近一次结构巡检问题数",
+            "count": 0
+          }
+        ],
+        "entries": [
+          {
+            "ref": "lint:5aa08bda-e847-4149-bea4-f9434c01d18f",
+            "title": "最近结构巡检快照",
+            "date": "2026-11-12",
+            "target": {
+              "kind": "lint",
+              "id": "5aa08bda-e847-4149-bea4-f9434c01d18f"
+            }
+          }
+        ]
+      },
+      {
+        "key": "inspection",
+        "title": "知识库主动巡检",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:inspection:pending",
+            "label": "本周巡检发现中当前待核数",
+            "count": 0
+          }
+        ],
+        "entries": []
+      },
+      {
+        "key": "automation",
+        "title": "自动化运行与用量",
+        "scope": "period",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:automation:runs",
+            "label": "本周运行总数",
+            "count": 2
+          },
+          {
+            "ref": "metric:automation:failed",
+            "label": "本周失败运行",
+            "count": 0
+          },
+          {
+            "ref": "metric:automation:requests",
+            "label": "模型请求",
+            "count": 0
+          },
+          {
+            "ref": "metric:automation:inputTokens",
+            "label": "输入 Token",
+            "count": 0
+          },
+          {
+            "ref": "metric:automation:outputTokens",
+            "label": "输出 Token",
+            "count": 0
+          },
+          {
+            "ref": "metric:automation:unknownUsageCount",
+            "label": "用量未知的请求",
+            "count": 0
+          }
+        ],
+        "entries": [
+          {
+            "ref": "run:5aa08bda-e847-4149-bea4-f9434c01d18f",
+            "title": "知识库结构巡检",
+            "date": "2026-11-12",
+            "status": "succeeded",
+            "target": {
+              "kind": "run",
+              "id": "5aa08bda-e847-4149-bea4-f9434c01d18f"
+            }
+          },
+          {
+            "ref": "run:3c6b38d1-d9c0-4dc6-8f40-ec01e1a97fcc",
+            "title": "每日资讯",
+            "date": "2026-11-12",
+            "status": "succeeded",
+            "target": {
+              "kind": "run",
+              "id": "3c6b38d1-d9c0-4dc6-8f40-ec01e1a97fcc"
+            }
+          }
+        ]
+      },
+      {
+        "key": "reminders",
+        "title": "站内事项提醒",
+        "scope": "current",
+        "status": "ok",
+        "metrics": [
+          {
+            "ref": "metric:reminders:active",
+            "label": "当前活动提醒",
+            "count": 0
+          },
+          {
+            "ref": "metric:reminders:unread",
+            "label": "当前未读提醒",
+            "count": 0
+          }
+        ],
+        "entries": []
+      }
+    ],
+    "hasActivity": true
+  },
+  "draft": {
+    "executiveSummary": "AI 整理：本周新增 Wiki 2 篇、新建工作事项 2 项，关闭 0 项；收到 1 条 helpful 类型的 Prompt 反馈。生成时当前未结事项 2 项，其中 1 项到期；当前待处理数为 0。自动化运行 2 次，失败 0 次。",
+    "highlights": [
+      {
+        "text": "本周新增 Wiki 2 篇，其中《合成门店陈列指引》于 11 月 12 日新增；另有 1 条明细因来源受限或无法核实而隐藏。",
+        "refs": [
+          "metric:knowledge:created",
+          "metric:knowledge:hidden",
+          "wiki:c7358678-ef14-428b-966b-b1b30794822d"
+        ]
+      },
+      {
+        "text": "本周收到 1 条 Prompt 反馈，类型为 helpful，涉及《合成陈列反馈模板》。",
+        "refs": [
+          "metric:feedback:feedback",
+          "metric:feedback:helpful",
+          "prompt:220bfb4e-6717-43d2-9d23-aeaefd6ade78:5fcb13ce-4d41-4a64-99a0-e901137bb8df"
+        ]
+      },
+      {
+        "text": "本周新建工作事项 2 项、关闭 0 项：新建《合成陈列跟进》和《合成渠道产品评估》。",
+        "refs": [
+          "metric:work:created",
+          "metric:work:closed",
+          "work:e6b16056-6211-4d9c-8e5c-95f8f24e2e42:created",
+          "work:e6c1f374-da6f-4a2f-b516-0d90413b92e3:created"
+        ]
+      },
+      {
+        "text": "生成时当前待处理数为 0；当前未结工作事项为 2 项。",
+        "refs": [
+          "metric:pending:open",
+          "metric:work-active:open"
+        ]
+      },
+      {
+        "text": "本周未抓取到可用资讯，未确认保存资讯 Raw。",
+        "refs": [
+          "metric:news:fetched",
+          "metric:news:editions",
+          "metric:news-saves:confirmed"
+        ]
+      },
+      {
+        "text": "本周 Wiki 结构问题新增、消除和净增减均为 0；最近一次结构巡检问题数为 0。",
+        "refs": [
+          "metric:lint:added",
+          "metric:lint:resolved",
+          "metric:lint:net",
+          "metric:lint-current:total",
+          "lint:5aa08bda-e847-4149-bea4-f9434c01d18f"
+        ]
+      },
+      {
+        "text": "本周自动化运行 2 次，失败 0 次；知识库结构巡检和每日资讯运行状态均为 succeeded。",
+        "refs": [
+          "metric:automation:runs",
+          "metric:automation:failed",
+          "run:5aa08bda-e847-4149-bea4-f9434c01d18f",
+          "run:3c6b38d1-d9c0-4dc6-8f40-ec01e1a97fcc"
+        ]
+      }
+    ],
+    "risksAndBlockers": [
+      {
+        "text": "生成时当前有 1 项到期或逾期事项：《合成陈列跟进》状态为到期、waiting。",
+        "refs": [
+          "metric:work-active:due",
+          "work:e6b16056-6211-4d9c-8e5c-95f8f24e2e42"
+        ]
+      }
+    ],
+    "nextWeekFocus": [
+      {
+        "text": "AI 建议、待确认：跟进《合成陈列跟进》的到期及等待状态。",
+        "reason": "该事项当前状态为到期、waiting。"
+      },
+      {
+        "text": "AI 建议、待确认：关注《合成渠道产品评估》的后续处理。",
+        "reason": "该事项当前未结，状态为 triage。"
+      }
+    ],
+    "openQuestions": [
+      "《合成陈列跟进》当前等待的具体内容及后续处理方式是什么？",
+      "《合成渠道产品评估》的后续处理安排是什么？"
+    ]
+  },
+  "userMarkdown": "",
+  "generatedAt": "2026-11-20T17:56:22.669Z",
+  "updatedAt": "2026-11-20T17:56:38.436Z",
+  "usage": {
+    "requests": 1,
+    "inputTokens": 1938,
+    "outputTokens": 1092,
+    "unknownUsageCount": 0
+  }
+}

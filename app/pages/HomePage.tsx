@@ -5,14 +5,14 @@ import type { Wiki, WorkItemSummary } from '../api';
 import { workKindLabel, workStatusLabel } from './WorkItemsPage';
 import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
-import type { AutomationStatus, CandidateFilter, CandidateList, KnowledgeHealth, Raw, Stats } from '../api';
+import type { AutomationStatus, CandidateFilter, CandidateList, KnowledgeHealth, Raw, Stats, WeeklyReviewTarget } from '../api';
 import { api, automationCandidates, automationKnowledgeHealth, automationReminders, automationStatus, automationTime, dateText, sourceLabels, workItems } from '../api';
 import '../home.css';
 
 const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
 const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
 
-export function HomePage({ onQuickCapture, onOpenAutomation, onOpenReminders, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onOpenInspection, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenReminders?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenInspection?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
+export function HomePage({ onQuickCapture, onOpenAutomation, onOpenReminders, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onOpenInspection, initialWeekKey, onOpenReviewReference, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenReminders?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenInspection?: (id: string) => void; initialWeekKey?: string; onOpenReviewReference?: (target: WeeklyReviewTarget) => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [deferred, setDeferred] = useState(false);
@@ -82,7 +82,8 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenReminders, on
     return () => controller.abort();
   }, [showReminders, dueReload, workItemsRevision]);
   useEffect(()=>{let active=true;api<{items:Wiki[]}>('/api/wiki').then(result=>{if(active)setRecentWiki([...result.items].sort((a,b)=>b.updated.localeCompare(a.updated)).slice(0,4));}).catch(()=>{if(active)setWikiError('最近知识读取失败，请稍后重试。');});return()=>{active=false;};},[]);
-  const [reviewOpen,setReviewOpen]=useState(false);
+  const [reviewOpen,setReviewOpen]=useState(Boolean(initialWeekKey));
+  const [reviewWeekKey,setReviewWeekKey]=useState(initialWeekKey);
   const [actions,setActions]=useState<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}|null>(null);
   const [actionError,setActionError]=useState(''); const generation=useRef(0);
   const loadActions=async()=>{const current=++generation.current;setActionError('');try{const result=await api<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}>('/api/home/actions');if(current===generation.current)setActions(result);}catch{if(current===generation.current)setActionError('行动事项读取失败，请刷新。');}};
@@ -127,7 +128,8 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenReminders, on
       {title:'生成 Prompt',description:'打开生成工作台',icon:'code',action:onGeneratePrompt},
       {title:'新建会议',description:'记录和管理会议',icon:'calendar',action:onCreateMeeting},
     ].map(entry=><button className="home-entry" key={entry.title} onClick={entry.action}><span className="entry-icon"><Icon name={entry.icon}/></span><span><b>{entry.title}</b><small>{entry.description}</small></span><span aria-hidden="true">›</span></button>)}</div>
-    {reviewOpen&&<PeriodReview onClose={()=>setReviewOpen(false)} onOpenWiki={id=>onOpenWiki(id)} onOpenAction={item=>onOpenAction?.(item)} />}
+    {reviewOpen&&<PeriodReview onClose={()=>{setReviewOpen(false);setReviewWeekKey(undefined);}} initialWeekKey={reviewWeekKey}
+      onOpenReference={onOpenReviewReference} onOpenWiki={id=>onOpenWiki(id)} onOpenAction={item=>onOpenAction?.(item)} />}
     {(showPipeline || showAutomation) && <div className="panel home-status-banner home-a-banner">
       {onOpenPipeline && <section aria-labelledby="home-pipeline-heading">
         <div className="panel-heading"><h2 id="home-pipeline-heading">今日资讯流水线</h2><button className="text-button" onClick={() => onOpenPipeline('all')}>打开收件箱 ›</button></div>

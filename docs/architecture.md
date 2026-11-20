@@ -36,6 +36,14 @@ RUN01 增加到点严格向未来推进的上海时区周计划，周一为 1，
 
 通知适配器限制输入为事项标题、固定类型和数量，WinRT XML 转义并限制单段文本长度。Windows 实现通过 Windows PowerShell 的已注册应用标识调用 `CreateToastNotifier`，以 5 秒为硬超时，系统失败保留在相应提醒。非 Windows、CI 和测试上下文使用安全返回值；测试可注入假通知器。自动化 API 写操作沿用本机 Origin、JSON 和进程令牌约束，设置修改使用 revision 校验。测试通知使用固定非业务文案。 [任务卡](handoffs/WORKAUTO01-20261120-task.md) · [WinRT 桌面通知接口](https://learn.microsoft.com/en-us/windows/win32/shell/quickstart-sending-desktop-toast)
 
+## REVIEW01 每周工作回顾
+
+`review.weekly` 默认上海时间周一 09:00，从计划触发时点选择上一完整 ISO 周。补跑沿用计划时点。手动指定当前周时以执行时刻为上界。快照复用 L6 期间与当前待办来源，加上事项关闭历史、资讯版次和保存收据、知识巡检、自动化用量与事项提醒。时间窗口左闭右开，来源错误按独立栏目显示。
+
+标题投影复用 Raw 会议来源门禁和 Wiki 来源链校验。未知或受限来源只进入安全计数。周报先原子写到 `state/automation/weekly-reviews/<weekKey>.json`，再将允许的栏目、日期、状态、标题、引用键和统计量发给配置的 Provider。单次结构化调用走运行账本计量，响应中引用必须属于本次快照。失败仅记录安全错误与事实。关闭 AI、模型未配置或没有变更和待核风险时保留事实快照。设置同目录落盘，现有备份包含周报。
+
+自动运行保护人工编辑及已审阅周报。手动重生成走相同任务和账本，需版本匹配，已有人工内容时还需明确确认。事实写回与 AI 返回后分别校验 revision，较新人工版本保留。导出依次包含事实、AI 整理和人工备注。定时任务和导出限于周报档案，正式资产沿人工写入边界保护。CI 对四组合成案例离线回放。 [任务卡](handoffs/REVIEW01-20261120-task.md)
+
 ## RAWEDIT02 人工正文修订边界（2026-11-14，独立验收通过）
 
 用户明确授权从 Raw 详情人工编辑正文，取代下文历史“Raw 不可变”对人工操作的限制；AI 仍不得改写 Raw。见 [RAWEDIT02 任务卡](handoffs/RAWEDIT02-20261114-task.md)及[独立验收](reports/RAWEDIT02-20261114-review.md)。稳定 Raw ID 和来源身份保持，PATCH正文校验预期SHA及bodyRevision（旧记录0），先将修改前完整Markdown原字节写入 knowledge/raw/history/<id>/<revision>.md，再原子替换正文；原件字节不修改。编辑与启动/确认复用Wiki锁，进行中处理及未完成确认阻止编辑。旧普通派生依据按正文SHA失效，已有正式Wiki不自动改写。PDF人工改的是提取文字，bodyRevision非零时旧页链与按页草稿不再用于当前正文，原PDF仍可打开；不能把改后文字冒充原PDF页内容。带Meeting来源身份的Raw仍保持桥接原件一致性，不开放直接正文修订；普通meeting分类不受此限制。

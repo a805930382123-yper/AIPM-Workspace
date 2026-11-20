@@ -34,7 +34,9 @@ function isStoredRun(value: unknown, id: string, month: string): value is Automa
   return object(artifacts) && ['rawIds', 'jobIds', 'draftIds'].every(key => Array.isArray(artifacts[key]) && artifacts[key].every(string))
     && (artifacts.lintSnapshotId === undefined || (string(artifacts.lintSnapshotId) && runIdPattern.test(artifacts.lintSnapshotId)))
     && (artifacts.inspectionIds === undefined || (Array.isArray(artifacts.inspectionIds)
-      && artifacts.inspectionIds.every(id => string(id) && runIdPattern.test(id))));
+      && artifacts.inspectionIds.every(id => string(id) && runIdPattern.test(id))))
+    && (artifacts.weeklyReviewWeekKey === undefined || (string(artifacts.weeklyReviewWeekKey)
+      && /^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/u.test(artifacts.weeklyReviewWeekKey)));
 }
 
 export class AutomationLedger {

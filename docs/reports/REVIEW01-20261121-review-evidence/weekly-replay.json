@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-11-20T17-59-11-899Z-e572dae1",
+  "chain": "weekly-review",
+  "mode": "replay",
+  "recording": "synthetic-v1",
+  "cases": [
+    {
+      "id": "active-week",
+      "status": "PASS",
+      "requests": 1,
+      "measures": {
+        "structure": 1,
+        "referenceRate": 1,
+        "factRecall": 1,
+        "forbiddenAssertions": 0,
+        "partitionViolations": 0
+      },
+      "refs": [
+        "wiki:synthetic-guide",
+        "work:synthetic-review:closed"
+      ]
+    },
+    {
+      "id": "overdue-and-failures",
+      "status": "PASS",
+      "requests": 1,
+      "measures": {
+        "structure": 1,
+        "referenceRate": 1,
+        "factRecall": 1,
+        "forbiddenAssertions": 0,
+        "partitionViolations": 0
+      },
+      "refs": [
+        "work:synthetic-overdue",
+        "metric:automation:failed",
+        "run:synthetic-failure"
+      ]
+    },
+    {
+      "id": "restricted-source-filtered",
+      "status": "PASS",
+      "requests": 1,
+      "measures": {
+        "structure": 1,
+        "referenceRate": 1,
+        "factRecall": 1,
+        "forbiddenAssertions": 0,
+        "partitionViolations": 0
+      },
+      "refs": [
+        "wiki:synthetic-open",
+        "metric:knowledge:hidden"
+      ]
+    },
+    {
+      "id": "empty-week",
+      "status": "PASS",
+      "requests": 0,
+      "measures": {
+        "structure": 1,
+        "referenceRate": 1,
+        "factRecall": 1,
+        "forbiddenAssertions": 0,
+        "partitionViolations": 0
+      },
+      "refs": []
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "total": 4,
+    "pass": true
+  }
+}
