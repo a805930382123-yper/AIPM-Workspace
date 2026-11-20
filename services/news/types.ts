@@ -1,4 +1,7 @@
 export type NewsSectionName = 'fmcg' | 'ai';
+export type NewsSavedRaw = {section:NewsSectionName;itemId:string} & (
+  {status:'saved'|'missing'|'pending';rawId:string} | {status:'error';message:string;rawId?:never}
+);
 export type NewsItem = {id:string;title:string;sourceId:string;sourceName:string;url:string;author?:string;publishedAt:string|null;fetchedAt:string;excerpt:string;evidenceKind:'article_excerpt'|'source_summary';research?:{kind:string;dataPeriod:string|null;pdfUrl?:string;pageRange?:string};analysis?:{fact:string;whyItMatters:string;possibleImpact:string}};
 export type NewsCheckMode = 'all' | 'failed';
 export type SourceExclusions = {urls:Set<string>;titles:Set<string>;pdfs?:Set<string>};

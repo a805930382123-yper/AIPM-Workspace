@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
-import type { NewsCheckMode, NewsEdition, NewsItem, NewsSection, NewsSectionName } from '../../services/news/types';
+import type { NewsCheckMode, NewsEdition, NewsItem, NewsSavedRaw, NewsSection, NewsSectionName } from '../../services/news/types';
 import { AiFrontierAccordion, BriefingItemCard, FmcgBriefingSection, groupAiItems } from './NewsReading';
 import { hasSourceFailure, SourceDiagnosticsSidebar } from './NewsSources';
 import '../news.css';
@@ -75,21 +75,23 @@ function useToday(ensure:boolean){
  return {view,error,setView,setError,refresh:()=>refreshRef.current()};
 }
 export function NewsHome({onOpen}:{onOpen:()=>void}){const {view,error,refresh}=useToday(true);return <section className="panel news-home"><div><h2>每日资讯</h2><p>{view?`${view.date} · AI 分析${view.aiEnabled?'已启用':'未启用'}`:'正在读取资讯状态'}</p>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}<div className="news-home-status">{(['fmcg','ai'] as const).map(n=><span key={n}>{labels[n]}：{view?.edition?.sections[n]?statusLabel(n,view.edition.sections[n]!.status):'等待准备'}</span>)}</div></div><button className="secondary-button" onClick={onOpen}>阅读资讯</button></section>;}
-type Saved={section:NewsSectionName;itemId:string;rawId:string;status:'saved'|'missing'|'pending'};
 export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawChanged?:()=>void|Promise<void>;onOpenRaw?:(id:string)=>void;onBack?:()=>void}){const {view,error,setView,setError,refresh}=useToday(false);const [history,setHistory]=useState<{items:Array<{date:string}>;errors:string[]}|null>(null),[selected,setSelected]=useState<string|null>(null),[edition,setEdition]=useState<NewsEdition|null>(null),[readError,setReadError]=useState('');
  useEffect(()=>{let active=true;api<{items:Array<{date:string}>;errors:string[]}>('/api/news/history').then(x=>{if(active)setHistory(x)}).catch(()=>{if(active)setReadError('历史记录读取失败。')});return()=>{active=false}},[]);
  useEffect(()=>{let active=true;setEdition(null);setReadError('');if(selected)void api<NewsEdition>(`/api/news/editions/${selected}`).then(x=>{if(active)setEdition(x)}).catch(()=>{if(active)setReadError('这期记录读取失败。')});return()=>{active=false}},[selected]);
- const [saved,setSaved]=useState<Record<string,Saved[]>>({}),[busy,setBusy]=useState<Record<string,boolean>>({}),[saveErrors,setSaveErrors]=useState<Record<string,string>>({});
+ const [saved,setSaved]=useState<Record<string,NewsSavedRaw[]>>({}),[busy,setBusy]=useState<Record<string,boolean>>({}),[saveErrors,setSaveErrors]=useState<Record<string,string>>({});
  const projectionVersion=useRef<Record<string,number>>({});
  const alive=useRef(true);useEffect(()=>{alive.current=true;return()=>{alive.current=false}},[]);
  const [projectionReload,setProjectionReload]=useState(0);
  const [projectionReading,setProjectionReading]=useState(false);
- const dates=[...new Set([selected||view?.date,...(!selected?[...(view?.fallbacks.ai?[view.fallbacks.ai.date]:[]),...(view?.recentFmcg||[]).map(x=>x.date)]:[])].filter((x):x is string=>!!x))].join(',');
+ const shown = selected ? (edition?.date === selected ? edition : null) : view?.edition;
+ const dates = selected ? shown?.date ?? '' : [...new Set([
+  shown?.date, view?.fallbacks.ai?.date, ...(view?.recentFmcg ?? []).map(row => row.date),
+ ].filter(Boolean))].join(',');
  useEffect(()=>{
   let active=true;
   const reads=dates.split(',').filter(Boolean).map(date=>{
    const version=projectionVersion.current[date]||0;
-   return api<{items:Saved[]}>(`/api/news/editions/${date}/saved-raws`).then(x=>{
+   return api<{items:NewsSavedRaw[]}>(`/api/news/editions/${date}/saved-raws`).then(x=>{
     if(active&&version===(projectionVersion.current[date]||0)) {
      setSaved(prev=>({...prev,[date]:x.items}));
      setSaveErrors(prev=>({...prev,[date]:''}));
@@ -139,7 +141,6 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
   window.history.replaceState(window.history.state, '', `#news-section-${name}`);
  };
 
- const shown = selected ? (edition?.date === selected ? edition : null) : view?.edition;
  const readingDate = selected ?? view?.date ?? '';
  const fmcg = shown?.sections.fmcg;
  const ai = shown?.sections.ai;
@@ -151,8 +152,8 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
  const aiGroups = groupAiItems(displayedAi);
  const counts = { fmcg: fmcgItems.length + recent.length, ai: aiGroups.reduce((total, group) => total + group.items.length, 0) };
  const current = shown?.sections[active];
- const relevantDates = active === 'ai' ? [fallback?.date ?? readingDate] : [readingDate, ...recent.map(row => row.date)];
- const projectionError = relevantDates.some(date => saveErrors[date]);
+ const relevantDates = active === 'ai' ? [fallback?.date ?? shown?.date] : [shown?.date, ...recent.map(row => row.date)];
+ const projectionError = relevantDates.some(date => date && saveErrors[date]);
  const failures = current?.sources.filter(hasSourceFailure).length ?? 0;
  const activeMode = checking[active];
  const checkDisabled = !view || Boolean(activeMode) || current?.status === 'running';
@@ -166,6 +167,7 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
   return <BriefingItemCard key={options?.key ?? key} item={item} ai={name === 'ai'} recentDate={options?.recentDate} analysisStatus={name === 'ai' ? analysisStatus : undefined} actions={<>
    {entry?.status === 'saved' ? <span>已保存 · <button type="button" className="text-button" onClick={() => onOpenRaw(entry.rawId)}>查看 Raw</button></span>
     : entry?.status === 'missing' ? <span>原 Raw 已删除</span>
+    : entry?.status === 'error' ? <p className="form-error" role="alert">{entry.message}</p>
     : <button type="button" className="secondary-button" disabled={Boolean(busy[key])} onClick={() => void save(date, name, item.id)}>
      {busy[key] ? '正在保存…' : entry?.status === 'pending' ? '核对保存状态' : '保存到 Raw'}
     </button>}

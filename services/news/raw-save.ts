@@ -5,7 +5,7 @@ import { SerialQueue, writeJsonAtomic } from '../storage/files.ts';
 import { RawIntegrityError, type RawInput, type RawStore } from '../raw/store.ts';
 import { NewsError, normalizedUrl } from './service.ts';
 import { newsEvidenceLabel } from './evidence.ts';
-import type { NewsEdition, NewsItem, NewsSectionName } from './types.ts';
+import type { NewsEdition, NewsItem, NewsSavedRaw, NewsSectionName } from './types.ts';
 
 type Receipt={schemaVersion:1; date:string; section:NewsSectionName; itemId:string; sourceId:string; fetchedAt:string; evidenceKind:NewsItem['evidenceKind']; normalizedUrl:string; rawId:string; input:RawInput; status:'pending'|'linked'; createdAt:string; updatedAt:string; registrationId?:string};
 export class NewsRawSave {
@@ -18,7 +18,17 @@ export class NewsRawSave {
     if(!x||x.schemaVersion!==1||x.normalizedUrl!==url||!/^[-a-f0-9]{36}$/i.test(x.rawId)||!['pending','linked'].includes(x.status)||!x.input||typeof x.input.body!=='string'||typeof x.input.title!=='string'||!Array.isArray(x.input.tags)||!['fmcg','ai'].includes(x.section)||!['article_excerpt','source_summary'].includes(x.evidenceKind)||typeof x.date!=='string'||typeof x.itemId!=='string'||typeof x.sourceId!=='string'||typeof x.fetchedAt!=='string')throw new NewsError('保存收据无效，原文件已保留。',409);
     return x;
   }
-  private async check(x:Receipt){const raw=await this.raws.get(x.rawId);if(!raw)return false;const i=x.input;if(raw.body!==i.body||raw.title!==i.title||raw.sourceType!==i.sourceType||raw.sourceName!==i.sourceName||raw.url!==i.url||raw.publishedAt!==i.publishedAt||raw.extractionNote!==i.extractionNote||JSON.stringify(raw.tags)!==JSON.stringify(i.tags))throw new RawIntegrityError();return true;}
+  private async check(receipt:Receipt){
+    const raw=await this.raws.get(receipt.rawId);
+    if(!raw)return false;
+    // Linked receipts keep the original registration even after a user edits the Raw.
+    if(receipt.status==='linked')return true;
+    const input=receipt.input;
+    if(raw.body!==input.body||raw.title!==input.title||raw.sourceType!==input.sourceType||raw.sourceName!==input.sourceName||
+        raw.url!==input.url||raw.publishedAt!==input.publishedAt||raw.extractionNote!==input.extractionNote||
+        JSON.stringify(raw.tags)!==JSON.stringify(input.tags))throw new RawIntegrityError();
+    return true;
+  }
   async save(date:string,section:NewsSectionName,item:NewsItem,registrationId?:string){return this.queue.run(async()=>{
     const url=normalizedUrl(item.url);let receipt=await this.read(url);let created=false;
     if(!receipt){const label=newsEvidenceLabel(item);const note=item.research?[label,`数据时期：${item.research.dataPeriod||'请以原文为准'}`,item.research.pdfUrl?`PDF：${item.research.pdfUrl}（${item.research.pageRange||'页码未提供'}）`:''].filter(Boolean).join('；'):item.author?`${label}；作者：${item.author}`:label;const now=this.clock().toISOString();const input:RawInput={title:item.title,sourceType:'article',sourceName:item.sourceName+'（'+label+'）',url:item.url,...(item.publishedAt?{publishedAt:item.publishedAt}:{}),tags:['每日资讯',section==='fmcg'?'快消行业':'AI 前沿',label],extractionNote:note,body:item.excerpt};receipt={schemaVersion:1,date,section,itemId:item.id,sourceId:item.sourceId,fetchedAt:item.fetchedAt,evidenceKind:item.evidenceKind,normalizedUrl:url,rawId:randomUUID(),input,status:'pending',createdAt:now,updatedAt:now,...(registrationId?{registrationId}:{})};await writeJsonAtomic(this.file(url),receipt);try{await this.raws.createNewsRegistration(receipt.rawId,input);}catch{throw new NewsError('保存状态待核对，请重试。',409);}created=true;
@@ -35,15 +45,20 @@ export class NewsRawSave {
     return receipt && await this.raws.get(receipt.rawId) ? receipt.rawId : undefined;
   }
   async projection(edition:NewsEdition){
-    const items:Array<{section:NewsSectionName;itemId:string;rawId:string;status:'saved'|'missing'|'pending'}>=[];
+    const items:NewsSavedRaw[]=[];
     for(const section of ['fmcg','ai'] as const){
       const part=edition.sections[section];
       const additional=section==='fmcg'?edition.legacyFmcg?.items:part?.sourceItems;
       for(const item of [...(part?.items??[]),...(additional??[])]){
-        const receipt=await this.read(normalizedUrl(item.url));
-        if(!receipt) continue;
-        const exists=await this.check(receipt);
-        items.push({section,itemId:item.id,rawId:receipt.rawId,status:receipt.status==='pending'?'pending':exists?'saved':'missing'});
+        try{
+          const receipt=await this.read(normalizedUrl(item.url));
+          if(!receipt) continue;
+          const exists=await this.check(receipt);
+          items.push({section,itemId:item.id,rawId:receipt.rawId,status:receipt.status==='pending'?'pending':exists?'saved':'missing'});
+        }catch(error){
+          const message=error instanceof NewsError||error instanceof RawIntegrityError?error.message:'这条资讯的保存状态无法读取。';
+          items.push({section,itemId:item.id,status:'error',message});
+        }
       }
     }
     return {items};
