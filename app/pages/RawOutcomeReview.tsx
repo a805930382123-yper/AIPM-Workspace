@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, type ReactNode} from 'react';
+import {useEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {ApiError, api, cancelDraftPreparation, confirmDraft, discardDraft, draftView, finishDraftReview, patchDraft, pdfOriginalPageUrl, prepareDraftChange, savePageDecision, setDraftDeferred, startUpdateWorkflow, wikiCommit} from '../api';
 import type {DraftView, RawDraftView, Wiki, WikiCommitStatus} from '../api';
 import {FormalNoteReader} from '../components/FormalNoteReader';
@@ -25,8 +25,18 @@ type Props = {
 type Edit = {id: string; title: string; text: string; description?: string};
 type Duplicate = {pageId: string; candidates: Array<{id: string; title: string}>};
 type Adjustment={changeId:string;action:KnowledgeChange['action'];targetWikiId:string};
+type TopicFilter = 'all' | 'pending' | 'selected' | 'committed' | 'dismissed';
 const actions = {create:'新建主题', update:'更新主题', link:'补充来源', noop:'主题无需改动'};
 const statusLabels = {pending_confirmation:'待确认', committing:'正在处理上次确认', confirmed:'已确认入库', discarded:'已放弃'};
+
+function readDismissedIds(key: string): string[] {
+  try {
+    const saved: unknown = JSON.parse(window.localStorage.getItem(key) ?? '[]');
+    return Array.isArray(saved) ? saved.filter((id): id is string => typeof id === 'string') : [];
+  } catch {
+    return [];
+  }
+}
 
 function pdfOutcomeExcerpt(body: string) {
   const lines = body.split(/\r?\n/u);
@@ -53,11 +63,20 @@ function pdfOutcomeExcerpt(body: string) {
   }
 }
 
-export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenRaw, onOpenWiki, onOpenWorkflow, onCommitted, advanced, advancedDirty, advancedBusy}: Props) {
+export function RawOutcomeReview(props: Props) {
+  return <RawOutcomeReviewContent key={props.view.id} {...props} />;
+}
+
+function RawOutcomeReviewContent({view, body, onView, onBack, backLabel, onOpenRaw, onOpenWiki, onOpenWorkflow, onCommitted, advanced, advancedDirty, advancedBusy}: Props) {
+  const dismissedKey = `aipm.outcome.dismissed.v1:${view.id}`;
+  const [dismissedIds, setDismissedIds] = useState(() => readDismissedIds(dismissedKey));
+  const [topicQuery, setTopicQuery] = useState('');
+  const [topicFilter, setTopicFilter] = useState<TopicFilter>('all');
   const [selection, setSelection] = useState(() => {
     if (view.deferredAt) return [];
     const remaining=view.maintenance?.changes.filter(c=>!c.committedOperationId);
-    return remaining?.every(c=>c.action==='noop')?remaining.map(c=>view.pages[c.pageIndex].pageId):view.pages.filter(p=>p.selected&&p.reviewDecision!=='defer').map(p=>p.pageId);
+    const initial = remaining?.every(c=>c.action==='noop')?remaining.map(c=>view.pages[c.pageIndex].pageId):view.pages.filter(p=>p.selected&&p.reviewDecision!=='defer').map(p=>p.pageId);
+    return initial.filter(id => !dismissedIds.includes(id));
   });
   const [edit, setEdit] = useState<Edit | null>(null);
   const [pendingRead, setPendingRead] = useState(false);
@@ -99,16 +118,50 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
     return () => { active = false; };
   }, [operationIds,operationId]);
 
-  const cards = view.maintenance
-    ? view.maintenance.changes.map(change=>({page:view.pages[change.pageIndex],change,topics:(change.pageIndexes??[change.pageIndex]).map(i=>view.pages[i])}))
-    : view.pages.map(page=>({page,change:undefined,topics:[page]}));
+  const pdf = view.pdfInput;
+  const {maintenance, pages} = view;
+  const cards = useMemo(() => {
+    const entries = maintenance
+      ? maintenance.changes.map(change => ({page:pages[change.pageIndex], change, topics:(change.pageIndexes ?? [change.pageIndex]).map(i => pages[i])}))
+      : pages.map(page => ({page, change:undefined, topics:[page]}));
+    return entries.map(({page, change, topics}) => {
+      const title = change?.candidate.title ?? page.title;
+      const actionLabel = change ? actions[change.action] : '新建主题';
+      const fullBody = change?.candidate.body ?? page.renderedBody ?? page.ai_organized.join('\n');
+      const excerpt = pdf ? pdfOutcomeExcerpt(fullBody) ?? page.one_line_definition
+        : change?.candidate.body.split('\n').find(line => line.trim() && !line.trimStart().startsWith('#')) ?? page.ai_organized[0] ?? page.source_facts[0]?.text ?? page.one_line_definition;
+      return {page, change, topics, title, actionLabel, fullBody, excerpt, committed: !!change?.committedOperationId};
+    });
+  }, [maintenance, pages, pdf]);
+  useEffect(() => {
+    const activeIds = dismissedIds.filter(id => cards.some(({page, committed}) => page.pageId === id && !committed));
+    if (activeIds.length !== dismissedIds.length) setDismissedIds(activeIds);
+    try {
+      if (activeIds.length) window.localStorage.setItem(dismissedKey, JSON.stringify(activeIds));
+      else window.localStorage.removeItem(dismissedKey);
+    } catch { /* Keep the current dismissals in memory when browser storage is unavailable. */ }
+  }, [cards, dismissedIds, dismissedKey]);
   const readOnly = view.status !== 'pending_confirmation';
   const deferred = !!view.deferredAt && !readOnly;
   const recovering = operation && operation.status !== 'completed';
   const pendingRecovery = !!view.pendingCommitOperationId && operation?.operationId !== view.pendingCommitOperationId;
   const chosen = recovering ? operation.selectedPageIds : cards.filter(({page, change}) =>
-    !change?.committedOperationId && (change || page.reviewDecision !== 'update') && selection.includes(page.pageId),
+    !change?.committedOperationId && !dismissedIds.includes(page.pageId) && (change || page.reviewDecision !== 'update') && selection.includes(page.pageId),
   ).map(({page}) => page.pageId);
+  const committedCount = cards.filter(card => card.committed).length;
+  const dismissedCount = cards.filter(({page, committed}) => !committed && dismissedIds.includes(page.pageId)).length;
+  const pendingCount = cards.length - committedCount - dismissedCount;
+  const query = topicQuery.trim().toLowerCase();
+  const filtering = Boolean(query) || topicFilter !== 'all';
+  const filteredCards = cards.filter(({page, change, title, actionLabel, excerpt, committed}) => {
+    const dismissed = !committed && dismissedIds.includes(page.pageId);
+    if (topicFilter === 'pending' && (committed || dismissed)) return false;
+    if (topicFilter === 'selected' && !chosen.includes(page.pageId)) return false;
+    if (topicFilter === 'committed' && !committed) return false;
+    if (topicFilter === 'dismissed' && !dismissed) return false;
+    return !query || [title, excerpt, page.one_line_definition, change?.reason, actionLabel]
+      .some(value => value?.toLowerCase().includes(query));
+  });
   const allowsSourceOnly = !!view.structuredNote;
   const sourceReuse = view.preview?.sourceReuse;
   const noChanges=chosen.length>0&&cards.filter(({page})=>chosen.includes(page.pageId)).every(({change})=>change?.action==='noop');
@@ -116,8 +169,8 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
   const blockedSource = !view.preview?.rawExists || !view.preview.rawSha256Matches || (!noChanges&&!!view.preview.sourceAmbiguous);
   const disabled = !!busy || readOnly || !!recovering || pendingRecovery || deferred || advancedDirty || advancedBusy || noteSaving;
   const editing = !!edit || noteDirty;
-  const selectablePageIds = cards
-    .filter(({ page, change }) => !disabled && !editing && !adjustment && !change?.committedOperationId && (change || page.reviewDecision !== 'update'))
+  const selectablePageIds = filteredCards
+    .filter(({page, change, committed}) => !disabled && !editing && !adjustment && !committed && !dismissedIds.includes(page.pageId) && (change || page.reviewDecision !== 'update'))
     .map(({ page }) => page.pageId);
   const allSelectableChosen = selectablePageIds.length > 0 && selectablePageIds.every(id => chosen.includes(id));
   const navigationDisabled = !!busy || editing || noteSaving;
@@ -127,7 +180,6 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
   const selectedTitles = cards.filter(({page}) => chosen.includes(page.pageId)).map(({page,change}) => change?.candidate.title ?? page.title);
   const selectedQuestions = cards.filter(({page}) => chosen.includes(page.pageId)).flatMap(({page,change}) => change?.questions ?? page.open_questions);
   const sourceBody = view.structuredNote ? `## 深度整理笔记\n\n${renderStructuredNote(view.structuredNote)}` : view.sourceRenderedBody ?? view.source.body;
-  const pdf = view.pdfInput;
   const modeLabel = pdf ? `PDF 内容清理 · ${pdf.startPage===1&&pdf.endPage===pdf.pageCount?'整份 PDF':pdf.startPage===pdf.endPage?`第 ${pdf.startPage} 页`:`第 ${pdf.startPage}–${pdf.endPage} 页`}` : view.structuredNote ? '深度整理' : '标准整理';
 
   const run = async (label: string, work: () => Promise<void>) => {
@@ -363,22 +415,47 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
     </section>
     <section className="outcome-cards" aria-label="选择入库成果">
       <div className="outcome-cards-heading">
-        <div>
-          <h2>知识主题</h2>
-          <p>阅读整理结果，选择值得加入知识库的主题。</p>
+        <div className="outcome-cards-heading-row">
+          <div>
+            <h2>知识主题</h2>
+            <p>{filtering || dismissedCount ? `显示 ${filteredCards.length} / 共 ${cards.length} 项 · 已入库 ${committedCount} · 已忽略 ${dismissedCount}` : '阅读整理结果，选择值得加入知识库的主题。'}</p>
+          </div>
+          {selectablePageIds.length > 0 && !(view.maintenance && view.discardedAt) && (
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => setSelection(ids => allSelectableChosen ? ids.filter(id => !selectablePageIds.includes(id)) : [...new Set([...ids, ...selectablePageIds])])}
+            >
+              {filtering
+                ? allSelectableChosen ? '取消当前筛选全选' : `全选当前筛选（${selectablePageIds.length} 项）`
+                : allSelectableChosen ? '取消全选主题' : `全选可选主题（${selectablePageIds.length} 项）`}
+            </button>
+          )}
         </div>
-        {selectablePageIds.length > 0 && !(view.maintenance && view.discardedAt) && (
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={() => setSelection(ids => allSelectableChosen ? ids.filter(id => !selectablePageIds.includes(id)) : [...new Set([...ids, ...selectablePageIds])])}
-          >
-            {allSelectableChosen ? '取消全选主题' : `全选可选主题（${selectablePageIds.length} 项）`}
-          </button>
-        )}
+        {cards.length > 0 && <div className="outcome-cards-filters">
+          <input type="search" aria-label="搜索主题成果" placeholder="搜索主题标题、摘要或理由…" value={topicQuery} disabled={editing || !!adjustment} onChange={event => setTopicQuery(event.target.value)} />
+          <select aria-label="筛选主题状态" value={topicFilter} disabled={editing || !!adjustment} onChange={event => setTopicFilter(event.target.value as TopicFilter)}>
+            <option value="all">全部主题（{cards.length}）</option>
+            <option value="pending">待处理（{pendingCount}）</option>
+            <option value="selected">已勾选（{chosen.length}）</option>
+            <option value="committed">已入库（{committedCount}）</option>
+            <option value="dismissed">已忽略（{dismissedCount}）</option>
+          </select>
+          {filtering && <button type="button" className="text-button" disabled={editing || !!adjustment} onClick={() => { setTopicQuery(''); setTopicFilter('all'); }}>重置筛选</button>}
+        </div>}
       </div>
-      {cards.map(({page, change,topics}) => {
-        const title = change?.candidate.title ?? page.title;
+      {cards.length > 0 && filteredCards.length === 0 && <p className="outcome-filter-empty" role="status">没有符合当前筛选条件的主题成果。</p>}
+      {filteredCards.map(({page, change, topics, title, actionLabel, fullBody, excerpt, committed}) => {
+        const dismissible = !readOnly && !committed && !recovering && !deferred && !(view.maintenance && view.discardedAt);
+        const dismissDisabled = disabled || editing || !!adjustment;
+        if (!committed && dismissedIds.includes(page.pageId)) {
+          return <article className="panel draft-card-body outcome-card dismissed" key={page.pageId} aria-label={`成果 ${title}`}>
+            <div className="outcome-card-heading">
+              <div><span className="tag">{actionLabel}</span><h3>{title}</h3><span className="tag outcome-dismissed-tag">已忽略</span></div>
+              {dismissible && <button type="button" className="text-button" disabled={dismissDisabled} onClick={() => setDismissedIds(ids => ids.filter(id => id !== page.pageId))}>恢复待选</button>}
+            </div>
+          </article>;
+        }
         const target = view.maintenance?.context.find(wiki => wiki.id === change?.targetWikiId);
         const conflicts = change ? [] : view.preview?.titleConflicts.filter(item => item.title === page.title) ?? [];
         const existing = duplicates?.pageId === page.pageId ? duplicates.candidates : conflicts.map(c => ({id:c.existingId, title:c.existingTitle}));
@@ -387,12 +464,15 @@ export function RawOutcomeReview({view, body, onView, onBack, backLabel, onOpenR
         const resultId=change&&result?.status==='completed'?result.changeResults?.[change.changeId]:undefined;
         const evidence=[...new Map(topics.flatMap(topic=>topic.source_evidence).map(ref=>[ref.id,ref])).values()];
         const pdfEvidence=[...new Map(topics.flatMap(topic=>topic.pdfEvidence??[]).map(ref=>[ref.unitId,ref])).values()];
-        const fullBody = change?.candidate.body ?? page.renderedBody ?? page.ai_organized.join('\n');
-        const excerpt = pdf ? pdfOutcomeExcerpt(fullBody) ?? page.one_line_definition
-          : change?.candidate.body.split('\n').find(line => line.trim() && !line.trimStart().startsWith('#')) ?? page.ai_organized[0] ?? page.source_facts[0]?.text ?? page.one_line_definition;
         return <article className="panel draft-card-body outcome-card" key={page.pageId} aria-label={`成果 ${title}`}>
-          <div className="outcome-card-heading"><div><span className="tag">{change ? actions[change.action] : '新建主题'}</span><h3>{title}</h3></div>
-            {change?.committedOperationId ? <span>{change.action==='noop'?'已检查，无需变更':'已入库'}{resultId&&<button className="text-button" disabled={navigationDisabled} onClick={()=>onOpenWiki?.(resultId)}>打开正式主题</button>}</span> : view.maintenance&&view.discardedAt?<span>未采纳</span>:<label className="draft-select"><input type="checkbox" aria-label={`选择入库 ${title}`} checked={chosen.includes(page.pageId)} disabled={!canSelect || editing} onChange={event => setSelection(ids => event.target.checked ? [...ids, page.pageId] : ids.filter(id => id !== page.pageId))}/>{change?.action==='noop'?'确认检查':'选择入库'}</label>}
+          <div className="outcome-card-heading"><div><span className="tag">{actionLabel}</span><h3>{title}</h3></div>
+            <div className="outcome-card-actions">
+              {change?.committedOperationId ? <span>{change.action==='noop'?'已检查，无需变更':'已入库'}{resultId&&<button className="text-button" disabled={navigationDisabled} onClick={()=>onOpenWiki?.(resultId)}>打开正式主题</button>}</span> : view.maintenance&&view.discardedAt?<span>未采纳</span>:<label className="draft-select"><input type="checkbox" aria-label={`选择入库 ${title}`} checked={chosen.includes(page.pageId)} disabled={!canSelect || editing} onChange={event => setSelection(ids => event.target.checked ? [...ids, page.pageId] : ids.filter(id => id !== page.pageId))}/>{change?.action==='noop'?'确认检查':'选择入库'}</label>}
+              {dismissible && <button type="button" className="text-button outcome-dismiss-btn" disabled={dismissDisabled} onClick={() => {
+                setDismissedIds(ids => [...ids, page.pageId]);
+                setSelection(ids => ids.filter(id => id !== page.pageId));
+              }}>暂不采纳</button>}
+            </div>
           </div>
           {target && <p>目标 <button className="text-button" disabled={navigationDisabled} onClick={() => onOpenWiki?.(target.id)}>{target.title}</button> · v{change?.baseRevision}</p>}
           {!!existing.length && page.reviewDecision !== 'create' && <div className="notice-warn">

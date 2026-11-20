@@ -12,7 +12,7 @@ import '../home.css';
 const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
 const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
 
-export function HomePage({ onOpenAutomation, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onOpenAutomation?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
+export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [deferred, setDeferred] = useState(false);
@@ -93,7 +93,13 @@ export function HomePage({ onOpenAutomation, onOpenPipeline, onOpenNews, stats, 
     { label: 'Prompt', value: stats.promptCount, detail: 'Library 中的有效模板', action: onOpenPrompt },
   ];
   return <div className="page home-page">
-    <div className="page-heading"><div><h1>工作台</h1><p className="subheading">从一件待处理的事开始。</p></div><button className="secondary-button" onClick={()=>setReviewOpen(true)} disabled={reviewOpen}>周期回顾</button></div>
+    <div className="page-heading">
+      <div><h1>工作台</h1><p className="subheading">从一件待处理的事开始。</p></div>
+      <div className="home-heading-actions">
+        {onQuickCapture && <button type="button" className="primary-button" onClick={onQuickCapture}>快速记一条</button>}
+        <button type="button" className="secondary-button" onClick={()=>setReviewOpen(true)} disabled={reviewOpen}>周期回顾</button>
+      </div>
+    </div>
     <div className="home-entry-grid">{[
       {title:'导入资料',description:'保存原始资料',icon:'upload',action:onImport},
       {title:'审核草稿',description:'查看待审核事项',icon:'file',action:()=>{setDeferred(false);setPipelineReview(false);setReviewFilter(true);document.getElementById('home-actions')?.scrollIntoView();}},
