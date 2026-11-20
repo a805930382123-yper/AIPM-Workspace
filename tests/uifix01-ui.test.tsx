@@ -738,7 +738,7 @@ test('U1-03: WikiPage 与 PromptLibraryPage 删除弹窗支持 Escape 关闭、�
   }
 });
 
-test('U1-04: NewsPage 返回工作台、栏目锚点及手动检查更新加载态文案切换', async () => {
+test('U1-04: NewsPage 返回工作台、栏目切换及手动检查更新加载态', async () => {
   const date = '2026-11-18';
   const view = {
     date,
@@ -748,8 +748,8 @@ test('U1-04: NewsPage 返回工作台、栏目锚点及手动检查更新加载�
       date,
       updatedAt: '2026-11-18T00:00:00Z',
       sections: {
-        fmcg: { contentVersion: 'research-v1', status: 'source_only', attempt: 1, startedAt: '2026-11-18T00:00:00Z', sources: [], items: [] },
-        ai: { status: 'source_only', attempt: 1, startedAt: '2026-11-18T00:00:00Z', sources: [], items: [] },
+        fmcg: { contentVersion: 'research-v1', status: 'source_only', attempt: 1, startedAt: '2026-11-18T00:00:00Z', sources: [{ name: '快消来源', status: 'failed' }], items: [] },
+        ai: { status: 'failed', attempt: 1, startedAt: '2026-11-18T00:00:00Z', sources: [{ name: 'AI 来源', status: 'failed' }], items: [] },
       },
     },
     fallbacks: {},
@@ -774,43 +774,41 @@ test('U1-04: NewsPage 返回工作台、栏目锚点及手动检查更新加载�
       root.render(createElement(NewsPage, { onBack: () => { backCalls += 1; } }));
       await tick();
     });
-    await waitFor(() => !!container.querySelector('#news-section-fmcg') && !!container.querySelector('#news-section-ai'), 'NewsPage 渲染完成');
+    await waitFor(() => !!container.querySelector('#news-section-fmcg') && Boolean(maybeButton(container, '仅补抓失败来源 (1)')), 'NewsPage 渲染完成');
 
     // 返回工作台按钮
     await click(findButton(container, '返回工作台'));
     assert.equal(backCalls, 1, '点击返回工作台应触发 onBack');
 
-    // 栏目锚点导航
-    const jump = container.querySelector('nav.news-jump[aria-label="栏目定位"]');
-    assert.ok(jump, '工具栏内必须渲染栏目快速定位导航');
-    const links = [...jump.querySelectorAll('a')];
-    assert.deepEqual(links.map(a => [a.getAttribute('href'), a.textContent]), [
-      ['#news-section-fmcg', '快消研报与洞察'],
-      ['#news-section-ai', 'AI 前沿'],
-    ]);
-    assert.ok(container.querySelector('section#news-section-fmcg.news-section'));
-    assert.ok(container.querySelector('section#news-section-ai.news-section'));
+    const tabs = [...container.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    assert.deepEqual(tabs.map(tab => tab.textContent), ['快消研报与洞察 (0)', 'AI 前沿 (0)']);
+    assert.equal(tabs[0].getAttribute('aria-selected'), 'true');
+    assert.equal(container.querySelector('#news-section-ai'), null);
 
     // 检查更新按钮文案切换（all 模式）
-    const fmcgSection = container.querySelector('#news-section-fmcg')!;
-    const aiSection = container.querySelector('#news-section-ai')!;
-    await click(findButton(fmcgSection, '检查更新'));
-    await waitFor(() => maybeButton(fmcgSection, '正在检查更新…')?.disabled === true, '点击检查更新后显示“正在检查更新…”并禁用');
-    assert.equal(findButton(fmcgSection, '仅补抓失败来源').disabled, true, '同栏目补抓按钮同步禁用');
-    assert.equal(findButton(aiSection, '检查更新').disabled, false, '其他栏目不受影响');
+    await click(findButton(container, '检查更新'));
+    await waitFor(() => maybeButton(container, '正在检查更新…')?.disabled === true, '点击检查更新后显示“正在检查更新…”并禁用');
+    assert.equal(findButton(container, '仅补抓失败来源 (1)').disabled, true, '同栏目补抓按钮同步禁用');
+    await click(tabs[1]);
+    assert.equal(window.location.hash, '#news-section-ai');
+    assert.equal(tabs[1].getAttribute('aria-selected'), 'true');
+    assert.equal(container.querySelector('#news-section-fmcg'), null);
+    assert.equal(findButton(container, '检查更新').disabled, false, '其他栏目不受影响');
+    assert.equal(maybeButton(container, '仅补抓失败来源 (1)'), undefined);
+    await click(tabs[0]);
+    assert.equal(findButton(container, '正在检查更新…').disabled, true, '切回后保留在途状态');
 
     checkGate.resolve(jsonResponse(view));
-    await waitFor(() => maybeButton(fmcgSection, '检查更新')?.disabled === false, '检查更新完成后按钮恢复空闲文案');
+    await waitFor(() => maybeButton(container, '检查更新')?.disabled === false, '检查更新完成后按钮恢复空闲文案');
 
     // 仅补抓失败来源按钮文案切换（failed 模式）
     checkGate = deferred<Response>();
-    await click(findButton(fmcgSection, '仅补抓失败来源'));
-    await waitFor(() => maybeButton(fmcgSection, '正在补抓失败来源…')?.disabled === true, '点击仅补抓失败来源后显示“正在补抓失败来源…”并禁用');
-    assert.equal(findButton(fmcgSection, '检查更新').textContent, '检查更新');
-    assert.equal(findButton(fmcgSection, '检查更新').disabled, true);
+    await click(findButton(container, '仅补抓失败来源 (1)'));
+    await waitFor(() => maybeButton(container, '正在补抓失败来源…')?.disabled === true, '点击仅补抓失败来源后显示“正在补抓失败来源…”并禁用');
+    assert.equal(findButton(container, '检查更新').disabled, true);
 
     checkGate.resolve(jsonResponse(view));
-    await waitFor(() => maybeButton(fmcgSection, '仅补抓失败来源')?.disabled === false, '补抓完成后恢复“仅补抓失败来源”');
+    await waitFor(() => maybeButton(container, '仅补抓失败来源 (1)')?.disabled === false, '补抓完成后恢复“仅补抓失败来源”');
   } finally {
     await act(async () => { root.unmount(); });
     globalThis.fetch = originalFetch;

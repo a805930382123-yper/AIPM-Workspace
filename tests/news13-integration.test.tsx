@@ -82,7 +82,7 @@ test('保留 AIHOT 首批及新来源存储，更新提示按实际新增计数�
 });
 
 test('AI 前沿合并今日、历史及回退分组，按时间去重限额，保留分析和 Raw 入口',async()=>{
-  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:5173/',pretendToBeVisual:true});
+  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:5173/#ai',pretendToBeVisual:true});
   Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,
     Event:dom.window.Event,IS_REACT_ACT_ENVIRONMENT:true});
   const oldDate='2026-11-19';
@@ -91,16 +91,16 @@ test('AI 前沿合并今日、历史及回退分组，按时间去重限额，�
   items[4].analysis={fact:'旧条目分析',whyItMatters:'现有分析理由',possibleImpact:'现有分析推断'};
   const newAihot:NewsItem={...items[0],id:'ai-new',title:'AIHOT 新条目',url:'https://example.com/new',publishedAt:null};
   const duplicate:NewsItem={...newAihot,id:'duplicate',title:'按源重复包装',url:items[4].url+'?utm_source=repost'};
-  const refreshed:NewsItem={...newAihot,id:'ai-fresh',title:'AIHOT 更新条目',url:'https://example.com/fresh',publishedAt:'2026-11-20T09:00:00Z'};
+  const refreshed:NewsItem={...newAihot,id:'ai-fresh',title:'AIHOT 更新条目',url:'https://example.com/fresh',publishedAt:'2026-11-20T09:00Z'};
   const video:NewsItem={...items[0],id:'video',title:'视频',sourceId:'karpathy-youtube',sourceName:'Karpathy · YouTube',
-    author:'Andrej Karpathy',url:'https://www.youtube.com/watch?v=ABCDEFGHIJK',excerpt:'来源提供的视频介绍'};
+    author:'Andrej Karpathy',url:'https://www.youtube.com/watch?v=ABCDEFGHIJK',publishedAt:date,excerpt:'来源提供的视频介绍'};
   const section={status:'source_only' as const,attempt:1,startedAt:now.toISOString(),items,sourceItems:[newAihot,duplicate,video],
     checkMessage:'已检查，本期已满5条。按来源浏览新增 3 条。',shortageReasons:['旧版不足原因'],sources:[{sourceId:'karpathy-x',name:'Karpathy · X 公开帖',
       checkedAt:now.toISOString(),status:'failed' as const,homepage:'https://x.com/karpathy'}]};
   const edition:NewsEdition={schemaVersion:1,date,updatedAt:now.toISOString(),sections:{ai:section}};
-  const oldSection={...section,items:[],sourceItems:[video]};
+  const oldSection={...section,items:[],sourceItems:[{...video,publishedAt:'2026-11'}]};
   const oldEdition:NewsEdition={...edition,date:oldDate,sections:{ai:oldSection}};
-  const today={date,edition,aiEnabled:true,fallbacks:{}};
+  const today={date,edition,aiEnabled:false,fallbacks:{}};
   const originalFetch=globalThis.fetch;
   let saved:unknown,opened:string|undefined,checks=0;
   globalThis.fetch=async(input,init)=>{
@@ -129,41 +129,68 @@ test('AI 前沿合并今日、历史及回退分组，按时间去重限额，�
   try {
     await act(async()=>root.render(<NewsPage onOpenRaw={id=>{opened=id;}}/>));
     const ai=document.getElementById('news-section-ai')!;
-    const groupTitles=()=>[...ai.querySelectorAll('.news-source-items section > h3')].map(el=>el.textContent);
-    const aihotTitles=()=>[...ai.querySelectorAll('.news-source-items section:first-child h4')].map(el=>el.textContent);
+    const groupTitles=()=>[...ai.querySelectorAll('.news-drawer-title')].map(el=>el.textContent);
+    const aihotTitles=()=>[...ai.querySelectorAll('.news-drawer:first-child h4 a')].map(el=>el.textContent?.replace(/ ↗$/u,''));
+    const drawerButtons=()=>[...ai.querySelectorAll<HTMLButtonElement>('.news-drawer-head button')];
+    const button=(label:string, scope:Element=ai)=>[...scope.querySelectorAll('button')].find(btn=>btn.textContent===label)!;
     const check=()=>[...ai.querySelectorAll('button')].find(btn=>btn.textContent==='检查更新')!;
     const noOldQuota=()=>assert.doesNotMatch(ai.textContent!,/\/5 条|已满5条|按来源浏览新增|不足/u);
-    assert.deepEqual(groupTitles(),['AIHOT（5 条）','Karpathy · YouTube（1 条）']);
+    assert.equal(document.getElementById('news-section-fmcg'),null);
+    assert.match(document.getElementById('news-tab-ai')!.textContent!,/AI 前沿 \(6\)/);
+    assert.deepEqual(groupTitles(),['AIHOT','Karpathy · YouTube']);
+    assert.deepEqual(drawerButtons().map(btn=>btn.getAttribute('aria-expanded')),['true','false']);
     assert.deepEqual(aihotTitles(),['AIHOT 新条目','AIHOT 4','AIHOT 3','AIHOT 2','AIHOT 1']);
+    const timestamp=ai.querySelector('article time[datetime="2026-11-20T05:00:00Z"]');
+    assert.equal(timestamp?.textContent,'2026-11-20 13:00:00');
+    assert.equal(timestamp?.getAttribute('title'),'上海时间');
     assert.match(ai.textContent!,/旧条目分析/);
+    assert.doesNotMatch(ai.textContent!,/未生成分析/);
     noOldQuota();
-    const group=ai.querySelector('.news-source-items section:nth-child(2)')!;
+    await act(async()=>button('全部展开').click());
+    assert.deepEqual(drawerButtons().map(btn=>btn.getAttribute('aria-expanded')),['true','true']);
+    await act(async()=>button('全部收起').click());
+    assert.deepEqual(drawerButtons().map(btn=>btn.getAttribute('aria-expanded')),['false','false']);
+    await act(async()=>button('仅今日更新').click());
+    assert.deepEqual(aihotTitles(),['AIHOT 4','AIHOT 3','AIHOT 2','AIHOT 1']);
+    await act(async()=>button('全部').click());
+    await act(async()=>drawerButtons()[1].click());
+    const group=ai.querySelector('.news-drawer:nth-child(2)')!;
+    assert.equal(group.querySelector('article time')?.textContent,date);
     assert.match(group.textContent!,/Andrej Karpathy.*视频简介/u);
     assert.match(group.textContent!,/来源提供的视频介绍/u);
     assert.doesNotMatch(group.textContent!,/AIHOT/u);
     assert.equal(ai.querySelector('a[aria-label="Karpathy · X 公开帖 官方入口"]')?.getAttribute('href'),'https://x.com/karpathy');
-    await act(async()=>group.querySelector('button')!.click());
+    await act(async()=>button('保存到 Raw',group).click());
     assert.deepEqual(saved,{section:'ai',itemId:'video'});
     assert.match(group.textContent!,/已保存/);
 
     await act(async()=>check().click());
-    assert.deepEqual(groupTitles(),['AIHOT（5 条）','Karpathy · YouTube（1 条）']);
+    assert.deepEqual(groupTitles(),['AIHOT','Karpathy · YouTube']);
     assert.deepEqual(aihotTitles(),['AIHOT 更新条目','AIHOT 新条目','AIHOT 4','AIHOT 3','AIHOT 2']);
+    assert.equal(ai.querySelector('article time[datetime="2026-11-20T09:00Z"]')?.textContent,'2026-11-20 17:00');
     assert.match(ai.textContent!,/本次新增 1 条/);
     noOldQuota();
 
     const select=document.querySelector('select')!;
     const read=async(value:string)=>act(async()=>{select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));});
     await read(oldDate);
-    assert.deepEqual(groupTitles(),['Karpathy · YouTube（1 条）']);
+    assert.deepEqual(groupTitles(),['Karpathy · YouTube']);
+    assert.match(document.getElementById('news-tab-ai')!.textContent!,/AI 前沿 \(1\)/);
     noOldQuota();
+    await act(async()=>button('仅今日更新').click());
+    assert.match(ai.textContent!,/2026-11-19 暂无当日更新/);
+    await act(async()=>button('查看全部资讯').click());
+    const month=ai.querySelector('article time');
+    assert.equal(month?.textContent,'2026-11');
+    assert.equal(month?.getAttribute('title'),'仅知月份');
     const openRaw=()=>[...ai.querySelectorAll('button')].find(btn=>btn.textContent==='查看 Raw')!;
     await act(async()=>openRaw().click());
     assert.equal(opened,'old-raw');
 
     await read('');
     await act(async()=>check().click());
-    assert.deepEqual(groupTitles(),['Karpathy · YouTube（1 条）']);
+    assert.deepEqual(groupTitles(),['Karpathy · YouTube']);
+    assert.match(ai.textContent!,/缓存 · 本次抓取失败/);
     assert.match(ai.textContent!,/显示 2026-11-19 的历史内容/);
     noOldQuota();
     opened=undefined;

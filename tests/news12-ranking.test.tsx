@@ -91,7 +91,9 @@ test('快消研究卡显示官方材料类型、选入理由和可验证问题�
   try {
     await act(async()=>root.render(<NewsPage/>));
     const card=document.querySelector('.news-article');
-    assert.match(card?.textContent??'',/官方研究机构.*官方报告摘要，非报告全文/u);
+    assert.match(card?.textContent??'',/官方研究机构.*官方报告摘要/u);
+    assert.match(card?.querySelector('.news-info')?.getAttribute('title')??'',/非报告全文.*数据时期/u);
+    assert.match(card?.querySelector('.news-chip-accent')?.getAttribute('title')??'',/原收录.*原抓取/u);
     assert.match(card?.textContent??'',/推荐理由.*公开报告摘要.*即时零售与 O2O/u);
     assert.match(card?.textContent??'',/应用建议.*畅销 SKU 重合度有多高？/u);
     const button=card?.querySelector('button');
