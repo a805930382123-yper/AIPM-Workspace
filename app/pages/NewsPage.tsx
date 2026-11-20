@@ -186,7 +186,10 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
  const itemCard = (item: NewsItem, name: NewsSectionName, date: string, options?: { recentDate?: string; key?: string }) => {
   const key = `${date}:${name}:${item.id}`;
   const entry = saved[date]?.find(row => row.section === name && row.itemId === item.id);
+  const officialUrl = name === 'fmcg' ? (date === readingDate ? fmcg?.sources : view?.edition?.sections.fmcg?.sources)
+   ?.find(source => source.sourceId ? source.sourceId === item.sourceId : source.name === item.sourceName)?.homepage : undefined;
   return <BriefingItemCard key={options?.key ?? key} item={item} ai={name === 'ai'} recentDate={options?.recentDate} analysisStatus={name === 'ai' ? analysisStatus : undefined}
+   officialUrl={officialUrl}
    translation={name === 'ai' ? translations[date]?.[item.id] : undefined}
    onRetryTranslation={() => void requestTranslations(date, [item.id], true)} actions={<>
    {entry?.status === 'saved' ? <span>已保存 · <button type="button" className="text-button" onClick={() => onOpenRaw(entry.rawId)}>查看 Raw</button></span>

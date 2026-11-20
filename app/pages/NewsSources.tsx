@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import type { NewsSection, NewsSectionName, SourceHealth } from '../../services/news/types';
+import { SourceLogo } from './SourceLogo';
 
 const fullTime = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'medium', timeZone: 'Asia/Shanghai' });
 const clockTime = new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'Asia/Shanghai' });
@@ -56,8 +57,9 @@ function SourceDiagnostics({ section, name }: { section?: NewsSection; name: New
             <div className="news-source-row">
               <details>
                 <summary>
-                  <span className={`news-dot${failed ? ' news-failure' : successful ? ' news-success' : ''}`} title={outcomeText} />
+                  <SourceLogo sourceId={source.sourceId} sourceName={source.name} officialUrl={source.homepage} size="sm" />
                   <span className="news-source-name">{source.name}</span>
+                  <span className={`news-dot${failed ? ' news-failure' : successful ? ' news-success' : ''}`} title={outcomeText} />
                   <span className={`news-chip${failed ? ' news-chip-error' : ''}`} title={outcomeText}>{result}</span>
                   <span className="news-chevron" aria-hidden="true">›</span>
                 </summary>

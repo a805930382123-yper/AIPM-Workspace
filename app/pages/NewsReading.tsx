@@ -4,6 +4,7 @@ import { normalizedTitle, normalizedUrl } from '../../services/news/normalize';
 import { evaluateResearchValue } from '../../services/news/research-value';
 import { needsNewsTranslation, type NewsItem, type NewsSection, type NewsTranslationResult, type SourceHealth } from '../../services/news/types';
 import { hasSourceFailure, time } from './NewsSources';
+import { SourceLogo } from './SourceLogo';
 
 const shanghaiDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' });
 const shanghaiMinute = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', hourCycle: 'h23', hour: '2-digit', minute: '2-digit' });
@@ -95,8 +96,11 @@ export function AiFrontierAccordion({ groups, date, editionDate, sources, cached
               else next.add(id);
               setOpened(next);
             }}>
-              <span className="news-chevron" aria-hidden="true">›</span>
-              <span className="news-drawer-title">{sourceName}</span>
+              <span className="news-drawer-identity">
+                <span className="news-chevron" aria-hidden="true">›</span>
+                <SourceLogo sourceId={id} sourceName={sourceName} officialUrl={homepage} size="md" />
+                <span className="news-drawer-title">{sourceName}</span>
+              </span>
               <span className="news-chip">{items.length} 条</span>
               <span className="news-meta">{latest ? `最新 ${latest}` : '发布日期未知'}</span>
               {cached && <span className="news-chip news-chip-warn">缓存 · 本次抓取失败</span>}
@@ -140,9 +144,10 @@ export function FmcgBriefingSection({ items, recent, historical, oldEdition, leg
   </div>;
 }
 
-export function BriefingItemCard({ item, ai, recentDate, analysisStatus, translation, onRetryTranslation, actions }: {
+export function BriefingItemCard({ item, ai, officialUrl, recentDate, analysisStatus, translation, onRetryTranslation, actions }: {
   item: NewsItem;
   ai: boolean;
+  officialUrl?: string;
   recentDate?: string;
   analysisStatus?: string;
   translation?: NewsTranslationState;
@@ -185,7 +190,10 @@ export function BriefingItemCard({ item, ai, recentDate, analysisStatus, transla
       {recentDate && <span tabIndex={0} className="news-chip news-chip-accent" title={`原收录：${recentDate} · 原抓取：${time(item.fetchedAt)}`}>近期精选</span>}
     </div>
     <div className="news-item-meta">
-      <span className="news-chip">{item.sourceName}</span>
+      <span className={`news-chip${ai ? '' : ' news-source-chip'}`}>
+        {!ai && <SourceLogo sourceId={item.sourceId} sourceName={item.sourceName} officialUrl={officialUrl} size="xs" />}
+        {item.sourceName}
+      </span>
       {item.author && <span>{item.author}</span>}
       {published ? <time dateTime={item.publishedAt ?? undefined} title={timestamp ? '上海时间' : published.length === 7 ? '仅知月份' : undefined}>
         {published}{timestamp && ` ${timestamp}`}
