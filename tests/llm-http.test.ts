@@ -4,13 +4,14 @@ import os from 'node:os';
 // injections, cancel, restart recovery, the delete guard and the key-leak probe.
 import assert from 'node:assert/strict';
 import { spawn, type ChildProcess } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { once } from 'node:events';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import net from 'node:net';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { RawStore } from '../services/raw/store.ts';
 import type { DraftRecord } from '../services/wiki/drafts.ts';
 import { buildPayloadForChunk, chunkFromPrompt, contentOf, isPlanningPrompt, planningPayloadFromPrompt, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
 
@@ -470,6 +471,38 @@ test('F04-08 HTTP 竞态：并发提取只有一个任务；删除与提取串�
     if (!rawStillThere) {
       assert.equal((shape(await client.request(`/api/drafts?rawId=${second.id}`)) as unknown as { items: unknown[] }).items.length, 0, '晚到的提取应答也不得创建孤儿草稿');
     }
+  } finally { await harness.clean(); }
+});
+
+test('F04-08 HTTP 删除完成后提取返回 404，现存会议来源仍受限', async () => {
+  const harness = await setupHarness({});
+  try {
+    const { client, fake, dataRoot } = harness;
+    const jobsDir = path.join(dataRoot, 'state', 'extraction-jobs');
+    const draftsDir = path.join(dataRoot, 'drafts');
+    const beforeJobs = (await readdir(jobsDir)).sort();
+    const beforeDrafts = (await readdir(draftsDir, { recursive: true })).sort();
+    const raw = await createRaw(client, '先删除的提取样本');
+    const deleted = await client.request(`/api/raw/${raw.id}`, 'DELETE', {});
+    assert.equal(deleted.status, 200, deleted.text);
+    for (const options of [{}, { mode: 'deep' }]) {
+      const missing = await client.request(`/api/raw/${raw.id}/extract`, 'POST', options);
+      assert.equal(missing.status, 404, missing.text);
+      assert.equal(shape(missing).error?.code, 'NOT_FOUND');
+    }
+
+    const { record: meetingRaw } = await new RawStore(dataRoot).createMeetingRegistration({
+      id: randomUUID(), title: '本机会议来源', sourceName: '合成样本', body: '仅供本机保存。',
+      tags: [], importedAt: new Date().toISOString(),
+      origin: { kind: 'meeting', meeting_id: randomUUID(), import_id: randomUUID(), original_sha256: '1'.repeat(64),
+        registered_confidentiality: 'Internal', processing_policy: 'meeting_local_only' },
+    });
+    const blocked = await client.request(`/api/raw/${meetingRaw.id}/extract`, 'POST', {});
+    assert.equal(blocked.status, 403, blocked.text);
+    assert.equal(shape(blocked).error?.code, 'MEETING_SOURCE_RESTRICTED');
+    assert.equal(fake.requests.length, 0);
+    assert.deepEqual((await readdir(jobsDir)).sort(), beforeJobs);
+    assert.deepEqual((await readdir(draftsDir, { recursive: true })).sort(), beforeDrafts);
   } finally { await harness.clean(); }
 });
 

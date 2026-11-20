@@ -343,9 +343,9 @@ export class ExtractionRunner {
     const mode=options.mode??'standard';
     if(!['standard','deep'].includes(mode)||(mode==='deep'&&options.planningRetry))throw new JobError('EXTRACT_REQUEST_INVALID','无效mode或deep planningRetry。');
     const raw = await this.deps.rawStore.get(rawId);
-    if(mode==='deep'&&raw&&raw.body.length>30000)throw new JobError('LLM_RAW_TOO_LARGE','深度整理最多30000字符，原文未截断。',413);
-    assertRawNotMeeting(raw);
     if (!raw) throw new JobError('NOT_FOUND', '没有找到这条原始资料。', 404);
+    if(mode==='deep'&&raw.body.length>30000)throw new JobError('LLM_RAW_TOO_LARGE','深度整理最多30000字符，原文未截断。',413);
+    assertRawNotMeeting(raw);
     if (raw.assetFormat === 'pdf' && !raw.body.trim()) throw new JobError('PDF_TEXT_LAYER_REQUIRED', '此 PDF 没有文字层，请在原始资料打开 PDF 页级图文理解。', 422);
     const state = await this.deps.rawStates.get(rawId);
     if ([...this.pending.values()].some(item => item.rawId === rawId && item.issue)) throw new JobError('STORAGE_RECONCILE_REQUIRED', '上次任务状态尚未保存，请先重试保存状态。', 409);
