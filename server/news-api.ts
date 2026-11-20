@@ -7,6 +7,14 @@ export function registerNewsRoutes(app:express.Express,service:NewsService){
  const handle=(work:(req:express.Request)=>Promise<unknown>):express.RequestHandler=>async(req,res)=>{try{res.json(await work(req));}catch(e){res.status(e instanceof NewsError?e.status:e instanceof RawIntegrityError?409:500).json({error:{message:e instanceof NewsError||e instanceof RawIntegrityError?e.message:'资讯读取失败。'}});}};
  app.get('/api/news/today',handle(()=>service.today()));app.get('/api/news/history',handle(()=>service.history()));app.get('/api/news/editions/:date',handle(async req=>{const x=await service.edition(String(req.params.date));if(!x)throw new NewsError('没有找到这期资讯。',404);return x;}));
  app.get('/api/news/editions/:date/saved-raws',handle(req=>service.savedRaws(String(req.params.date))));
+ app.post('/api/news/editions/:date/translations',guard,handle(req=>{
+  const body=req.body;
+  if(!body||!Array.isArray(body.itemIds)||Object.keys(body).length!==1||!body.itemIds.length||body.itemIds.length>40||
+   !body.itemIds.every((id:unknown)=>typeof id==='string'&&id.trim().length>0&&id.length<=256)) {
+   throw new NewsError('请求格式无效。',400);
+  }
+  return service.translate(String(req.params.date),body.itemIds);
+ }));
  app.post('/api/news/editions/:date/items/save-raw',guard,handle(req=>{if(!req.body||typeof req.body!=='object'||Array.isArray(req.body)||!['fmcg','ai'].includes(req.body.section)||typeof req.body.itemId!=='string'||!req.body.itemId||Object.keys(req.body).some(k=>!['section','itemId'].includes(k)))throw new NewsError('请求格式无效。',400);return service.saveRaw(String(req.params.date),req.body.section,req.body.itemId);}));
  app.post('/api/news/today/ensure',guard,handle(req=>{if(!req.body||typeof req.body!=='object'||Array.isArray(req.body)||Object.keys(req.body).length)throw new NewsError('请求格式无效。',400);return service.ensure();}));
  app.post('/api/news/today/check',guard,handle(req=>{

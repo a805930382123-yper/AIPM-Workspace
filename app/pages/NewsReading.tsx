@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { newsEvidenceLabel } from '../../services/news/evidence';
 import { normalizedTitle, normalizedUrl } from '../../services/news/normalize';
 import { evaluateResearchValue } from '../../services/news/research-value';
-import type { NewsItem, NewsSection, SourceHealth } from '../../services/news/types';
+import { needsNewsTranslation, type NewsItem, type NewsSection, type NewsTranslationResult, type SourceHealth } from '../../services/news/types';
 import { hasSourceFailure, time } from './NewsSources';
 
 const shanghaiDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' });
@@ -35,21 +35,33 @@ export function groupAiItems(section?: NewsSection) {
   return Array.from(groups, ([id, items]) => ({ id, items: items.sort((a, b) => itemTime(b) - itemTime(a)).slice(0, 5) }));
 }
 
-export function AiFrontierAccordion({ groups, date, sources, cachedSources, fallback, empty, renderItem }: {
+export type NewsTranslationState = NewsTranslationResult['items'][number] | 'pending' | 'failed';
+
+export function AiFrontierAccordion({ groups, date, editionDate, sources, cachedSources, fallback, empty, requestTranslations, renderItem }: {
   groups: ReturnType<typeof groupAiItems>;
   date: string;
+  editionDate: string;
   sources: SourceHealth[];
   cachedSources: SourceHealth[];
   fallback: boolean;
   empty: string;
+  requestTranslations: (date: string, itemIds: string[]) => Promise<void>;
   renderItem: (item: NewsItem) => ReactNode;
 }) {
   const [todayOnly, setTodayOnly] = useState(false);
   const [opened, setOpened] = useState<Set<string> | null>(null);
-  const visible = todayOnly
-    ? groups.map(({ id, items }) => ({ id, items: items.filter(item => publicationDate(item.publishedAt) === date) })).filter(group => group.items.length)
-    : groups;
-  const openIds = opened ?? new Set(visible.slice(0, 1).map(group => group.id));
+  const { visible, openIds } = useMemo(() => {
+    const visible = todayOnly
+      ? groups.map(({ id, items }) => ({ id, items: items.filter(item => publicationDate(item.publishedAt) === date) })).filter(group => group.items.length)
+      : groups;
+    return { visible, openIds: opened ?? new Set(visible.slice(0, 1).map(group => group.id)) };
+  }, [date, groups, opened, todayOnly]);
+  useEffect(() => {
+    const itemIds = visible.flatMap(({ id, items }) => openIds.has(id)
+      ? items.filter(needsNewsTranslation).map(item => item.id)
+      : []);
+    if (itemIds.length) void requestTranslations(editionDate, itemIds);
+  }, [editionDate, openIds, requestTranslations, visible]);
   const allOpen = visible.length > 0 && visible.every(group => openIds.has(group.id));
   return <>
     <div className="news-reading-tools">
@@ -128,28 +140,33 @@ export function FmcgBriefingSection({ items, recent, historical, oldEdition, leg
   </div>;
 }
 
-export function BriefingItemCard({ item, ai, recentDate, analysisStatus, actions }: {
+export function BriefingItemCard({ item, ai, recentDate, analysisStatus, translation, onRetryTranslation, actions }: {
   item: NewsItem;
   ai: boolean;
   recentDate?: string;
   analysisStatus?: string;
+  translation?: NewsTranslationState;
+  onRetryTranslation?: () => void;
   actions: ReactNode;
 }) {
+  const [showOriginal, setShowOriginal] = useState(false);
+  const translated = typeof translation === 'object' ? translation : undefined;
+  const displayed = showOriginal ? item : translated ?? item;
   const [expanded, setExpanded] = useState(false);
-  const [overflows, setOverflows] = useState(item.excerpt.length > 280);
+  const [overflows, setOverflows] = useState(displayed.excerpt.length > 280);
   const excerpt = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
     const node = excerpt.current;
     if (!node || expanded) return;
     const measure = () => {
-      if (node.clientHeight) setOverflows(node.scrollHeight > node.clientHeight);
+      setOverflows(node.clientHeight ? node.scrollHeight > node.clientHeight : displayed.excerpt.length > 280);
     };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
-  }, [expanded, item.excerpt]);
+  }, [expanded, displayed.excerpt]);
 
   const value = ai ? undefined : evaluateResearchValue(item);
   const research = item.research;
@@ -164,7 +181,7 @@ export function BriefingItemCard({ item, ai, recentDate, analysisStatus, actions
     : '';
   return <article className={`news-article${ai ? '' : ' panel'}`}>
     <div className="news-article-heading">
-      <h4><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} <span aria-hidden="true">↗</span></a></h4>
+      <h4><a href={item.url} target="_blank" rel="noopener noreferrer">{displayed.title} <span aria-hidden="true">↗</span></a></h4>
       {recentDate && <span tabIndex={0} className="news-chip news-chip-accent" title={`原收录：${recentDate} · 原抓取：${time(item.fetchedAt)}`}>近期精选</span>}
     </div>
     <div className="news-item-meta">
@@ -177,13 +194,14 @@ export function BriefingItemCard({ item, ai, recentDate, analysisStatus, actions
       {research?.pdfUrl
         ? <a className="news-chip" href={research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF{research.pageRange && ` · ${research.pageRange}`} ↗</a>
         : <span className="news-chip">{kind.split(/[，,；;]/u)[0]}</span>}
+      {translated && !showOriginal && <span className="news-chip news-chip-accent">AI 翻译</span>}
       {limitation && <span className="news-info" tabIndex={0} title={limitation} aria-label={limitation}>ⓘ</span>}
     </div>
     {value?.eligible && <div className="news-analysis">
       <p><b>推荐理由</b> {value.reason}</p>
       {value.application && <p><b>应用建议</b> {value.application}</p>}
     </div>}
-    <p ref={excerpt} className={`news-excerpt${expanded ? ' is-expanded' : ''}`}>{item.excerpt}</p>
+    <p ref={excerpt} className={`news-excerpt${expanded ? ' is-expanded' : ''}`}>{displayed.excerpt}</p>
     {item.analysis ? <div className="news-analysis">
       <p><b>事实</b> {item.analysis.fact}</p>
       <p><b>为何值得关注</b> {item.analysis.whyItMatters}</p>
@@ -191,6 +209,12 @@ export function BriefingItemCard({ item, ai, recentDate, analysisStatus, actions
     </div> : analysisStatus && <p className="news-meta">{analysisStatus}</p>}
     <div className="news-item-actions">
       {(expanded || overflows) && <button className="text-button" type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)}>{expanded ? '收起摘录' : '展开完整摘录'}</button>}
+      {translated && <button className="text-button" type="button" onClick={() => setShowOriginal(value => !value)}>{showOriginal ? '查看中文' : '查看原文'}</button>}
+      {translation === 'pending' && <span className="news-meta" role="status">正在翻译，暂时显示原文。</span>}
+      {translation === 'failed' && <>
+        <span className="news-meta" role="status">翻译暂不可用，当前显示原文。</span>
+        <button className="text-button" type="button" onClick={onRetryTranslation}>重试翻译</button>
+      </>}
       <div className="news-save">{actions}</div>
     </div>
   </article>;

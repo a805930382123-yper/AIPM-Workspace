@@ -8,7 +8,9 @@ import path from 'node:path';
 import { SerialQueue, writeJsonAtomic } from '../storage/files.ts';
 import { assertNoKnownSecret, type LlmProvider } from '../llm/provider.ts';
 import { NewsRawSave } from './raw-save.ts';
+import { NewsTranslations } from './translations.ts';
 import type { RawStore } from '../raw/store.ts';
+import { isNewsTranslationSource } from './types.ts';
 import type { NewsCheckMode, NewsEdition, NewsItem, NewsSection, NewsSectionName, SourceExclusions, SourceResult } from './types.ts';
 
 const names:NewsSectionName[]=['fmcg','ai'];
@@ -24,7 +26,10 @@ export class NewsService {
   private active=new Set<string>();
   private launched=new Map<string,Promise<void>>();
   private pending=new Map<string,{section:Pick<NewsSection,'status'|'finishedAt'|'sources'|'items'|'sourceItems'|'error'|'shortageReasons'|'checkMessage'>;researchOverflow:NewsItem[]}>();
-  constructor(private deps:{root:string;clock:()=>Date;readSources:(section:NewsSectionName,now:Date, exclusions?:SourceExclusions,sourceIds?:ReadonlySet<string>)=>Promise<SourceResult>;aiEnabled:boolean;providerFactory:()=>Promise<LlmProvider|undefined>;rawStore?:RawStore;stageResearchOverflow?:(edition:NewsEdition)=>Promise<unknown>}) {}
+  private readonly translations:NewsTranslations;
+  constructor(private deps:{root:string;clock:()=>Date;readSources:(section:NewsSectionName,now:Date, exclusions?:SourceExclusions,sourceIds?:ReadonlySet<string>)=>Promise<SourceResult>;aiEnabled:boolean;providerFactory:()=>Promise<LlmProvider|undefined>;rawStore?:RawStore;stageResearchOverflow?:(edition:NewsEdition)=>Promise<unknown>}) {
+    this.translations=new NewsTranslations(deps.root,deps.providerFactory);
+  }
   private dir(){return path.join(this.deps.root,'state','news');}
   private file(date:string){if(!validNewsDate(date)) throw new NewsError('日期无效。',400); return path.join(this.dir(),`${date}.json`);}
   private async read(date:string):Promise<NewsEdition|null> {
@@ -53,6 +58,20 @@ export class NewsService {
     return this.rawSaves().save(date,section,item);
   }
   async savedRaws(date:string){const edition=await this.edition(date);if(!edition)throw new NewsError('没有找到这期资讯。',404);return this.rawSaves().projection(edition);}
+  async translate(date:string,itemIds:string[]){
+    const edition=await this.read(date);
+    if(!edition) throw new NewsError('没有找到这期资讯。',404);
+    const section=edition.sections.ai;
+    const candidates=[...(section?.items??[]),...(section?.sourceItems??[])];
+    const ids=[...new Set(itemIds)];
+    const selected=ids.flatMap(id=>{
+      const item=candidates.find(candidate=>candidate.id===id);
+      return item&&isNewsTranslationSource(item.sourceId)?[item]:[];
+    });
+    const items=await this.translations.get(selected);
+    const translated=new Set(items.map(item=>item.itemId));
+    return {items,failedIds:ids.filter(id=>!translated.has(id))};
+  }
   async edition(date:string){return this.project(await this.read(date));}
   async history(){let files:string[];try{files=await readdir(this.dir());}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return {items:[],errors:[]};throw e;} const items:Array<{date:string;sections:Partial<Record<NewsSectionName,NewsSection['status']>>}>=[],errors:string[]=[];for(const file of files.filter(x=>/^\d{4}-\d\d-\d\d\.json$/u.test(x)).sort().reverse()){const date=file.slice(0,10);try{const x=await this.edition(date);if(x)items.push({date,sections:Object.fromEntries(names.filter(n=>x.sections[n]).map(n=>[n,x.sections[n]!.status]))});}catch{errors.push(`${date} 的记录不可读取，原文件已保留。`);}}return {items,errors};}
   async today() {

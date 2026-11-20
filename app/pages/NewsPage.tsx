@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api';
-import type { NewsCheckMode, NewsEdition, NewsItem, NewsSavedRaw, NewsSection, NewsSectionName } from '../../services/news/types';
-import { AiFrontierAccordion, BriefingItemCard, FmcgBriefingSection, groupAiItems } from './NewsReading';
+import type { NewsCheckMode, NewsEdition, NewsItem, NewsSavedRaw, NewsSection, NewsSectionName, NewsTranslationResult } from '../../services/news/types';
+import { AiFrontierAccordion, BriefingItemCard, FmcgBriefingSection, groupAiItems, type NewsTranslationState } from './NewsReading';
 import { hasSourceFailure, SourceDiagnosticsSidebar } from './NewsSources';
 import '../news.css';
 type View={date:string;aiEnabled:boolean;edition:NewsEdition|null;recentFmcg?:Array<{date:string;item:NewsItem}>;fallbacks:Partial<Record<NewsSectionName,{date:string;section:NewsSection}>>};
@@ -81,6 +81,27 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
  const [saved,setSaved]=useState<Record<string,NewsSavedRaw[]>>({}),[busy,setBusy]=useState<Record<string,boolean>>({}),[saveErrors,setSaveErrors]=useState<Record<string,string>>({});
  const projectionVersion=useRef<Record<string,number>>({});
  const alive=useRef(true);useEffect(()=>{alive.current=true;return()=>{alive.current=false}},[]);
+ const translationCache = useRef<Record<string, Record<string, NewsTranslationState>>>({});
+ const [translations, setTranslations] = useState(translationCache.current);
+ const requestTranslations = useCallback(async (date: string, itemIds: string[], retry = false) => {
+  const wanted = itemIds.filter(id => translationCache.current[date]?.[id] === (retry ? 'failed' : undefined));
+  if (!date || !wanted.length) return;
+  const update = (entries: Record<string, NewsTranslationState>) => {
+   translationCache.current = { ...translationCache.current, [date]: { ...translationCache.current[date], ...entries } };
+   if (alive.current) setTranslations(translationCache.current);
+  };
+  update(Object.fromEntries(wanted.map(id => [id, 'pending' as const])));
+  const results: Record<string, NewsTranslationState> = Object.fromEntries(wanted.map(id => [id, 'failed' as const]));
+  try {
+   const response = await api<NewsTranslationResult>(`/api/news/editions/${date}/translations`, {
+    method: 'POST', body: JSON.stringify({ itemIds: wanted }),
+   });
+   for (const item of response.items) results[item.itemId] = item;
+  } catch {
+   // The affected cards keep showing the source text and offer a retry.
+  }
+  update(results);
+ }, []);
  const [projectionReload,setProjectionReload]=useState(0);
  const [projectionReading,setProjectionReading]=useState(false);
  const shown = selected ? (edition?.date === selected ? edition : null) : view?.edition;
@@ -149,7 +170,8 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
  const fallback = !selected && ai && !ai.items.length && !ai.sourceItems?.length && ['failed', 'interrupted'].includes(ai.status)
   ? view?.fallbacks.ai : undefined;
  const displayedAi = fallback?.section ?? ai;
- const aiGroups = groupAiItems(displayedAi);
+ const aiEditionDate = fallback?.date ?? readingDate;
+ const aiGroups = useMemo(() => groupAiItems(displayedAi), [displayedAi]);
  const counts = { fmcg: fmcgItems.length + recent.length, ai: aiGroups.reduce((total, group) => total + group.items.length, 0) };
  const current = shown?.sections[active];
  const relevantDates = active === 'ai' ? [fallback?.date ?? shown?.date] : [shown?.date, ...recent.map(row => row.date)];
@@ -164,7 +186,9 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
  const itemCard = (item: NewsItem, name: NewsSectionName, date: string, options?: { recentDate?: string; key?: string }) => {
   const key = `${date}:${name}:${item.id}`;
   const entry = saved[date]?.find(row => row.section === name && row.itemId === item.id);
-  return <BriefingItemCard key={options?.key ?? key} item={item} ai={name === 'ai'} recentDate={options?.recentDate} analysisStatus={name === 'ai' ? analysisStatus : undefined} actions={<>
+  return <BriefingItemCard key={options?.key ?? key} item={item} ai={name === 'ai'} recentDate={options?.recentDate} analysisStatus={name === 'ai' ? analysisStatus : undefined}
+   translation={name === 'ai' ? translations[date]?.[item.id] : undefined}
+   onRetryTranslation={() => void requestTranslations(date, [item.id], true)} actions={<>
    {entry?.status === 'saved' ? <span>已保存 · <button type="button" className="text-button" onClick={() => onOpenRaw(entry.rawId)}>查看 Raw</button></span>
     : entry?.status === 'missing' ? <span>原 Raw 已删除</span>
     : entry?.status === 'error' ? <p className="form-error" role="alert">{entry.message}</p>
@@ -220,9 +244,9 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
       renderItem={(item, options) => itemCard(item, 'fmcg', options?.recentDate ?? readingDate, options)} />
       : <>
        {fallback && <p className="news-warning news-fallback">本次读取失败，显示 {fallback.date} 的历史内容。</p>}
-       <AiFrontierAccordion key={readingDate} groups={aiGroups} date={readingDate} sources={ai?.sources ?? []}
+       <AiFrontierAccordion key={readingDate} groups={aiGroups} date={readingDate} editionDate={aiEditionDate} sources={ai?.sources ?? []}
         cachedSources={fallback?.section.sources ?? []} fallback={Boolean(fallback)} empty={empty}
-        renderItem={item => itemCard(item, 'ai', fallback?.date ?? readingDate)} />
+        requestTranslations={requestTranslations} renderItem={item => itemCard(item, 'ai', aiEditionDate)} />
       </>}
     </div>
    </div>
