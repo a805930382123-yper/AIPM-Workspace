@@ -1,0 +1,72 @@
+{
+  "real": true,
+  "viewport": [],
+  "errors": [],
+  "runs": [
+    {
+      "id": "5ce45c29-bfd6-4f44-98eb-f2b4846aea49",
+      "type": "wiki.lint",
+      "status": "succeeded",
+      "usage": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 0
+      },
+      "artifacts": {
+        "rawIds": [],
+        "jobIds": [],
+        "draftIds": [],
+        "lintSnapshotId": "5ce45c29-bfd6-4f44-98eb-f2b4846aea49"
+      }
+    },
+    {
+      "id": "fe75811b-eb18-48a6-81ac-80870f186cfc",
+      "type": "wiki.lint",
+      "status": "succeeded",
+      "usage": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 0
+      },
+      "artifacts": {
+        "rawIds": [],
+        "jobIds": [],
+        "draftIds": [],
+        "lintSnapshotId": "fe75811b-eb18-48a6-81ac-80870f186cfc"
+      }
+    },
+    {
+      "id": "02a2a6e5-db04-40e7-90ab-e3af7a077ec5",
+      "type": "wiki.inspect",
+      "status": "failed",
+      "usage": {
+        "requests": 1,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 1
+      },
+      "artifacts": {
+        "rawIds": [],
+        "jobIds": [],
+        "draftIds": [],
+        "inspectionIds": [
+          "c755e8b4-bba6-4ead-bff4-31b0f24d4f22"
+        ]
+      },
+      "error": "主动检查失败（LLM_NETWORK_ERROR），请查看检查记录。"
+    }
+  ],
+  "hashes": [
+    "wiki.lint",
+    "wiki.lint",
+    "wiki.inspect"
+  ],
+  "screens": [
+    "weekly-1440.png",
+    "lint-diff-1440.png"
+  ],
+  "browser": "157.0.4341.60",
+  "providerAttempts": 1
+}

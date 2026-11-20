@@ -1,0 +1,102 @@
+{
+  "real": true,
+  "node": "v22.23.5",
+  "viewport": [
+    {
+      "width": 1440,
+      "height": 900,
+      "weekly": {
+        "kind": "weekly",
+        "weekday": 4,
+        "time": "10:10",
+        "timezone": "Asia/Shanghai"
+      },
+      "evidenceStatus": 200
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "weekly": {
+        "kind": "weekly",
+        "weekday": 7,
+        "time": "12:12",
+        "timezone": "Asia/Shanghai"
+      },
+      "evidenceStatus": 200
+    }
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "id": "e11a3f31-ae06-4237-b9a2-4c67a7bba884",
+      "type": "wiki.lint",
+      "status": "succeeded",
+      "usage": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 0
+      },
+      "artifacts": {
+        "rawIds": [],
+        "jobIds": [],
+        "draftIds": [],
+        "lintSnapshotId": "e11a3f31-ae06-4237-b9a2-4c67a7bba884"
+      }
+    },
+    {
+      "id": "19de4222-ceb4-45ed-8e33-78793bdfde0c",
+      "type": "wiki.lint",
+      "status": "succeeded",
+      "usage": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownUsageCount": 0
+      },
+      "artifacts": {
+        "rawIds": [],
+        "jobIds": [],
+        "draftIds": [],
+        "lintSnapshotId": "19de4222-ceb4-45ed-8e33-78793bdfde0c"
+      }
+    },
+    {
+      "id": "61fe2f13-83ce-48bf-80b2-1404241d1bb9",
+      "type": "wiki.inspect",
+      "status": "succeeded",
+      "usage": {
+        "requests": 1,
+        "inputTokens": 1493,
+        "outputTokens": 816,
+        "unknownUsageCount": 0
+      },
+      "artifacts": {
+        "rawIds": [],
+        "jobIds": [],
+        "draftIds": [],
+        "inspectionIds": [
+          "d1faedd3-494d-4664-b8e1-e6019e902dc3"
+        ]
+      }
+    }
+  ],
+  "hashes": [
+    "wiki.lint",
+    "wiki.lint",
+    "wiki.inspect"
+  ],
+  "screens": [
+    "weekly-1440.png",
+    "lint-diff-1440.png",
+    "summary-1440.png",
+    "inspection-1440.png",
+    "home-1440.png",
+    "weekly-390.png",
+    "summary-390.png",
+    "inspection-390.png",
+    "home-390.png"
+  ],
+  "browser": "157.0.4341.60",
+  "providerAttempts": 1
+}
