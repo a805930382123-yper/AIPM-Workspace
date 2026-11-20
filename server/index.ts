@@ -176,7 +176,9 @@ app.disable('x-powered-by');
 // Minute imports authorize before either JSON parsing or multipart buffering reads the body.
 registerMeetingMinutesRoutes(app, meetings);
 const news = new NewsService({ root, clock: () => new Date(), readSources: readNewsSources, rawStore: store,
-  aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory });
+  aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true', providerFactory,
+  stageResearchOverflow: edition => pipeline.stageEdition(edition, 'research-overflow'),
+});
 const pipeline: NewsPipeline = new NewsPipeline({
   root, news, runner, wiki: wikiStore, states: rawStates, drafts,
   scheduler: {

@@ -5,6 +5,7 @@ import {setTimeout as wait} from 'node:timers/promises';
 import {test} from 'node:test';
 import {NewsService} from '../../services/news/service.ts';
 import {readNewsSources} from '../../services/news/sources.ts';
+import {textPdf} from '../support/news-pdf-fixture.ts';
 
 const cache = path.resolve('node_modules/.cache/news07-review');
 await mkdir(cache,{recursive:true});
@@ -15,32 +16,14 @@ const wp = 'https://worldpanelbynumerator.com';
 const niq = 'https://nielseniq.cn';
 const wpList = wp + '/language/chinese-simplified';
 const niqList = niq + '/global/zh/insights/consumer-packaged-goods/';
+const niqCatalogs = [
+  niq + '/wp-json/wp/v2/insight?industries=663&per_page=12&page=1&_fields=link,title,date_gmt',
+  niq + '/wp-json/wp/v2/insight?topics=345&per_page=12&page=1&_fields=link,title,date_gmt',
+];
 const aiURL = 'https://aihot.news/api/v1/items?mode=selected&window=24h&limit=5';
 const body = '消费者研究显示快消销售额同比增长8.2%。' + '研究覆盖零售渠道、品牌及消费行为。'.repeat(10);
 const html = text => new Response(text,{headers:{'content-type':'text/html'}});
 const unavailable = () => new Response(null,{status:503});
-function textPdf(texts) {
-  const utf=s=>[...s].map(x=>x.charCodeAt(0).toString(16).padStart(4,'0')).join('').toUpperCase();
-  const codes=[...new Set(texts.join(''))].map(utf);
-  const cmap='/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n'+codes.length+' beginbfchar\n'+codes.map(x=>'<'+x+'> <'+x+'>').join('\n')+'\nendbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend';
-  const stream=x=>'<< /Length '+Buffer.byteLength(x)+' >>\nstream\n'+x+'\nendstream';
-  const objects=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids ['+texts.map((_,i)=>(6+i*2)+' 0 R').join(' ')+'] /Count '+texts.length+' >>',
-    '<< /Type /Font /Subtype /Type0 /BaseFont /Fixture /Encoding /Identity-H /DescendantFonts [4 0 R] /ToUnicode 5 0 R >>',
-    '<< /Type /Font /Subtype /CIDFontType2 /BaseFont /Fixture /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /DW 500 >>',stream(cmap)];
-  for(const [i,t] of texts.entries()){
-    objects.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents '+(7+i*2)+' 0 R >>');
-    const lines=t.match(/.{1,70}/gu);
-    objects.push(stream('BT /F1 10 Tf 14 TL 20 700 Td '+lines.map(line=>'<'+utf(line)+'> Tj').join(' T* ')+' ET'));
-  }
-  let data='%PDF-1.5\n';
-  const offsets=[];
-  for(const [i,obj] of objects.entries()){
-    offsets.push(Buffer.byteLength(data));
-    data+=(i+1)+' 0 obj\n'+obj+'\nendobj\n';
-  }
-  const xref=Buffer.byteLength(data);
-  return Buffer.from(data+'xref\n0 '+(objects.length+1)+'\n0000000000 65535 f \n'+offsets.map(x=>String(x).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+(objects.length+1)+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
-}
 const wpCard = ([slug,title,d]) => '<div class="blog-post-title"><div class="post-meta"><div class="small-text">' +
   (d ?? 'November 4, 2026') + '</div></div><a href="/insights/' + slug + '">' + title + '</a></div>';
 const item = (id,title,url) => ({
@@ -67,6 +50,7 @@ async function fixture(name,config) {
   globalThis.fetch = async input => {
     const url = String(input);
     requests.push(url);
+    if (niqCatalogs.includes(url)) return Response.json([]);
     if (url === wpList) return html(config.wp.map(wpCard).join(''));
     if (url === niqList) return config.niq ? html(config.niq.map(row=>{
       const [slug,title]=Array.isArray(row)?row:[row,'消费者快消研究 '+row];
@@ -93,7 +77,10 @@ async function fixture(name,config) {
   };
   const deps = {
     root,clock:()=>now,aiEnabled:!!config.analyze,
-    readSources:async (...args)=>{calls.push(args[0]);return readNewsSources(...args);},
+    readSources:async (section,now,exclusions,ids)=>{
+      calls.push(section);
+      return readNewsSources(section,now,exclusions,ids??(section==='fmcg'?new Set(['worldpanel','niq']):undefined));
+    },
     providerFactory:async()=>({
       model:'fixed',name:'fixed',complete:async ({user})=>{
         completed++;
@@ -192,7 +179,7 @@ test('empty due to directory date gate, distinct from unavailable source',async(
   assert.equal(result.edition.sections.fmcg.items.length,0);
   assert.equal(result.edition.sections.ai.status,'failed');
   assert.equal(result.edition.sections.ai.items.length,0);
-  assert.deepEqual([...requests].sort(),[wpList,niqList,aiURL].sort());
+  assert.deepEqual([...requests].sort(),[wpList,niqList,...niqCatalogs,aiURL].sort());
   assert.equal(completed,0);
 });
 

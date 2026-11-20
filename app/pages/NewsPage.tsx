@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
+import { evaluateResearchValue } from '../../services/news/research-value';
 import type { NewsCheckMode, NewsEdition, NewsItem, NewsSection, NewsSectionName, SourceHealth } from '../../services/news/types';
 import '../news.css';
 type View={date:string;aiEnabled:boolean;edition:NewsEdition|null;recentFmcg?:Array<{date:string;item:NewsItem}>;fallbacks:Partial<Record<NewsSectionName,{date:string;section:NewsSection}>>};
@@ -106,7 +107,26 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
    {section==='fmcg'&&<button className="secondary-button" disabled={disabled} onClick={()=>void check(section,'failed',current?.attempt??0)}>{activeMode==='failed'?'正在补抓失败来源…':'仅补抓失败来源'}</button>}
   </div>;
  };
- const renderItem=(item:NewsItem,n:NewsSectionName,date:string)=>{const key=`${date}:${n}:${item.id}`,entry=saved[date]?.find(x=>x.section===n&&x.itemId===item.id);return <article className="news-article" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3><p className="news-meta">{item.sourceName}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d$/.test(item.publishedAt)?item.publishedAt+'（仅知月份）':/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {item.research?.kind||(item.evidenceKind==='source_summary'?'AIHOT 来源摘要，未核验原文':'来源正文摘录')}{item.research&&<> · 数据时期：{item.research.dataPeriod||'请以原文为准'}{item.research.pdfUrl&&<> · <a href={item.research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF</a>（{item.research.pageRange}）</>}</>}</p><p>{item.excerpt.slice(0,280)}{item.excerpt.length>280?'…':''}</p>{item.excerpt.length>280&&<details><summary>展开完整摘录</summary><p>{item.excerpt}</p></details>}{item.analysis?<div className="news-analysis"><p><b>事实：</b>{item.analysis.fact}</p><p><b>值得关注：</b>{item.analysis.whyItMatters}</p><p><b>可能影响（推断）：</b>{item.analysis.possibleImpact}</p></div>:n==='ai'?<p className="news-meta">为何值得关注 / 可能影响：未生成分析</p>:null}<div className="news-save"><p className="news-meta">仅保存已取得的摘录或来源摘要；后续 AI 整理需在 Raw 中另行操作。</p>{entry?.status==='saved'?<span>已保存 · <button className="text-button" onClick={()=>onOpenRaw(entry.rawId)}>查看 Raw</button></span>:entry?.status==='missing'?<span>原 Raw 已删除</span>:<button className="secondary-button" disabled={!!busy[key]} onClick={()=>void save(date,n,item.id)}>{busy[key]?'正在保存…':entry?.status==='pending'?'核对保存状态':'保存来源摘录到 Raw'}</button>}{saveErrors[key]&&<p className="form-error" role="alert">{saveErrors[key]}</p>}</div></article>};
+ const renderItem=(item:NewsItem,n:NewsSectionName,date:string)=>{
+  const key=`${date}:${n}:${item.id}`,entry=saved[date]?.find(x=>x.section===n&&x.itemId===item.id);
+  const value=n==='fmcg'?evaluateResearchValue(item):undefined;
+  return <article className="news-article" key={item.id}>
+   <h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3>
+   <p className="news-meta">{item.sourceName}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d$/.test(item.publishedAt)?item.publishedAt+'（仅知月份）':/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {item.research?.kind||(item.evidenceKind==='source_summary'?(n==='ai'?'AIHOT 来源摘要，未核验原文':'来源摘要'):'来源正文摘录')}{item.research&&<> · 数据时期：{item.research.dataPeriod||'请以原文为准'}{item.research.pdfUrl&&<> · <a href={item.research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF</a>{item.research.pageRange&&<>（{item.research.pageRange}）</>}</>}</>}</p>
+   {value?.eligible&&<div className="news-analysis">
+    <p><b>推荐理由</b> {value.reason}</p>
+    {value.application&&<p><b>应用建议</b> {value.application}</p>}
+   </div>}
+   <p>{item.excerpt.slice(0,280)}{item.excerpt.length>280?'…':''}</p>
+   {item.excerpt.length>280&&<details><summary>展开完整摘录</summary><p>{item.excerpt}</p></details>}
+   {item.analysis?<div className="news-analysis"><p><b>事实：</b>{item.analysis.fact}</p><p><b>值得关注：</b>{item.analysis.whyItMatters}</p><p><b>可能影响（推断）：</b>{item.analysis.possibleImpact}</p></div>:n==='ai'?<p className="news-meta">为何值得关注 / 可能影响：未生成分析</p>:null}
+   <div className="news-save">
+    <p className="news-meta">仅保存已取得的摘录或来源摘要；后续 AI 整理需在 Raw 中另行操作。</p>
+    {entry?.status==='saved'?<span>已保存 · <button className="text-button" onClick={()=>onOpenRaw(entry.rawId)}>查看 Raw</button></span>:entry?.status==='missing'?<span>原 Raw 已删除</span>:<button className="secondary-button" disabled={!!busy[key]} onClick={()=>void save(date,n,item.id)}>{busy[key]?'正在保存…':entry?.status==='pending'?'核对保存状态':'保存来源摘录到 Raw'}</button>}
+    {saveErrors[key]&&<p className="form-error" role="alert">{saveErrors[key]}</p>}
+   </div>
+  </article>;
+ };
  const shown=selected?edition:view?.edition;return <div className="page news-page"><div className="page-heading"><div><h1>每日资讯</h1><p className="subheading">来源摘录与分析分开保存，日期以来源为准。</p></div>{onBack&&<button type="button" className="secondary-button" onClick={onBack}>返回工作台</button>}</div><div className="news-toolbar"><label>阅读日期 <select value={selected||''} onChange={e=>setSelected(e.target.value||null)}><option value="">今天 {view?.date||''}</option>{history?.items.filter(x=>x.date!==view?.date).map(x=><option key={x.date}>{x.date}</option>)}</select></label><span>{!view?.aiEnabled?'AI 分析未启用':'AI 分析已启用'}</span><nav className="news-jump" aria-label="栏目定位"><a href="#news-section-fmcg">快消研报与洞察</a><span aria-hidden="true">·</span><a href="#news-section-ai">AI 前沿</a></nav></div>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}{readError&&<p className="form-error" role="alert">{readError}</p>}{history?.errors.map(e=><p className="form-error" key={e}>{e}</p>)}{selected&&!edition&&!readError&&<p>正在读取历史…</p>}
  {(['fmcg','ai'] as const).map(n=>{
   const current=shown?.sections[n];
@@ -120,6 +140,7 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
     </div>
     {checkNotices[n]&&<p role="status">{checkNotices[n]}</p>}
     <SectionDiagnosis section={current}/>
+    <p className="news-notice">优先收录与中国即时零售、经销渠道、货盘、促销和门店经营有关的快消研究。近365日发布，最多展示5条。</p>
     {current&&current.status!=='running'&&items.length<5&&<p>今日新增不足原因：{current.shortageReasons?.length?current.shortageReasons.join(' '):'旧记录未记录具体不足原因'}</p>}
     {current?<p>今日收录 {items.length} 条 · 近期精选 {recent.length} 条 · 合计 {items.length+recent.length}/5</p>:<p>近期精选 {recent.length} 条</p>}
     <p>本期首次收录，并非今日发布。</p>
@@ -147,7 +168,6 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
     {section.items.length}/5 条{section.items.length<5&&<> · {section.shortageReasons?.length?section.shortageReasons.join(' '):'旧记录未记录具体不足原因'}</>}
    </p>}
    {section?.status==='empty'&&!section.checkMessage&&!section.sources.some(hasSourceFailure)&&<p>{n==='fmcg'?'暂无新的可核验研报':'近期没有足够的可核验内容。'}</p>}
-   {n==='fmcg'&&section?.contentVersion==='research-v1'&&<p className="news-notice">中国市场优先，近365日发布，每日精选最多5篇；报告非每日更新。</p>}
    {!section&&<p>{n==='fmcg'&&shown?.legacyFmcg?'等待更新快消研报。':'暂无可阅读内容。'}</p>}
    {n==='fmcg'&&selected&&section&&<p>本期收录</p>}
    {section?.items.map(item=>renderItem(item,n,date))}

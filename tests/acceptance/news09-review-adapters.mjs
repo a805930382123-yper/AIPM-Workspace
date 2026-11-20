@@ -145,15 +145,16 @@ test('PwC dynamic collection keeps official month, scans past 20, rejects image-
 
 test('NIQ scan remains limited to page 20 for the same page-22 material',async()=>{
   const {result,requests}=await withFetch({
-    [nbs]:down,
-    [pwcList]:down,
-    'https://worldpanelbynumerator.com/language/chinese-simplified':down,
     [niqList]:()=>html('<a class="niq-card-link" href="'+niqDetail+'"><span class="niq-insight-title">中国消费者零售调研</span><time datetime="2026-10-19"></time></a>'),
+    [niq+'wp-json/wp/v2/insight?industries=663&per_page=12&page=1&_fields=link,title,date_gmt']:()=>Response.json([]),
+    [niq+'wp-json/wp/v2/insight?topics=345&per_page=12&page=1&_fields=link,title,date_gmt']:()=>Response.json([]),
     [niqDetail]:()=>html('<a href="'+niqPdf+'">公开PDF</a>'),
     [niqPdf]:()=>pdf(longPdf),
-  },()=>readResearchSources(now));
+  },()=>readResearchSources(now,undefined,new Set(['niq'])));
   assert.equal(requests.filter(x=>x===niqPdf).length,1);
   assert.ok(requests.every(x=>!x.includes('pwccn.com')));
   assert.equal(result.items.length,0);
-  assert.equal(result.sources.find(x=>x.name==='NIQ').status,'failed');
+  const diagnosis=result.sources.find(x=>x.name==='NIQ').diagnosis;
+  assert.equal(diagnosis.outcome,'empty');
+  assert.equal(diagnosis.counts.rejected,1);
 });

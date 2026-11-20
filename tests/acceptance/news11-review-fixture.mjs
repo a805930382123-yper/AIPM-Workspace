@@ -34,6 +34,8 @@ export const responseFor = (url, mode, date) => {
     return html(`<div class="article w-richtext"><p>${url.pathname.endsWith('-tiny') ? '广告' : paragraph}</p></div>`);
   }
   if (url.origin === niq) {
+    if (url.pathname === '/wp-json/wp/v2/insight' &&
+      (url.searchParams.get('industries') === '663' || url.searchParams.get('topics') === '345')) return Response.json([]);
     if (url.href === niqPdf) throw new DOMException('private timeout marker', 'TimeoutError');
     if (url.href === niqDetail) return html(`<a href="${niqPdf}">PDF</a>`);
     return html(`<a class="niq-card-link" href="${niqDetail}"><span class="niq-insight-title">${mode === 'diagnostics' ? '中国食品零售研究' : '家电论坛'}</span><time datetime="${date}"/></a>`);

@@ -1,4 +1,5 @@
 import {readSourceBytes,sourceAttempt} from './source-health.ts';
+import {researchTopicPriority} from './research-value.ts';
 import {createHash} from 'node:crypto';import {JSDOM,VirtualConsole} from 'jsdom';import {normalizedUrl,normalizedTitle} from './normalize.ts';import type {NewsItem,SourceExclusions,SourceResult} from './types.ts';
 const clean=(s:string)=>s.replace(/\s+/gu,' ').trim();const kdir='https://kpmg.com/cn/zh/industries/consumer-and-retail.html';const mintelDirectory='https://china.mintel.com/press-centre/';
 const allowed=(u:URL)=>u.protocol==='https:'&&!u.port&&!u.username&&!u.password&&((u.hostname==='kpmg.com'&&(u.href===kdir||/^\/cn\/zh\/insights\/\d{4}\/\d{2}\//u.test(u.pathname)))||(['kpmg.com','assets.kpmg.com'].includes(u.hostname)&&/^\/content\/dam\/kpmgsites\/cn\/pdf\/zh\//u.test(u.pathname)&&/\.pdf(?:\.coredownload\.inline\.pdf)?$/iu.test(u.pathname))||(u.hostname==='china.mintel.com'&&(u.pathname==='/press-centre/'||/^\/insights\/(articles|downloads)\/$/u.test(u.pathname)||/^\/(insights|press-centre)\/[\w\-/]+\/?$/u.test(u.pathname))));
@@ -34,7 +35,7 @@ export async function readNewResearch(now:Date,exclusions?:SourceExclusions,enab
             if(!feed.window.document.querySelector('rss > channel')) throw Error('RSS结构异常');
             for(const row of feed.window.document.querySelectorAll('item')) {
               const title=clean(row.querySelector('title')?.textContent||''),url=clean(row.querySelector('link')?.textContent||''),date=clean(row.querySelector('pubDate')?.textContent||'');
-              if(!url||!allowed(new URL(url))||!/食品|饮料|美妆|美容|护肤|个护|零售|消费|风味/u.test(title)) continue;
+              if(!url||!allowed(new URL(url))||(!researchTopicPriority(title)&&!/美容|零售|消费|风味/u.test(title))) continue;
               attempt.counts.candidates++;
               const key=normalizedUrl(url);
               if(seenUrls.has(key)||exclusions?.urls.has(key)||exclusions?.titles.has(normalizedTitle(title))) {attempt.counts.duplicates++;continue;}
@@ -45,7 +46,7 @@ export async function readNewResearch(now:Date,exclusions?:SourceExclusions,enab
         } else {
           for(const anchor of listing.window.document.querySelectorAll('a[href]')) {
             const target=new URL(anchor.getAttribute('href')!,source.url),title=clean(anchor.textContent||'');
-            if(!allowed(target)||!/^\/cn\/zh\/insights\/\d{4}\/\d{2}\//u.test(target.pathname)||!/消费|零售/u.test(title)) continue;
+            if(!allowed(target)||!/^\/cn\/zh\/insights\/\d{4}\/\d{2}\//u.test(target.pathname)||(!researchTopicPriority(title)&&!/消费|零售/u.test(title))) continue;
             attempt.counts.candidates++;
             const key=normalizedUrl(target.href);
             if(seenUrls.has(key)||exclusions?.urls.has(key)||exclusions?.titles.has(normalizedTitle(title))) {attempt.counts.duplicates++;continue;}
@@ -55,10 +56,13 @@ export async function readNewResearch(now:Date,exclusions?:SourceExclusions,enab
         }
       } finally {listing.window.close();}
     } catch(error) {attempt.fail(error,attempt.stage);}
-    if(source.id==='mintel') candidates.sort((a,b)=>Number(/中国/u.test(b.title))-Number(/中国/u.test(a.title))||Number(b.url.includes('/press-centre/'))-Number(a.url.includes('/press-centre/'))||(Date.parse(b.date||'')||0)-(Date.parse(a.date||'')||0));
+    candidates.sort((a,b)=>researchTopicPriority(b.title)-researchTopicPriority(a.title)||
+      (source.id==='mintel'?Number(/中国/u.test(b.title))-Number(/中国/u.test(a.title))||
+        Number(b.url.includes('/press-centre/'))-Number(a.url.includes('/press-centre/'))||
+        (Date.parse(b.date||'')||0)-(Date.parse(a.date||'')||0):0));
     let pdfs=0;
     for(const c of candidates.slice(0,source.id==='kpmg'?4:6)) {
-      if(items.length>=2) break;
+      if(source.id==='kpmg'&&items.length>=2) break;
       const title=normalizedTitle(c.title);
       if(seenTitles.has(title)) {attempt.counts.duplicates++;continue;}
       try {

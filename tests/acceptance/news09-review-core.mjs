@@ -13,7 +13,7 @@ const day=offset=>shanghaiDate(new Date(+now-offset*86400000));
 const d=day(0);
 const item=(source,id,age=1,pdfUrl,extra={})=>({
   id,sourceId:source,sourceName:source,title:'中国快消研究 '+id,url:'https://example.invalid/'+id,
-  publishedAt:day(age),fetchedAt:stamp,excerpt:'来源原始正文 '+id,evidenceKind:'article_excerpt',
+  publishedAt:day(age),fetchedAt:stamp,excerpt:'中国食品门店销量同比增长 6%。来源原始正文 '+id,evidenceKind:'article_excerpt',
   research:{kind:'官方正文摘录',dataPeriod:null,...(pdfUrl?{pdfUrl,pageRange:'第 22 页'}:{})},
   ...extra,
 });

@@ -16,5 +16,5 @@ export type SourceDiagnosis = {
 };
 export type SourceHealth = {name:string;checkedAt:string;status:'ok'|'empty'|'failed';error?:string;sourceId?:string;diagnosis?:SourceDiagnosis};
 export type NewsSection = {contentVersion?:'research-v1';status:'running'|'ready'|'source_only'|'empty'|'failed'|'interrupted';attempt:number;startedAt:string;finishedAt?:string;error?:string;sources:SourceHealth[];items:NewsItem[];shortageReasons?:string[];checkMessage?:string};
-export type NewsEdition = {schemaVersion:1;date:string;updatedAt:string;sections:Partial<Record<NewsSectionName,NewsSection>>;legacyFmcg?:NewsSection};
+export type NewsEdition = {schemaVersion:1;date:string;updatedAt:string;sections:Partial<Record<NewsSectionName,NewsSection>>;legacyFmcg?:NewsSection;researchOverflow?:NewsItem[]};
 export type SourceResult = {items:NewsItem[];sources:SourceHealth[];shortageReasons?:string[]};

@@ -13,7 +13,7 @@ const day=offset=>shanghaiDate(new Date(+now-offset*86400000));
 const d=day(0);
 const research=(id,extra={})=>({
   id,title:'快消研究 '+id,url:'https://example.invalid/'+id,publishedAt:day(40),
-  fetchedAt:stamp,excerpt:'已收录的隔离正文 '+id,sourceName:'隔离来源',sourceId:'worldpanel',
+  fetchedAt:stamp,excerpt:'中国食品门店销量同比增长 6%。已收录的隔离正文 '+id,sourceName:'隔离来源',sourceId:'worldpanel',
   evidenceKind:'article_excerpt',research:{kind:'官方正文摘录',dataPeriod:null},...extra,
 });
 const fmcg=(items,status='source_only',extra={})=>({

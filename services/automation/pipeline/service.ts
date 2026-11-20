@@ -27,6 +27,7 @@ type Phase = typeof phases[number];
 type Confirmation = { requestId: string; registrationId: string; grantedAt: string; organize: boolean; mode: NewsMode };
 type Execution = { phase: Phase; runId: string; rawId?: string; jobId?: string; draftId?: string; error?: string };
 export type NewsCandidate = { id: string; section: NewsSectionName; item: NewsItem; disposition: PipelineDisposition;
+  origin?: 'research-overflow';
   screening?: { score: NewsScore } | { error: string }; confirmation?: Confirmation; execution?: Execution };
 export type CandidateView = NewsCandidate & { savedRawId?: string; draftPending?: boolean; saveIssue?: boolean };
 export type CandidateList = { date: string; dates: string[]; items: CandidateView[];
@@ -56,6 +57,7 @@ function isDay(value: unknown, date: string): value is Day {
       || typeof row.item.id !== 'string' || !/^[-\w]{1,120}$/u.test(row.item.id)
       || row.id !== candidateId(date, row.section, row.item.id) || ids.has(row.id)
       || !['inbox', 'later', 'ignored'].some(status => status === row.disposition)
+      || (row.origin !== undefined && (row.origin !== 'research-overflow' || row.section !== 'fmcg'))
       || !['title', 'sourceId', 'sourceName', 'fetchedAt', 'excerpt', 'url'].every(key => typeof (row.item as Record<string, unknown>)[key] === 'string')
       || !(row.item.publishedAt === null || typeof row.item.publishedAt === 'string')
       || (row.item.evidenceKind !== 'article_excerpt' && row.item.evidenceKind !== 'source_summary')) return false;
@@ -139,24 +141,29 @@ export class NewsPipeline {
     return files.filter(file => file.endsWith('.json')).map(file => file.slice(0, -5)).filter(validNewsDate).sort().reverse();
   }
 
-  async stageEdition(edition: NewsEdition | null) {
+  async stageEdition(edition: NewsEdition | null, scope: 'all' | 'research-overflow' = 'all') {
     if (!edition) return [];
     return this.queue.run(async () => {
       const day = await this.read(edition.date);
       const present = new Set(day.items.map(item => item.id));
-      for (const section of ['fmcg', 'ai'] as const) {
-        const part = edition.sections[section];
-        if (part?.status !== 'ready' && part?.status !== 'source_only') continue;
-        for (const item of part.items) {
-          const id = candidateId(edition.date, section, item.id);
-          if (present.has(id)) continue;
-          candidateDate(id);
-          present.add(id);
-          day.items.push({ id, section, item, disposition: 'inbox' });
+      const add = (section: NewsSectionName, item: NewsItem, origin?: NewsCandidate['origin']) => {
+        const id = candidateId(edition.date, section, item.id);
+        if (present.has(id)) return;
+        candidateDate(id);
+        present.add(id);
+        day.items.push({ id, section, item, disposition: 'inbox', ...(origin ? { origin } : {}) });
+      };
+      const previousCount = day.items.length;
+      if (scope === 'all') {
+        for (const section of ['fmcg', 'ai'] as const) {
+          const part = edition.sections[section];
+          if (part?.status !== 'ready' && part?.status !== 'source_only') continue;
+          for (const item of part.items) add(section, item);
         }
       }
-      await this.write(day);
-      return day.items.filter(item => !item.screening);
+      for (const item of edition.researchOverflow ?? []) add('fmcg', item, 'research-overflow');
+      if (scope === 'all' || day.items.length !== previousCount) await this.write(day);
+      return scope === 'all' ? day.items.filter(item => !item.screening && item.origin !== 'research-overflow') : [];
     });
   }
 

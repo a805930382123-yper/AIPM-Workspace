@@ -8,7 +8,7 @@ import { registerNewsRoutes } from '../server/news-api.ts';
 import type { NewsItem, NewsSectionName, SourceResult } from '../services/news/types.ts';
 
 const now=new Date('2026-11-07T04:00:00Z');
-const item=(id:string,date='2026-11-07T03:00:00Z'):NewsItem=>({id,title:id,sourceId:'test',sourceName:'test',url:`https://example.com/${id}`,publishedAt:date,fetchedAt:now.toISOString(),excerpt:'来源摘录',evidenceKind:'article_excerpt'});
+const item=(id:string,date='2026-11-07T03:00:00Z'):NewsItem=>({id,title:id,sourceId:'test',sourceName:'test',url:`https://example.com/${id}`,publishedAt:date,fetchedAt:now.toISOString(),excerpt:'饮料零售研究显示，相关品类销量同比增长 6%。',evidenceKind:'article_excerpt'});
 const source=(items:NewsItem[]):SourceResult=>({items,sources:[{name:'test',checkedAt:now.toISOString(),status:items.length?'ok':'empty'}]});
 async function settle(s:NewsService){for(let i=0;i<100;i++){const v=await s.today();if(Object.values(v.edition?.sections||{}).every(x=>x.status!=='running'))return v;await new Promise(r=>setTimeout(r,10));}throw Error('timeout');}
 const temp=async()=>{const dir=path.join(process.cwd(),'node_modules/.cache/news01-check');await mkdir(dir,{recursive:true});return mkdtemp(path.join(dir,'test-'));};

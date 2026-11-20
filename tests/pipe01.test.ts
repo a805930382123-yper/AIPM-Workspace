@@ -36,7 +36,7 @@ const duration = 20;
 const fixtureNews = (section: NewsSectionName, n: number, overrides?: Partial<NewsItem>): NewsItem => ({
   id: section + '-' + n, title: section + ' 测试资讯 ' + n, sourceId: section + n, sourceName: '夹具来源 ' + n,
   url: `https://news.example.test/${section}/${n}?utm_medium=pipe-fixture`, publishedAt: '2026-11-14', fetchedAt: new Date(start).toISOString(),
-  excerpt: `【合成资讯 ${n}】\n零售门店新增常温饮料陈列位。\n来源第二行保持原样。`,
+  excerpt: `【合成资讯 ${n}】\n${section === 'fmcg' ? '快消零售门店调研显示，新增常温饮料陈列位后，该品类销量增长 12%。' : '零售门店新增常温饮料陈列位。'}\n来源第二行保持原样。`,
   evidenceKind: section === 'ai' ? 'source_summary' : 'article_excerpt', ...overrides,
 });
 const reply = (payload: unknown) => { const text = JSON.stringify(payload); return { text, bytes: Buffer.byteLength(text), finishReason: 'stop', usage: { promptTokens: 7, completionTokens: 11 } }; };
@@ -421,7 +421,7 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
       source_level: bundle.fmcg.enums?.source_level ?? [], review_status: bundle.fmcg.enums?.review_status ?? [],
     }),
   });
-  const excerpt = '试点门店将瓶装茶移到常温货架。';
+  const excerpt = '快消零售门店调研显示，试点门店将瓶装茶移到常温货架后，瓶装茶销量增长 12%。';
   const article = fixtureNews('fmcg', 1, { excerpt });
   const news = new NewsService({ root, clock, rawStore: raws, aiEnabled: false, providerFactory: async () => provider,
     readSources: async section => ({ items: section === 'fmcg' ? [article] : [], sources: [{ name: '合成来源', checkedAt: clock().toISOString(), status: 'ok' }] }),

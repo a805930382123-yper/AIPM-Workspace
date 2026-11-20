@@ -16,6 +16,7 @@ const stamp = initial.toISOString();
 const item = (id, sourceId = 'worldpanel', options = {}) => ({ id, title: '中国食品市场研究 ' + id,
   sourceId, sourceName: sourceId, url: `https://example.invalid/${id}`, publishedAt: published, fetchedAt: stamp,
   excerpt: `固定原始正文 ${id}。\n\n保留格式。`, evidenceKind: 'article_excerpt', ...options });
+const researchExcerpt = '中国食品零售渠道调研显示，商超门店饮料销量同比增长 12%，便利店渗透率达到 35%。';
 const priorAnalysis = { fact: '现有事实', whyItMatters: '原分析', possibleImpact: '原推断' };
 const original = item('original', 'mintel', { analysis: priorAnalysis });
 const originalAi = item('original-ai', 'aihot', { evidenceKind: 'source_summary' });
@@ -115,7 +116,7 @@ test('NEWS11 simultaneous section updates, stale attempts and ensure wait preser
       await gates[section].promise;
       await fetchNewsSource(`https://example.invalid/${section}`);
       const sourceId = section === 'fmcg' ? 'worldpanel' : 'aihot';
-      return { items: [item(`new-${section}`, sourceId)], sources: [{ ...health(sourceId, 'ok'), sourceId }] };
+      return { items: [item(`new-${section}`, sourceId, section === 'fmcg' ? { excerpt: researchExcerpt } : {})], sources: [{ ...health(sourceId, 'ok'), sourceId }] };
     },
   });
   const automation = (runId, action) => runInAutomationContext({ runId,
@@ -159,14 +160,14 @@ test('NEWS11 simultaneous section updates, stale attempts and ensure wait preser
 test('NEWS11 interrupted and failed prior editions retain identity; a pending disk retry keeps merged content', async t => {
   const { root, seed } = await withDir(t);
   const priorDay = '2026-11-16';
-  const prior = item('from-prior-failed', 'niq', { research: { kind: 'PDF', dataPeriod: null, pdfUrl: 'https://example.invalid/report.pdf' } });
+  const prior = item('from-prior-failed', 'niq', { excerpt: researchExcerpt, research: { kind: 'PDF', dataPeriod: null, pdfUrl: 'https://example.invalid/report.pdf' } });
   await seed(priorDay, { fmcg: fmcg([prior], { status: 'failed' }) });
   await seed(day, { fmcg: fmcg([original], { status: 'running' }), ai: part([originalAi]) });
-  const included = item('included');
+  const included = item('included', 'worldpanel', { excerpt: researchExcerpt });
   let requests = 0;
   const deps = { ...defaults, root, readSources: async () => {
     requests++;
-    return { items: [item('same-pdf', 'niq', { research: prior.research }), included], sources: [health('Worldpanel by Numerator', 'ok')] };
+    return { items: [item('same-pdf', 'niq', { excerpt: researchExcerpt, research: prior.research }), included], sources: [health('Worldpanel by Numerator', 'ok')] };
   } };
   const service = new NewsService(deps);
   const initialView = await service.today();
@@ -197,7 +198,7 @@ test('NEWS11 a full edition still checks and explains why qualified content was 
   let attempts = 0;
   const service = new NewsService({ ...defaults, root, readSources: async () => {
     attempts++;
-    return { items: [item('possible-append', 'kpmg')], sources: [health('KPMG', 'ok')] };
+    return { items: [item('possible-append', 'kpmg', { excerpt: researchExcerpt })], sources: [health('KPMG', 'ok')] };
   } });
   await service.check('fmcg', 'all', 1);
   const full = (await service.ensure(true)).sections.fmcg;

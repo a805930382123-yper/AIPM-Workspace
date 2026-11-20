@@ -1,4 +1,5 @@
 import {readSourceBytes,sourceAttempt} from './source-health.ts';
+import {researchTopicPriority} from './research-value.ts';
 import {createHash} from 'node:crypto';
 import {JSDOM,VirtualConsole} from 'jsdom';
 import {normalizedUrl,normalizedTitle} from './normalize.ts';
@@ -67,6 +68,7 @@ export async function readAdditionalResearch(now:Date,exclusions?:SourceExclusio
       }
       return true;
     });
+    if(source.id==='pwc') eligible.sort((a,b)=>researchTopicPriority(b.title)-researchTopicPriority(a.title));
     for(const candidate of eligible.slice(0,4)) {
       if(items.length>=2) break;
       const title=normalizedTitle(candidate.title);
