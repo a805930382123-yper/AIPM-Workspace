@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import files from '../source-logo-files.json';
+import { newsSourceIdentities, type Platform } from './newsSourceDisplay';
 
 const platforms = {
   youtube: 'M8 5v14l12-7z',
@@ -8,29 +9,15 @@ const platforms = {
   blog: 'M5 2h9l5 5v15H5V2Zm8 2v5h4l-4-5Zm-5 8v2h8v-2H8Zm0 4v2h8v-2H8Z',
 };
 
-type Source = { icon: keyof typeof files; names: string[]; portrait?: boolean; platform?: keyof typeof platforms };
-
-const sources: Record<string, Source> = {
-  aihot: { icon: 'aihot', names: ['AIHOT'] },
-  'openai-cookbook': { icon: 'openai', names: ['OpenAI Cookbook', 'OpenAI'] },
-  'anthropic-engineering': { icon: 'anthropic', names: ['Anthropic Engineering', 'Anthropic'] },
-  'huggingface-blog': { icon: 'huggingface', names: ['Hugging Face 官方博客', 'Hugging Face Blog', 'Hugging Face'] },
-  'simon-prompt-engineering': { icon: 'simonw', names: ['Simon Willison 提示词专题', 'Simon Willison', 'simonw'], portrait: true },
-  'karpathy-github': { icon: 'karpathy', names: ['Karpathy · GitHub'], portrait: true, platform: 'github' },
-  'karpathy-blog': { icon: 'karpathy', names: ['Karpathy · Bear Blog', 'Karpathy Blog'], portrait: true, platform: 'blog' },
-  'karpathy-youtube': { icon: 'karpathy', names: ['Karpathy · YouTube'], portrait: true, platform: 'youtube' },
-  'karpathy-x': { icon: 'karpathy', names: ['Karpathy · X 公开帖', 'Karpathy X'], portrait: true, platform: 'x' },
-  worldpanel: { icon: 'worldpanel', names: ['Worldpanel by Numerator', 'Worldpanel'] },
-  niq: { icon: 'niq', names: ['NIQ', 'NielsenIQ'] },
-  nbs: { icon: 'nbs', names: ['国家统计局', 'NBS'] },
-  pwc: { icon: 'pwc', names: ['PwC', '普华永道'] },
-  kpmg: { icon: 'kpmg', names: ['KPMG', '毕马威'] },
-  mintel: { icon: 'mintel', names: ['Mintel', '英敏特'] },
-};
-
 const normalizeName = (name: string) => name.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
-const byName = new Map(Object.values(sources).flatMap(source => source.names.map(name => [normalizeName(name), source] as const)));
+const byName = new Map(Array.from(newsSourceIdentities.values()).flatMap(source => source.names.map(name => [normalizeName(name), source] as const)));
 const palette = ['#6651a3', '#355f93', '#257267', '#8b452e', '#9a4364'];
+
+export function PlatformIcon({ platform }: { platform: Platform }) {
+  return <span className={`source-logo-platform source-logo-platform-${platform}`} aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false"><path d={platforms[platform]} fill="currentColor" /></svg>
+  </span>;
+}
 
 function remoteLogo(officialUrl?: string) {
   if (!officialUrl || !URL.canParse(officialUrl)) return;
@@ -51,7 +38,7 @@ export function SourceLogo({ sourceId, sourceName, officialUrl, size = 'sm', cla
   className?: string;
 }) {
   const nameKey = normalizeName(sourceName);
-  const source = (sourceId && Object.hasOwn(sources, sourceId) ? sources[sourceId] : undefined) ?? byName.get(nameKey);
+  const source = (sourceId ? newsSourceIdentities.get(sourceId) : undefined) ?? byName.get(nameKey);
   const src = source ? `/icons/sources/${files[source.icon].file}` : remoteLogo(officialUrl);
   const [failedSrc, setFailedSrc] = useState<string>();
   const words = sourceName.normalize('NFKC').match(/[\p{L}\p{N}]+/gu) ?? [];
@@ -66,8 +53,6 @@ export function SourceLogo({ sourceId, sourceName, officialUrl, size = 'sm', cla
         backgroundColor: palette[hash % palette.length],
         fontSize: initials.length > 2 ? 'calc(var(--source-logo-size) * .33)' : undefined,
       }}>{initials}</span>}
-    {source?.platform && <span className={`source-logo-platform source-logo-platform-${source.platform}`}>
-      <svg viewBox="0 0 24 24" focusable="false"><path d={platforms[source.platform]} fill="currentColor" /></svg>
-    </span>}
+    {source?.channel && <PlatformIcon platform={source.channel.platform} />}
   </span>;
 }

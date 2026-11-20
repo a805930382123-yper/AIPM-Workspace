@@ -4,7 +4,8 @@ import { normalizedTitle, normalizedUrl } from '../../services/news/normalize';
 import { evaluateResearchValue } from '../../services/news/research-value';
 import { needsNewsTranslation, type NewsItem, type NewsSection, type NewsTranslationResult, type SourceHealth } from '../../services/news/types';
 import { hasSourceFailure, time } from './NewsSources';
-import { SourceLogo } from './SourceLogo';
+import { PlatformIcon, SourceLogo } from './SourceLogo';
+import { newsSourceIdentities, type Platform } from './newsSourceDisplay';
 
 const shanghaiDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' });
 const shanghaiMinute = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', hourCycle: 'h23', hour: '2-digit', minute: '2-digit' });
@@ -38,6 +39,48 @@ export function groupAiItems(section?: NewsSection) {
 
 export type NewsTranslationState = NewsTranslationResult['items'][number] | 'pending' | 'failed';
 
+type ReadingChannel = ReturnType<typeof groupAiItems>[number] & {
+  sourceName: string;
+  name: string;
+  platform?: Platform;
+  homepage?: string;
+  cached: boolean;
+  latest: number;
+};
+
+const publishedTime = (item: NewsItem) => {
+  const timestamp = Date.parse(item.publishedAt ?? '');
+  return Number.isFinite(timestamp) ? timestamp : -Infinity;
+};
+
+function readingDrawers(groups: ReturnType<typeof groupAiItems>, sources: SourceHealth[], cachedSources: SourceHealth[], fallback: boolean, date?: string) {
+  const drawers = new Map<string, { name: string; channels: ReadingChannel[] }>();
+  for (const group of groups) {
+    const { id } = group;
+    const items = date === undefined ? group.items : group.items.filter(item => publicationDate(item.publishedAt) === date);
+    if (!items.length) continue;
+    const identity = newsSourceIdentities.get(id);
+    const sourceName = items[0].sourceName;
+    const matches = (row: SourceHealth) => row.sourceId ? row.sourceId === id : row.name === sourceName;
+    const source = sources.find(matches);
+    const homepage = source?.homepage ?? cachedSources.find(matches)?.homepage ?? identity?.channel?.homepage;
+    const cached = fallback || Boolean(source && hasSourceFailure(source) && (source.status === 'failed'
+      || items.some(item => Date.parse(item.fetchedAt) < Date.parse(source.diagnosis?.startedAt ?? source.checkedAt))));
+    const drawerId = identity?.persona?.id ?? id;
+    const drawer = drawers.get(drawerId) ?? { name: identity?.persona?.name ?? sourceName, channels: [] };
+    drawer.channels.push({ id, items, sourceName, name: identity?.channel?.name ?? sourceName,
+      platform: identity?.channel?.platform, homepage, cached, latest: Math.max(...items.map(publishedTime)) });
+    drawers.set(drawerId, drawer);
+  }
+  return Array.from(drawers, ([groupId, { name, channels }]) => {
+    const first = channels[0];
+    if (channels.length === 1) return { groupId, id: first.id, name: first.sourceName, channels, items: first.items, latest: publicationDate(first.items[0].publishedAt), homepage: first.homepage };
+    channels.sort((a, b) => b.latest - a.latest);
+    const items = channels.flatMap(channel => channel.items).sort((a, b) => publishedTime(b) - publishedTime(a));
+    return { groupId, id: groupId, name, channels, items, latest: publicationDate(items[0].publishedAt), homepage: undefined };
+  });
+}
+
 export function AiFrontierAccordion({ groups, date, editionDate, sources, cachedSources, fallback, empty, requestTranslations, renderItem }: {
   groups: ReturnType<typeof groupAiItems>;
   date: string;
@@ -47,28 +90,38 @@ export function AiFrontierAccordion({ groups, date, editionDate, sources, cached
   fallback: boolean;
   empty: string;
   requestTranslations: (date: string, itemIds: string[]) => Promise<void>;
-  renderItem: (item: NewsItem) => ReactNode;
+  renderItem: (item: NewsItem, showPlatform: boolean) => ReactNode;
 }) {
   const [todayOnly, setTodayOnly] = useState(false);
   const [opened, setOpened] = useState<Set<string> | null>(null);
-  const { visible, openIds } = useMemo(() => {
-    const visible = todayOnly
-      ? groups.map(({ id, items }) => ({ id, items: items.filter(item => publicationDate(item.publishedAt) === date) })).filter(group => group.items.length)
-      : groups;
-    return { visible, openIds: opened ?? new Set(visible.slice(0, 1).map(group => group.id)) };
-  }, [date, groups, opened, todayOnly]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Record<string, string>>({});
+  const drawers = useMemo(() => readingDrawers(groups, sources, cachedSources, fallback, todayOnly ? date : undefined),
+    [todayOnly, date, groups, sources, cachedSources, fallback]);
   useEffect(() => {
-    const itemIds = visible.flatMap(({ id, items }) => openIds.has(id)
-      ? items.filter(needsNewsTranslation).map(item => item.id)
+    setSelectedPlatforms(previous => {
+      const entries = Object.entries(previous);
+      const retained = entries.filter(([id, channelId]) => drawers.some(drawer => drawer.groupId === id
+        && drawer.channels.some(channel => channel.id === channelId)));
+      return retained.length === entries.length ? previous : Object.fromEntries(retained);
+    });
+  }, [drawers]);
+  const { visible, openIds } = useMemo(() => {
+    const visible = drawers.map(drawer => ({ ...drawer, selected: drawer.channels.length > 1
+      ? drawer.channels.find(channel => channel.id === selectedPlatforms[drawer.groupId]) : undefined }));
+    return { visible, openIds: opened ?? new Set(visible.slice(0, 1).map(group => group.groupId)) };
+  }, [drawers, opened, selectedPlatforms]);
+  useEffect(() => {
+    const itemIds = visible.flatMap(({ groupId, items, selected }) => openIds.has(groupId)
+      ? (selected?.items ?? items).filter(needsNewsTranslation).map(item => item.id)
       : []);
     if (itemIds.length) void requestTranslations(editionDate, itemIds);
   }, [editionDate, openIds, requestTranslations, visible]);
-  const allOpen = visible.length > 0 && visible.every(group => openIds.has(group.id));
+  const allOpen = visible.length > 0 && visible.every(group => openIds.has(group.groupId));
   return <>
     <div className="news-reading-tools">
       <span>共 {visible.length} 个来源 · {visible.reduce((total, group) => total + group.items.length, 0)} 条资讯</span>
       <div className="news-inline-actions">
-        <button className="text-button" type="button" disabled={!visible.length} onClick={() => setOpened(new Set(allOpen ? [] : visible.map(group => group.id)))}>{allOpen ? '全部收起' : '全部展开'}</button>
+        <button className="text-button" type="button" disabled={!visible.length} onClick={() => setOpened(new Set(allOpen ? [] : visible.map(group => group.groupId)))}>{allOpen ? '全部收起' : '全部展开'}</button>
         <div className="news-segments" role="group" aria-label="资讯筛选">
           <button type="button" aria-pressed={!todayOnly} onClick={() => { setTodayOnly(false); setOpened(null); }}>全部</button>
           <button type="button" aria-pressed={todayOnly} onClick={() => { setTodayOnly(true); setOpened(null); }}>仅今日更新</button>
@@ -80,35 +133,55 @@ export function AiFrontierAccordion({ groups, date, editionDate, sources, cached
       {todayOnly && <button className="text-button" type="button" onClick={() => { setTodayOnly(false); setOpened(null); }}>查看全部资讯</button>}
     </div>}
     <div className="news-source-items">
-      {visible.map(({ id, items }) => {
-        const isOpen = openIds.has(id);
-        const sourceName = items[0].sourceName;
-        const source = sources.find(row => row.sourceId ? row.sourceId === id : row.name === sourceName);
-        const homepage = source?.homepage ?? cachedSources.find(row => row.sourceId ? row.sourceId === id : row.name === sourceName)?.homepage;
-        const cached = fallback || (source && hasSourceFailure(source) && (source.status === 'failed'
-          || items.some(item => Date.parse(item.fetchedAt) < Date.parse(source.diagnosis?.startedAt ?? source.checkedAt))));
-        const latest = publicationDate(items[0].publishedAt);
-        return <section className="panel news-drawer" key={id}>
+      {visible.map(({ id, groupId, name, channels, items, latest, homepage, selected }) => {
+        const isOpen = openIds.has(groupId);
+        const persona = channels.length > 1;
+        const cachedChannels = channels.filter(channel => channel.cached);
+        return <section className={`panel news-drawer${persona ? ' news-persona-drawer' : ''}`} key={groupId}>
           <header className="news-drawer-head">
             <h3><button type="button" aria-expanded={isOpen} aria-controls={`news-drawer-${id}`} onClick={() => {
               const next = new Set(openIds);
-              if (isOpen) next.delete(id);
-              else next.add(id);
+              if (isOpen) next.delete(groupId);
+              else next.add(groupId);
               setOpened(next);
             }}>
               <span className="news-drawer-identity">
                 <span className="news-chevron" aria-hidden="true">›</span>
-                <SourceLogo sourceId={id} sourceName={sourceName} officialUrl={homepage} size="md" />
-                <span className="news-drawer-title">{sourceName}</span>
+                <SourceLogo sourceId={id} sourceName={name} officialUrl={homepage} size="md" />
+                <span className="news-drawer-title">{name}</span>
               </span>
               <span className="news-chip">{items.length} 条</span>
               <span className="news-meta">{latest ? `最新 ${latest}` : '发布日期未知'}</span>
-              {cached && <span className="news-chip news-chip-warn">缓存 · 本次抓取失败</span>}
+              {cachedChannels.length > 0 && <span className="news-chip news-chip-warn"
+                title={persona ? `缓存渠道：${cachedChannels.map(channel => channel.name).join('、')}` : undefined}>
+                {persona ? '含缓存渠道' : '缓存 · 本次抓取失败'}
+              </span>}
+              {persona && <span className="news-platform-cluster">
+                {channels.map(channel => <span key={channel.id} className="news-platform-count" title={`${channel.name} · ${channel.items.length} 条`}>
+                  {channel.platform && <PlatformIcon platform={channel.platform} />}<span>{channel.name} {channel.items.length}</span>
+                </span>)}
+              </span>}
             </button></h3>
-            {homepage && <a href={homepage} target="_blank" rel="noopener noreferrer" aria-label={`${sourceName} 官方入口`}>官方入口 ↗</a>}
+            {homepage && <a href={homepage} target="_blank" rel="noopener noreferrer" aria-label={`${name} 官方入口`}>官方入口 ↗</a>}
           </header>
           <div id={`news-drawer-${id}`} hidden={!isOpen}>
-            {isOpen && <ul className="news-drawer-items">{items.map(item => <li key={item.id}>{renderItem(item)}</li>)}</ul>}
+            {isOpen && <>
+              {persona && <div className="news-platform-controls">
+                <div className="news-platform-filters" role="group" aria-label={`${name} 平台筛选`}>
+                  <button type="button" aria-pressed={!selected} onClick={() => setSelectedPlatforms(previous => ({ ...previous, [groupId]: '' }))}>
+                    全部 <span className="news-platform-number">{items.length}</span>
+                  </button>
+                  {channels.map(channel => <button key={channel.id} type="button" aria-pressed={selected?.id === channel.id}
+                    onClick={() => setSelectedPlatforms(previous => ({ ...previous, [groupId]: channel.id }))}>
+                    {channel.platform && <PlatformIcon platform={channel.platform} />}{channel.name}
+                    <span className="news-platform-number">{channel.items.length}</span>
+                    {channel.cached && <span className="news-dot news-cache-dot" role="img" title="本次抓取失败，展示缓存" aria-label="本次抓取失败，展示缓存" />}
+                  </button>)}
+                </div>
+                {selected?.homepage && <a href={selected.homepage} target="_blank" rel="noopener noreferrer" aria-label={`${selected.name} 官方入口`}>官方入口 ↗</a>}
+              </div>}
+              <ul className="news-drawer-items">{(selected?.items ?? items).map(item => <li key={item.id}>{renderItem(item, persona && !selected)}</li>)}</ul>
+            </>}
           </div>
         </section>;
       })}
@@ -144,9 +217,10 @@ export function FmcgBriefingSection({ items, recent, historical, oldEdition, leg
   </div>;
 }
 
-export function BriefingItemCard({ item, ai, officialUrl, recentDate, analysisStatus, translation, onRetryTranslation, actions }: {
+export function BriefingItemCard({ item, ai, showPlatform, officialUrl, recentDate, analysisStatus, translation, onRetryTranslation, actions }: {
   item: NewsItem;
   ai: boolean;
+  showPlatform?: boolean;
   officialUrl?: string;
   recentDate?: string;
   analysisStatus?: string;
@@ -174,6 +248,7 @@ export function BriefingItemCard({ item, ai, officialUrl, recentDate, analysisSt
   }, [expanded, displayed.excerpt]);
 
   const value = ai ? undefined : evaluateResearchValue(item);
+  const channel = showPlatform ? newsSourceIdentities.get(item.sourceId)?.channel : undefined;
   const research = item.research;
   const kind = research?.kind ?? (ai && item.sourceId === 'karpathy-youtube' && item.evidenceKind === 'source_summary'
     ? '视频简介' : item.evidenceKind === 'source_summary' ? '来源摘要' : '来源正文摘录');
@@ -190,9 +265,10 @@ export function BriefingItemCard({ item, ai, officialUrl, recentDate, analysisSt
       {recentDate && <span tabIndex={0} className="news-chip news-chip-accent" title={`原收录：${recentDate} · 原抓取：${time(item.fetchedAt)}`}>近期精选</span>}
     </div>
     <div className="news-item-meta">
-      <span className={`news-chip${ai ? '' : ' news-source-chip'}`}>
+      <span className={`news-chip${!ai || channel ? ' news-source-chip' : ''}`}>
         {!ai && <SourceLogo sourceId={item.sourceId} sourceName={item.sourceName} officialUrl={officialUrl} size="xs" />}
-        {item.sourceName}
+        {channel && <PlatformIcon platform={channel.platform} />}
+        {channel?.name ?? item.sourceName}
       </span>
       {item.author && <span>{item.author}</span>}
       {published ? <time dateTime={item.publishedAt ?? undefined} title={timestamp ? '上海时间' : published.length === 7 ? '仅知月份' : undefined}>
