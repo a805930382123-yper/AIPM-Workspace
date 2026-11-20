@@ -37,6 +37,7 @@ export async function homeActions(deps:{root:string;raws:RawStore;wiki:WikiStore
      if (!states.has(rawId)) states.set(rawId, {rawId,status:'processing',updatedAt:jobs.get(jobId)?.updatedAt??new Date(0).toISOString(),history:[]});
    }
    const found: HomeAction[] = [];
+   let commitScan: ReturnType<typeof scanWikiCommits> | undefined;
    for (const state of states.values()) {
      const recoveryId = pending.get(state.rawId);
      if (!recoveryId && !['processing','failed','pending_confirmation'].includes(state.status)) continue;
@@ -50,8 +51,21 @@ export async function homeActions(deps:{root:string;raws:RawStore;wiki:WikiStore
      const running = view?.execution === 'running' && live?.status === 'running';
      if (state.status !== 'failed' && !blocked && !running && !missingJob) continue;
      const raw = await raws.get(state.rawId);
-     const missing = !raw || missingJob;
+     if (!raw) continue;
+     const missing = missingJob;
      const status = missing || blocked ? 'recovery' : running ? 'running' : 'failed';
+     if (status === 'failed' && state.generatedWikiIds?.length) {
+       let confirmedIds = state.generatedWikiIds;
+       if ((raw.bodyRevision ?? 0) !== 0 || raw.bodyEditedAt) {
+         const commits = await (commitScan ??= scanWikiCommits(root));
+         if (commits.issues.length || commits.partial || commits.overflow) throw Error('incomplete commits');
+         confirmedIds = commits.records.flatMap(({value}) =>
+           value.status === 'completed' && value.rawId === raw.id && value.rawSha256 === raw.bodySha256
+             ? value.writtenWikiIds.filter(id => confirmedIds.includes(id)) : []);
+       }
+       const pages = await Promise.all(confirmedIds.map(id => wiki.get(id)));
+       if (pages.length && pages.every(page => page?.sources.includes(raw.id))) continue;
+     }
      let draftId = view?.pendingDraftId ?? live?.draftId
        ?? (state.jobId === job?.id && state.status === 'pending_confirmation' ? state.draftId : undefined);
      if (!draftId && job && blocked) {
@@ -62,7 +76,7 @@ export async function homeActions(deps:{root:string;raws:RawStore;wiki:WikiStore
      if (job && draftId) currentTasks.set(job.id,{rawId:job.rawId,draftId});
      const jobVersion = status === 'running' && live ? {id:live.id,rawId:live.rawId,status:live.status,cancelRequested:live.cancelRequested} : live;
      found.push(entry({
-       kind:'raw-task', id:id??state.rawId, title:raw?.title??`Raw ${state.rawId}`, status,
+       kind:'raw-task', id:id??state.rawId, title:raw.title, status,
        problem:missing?'关联资料或任务不存在':blocked?'状态保存待恢复':running?'正在准备整理成果':state.lastError?.message??'整理失败',
        result:live?.checkpoint?`已验证 ${live.checkpoint.validatedChunks}/${live.checkpoint.totalChunks} 提取段`:'暂无可确认的已保存结果',
        action:running && !blocked && !missing?'查看整理进度':'查看整理状态', updatedAt:live?.updatedAt??state.updatedAt, priority:status==='running'?1:0,

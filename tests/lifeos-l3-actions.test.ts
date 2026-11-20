@@ -6,6 +6,32 @@ import {randomUUID} from 'node:crypto';
 import {storageFixture} from './support/kb02-storage-fixture.ts';
 import {homeActions} from '../services/home/actions.ts';
 
+test('已确认且正文未改的失败重跑不进待办；旧版成果和无关页面不能消除失败',async()=>{
+ const f=await storageFixture();try{
+  const wikiId=randomUUID();
+  await f.rawStates.set(f.raw.id,{status:'failed',reason:'重复整理失败',generatedWikiIds:[wikiId]});
+  const sources:string[]=[];
+  const deps={root:f.root,raws:f.rawStore,runner:f.runner,wiki:{get:async()=>({sources})} as any};
+  const count=async()=>{const result=await homeActions(deps);assert.equal(result.sources['raw-task'].status,'ok');return result.items.filter(item=>item.kind==='raw-task').length;};
+  assert.equal(await count(),1);
+  sources.push(f.raw.id);
+  assert.equal(await count(),0);
+  await f.rawStore.updateBody(f.raw.id,{expectedBodyRevision:0,expectedBodySha256:f.raw.bodySha256,body:'新版正文'},async()=>{});
+  assert.equal(await count(),1);
+ }finally{await f.clean();}
+});
+
+test('孤立 Raw 不生成恢复任务，也不遮住留下的草稿',async()=>{
+ const f=await storageFixture();try{
+  f.succeed();const {job}=await f.start();await f.runner.waitForSettlement(job.id);
+  await f.rawStates.set(f.raw.id,{status:'failed',reason:'历史失败',jobId:job.id});
+  const result=await homeActions({root:f.root,raws:{get:async()=>undefined} as any,runner:f.runner,wiki:{get:async()=>undefined} as any});
+  assert.equal(result.sources['raw-task'].status,'ok');
+  assert.equal(result.items.some(item=>item.kind==='raw-task'),false);
+  assert.ok(result.items.some(item=>item.kind==='draft'&&item.target.rawId===f.raw.id));
+ }finally{await f.clean();}
+});
+
 test('四源安全扫描、真实草稿、当前恢复任务与缺失引用',async()=>{
  const f=await storageFixture();try{
   f.succeed();const job=(await f.start()).job;await f.runner.waitForSettlement(job.id);const draft=(await f.drafts.list())[0];assert.ok(draft);
