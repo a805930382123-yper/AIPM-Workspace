@@ -26,6 +26,14 @@
 .automation-page .automation-list li button { flex: 0 0 auto; }
 .automation-page .automation-list li p { margin: 4px 0 0; }
 .automation-page .automation-steps li { align-items: flex-start; }
+.automation-page .automation-health-list > li { flex-wrap: wrap; }
+.automation-page .automation-health-list .text-button { padding: 5px 0; }
+.automation-page .automation-artifact { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; }
+.automation-page .automation-artifact h4 { margin: 0; font-size: 14px; }
+.automation-page .automation-artifact details { margin-top: 8px; font-size: 13px; }
+.automation-page .automation-artifact summary { cursor: pointer; }
+.home-page .home-knowledge-hint { margin-top: 6px; }
+.home-page .home-knowledge-hint .text-button { display: block; padding: 5px 0; white-space: normal; text-align: start; }
 .home-page .home-workspace .home-automation { padding: 16px 20px; }
 .home-page .home-automation > p { margin: 6px 0 0; }
 .home-page .home-automation .panel-heading { padding: 0; }
@@ -38,8 +46,8 @@
 .automation-page .candidate-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
 .automation-page .candidate-topics { width: 100%; }
 .automation-page .candidate-topics textarea { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--surface); font: inherit; }
-.automation-page .candidate-modal { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 16px; background: rgb(22 32 48 / 55%); }
-.automation-page .candidate-dialog { width: min(560px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 20px; }
+.automation-page :is(.candidate-modal, .schedule-modal) { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 16px; background: rgb(22 32 48 / 55%); }
+.automation-page :is(.candidate-dialog, .schedule-dialog) { width: min(560px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 20px; }
 .automation-page .candidate-dialog li { margin: 6px 0; font-size: 14px; }
 .automation-page .candidate-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; }
 @media (max-width: 580px) {

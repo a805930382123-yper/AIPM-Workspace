@@ -19,14 +19,21 @@ export function inspectionSummary(record:KnowledgeInspection){
 const steps={preserve_differences:'保留差异',add_note:'补充说明',change_topic:'修改主题',defer:'暂缓'};
 const statuses={queued:'排队中',checking:'正在检查',completed:'检查完成',partial:'部分完成，存在范围缺口',failed:'检查失败'};
 const stages:Record<string,string>={queued:'等待读取',reading:'正在读取本次知识范围',partial:'本次结束，仍有缺口',retrieving:'读取有界知识范围',checking:'核对已读知识',analyzing:'分析已读依据',completed:'本次检查结束',failed:'本次操作失败',saving_draft:'生成维护草稿'};
- export function WikiInspectionPanel({items,currentWikiId,onOpenWiki,onOpenRaw,onOpenDraft}:{items:Wiki[];currentWikiId:string|null;onOpenWiki:(id:string,citation?:AnswerCitation)=>void;onOpenRaw:(id:string,target?:RawCitationTarget)=>void;onOpenDraft:(id:string)=>void}){
+ export function WikiInspectionPanel({items,currentWikiId,initialInspectionId,onOpenWiki,onOpenRaw,onOpenDraft}:{items:Wiki[];currentWikiId:string|null;initialInspectionId?:string;onOpenWiki:(id:string,citation?:AnswerCitation)=>void;onOpenRaw:(id:string,target?:RawCitationTarget)=>void;onOpenDraft:(id:string)=>void}){
  const [selected,setSelected]=useState<string[]>(currentWikiId?[currentWikiId]:[]),[related,setRelated]=useState(false),[result,setResult]=useState<KnowledgeInspection|null>(null),[busy,setBusy]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState(''),[chosen,setChosen]=useState<string[]>([]),[reasons,setReasons]=useState<Record<string,string>>({});
  const [scopeQuery,setScopeQuery]=useState('');
  const generation=useRef(0),draftKey=useRef(crypto.randomUUID());
  const working=result?.status==='queued'||result?.status==='checking',locked=busy||working;
  const trimmedScopeQuery=scopeQuery.trim().toLocaleLowerCase();
  const filteredItems=trimmedScopeQuery?items.filter(p=>p.title.toLocaleLowerCase().includes(trimmedScopeQuery)):items;
- useEffect(()=>{const turn=generation.current;currentInspection().then(r=>{if(turn===generation.current)setResult(r);}).catch(e=>{if(turn===generation.current)setError(e.message);}).finally(()=>{if(turn===generation.current)setLoading(false);});return()=>{generation.current++;};},[]);
+ useEffect(() => {
+  const turn = generation.current;
+  const read = initialInspectionId ? getInspection(initialInspectionId) : currentInspection();
+  read.then(record => { if (turn === generation.current) setResult(record); })
+    .catch(error => { if (turn === generation.current) setError(error.message); })
+    .finally(() => { if (turn === generation.current) setLoading(false); });
+  return () => { generation.current++; };
+ }, [initialInspectionId]);
  useEffect(()=>{if(!working||!result)return;let active=true;const timer=window.setTimeout(()=>{getInspection(result.id).then(r=>{if(active)setResult(r);}).catch(e=>{if(active)setError(e.message);});},350);return()=>{active=false;window.clearTimeout(timer);};},[working,result]);
  const run=async(work:(turn:number)=>Promise<void>)=>{const turn=++generation.current;setBusy(true);setError('');setNotice('');try{await work(turn);}catch(e){if(turn===generation.current)setError(e instanceof Error?e.message:'操作失败，当前选择已保留。');}finally{if(turn===generation.current)setBusy(false);}};
  const check=(retry=false,withRelated=false)=>run(async(turn)=>{const r=await startInspection({requestId:retry&&result?result.id:crypto.randomUUID(),wikiIds:(retry||withRelated)&&result?result.scope.selected:selected,includeRelated:withRelated||(retry&&result?result.includeRelated:related),retry});if(turn!==generation.current)return;setResult(r);setChosen([]);draftKey.current=crypto.randomUUID();});

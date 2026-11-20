@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import type {
-  AutomationList, AutomationRun, AutomationRunStatus, AutomationSchedule, AutomationStatus,
-  CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, PipelineSettings,
+  AutomationList, AutomationPlan, AutomationRun, AutomationRunStatus, AutomationSchedule, AutomationStatus,
+  CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, KnowledgeHealth, KnowledgeInspection, PipelineSettings, WikiLintSnapshot,
 } from '../api';
 import {
-  ApiError, automationRun, automationRuns, automationSchedules, automationStatus, automationTime,
+  ApiError, automationKnowledgeHealth, automationLintSnapshot, automationRun, automationRuns, automationSchedules, automationStatus, automationTime, getInspection,
   cancelAutomationRun, changeAutomationPause, editAutomationSchedule, runAutomationTask,
   automationCandidates, changeCandidateDisposition, confirmCandidates, readPipelineSettings, retryCandidate, savePipelineSettings,
 } from '../api';
@@ -21,6 +21,13 @@ const issueLabels = { read: '无法读取', parse: '格式损坏', directory: '�
 const runError = (error: string) => error === 'paused' ? '全局已暂停' : error === 'overlap' ? '同类任务正在运行' : error;
 const isActive = (status: AutomationRunStatus) => status === 'queued' || status === 'running';
 const describeError = (error: unknown) => error instanceof Error ? error.message : '请求失败，请稍后重试。';
+const weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] as const;
+
+function describePlan(plan: AutomationPlan) {
+  if (plan.kind === 'interval') return `每 ${plan.minutes} 分钟`;
+  if (plan.kind === 'daily') return `每天 ${plan.time}`;
+  return `每${weekdays[plan.weekday - 1]} ${plan.time}`;
+}
 
 function poll(load: (signal: AbortSignal) => Promise<void>) {
   const controller = new AbortController();
@@ -38,19 +45,23 @@ function createEditor(schedule: AutomationSchedule) {
     type: schedule.type, revision: schedule.revision, enabled: schedule.enabled, catchUp: schedule.catchUp,
     kind: schedule.plan.kind,
     minutes: schedule.plan.kind === 'interval' ? String(schedule.plan.minutes) : '60',
-    time: schedule.plan.kind === 'daily' ? schedule.plan.time : '09:00',
+    time: schedule.plan.kind === 'interval' ? '09:00' : schedule.plan.time,
+    weekday: schedule.plan.kind === 'weekly' ? schedule.plan.weekday : 1 as const,
   };
 }
 
-export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
+export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspection, candidateFilter }: {
   onOpenRaw: (id: string) => void;
   onOpenDraft: (id: string) => void;
+  onOpenLint?: () => void;
+  onOpenInspection?: (id?: string) => void;
   candidateFilter?: CandidateFilter;
 }) {
   const [status, setStatus] = useState<AutomationStatus | null>(null);
   const [schedules, setSchedules] = useState<AutomationList<AutomationSchedule> | null>(null);
   const [history, setHistory] = useState<AutomationList<AutomationRun> | null>(null);
-  const [readErrors, setReadErrors] = useState({ status: '', schedules: '', history: '', detail: '' });
+  const [health, setHealth] = useState<KnowledgeHealth | null>(null);
+  const [readErrors, setReadErrors] = useState({ status: '', schedules: '', history: '', detail: '', health: '' });
   const [refresh, setRefresh] = useState(0);
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<AutomationRunStatus | ''>('');
@@ -63,6 +74,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
   const [pauseConfirmation, setPauseConfirmation] = useState<boolean | null>(null);
   const [pending, setPending] = useState(false);
   const [actionError, setActionError] = useState<{ area: string; message: string } | null>(null);
+  const showHealth = Boolean(onOpenLint || onOpenInspection);
 
   useEffect(() => poll(async signal => {
     const [service, tasks] = await Promise.allSettled([automationStatus(signal), automationSchedules(signal)]);
@@ -75,6 +87,20 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
       schedules: tasks.status === 'rejected' ? describeError(tasks.reason) : '',
     }));
   }), [refresh]);
+  useEffect(() => {
+    if (!showHealth) return;
+    return poll(async signal => {
+      try {
+        const result = await automationKnowledgeHealth(signal);
+        if (!signal.aborted) {
+          setHealth(result);
+          setReadErrors(current => ({ ...current, health: '' }));
+        }
+      } catch (error) {
+        if (!signal.aborted) setReadErrors(current => ({ ...current, health: describeError(error) }));
+      }
+    });
+  }, [showHealth, refresh]);
   useEffect(() => poll(async signal => {
     try {
       const runs = await automationRuns({ type: typeFilter, status: statusFilter, limit }, signal);
@@ -127,6 +153,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
     setSelectedRunId(id);
     setReadErrors(current => ({ ...current, detail: '' }));
   };
+  const closeEditor = () => { setEditor(null); setActionError(null); };
   const submitSchedule = (event: FormEvent, schedule: AutomationSchedule) => {
     event.preventDefault();
     if (!editor) return;
@@ -137,7 +164,9 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
         catchUp: editor.catchUp,
         plan: editor.kind === 'interval'
           ? { kind: 'interval', minutes: Number(editor.minutes) }
-          : { kind: 'daily', time: editor.time, timezone: 'Asia/Shanghai' },
+          : editor.kind === 'weekly'
+            ? { kind: 'weekly', weekday: editor.weekday, time: editor.time, timezone: 'Asia/Shanghai' }
+            : { kind: 'daily', time: editor.time, timezone: 'Asia/Shanghai' },
       }, token);
       setEditor(null);
     });
@@ -147,6 +176,8 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
   const hasPipeline = tasks.some(task => task.type === 'news.daily');
   const showError = (area: string) => actionError?.area === area && <p className="form-error" role="alert">{actionError.message}</p>;
   const currentDetail = detail?.id === selectedRunId ? detail : null;
+  const lint = health?.lint;
+  const inspection = health?.inspection;
 
   return <div className="page automation-page">
     <div className="page-heading">
@@ -186,6 +217,25 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
       {showError('pause')}
     </section>
 
+    {showHealth && <section className="panel automation-panel" aria-labelledby="automation-knowledge-health">
+      <div className="automation-heading"><h2 id="automation-knowledge-health">知识库巡检摘要</h2></div>
+      {readErrors.health && <p className="form-error" role="alert">巡检摘要读取失败。{readErrors.health}</p>}
+      {!health && !readErrors.health && <p role="status">正在读取巡检摘要…</p>}
+      {health && <ul className="automation-list automation-health-list">
+        <li>
+          <div><strong>结构检查</strong><p>{lint ? `总问题 ${lint.total} 项 · ${lint.isBaseline ? '首次检查基线' : `较上次新增 ${lint.addedCount} 项 · 消除 ${lint.resolvedCount} 项`}` : '暂无成功巡检记录'}</p>
+            {lint && <p><time dateTime={lint.checkedAt}>{automationTime(lint.checkedAt)}</time>（上海）</p>}</div>
+          {onOpenLint && <button className="text-button" onClick={onOpenLint}>查看结构检查</button>}
+        </li>
+        <li>
+          <div><strong>主动检查</strong><p>{inspection ? `待核发现 ${inspection.pendingCount} 项 · 实读 ${inspection.readCount} 页` : '暂无已归档的巡检记录'}</p>
+            {inspection && <p><time dateTime={inspection.checkedAt}>{automationTime(inspection.checkedAt)}</time>（上海）</p>}</div>
+          {onOpenInspection && <button className="text-button" onClick={() => onOpenInspection(inspection?.inspectionId)}>查看主动检查</button>}
+        </li>
+      </ul>}
+      {health?.issues.map(issue => <p key={issue.file} className="form-error" role="alert">{issueLabels[issue.reason]} · {issue.file}</p>)}
+    </section>}
+
     {hasPipeline && <NewsInbox initialFilter={candidateFilter} token={status?.writeToken} paused={status?.paused}
       refresh={refresh} onOpenRaw={onOpenRaw} onOpenDraft={onOpenDraft} onOpenRun={(id, trigger) => chooseRun(id, null, trigger)} />}
 
@@ -198,7 +248,7 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
       {showError('run')}
       {tasks.map(task => <article className="automation-task" key={task.type} aria-label={task.name}>
         <div className="automation-heading">
-          <div><h3>{task.name}</h3><p>{task.enabled ? '已启用' : '已停用'} · {task.plan.kind === 'interval' ? `每 ${task.plan.minutes} 分钟` : `每天 ${task.plan.time}`} · {task.mayCallModel ? '可能调用模型' : '无需模型调用'}</p></div>
+          <div><h3>{task.name}</h3><p>{task.enabled ? '已启用' : '已停用'} · {describePlan(task.plan)} · {task.mayCallModel ? '可能调用模型' : '无需模型调用'}</p></div>
           <div className="automation-actions">
             <button className="secondary-button" disabled={pending} onClick={() => { setEditor(createEditor(task)); setActionError(null); }}>编辑计划</button>
             <button className="primary-button" disabled={pending || !status || Boolean(task.lastRun && isActive(task.lastRun.status))} onClick={event => {
@@ -215,23 +265,32 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
           <div><dt>补跑</dt><dd>{task.catchUp ? '已开启' : '已关闭'}</dd></div>
           <div><dt>最近结果</dt><dd>{task.lastRun ? <button className="text-button" onClick={event => chooseRun(task.lastRun!.id, null, event.currentTarget)}>{statusLabels[task.lastRun.status]} · {automationTime(task.lastRun.scheduledAt)}</button> : '暂无运行'}</dd></div>
         </dl>
-        {editor?.type === task.type && <form className="automation-editor" aria-label="编辑计划" onSubmit={event => submitSchedule(event, task)}>
-          <label className="automation-check"><input type="checkbox" checked={editor.enabled} disabled={pending} onChange={event => setEditor({ ...editor, enabled: event.target.checked })} />启用计划</label>
-          <label className="automation-check"><input type="checkbox" checked={editor.catchUp} disabled={pending || !task.allowsCatchUp} onChange={event => setEditor({ ...editor, catchUp: event.target.checked })} />启动时补跑一次</label>
-          <label>调度方式<select value={editor.kind} disabled={pending} onChange={event => setEditor({ ...editor, kind: event.target.value === 'daily' ? 'daily' : 'interval' })}><option value="interval">固定间隔</option><option value="daily">每天</option></select></label>
-          {editor.kind === 'interval' ?
-            <label>间隔分钟<input type="number" min="1" max="525600" step="1" required value={editor.minutes} disabled={pending} onChange={event => setEditor({ ...editor, minutes: event.target.value })} /></label> :
-            <label>每天运行时间（上海时间）<input type="time" required value={editor.time} disabled={pending} onChange={event => setEditor({ ...editor, time: event.target.value })} /></label>}
-          {showError('editor')}
-          {editor.revision !== task.revision && <div className="automation-conflict">
-            <p>当前计划已更新。重新读取会替换表单中的输入。</p>
-            <button type="button" className="text-button" disabled={pending} onClick={() => { setEditor(createEditor(task)); setActionError(null); }}>读取最新版本</button>
-          </div>}
-          <div className="automation-actions">
-            <button type="submit" className="primary-button" disabled={pending || !status || editor.revision !== task.revision}>保存计划</button>
-            <button type="button" className="secondary-button" disabled={pending} onClick={() => { setEditor(null); setActionError(null); }}>取消编辑</button>
-          </div>
-        </form>}
+        {editor?.type === task.type && <ScheduleEditorDialog name={task.name} pending={pending} onClose={closeEditor}>
+          <form className="automation-editor" aria-label="编辑计划" onSubmit={event => submitSchedule(event, task)}>
+            <div className="automation-actions">
+              <label className="automation-check"><input type="checkbox" checked={editor.enabled} disabled={pending} onChange={event => setEditor({ ...editor, enabled: event.target.checked })} />启用计划</label>
+              <label className="automation-check"><input type="checkbox" checked={editor.catchUp} disabled={pending || !task.allowsCatchUp} onChange={event => setEditor({ ...editor, catchUp: event.target.checked })} />启动时补跑一次</label>
+            </div>
+            <label>调度方式<select data-autofocus value={editor.kind} disabled={pending} onChange={event => setEditor({ ...editor, kind: event.target.value as AutomationPlan['kind'] })}>
+              <option value="interval">固定间隔</option><option value="daily">每天</option><option value="weekly">每周</option>
+            </select></label>
+            {editor.kind === 'weekly' && <label>周几<select value={editor.weekday} disabled={pending} onChange={event => setEditor({ ...editor, weekday: Number(event.target.value) as typeof editor.weekday })}>
+              {weekdays.map((day, index) => <option key={day} value={index + 1}>{day}</option>)}
+            </select></label>}
+            {editor.kind === 'interval' ?
+              <label>间隔分钟<input type="number" min="1" max="525600" step="1" required value={editor.minutes} disabled={pending} onChange={event => setEditor({ ...editor, minutes: event.target.value })} /></label> :
+              <label>{editor.kind === 'weekly' ? '每周运行时间（上海时间）' : '每天运行时间（上海时间）'}<input type="time" required value={editor.time} disabled={pending} onChange={event => setEditor({ ...editor, time: event.target.value })} /></label>}
+            {showError('editor')}
+            {editor.revision !== task.revision && <div className="automation-conflict">
+              <p>当前计划已更新。重新读取会替换表单中的输入。</p>
+              <button type="button" className="text-button" disabled={pending} onClick={() => { setEditor(createEditor(task)); setActionError(null); }}>读取最新版本</button>
+            </div>}
+            <div className="automation-actions">
+              <button type="submit" className="primary-button" disabled={pending || !status || editor.revision !== task.revision}>{pending ? '正在保存…' : '保存计划'}</button>
+              <button type="button" className="secondary-button" disabled={pending} onClick={closeEditor}>取消编辑</button>
+            </div>
+          </form>
+        </ScheduleEditorDialog>}
       </article>)}
     </section>
 
@@ -307,10 +366,82 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, candidateFilter }: {
           {currentDetail.artifacts.rawIds.map(id => <button key={id} className="text-button" onClick={() => onOpenRaw(id)}>Raw {id}</button>)}
           {currentDetail.artifacts.draftIds.map(id => <button key={id} className="text-button" onClick={() => onOpenDraft(id)}>草稿 {id}</button>)}
           {currentDetail.artifacts.jobIds.map(id => <a key={id} href={`/api/extraction-jobs/${encodeURIComponent(id)}`} target="_blank" rel="noreferrer">任务 {id}</a>)}
-          {!Object.values(currentDetail.artifacts).some(ids => ids.length > 0) && <p>无产物。</p>}
+          {!currentDetail.artifacts.lintSnapshotId && !Object.values(currentDetail.artifacts).some(value => Array.isArray(value) && value.length) && <p>无产物。</p>}
         </div>
+        {currentDetail.artifacts.lintSnapshotId && <LintRunDetails key={currentDetail.artifacts.lintSnapshotId} id={currentDetail.artifacts.lintSnapshotId} onOpenLint={onOpenLint} />}
+        {currentDetail.artifacts.inspectionIds?.map(id => <InspectionRunDetails key={id} id={id} onOpenInspection={onOpenInspection} />)}
       </>}
     </section>}
+  </div>;
+}
+
+function ScheduleEditorDialog({ name, pending, onClose, children }: {
+  name: string; pending: boolean; onClose: () => void; children: ReactNode;
+}) {
+  const dialog = useDialogFocus<HTMLDivElement>();
+  return <div className="schedule-modal">
+    <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="automation-editor-title" className="panel schedule-dialog"
+      onKeyDown={event => { if (event.key === 'Escape' && !pending) onClose(); }}>
+      <h2 id="automation-editor-title">编辑计划 · {name}</h2>
+      {children}
+    </div>
+  </div>;
+}
+
+function LintRunDetails({ id, onOpenLint }: { id: string; onOpenLint?: () => void }) {
+  const [snapshot, setSnapshot] = useState<WikiLintSnapshot | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    const controller = new AbortController();
+    void automationLintSnapshot(id, controller.signal)
+      .then(value => { if (!controller.signal.aborted) setSnapshot(value); })
+      .catch(reason => { if (!controller.signal.aborted) setError(describeError(reason)); });
+    return () => controller.abort();
+  }, [id]);
+  return <div className="automation-artifact">
+    <div className="automation-heading">
+      <h4>结构检查快照</h4>
+      {onOpenLint && <button className="text-button" onClick={onOpenLint}>查看结构检查</button>}
+    </div>
+    {error && <p className="form-error" role="alert">快照读取失败。{error}</p>}
+    {!snapshot && !error && <p role="status">正在读取结构检查快照…</p>}
+    {snapshot && <>
+      <p>总问题 {snapshot.total} 项 · {snapshot.diff.isBaseline ? '首次检查基线' : `新增 ${snapshot.diff.addedCount} 项 · 消除 ${snapshot.diff.resolvedCount} 项 · 未变化 ${snapshot.diff.unchangedCount} 项`}</p>
+      {!snapshot.diff.isBaseline && ([['新增问题', snapshot.diff.added], ['已消除问题', snapshot.diff.resolved]] as const).map(([label, findings]) => <details key={label}>
+        <summary>{label}（{findings.length} 项）</summary>
+        {findings.length === 0 ? <p>无{label}。</p> : <ul className="automation-list">{findings.map(finding => <li key={finding.fingerprint}>
+          <div><strong>{finding.pageTitle ?? finding.file}{finding.location.scope === 'line' && ` · 第 ${finding.location.line} 行`}</strong><p>{finding.message}</p></div>
+        </li>)}</ul>}
+      </details>)}
+    </>}
+  </div>;
+}
+
+function InspectionRunDetails({ id, onOpenInspection }: { id: string; onOpenInspection?: (id: string) => void }) {
+  const [record, setRecord] = useState<KnowledgeInspection | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    const controller = new AbortController();
+    void getInspection(id, controller.signal)
+      .then(value => { if (!controller.signal.aborted) setRecord(value); })
+      .catch(reason => { if (!controller.signal.aborted) setError(describeError(reason)); });
+    return () => controller.abort();
+  }, [id]);
+  const pendingCount = record?.findings.filter(finding => finding.status === 'pending').length ?? 0;
+  return <div className="automation-artifact">
+    <div className="automation-heading">
+      <h4>主动检查发现</h4>
+      {onOpenInspection && record && <button className="text-button" onClick={() => onOpenInspection(id)}>查看本次检查记录</button>}
+    </div>
+    {error && <p className="form-error" role="alert">检查记录读取失败。{error}</p>}
+    {!record && !error && <p role="status">正在读取主动检查记录…</p>}
+    {record && <>
+      <p>实读 {record.scope.read.length} 页 · 共发现 {record.findings.length} 项 · 待核 {pendingCount} 项</p>
+      {record.findings.length > 0 && <details>
+        <summary>查看发现摘要</summary>
+        <ul className="automation-list">{record.findings.map(finding => <li key={finding.id}><div>{finding.summary}</div></li>)}</ul>
+      </details>}
+    </>}
   </div>;
 }
 

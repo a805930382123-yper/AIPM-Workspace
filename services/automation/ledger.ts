@@ -31,7 +31,10 @@ function isStoredRun(value: unknown, id: string, month: string): value is Automa
   if (!object(value.usage) || !['requests', 'inputTokens', 'outputTokens', 'unknownUsageCount'].every(key => nonnegative((value.usage as Record<string, unknown>)[key]))
     || (value.sourceRequests !== undefined && !nonnegative(value.sourceRequests)) || !optionalText(value.candidateId)) return false;
   const artifacts = value.artifacts;
-  return object(artifacts) && ['rawIds', 'jobIds', 'draftIds'].every(key => Array.isArray(artifacts[key]) && artifacts[key].every(string));
+  return object(artifacts) && ['rawIds', 'jobIds', 'draftIds'].every(key => Array.isArray(artifacts[key]) && artifacts[key].every(string))
+    && (artifacts.lintSnapshotId === undefined || (string(artifacts.lintSnapshotId) && runIdPattern.test(artifacts.lintSnapshotId)))
+    && (artifacts.inspectionIds === undefined || (Array.isArray(artifacts.inspectionIds)
+      && artifacts.inspectionIds.every(id => string(id) && runIdPattern.test(id))));
 }
 
 export class AutomationLedger {

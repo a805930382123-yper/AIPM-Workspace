@@ -11,11 +11,12 @@ import { validateHumanReview } from './llm-validation.ts';
 
 export function registerKnowledgeRoutes(app: express.Express, deps: {
   root: string; raws: RawStore; drafts: DraftStore; wiki: WikiStore; provider: () => LlmProvider | undefined;
+  inspections?: KnowledgeInspectionService;
 }) {
   const workflows = new KnowledgeWorkflowStore(deps.root, deps.wiki, deps.raws);
   const answers=new KnowledgeAnswerService({root:deps.root,raws:deps.raws,wiki:deps.wiki,drafts:deps.drafts,provider:deps.provider});
-  const inspections=new KnowledgeInspectionService({root:deps.root,wiki:deps.wiki,raws:deps.raws,drafts:deps.drafts,provider:deps.provider});
-  const ready=Promise.all([workflows.initialize(),answers.initialize(),inspections.initialize()]);
+  const inspections=deps.inspections??new KnowledgeInspectionService({root:deps.root,wiki:deps.wiki,raws:deps.raws,drafts:deps.drafts,provider:deps.provider});
+  const ready=Promise.all([workflows.initialize(),answers.initialize(),deps.inspections?undefined:inspections.initialize()]);
   app.post('/api/knowledge/inspections',async(req,res,next)=>{try{await ready;res.status(202).json(await inspections.start(req.body));}catch(e){next(e);}});
   app.get('/api/knowledge/inspections/current',async(_req,res,next)=>{try{await ready;res.json(await inspections.current());}catch(e){next(e);}});
   app.get('/api/knowledge/inspections/:id',async(req,res,next)=>{try{await ready;const r=await inspections.read(String(req.params.id));if(!r)throw new WikiError('INSPECTION_MISSING','检查不存在。',404);res.json(r);}catch(e){next(e);}});

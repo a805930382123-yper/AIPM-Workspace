@@ -6,7 +6,7 @@ import { api, extractionJob, rawProcessing } from './api';
 import { HomePage } from './pages/HomePage';
 import { NewsPage } from './pages/NewsPage';
 import { RawPage } from './pages/RawPage';
-import { WikiPage } from './pages/WikiPage';
+import { WikiPage, type WikiCheckEntry } from './pages/WikiPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { DraftReviewPage } from './pages/DraftReviewPage';
 import { KnowledgeWorkflowPage } from './pages/KnowledgeWorkflowPage';
@@ -34,6 +34,7 @@ export function App() {
   const [selectedRawId, setSelectedRawId] = useState<string | null>(null);
   const [pendingAudit, setPendingAudit] = useState<{wikiId:string;auditId:string;revision:number;wikiRevision:number}|null>(null);
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null);
+  const [wikiCheckEntry, setWikiCheckEntry] = useState<WikiCheckEntry | null>(null);
   const [openImport, setOpenImport] = useState(false);
   const [quickCaptureOpen, setQuickCaptureOpen] = useState(false);
   const [meetingCreate, setMeetingCreate] = useState(false);
@@ -147,12 +148,20 @@ export function App() {
     setWorkItemId(null);
     pageGeneration.current += 1;
     setPendingAudit(null);
+    setWikiCheckEntry(null);
     setPage(destination); setOpenImport(false); setMeetingCreate(false); setReviewDraftId(null); setWorkflowId(null);
     rawSelectionGeneration.current += 1;
     explicitRawTarget.current = destination === 'raw' && preferredRawId !== undefined ? preferredRawId : null;
     if (explicitRawTarget.current !== null) commitRawSelection(explicitRawTarget.current);
     if (destination === 'home' || destination === 'raw' || destination === 'work') void refresh(preferredRawId, preferredRawId !== undefined);
   };
+  const openWikiCheck = (entry: WikiCheckEntry) => {
+    nav('wiki');
+    setPendingWikiId(null);
+    setWikiCheckEntry(entry);
+  };
+  const openWikiLint = () => openWikiCheck({ view: 'lint' });
+  const openWikiInspection = (inspectionId?: string) => openWikiCheck({ view: 'active-check', inspectionId });
   const handleJobStarted = (started: ExtractionJob, requestedPageGeneration = pageGeneration.current, requestedSelectionGeneration?: number) => {
     setJobPollGeneration(value => value + 1);
     setJob(started); setActiveJobId(started.jobId);
@@ -205,12 +214,12 @@ export function App() {
       {workflowId ? <KnowledgeWorkflowPage workflowId={workflowId} onBack={() => setWorkflowId(null)} onDone={async () => { setWorkflowId(null); await refresh(); }} /> : reviewDraftId
         ? <DraftReviewPage key={reviewDraftId} draftId={reviewDraftId} backLabel={draftBackLabel} onBack={() => setReviewDraftId(null)} onCommitted={refresh} onOpenWorkflow={setWorkflowId} onOpenWiki={id=>{setPendingWikiId(id);nav('wiki');}} onOpenRaw={(id,target) => { setReviewDraftId(null); nav('raw', id);setRawCitation(target??null); }} />
         : <>
-          {page === 'home' && <HomePage onQuickCapture={() => setQuickCaptureOpen(true)} onOpenAutomation={() => nav('automation')} onOpenPipeline={filter => { nav('automation'); setPipelineEntry(filter); }} onOpenNews={() => nav('news')} actionsRevision={homeActionsRevision} workItemsRevision={workItemsRevision} onOpenWorkItem={id => { nav('work'); setWorkItemId(id); }} onOpenAction={openHomeAction} onCreateMeeting={() => { nav('meeting'); setMeetingCreate(true); }} stats={stats} items={raws} onOpenRaw={id => nav('raw', id)} onOpenWiki={id => { setPendingWikiId(id ?? null); nav('wiki'); }} onOpenPrompt={() => nav('prompt')} onImport={() => { nav('raw'); setOpenImport(true); }} onCreateWiki={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:new')), 0); }} onCreatePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:new')), 0); }} onGeneratePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:generator')), 0); }} onLint={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:lint')), 0); }} onOpenWorkflow={setWorkflowId} onGenerateFromRaw={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:generate')), 0); }} />}
-          {page === 'automation' && <AutomationPage candidateFilter={pipelineEntry} onOpenRaw={id => nav('raw', id)} onOpenDraft={id => setReviewDraftId(id)} />}
+          {page === 'home' && <HomePage onQuickCapture={() => setQuickCaptureOpen(true)} onOpenAutomation={() => nav('automation')} onOpenPipeline={filter => { nav('automation'); setPipelineEntry(filter); }} onOpenNews={() => nav('news')} actionsRevision={homeActionsRevision} workItemsRevision={workItemsRevision} onOpenWorkItem={id => { nav('work'); setWorkItemId(id); }} onOpenAction={openHomeAction} onCreateMeeting={() => { nav('meeting'); setMeetingCreate(true); }} stats={stats} items={raws} onOpenRaw={id => nav('raw', id)} onOpenWiki={id => { setPendingWikiId(id ?? null); nav('wiki'); }} onOpenPrompt={() => nav('prompt')} onImport={() => { nav('raw'); setOpenImport(true); }} onCreateWiki={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:new')), 0); }} onCreatePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:new')), 0); }} onGeneratePrompt={() => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:generator')), 0); }} onLint={openWikiLint} onOpenInspection={openWikiInspection} onOpenWorkflow={setWorkflowId} onGenerateFromRaw={() => { nav('wiki'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('wiki:generate')), 0); }} />}
+          {page === 'automation' && <AutomationPage candidateFilter={pipelineEntry} onOpenRaw={id => nav('raw', id)} onOpenDraft={id => setReviewDraftId(id)} onOpenLint={openWikiLint} onOpenInspection={openWikiInspection} />}
           {page === 'news' && <NewsPage onBack={() => nav('home')} onRawChanged={refresh} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} />}
           {page === 'work' && <WorkItemsPage key={pageGeneration.current} initialId={workItemId} raws={raws} onOpenRaw={id => { nav('raw', id); setRawOriginal(true); }} onChanged={() => setWorkItemsRevision(value => value + 1)} />}
           {page === 'raw' && <RawPage initialOriginal={rawOriginal} initialCitation={rawCitation} items={raws} selectedId={selectedRawId} onSelected={id=>{setRawCitation(null);setRawOriginal(false);selectRaw(id);}} onOpenImport={() => setOpenImport(true)} onCommitted={onRawCaptured} onBodySaved={raw => { setRaws(previous => previous.map(item => item.id === raw.id ? raw : item)); void refresh(); }} openImport={openImport} onCloseImport={() => setOpenImport(false)} onDeleted={async id => { setRaws(previous => previous.filter(item => item.id !== id)); if (selectedRawId === id) selectRaw(null); await refresh(); }} processing={processingById} job={job} onJobStarted={handleJobStarted} navigationGeneration={pageGeneration.current} selectionGeneration={rawSelectionGeneration.current} onOpenDraft={setReviewDraftId} onOpenWorkflow={setWorkflowId} onRefresh={refresh} />}
-          {page === 'wiki' && <WikiPage onInitialAuditHandled={()=>setPendingAudit(null)} initialAudit={pendingAudit} onOpenRaw={(id,target)=>{nav('raw',id);setRawCitation(target??null);}} onChanged={refresh} initialOpenId={pendingWikiId} onInitialOpenHandled={clearPendingWikiId} processing={processingById} onJobStarted={handleJobStarted} navigationGeneration={pageGeneration.current} onOpenDraft={setReviewDraftId} onOpenWorkflow={setWorkflowId} onImport={() => { nav('raw'); setOpenImport(true); }} />}
+          {page === 'wiki' && <WikiPage onInitialAuditHandled={()=>setPendingAudit(null)} initialAudit={pendingAudit} initialCheck={wikiCheckEntry} onOpenRaw={(id,target)=>{nav('raw',id);setRawCitation(target??null);}} onChanged={refresh} initialOpenId={pendingWikiId} onInitialOpenHandled={clearPendingWikiId} processing={processingById} onJobStarted={handleJobStarted} navigationGeneration={pageGeneration.current} onOpenDraft={setReviewDraftId} onOpenWorkflow={setWorkflowId} onImport={() => { nav('raw'); setOpenImport(true); }} />}
           {page === 'prompt' && <PromptLibraryPage onChanged={refresh} onOpenWiki={() => nav('wiki')} />}
           {page === 'meeting' && <MeetingPage initialCreate={meetingCreate} onRawChanged={refresh} onOpenRaw={id => nav('raw', id)} />}
           {page === 'settings' && <SettingsPage onImported={refresh} onOpenExampleTask={task => { nav('prompt'); window.setTimeout(() => window.dispatchEvent(new CustomEvent('prompt:generator', { detail: { task } })), 0); }} />}

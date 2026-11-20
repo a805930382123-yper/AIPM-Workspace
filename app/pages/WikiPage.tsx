@@ -20,6 +20,7 @@ const wikiViews = [
   { key: 'lint', label: '结构检查（Lint）' },
 ] as const;
 type WikiSubView = typeof wikiViews[number]['key'];
+export type WikiCheckEntry = { view: 'lint' } | { view: 'active-check'; inspectionId?: string };
 const csv = (value: string) => value.split(/[，,]/).map(item => item.trim()).filter(Boolean);
 function templateBody(schema: WikiSchema | null, type: WikiType) {
   return (schema?.pageTemplates[type]?.sections ?? []).map(section => {
@@ -31,10 +32,12 @@ function hasSectionContent(body: string) {
   return body.split(/\r?\n/).some(line => line.trim() && !/^#{1,6}\s/.test(line.trim()) && !/^<!--.*-->$/.test(line.trim()));
 }
 
-export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, onInitialAuditHandled, onInitialOpenHandled, processing = {}, onJobStarted, navigationGeneration = 0, onOpenDraft, onOpenWorkflow, onImport }: { onOpenRaw: (id: string,target?:RawCitationTarget) => void; onChanged: () => void; initialOpenId?: string | null; initialAudit?: {wikiId:string;auditId:string;revision:number;wikiRevision:number}|null; onInitialAuditHandled?:()=>void; onInitialOpenHandled?: () => void; processing?: Record<string, RawProcessingState>; onJobStarted?: (job: ExtractionJob, pageGeneration?: number) => void; navigationGeneration?: number; onOpenDraft?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onImport?: () => void }) {
-  const [activeSubView, setActiveSubView] = useState<WikiSubView>('overview');
+export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, initialCheck, onInitialAuditHandled, onInitialOpenHandled, processing = {}, onJobStarted, navigationGeneration = 0, onOpenDraft, onOpenWorkflow, onImport }: { onOpenRaw: (id: string,target?:RawCitationTarget) => void; onChanged: () => void; initialOpenId?: string | null; initialAudit?: {wikiId:string;auditId:string;revision:number;wikiRevision:number}|null; initialCheck?: WikiCheckEntry | null; onInitialAuditHandled?:()=>void; onInitialOpenHandled?: () => void; processing?: Record<string, RawProcessingState>; onJobStarted?: (job: ExtractionJob, pageGeneration?: number) => void; navigationGeneration?: number; onOpenDraft?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onImport?: () => void }) {
+  const [activeSubView, setActiveSubView] = useState<WikiSubView>(initialCheck?.view ?? 'overview');
   const [hasOpenedAsk, setHasOpenedAsk] = useState(false);
-  const [hasOpenedInspection, setHasOpenedInspection] = useState(false);
+  const [hasOpenedInspection, setHasOpenedInspection] = useState(initialCheck?.view === 'active-check');
+  const [initialInspectionId] = useState(initialCheck?.view === 'active-check' ? initialCheck.inspectionId : undefined);
+  const initialCheckTab = useRef<HTMLButtonElement>(null);
   const [inspectionCitation, setInspectionCitation] = useState<AnswerCitation | null>(null);
   const [detailTarget, setDetailTarget] = useState<{ id: string; edit?: boolean } | null>(null);
   const [detailReload, setDetailReload] = useState(0);
@@ -140,6 +143,11 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
     catch (e) { setLintError(e instanceof Error ? e.message : 'Lint 运行失败。'); }
     finally { setLintBusy(false); }
   }, []);
+  useEffect(() => {
+    if (!initialCheck) return;
+    initialCheckTab.current?.focus();
+    if (initialCheck.view === 'lint') void runLint();
+  }, [initialCheck, runLint]);
 
   useEffect(() => {
     const lint = () => { setActiveSubView('lint'); void runLint(); };
@@ -294,6 +302,7 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
             event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
           }}>
           {wikiViews.map(({ key, label }) => <button type="button" role="tab" key={key} id={`wiki-tab-${key}`}
+            ref={initialCheck?.view === key ? initialCheckTab : undefined}
             aria-selected={activeSubView === key} aria-controls={`wiki-view-${key}`}
             tabIndex={activeSubView === key ? 0 : -1} onClick={() => switchSubView(key)}>{label}</button>)}
         </div>
@@ -306,7 +315,7 @@ export function WikiPage({ onOpenRaw, onChanged, initialOpenId, initialAudit, on
       {hasOpenedAsk && <WikiQuestionPanel onOpenWiki={openWiki} onOpenRaw={onOpenRaw} onOpenDraft={id => onOpenDraft?.(id)} />}
     </div>
     <div role="tabpanel" id="wiki-view-active-check" aria-labelledby="wiki-tab-active-check" hidden={activeSubView !== 'active-check'}>
-      {hasOpenedInspection && <WikiInspectionPanel items={items} currentWikiId={selectedId} onOpenWiki={openWiki} onOpenRaw={onOpenRaw} onOpenDraft={id => onOpenDraft?.(id)} />}
+      {hasOpenedInspection && <WikiInspectionPanel items={items} currentWikiId={selectedId} initialInspectionId={initialInspectionId} onOpenWiki={openWiki} onOpenRaw={onOpenRaw} onOpenDraft={id => onOpenDraft?.(id)} />}
     </div>
     <div role="tabpanel" id="wiki-view-lint" aria-labelledby="wiki-tab-lint" hidden={activeSubView !== 'lint'}>
       <WikiLintPanel result={lintResult} busy={lintBusy} error={lintError} editingDisabled={busy} onRun={() => void runLint()} onEdit={openLintEditor} />

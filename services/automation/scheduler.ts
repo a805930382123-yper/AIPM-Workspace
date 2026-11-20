@@ -68,7 +68,7 @@ export class AutomationScheduler {
   private timer: ReturnType<typeof setInterval> | undefined;
   private stopping = false;
 
-  constructor(private readonly options: { root: string; instance: AutomationInstance; tasks: readonly TaskDefinition[]; authorizedTypes?: readonly string[]; clock?: () => number; withProvider?: ProviderScope }) {
+  constructor(private readonly options: { root: string; instance: AutomationInstance; tasks: readonly TaskDefinition[]; authorizedTypes?: readonly string[]; clock?: () => number; withProvider?: ProviderScope; pruneArtifacts?: (now: number) => Promise<void> }) {
     this.file = path.join(options.root, 'state', 'automation', 'schedules.json');
     this.ledger = new AutomationLedger(options.root);
     this.clock = options.clock ?? Date.now;
@@ -125,6 +125,7 @@ export class AutomationScheduler {
         await this.consumeDue(now, startup);
         if (now >= this.pruneAt) {
           await this.ledger.prune(now);
+          await this.options.pruneArtifacts?.(now);
           this.pruneAt = now + DAY;
         }
         this.scheduler = { healthy: true, lastTickAt: iso(now) };
@@ -347,6 +348,19 @@ export class AutomationScheduler {
     const issues = this.ledger.listIssues();
     return { items, ...(issues.length ? { issues } : {}) };
   }
+
+  async *successfulRuns(type: string) {
+    const indexed = [...this.ledger.values()].filter(run => run.type === type && run.status === 'succeeded').sort(newestRunFirst);
+    for (const item of indexed) {
+      const run = await this.ledger.get(item.id).catch(error => {
+        if (error instanceof StorageError && error.code === 'AUTOMATION_RUN_CORRUPT') return undefined;
+        throw error;
+      });
+      if (run?.type === type && run.status === 'succeeded') yield run;
+    }
+  }
+
+  runIssues() { return this.ledger.listIssues(); }
 
   async getRun(id: string) {
     const run = await this.ledger.get(id);

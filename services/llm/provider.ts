@@ -187,6 +187,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       }
       userContent = [{ type: 'text', text: request.user }, { type: 'image_url', image_url: { url: `data:image/png;base64,${request.image.toString('base64')}` } }];
     }
+    if (request.signal?.aborted) throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
     const controller = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => { timedOut = true; controller.abort(); }, request.timeoutMs);

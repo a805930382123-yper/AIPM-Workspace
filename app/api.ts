@@ -147,6 +147,10 @@ export type {
 import type {
   AutomationList, AutomationRun, AutomationRunStatus, AutomationSchedule, AutomationSchedulePatch, AutomationStatus,
 } from '../services/automation/types';
+import type { KnowledgeHealth } from '../services/automation/wiki-health';
+import type { WikiLintSnapshot } from '../services/automation/tasks/wiki-lint';
+export type { KnowledgeHealth } from '../services/automation/wiki-health';
+export type { WikiLintSnapshot } from '../services/automation/tasks/wiki-lint';
 
 const automationUrl = '/api/automation';
 const automationRunUrl = (id: string) => `${automationUrl}/runs/${encodeURIComponent(id)}`;
@@ -155,6 +159,9 @@ const automationWrite = (method: 'POST' | 'PATCH', token: string, input: object)
 });
 export const automationStatus = (signal?: AbortSignal) => api<AutomationStatus>(`${automationUrl}/status`, { signal });
 export const automationSchedules = (signal?: AbortSignal) => api<AutomationList<AutomationSchedule>>(`${automationUrl}/schedules`, { signal });
+export const automationKnowledgeHealth = (signal?: AbortSignal) => api<KnowledgeHealth>(`${automationUrl}/knowledge-health`, { signal });
+export const automationLintSnapshot = (id: string, signal?: AbortSignal) =>
+  api<WikiLintSnapshot>(`${automationUrl}/wiki-lint/${encodeURIComponent(id)}`, { signal });
 export const editAutomationSchedule = (type: string, input: AutomationSchedulePatch, token: string) =>
   api<AutomationSchedule>(`${automationUrl}/schedules/${encodeURIComponent(type)}`, automationWrite('PATCH', token, input));
 export const changeAutomationPause = (paused: boolean, token: string) =>
@@ -306,7 +313,7 @@ export type KnowledgeInspection={sourceComparisonCount?:number;id:string;revisio
 const inspectionPath=(id:string)=>'/api/knowledge/inspections/'+encodeURIComponent(id);
 export const startInspection=(input:{requestId:string;wikiIds:string[];includeRelated:boolean;retry?:boolean})=>api<KnowledgeInspection>('/api/knowledge/inspections',{method:'POST',body:JSON.stringify(input)});
 export const currentInspection=()=>api<KnowledgeInspection|null>('/api/knowledge/inspections/current');
-export const getInspection=(id:string)=>api<KnowledgeInspection>(inspectionPath(id));
+export const getInspection=(id:string,signal?:AbortSignal)=>api<KnowledgeInspection>(inspectionPath(id),{signal});
 export const inspectionEvidence=(id:string,findingId:string,evidenceId:string)=>api<AnswerCitation>(inspectionPath(id)+'/findings/'+encodeURIComponent(findingId)+'/evidence/'+encodeURIComponent(evidenceId));
 export const decideInspection=(id:string,findingId:string,input:{baseRevision:number;status:'viewed'|'deferred';reason:string})=>api<KnowledgeInspection>(inspectionPath(id)+'/findings/'+encodeURIComponent(findingId)+'/decision',{method:'POST',body:JSON.stringify(input)});
 export const draftInspection=(id:string,input:{baseRevision:number;selectedFindingIds:string[];key:string})=>api<{status:string;draftId?:string;reason?:string;inspection:KnowledgeInspection}>(inspectionPath(id)+'/draft',{method:'POST',body:JSON.stringify(input)});

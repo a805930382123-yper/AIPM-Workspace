@@ -18,6 +18,16 @@
 
 每条 `pipeline.organize` 独立记录候选、Raw、整理任务、草稿及执行步骤。来源 HTTP 计数与 Provider 请求/Token 分开。发送前先记录请求及未知用量，收到响应后更新 Token，符合原 RUN01 账本兼容规则。实时列表及首页数字投影使用持久候选、来源收据、整理作业和草稿。阶段及契约见 [PIPE01 任务卡](handoffs/PIPE01-20261114-task.md)。
 
+## KBMAINT01 知识库定时巡检
+
+RUN01 增加到点严格向未来推进的上海时区周计划，周一为 1，周日为 7。周计划补跑窗口为 7 天，沿用最新一次补跑、暂停及防重复执行机制。初次升级从已有 `schedules.json` 补注册 `wiki.lint` 和 `wiki.inspect`，保留已有任务配置和 revision。
+
+`wiki.lint` 默认每天 08:00，直接复用 LINT01 的结构检查。快照和差异原子写入 `state/automation/wiki-lint/<runId>.json`，首次结果记为基线。差异对比最近一次成功且可读的快照，保留逐条位置和指纹。随账本维护保留近 90 天的快照及最新 200 份快照的并集。损坏文件保留并作为读取问题报告。运行历史以 `lintSnapshotId` 指向快照，现有备份包含该目录。
+
+`wiki.inspect` 默认每周一 08:30。主题页逐页通过来源门禁后，按派生依据版本变化、上次主动检查后更新、更新时间和 ID 排序。所选页和相关扩展共用 8 页、48,000 JSON 字符的完整页数组上限。排除原因记在本地检查范围和运行步骤。合格主题缺失时以 0 次模型请求结束。正常检查经既有 Provider 计量，复用主动检查的严格结构、证据校验和去重。取消信号传至 Provider，检查记录以原子写入保留。只有已完成或部分完成的检查链接到成功运行的 `inspectionIds`。巡检产生结构快照或检查记录，正式页和草稿由现有人工流程操作。
+
+自动化的两个只读入口 `/api/automation/knowledge-health` 与 `/api/automation/wiki-lint/:snapshotId` 分别用于了解最近成功巡检和查看结构快照的详细差异。主动巡检摘要读取检查记录的当前待核状态。任务卡见 [KBMAINT01](handoffs/KBMAINT01-20261120-task.md)。
+
 ## RAWEDIT02 人工正文修订边界（2026-11-14，独立验收通过）
 
 用户明确授权从 Raw 详情人工编辑正文，取代下文历史“Raw 不可变”对人工操作的限制；AI 仍不得改写 Raw。见 [RAWEDIT02 任务卡](handoffs/RAWEDIT02-20261114-task.md)及[独立验收](reports/RAWEDIT02-20261114-review.md)。稳定 Raw ID 和来源身份保持，PATCH正文校验预期SHA及bodyRevision（旧记录0），先将修改前完整Markdown原字节写入 knowledge/raw/history/<id>/<revision>.md，再原子替换正文；原件字节不修改。编辑与启动/确认复用Wiki锁，进行中处理及未完成确认阻止编辑。旧普通派生依据按正文SHA失效，已有正式Wiki不自动改写。PDF人工改的是提取文字，bodyRevision非零时旧页链与按页草稿不再用于当前正文，原PDF仍可打开；不能把改后文字冒充原PDF页内容。带Meeting来源身份的Raw仍保持桥接原件一致性，不开放直接正文修订；普通meeting分类不受此限制。

@@ -56,6 +56,11 @@ import { AutomationScheduler } from '../services/automation/scheduler.ts';
 import { createSelfcheck } from '../services/automation/selfcheck.ts';
 import { NewsPipeline, organizeType } from '../services/automation/pipeline/service.ts';
 import { createDailyNews } from '../services/automation/tasks/news-daily.ts';
+import { createWikiLint, wikiLintType, WikiLintSnapshots } from '../services/automation/tasks/wiki-lint.ts';
+import { createWikiInspect } from '../services/automation/tasks/wiki-inspect.ts';
+import { WikiHealth } from '../services/automation/wiki-health.ts';
+import { KnowledgeInspectionService } from '../services/llm/knowledge-inspections.ts';
+import { WikiLint } from '../services/audit/lint.ts';
 import { registerAutomationRoutes } from './automation-api.ts';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -190,21 +195,28 @@ const pipeline: NewsPipeline = new NewsPipeline({
     return providerContext.run({ provider: snapshot }, work);
   },
 });
-const automation = new AutomationScheduler({
+const knowledgeInspections = new KnowledgeInspectionService({ root, wiki: wikiStore, raws: store, drafts, provider: activeProvider });
+const lintSnapshots = new WikiLintSnapshots(root);
+const wikiHealth = new WikiHealth(root, lintSnapshots, knowledgeInspections);
+const automation: AutomationScheduler = new AutomationScheduler({
   root, instance: lock.instance,
   authorizedTypes: [organizeType],
   tasks: [createSelfcheck({
     root, lockIsCurrent: lock.isCurrent, scanRecovery: () => recovery.scan(),
     isProviderConfigured: async () => (await configManager.get()).configured,
-  }), createDailyNews(news, pipeline)],
+  }), createDailyNews(news, pipeline),
+  createWikiLint(new WikiLint(root, store, audits), lintSnapshots, () => automation.successfulRuns(wikiLintType)),
+  createWikiInspect(wikiStore, store, knowledgeInspections)],
+  pruneArtifacts: now => lintSnapshots.prune(now),
   withProvider: async execute => {
     const snapshot = await providerFactory().catch(() => undefined);
     await providerContext.run({ provider: snapshot }, () => execute(activeProvider));
   },
 });
 await pipeline.initialize();
+await knowledgeInspections.initialize();
 await automation.initialize();
-registerAutomationRoutes(app, automation, pipeline);
+registerAutomationRoutes(app, automation, pipeline, wikiHealth);
 app.use(express.json({ limit: '3mb', strict: true }));
 // Resolve a provider only for routes that actually start AI work. A broken optional config file
 // must not prevent the manual workspace or unrelated read APIs from starting/responding.
@@ -381,7 +393,7 @@ registerB04Routes(app, {
   root, rulesDir, provider: activeProvider, llm, runner, jobs, drafts, commits, rawStates, rawStore: store, wikiStore,
 });
 registerLlmConfigRoutes(app, configManager, providerFactory);
-registerKnowledgeRoutes(app, { root, raws: store, drafts, wiki: wikiStore, provider: activeProvider });
+registerKnowledgeRoutes(app, { root, raws: store, drafts, wiki: wikiStore, provider: activeProvider, inspections: knowledgeInspections });
 registerAuditRoutes(app, { root, audits, wiki: wikiStore, raws: store, provider: activeProvider });
 registerPromptRoutes(app, { store: prompts });
 registerPromptAiRoutes(app, promptAi);

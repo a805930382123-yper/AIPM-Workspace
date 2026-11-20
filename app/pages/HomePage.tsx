@@ -5,14 +5,14 @@ import type { Wiki, WorkItemSummary } from '../api';
 import { workKindLabel, workStatusLabel } from './WorkItemsPage';
 import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
-import type { AutomationStatus, CandidateFilter, CandidateList, Raw, Stats } from '../api';
-import { api, automationCandidates, automationStatus, automationTime, dateText, sourceLabels, workItems } from '../api';
+import type { AutomationStatus, CandidateFilter, CandidateList, KnowledgeHealth, Raw, Stats } from '../api';
+import { api, automationCandidates, automationKnowledgeHealth, automationStatus, automationTime, dateText, sourceLabels, workItems } from '../api';
 import '../home.css';
 
 const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
 const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
 
-export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
+export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onOpenInspection, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenInspection?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [deferred, setDeferred] = useState(false);
@@ -23,6 +23,7 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
   const [dueReload, setDueReload] = useState(0);
   const [automation, setAutomation] = useState<AutomationStatus | null>(null);
   const [automationError, setAutomationError] = useState(false);
+  const [knowledgeHealth, setKnowledgeHealth] = useState<KnowledgeHealth | null>(null);
   const [pipeline, setPipeline] = useState<CandidateList>();
   const [pipelineError, setPipelineError] = useState(false);
   const [pipelineReview, setPipelineReview] = useState(false);
@@ -51,6 +52,9 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
     void automationStatus(controller.signal)
       .then(value => { if (!controller.signal.aborted) setAutomation(value); })
       .catch(() => { if (!controller.signal.aborted) setAutomationError(true); });
+    void automationKnowledgeHealth(controller.signal)
+      .then(value => { if (!controller.signal.aborted) setKnowledgeHealth(value); })
+      .catch(() => { if (!controller.signal.aborted) setKnowledgeHealth(null); });
     return () => controller.abort();
   }, [showAutomation]);
   const showDue = Boolean(onOpenWorkItem);
@@ -75,6 +79,9 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
   const currentActions = actions?.items.filter(item => item.status !== 'deferred' && (pipelineReview ? item.kind === 'draft' && todaysDrafts.has(item.id)
     : !reviewFilter || item.kind === 'draft' || item.kind === 'workflow')) ?? [];
   const deferredActions = actions?.items.filter(item => item.status === 'deferred' && (!pipelineReview || todaysDrafts.has(item.id))) ?? [];
+  const lintAdded = knowledgeHealth?.lint?.addedCount ?? 0;
+  const activeInspection = knowledgeHealth?.inspection;
+  const inspectionToReview = onOpenInspection && activeInspection && activeInspection.pendingCount > 0 ? activeInspection : null;
   const renderAction = (item: HomeAction) => {
     const label = item.status ? actionStatuses[item.status] : item.kind === 'draft' ? '待审核' : item.kind === 'audit' ? '待纠错' : '待处理';
     const badge = item.priority === 0 ? 'action-warning' : item.kind === 'draft' && item.status !== 'deferred' ? 'action-review' : 'action-neutral';
@@ -127,6 +134,11 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
           <p><span className="home-a-dot" aria-hidden="true">● </span>{automation.scheduler.healthy ? '调度器正常' : '调度器异常'} · {automation.paused ? '全局暂停' : '任务可触发'} · 24h 失败 {automation.failuresLast24Hours} 次</p>
           <small>下次运行：{automationTime(automation.nextRunAt)}（上海）</small>
         </> : <p role="status">正在读取自动化状态…</p>}
+        {(lintAdded > 0 || inspectionToReview) && <div className="home-knowledge-hint">
+          {lintAdded > 0 && <button className="text-button" onClick={onLint}>结构检查新增 {lintAdded} 项问题</button>}
+          {inspectionToReview &&
+            <button className="text-button" onClick={() => onOpenInspection?.(inspectionToReview.inspectionId)}>主动检查有 {inspectionToReview.pendingCount} 项待核发现</button>}
+        </div>}
       </section>}
     </div>}
     <div className="home-workspace">

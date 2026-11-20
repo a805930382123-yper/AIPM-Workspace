@@ -6,6 +6,7 @@ import { automationRunStatuses, type AutomationSchedulePatch } from '../services
 import { StorageError } from '../services/storage/files.ts';
 import { isConcurrency, isRevision, isTopics, type NewsPipeline } from '../services/automation/pipeline/service.ts';
 import { isNewsMode } from '../services/automation/pipeline/screen.ts';
+import type { WikiHealth } from '../services/automation/wiki-health.ts';
 
 const badInput = (message: string) => new StorageError('AUTOMATION_INVALID_INPUT', message, 400);
 
@@ -36,7 +37,7 @@ function runId(id: string): string {
   return id;
 }
 
-export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline): void {
+export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline, knowledge?: WikiHealth): void {
   app.use('/api/automation', (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!localOrigin(req)) return next(new StorageError('AUTOMATION_ORIGIN_FORBIDDEN', '仅允许本机可信页面访问自动化。', 403));
@@ -86,6 +87,10 @@ export function registerAutomationRoutes(app: express.Express, scheduler: Automa
     bodyFields(req.body, []);
     res.json(await scheduler.cancel(runId(req.params.id)));
   });
+  if (knowledge) {
+    app.get('/api/automation/knowledge-health', async (_req, res) => { res.json(await knowledge.read(scheduler)); });
+    app.get('/api/automation/wiki-lint/:snapshotId', async (req, res) => { res.json(await knowledge.snapshots.get(runId(req.params.snapshotId))); });
+  }
   if (!pipeline) return;
   app.get('/api/automation/candidates', async (req, res) => {
     const date = req.query.date;
