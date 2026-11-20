@@ -28,6 +28,14 @@ RUN01 增加到点严格向未来推进的上海时区周计划，周一为 1，
 
 自动化的两个只读入口 `/api/automation/knowledge-health` 与 `/api/automation/wiki-lint/:snapshotId` 分别用于了解最近成功巡检和查看结构快照的详细差异。主动巡检摘要读取检查记录的当前待核状态。任务卡见 [KBMAINT01](handoffs/KBMAINT01-20261120-task.md)。
 
+## WORKAUTO01 工作事项提醒
+
+`work.reminders` 默认每 60 分钟扫描未关闭事项，关闭失效提醒，模型调用次数为 0。上海自然日确定到期和逾期天数，同一事项到期时优先于久未推进。产品事项按可选来源与最近一轮完成分析的实际覆盖范围对比，含已明确继承的来源。首轮分析前，已关联且可以分析的 Raw 都属于待分析资料。事项、分析和来源经原有读入校验，逐条报告不可读取的依据并保留无法确认是否消解的提醒。
+
+提醒状态、设置版本和读取问题原子保存在 `state/automation/reminders.json`，由现有备份包含。站内条件键保留已读、延后和消解状态，延后在目标上海日期重新未读，已消解 30 天后清理。桌面投递按事项与类型的自然日去重，待分析提示按合规资料集合指纹去重。先落盘记录投递尝试，再跨进程调用 Windows 通知；中断保留未确认结果，同条件窗口不自动重发。免打扰和桌面通知关闭只影响桌面投递，超过上限的提醒合并为一条汇总。
+
+通知适配器限制输入为事项标题、固定类型和数量，WinRT XML 转义并限制单段文本长度。Windows 实现通过 Windows PowerShell 的已注册应用标识调用 `CreateToastNotifier`，以 5 秒为硬超时，系统失败保留在相应提醒。非 Windows、CI 和测试上下文使用安全返回值；测试可注入假通知器。自动化 API 写操作沿用本机 Origin、JSON 和进程令牌约束，设置修改使用 revision 校验。测试通知使用固定非业务文案。 [任务卡](handoffs/WORKAUTO01-20261120-task.md) · [WinRT 桌面通知接口](https://learn.microsoft.com/en-us/windows/win32/shell/quickstart-sending-desktop-toast)
+
 ## RAWEDIT02 人工正文修订边界（2026-11-14，独立验收通过）
 
 用户明确授权从 Raw 详情人工编辑正文，取代下文历史“Raw 不可变”对人工操作的限制；AI 仍不得改写 Raw。见 [RAWEDIT02 任务卡](handoffs/RAWEDIT02-20261114-task.md)及[独立验收](reports/RAWEDIT02-20261114-review.md)。稳定 Raw ID 和来源身份保持，PATCH正文校验预期SHA及bodyRevision（旧记录0），先将修改前完整Markdown原字节写入 knowledge/raw/history/<id>/<revision>.md，再原子替换正文；原件字节不修改。编辑与启动/确认复用Wiki锁，进行中处理及未完成确认阻止编辑。旧普通派生依据按正文SHA失效，已有正式Wiki不自动改写。PDF人工改的是提取文字，bodyRevision非零时旧页链与按页草稿不再用于当前正文，原PDF仍可打开；不能把改后文字冒充原PDF页内容。带Meeting来源身份的Raw仍保持桥接原件一致性，不开放直接正文修订；普通meeting分类不受此限制。

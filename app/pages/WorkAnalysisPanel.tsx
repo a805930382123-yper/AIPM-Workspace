@@ -179,8 +179,9 @@ function stageDraft(run: WorkAnalysisRun, output: NonNullable<WorkAnalysisRun['o
     .filter(Boolean).join('\n\n');
 }
 
-export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadItem, analysisNotice, saveStage, stageNotice }: {
+export function WorkAnalysisPanel({ item, focusMaterials, rawById, busy, analysisDirty, reloadItem, analysisNotice, saveStage, stageNotice }: {
   item: Extract<WorkItem, { kind: 'product_analysis' }>;
+  focusMaterials?: boolean;
   rawById: ReadonlyMap<string, Raw>;
   busy: boolean;
   analysisDirty: boolean;
@@ -205,6 +206,10 @@ export function WorkAnalysisPanel({ item, rawById, busy, analysisDirty, reloadIt
   const stageEditor = useRef<HTMLTextAreaElement>(null);
   const previewHeading = useRef<HTMLHeadingElement>(null);
   const materialsHeading = useRef<HTMLLegendElement>(null);
+
+  useEffect(() => {
+    if (focusMaterials) materialsHeading.current?.focus();
+  }, [focusMaterials]);
 
   useEffect(() => {
     let active = true;

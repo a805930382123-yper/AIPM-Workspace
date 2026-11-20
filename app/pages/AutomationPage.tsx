@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import type {
   AutomationList, AutomationPlan, AutomationRun, AutomationRunStatus, AutomationSchedule, AutomationStatus,
-  CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, KnowledgeHealth, KnowledgeInspection, PipelineSettings, WikiLintSnapshot,
+  CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, KnowledgeHealth, KnowledgeInspection, PipelineSettings,
+  ReminderSettings, ReminderView, WikiLintSnapshot, WorkReminder,
 } from '../api';
 import {
-  ApiError, automationKnowledgeHealth, automationLintSnapshot, automationRun, automationRuns, automationSchedules, automationStatus, automationTime, getInspection,
+  ApiError, acknowledgeReminder, automationKnowledgeHealth, automationLintSnapshot, automationReminders, automationRun, automationRuns, automationSchedules, automationStatus, automationTime, getInspection,
   cancelAutomationRun, changeAutomationPause, editAutomationSchedule, runAutomationTask,
   automationCandidates, changeCandidateDisposition, confirmCandidates, readPipelineSettings, retryCandidate, savePipelineSettings,
+  snoozeReminder, testReminderNotification, updateReminderSettings,
 } from '../api';
 import { useDialogFocus } from '../components/useDialogFocus';
 import '../automation.css';
@@ -50,11 +52,13 @@ function createEditor(schedule: AutomationSchedule) {
   };
 }
 
-export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspection, candidateFilter }: {
+export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspection, onOpenWorkItem, focusReminders, candidateFilter }: {
   onOpenRaw: (id: string) => void;
   onOpenDraft: (id: string) => void;
   onOpenLint?: () => void;
   onOpenInspection?: (id?: string) => void;
+  onOpenWorkItem?: (id: string, focusMaterials?: boolean) => void;
+  focusReminders?: boolean;
   candidateFilter?: CandidateFilter;
 }) {
   const [status, setStatus] = useState<AutomationStatus | null>(null);
@@ -236,6 +240,9 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspe
       {health?.issues.map(issue => <p key={issue.file} className="form-error" role="alert">{issueLabels[issue.reason]} · {issue.file}</p>)}
     </section>}
 
+    {onOpenWorkItem && <WorkRemindersPanel token={status?.writeToken} refresh={refresh}
+      focusOnEntry={focusReminders} onOpenWorkItem={onOpenWorkItem} />}
+
     {hasPipeline && <NewsInbox initialFilter={candidateFilter} token={status?.writeToken} paused={status?.paused}
       refresh={refresh} onOpenRaw={onOpenRaw} onOpenDraft={onOpenDraft} onOpenRun={(id, trigger) => chooseRun(id, null, trigger)} />}
 
@@ -373,6 +380,158 @@ export function AutomationPage({ onOpenRaw, onOpenDraft, onOpenLint, onOpenInspe
       </>}
     </section>}
   </div>;
+}
+
+const reminderKinds: Record<WorkReminder['kind'], string> = {
+  due_follow_up: '到期跟进', stale_item: '久未推进', new_raw_ready: '新资料待分析',
+};
+const reminderStatuses: Record<WorkReminder['status'], string> = {
+  unread: '未读', acknowledged: '已读', snoozed: '已延后', resolved: '已消解',
+};
+const reminderDeliveryLabels: Record<WorkReminder['deliveryStatus'], string> = {
+  pending: '待投递', delivered: '已投递', suppressed_quiet_hours: '免打扰期间',
+  suppressed_disabled: '已关闭', suppressed_non_windows: '当前环境不支持', failed: '投递失败',
+};
+type ReminderEditor = Omit<ReminderSettings, 'staleDays' | 'maxToastsPerRun'> & {
+  revision: number; staleDays: string; maxToastsPerRun: string;
+};
+
+function WorkRemindersPanel({ token, refresh, focusOnEntry, onOpenWorkItem }: {
+  token?: string;
+  refresh: number;
+  focusOnEntry?: boolean;
+  onOpenWorkItem: (id: string, focusMaterials?: boolean) => void;
+}) {
+  const [view, setView] = useState<ReminderView | null>(null);
+  const [readError, setReadError] = useState('');
+  const [editor, setEditor] = useState<ReminderEditor | null>(null);
+  const [pending, setPending] = useState(false);
+  const [change, setChange] = useState(0);
+  const [feedback, setFeedback] = useState<{ area: string; text: string; error?: boolean } | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (focusOnEntry) heading.current?.focus();
+  }, [focusOnEntry]);
+  useEffect(() => poll(async signal => {
+    try {
+      const result = await automationReminders(signal);
+      if (!signal.aborted) {
+        setView(result);
+        setReadError('');
+      }
+    } catch (error) {
+      if (!signal.aborted) setReadError(describeError(error));
+    }
+  }), [refresh, change]);
+
+  const write = async (area: string, operation: (writeToken: string) => Promise<{ text: string; error?: boolean }>) => {
+    if (!token || pending) return;
+    setPending(true);
+    setFeedback(null);
+    try {
+      setFeedback({ area, ...await operation(token) });
+    } catch (error) {
+      const conflict = area === 'settings' && error instanceof ApiError && error.status === 409;
+      setFeedback({ area, error: true, text: conflict ? '设置已更新。请核对最新设置后再保存。' : describeError(error) });
+    } finally {
+      setChange(value => value + 1);
+      setPending(false);
+    }
+  };
+  const edit = (patch: Partial<ReminderEditor>) => {
+    if (!view) return;
+    setEditor(current => ({
+      ...(current ?? { ...view.settings, revision: view.revision, staleDays: String(view.settings.staleDays), maxToastsPerRun: String(view.settings.maxToastsPerRun) }),
+      ...patch,
+    }));
+    setFeedback(null);
+  };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!editor) return;
+    void write('settings', async writeToken => {
+      const next = await updateReminderSettings({ ...editor, staleDays: Number(editor.staleDays), maxToastsPerRun: Number(editor.maxToastsPerRun) }, writeToken);
+      setView(next);
+      setEditor(null);
+      return { text: '提醒设置已保存。' };
+    });
+  };
+  const showFeedback = (area: string) => feedback?.area === area &&
+    <p className={feedback.error ? 'form-error' : undefined} role={feedback.error ? 'alert' : 'status'}>{feedback.text}</p>;
+  const settings = editor ?? view?.settings;
+  const conflict = Boolean(editor && view && editor.revision !== view.revision);
+  const canWrite = Boolean(token && !pending);
+
+  return <section className="panel automation-panel" aria-labelledby="automation-reminders">
+    <div className="automation-heading">
+      <h2 id="automation-reminders" ref={heading} tabIndex={-1}>事项提醒</h2>
+      {view && <p>{view.unreadCount} 条未读</p>}
+    </div>
+    {readError && <p className="form-error" role="alert">事项提醒读取失败。{readError}</p>}
+    {!view && !readError && <p role="status">正在读取事项提醒…</p>}
+    {view?.issues.map(issue => <p key={issue.file} className="form-error" role="alert">{issueLabels[issue.reason]} · {issue.file}</p>)}
+    {view && view.items.length === 0 && <p>暂无活动提醒。</p>}
+    {Boolean(view?.items.length) && <ul className="automation-list automation-reminder-list">
+      {view?.items.map(item => {
+        const newMaterials = item.kind === 'new_raw_ready';
+        return <li key={item.id} aria-label={item.itemTitle}>
+          <div>
+            <span className="action-badge action-neutral">{reminderKinds[item.kind]}</span>
+            <h3>{item.itemTitle}</h3>
+            <p>{item.summary}</p>
+            <p className="automation-reminder-meta">
+              {reminderStatuses[item.status]}{item.snoozedUntil && <>至 <time dateTime={item.snoozedUntil}>{item.snoozedUntil}</time></>}
+              {' · 桌面通知 '}{reminderDeliveryLabels[item.deliveryStatus]}
+            </p>
+            {item.deliveryStatus === 'failed' && item.deliveryError && <p className="form-error">{item.deliveryError}</p>}
+            {showFeedback(item.id)}
+          </div>
+          <div className="automation-actions">
+            {item.status === 'unread' && <button className="secondary-button" disabled={!canWrite} onClick={() => void write(item.id, async writeToken => {
+              setView(await acknowledgeReminder(item.id, writeToken));
+              return { text: '提醒已标为已读。' };
+            })}>已读</button>}
+            {(item.status === 'unread' || item.status === 'acknowledged') && <button className="secondary-button" disabled={!canWrite} onClick={() => void write(item.id, async writeToken => {
+              setView(await snoozeReminder(item.id, writeToken));
+              return { text: '提醒已延后一天。' };
+            })}>延后一天</button>}
+            <button className="secondary-button" onClick={() => onOpenWorkItem(item.itemId, newMaterials)}>{newMaterials ? '前往分析' : '打开事项'}</button>
+          </div>
+        </li>;
+      })}
+    </ul>}
+    {settings && <details className="automation-reminder-settings">
+      <summary>提醒与通知设置</summary>
+      <form className="automation-editor" aria-label="提醒与通知设置" onSubmit={submit}>
+        <div className="automation-actions">
+          <label className="automation-check"><input type="checkbox" checked={settings.desktopNotificationsEnabled} disabled={pending}
+            onChange={event => edit({ desktopNotificationsEnabled: event.target.checked })} />启用桌面通知</label>
+        </div>
+        <label>免打扰开始（上海时间）<input type="time" required value={settings.quietHoursStart} disabled={pending}
+          onChange={event => edit({ quietHoursStart: event.target.value })} /></label>
+        <label>免打扰结束（上海时间）<input type="time" required value={settings.quietHoursEnd} disabled={pending}
+          onChange={event => edit({ quietHoursEnd: event.target.value })} /></label>
+        <label>久未推进天数<input type="number" min="0" max="90" step="1" required value={settings.staleDays} disabled={pending}
+          onChange={event => edit({ staleDays: event.target.value })} /></label>
+        <label>单次通知上限<input type="number" min="1" max="10" step="1" required value={settings.maxToastsPerRun} disabled={pending}
+          onChange={event => edit({ maxToastsPerRun: event.target.value })} /></label>
+        {conflict && <div className="automation-conflict">
+          <p>读取最新设置会替换当前输入。</p>
+          <button className="text-button" type="button" disabled={pending} onClick={() => { setEditor(null); setFeedback(null); }}>读取最新设置</button>
+        </div>}
+        <div className="automation-actions">
+          <button className="primary-button" type="submit" disabled={!canWrite || !editor || conflict}>保存提醒设置</button>
+          <button className="secondary-button" type="button" disabled={!canWrite} onClick={() => void write('test', async writeToken => {
+            const delivery = await testReminderNotification(writeToken);
+            return { error: delivery.deliveryStatus === 'failed', text: `测试通知 · ${reminderDeliveryLabels[delivery.deliveryStatus]}${delivery.deliveryError ? `。${delivery.deliveryError}` : ''}` };
+          })}>发送测试通知</button>
+        </div>
+        {showFeedback('settings')}
+        {showFeedback('test')}
+      </form>
+      <p>免打扰起止时间相同时关闭免打扰。久未推进天数设为 0 时停用该提醒。</p>
+    </details>}
+  </section>;
 }
 
 function ScheduleEditorDialog({ name, pending, onClose, children }: {

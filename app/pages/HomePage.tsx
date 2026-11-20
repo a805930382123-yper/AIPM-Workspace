@@ -6,13 +6,13 @@ import { workKindLabel, workStatusLabel } from './WorkItemsPage';
 import {PeriodReview} from '../components/PeriodReview';
 import type { HomeAction } from '../../services/home/actions';
 import type { AutomationStatus, CandidateFilter, CandidateList, KnowledgeHealth, Raw, Stats } from '../api';
-import { api, automationCandidates, automationKnowledgeHealth, automationStatus, automationTime, dateText, sourceLabels, workItems } from '../api';
+import { api, automationCandidates, automationKnowledgeHealth, automationReminders, automationStatus, automationTime, dateText, sourceLabels, workItems } from '../api';
 import '../home.css';
 
 const actionKinds = {'raw-task':'整理任务',draft:'待审草稿',workflow:'更新与综合',audit:'Audit'};
 const actionStatuses = {running:'整理中',failed:'整理失败',recovery:'待恢复',review:'待审核',partial:'部分已入库','commit-recovery':'提交待恢复',deferred:'稍后处理'};
 
-export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onOpenInspection, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenInspection?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
+export function HomePage({ onQuickCapture, onOpenAutomation, onOpenReminders, onOpenPipeline, onOpenNews, stats, items, onOpenRaw, onOpenWiki, onOpenPrompt, onImport, onCreateWiki, onCreatePrompt, onGeneratePrompt, onLint, onOpenInspection, onGenerateFromRaw, onOpenAction, onCreateMeeting, actionsRevision, onOpenWorkItem, workItemsRevision }: { onQuickCapture?: () => void; onOpenAutomation?: () => void; onOpenReminders?: () => void; onOpenPipeline?: (filter: CandidateFilter) => void; onOpenNews?: () => void; stats: Stats; items: Raw[]; onOpenRaw: (id?: string) => void; onOpenWiki: (id?: string) => void; onOpenPrompt: () => void; onImport: () => void; onCreateWiki: () => void; onCreatePrompt: () => void; onGeneratePrompt: () => void; onLint: () => void; onOpenInspection?: (id: string) => void; onOpenWorkflow?: (id: string) => void; onGenerateFromRaw?: () => void; onOpenAction?: (item:HomeAction) => void; onCreateMeeting?: () => void; actionsRevision?: number; onOpenWorkItem?: (id: string) => void; workItemsRevision?: number }) {
   const [recentWiki,setRecentWiki]=useState<Wiki[]|null>(null);
   const [wikiError,setWikiError]=useState('');
   const [deferred, setDeferred] = useState(false);
@@ -21,6 +21,7 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
   const [dueItems, setDueItems] = useState<WorkItemSummary[] | null>(null);
   const [dueError, setDueError] = useState('');
   const [dueReload, setDueReload] = useState(0);
+  const [reminderSummary, setReminderSummary] = useState('');
   const [automation, setAutomation] = useState<AutomationStatus | null>(null);
   const [automationError, setAutomationError] = useState(false);
   const [knowledgeHealth, setKnowledgeHealth] = useState<KnowledgeHealth | null>(null);
@@ -67,6 +68,19 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
       .catch(() => { if (active) setDueError('到期跟进读取失败，请刷新后重试。'); });
     return () => { active = false; };
   }, [showDue, dueReload, workItemsRevision]);
+  const showReminders = showDue && Boolean(onOpenReminders);
+  useEffect(() => {
+    if (!showReminders) return;
+    const controller = new AbortController();
+    void automationReminders(controller.signal).then(view => {
+      if (controller.signal.aborted) return;
+      const active = view.items.filter(item => item.status !== 'snoozed');
+      const ready = active.filter(item => item.kind === 'new_raw_ready').length;
+      const stale = active.filter(item => item.kind === 'stale_item').length;
+      setReminderSummary([ready ? `${ready} 项有新资料待分析` : '', stale ? `${stale} 项久未推进` : ''].filter(Boolean).join(' · '));
+    }).catch(() => { if (!controller.signal.aborted) setReminderSummary(''); });
+    return () => controller.abort();
+  }, [showReminders, dueReload, workItemsRevision]);
   useEffect(()=>{let active=true;api<{items:Wiki[]}>('/api/wiki').then(result=>{if(active)setRecentWiki([...result.items].sort((a,b)=>b.updated.localeCompare(a.updated)).slice(0,4));}).catch(()=>{if(active)setWikiError('最近知识读取失败，请稍后重试。');});return()=>{active=false;};},[]);
   const [reviewOpen,setReviewOpen]=useState(false);
   const [actions,setActions]=useState<{items:HomeAction[];sources:Record<string,{status:string;message?:string}>}|null>(null);
@@ -163,6 +177,7 @@ export function HomePage({ onQuickCapture, onOpenAutomation, onOpenPipeline, onO
     {onOpenWorkItem && <section className="panel home-actions work-due" aria-labelledby="work-due-heading">
       <div className="panel-heading"><div><h2 id="work-due-heading">到期跟进</h2><p>工作事项 · 上海日期</p></div><button className="text-button" title="刷新到期跟进" aria-label="刷新到期跟进" onClick={() => setDueReload(value => value + 1)}>刷新</button></div>
       {dueError ? <p className="form-error" role="alert">{dueError}</p> : dueItems === null ? <p role="status">正在读取到期跟进…</p> : dueItems.length === 0 ? <p><span aria-hidden="true">✓ </span>暂无到期的工作事项。</p> : <div className="home-action-list">{dueItems.map(item => <article className="home-action-row" key={item.id} aria-label={item.title}><div><b>{item.title}</b><p>{workKindLabel(item.kind)} · {item.followUpOn && <time dateTime={item.followUpOn}>{item.followUpOn}</time>} · {workStatusLabel(item.kind, item.status)}</p></div><button className="secondary-button" onClick={() => onOpenWorkItem(item.id)}>查看事项</button></article>)}</div>}
+      {onOpenReminders && reminderSummary && <button className="text-button home-reminder-summary" onClick={onOpenReminders}>另有 {reminderSummary}</button>}
     </section>}
     {onOpenNews && <NewsHome onOpen={onOpenNews} />}
     </div></div>

@@ -7,6 +7,7 @@ import { StorageError } from '../services/storage/files.ts';
 import { isConcurrency, isRevision, isTopics, type NewsPipeline } from '../services/automation/pipeline/service.ts';
 import { isNewsMode } from '../services/automation/pipeline/screen.ts';
 import type { WikiHealth } from '../services/automation/wiki-health.ts';
+import { isReminderTime, isStaleDays, isToastLimit, reminderSettingKeys, type RemindersStore } from '../services/automation/reminders.ts';
 
 const badInput = (message: string) => new StorageError('AUTOMATION_INVALID_INPUT', message, 400);
 
@@ -37,7 +38,7 @@ function runId(id: string): string {
   return id;
 }
 
-export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline, knowledge?: WikiHealth): void {
+export function registerAutomationRoutes(app: express.Express, scheduler: AutomationScheduler, pipeline?: NewsPipeline, knowledge?: WikiHealth, reminders?: RemindersStore): void {
   app.use('/api/automation', (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!localOrigin(req)) return next(new StorageError('AUTOMATION_ORIGIN_FORBIDDEN', '仅允许本机可信页面访问自动化。', 403));
@@ -90,6 +91,45 @@ export function registerAutomationRoutes(app: express.Express, scheduler: Automa
   if (knowledge) {
     app.get('/api/automation/knowledge-health', async (_req, res) => { res.json(await knowledge.read(scheduler)); });
     app.get('/api/automation/wiki-lint/:snapshotId', async (req, res) => { res.json(await knowledge.snapshots.get(runId(req.params.snapshotId))); });
+  }
+  if (reminders) {
+    app.get('/api/automation/reminders', async (req, res) => {
+      const { status } = req.query;
+      if (status !== undefined && status !== 'active' && status !== 'all') throw badInput('提醒状态过滤无效。');
+      res.json(await reminders.read(status === 'all'));
+    });
+    app.patch('/api/automation/reminders/settings', async (req, res) => {
+      const { revision, desktopNotificationsEnabled, quietHoursStart, quietHoursEnd, staleDays, maxToastsPerRun } =
+        bodyFields(req.body, ['revision', ...reminderSettingKeys]);
+      if (!isRevision(revision) || Object.keys(req.body).length < 2
+        || (desktopNotificationsEnabled !== undefined && typeof desktopNotificationsEnabled !== 'boolean')
+        || (quietHoursStart !== undefined && !isReminderTime(quietHoursStart))
+        || (quietHoursEnd !== undefined && !isReminderTime(quietHoursEnd))
+        || (staleDays !== undefined && !isStaleDays(staleDays))
+        || (maxToastsPerRun !== undefined && !isToastLimit(maxToastsPerRun))) {
+        throw badInput('请填写有效的提醒设置和版本。');
+      }
+      res.json(await reminders.updateSettings(revision, {
+        ...(desktopNotificationsEnabled === undefined ? {} : { desktopNotificationsEnabled }),
+        ...(quietHoursStart === undefined ? {} : { quietHoursStart }),
+        ...(quietHoursEnd === undefined ? {} : { quietHoursEnd }),
+        ...(staleDays === undefined ? {} : { staleDays }),
+        ...(maxToastsPerRun === undefined ? {} : { maxToastsPerRun }),
+      }));
+    });
+    for (const action of ['ack', 'snooze'] as const) {
+      app.post('/api/automation/reminders/:id/' + action, async (req, res) => {
+        const { id } = req.params;
+        if (typeof id !== 'string' || !runIdPattern.test(id)) throw badInput('提醒 ID 无效。');
+        const { until } = bodyFields(req.body, action === 'snooze' ? ['until'] : []);
+        if (until !== undefined && typeof until !== 'string') throw badInput('延后日期无效。');
+        res.json(await reminders.mark(id, action, until));
+      });
+    }
+    app.post('/api/automation/reminders/test-notification', async (req, res) => {
+      bodyFields(req.body, []);
+      res.json(await reminders.testNotification());
+    });
   }
   if (!pipeline) return;
   app.get('/api/automation/candidates', async (req, res) => {

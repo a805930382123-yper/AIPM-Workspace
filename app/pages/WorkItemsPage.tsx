@@ -22,14 +22,16 @@ function Status({ kind, value }: { kind?: WorkItemKind; value: WorkStatus }) {
   return <span className={`work-status ${value === 'waiting' ? 'action-warning' : value === 'closed' ? 'action-neutral' : 'action-review'}`}>{workStatusLabel(kind, value)}</span>;
 }
 
-export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
+export function WorkItemsPage({ initialId, initialFocusMaterials = false, raws, onOpenRaw, onChanged }: {
   initialId: string | null;
+  initialFocusMaterials?: boolean;
   raws: Raw[];
   onOpenRaw: (id: string) => void;
   onChanged: () => void;
 }) {
   const [mode, setMode] = useState<'list' | 'create' | 'detail'>(initialId ? 'detail' : 'list');
   const [id, setId] = useState(initialId);
+  const [focusMaterials, setFocusMaterials] = useState(initialFocusMaterials);
   const [items, setItems] = useState<WorkItemSummary[] | null>(null);
   const [item, setItem] = useState<WorkItem | null>(null);
   const [loadError, setLoadError] = useState('');
@@ -57,7 +59,7 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
     return () => { active = false; };
   }, [mode, id, item?.id, reload]);
 
-  const back = () => { setItem(null); setId(null); setLoadError(''); setMode('list'); };
+  const back = () => { setItem(null); setId(null); setFocusMaterials(false); setLoadError(''); setMode('list'); };
   const open = (nextId: string) => { setItem(null); setId(nextId); setMode('detail'); window.scrollTo(0, 0); };
   const create = async (event: FormEvent) => {
     event.preventDefault();
@@ -80,7 +82,7 @@ export function WorkItemsPage({ initialId, raws, onOpenRaw, onChanged }: {
   };
 
   if (mode === 'detail' && item?.id === id && item) {
-    return <WorkItemDetail key={item.id} item={item} raws={raws} onBack={back} onOpenRaw={onOpenRaw} onChanged={onChanged} />;
+    return <WorkItemDetail key={item.id} item={item} focusMaterials={focusMaterials} raws={raws} onBack={back} onOpenRaw={onOpenRaw} onChanged={onChanged} />;
   }
   const beginCreate = (kind: WorkItemKind) => {
     setCreateKind(kind);
@@ -164,8 +166,9 @@ const analysisOf = (analysis?: WorkAnalysis) => ({
 });
 type Section = 'suggestion' | 'current' | 'history' | 'report' | 'materials' | 'stage' | 'analysis';
 
-function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
+function WorkItemDetail({ item, focusMaterials, raws, onBack, onOpenRaw, onChanged }: {
   item: WorkItem;
+  focusMaterials: boolean;
   raws: Raw[];
   onBack: () => void;
   onOpenRaw: (id: string) => void;
@@ -520,6 +523,7 @@ function WorkItemDetail({ item, raws, onBack, onOpenRaw, onChanged }: {
     </section>
     {product && <WorkAnalysisPanel
       item={saved}
+      focusMaterials={focusMaterials}
       rawById={rawById}
       busy={busy}
       analysisDirty={analysisDirty}

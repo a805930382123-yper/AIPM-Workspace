@@ -149,8 +149,10 @@ import type {
 } from '../services/automation/types';
 import type { KnowledgeHealth } from '../services/automation/wiki-health';
 import type { WikiLintSnapshot } from '../services/automation/tasks/wiki-lint';
+import type { ReminderSettings, ReminderView, WorkReminder } from '../services/automation/reminders';
 export type { KnowledgeHealth } from '../services/automation/wiki-health';
 export type { WikiLintSnapshot } from '../services/automation/tasks/wiki-lint';
+export type { ReminderSettings, ReminderView, WorkReminder } from '../services/automation/reminders';
 
 const automationUrl = '/api/automation';
 const automationRunUrl = (id: string) => `${automationUrl}/runs/${encodeURIComponent(id)}`;
@@ -177,6 +179,16 @@ export const automationRuns = ({ type, status, limit }: { type: string; status: 
 export const automationRun = (id: string, signal?: AbortSignal) => api<AutomationRun>(automationRunUrl(id), { signal });
 export const cancelAutomationRun = (id: string, token: string) =>
   api<AutomationRun>(`${automationRunUrl(id)}/cancel`, automationWrite('POST', token, {}));
+const remindersUrl = `${automationUrl}/reminders`;
+export const automationReminders = (signal?: AbortSignal) => api<ReminderView>(`${remindersUrl}?status=active`, { signal });
+export const updateReminderSettings = (input: ReminderSettings & { revision: number }, token: string) =>
+  api<ReminderView>(`${remindersUrl}/settings`, automationWrite('PATCH', token, input));
+export const acknowledgeReminder = (id: string, token: string) =>
+  api<ReminderView>(`${remindersUrl}/${encodeURIComponent(id)}/ack`, automationWrite('POST', token, {}));
+export const snoozeReminder = (id: string, token: string) =>
+  api<ReminderView>(`${remindersUrl}/${encodeURIComponent(id)}/snooze`, automationWrite('POST', token, {}));
+export const testReminderNotification = (token: string) =>
+  api<Pick<WorkReminder, 'deliveryStatus' | 'deliveryError'>>(`${remindersUrl}/test-notification`, automationWrite('POST', token, {}));
 export type { CandidateFilter, CandidateList, CandidateView, ConfirmCandidates, PipelineSettings } from '../services/automation/pipeline/service';
 import type { CandidateList, ConfirmCandidates, PipelineSettings } from '../services/automation/pipeline/service';
 const candidatesUrl = `${automationUrl}/candidates`;

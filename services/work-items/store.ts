@@ -3,7 +3,7 @@ import { readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { validReviewDate } from '../home/review.ts';
 import type { RawStore } from '../raw/store.ts';
-import { JSON_SCAN_BUDGET, listJsonRecords, readJsonRecord, SerialQueue, StorageError, writeFileAtomic, writeJsonAtomic } from '../storage/files.ts';
+import { JSON_SCAN_BUDGET, listJsonRecords, readJsonRecord, scanJsonRecords, SerialQueue, StorageError, writeFileAtomic, writeJsonAtomic } from '../storage/files.ts';
 import { isUuid } from '../storage/record-validators.ts';
 import { readWorkAnalysisRun, validWorkAnalysis } from './analysis-runs.ts';
 import { workStatuses, type WorkHistory, type WorkHistoryInput, type WorkItem, type WorkItemSummary, type WorkScreenshot, type WorkStatus } from './types.ts';
@@ -130,6 +130,14 @@ export class WorkItemStore {
     const item = isUuid(id) ? await readJsonRecord(this.root, this.file(id), (value): value is WorkItem => validStoredItem(value, id)) : undefined;
     if (!item) throw new StorageError('WORK_ITEM_NOT_FOUND', '没有找到这条工作事项。', 404);
     return item.kind === undefined ? { ...item, kind: 'customer_issue' } : item;
+  }
+
+  async scanForReminders() {
+    const { records, issues, partial } = await scanJsonRecords(this.directory,
+      (value, file): value is WorkItem => validStoredItem(value, path.basename(file, '.json')), this.root);
+    const items = records.map(({ value: { id, kind = 'customer_issue', title, status, followUpOn, updatedAt, rawIds } }) =>
+      ({ id, kind, title, status, followUpOn, updatedAt, rawIds }));
+    return { items, issues, partial };
   }
 
   private async save(item: WorkItem) {

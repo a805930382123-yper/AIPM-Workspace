@@ -4,7 +4,7 @@ import { assertNoKnownSecret, LlmError, sanitizeProviderText, type LlmProvider }
 import { validateSchema, type JsonSchemaNode } from '../llm/schema-validator.ts';
 import { assertRawNotMeeting, SourcePolicyError } from '../meeting/source-policy.ts';
 import type { RawStore } from '../raw/store.ts';
-import { JSON_SCAN_BUDGET, listJsonRecords, readJsonRecord, StorageError, writeJsonAtomic } from '../storage/files.ts';
+import { JSON_SCAN_BUDGET, listJsonRecords, readJsonRecord, scanJsonRecords, StorageError, writeJsonAtomic } from '../storage/files.ts';
 import { isUuid } from '../storage/record-validators.ts';
 import { basisReviewUnavailable, WorkBasisReviews, workAnalysisSendInput } from './basis-review.ts';
 import type { WorkAnalysis, WorkAnalysisOutput, WorkAnalysisOutputV2, WorkAnalysisRun, WorkAnalysisRunWithReview, WorkAnalysisSource, WorkAnalysisStageContext, WorkItem } from './types.ts';
@@ -196,6 +196,14 @@ export class WorkAnalysisRuns {
       }
     }
     return runs.sort((a, b) => b.startedAt.localeCompare(a.startedAt) || a.id.localeCompare(b.id));
+  }
+
+  async reminderBasis(itemId: string) {
+    const { records, issues } = await scanJsonRecords(runDirectory(this.root, itemId),
+      (value, file): value is WorkAnalysisRun => validRun(value, itemId, path.basename(file, '.json')), this.root);
+    const latest = records.map(({ value }) => value).filter(run => run.status === 'completed')
+      .sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt) || a.id.localeCompare(b.id))[0];
+    return { issues, coveredRawIds: latest?.sourceRawIds ?? latest?.input.sources.map(source => source.rawId) ?? [] };
   }
 
   async start(itemId: string, value: unknown): Promise<WorkAnalysisRun> {

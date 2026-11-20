@@ -28,12 +28,20 @@
 .automation-page .automation-steps li { align-items: flex-start; }
 .automation-page .automation-health-list > li { flex-wrap: wrap; }
 .automation-page .automation-health-list .text-button { padding: 5px 0; }
+.automation-page .automation-reminder-list > li { align-items: flex-start; flex-wrap: wrap; }
+.automation-page .automation-reminder-list h3 { margin: 6px 0 0; }
+.automation-page .automation-reminder-meta, .automation-page .automation-reminder-settings > p { color: var(--muted); }
+.automation-page .automation-reminder-settings { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 12px; }
+.automation-page .automation-reminder-settings summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.automation-page .automation-reminder-settings .automation-editor { margin-top: 10px; }
+.automation-page .automation-reminder-settings .automation-editor > p { flex-basis: 100%; margin: 0; }
 .automation-page .automation-artifact { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; }
 .automation-page .automation-artifact h4 { margin: 0; font-size: 14px; }
 .automation-page .automation-artifact details { margin-top: 8px; font-size: 13px; }
 .automation-page .automation-artifact summary { cursor: pointer; }
 .home-page .home-knowledge-hint { margin-top: 6px; }
 .home-page .home-knowledge-hint .text-button { display: block; padding: 5px 0; white-space: normal; text-align: start; }
+.home-page .home-reminder-summary { display: block; margin-top: 8px; padding: 5px 0; white-space: normal; text-align: start; }
 .home-page .home-workspace .home-automation { padding: 16px 20px; }
 .home-page .home-automation > p { margin: 6px 0 0; }
 .home-page .home-automation .panel-heading { padding: 0; }
