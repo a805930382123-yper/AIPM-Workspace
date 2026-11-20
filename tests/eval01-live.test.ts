@@ -18,6 +18,16 @@ test('EVAL01 isolated resume preflight, bounded calls and one-use permit',async(
  const frozen=['c9ef7235c3cbfa32600b3ea7a138beac9ce3971d96b8b31ce476c45294493feb','c196ff11e93c40987def15b483c75c3293353cc11a4ff894f32506d84691b942','1412e1f8614432fd2eea9b97fd3da4ee437c4130646b8dc2930a43528d7ee9b1','cb39cc3063a8942274dc0c2ea86305e3cbf04fff1058f5008be76bd57fff80f3'];
  try{
   for(const sub of ['services','rules','scripts/eval','evals/cases','evals/thresholds.json'])await cp(path.join(process.cwd(),sub),path.join(dir,sub),{recursive:true});
+  // Match the runner's normalized service tree digest using the copied files.
+  const productRoots = ['services/llm', 'services/wiki', 'services/storage'];
+  const productFiles = (await Promise.all(productRoots.map(sub => readdir(path.join(dir, sub), {recursive: true, withFileTypes: true}))))
+    .flat().filter(entry => entry.isFile())
+    .map(entry => path.relative(dir, path.join(entry.parentPath, entry.name)).split(path.sep).join('/')).sort();
+  const product = await Promise.all(productFiles.map(async name => {
+    const text = await readFile(path.join(dir, name), 'utf8');
+    return [name, hash(text.replace(/\r\n?/gu, '\n'))];
+  }));
+  const fixtureProductHash = hash(JSON.stringify(product));
   // A checkout may already contain all eight live recordings. The synthetic source run
   // represents the earlier four-case stop, so clear only its temporary remaining copies.
   for(const id of ids.slice(4)){const target=path.resolve(dir,'evals/cases/standard-extract',id,'recordings/live-20261115-baseline.json');assert(target.startsWith(path.resolve(dir)+path.sep));await rm(target,{force:true});}
@@ -26,15 +36,29 @@ test('EVAL01 isolated resume preflight, bounded calls and one-use permit',async(
   const sample=JSON.parse(await readFile(path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/synthetic-v1.json'),'utf8'));const threshold=JSON.parse(await readFile(path.join(dir,'evals/thresholds.json'),'utf8'));
   const source={runId:'2026-11-15T10-34-38-191Z-832c444a',schemaVersion:1,scoringSchemaVersion:1,mode:'live',chain:'standard-extract',rulesVersion:sample.rulesVersion,thresholdHash:hash(canonical(threshold)),cases,ledger:Array.from({length:8},(_,i)=>({caseId:ids[Math.floor(i/2)],stage:i%2?'planning':'extracting',status:'success',unknownUsage:false,usage:{promptTokens:i?0:33295,completionTokens:i?0:3865}}))};
   const sourceBytes=JSON.stringify(source,null,2)+'\n',sourcePath=path.join(dir,'evals/results/source.json'),sourceHash=hash(sourceBytes);await writeFile(sourcePath,sourceBytes);
-  const runner=path.join(dir,'scripts/eval/run.mjs');let code=await readFile(runner,'utf8');code=code.replaceAll('ca9a118ee1f7bba97facaf49c186675537e8ad5612a6d2398b8d33ecd3387b61',sourceHash);for(let i=0;i<4;i++)code=code.replaceAll(frozen[i]!,recHashes[i]!);await writeFile(runner,code);
+  const runner=path.join(dir,'scripts/eval/run.mjs');
+  const frozenProductHash = '20d80ac6f25b61d97862ff926823dd716649771d9ab962c61407f24e3ae93602';
+  let code=await readFile(runner,'utf8');
+  assert.ok(code.includes(frozenProductHash), 'Expected the frozen fingerprint in the copied runner.');
+  code=code.replace(frozenProductHash, fixtureProductHash).replaceAll('ca9a118ee1f7bba97facaf49c186675537e8ad5612a6d2398b8d33ecd3387b61',sourceHash);
+  for(let i=0;i<4;i++)code=code.replaceAll(frozen[i]!,recHashes[i]!);
+  await writeFile(runner,code);
   const preload=path.join(dir,'fake.mjs');await writeFile(preload,`import {readFileSync,appendFileSync} from 'node:fs';\nlet n=0;const ids=${JSON.stringify(ids.slice(4))};globalThis.fetch=async(_url,init)=>{n++;appendFileSync(process.env.EVAL01_CALL_LOG,'call\\n');if(Number(process.env.EVAL01_FAIL_AT)===n)return new Response('{}',{status:500});let rec=JSON.parse(readFileSync('evals/cases/standard-extract/'+ids[Math.floor((n-1)/2)]+'/recordings/synthetic-v1.json'));let text=rec.calls[(n-1)%2].completion.text;if(process.env.EVAL01_QUALITY==='1'){let obj=JSON.parse(text);if(n===1)obj.facts.pop();if(n===2){let payload=JSON.parse(JSON.parse(init.body).messages[1].content.split('\\n').at(-1));obj.pages[0].factUnitIds=payload.factUnits.map(x=>x.id);}text=JSON.stringify(obj);}if(Number(process.env.EVAL01_BAD_AT)===n)text='not json';if(Number(process.env.EVAL01_SCHEMA_AT)===n)text='{}';return new Response(JSON.stringify({choices:[{message:{content:text},finish_reason:'stop'}],usage:{prompt_tokens:1,completion_tokens:2}}),{status:200});};`);
   const log=path.join(dir,'calls'),args=['--chain','standard-extract','--mode','live','--record','--recording','live-20261115-baseline','--resume-from',sourcePath,'--resume-sha256',sourceHash];
   async function invoke(a:string[],extra:Record<string,string>={}){const child=spawn(process.execPath,['--import','tsx','--import','./fake.mjs','scripts/eval/run.mjs',...a],{cwd:dir,env:{...process.env,FMCG_LLM_BASE_URL:'http://127.0.0.1:1',FMCG_LLM_MODEL:'gpt-6.1-terra',FMCG_LLM_API_KEY:'synthetic-test-key',FMCG_LLM_CONFIG_FILE:path.join(dir,'none'),EVAL01_CALL_LOG:log,...extra},stdio:['ignore','pipe','pipe']});let out='';child.stdout.on('data',b=>out+=b);child.stderr.on('data',b=>out+=b);const status=await new Promise<number|null>(resolve=>child.on('close',resolve));return {status,out};}
   const count=async()=>{try{return (await readFile(log,'utf8')).split('\n').filter(Boolean).length}catch{return 0}};
   for(const bad of [args.filter((_,i)=>i!==2&&i!==3),args.filter((_,i)=>i!==3),args.filter((_,i)=>i!==4),[...args,'--case','basic-01-timeout'],args.map(x=>x===sourceHash?'0'.repeat(64):x)]){let r=await invoke(bad);assert.equal(r.status,1,r.out);assert.equal(await count(),0);}
+  const service = path.join(dir, 'services/storage/files.ts');
+  const serviceBytes = await readFile(service);
+  await writeFile(service, Buffer.concat([serviceBytes, Buffer.from('\n// Change the fixture fingerprint.\n')]));
+  let blocked = await invoke(args);
+  assert.equal(blocked.status, 1, blocked.out);
+  assert.match(blocked.out, /Product fingerprint mismatch/u);
+  assert.equal(await count(), 0);
+  await writeFile(service, serviceBytes);
   // Existing remaining recording, missing or altered prior recording, and occupied permit all refuse before fetch.
   const old=path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/live-20261115-baseline.json'),oldBytes=await readFile(old);
-  await unlink(old);let blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await writeFile(old,oldBytes);
+  await unlink(old);blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await writeFile(old,oldBytes);
   await writeFile(old,Buffer.concat([oldBytes,Buffer.from(' ')]));blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await writeFile(old,oldBytes);
   const future=path.join(dir,'evals/cases/standard-extract',ids[4]!,'recordings/live-20261115-baseline.json');await writeFile(future,'{}');blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await unlink(future);
   const permit=path.join(dir,'evals/results','resume-'+sourceHash+'.json');await writeFile(permit,'{}');blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await unlink(permit);
