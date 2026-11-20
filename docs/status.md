@@ -1,5 +1,11 @@
 # 工程状态
 
+## AI 自动化阶段 2 任务卡规划（2026-11-20）
+
+承接阶段 0–1（ENG01、RUN01、EVAL01、PIPE01）及 LINT01–02、KBI01 交付，已完成阶段 2 规划文档：[阶段 2 路线图](batches/AUTO-STAGE2-ROADMAP-20261120.md)与三张任务卡——[KBMAINT01 知识库定时巡检与周计划扩展](handoffs/KBMAINT01-20261120-task.md)（5 分 B）、[WORKAUTO01 事项到期提醒、桌面通知与新资料提示](handoffs/WORKAUTO01-20261120-task.md)（4 分 A 标准，Sol 先审计划）、[REVIEW01 每周工作回顾自动草稿与归档](handoffs/REVIEW01-20261120-task.md)（4 分 A 标准，Sol 先审计划）。延续人工确认与隐私不变量：不自动修改正式 Wiki/Raw/Prompt 或事项状态，桌面通知不含敏感正文，逐批明确授权后交 Codex 按 agent-router 施工。
+
+本次仅规划文档：未派发施工、未改产品代码、真实模型调用 0、正式 `workspace/` 与用户服务未改动；工作区中其他未提交/未跟踪改动（含 `QUICKUX01` 等）保留未动。
+
 ## NEWS18 AI 前沿人物聚合抽屉完成（2026-11-20）
 
 工程提交 `00d7496`。Karpathy 的四个渠道合并为人物抽屉，支持平台筛选、合并时间流与单平台降级。Sol High 施工、Astra Medium 独验，局部与整批通过。资讯回归 74/74、定向独验 6/6、类型检查、隔离构建及真实 Edge 桌面和窄屏操作通过。见[独立验收](reports/NEWS18-review.md)。
