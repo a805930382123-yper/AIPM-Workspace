@@ -1,5 +1,13 @@
 # 工程状态
 
+## NEWS13 AI 前沿新增八个渠道（2026-11-20）
+
+工程提交 `c7d7fa3`。保留 AIHOT 的前五条规则，增加 OpenAI Cookbook、Anthropic Engineering、Hugging Face 官方博客、Simon Willison 提示词专题及 Karpathy 的 GitHub、Bear Blog、YouTube、X。今日已有期刊时通过「检查更新」发现材料，超出五条的内容在「按来源浏览」中查看和保存。
+
+Sol High 施工、Astra Medium 独立验收。本轮改动及整批按任务卡通过。资讯与自动化相关回归 88/88、类型检查通过。Edge 隔离实测 5 条主列表及 22 条补充材料，成功手动保存视频简介至 Raw。八个新渠道中七个取得真实材料，Bear Blog 官方订阅返回 HTTP 403，页面保留诊断及官方入口。X 仅收公开可见的本人原帖。
+
+本机同时验证七个新增渠道时，通过项目已有的 `scripts/start_with_proxy.ps1` 启动检测进程，并为该进程设置 `NO_PROXY=api.github.com,raw.githubusercontent.com,www.anthropic.com,anthropic.com,simonwillison.net`。外网状态随运行环境变化。见[任务卡](handoffs/NEWS13-task.md)和[独立验收报告](reports/NEWS13-review.md)。
+
 ## NEWS12 快消研报与洞察第一版（2026-11-20）
 
 工程提交 `577c248`。Sol High 施工，Astra Medium 独立验收。本轮改动及 NEWS12 整批分别通过。隔离运行冻结版的全部六个快消来源，本次六源均成功，精选 5 条、另有 5 条合格候选。此前一次运行 Mintel 列表返回 HTTP 503，其他来源正常。觅果与彩华的应用问题由经营主题生成，原文摘录和人工确认保存流程保留。
