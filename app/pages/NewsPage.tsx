@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { newsEvidenceLabel } from '../../services/news/evidence';
+import { normalizedTitle, normalizedUrl } from '../../services/news/normalize';
 import { evaluateResearchValue } from '../../services/news/research-value';
 import type { NewsCheckMode, NewsEdition, NewsItem, NewsSection, NewsSectionName, SourceHealth } from '../../services/news/types';
 import '../news.css';
@@ -8,25 +9,31 @@ type View={date:string;aiEnabled:boolean;edition:NewsEdition|null;recentFmcg?:Ar
 const time=(value?:string)=>value&&Number.isFinite(Date.parse(value))?new Date(value).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'}):'未记录';
 const labels={fmcg:'快消研报与洞察',ai:'AI 前沿'};
 const status={running:'正在准备',ready:'分析已生成',source_only:'来源摘录可阅读',empty:'近期内容不足',failed:'读取失败',interrupted:'上次准备中断'};
+const statusLabel=(n:NewsSectionName,s:NewsSection['status'])=>n==='ai'&&s==='empty'?'暂无可核验内容':status[s];
 const hasSourceFailure=(source:SourceHealth)=>source.diagnosis?['partial','failed'].includes(source.diagnosis.outcome):source.status==='failed'||!!source.error;
 const outcomeLabel={ok:'读取成功',empty:'没有合格条目',partial:'部分读取失败',failed:'读取失败'};
 const errorLabel={timeout:'超时',network:'网络错误',tls:'TLS 错误',http:'HTTP 错误',parse:'解析错误',unknown:'未知错误'};
 const stageLabel={list:'来源列表',detail:'详情',pdf:'PDF',parse:'内容解析'};
+function itemTime(item:NewsItem) {
+ const published=item.publishedAt?Date.parse(item.publishedAt):NaN;
+ return Number.isFinite(published)?published:Date.parse(item.fetchedAt)||0;
+}
 
-function sectionStatus(section:NewsSection|undefined,missing:string) {
+function sectionStatus(section:NewsSection|undefined,missing:string,n:NewsSectionName='fmcg') {
  if(!section) return missing;
  const hasContent=section.items.length||section.sourceItems?.length;
  if(section.status==='running') return hasContent?'正在检查更新，已收录内容可继续阅读':'正在检查更新';
  if(section.status==='interrupted'&&hasContent) return '上次检查中断，保留已收录内容';
- return status[section.status];
+ return statusLabel(n,section.status);
 }
 
-function SectionDiagnosis({section}:{section?:NewsSection}) {
+function SectionDiagnosis({section,name='fmcg'}:{section?:NewsSection;name?:NewsSectionName}) {
  if(!section) return null;
+ const checkMessage=section.checkMessage;
  return <>
   <p className="news-meta">尝试开始 {time(section.startedAt)} · 完成 {time(section.finishedAt)}</p>
   {section.error&&<p className="form-error" role="status">{section.error}</p>}
-  {section.checkMessage&&<p role="status">{section.checkMessage}</p>}
+  {checkMessage&&(name!=='ai'||!/已满5条|按来源浏览新增/u.test(checkMessage))&&<p role="status">{checkMessage}</p>}
   {section.sources.some(hasSourceFailure)&&<p className="news-notice">部分来源不可用，覆盖不完整。</p>}
   {!!section.sources.length&&<details className="news-diagnosis">
    <summary>来源诊断</summary>
@@ -68,7 +75,7 @@ function useToday(ensure:boolean){
  useEffect(()=>{if(error||!view||!Object.values(view.edition?.sections||{}).some(x=>x.status==='running'))return;const timer=setTimeout(()=>refreshRef.current(),2000);return()=>clearTimeout(timer);},[view,error]);
  return {view,error,setView,setError,refresh:()=>refreshRef.current()};
 }
-export function NewsHome({onOpen}:{onOpen:()=>void}){const {view,error,refresh}=useToday(true);return <section className="panel news-home"><div><h2>每日资讯</h2><p>{view?`${view.date} · AI 分析${view.aiEnabled?'已启用':'未启用'}`:'正在读取资讯状态'}</p>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}<div className="news-home-status">{(['fmcg','ai'] as const).map(n=><span key={n}>{labels[n]}：{view?.edition?.sections[n]?status[view.edition.sections[n]!.status]:'等待准备'}</span>)}</div></div><button className="secondary-button" onClick={onOpen}>阅读资讯</button></section>;}
+export function NewsHome({onOpen}:{onOpen:()=>void}){const {view,error,refresh}=useToday(true);return <section className="panel news-home"><div><h2>每日资讯</h2><p>{view?`${view.date} · AI 分析${view.aiEnabled?'已启用':'未启用'}`:'正在读取资讯状态'}</p>{error&&<p className="form-error" role="alert">{error} <button className="text-button" onClick={refresh}>重新读取状态</button></p>}<div className="news-home-status">{(['fmcg','ai'] as const).map(n=><span key={n}>{labels[n]}：{view?.edition?.sections[n]?statusLabel(n,view.edition.sections[n]!.status):'等待准备'}</span>)}</div></div><button className="secondary-button" onClick={onOpen}>阅读资讯</button></section>;}
 type Saved={section:NewsSectionName;itemId:string;rawId:string;status:'saved'|'missing'|'pending'};
 export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawChanged?:()=>void|Promise<void>;onOpenRaw?:(id:string)=>void;onBack?:()=>void}){const {view,error,setView,setError,refresh}=useToday(false);const [history,setHistory]=useState<{items:Array<{date:string}>;errors:string[]}|null>(null),[selected,setSelected]=useState<string|null>(null),[edition,setEdition]=useState<NewsEdition|null>(null),[readError,setReadError]=useState('');
  useEffect(()=>{let active=true;api<{items:Array<{date:string}>;errors:string[]}>('/api/news/history').then(x=>{if(active)setHistory(x)}).catch(()=>{if(active)setReadError('历史记录读取失败。')});return()=>{active=false}},[]);
@@ -114,8 +121,9 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
   const key=`${date}:${n}:${item.id}`,entry=saved[date]?.find(x=>x.section===n&&x.itemId===item.id);
   const value=n==='fmcg'?evaluateResearchValue(item):undefined;
   const evidence=n==='ai'?(item.sourceId==='aihot'&&item.evidenceKind==='source_summary'?'AIHOT ':'')+newsEvidenceLabel(item):item.research?.kind||(item.evidenceKind==='source_summary'?'来源摘要':'来源正文摘录');
+  const Heading=n==='ai'?'h4':'h3';
   return <article className="news-article" key={displayKey}>
-   <h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></h3>
+   <Heading><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></Heading>
    <p className="news-meta">{item.sourceName}{item.author&&<> · {item.author}</>}{item.url.startsWith('http:')?' · HTTP 链接':''} · {item.publishedAt?(/^\d{4}-\d\d$/.test(item.publishedAt)?item.publishedAt+'（仅知月份）':/^\d{4}-\d\d-\d\d$/.test(item.publishedAt)?item.publishedAt:new Date(item.publishedAt).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'})):'日期未知'} · {evidence}{item.research&&<> · 数据时期：{item.research.dataPeriod||'请以原文为准'}{item.research.pdfUrl&&<> · <a href={item.research.pdfUrl} target="_blank" rel="noopener noreferrer">报告 PDF</a>{item.research.pageRange&&<>（{item.research.pageRange}）</>}</>}</>}</p>
    {value?.eligible&&<div className="news-analysis">
     <p><b>推荐理由</b> {value.reason}</p>
@@ -159,35 +167,45 @@ export function NewsPage({onRawChanged=()=>{},onOpenRaw=()=>{},onBack}:{onRawCha
   const fallback=!selected&&current&&!current.items.length&&!current.sourceItems?.length&&['failed','interrupted'].includes(current.status)?view?.fallbacks[n]:undefined;
   const section=fallback?.section||current,date=fallback?.date||selected||view?.date||'';
   const bySource=new Map<string,NewsItem[]>();
-  if(n==='ai') for(const item of section?.sourceItems??[]) {
-   const items=bySource.get(item.sourceId);
-   if(items) items.push(item);
-   else bySource.set(item.sourceId,[item]);
+  if(n==='ai'&&section) {
+   const ids=new Set<string>(),urls=new Set<string>(),titles=new Set<string>();
+   for(const item of [...section.items,...(section.sourceItems??[])]) {
+    const url=normalizedUrl(item.url),title=normalizedTitle(item.title);
+    if(ids.has(item.id)||urls.has(url)||titles.has(title)) continue;
+    ids.add(item.id);
+    urls.add(url);
+    titles.add(title);
+    const items=bySource.get(item.sourceId);
+    if(items) items.push(item);
+    else bySource.set(item.sourceId,[item]);
+   }
   }
   return <section id={`news-section-${n}`} className="news-section" key={n}>
    <div className="news-section-heading">
     <div>
      <h2>{n==='fmcg'&&selected&&section&&!section.contentVersion?'旧版快消新闻':labels[n]}</h2>
-     <p>{sectionStatus(current,n==='fmcg'&&shown?.legacyFmcg?'等待更新':'暂无记录')}{fallback&&' · 显示 '+fallback.date+' 的历史内容'}</p>
+     <p>{sectionStatus(current,n==='fmcg'&&shown?.legacyFmcg?'等待更新':'暂无记录',n)}{fallback&&' · 显示 '+fallback.date+' 的历史内容'}</p>
     </div>
     {!selected&&controls(n,current)}
    </div>
    {!selected&&checkNotices[n]&&<p role="status">{checkNotices[n]}</p>}
-   <SectionDiagnosis section={current}/>
-   {section&&section.status!=='running'&&<p className="news-meta">
+   <SectionDiagnosis section={current} name={n}/>
+   {n==='fmcg'&&section&&section.status!=='running'&&<p className="news-meta">
     {section.items.length}/5 条{section.items.length<5&&<> · {section.shortageReasons?.length?section.shortageReasons.join(' '):'旧记录未记录具体不足原因'}</>}
    </p>}
-   {section?.status==='empty'&&!section.checkMessage&&!section.sources.some(hasSourceFailure)&&<p>{n==='fmcg'?'暂无新的可核验研报':'近期没有足够的可核验内容。'}</p>}
+   {n==='fmcg'&&section?.status==='empty'&&!section.checkMessage&&!section.sources.some(hasSourceFailure)&&<p>暂无新的可核验研报</p>}
    {!section&&<p>{n==='fmcg'&&shown?.legacyFmcg?'等待更新快消研报。':'暂无可阅读内容。'}</p>}
    {n==='fmcg'&&selected&&section&&<p>本期收录</p>}
-   {!!bySource.size&&<div className="news-source-items">
-    <h3>按来源浏览</h3>
-    {[...bySource].map(([sourceId,items])=><details key={sourceId}>
-     <summary>{items[0].sourceName}（{items.length} 条）</summary>
-     {items.map(item=>renderItem(item,n,date))}
-    </details>)}
+   {n==='ai'&&bySource.size>0&&<div className="news-source-items">
+    {[...bySource].map(([sourceId,items])=>{
+     const displayed=items.sort((a,b)=>itemTime(b)-itemTime(a)).slice(0,5);
+     return <section key={sourceId}>
+      <h3>{displayed[0].sourceName}（{displayed.length} 条）</h3>
+      {displayed.map(item=>renderItem(item,n,date))}
+     </section>;
+    })}
    </div>}
-   {section?.items.map((item,index)=>renderItem(item,n,date,`${item.id}:${index}`))}
+   {n==='fmcg'&&section?.items.map((item,index)=>renderItem(item,n,date,`${item.id}:${index}`))}
    {saveErrors[date]&&<p className="form-error" role="alert">{saveErrors[date]} <button className="text-button" onClick={()=>setProjectionReload(value=>value+1)}>重新读取保存状态</button></p>}
   </section>;
  })}

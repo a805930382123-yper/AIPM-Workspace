@@ -63,7 +63,7 @@ export class NewsService {
       for(const n of names) {
         if(fallbacks[n]||edition?.sections[n]?.items.length||edition?.sections[n]?.sourceItems?.length||!['failed','interrupted'].includes(edition?.sections[n]?.status||'')) continue;
         const s=(await this.edition(row.date))?.sections[n];
-        if(s?.items.length&&(n!=='fmcg'||s.contentVersion==='research-v1')) fallbacks[n]={date:row.date,section:s};
+        if(s&&(n==='ai'?s.items.length||s.sourceItems?.length:s.items.length&&s.contentVersion==='research-v1')) fallbacks[n]={date:row.date,section:s};
       }
       if(names.every(n=>fallbacks[n]||['ready','source_only'].includes(edition?.sections[n]?.status||''))) break;
     }
@@ -334,11 +334,9 @@ export class NewsService {
         const added=fresh.length?`本次新增 ${fresh.length} 条。`:!slots?'已检查，本期已满5条，保留已收录内容。':'';
         checkMessage=`${added}${researchOverflow.length} 条合格研报已送至自动化的资讯候选收件箱。`;
       } else if(manual&&status!=='failed') {
-        if(sourceItems.length>retainedSourceCount) {
-          const added=fresh.length?`本期新增 ${fresh.length} 条，已满5条。`:'已检查，本期已满5条。';
-          checkMessage=`${added}按来源浏览新增 ${sourceItems.length-retainedSourceCount} 条。`;
-        } else if(!slots) checkMessage='已检查，本期已满5条，保留已收录内容。';
-        else if(fresh.length) checkMessage='本次新增 '+fresh.length+' 条。';
+        const added=fresh.length+sourceItems.length-retainedSourceCount;
+        if(section==='fmcg'&&!slots) checkMessage='已检查，本期已满5条，保留已收录内容。';
+        else if(added) checkMessage='本次新增 '+added+' 条。';
         else if(incomplete) checkMessage='部分来源未能完整读取。';
         else if(shortageReasons.some(reason=>reason.includes('重复'))||attempted.some(source=>source.diagnosis?.counts.duplicates)) checkMessage='本次检查已排除重复条目。';
         else if(attempted.some(source=>source.diagnosis?.counts.rejected)) checkMessage='本次检查没有达到正文要求的新增条目。';

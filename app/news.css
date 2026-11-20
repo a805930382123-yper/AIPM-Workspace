@@ -16,7 +16,8 @@
 .news-jump a:hover{text-decoration:underline}
 .news-section{scroll-margin-top:16px}
 .news-article,.news-article a{overflow-wrap:anywhere}
-.news-source-items>h3{font-size:16px;margin:16px 0 8px}
-.news-source-items>details{border-top:1px solid #e7eaf3;padding:8px 0}
-.news-source-items>details>summary{color:#4531c4;cursor:pointer;overflow-wrap:anywhere}
+.news-source-items>section{border-top:1px solid #e7eaf3;margin-top:20px;padding-top:12px}
+.news-source-items>section>h3{font-size:16px;margin:0;overflow-wrap:anywhere}
+.news-source-items .news-article:first-of-type{border-top:0;margin-top:12px;padding-top:0}
+.news-source-items .news-article h4{font-size:18px;line-height:1.45;margin:0}
 @media(max-width:600px){.news-toolbar{gap:10px 16px}}
