@@ -4,7 +4,6 @@ import { automationTime } from '../../api';
 import type {
   AutomationList,
   AutomationSchedule,
-  CandidateFilter,
   CandidateList,
   KnowledgeHealth,
   ReminderView,
@@ -17,6 +16,7 @@ import {
   lastCompletedIsoWeek,
   statusLabels,
   workflowMeta,
+  type InboxCandidateFilter,
 } from './automationMeta';
 
 export type WorkflowsTabProps = {
@@ -30,6 +30,7 @@ export type WorkflowsTabProps = {
   healthError: string;
   showHealth: boolean;
   candidates?: CandidateList;
+  hasPipelineSettings: boolean;
   remindersView: ReminderView | null;
   showReminders: boolean;
   weeklyList: WeeklyReviewList | null;
@@ -40,7 +41,9 @@ export type WorkflowsTabProps = {
   onEditSchedule: (schedule: AutomationSchedule) => void;
   onRunTask: (type: string, trigger: HTMLElement | null) => void;
   onOpenRun: (id: string, trigger?: HTMLElement | null) => void;
-  onOpenInbox: (target: 'candidates' | 'reminders', filter?: CandidateFilter) => void;
+  onOpenInbox: (target: 'candidates' | 'reminders', filter?: InboxCandidateFilter) => void;
+  onOpenPipelineSettings: () => void;
+  onOpenReminderSettings: () => void;
   onOpenLint?: () => void;
   onOpenInspection?: (id?: string) => void;
   onOpenWeeklyReview?: (weekKey: string) => void;
@@ -199,6 +202,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
     healthError,
     showHealth,
     candidates,
+    hasPipelineSettings,
     remindersView,
     showReminders,
     weeklyList,
@@ -210,6 +214,8 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
     onRunTask,
     onOpenRun,
     onOpenInbox,
+    onOpenPipelineSettings,
+    onOpenReminderSettings,
     onOpenLint,
     onOpenInspection,
     onOpenWeeklyReview,
@@ -235,12 +241,14 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
   const renderNewsCard = (task: AutomationSchedule) => {
     const meta = workflowMeta['news.daily'];
     const counts = candidates?.counts;
-    const organizeFilter: CandidateFilter = counts
+    const organizeFilter: InboxCandidateFilter = counts
       ? counts.organizing > 0
         ? 'organizing'
         : counts.failed > 0
           ? 'failed'
-          : 'all'
+          : counts.drafts > 0
+            ? 'drafts'
+            : 'all'
       : 'organizing';
     return (
       <article className="automation-workflow-card" key={task.type} aria-label={task.name}>
@@ -277,13 +285,23 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           onEditSchedule={onEditSchedule}
           onRunTask={onRunTask}
           extra={
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => onOpenInbox('candidates', 'all')}
-            >
-              前往收件箱
-            </button>
+            <>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => onOpenInbox('candidates', 'all')}
+              >
+                前往收件箱
+              </button>
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={pending || !hasPipelineSettings}
+                onClick={onOpenPipelineSettings}
+              >
+                流水线设置
+              </button>
+            </>
           }
         />
       </article>
@@ -439,13 +457,23 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           onRunTask={onRunTask}
           extra={
             showReminders && (
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => onOpenInbox('reminders')}
-              >
-                前往提醒
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => onOpenInbox('reminders')}
+                >
+                  前往提醒
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={pending || !remindersView}
+                  onClick={onOpenReminderSettings}
+                >
+                  通知设置
+                </button>
+              </>
             )
           }
         />

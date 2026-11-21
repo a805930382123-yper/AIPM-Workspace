@@ -1,6 +1,38 @@
-import type { AutomationPlan, AutomationRunStatus } from '../../api';
+import type {
+  AutomationPlan,
+  AutomationRunStatus,
+  AutomationSchedule,
+  CandidateFilter,
+  CandidateView,
+  PipelineSettings,
+  ReminderSettings,
+  WorkReminder,
+} from '../../api';
 
 export type AutomationTab = 'workflows' | 'inbox' | 'runs';
+export type InboxSection = 'candidates' | 'reminders';
+export type InboxCandidateFilter = CandidateFilter | 'drafts';
+export type ReminderFilterKind = 'all' | WorkReminder['kind'];
+export type RunStatusTone = 'ok' | 'danger' | 'warning' | 'accent' | 'muted';
+
+export type ScheduleEditorState = {
+  type: string;
+  revision: number;
+  enabled: boolean;
+  catchUp: boolean;
+  kind: AutomationPlan['kind'];
+  minutes: string;
+  time: string;
+  weekday: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+};
+
+export type PipelineSettingsEdit = Omit<PipelineSettings, 'topics'> & { topics: string };
+
+export type ReminderEditor = Omit<ReminderSettings, 'staleDays' | 'maxToastsPerRun'> & {
+  revision: number;
+  staleDays: string;
+  maxToastsPerRun: string;
+};
 
 export type WorkflowGroupId =
   | 'news.daily'
@@ -94,3 +126,91 @@ export function lastCompletedIsoWeek(nowMs = Date.now()): string {
   const weekNumber = Math.floor((lastThursday.getTime() - Date.UTC(year, 0, 1)) / 604_800_000) + 1;
   return `${year}-W${String(weekNumber).padStart(2, '0')}`;
 }
+
+export function createScheduleEditor(schedule: AutomationSchedule): ScheduleEditorState {
+  return {
+    type: schedule.type,
+    revision: schedule.revision,
+    enabled: schedule.enabled,
+    catchUp: schedule.catchUp,
+    kind: schedule.plan.kind,
+    minutes: schedule.plan.kind === 'interval' ? String(schedule.plan.minutes) : '60',
+    time: schedule.plan.kind === 'interval' ? '09:00' : schedule.plan.time,
+    weekday: schedule.plan.kind === 'weekly' ? schedule.plan.weekday : (1 as const),
+  };
+}
+
+export function runStatusTone(status: AutomationRunStatus): RunStatusTone {
+  if (status === 'succeeded') return 'ok';
+  if (status === 'failed') return 'danger';
+  if (status === 'interrupted') return 'warning';
+  if (status === 'running' || status === 'queued') return 'accent';
+  return 'muted';
+}
+
+export const reminderKinds: Record<WorkReminder['kind'], string> = {
+  due_follow_up: '到期跟进',
+  stale_item: '久未推进',
+  new_raw_ready: '新资料待分析',
+};
+
+export const reminderStatuses: Record<WorkReminder['status'], string> = {
+  unread: '未读',
+  acknowledged: '已读',
+  snoozed: '已延后',
+  resolved: '已消解',
+};
+
+export const reminderDeliveryLabels: Record<WorkReminder['deliveryStatus'], string> = {
+  pending: '待投递',
+  delivered: '已投递',
+  suppressed_quiet_hours: '免打扰期间',
+  suppressed_disabled: '已关闭',
+  suppressed_non_windows: '当前环境不支持',
+  failed: '投递失败',
+};
+
+export function reminderKindTone(kind: WorkReminder['kind']): 'danger' | 'warning' | 'accent' {
+  if (kind === 'due_follow_up') return 'danger';
+  if (kind === 'stale_item') return 'warning';
+  return 'accent';
+}
+
+export const candidateStages = {
+  queued_raw: '等待保存 Raw',
+  saving_raw: '正在保存 Raw',
+  raw_failed: 'Raw 保存失败',
+  queued_organize: '等待整理',
+  organizing: '整理中',
+  organize_failed: '整理失败',
+  interrupted: '整理已中断',
+  saved: '已入库',
+  draft_ready: '草稿已生成',
+} as const;
+
+export const candidateViews: Array<[InboxCandidateFilter, string]> = [
+  ['all', '收件箱'],
+  ['fetched', '已抓取'],
+  ['pending', '待确认'],
+  ['organizing', '整理中'],
+  ['drafts', '待审草稿'],
+  ['failed', '失败'],
+  ['ignored', '已忽略'],
+];
+
+export const evidenceLabel = (row: CandidateView) =>
+  row.item.evidenceKind === 'source_summary' ? '来源摘要（未核验原文）' : '来源正文摘录（非全文）';
+
+export const candidateScore = (row: CandidateView) =>
+  row.screening && 'score' in row.screening ? row.screening.score : undefined;
+
+export const canConfirmCandidate = (row: CandidateView) =>
+  !row.confirmation && !row.savedRawId && row.disposition !== 'ignored';
+
+export const isOrganizingCandidate = (row: CandidateView) =>
+  ['queued_raw', 'saving_raw', 'queued_organize', 'organizing'].some(phase => phase === row.execution?.phase);
+
+export const isFailedCandidate = (row: CandidateView) =>
+  Boolean(row.saveIssue) ||
+  (!row.draftPending &&
+    ['raw_failed', 'organize_failed', 'interrupted'].some(phase => phase === row.execution?.phase));
