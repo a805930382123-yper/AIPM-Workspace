@@ -456,6 +456,7 @@ test('U2-04: 自动化收件箱支持当前可见范围「全选可确认项 / �
       root.render(createElement(AutomationPage, { onOpenRaw: () => {}, onOpenDraft: () => {} }));
       await tick();
     });
+    await click(findButton(container, '待处理收件箱'));
     await waitFor(() => !!container.querySelector('.candidate-low'), '收件箱渲染完成');
 
     const filters = container.querySelector('#news-candidates .automation-filters')!;
@@ -581,6 +582,7 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
       root.render(createElement(AutomationPage, { onOpenRaw: () => {}, onOpenDraft: () => {} }));
       await tick();
     });
+    await click(findButton(container, '运行记录'));
     await waitFor(() => !!container.querySelector('[aria-labelledby="automation-history"] li button'), '运行历史渲染完成');
 
     const historySection = container.querySelector('[aria-labelledby="automation-history"]')!;
@@ -602,6 +604,7 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     assert.equal(window.document.activeElement, detailBtn1, '关闭详情后应恢复焦点至「查看详情」按钮');
 
     // 2. 任务计划「最近结果」-> 聚焦 #automation-run-detail -> 关闭详情恢复焦点到「最近结果」按钮
+    await click(findButton(container, '流程与计划'));
     const selfcheckCard = container.querySelector('[aria-label="系统自检"]')!;
     const lastRunBtn = [...selfcheckCard.querySelectorAll('dd button')][0] as HTMLButtonElement;
     await click(lastRunBtn);
@@ -610,6 +613,8 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     assert.equal(window.document.activeElement, lastRunBtn, '关闭详情后应恢复焦点至「最近结果」按钮');
 
     // 3. 资讯收件箱「查看运行」-> 通过 NewsInbox.onOpenRun 传递 trigger 并聚焦详情 -> 关闭后恢复焦点
+    await click(findButton(container, '待处理收件箱'));
+    await waitFor(() => !!container.querySelector('#news-candidates'), '收件箱渲染完成');
     const viewRunBtn = findButton(container.querySelector('#news-candidates')!, '查看运行');
     await click(viewRunBtn);
     assert.equal(window.document.activeElement, container.querySelector('#automation-run-detail'));
@@ -618,22 +623,27 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     assert.equal(window.document.activeElement, viewRunBtn, '关闭详情后应恢复焦点至「查看运行」按钮');
 
     // 4. 任务计划「立即运行」-> 异步返回后仍记住触发按钮，关闭详情后恢复焦点
-    const runNowBtn = findButton(selfcheckCard, '立即运行');
+    await click(findButton(container, '流程与计划'));
+    const runNowBtn = findButton(container.querySelector('[aria-label="系统自检"]')!, '立即运行');
     await click(runNowBtn);
     assert.equal(window.document.activeElement, container.querySelector('#automation-run-detail'));
     await click(findButton(container, '关闭详情'));
     assert.equal(window.document.activeElement, runNowBtn, '关闭详情后应恢复焦点至「立即运行」按钮');
 
     // 5. 若原触发按钮已从 DOM 卸载（isConnected === false），关闭详情不得报错或聚焦到断连节点
-    await click(detailBtn1);
-    assert.equal(detailBtn1.isConnected, true);
-    const statusSelect = [...historySection.querySelectorAll('.automation-filters select')][1] as HTMLSelectElement;
+    await click(findButton(container, '运行记录'));
+    await waitFor(() => !!container.querySelector('[aria-labelledby="automation-history"] li button'), '运行历史重新渲染完成');
+    const historySectionAfter = container.querySelector('[aria-labelledby="automation-history"]')!;
+    const detailBtnAfter = [...historySectionAfter.querySelectorAll('li button')][0] as HTMLButtonElement;
+    await click(detailBtnAfter);
+    assert.equal(detailBtnAfter.isConnected, true);
+    const statusSelect = [...historySectionAfter.querySelectorAll('.automation-filters select')][1] as HTMLSelectElement;
     await act(async () => {
       statusSelect.value = 'failed';
       statusSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
       await tick();
     });
-    await waitFor(() => !detailBtn1.isConnected, '筛选后原按钮已从 DOM 移除');
+    await waitFor(() => !detailBtnAfter.isConnected, '筛选后原按钮已从 DOM 移除');
     await click(findButton(container, '关闭详情'));
     assert.equal(container.querySelector('#automation-run-detail'), null);
     assert.equal(window.document.activeElement?.isConnected, true, '焦点不得落在已卸载节点上');

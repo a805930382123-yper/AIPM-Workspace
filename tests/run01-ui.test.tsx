@@ -135,6 +135,7 @@ test('RUN01 UI confirms pauses, retains edits on revision conflict, filters and 
     await click('取消运行');
     assert.equal(writes.at(-1)?.path, '/runs/run1/cancel');
     await click('关闭详情');
+    await click('运行记录');
     const filter = [...document.querySelectorAll('select')].find(item => item.parentElement?.textContent?.startsWith('运行状态'))!;
     await act(async () => {
       filter.value = 'cancelled';

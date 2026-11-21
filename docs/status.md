@@ -1,5 +1,11 @@
 # 工程状态
 
+## AUTOUX01 自动化页顶部状态横幅、3-Tab 架构与「流程与计划」可视化完成（2026-11-21）
+
+将 [AutomationPage.tsx](../app/pages/AutomationPage.tsx) 重构为顶部紧凑状态横幅（状态色标/圆点、3 项关键指标与默认折叠的进程信息，保留暂停/恢复二次确认）+ 3 视图互斥分段 Tab（`流程与计划`、`待处理收件箱`含实时待办角标、`运行记录`，支持方向键/`Home`/`End` 键盘导航及首页/周报 3 条深链自动路由）；新增 [WorkflowsTab.tsx](../app/components/automation/WorkflowsTab.tsx) 与 [automationMeta.ts](../app/components/automation/automationMeta.ts)，按 5 组业务域展示 3 段式可视化流程条（自动阶段 → 人工门禁/边界 → 产出落点与跳转），合并原独立「知识库巡检摘要」面板为双轨巡检卡片，并补齐「每周工作回顾草稿」直达周报（含无归档回退上一完整自然周）与卡内「启用自动 AI 周报总结」持久化开关及 `409` 版本冲突处理；[automation.css](../app/automation.css) 对齐首页视觉语义并在窄屏下垂直堆叠流程条、隐藏箭头保证零溢出。不修改任何后端代码与既定数据安全边界。
+
+Agent Router 评分 `0/1/1/0`，共 `2` 分，A 标准。主会话规划与协调（`d981debabf6bac1b64546f9c1274c0fc3340693e` 基线），施工子 Agent（`3249f7b1-f814-48b7-91f8-5ec662d9fb61`，`Model: inherit`）实现与自查，独立验收子 Agent（`be7f3ec7-6c79-4712-a0d7-8e8aab262524`，`Model: inherit`）独立复验与隔离浏览器实测。双层独立裁决：**本轮施工范围内（`A1-01` ～ `A1-05`）交付/缺陷修复 PASS、`AUTOUX01` 当前批次整体 PASS**。8 个产品与测试文件 SHA-256 与施工报告 100% 一致；定向回归与新增单测 `35/35`（`autoux01-ui`、`run01-ui`、`pipe01-ui`、`uifix02-ui`、`homeui01-ui`、`review01`、`kbmaint01`、`workauto01`）、`npm.cmd run typecheck`、`npm.cmd run build`（251 模块）均退出码 `0`；隔离 `os.tmpdir()` 数据目录与随机端口（`50755`/`50756`，零外网请求、零真实模型请求、未触碰 `workspace/` 与运行中服务）真机 Edge `158.0.4370.33` 在 `1440×900` 与 `390×844` 全部实测通过（`scrollWidth === 390`、`pageErrors: []`、`consoleErrors: []`、`httpErrors: []`）。见[任务卡](handoffs/AUTOUX01-20261121-task.md)、[施工报告](reports/AUTOUX01-20261121-builder.md)、[独立验收报告](reports/AUTOUX01-20261121-review.md)与[浏览器验收脚本](../tests/acceptance/autoux01-review-browser.mjs)。`AUTOUX01` 停步交付，待用户确认后方可启动第二批 `AUTOUX02`。
+
 ## REVIEW01 每周工作回顾草稿与归档（2026-11-21）
 
 首页「周期回顾」可切换实时查询和自动周报。默认每周一上海时间 09:00 汇总上一完整自然周，先存事实快照，按开关选择是否起草 AI 周报。人工备注和已归档周报受版本保护，可导出 Markdown。周报仅存于自动化档案。

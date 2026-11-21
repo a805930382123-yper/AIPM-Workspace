@@ -71,6 +71,8 @@ test('PIPE01 inbox folds only low scores, confirms a reviewed batch with default
   };
   try {
     await act(async () => root.render(createElement(AutomationPage, { onOpenRaw() {}, onOpenDraft() {} })));
+    await when(() => document.querySelector('#automation-tab-inbox'));
+    await act(async () => document.querySelector<HTMLButtonElement>('#automation-tab-inbox')!.click());
     await when(() => document.querySelector('.candidate-low'));
     const low = document.querySelector<HTMLDetailsElement>('.candidate-low')!;
     assert.equal(low.open, false);
