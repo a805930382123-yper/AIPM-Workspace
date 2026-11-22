@@ -251,6 +251,8 @@ test('U1-01 & U1-02: 侧栏图标去重、自动化打开草稿返回自动化�
 
     // U1-01: 自动化打开草稿 -> 返回按钮文案为“返回自动化” -> 点击返回回到自动化页面
     await click(findButton(container.querySelector('.sidebar')!, '自动化'));
+    await waitFor(() => !!container.querySelector('#automation-tab-inbox'), '自动化收件箱标签就绪');
+    await click(container.querySelector('#automation-tab-inbox') as HTMLButtonElement);
     await waitFor(() => !!maybeButton(container, '审核草稿'), '自动化候选收件箱就绪');
     await click(findButton(container, '审核草稿'));
     await waitFor(() => container.querySelector('h1')?.textContent?.includes('审核「自动化草稿夹具」') === true, '从自动化打开草稿审核');
@@ -414,6 +416,8 @@ test('U1-01 返修：真实服务端带 outcomeDigest 草稿进入 RawOutcomeRev
     // 1. App 完整路径：自动化收件箱打开含 outcomeDigest 的草稿 -> 实际走入 RawOutcomeReview，返回按钮显示“返回自动化”并回到自动化
     await act(async () => { root.render(createElement(App)); await tick(); });
     await click(findButton(container.querySelector('.sidebar')!, '自动化'));
+    await waitFor(() => !!container.querySelector('#automation-tab-inbox'), '自动化收件箱标签就绪');
+    await click(container.querySelector('#automation-tab-inbox') as HTMLButtonElement);
     await waitFor(() => !!maybeButton(container, '审核草稿'), '自动化收件箱候选就绪');
     await click(findButton(container, '审核草稿'));
     await waitFor(() => container.querySelector('h1')?.textContent === '整理成果', '带 outcomeDigest 草稿必须走入 RawOutcomeReview');

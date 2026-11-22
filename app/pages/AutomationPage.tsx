@@ -79,27 +79,32 @@ export function AutomationPage({
   onOpenInspection,
   onOpenWorkItem,
   onOpenWeeklyReview,
+  initialTab,
   initialRunId,
   focusReminders,
   candidateFilter,
 }: {
   onOpenRaw: (id: string) => void;
-  onOpenDraft: (id: string) => void;
+  onOpenDraft: (id: string, returnTab?: AutomationTab) => void;
   onOpenLint?: () => void;
   onOpenInspection?: (id?: string) => void;
   onOpenWorkItem?: (id: string, focusMaterials?: boolean) => void;
   onOpenWeeklyReview?: (weekKey: string) => void;
+  initialTab?: AutomationTab;
   initialRunId?: string;
   focusReminders?: boolean;
   candidateFilter?: CandidateFilter;
 }) {
-  const initialTab: AutomationTab = initialRunId
-    ? 'runs'
-    : candidateFilter || focusReminders
-      ? 'inbox'
-      : 'workflows';
+  const resolvedInitialTab: AutomationTab =
+    initialTab ??
+    (initialRunId
+      ? 'runs'
+      : candidateFilter || focusReminders
+        ? 'inbox'
+        : 'workflows');
 
-  const [tab, setTab] = useState<AutomationTab>(initialTab);
+  const [tab, setTab] = useState<AutomationTab>(resolvedInitialTab);
+  const handleOpenDraft = (id: string) => onOpenDraft(id, tab);
   const [inboxSection, setInboxSection] = useState<InboxSection>(() => (focusReminders ? 'reminders' : 'candidates'));
   const [inboxFilter, setInboxFilter] = useState<InboxCandidateFilter>(candidateFilter ?? 'all');
   const [inboxFocus, setInboxFocus] = useState<InboxSection | null>(() =>
@@ -805,7 +810,7 @@ export function AutomationPage({
             onOpenReminderSettings={openReminderSettings}
             onOpenWorkItem={onOpenWorkItem}
             onOpenRaw={onOpenRaw}
-            onOpenDraft={onOpenDraft}
+            onOpenDraft={handleOpenDraft}
             onOpenRun={(id, trigger) => chooseRun(id, null, trigger)}
           />
         )}
@@ -854,7 +859,7 @@ export function AutomationPage({
             }
             onCloseDetail={closeRunDetail}
             onOpenRaw={onOpenRaw}
-            onOpenDraft={onOpenDraft}
+            onOpenDraft={handleOpenDraft}
             onOpenLint={onOpenLint}
             onOpenInspection={onOpenInspection}
             onOpenWeeklyReview={onOpenWeeklyReview}
@@ -880,7 +885,7 @@ export function AutomationPage({
             onClose={closeRunDetail}
             onViewInRuns={viewInRuns}
             onOpenRaw={onOpenRaw}
-            onOpenDraft={onOpenDraft}
+            onOpenDraft={handleOpenDraft}
             onOpenLint={onOpenLint}
             onOpenInspection={onOpenInspection}
             onOpenWeeklyReview={onOpenWeeklyReview}

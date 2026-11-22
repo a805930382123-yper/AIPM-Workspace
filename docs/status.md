@@ -4,11 +4,11 @@
 
 按[任务卡](handoffs/ENG02-20261122-task.md)及用户 G3 决策（D1–D10 默认、G1 走代理）执行。Agent Router 评分 `1/0/1/1 = 3`（A 标准，验收先审计划）：主会话规划协调，施工子 Agent（`c49fa5ca-2510-4577-8823-7c662930a67e`，`Model: inherit`）完成 G2 清点与 G4/G5 施工，独立验收子 Agent（`c1451d75-cd00-4b8a-a5a9-8626802c8dd2`，`Model: inherit`）先审计划并独立复验。
 
-双层独立结论（见[施工报告](reports/ENG02-20261122-builder.md)、[独立验收报告](reports/ENG02-20261122-review.md)）：
-- **本轮施工范围内交付（G2 / G4 / G5）**：**`PASS_WITH_EXTERNAL_BLOCKERS`**。账本 A 541 项守恒（恢复 6 项、归档 526 项独立复算 SHA-256 526/526 匹配、提交 D4/D5 共 2 项、D1 7 项因底层 NTFS 物理损坏阻塞）、账本 B 214 个根目录临时目录（4.10 GiB）清零（归档 169 个、删除可再生 45 个）；已删除合入分支 `codex/quickux01-delivery`；新增 `.scratch/` 忽略、`docs/testing.md` 临时数据约定及 `npm run hygiene`（`scripts/workspace-hygiene.ts`）；全部拟提交文件 ENG02-05 扫描 0 凭据 / 0 本机路径 / ≤1MB。
-- **ENG02 批次整体**：**`NOT_PASS（BLOCKED / FAIL）`**，不可推进 ENG03。逐项：ENG02-02/04/05/07 `PASS`，ENG02-01 `BLOCKED`（`.git/config` 绑定失效代理 `127.0.0.1:58319` 致推送与远端 CI 受阻），ENG02-03 `BLOCKED`（D1 7 项受 E 盘 NTFS 目录物理损坏阻塞），ENG02-06 `FAIL`（隔离 `typecheck`/`build`/`news01-sources` 通过，但前置提交 `17e244e`/`7b01402` 重构自动化页默认 Tab 为 `workflows` 遗漏更新 `tests/uifix01-ui.test.tsx` L253/L416 致 2 项超时，且本机为 Node v25.2.1 非 Node 22）。
+双层独立结论（见[施工报告](reports/ENG02-20261122-builder.md)、[独立验收报告](reports/ENG02-20261122-review.md)，含 Round 2 阻塞 3 返修复验）：
+- **本轮施工与返修范围内交付**：G2/G4/G5 为 **`PASS_WITH_EXTERNAL_BLOCKERS`**（提交 `9136910`），阻塞 3 返修（`app/App.tsx` 与 `app/pages/AutomationPage.tsx` 保持从自动化页打开草稿返回时的原 Tab 上下文、`tests/uifix01-ui.test.tsx` 切至收件箱且 0 弱化断言）独立复验 **`PASS`**。账本 A 541 项守恒（恢复 6 项、归档 526 项 SHA-256 526/526 匹配、提交 D4/D5 共 2 项、D1 7 项受底层 NTFS 损坏阻塞）、账本 B 214 个根目录临时目录（4.10 GiB）清零；已删除合入分支 `codex/quickux01-delivery`；隔离全量 `npm run check` 在 Node `v25.2.1` 下 `1006 / 1006 PASS`（独立复验定向 7 文件 `22 / 22 PASS`、`typecheck` 与 `build` 255 模块通过）；全部文件 ENG02-05 扫描 0 凭据 / 0 本机路径 / ≤1MB。
+- **ENG02 批次整体**：**`BLOCKED`**（0 已确认失败，但因外部环境阻塞尚不可标 PASS、不可推进 ENG03）。逐项：ENG02-02/04/05/07 `PASS`；ENG02-01 `BLOCKED`（`.git/config` 失效代理 `127.0.0.1:58319` 致推送与远端 CI 受阻）；ENG02-03 `BLOCKED`（D1 7 项受 E 盘 NTFS 物理目录损坏阻塞）；ENG02-06 `BLOCKED`（本地 Node `v25.2.1` 全量 `1006/1006 PASS`，待推送后由远端 Windows Node 22/24 CI 验证通过）。
 
-解除条件：① 管理员运行 `chkdsk` 修复磁盘并 `git restore` D1 7 文件；② 恢复代理或修正 `.git/config` 代理后推送并查 Windows Node 22/24 CI；③ 获授权修复 `tests/uifix01-ui.test.tsx` L253/L416 并在 Node 22/CI 复跑 `npm run check` 全绿。
+剩余解除条件：① 用户以管理员运行 `chkdsk E: /f` 修复磁盘后执行 `git restore -- docs/reports/AUTO01-20261106-review-evidence/`；② 恢复本地代理或授权修正 `.git/config` 代理后推送 `main` 并核验 Windows Node 22/24 CI 全绿。
 
 ## 工程整固 ENG02–ENG04 任务卡规划（2026-11-22）
 
