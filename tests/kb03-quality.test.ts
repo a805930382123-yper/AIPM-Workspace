@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 // The acceptance CLI deliberately remains directly runnable ESM; its fake path loads no config.
+// prettier-ignore
 // @ts-expect-error acceptance ESM support has no declaration file
 import { COUNTER, BUDGET_POLICY, REAL_LEDGER_ROOT, sha, durable, json, fakeCase, ledgerEntries, reserve } from './support/kb03-quality-runner.mjs';
 // @ts-expect-error acceptance ESM entry has no declaration file

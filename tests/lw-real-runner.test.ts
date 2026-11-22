@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+// prettier-ignore
 // @ts-expect-error Offline acceptance ESM has no declaration file.
 import {prepare,fake,entries,reserve,metered,json,sha,validate,phase,open,LEDGER} from './support/lw-real-runner.mjs';
 const temp=()=>fs.mkdtemp(path.join(os.tmpdir(),'lw-real-test-'));

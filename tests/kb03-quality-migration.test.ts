@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+// prettier-ignore
 // @ts-expect-error Acceptance ESM support deliberately has no declaration file.
 import { BUDGET_POLICY, REAL_LEDGER_ROOT, LEGACY_LEDGER_ROOT, R8_ROOT, HISTORY_USAGE, R10_SESSION_FILE, R10_STOP_FILE, COUNTER, durable, json, sha, treeHashes, startR10Session, stopR10Round, ledgerEntries, readLedger, reserve, checkBudget, fakeCase, assertOfflineTarget } from './support/kb03-quality-runner.mjs';
 // @ts-expect-error Acceptance ESM entry deliberately has no declaration file.
