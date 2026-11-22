@@ -3,16 +3,20 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：工程整固阶段（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02` 已 `PASS`；`ENG03`（证据存放规范与文档瘦身）本机施工与独立验收均 `PASS`，已提交推送，待远端 Windows Node 22/24 CI 通过后正式结项。
+- **当前阶段**：工程整固阶段（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02` 与 `ENG03` 均已 **`PASS`**，本批停止交付，等待用户明确授权后方可开启 `ENG04`。
 - **最近 5 个批次结论**：
-  - `ENG03`（2026-11-22，**PENDING_CI**）：本机 V1–V6 与独立验收全部 `PASS`（新增 `evidence-policy` 与 `npm run guard`、8 个 >1 MiB 文件迁出归档、4 份台账无损瘦身、本地隔离 `1012/1012 PASS`），待远端 CI 闭环（[施工报告](reports/ENG03-20261122-builder.md) · [验收报告](reports/ENG03-20261122-review.md)）。
+  - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；本地隔离 `1012/1012 PASS`，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[施工报告](reports/ENG03-20261122-builder.md) · [验收报告](reports/ENG03-20261122-review.md)）。
   - `ENG02`（2026-11-22，**PASS**）：工作树归档守恒闭环、根目录 214 个临时目录清零，远端代理与 Windows Node 22/24 CI 通过（[验收报告](reports/ENG02-20261122-review.md)）。
   - `AUTOUX02`（2026-11-21，**PASS**）：自动化收件箱漏斗、主从运行记录、滑出详情抽屉与统一弹窗上线并通过双尺寸 Edge 验收（[验收报告](reports/AUTOUX02-20261121-review.md)）。
   - `AUTOUX01`（2026-11-21，**PASS**）：自动化页重构为状态横幅 + 3-Tab 架构并可视化 5 组工作流与周报直达入口（[验收报告](reports/AUTOUX01-20261121-review.md)）。
   - `REVIEW01`（2026-11-21，**PASS**）：每周工作回顾草稿与归档交付，1 次合成真实调用与 3 链回放全部通过（[验收报告](reports/REVIEW01-20261121-review.md)）。
-- **开放阻塞与待用户确认**：`ENG03` 待远端 CI 验证；`AGENTS.md` 入口改动建议（D5）与是否讨论改写历史打包（D2）待用户确认；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
-- **下一步**：核验 `ENG03` 远端 Windows Node 22/24 CI 并闭环汇报；待用户确认后方可启动 `ENG04`。
+- **开放阻塞与待用户确认**：`AGENTS.md` 入口改动建议（D5）与是否另行讨论改写 Git 历史瘦身 73.98 MiB 打包（D2）待用户确认；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
+- **下一步**：等待用户确认 D5/D2 并明确授权开启 `ENG04`（[任务卡](handoffs/ENG04-20261122-task.md)）。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
+
+## ENG03 证据存放规范与文档瘦身完成（PASS，2026-11-22）
+
+新增[证据存放规范](evidence-policy.md)与体积守护 `npm run guard`（`scripts/repo-guard.ts` + 70 条存量豁免清单 + 6 项隔离单测）并接入 `npm run check` 及 CI；8 个 >1 MiB 历史大文件（55.5 MiB）核对 SHA-256 迁至仓外归档并仅机械修正 2 处断链；`status.md`（109,715 B → 14,594 B）、`agent-control.md`（62,490 B → 6,845 B）、`acceptance.md`（54,056 B → 34,555 B）、`architecture.md`（29,521 B → 28,587 B，附 9 条不变量定位表与 7 条源码核对）完成无损瘦身并由 `docs-archive-check.ts` 4/4 重构匹配；同步刷新 `README.md`、`docs/agent-quickstart.md` 与 `docs/coordination.md` 条目模板，未修改 `AGENTS.md`。本地隔离 `npm run check` `1012/1012 PASS`，主交付 `3c9c273` 的[远端 Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169) 全部 `success`。见[施工报告](reports/ENG03-20261122-builder.md)与[独立验收报告](reports/ENG03-20261122-review.md)。
 <!-- ENG03 inserted:end -->
 ## ENG02 工作区清理与同步核实完成（PASS，2026-11-22）
 
