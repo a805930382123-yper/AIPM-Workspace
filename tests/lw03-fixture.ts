@@ -1,13 +1,149 @@
-import {randomUUID} from 'node:crypto';
-import {lw02Fixture} from './lw02-fixture.ts';
-import {KnowledgeInspectionService} from '../services/llm/knowledge-inspections.ts';
-import {maintenanceDigest} from '../services/wiki/maintenance.ts';
-export async function lw03Fixture(){const f=await lw02Fixture(),original=f.provider.complete.bind(f.provider),requests:any[]=[];let mutate:((stage:string,value:any,payload:any)=>any)|undefined,fail='';
- f.provider.complete=async request=>{const p=JSON.parse(request.user);if(!['knowledge_inspection','inspection_maintenance'].includes(p.stage))return original(request);requests.push(request);if(fail===p.stage){fail='';throw Error('controlled inspection failure');}let value:any;if(p.stage==='knowledge_inspection'){const groups=[['duplicate','重复主题','副本'],['conflict','同口径甲','同口径乙'],['outdated','旧规则','新规则']],findings:any[]=[];for(const [type,a,b]of groups){const left=p.wiki.find((w:any)=>w.title.includes(a)),right=p.wiki.find((w:any)=>w.title.includes(b));if(left&&right)findings.push({type,wikiIds:[left.id,right.id],summary:type==='duplicate'?'两主题可能重复':'口径/更新依据需核对',reason:type==='outdated'?'新规则明确替代旧版，需核适用时点。':'真实双页陈述并列待核，不自动合并。',differences:'保持年份、区域、定义及数值口径，不能仅因标题相似裁定。',nextStep:'add_note',evidence:[left,right].map(w=>({wikiId:w.id,quote:w.body,start:0,end:w.body.length}))});}value={version:1,findings};}else{const targets=p.context.filter((w:any)=>p.findings.some((f:any)=>f.wikiIds.includes(w.id)));value={version:1,changes:targets.map((w:any)=>({action:'update',targetWikiId:w.id,baseRevision:w.revision,title:w.title,body:w.body+'\n\n## 口径说明（待核）\n保留双页及原来源，年度/区域差异需核对。',reason:'仅补充所选问题的口径说明，不删除合并。',summary:['保留旧有效内容、人工说明及来源'],questions:['业务适用范围仍待核对。'],findingIds:p.findings.filter((f:any)=>f.wikiIds.includes(w.id)).map((f:any)=>f.id)}))};}value=mutate?mutate(p.stage,value,p):value;const text=typeof value==='string'?value:JSON.stringify(value);return {text,bytes:Buffer.byteLength(text),finishReason:'stop'};};
- const inspections=new KnowledgeInspectionService({root:f.root,wiki:f.wiki,raws:f.rawStore,drafts:f.drafts,provider:()=>f.provider});await inspections.initialize();
- const seed=async(title:string,body:string)=>{const raw=await f.rawStore.create({title,body,sourceType:'report',sourceName:'虚构LW03',tags:[]});return f.wiki.create({title,type:'metric',category:'channel',body:body+'\n人工补充：保持各自口径，不直接相加。',sources:[raw.id],tags:['虚构口径'],aliases:[],knowledge_status:'source_supported',confidence:'low',source_level:'D',review_status:'unreviewed'});};
- const pages=await Promise.all([seed('重复主题','星桥2026直营网点目标100家，开业80家。'),seed('重复主题副本','星桥2026直营网点目标100家，开业80家。'),seed('同口径甲','星桥2026直营网点目标100家，统计期末。'),seed('同口径乙','星桥2026直营网点目标120家，统计期末。'),seed('旧规则','2024版规则适用至2025年末。'),seed('新规则','2026年新规则明确替代2024版，直营网点目标调整为120家。'),seed('海岚相似标题','海岚2027年经销门店300家，与星桥不同区域渠道。')]);
- const check=async(ids=pages.map(p=>p.id),includeRelated=false,requestId=randomUUID(),retry=false)=>{const r=await inspections.start({requestId,wikiIds:ids,includeRelated,retry});return (await inspections.wait(r.id))!;};
- const approve=async(id:string,only?:string[])=>{let d=(await f.drafts.getKnowledge(id))!;for(const c of d.maintenance!.changes)if(!only||only.includes(c.changeId))d=await f.drafts.reviewKnowledgeChange(id,{baseRevision:d.revision,changeId:c.changeId,decision:'accept'});for(const c of d.maintenance!.changes)if(c.decision==='accept'&&!c.committedOperationId)d=await f.drafts.reviewKnowledgeChange(id,{baseRevision:d.revision,changeId:c.changeId,confirmed:true,digest:maintenanceDigest(d,c.changeId)});return d;};
- const commit=async(d:any,key=randomUUID())=>f.wiki.withLock(()=>f.commits.confirm({draftId:d.id,baseRevision:d.revision,selectedPageIds:d.maintenance.changes.filter((c:any)=>c.decision==='accept'&&!c.committedOperationId).map((c:any)=>d.pages[c.pageIndex].pageId),idempotencyKey:key,operationId:randomUUID(),now:new Date().toISOString()}));
- return {...f,pages,seed,inspections,check,requests,approve,commit,mutate:(fn:typeof mutate)=>mutate=fn,failOnce:(stage:string)=>fail=stage};}
+import { randomUUID } from 'node:crypto';
+import { lw02Fixture } from './lw02-fixture.ts';
+import { KnowledgeInspectionService } from '../services/llm/knowledge-inspections.ts';
+import { maintenanceDigest } from '../services/wiki/maintenance.ts';
+export async function lw03Fixture() {
+  const f = await lw02Fixture(),
+    original = f.provider.complete.bind(f.provider),
+    requests: any[] = [];
+  let mutate: ((stage: string, value: any, payload: any) => any) | undefined,
+    fail = '';
+  f.provider.complete = async (request) => {
+    const p = JSON.parse(request.user);
+    if (!['knowledge_inspection', 'inspection_maintenance'].includes(p.stage)) return original(request);
+    requests.push(request);
+    if (fail === p.stage) {
+      fail = '';
+      throw Error('controlled inspection failure');
+    }
+    let value: any;
+    if (p.stage === 'knowledge_inspection') {
+      const groups = [
+          ['duplicate', '重复主题', '副本'],
+          ['conflict', '同口径甲', '同口径乙'],
+          ['outdated', '旧规则', '新规则'],
+        ],
+        findings: any[] = [];
+      for (const [type, a, b] of groups) {
+        const left = p.wiki.find((w: any) => w.title.includes(a)),
+          right = p.wiki.find((w: any) => w.title.includes(b));
+        if (left && right)
+          findings.push({
+            type,
+            wikiIds: [left.id, right.id],
+            summary: type === 'duplicate' ? '两主题可能重复' : '口径/更新依据需核对',
+            reason: type === 'outdated' ? '新规则明确替代旧版，需核适用时点。' : '真实双页陈述并列待核，不自动合并。',
+            differences: '保持年份、区域、定义及数值口径，不能仅因标题相似裁定。',
+            nextStep: 'add_note',
+            evidence: [left, right].map((w) => ({ wikiId: w.id, quote: w.body, start: 0, end: w.body.length })),
+          });
+      }
+      value = { version: 1, findings };
+    } else {
+      const targets = p.context.filter((w: any) => p.findings.some((f: any) => f.wikiIds.includes(w.id)));
+      value = {
+        version: 1,
+        changes: targets.map((w: any) => ({
+          action: 'update',
+          targetWikiId: w.id,
+          baseRevision: w.revision,
+          title: w.title,
+          body: w.body + '\n\n## 口径说明（待核）\n保留双页及原来源，年度/区域差异需核对。',
+          reason: '仅补充所选问题的口径说明，不删除合并。',
+          summary: ['保留旧有效内容、人工说明及来源'],
+          questions: ['业务适用范围仍待核对。'],
+          findingIds: p.findings.filter((f: any) => f.wikiIds.includes(w.id)).map((f: any) => f.id),
+        })),
+      };
+    }
+    value = mutate ? mutate(p.stage, value, p) : value;
+    const text = typeof value === 'string' ? value : JSON.stringify(value);
+    return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
+  };
+  const inspections = new KnowledgeInspectionService({
+    root: f.root,
+    wiki: f.wiki,
+    raws: f.rawStore,
+    drafts: f.drafts,
+    provider: () => f.provider,
+  });
+  await inspections.initialize();
+  const seed = async (title: string, body: string) => {
+    const raw = await f.rawStore.create({ title, body, sourceType: 'report', sourceName: '虚构LW03', tags: [] });
+    return f.wiki.create({
+      title,
+      type: 'metric',
+      category: 'channel',
+      body: body + '\n人工补充：保持各自口径，不直接相加。',
+      sources: [raw.id],
+      tags: ['虚构口径'],
+      aliases: [],
+      knowledge_status: 'source_supported',
+      confidence: 'low',
+      source_level: 'D',
+      review_status: 'unreviewed',
+    });
+  };
+  const pages = await Promise.all([
+    seed('重复主题', '星桥2026直营网点目标100家，开业80家。'),
+    seed('重复主题副本', '星桥2026直营网点目标100家，开业80家。'),
+    seed('同口径甲', '星桥2026直营网点目标100家，统计期末。'),
+    seed('同口径乙', '星桥2026直营网点目标120家，统计期末。'),
+    seed('旧规则', '2024版规则适用至2025年末。'),
+    seed('新规则', '2026年新规则明确替代2024版，直营网点目标调整为120家。'),
+    seed('海岚相似标题', '海岚2027年经销门店300家，与星桥不同区域渠道。'),
+  ]);
+  const check = async (
+    ids = pages.map((p) => p.id),
+    includeRelated = false,
+    requestId = randomUUID(),
+    retry = false,
+  ) => {
+    const r = await inspections.start({ requestId, wikiIds: ids, includeRelated, retry });
+    return (await inspections.wait(r.id))!;
+  };
+  const approve = async (id: string, only?: string[]) => {
+    let d = (await f.drafts.getKnowledge(id))!;
+    for (const c of d.maintenance!.changes)
+      if (!only || only.includes(c.changeId))
+        d = await f.drafts.reviewKnowledgeChange(id, {
+          baseRevision: d.revision,
+          changeId: c.changeId,
+          decision: 'accept',
+        });
+    for (const c of d.maintenance!.changes)
+      if (c.decision === 'accept' && !c.committedOperationId)
+        d = await f.drafts.reviewKnowledgeChange(id, {
+          baseRevision: d.revision,
+          changeId: c.changeId,
+          confirmed: true,
+          digest: maintenanceDigest(d, c.changeId),
+        });
+    return d;
+  };
+  const commit = async (d: any, key = randomUUID()) =>
+    f.wiki.withLock(() =>
+      f.commits.confirm({
+        draftId: d.id,
+        baseRevision: d.revision,
+        selectedPageIds: d.maintenance.changes
+          .filter((c: any) => c.decision === 'accept' && !c.committedOperationId)
+          .map((c: any) => d.pages[c.pageIndex].pageId),
+        idempotencyKey: key,
+        operationId: randomUUID(),
+        now: new Date().toISOString(),
+      }),
+    );
+  return {
+    ...f,
+    pages,
+    seed,
+    inspections,
+    check,
+    requests,
+    approve,
+    commit,
+    mutate: (fn: typeof mutate) => (mutate = fn),
+    failOnce: (stage: string) => (fail = stage),
+  };
+}

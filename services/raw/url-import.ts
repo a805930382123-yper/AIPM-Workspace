@@ -19,21 +19,40 @@ type WebOptions = {
 };
 
 export type ImportedWebText = {
-  body: string; title: string; finalUrl: string; fetchedAt: string; parser: string; note: string;
+  body: string;
+  title: string;
+  finalUrl: string;
+  fetchedAt: string;
+  parser: string;
+  note: string;
 };
 
 class RawUrlError extends Error {
-  constructor(public code: string, reason: string, public status: number) {
+  constructor(
+    public code: string,
+    reason: string,
+    public status: number,
+  ) {
     super(`${reason}${FALLBACK}`);
   }
 }
 
 const nonPublic = new BlockList();
 const ipv4Reserved: [string, number][] = [
-  ['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10], ['127.0.0.0', 8],
-  ['169.254.0.0', 16], ['172.16.0.0', 12], ['192.0.0.0', 24], ['192.0.2.0', 24],
-  ['192.88.99.0', 24], ['192.168.0.0', 16], ['198.18.0.0', 15], ['198.51.100.0', 24],
-  ['203.0.113.0', 24], ['224.0.0.0', 3],
+  ['0.0.0.0', 8],
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.0.0.0', 24],
+  ['192.0.2.0', 24],
+  ['192.88.99.0', 24],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+  ['198.51.100.0', 24],
+  ['203.0.113.0', 24],
+  ['224.0.0.0', 3],
 ];
 for (const [address, prefix] of ipv4Reserved) nonPublic.addSubnet(address, prefix, 'ipv4');
 nonPublic.addSubnet('2001::', 23, 'ipv6');
@@ -51,8 +70,11 @@ function publicAddress({ address, family }: Address): boolean {
 
 function webUrl(value: string, base?: URL): URL {
   let url: URL;
-  try { url = new URL(value, base); }
-  catch { throw new RawUrlError('URL_INVALID', '网页地址无效。', 400); }
+  try {
+    url = new URL(value, base);
+  } catch {
+    throw new RawUrlError('URL_INVALID', '网页地址无效。', 400);
+  }
   if (value.length > 2048 || !['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.port) {
     throw new RawUrlError('URL_FETCH_BLOCKED', '仅支持无凭据、使用默认端口的公开 HTTP(S) 网页。', 400);
   }
@@ -67,9 +89,10 @@ function ipv4Number(ip: string): number {
 function httpProxyFor(address: Address): URL | undefined {
   if (!process.allowedNodeEnvironmentFlags.has('--use-env-proxy')) return;
   const envOptions = process.env.NODE_OPTIONS?.match(/(?:[^\s"]|"(?:[^"\\]|\\.)*")+/gu) ?? [];
-  const flag = [...envOptions, ...process.execArgv].reverse()
-    .map(option => option.replace(/^"|"$/gu, '').replaceAll('_', '-'))
-    .find(option => option === '--use-env-proxy' || option === '--no-use-env-proxy');
+  const flag = [...envOptions, ...process.execArgv]
+    .reverse()
+    .map((option) => option.replace(/^"|"$/gu, '').replaceAll('_', '-'))
+    .find((option) => option === '--use-env-proxy' || option === '--no-use-env-proxy');
   if (flag ? flag === '--no-use-env-proxy' : process.env.NODE_USE_ENV_PROXY !== '1') return;
 
   const proxyUrl = process.env.http_proxy || process.env.HTTP_PROXY;
@@ -81,7 +104,7 @@ function httpProxyFor(address: Address): URL | undefined {
   // Native HTTP proxy bypass rules see the pinned socket hostname and default port.
   const host = address.address.toLowerCase();
   const noProxy = process.env.no_proxy || process.env.NO_PROXY;
-  const bypass = noProxy?.split(',').some(value => {
+  const bypass = noProxy?.split(',').some((value) => {
     const entry = value.trim().toLowerCase();
     if (entry === '*' || entry === host || entry === `${host}:80`) return true;
     if (entry.startsWith('*.')) return host.endsWith(entry.slice(1));
@@ -91,7 +114,7 @@ function httpProxyFor(address: Address): URL | undefined {
       return process.versions.node.startsWith('22.') ? host.endsWith(suffix) : host === suffix || host.endsWith(entry);
     }
     if (address.family === 4 && entry.includes('-')) {
-      const [start, end] = entry.split('-', 2).map(ip => ip.trim());
+      const [start, end] = entry.split('-', 2).map((ip) => ip.trim());
       if (isIPv4(start) && isIPv4(end)) {
         const ip = ipv4Number(host);
         return ip >= ipv4Number(start) && ip <= ipv4Number(end);
@@ -112,25 +135,31 @@ function requestPinned(url: URL, address: Address, signal: AbortSignal): Promise
   // Node's forward proxy agent requires the HTTP target authority to match Host.
   // Connect directly to the configured proxy to keep the pinned IP and original Host.
   const requestPath = `${proxy ? `http://${target}` : ''}${url.pathname}${url.search}`;
-  const proxyAuth = proxy && (proxy.username || proxy.password)
-    ? Buffer.from(`${decodeURIComponent(proxy.username)}:${decodeURIComponent(proxy.password)}`).toString('base64')
-    : undefined;
+  const proxyAuth =
+    proxy && (proxy.username || proxy.password)
+      ? Buffer.from(`${decodeURIComponent(proxy.username)}:${decodeURIComponent(proxy.password)}`).toString('base64')
+      : undefined;
   return new Promise((resolve, reject) => {
-    const request = client.request({
-      hostname: proxy ? hostname : address.address,
-      port: proxy?.port || undefined,
-      path: requestPath,
-      signal,
-      ...(!secure ? { agent: false } : {}),
-      ...(secureProxy ? { servername: isIP(hostname) ? '' : hostname } : {}),
-      ...(secure && !isIP(hostname) ? { servername: hostname } : {}),
-      headers: {
-        Host: url.host, Connection: 'close',
-        Accept: 'text/html,application/xhtml+xml,text/plain', 'Accept-Encoding': 'identity',
-        ...(proxy ? { 'Proxy-Connection': 'close' } : {}),
-        ...(proxyAuth ? { 'Proxy-Authorization': `Basic ${proxyAuth}` } : {}),
+    const request = client.request(
+      {
+        hostname: proxy ? hostname : address.address,
+        port: proxy?.port || undefined,
+        path: requestPath,
+        signal,
+        ...(!secure ? { agent: false } : {}),
+        ...(secureProxy ? { servername: isIP(hostname) ? '' : hostname } : {}),
+        ...(secure && !isIP(hostname) ? { servername: hostname } : {}),
+        headers: {
+          Host: url.host,
+          Connection: 'close',
+          Accept: 'text/html,application/xhtml+xml,text/plain',
+          'Accept-Encoding': 'identity',
+          ...(proxy ? { 'Proxy-Connection': 'close' } : {}),
+          ...(proxyAuth ? { 'Proxy-Authorization': `Basic ${proxyAuth}` } : {}),
+        },
       },
-    }, response => resolve({ status: response.statusCode ?? 0, headers: response.headers, body: response }));
+      (response) => resolve({ status: response.statusCode ?? 0, headers: response.headers, body: response }),
+    );
     request.once('error', reject);
     request.end();
   });
@@ -144,23 +173,48 @@ function extractHtml(html: string): { title: string; body: string } {
     const title = document.title.trim();
     const hasPasswordForm = !!document.querySelector('input[type="password"]');
     const hasMetaRedirect = !!document.querySelector('meta[http-equiv="refresh" i]');
-    document.querySelectorAll('script, style, noscript, template, iframe, nav, aside, footer, form, svg, canvas, [hidden], [aria-hidden="true"]').forEach(node => node.remove());
+    document
+      .querySelectorAll(
+        'script, style, noscript, template, iframe, nav, aside, footer, form, svg, canvas, [hidden], [aria-hidden="true"]',
+      )
+      .forEach((node) => node.remove());
     const article = document.querySelector('#js_content, [itemprop="articleBody"], article');
     const main = document.querySelector('main, [role="main"]');
     const root = article ?? main ?? document.body;
     const gateTitle = /^(?:登录|安全验证|验证码|sign in\b|log in\b|access denied\b|captcha\b)/iu.test(title);
-    if (hasMetaRedirect || (!article && (hasPasswordForm || gateTitle)) || (!article && !main && !root.querySelector('p, pre, blockquote'))) return { title, body: '' };
-    for (const block of root.querySelectorAll('address, blockquote, br, div, h1, h2, h3, h4, h5, h6, li, p, pre, section, tr')) {
+    if (
+      hasMetaRedirect ||
+      (!article && (hasPasswordForm || gateTitle)) ||
+      (!article && !main && !root.querySelector('p, pre, blockquote'))
+    )
+      return { title, body: '' };
+    for (const block of root.querySelectorAll(
+      'address, blockquote, br, div, h1, h2, h3, h4, h5, h6, li, p, pre, section, tr',
+    )) {
       block.before('\n');
       block.after('\n');
     }
-    root.querySelectorAll('td, th').forEach(cell => cell.after('\t'));
-    const body = (root.textContent ?? '').replace(/\u00a0/gu, ' ').split(/\r?\n/u).map(line => line.trim()).join('\n').replace(/\n{3,}/gu, '\n\n').trim();
-    if (/^(?:loading|正在加载|请稍候)[.…。\s]*$/iu.test(body) || (body.length < 300 && /enable javascript|请启用\s*javascript|captcha|安全验证|验证后继续|请先登录|sign in to continue|log in to continue/iu.test(`${title}\n${body}`))) {
+    root.querySelectorAll('td, th').forEach((cell) => cell.after('\t'));
+    const body = (root.textContent ?? '')
+      .replace(/\u00a0/gu, ' ')
+      .split(/\r?\n/u)
+      .map((line) => line.trim())
+      .join('\n')
+      .replace(/\n{3,}/gu, '\n\n')
+      .trim();
+    if (
+      /^(?:loading|正在加载|请稍候)[.…。\s]*$/iu.test(body) ||
+      (body.length < 300 &&
+        /enable javascript|请启用\s*javascript|captcha|安全验证|验证后继续|请先登录|sign in to continue|log in to continue/iu.test(
+          `${title}\n${body}`,
+        ))
+    ) {
       return { title, body: '' };
     }
     return { title: title || root.querySelector('h1')?.textContent?.trim() || '', body };
-  } finally { dom.window.close(); }
+  } finally {
+    dom.window.close();
+  }
 }
 
 export async function readPublicRawUrl(value: string, options: WebOptions = {}): Promise<ImportedWebText> {
@@ -171,7 +225,10 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
   const timeoutError = new RawUrlError('URL_FETCH_TIMEOUT', '读取网页超时。', 504);
   let timeout: ReturnType<typeof setTimeout> | undefined;
   const timedOut = new Promise<never>((_resolve, reject) => {
-    timeout = setTimeout(() => { controller.abort(timeoutError); reject(timeoutError); }, options.timeoutMs ?? WEB_TIMEOUT_MS);
+    timeout = setTimeout(() => {
+      controller.abort(timeoutError);
+      reject(timeoutError);
+    }, options.timeoutMs ?? WEB_TIMEOUT_MS);
   });
 
   const read = async (): Promise<ImportedWebText> => {
@@ -184,7 +241,7 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
       const family = isIP(hostname);
       const addresses = family ? [{ address: hostname, family }] : await resolve(hostname);
       signal.throwIfAborted();
-      if (!addresses.length || addresses.some(address => !publicAddress(address))) {
+      if (!addresses.length || addresses.some((address) => !publicAddress(address))) {
         throw new RawUrlError('URL_FETCH_BLOCKED', '网页地址解析到内网、回环或保留地址，已停止读取。', 400);
       }
       const response = await request(url, addresses[0], signal);
@@ -201,7 +258,11 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
         }
         if (response.status === 206) throw new RawUrlError('URL_BODY_UNAVAILABLE', '网页只返回了部分正文。', 422);
         if (response.status < 200 || response.status >= 300) {
-          throw new RawUrlError('URL_FETCH_FAILED', `网页返回 HTTP ${response.status}，可能需要登录或不允许读取。`, 422);
+          throw new RawUrlError(
+            'URL_FETCH_FAILED',
+            `网页返回 HTTP ${response.status}，可能需要登录或不允许读取。`,
+            422,
+          );
         }
         const contentType = response.headers['content-type'] ?? '';
         const mime = contentType.split(';', 1)[0].trim().toLowerCase();
@@ -223,17 +284,31 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
           chunks.push(buffer);
         }
         const buffer = Buffer.concat(chunks, bytes);
-        const charset = /charset\s*=\s*["']?([\w-]+)/iu.exec(contentType)?.[1]
-          ?? (html ? /<meta\b[^>]*\bcharset\s*=\s*["']?([\w-]+)/iu.exec(buffer.subarray(0, 4096).toString('ascii'))?.[1] : undefined)
-          ?? 'utf-8';
+        const charset =
+          /charset\s*=\s*["']?([\w-]+)/iu.exec(contentType)?.[1] ??
+          (html
+            ? /<meta\b[^>]*\bcharset\s*=\s*["']?([\w-]+)/iu.exec(buffer.subarray(0, 4096).toString('ascii'))?.[1]
+            : undefined) ??
+          'utf-8';
         let text: string;
-        try { text = new TextDecoder(charset, { fatal: true }).decode(buffer); }
-        catch { throw new RawUrlError('URL_CONTENT_UNSUPPORTED', '网页编码无法可靠解读。', 422); }
+        try {
+          text = new TextDecoder(charset, { fatal: true }).decode(buffer);
+        } catch {
+          throw new RawUrlError('URL_CONTENT_UNSUPPORTED', '网页编码无法可靠解读。', 422);
+        }
         const extracted = html ? extractHtml(text) : { title: '', body: text };
-        if (!extracted.body.trim()) throw new RawUrlError('URL_BODY_UNAVAILABLE', '没有取得可保存的静态正文，网页可能需要登录、验证或运行脚本。', 422);
-        if (extracted.body.length > MAX_BODY_CHARS) throw new RawUrlError('URL_BODY_TOO_LARGE', '网页正文超过 500,000 字符上限。', 413);
+        if (!extracted.body.trim())
+          throw new RawUrlError(
+            'URL_BODY_UNAVAILABLE',
+            '没有取得可保存的静态正文，网页可能需要登录、验证或运行脚本。',
+            422,
+          );
+        if (extracted.body.length > MAX_BODY_CHARS)
+          throw new RawUrlError('URL_BODY_TOO_LARGE', '网页正文超过 500,000 字符上限。', 413);
         return {
-          ...extracted, finalUrl: url.href, fetchedAt: new Date().toISOString(),
+          ...extracted,
+          finalUrl: url.href,
+          fetchedAt: new Date().toISOString(),
           parser: html ? 'url_html_text' : 'url_plain_text',
           note: html ? '从静态网页提取正文文本。' : '保存链接响应中的纯文本正文。',
         };
@@ -244,10 +319,13 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
     }
   };
 
-  try { return await Promise.race([read(), timedOut]); }
-  catch (error) {
+  try {
+    return await Promise.race([read(), timedOut]);
+  } catch (error) {
     if (signal.aborted) throw timeoutError;
     if (error instanceof RawUrlError) throw error;
     throw new RawUrlError('URL_FETCH_FAILED', '无法读取该网页。', 422);
-  } finally { clearTimeout(timeout); }
+  } finally {
+    clearTimeout(timeout);
+  }
 }

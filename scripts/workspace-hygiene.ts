@@ -54,11 +54,11 @@ function parseArgs(argv: string[]): { archiveDir: string | null; rootDir: string
 }
 
 function readGitStatus(rootDir: string): GitStatusSummary {
-  const res = spawnSync(
-    'git',
-    ['-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall', '-z'],
-    { cwd: rootDir, encoding: 'buffer', maxBuffer: 50 * 1024 * 1024 }
-  );
+  const res = spawnSync('git', ['-c', 'core.quotepath=false', 'status', '--porcelain=v1', '-uall', '-z'], {
+    cwd: rootDir,
+    encoding: 'buffer',
+    maxBuffer: 50 * 1024 * 1024,
+  });
   if (res.error) {
     throw res.error;
   }
@@ -72,7 +72,10 @@ function readGitStatus(rootDir: string): GitStatusSummary {
     return { total: 0, untracked: 0, modified: 0, deleted: 0, other: 0, stderrWarnings };
   }
 
-  const entries = res.stdout.toString('utf8').split('\0').filter((entry) => entry.length > 0);
+  const entries = res.stdout
+    .toString('utf8')
+    .split('\0')
+    .filter((entry) => entry.length > 0);
   let untracked = 0;
   let modified = 0;
   let deleted = 0;
@@ -210,7 +213,9 @@ function main(): void {
     if (json) {
       console.log(JSON.stringify({ mode: 'archive', ...manifest }, null, 2));
     } else {
-      console.log(`Archived ${archivedEntries.length} temporary directories (${totalTempFiles} files, ${formatBytes(totalTempBytes)}).`);
+      console.log(
+        `Archived ${archivedEntries.length} temporary directories (${totalTempFiles} files, ${formatBytes(totalTempBytes)}).`,
+      );
     }
     return;
   }
@@ -233,13 +238,15 @@ function main(): void {
 
   console.log('=== Workspace Hygiene Report ===');
   console.log(
-    `Git status entries: ${git.total} (untracked: ${git.untracked}, modified: ${git.modified}, deleted: ${git.deleted}, other: ${git.other})`
+    `Git status entries: ${git.total} (untracked: ${git.untracked}, modified: ${git.modified}, deleted: ${git.deleted}, other: ${git.other})`,
   );
   if (git.stderrWarnings.length > 0) {
     console.log(`Git stderr warnings (${git.stderrWarnings.length}):`);
     for (const warning of git.stderrWarnings) console.log(`  - ${warning}`);
   }
-  console.log(`Root temp directories (.scratch-*, .test-*, .rn-*, .scratch): ${tempDirs.length} (${totalTempFiles} files, ${formatBytes(totalTempBytes)})`);
+  console.log(
+    `Root temp directories (.scratch-*, .test-*, .rn-*, .scratch): ${tempDirs.length} (${totalTempFiles} files, ${formatBytes(totalTempBytes)})`,
+  );
   for (const dir of tempDirs) {
     console.log(`  - ${dir.name}: ${dir.fileCount} files, ${formatBytes(dir.bytes)}`);
   }

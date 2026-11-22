@@ -8,19 +8,40 @@
 //     leading/trailing whitespace, newlines and special characters, is what gets stored.
 import { PromptError } from './errors.ts';
 import {
-  MAX_BODY_CHARS, MAX_EXAMPLES_CHARS, MAX_NAME_CHARS, MAX_RELATED_WIKI,
-  MAX_REQUIREMENT_CHARS, MAX_SCENARIO_CHARS, MAX_TAG_CHARS, MAX_TAGS,
+  MAX_BODY_CHARS,
+  MAX_EXAMPLES_CHARS,
+  MAX_NAME_CHARS,
+  MAX_RELATED_WIKI,
+  MAX_REQUIREMENT_CHARS,
+  MAX_SCENARIO_CHARS,
+  MAX_TAG_CHARS,
+  MAX_TAGS,
 } from './limits.ts';
 
 export type PromptInput = {
-  name: string; category: string; scenario: string; body: string;
-  inputRequirements: string; outputRequirements: string;
-  relatedWikiIds: string[]; examples: string; tags: string[]; favorite: boolean;
+  name: string;
+  category: string;
+  scenario: string;
+  body: string;
+  inputRequirements: string;
+  outputRequirements: string;
+  relatedWikiIds: string[];
+  examples: string;
+  tags: string[];
+  favorite: boolean;
 };
 
 export const EDITABLE_FIELDS: Array<keyof PromptInput> = [
-  'name', 'category', 'scenario', 'body', 'inputRequirements', 'outputRequirements',
-  'relatedWikiIds', 'examples', 'tags', 'favorite',
+  'name',
+  'category',
+  'scenario',
+  'body',
+  'inputRequirements',
+  'outputRequirements',
+  'relatedWikiIds',
+  'examples',
+  'tags',
+  'favorite',
 ];
 /** System fields a client must never send; listing them gives a precise error instead of a silent drop. */
 export const SYSTEM_FIELDS = ['id', 'variables', 'createdAt', 'updatedAt', 'version', 'source'] as const;
@@ -48,25 +69,50 @@ export function requireBaseVersion(value: unknown, code = 'INVALID_BASE_VERSION'
  * `preserve` keeps the original string (used for the body and the examples block, where leading
  * or trailing whitespace is content). Everything else is stored trimmed.
  */
-function text(value: unknown, field: string, label: string, limit: number, allowEmpty: boolean, allowNewline = true, preserve = false): string {
+function text(
+  value: unknown,
+  field: string,
+  label: string,
+  limit: number,
+  allowEmpty: boolean,
+  allowNewline = true,
+  preserve = false,
+): string {
   if (typeof value !== 'string') throw new PromptError('INVALID_FIELD', `${label}必须是文本。`, 400, { field });
   const trimmed = value.trim();
   if (!allowEmpty && !trimmed) throw new PromptError('REQUIRED_FIELD', `${label}不能为空。`, 400, { field });
-  if (!allowNewline && /[\r\n]/.test(value)) throw new PromptError('INVALID_FIELD', `${label}不能包含换行。`, 400, { field });
-  if (value.length > limit) throw new PromptError('FIELD_TOO_LARGE', `${label}超过 ${limit.toLocaleString('en-US')} 字符上限。`, 400, { field, limit, length: value.length });
+  if (!allowNewline && /[\r\n]/.test(value))
+    throw new PromptError('INVALID_FIELD', `${label}不能包含换行。`, 400, { field });
+  if (value.length > limit)
+    throw new PromptError('FIELD_TOO_LARGE', `${label}超过 ${limit.toLocaleString('en-US')} 字符上限。`, 400, {
+      field,
+      limit,
+      length: value.length,
+    });
   return preserve ? value : trimmed;
 }
 
 function stringList(value: unknown, field: string, label: string, itemLimit: number, countLimit: number): string[] {
   if (!Array.isArray(value)) throw new PromptError('INVALID_FIELD', `${label}必须是文本列表。`, 400, { field });
-  if (value.length > countLimit) throw new PromptError('FIELD_TOO_LARGE', `${label}最多 ${countLimit} 项。`, 400, { field, limit: countLimit, length: value.length });
+  if (value.length > countLimit)
+    throw new PromptError('FIELD_TOO_LARGE', `${label}最多 ${countLimit} 项。`, 400, {
+      field,
+      limit: countLimit,
+      length: value.length,
+    });
   const seen = new Set<string>();
   const items: string[] = [];
   for (const entry of value) {
-    if (typeof entry !== 'string') throw new PromptError('INVALID_FIELD', `${label}的每一项都必须是文本。`, 400, { field });
+    if (typeof entry !== 'string')
+      throw new PromptError('INVALID_FIELD', `${label}的每一项都必须是文本。`, 400, { field });
     const item = entry.trim();
     if (!item) continue;
-    if (item.length > itemLimit) throw new PromptError('FIELD_TOO_LARGE', `${label}的单项超过 ${itemLimit} 字符上限。`, 400, { field, limit: itemLimit, length: item.length });
+    if (item.length > itemLimit)
+      throw new PromptError('FIELD_TOO_LARGE', `${label}的单项超过 ${itemLimit} 字符上限。`, 400, {
+        field,
+        limit: itemLimit,
+        length: item.length,
+      });
     if (seen.has(item)) continue;
     seen.add(item);
     items.push(item);
@@ -79,7 +125,8 @@ function stringList(value: unknown, field: string, label: string, itemLimit: num
  * (`requestId` on create, `baseVersion` on update) so unknown keys still fail loudly.
  */
 export function normalizePromptInput(value: unknown, categories: string[], allowedExtra: string[] = []): PromptInput {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new PromptError('INVALID_BODY', '请求内容格式不正确。', 400);
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    throw new PromptError('INVALID_BODY', '请求内容格式不正确。', 400);
   const source = value as Record<string, unknown>;
   const known = new Set<string>([...EDITABLE_FIELDS, ...allowedExtra]);
   for (const key of Object.keys(source)) {
@@ -120,19 +167,28 @@ export function requireBoolean(value: unknown, field: string, label: string): bo
 /** Canonical form used for "same content" comparisons (create retry, no-op update). */
 export function canonicalInput(input: Pick<PromptInput, keyof PromptInput>): string {
   return JSON.stringify({
-    name: input.name, category: input.category, scenario: input.scenario, body: input.body,
-    inputRequirements: input.inputRequirements, outputRequirements: input.outputRequirements,
-    relatedWikiIds: input.relatedWikiIds, examples: input.examples, tags: input.tags, favorite: input.favorite,
+    name: input.name,
+    category: input.category,
+    scenario: input.scenario,
+    body: input.body,
+    inputRequirements: input.inputRequirements,
+    outputRequirements: input.outputRequirements,
+    relatedWikiIds: input.relatedWikiIds,
+    examples: input.examples,
+    tags: input.tags,
+    favorite: input.favorite,
   });
 }
 
 /** Values map for `render`/`renderVariables`: own enumerable string keys with string values only. */
 export function normalizeVariableValues(value: unknown): Record<string, string> {
   if (value === undefined || value === null) return {};
-  if (typeof value !== 'object' || Array.isArray(value)) throw new PromptError('INVALID_VALUES', '变量值必须是对象。', 400);
+  if (typeof value !== 'object' || Array.isArray(value))
+    throw new PromptError('INVALID_VALUES', '变量值必须是对象。', 400);
   const out: Record<string, string> = Object.create(null) as Record<string, string>;
   for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
-    if (typeof entry !== 'string') throw new PromptError('INVALID_VALUES', `变量“${key}”的值必须是文本。`, 400, { variable: key });
+    if (typeof entry !== 'string')
+      throw new PromptError('INVALID_VALUES', `变量“${key}”的值必须是文本。`, 400, { variable: key });
     // Own-key read into a null-prototype map: `__proto__`/`constructor` can never walk the prototype.
     Object.defineProperty(out, key, { value: entry, enumerable: true, writable: true, configurable: true });
   }

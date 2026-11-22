@@ -1,2 +1,57 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {createElement} from 'react';import {renderToStaticMarkup} from 'react-dom/server';import {RawPage} from '../app/pages/RawPage';import type {Raw,ExtractionJob} from '../app/api';
-test('Raw 列表标明落盘状态，详情保留真实恢复提示',()=>{const raw:Raw={id:'r',title:'虚构来源',sourceType:'report',sourceName:'测试',tags:[],body:'原文',importedAt:'2026-10-01T00:00:00Z',status:'unprocessed',bodySha256:'hash'};const job:ExtractionJob={jobId:'j',rawId:'r',status:'running',stage:'planning',execution:'settled',mode:'deep',progress:{chunksTotal:1,chunksDone:1,pagesFound:1},draftId:null,error:null,provider:{name:'fake',model:'fake'},callCount:5,startedAt:'2026-10-01T00:00:00Z',finishedAt:null,cancelRequested:false,recovery:{code:'IO',message:'保存失败',phase:'done',persisted:false,action:'reconcile-storage'}};const html=renderToStaticMarkup(createElement(RawPage,{items:[raw],selectedId:'r',onSelected:()=>{},onOpenImport:()=>{},onCommitted:async()=>{},openImport:false,onCloseImport:()=>{},onDeleted:async()=>{},processing:{r:{rawId:'r',status:'processing',updatedAt:'2026-10-01T00:00:00Z'}},job,onJobStarted:()=>{},onOpenDraft:()=>{},onRefresh:async()=>{}}));assert.match(html,/上次保存状态：AI 处理中/);assert.match(html,/已停止，状态保存失败/);assert.match(html,/重试保存状态/);assert.match(html,/不会重新调用模型/)});
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { RawPage } from '../app/pages/RawPage';
+import type { Raw, ExtractionJob } from '../app/api';
+test('Raw 列表标明落盘状态，详情保留真实恢复提示', () => {
+  const raw: Raw = {
+    id: 'r',
+    title: '虚构来源',
+    sourceType: 'report',
+    sourceName: '测试',
+    tags: [],
+    body: '原文',
+    importedAt: '2026-10-01T00:00:00Z',
+    status: 'unprocessed',
+    bodySha256: 'hash',
+  };
+  const job: ExtractionJob = {
+    jobId: 'j',
+    rawId: 'r',
+    status: 'running',
+    stage: 'planning',
+    execution: 'settled',
+    mode: 'deep',
+    progress: { chunksTotal: 1, chunksDone: 1, pagesFound: 1 },
+    draftId: null,
+    error: null,
+    provider: { name: 'fake', model: 'fake' },
+    callCount: 5,
+    startedAt: '2026-10-01T00:00:00Z',
+    finishedAt: null,
+    cancelRequested: false,
+    recovery: { code: 'IO', message: '保存失败', phase: 'done', persisted: false, action: 'reconcile-storage' },
+  };
+  const html = renderToStaticMarkup(
+    createElement(RawPage, {
+      items: [raw],
+      selectedId: 'r',
+      onSelected: () => {},
+      onOpenImport: () => {},
+      onCommitted: async () => {},
+      openImport: false,
+      onCloseImport: () => {},
+      onDeleted: async () => {},
+      processing: { r: { rawId: 'r', status: 'processing', updatedAt: '2026-10-01T00:00:00Z' } },
+      job,
+      onJobStarted: () => {},
+      onOpenDraft: () => {},
+      onRefresh: async () => {},
+    }),
+  );
+  assert.match(html, /上次保存状态：AI 处理中/);
+  assert.match(html, /已停止，状态保存失败/);
+  assert.match(html, /重试保存状态/);
+  assert.match(html, /不会重新调用模型/);
+});

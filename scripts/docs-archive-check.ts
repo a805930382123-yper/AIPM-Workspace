@@ -63,8 +63,7 @@ export function stripEng03Insertions(lfText: string, docName: string): string {
 
     const isBlockStart = (startIdx === 0 || lfText[startIdx - 1] === '\n') && lfText[afterStart] === '\n';
     const afterEnd = endIdx + END_ANCHOR.length;
-    const isBlockEnd =
-      lfText[endIdx - 1] === '\n' && (afterEnd === lfText.length || lfText[afterEnd] === '\n');
+    const isBlockEnd = lfText[endIdx - 1] === '\n' && (afterEnd === lfText.length || lfText[afterEnd] === '\n');
 
     result += lfText.slice(cursor, startIdx);
     if (isBlockStart && isBlockEnd) {
@@ -91,15 +90,18 @@ export function undoArchivedLinks(text: string): string {
         return line;
       }
       if (fenced) return line;
-      return line.replace(/(\]\(\s*)(?:<([^>]+)>|([^\s)]+))/g, (match, prefix: string, angled: string | undefined, plain: string | undefined) => {
-        const url = angled ?? plain ?? '';
-        if (/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(url)) return match;
-        if (!url.startsWith('../')) {
-          throw new Error(`Unexpected archived relative link without ../ prefix: ${url}`);
-        }
-        const restored = url.slice(3);
-        return angled !== undefined ? `${prefix}<${restored}>` : `${prefix}${restored}`;
-      });
+      return line.replace(
+        /(\]\(\s*)(?:<([^>]+)>|([^\s)]+))/g,
+        (match, prefix: string, angled: string | undefined, plain: string | undefined) => {
+          const url = angled ?? plain ?? '';
+          if (/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(url)) return match;
+          if (!url.startsWith('../')) {
+            throw new Error(`Unexpected archived relative link without ../ prefix: ${url}`);
+          }
+          const restored = url.slice(3);
+          return angled !== undefined ? `${prefix}<${restored}>` : `${prefix}${restored}`;
+        },
+      );
     })
     .join('\n');
 }
@@ -206,9 +208,7 @@ function verifyEng03(base: string, manifest: Eng03ArchiveDoc[]): void {
     }
 
     if (keptOffset !== keptText.length) {
-      throw new Error(
-        `Unaccounted kept text in ${doc.source}: consumed ${keptOffset} of ${keptText.length} chars`,
-      );
+      throw new Error(`Unaccounted kept text in ${doc.source}: consumed ${keptOffset} of ${keptText.length} chars`);
     }
     if (doc.report.length !== doc.blocks) {
       throw new Error(`Block count mismatch for ${doc.source}: ${doc.report.length} !== ${doc.blocks}`);

@@ -46,7 +46,7 @@ const token = 'autoux01-test-token';
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 
-const tick = (ms = 10) => new Promise(resolve => setTimeout(resolve, ms));
+const tick = (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
 async function waitFor(check: () => unknown, label = 'condition') {
   for (let i = 0; i < 80; i += 1) {
     if (check()) return;
@@ -58,7 +58,7 @@ async function waitFor(check: () => unknown, label = 'condition') {
 }
 
 const findButton = (text: string, scope: ParentNode = document) => {
-  const btn = [...scope.querySelectorAll('button')].find(el => (el.textContent ?? '').includes(text));
+  const btn = [...scope.querySelectorAll('button')].find((el) => (el.textContent ?? '').includes(text));
   assert.ok(btn, `找不到按钮：${text}`);
   return btn;
 };
@@ -169,7 +169,11 @@ const makeSchedules = (): AutomationSchedule[] => [
   },
 ];
 
-const candidateRow = (id: string, title: string, phase?: NonNullable<CandidateView['execution']>['phase']): CandidateView => ({
+const candidateRow = (
+  id: string,
+  title: string,
+  phase?: NonNullable<CandidateView['execution']>['phase'],
+): CandidateView => ({
   id: `${day}/fmcg/${id}`,
   section: 'fmcg',
   disposition: 'inbox',
@@ -354,7 +358,7 @@ test('A1-01/A1-02/A1-03: 顶部紧凑横幅色标、折叠进程信息、3-Tab �
           onOpenLint: () => {
             lintOpened += 1;
           },
-          onOpenInspection: id => {
+          onOpenInspection: (id) => {
             inspectionOpened.push(id);
           },
           onOpenWorkItem: () => {},
@@ -364,7 +368,10 @@ test('A1-01/A1-02/A1-03: 顶部紧凑横幅色标、折叠进程信息、3-Tab �
       await tick(0);
     });
 
-    await waitFor(() => document.querySelectorAll('.automation-workflow-card').length === 6, '等待 5 组 + 1 兜底流程卡');
+    await waitFor(
+      () => document.querySelectorAll('.automation-workflow-card').length === 6,
+      '等待 5 组 + 1 兜底流程卡',
+    );
 
     // A1-01 顶部横幅初始 ok 色标、待处理计数（1 + 2 = 3 项）、折叠进程信息
     const banner = document.querySelector<HTMLElement>('.automation-banner')!;
@@ -479,7 +486,7 @@ test('A1-04: 每周工作回顾直达周报（有归档 / 无归档回退 lastCo
     const path = url.pathname;
     if (path === '/api/automation/status') return json(baseStatus());
     if (path === '/api/automation/schedules') {
-      return json({ items: makeSchedules().filter(item => item.type === 'review.weekly') });
+      return json({ items: makeSchedules().filter((item) => item.type === 'review.weekly') });
     }
     if (path === '/api/automation/runs') return json({ items: [] });
     if (path === '/api/automation/weekly-reviews') {
@@ -507,7 +514,7 @@ test('A1-04: 每周工作回顾直达周报（有归档 / 无归档回退 lastCo
         createElement(AutomationPage, {
           onOpenRaw: () => {},
           onOpenDraft: () => {},
-          onOpenWeeklyReview: weekKey => {
+          onOpenWeeklyReview: (weekKey) => {
             openedWeeks.push(weekKey);
           },
         }),

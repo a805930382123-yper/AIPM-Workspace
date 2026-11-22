@@ -11,7 +11,11 @@ const isLowSurrogate = (code: number) => code >= 0xdc00 && code <= 0xdfff;
 
 export function chunkText(body: string, options: ChunkOptions): TextChunk[] {
   if (body.length > options.maxRawChars) {
-    throw new LlmError('LLM_RAW_TOO_LARGE', `原文 ${body.length} 字符，超过本批 ${options.maxRawChars} 字符预算；原文完整保留，未做截尾。`, 413);
+    throw new LlmError(
+      'LLM_RAW_TOO_LARGE',
+      `原文 ${body.length} 字符，超过本批 ${options.maxRawChars} 字符预算；原文完整保留，未做截尾。`,
+      413,
+    );
   }
   if (!body.length) return [];
   const chunks: TextChunk[] = [];

@@ -1,86 +1,374 @@
-import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {spawn} from 'node:child_process';
+import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-test('EVAL01 live failure records one attempt and stops before the next case',async()=>{
- const temp=await mkdtemp(path.join(os.tmpdir(),'eval01-fail-'));const log=path.join(temp,'calls');
- try{const child=spawn(process.execPath,['--import','tsx','--import','./tests/eval01-preload.mjs','scripts/eval/run.mjs','--chain','standard-extract','--mode','live','--recording','fake-fail'],{cwd:process.cwd(),env:{...process.env,FMCG_LLM_BASE_URL:'http://127.0.0.1:1',FMCG_LLM_MODEL:'fake',FMCG_LLM_API_KEY:'synthetic-test-key',FMCG_LLM_CONFIG_FILE:path.join(temp,'none'),EVAL01_CALL_LOG:log},stdio:['ignore','pipe','pipe']});let output='';child.stdout.on('data',b=>output+=b);child.stderr.on('data',b=>output+=b);let code=await new Promise<number|null>(resolve=>child.on('close',resolve));assert.equal(code,1);assert.equal((await readFile(log,'utf8')).trim(),'call');let match=output.match(/Result: (.+\.json)/u);assert(match);let result=JSON.parse(await readFile(match[1]!.trim(),'utf8'));assert.equal(result.ledger.length,1);assert.equal(result.ledger[0].status,'failed');assert.equal(result.ledger[0].unknownUsage,true);assert.equal(result.cases[0].status,'FAIL');assert.equal(result.cases[0].error.code,'LLM_PROVIDER_ERROR');assert(result.cases.slice(1).every((x:{status:string})=>x.status==='NOT_RUN'));}finally{await rm(temp,{recursive:true,force:true});}
+test('EVAL01 live failure records one attempt and stops before the next case', async () => {
+  const temp = await mkdtemp(path.join(os.tmpdir(), 'eval01-fail-'));
+  const log = path.join(temp, 'calls');
+  try {
+    const child = spawn(
+      process.execPath,
+      [
+        '--import',
+        'tsx',
+        '--import',
+        './tests/eval01-preload.mjs',
+        'scripts/eval/run.mjs',
+        '--chain',
+        'standard-extract',
+        '--mode',
+        'live',
+        '--recording',
+        'fake-fail',
+      ],
+      {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          FMCG_LLM_BASE_URL: 'http://127.0.0.1:1',
+          FMCG_LLM_MODEL: 'fake',
+          FMCG_LLM_API_KEY: 'synthetic-test-key',
+          FMCG_LLM_CONFIG_FILE: path.join(temp, 'none'),
+          EVAL01_CALL_LOG: log,
+        },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    );
+    let output = '';
+    child.stdout.on('data', (b) => (output += b));
+    child.stderr.on('data', (b) => (output += b));
+    let code = await new Promise<number | null>((resolve) => child.on('close', resolve));
+    assert.equal(code, 1);
+    assert.equal((await readFile(log, 'utf8')).trim(), 'call');
+    let match = output.match(/Result: (.+\.json)/u);
+    assert(match);
+    let result = JSON.parse(await readFile(match[1]!.trim(), 'utf8'));
+    assert.equal(result.ledger.length, 1);
+    assert.equal(result.ledger[0].status, 'failed');
+    assert.equal(result.ledger[0].unknownUsage, true);
+    assert.equal(result.cases[0].status, 'FAIL');
+    assert.equal(result.cases[0].error.code, 'LLM_PROVIDER_ERROR');
+    assert(result.cases.slice(1).every((x: { status: string }) => x.status === 'NOT_RUN'));
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
 });
 // The real CLI constants remain immutable. Only this throwaway copy is rebound to a synthetic fixture.
-test('EVAL01 isolated resume preflight, bounded calls and one-use permit',async()=>{
- const {cp,mkdir,writeFile,readdir,unlink}=await import('node:fs/promises');const {createHash}=await import('node:crypto');
- const dir=await mkdtemp(path.join(process.cwd(),'.test-eval01-resume-'));
- const hash=(v:Buffer|string)=>createHash('sha256').update(v).digest('hex');
- const canonical=(v:unknown)=>JSON.stringify(v,function(_k,x){return x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.entries(x).sort(([a],[b])=>a.localeCompare(b,'en'))):x});
- const ids=['basic-01-timeout','basic-02-cutoff','basic-03-scope','basic-04-repeat','basic-05-reconcile','basic-06-rate','trap-01-forecast','trap-02-units'];
- const frozen=['c9ef7235c3cbfa32600b3ea7a138beac9ce3971d96b8b31ce476c45294493feb','c196ff11e93c40987def15b483c75c3293353cc11a4ff894f32506d84691b942','1412e1f8614432fd2eea9b97fd3da4ee437c4130646b8dc2930a43528d7ee9b1','cb39cc3063a8942274dc0c2ea86305e3cbf04fff1058f5008be76bd57fff80f3'];
- try{
-  for(const sub of ['services','rules','scripts/eval','evals/cases','evals/thresholds.json'])await cp(path.join(process.cwd(),sub),path.join(dir,sub),{recursive:true});
-  // Match the runner's normalized service tree digest using the copied files.
-  const productRoots = ['services/llm', 'services/wiki', 'services/storage'];
-  const productFiles = (await Promise.all(productRoots.map(sub => readdir(path.join(dir, sub), {recursive: true, withFileTypes: true}))))
-    .flat().filter(entry => entry.isFile())
-    .map(entry => path.relative(dir, path.join(entry.parentPath, entry.name)).split(path.sep).join('/')).sort();
-  const product = await Promise.all(productFiles.map(async name => {
-    const text = await readFile(path.join(dir, name), 'utf8');
-    return [name, hash(text.replace(/\r\n?/gu, '\n'))];
-  }));
-  const fixtureProductHash = hash(JSON.stringify(product));
-  // A checkout may already contain all eight live recordings. The synthetic source run
-  // represents the earlier four-case stop, so clear only its temporary remaining copies.
-  for(const id of ids.slice(4)){const target=path.resolve(dir,'evals/cases/standard-extract',id,'recordings/live-20261115-baseline.json');assert(target.startsWith(path.resolve(dir)+path.sep));await rm(target,{force:true});}
-  await mkdir(path.join(dir,'evals/results'),{recursive:true});let cases:any[]=[], recHashes:string[]=[];
-  for(let i=0;i<ids.length;i++){const root=path.join(dir,'evals/cases/standard-extract',ids[i]!,'recordings'),rec=JSON.parse(await readFile(path.join(root,'synthetic-v1.json'),'utf8'));let row:any={id:ids[i],status:i<3?'PASS':i===3?'FAIL':'NOT_RUN',caseHash:rec.caseHash,goldHash:rec.goldHash,bodyHash:rec.bodyHash};if(i<4){rec.origin='live';rec.provider={name:'openai-compatible',model:'gpt-6.1-terra'};const bytes=JSON.stringify(rec,null,2)+'\n';await writeFile(path.join(root,'live-20261115-baseline.json'),bytes);recHashes.push(hash(bytes));row.recordingHash=hash(canonical(rec));row.provider=rec.provider;}cases.push(row);}
-  const sample=JSON.parse(await readFile(path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/synthetic-v1.json'),'utf8'));
-  const thresholdsFile = path.join(dir, 'evals/thresholds.json');
-  const thresholdBytes = await readFile(thresholdsFile);
-  const { weeklyReview, ...threshold } = JSON.parse(thresholdBytes.toString('utf8'));
-  const source={runId:'2026-11-15T10-34-38-191Z-832c444a',schemaVersion:1,scoringSchemaVersion:1,mode:'live',chain:'standard-extract',rulesVersion:sample.rulesVersion,thresholdHash:hash(canonical(threshold)),cases,ledger:Array.from({length:8},(_,i)=>({caseId:ids[Math.floor(i/2)],stage:i%2?'planning':'extracting',status:'success',unknownUsage:false,usage:{promptTokens:i?0:33295,completionTokens:i?0:3865}}))};
-  const sourceBytes=JSON.stringify(source,null,2)+'\n',sourcePath=path.join(dir,'evals/results/source.json'),sourceHash=hash(sourceBytes);await writeFile(sourcePath,sourceBytes);
-  const runner=path.join(dir,'scripts/eval/run.mjs');
-  const frozenProductHash = '20d80ac6f25b61d97862ff926823dd716649771d9ab962c61407f24e3ae93602';
-  let code=await readFile(runner,'utf8');
-  assert.ok(code.includes(frozenProductHash), 'Expected the frozen fingerprint in the copied runner.');
-  code=code.replace(frozenProductHash, fixtureProductHash).replaceAll('ca9a118ee1f7bba97facaf49c186675537e8ad5612a6d2398b8d33ecd3387b61',sourceHash);
-  for(let i=0;i<4;i++)code=code.replaceAll(frozen[i]!,recHashes[i]!);
-  await writeFile(runner,code);
-  const preload=path.join(dir,'fake.mjs');await writeFile(preload,`import {readFileSync,appendFileSync} from 'node:fs';\nlet n=0;const ids=${JSON.stringify(ids.slice(4))};globalThis.fetch=async(_url,init)=>{n++;appendFileSync(process.env.EVAL01_CALL_LOG,'call\\n');if(Number(process.env.EVAL01_FAIL_AT)===n)return new Response('{}',{status:500});let rec=JSON.parse(readFileSync('evals/cases/standard-extract/'+ids[Math.floor((n-1)/2)]+'/recordings/synthetic-v1.json'));let text=rec.calls[(n-1)%2].completion.text;if(process.env.EVAL01_QUALITY==='1'){let obj=JSON.parse(text);if(n===1)obj.facts.pop();if(n===2){let payload=JSON.parse(JSON.parse(init.body).messages[1].content.split('\\n').at(-1));obj.pages[0].factUnitIds=payload.factUnits.map(x=>x.id);}text=JSON.stringify(obj);}if(Number(process.env.EVAL01_BAD_AT)===n)text='not json';if(Number(process.env.EVAL01_SCHEMA_AT)===n)text='{}';return new Response(JSON.stringify({choices:[{message:{content:text},finish_reason:'stop'}],usage:{prompt_tokens:1,completion_tokens:2}}),{status:200});};`);
-  const log=path.join(dir,'calls'),args=['--chain','standard-extract','--mode','live','--record','--recording','live-20261115-baseline','--resume-from',sourcePath,'--resume-sha256',sourceHash];
-  async function invoke(a:string[],extra:Record<string,string>={}){const child=spawn(process.execPath,['--import','tsx','--import','./fake.mjs','scripts/eval/run.mjs',...a],{cwd:dir,env:{...process.env,FMCG_LLM_BASE_URL:'http://127.0.0.1:1',FMCG_LLM_MODEL:'gpt-6.1-terra',FMCG_LLM_API_KEY:'synthetic-test-key',FMCG_LLM_CONFIG_FILE:path.join(dir,'none'),EVAL01_CALL_LOG:log,...extra},stdio:['ignore','pipe','pipe']});let out='';child.stdout.on('data',b=>out+=b);child.stderr.on('data',b=>out+=b);const status=await new Promise<number|null>(resolve=>child.on('close',resolve));return {status,out};}
-  const count=async()=>{try{return (await readFile(log,'utf8')).split('\n').filter(Boolean).length}catch{return 0}};
-  for(const bad of [args.filter((_,i)=>i!==2&&i!==3),args.filter((_,i)=>i!==3),args.filter((_,i)=>i!==4),[...args,'--case','basic-01-timeout'],args.map(x=>x===sourceHash?'0'.repeat(64):x)]){let r=await invoke(bad);assert.equal(r.status,1,r.out);assert.equal(await count(),0);}
-  await writeFile(thresholdsFile, JSON.stringify({ ...threshold, factRecallPerCase: 0.95, weeklyReview }));
-  const changedThreshold = await invoke(args);
-  assert.equal(changedThreshold.status, 1, changedThreshold.out);
-  assert.match(changedThreshold.out, /Incompatible resume source/u);
-  assert.equal(await count(), 0);
-  await writeFile(thresholdsFile, thresholdBytes);
-  const service = path.join(dir, 'services/storage/files.ts');
-  const serviceBytes = await readFile(service);
-  await writeFile(service, Buffer.concat([serviceBytes, Buffer.from('\n// Change the fixture fingerprint.\n')]));
-  let blocked = await invoke(args);
-  assert.equal(blocked.status, 1, blocked.out);
-  assert.match(blocked.out, /Product fingerprint mismatch/u);
-  assert.equal(await count(), 0);
-  await writeFile(service, serviceBytes);
-  // Existing remaining recording, missing or altered prior recording, and occupied permit all refuse before fetch.
-  const old=path.join(dir,'evals/cases/standard-extract',ids[0]!,'recordings/live-20261115-baseline.json'),oldBytes=await readFile(old);
-  await unlink(old);blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await writeFile(old,oldBytes);
-  await writeFile(old,Buffer.concat([oldBytes,Buffer.from(' ')]));blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await writeFile(old,oldBytes);
-  const future=path.join(dir,'evals/cases/standard-extract',ids[4]!,'recordings/live-20261115-baseline.json');await writeFile(future,'{}');blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await unlink(future);
-  const permit=path.join(dir,'evals/results','resume-'+sourceHash+'.json');await writeFile(permit,'{}');blocked=await invoke(args);assert.equal(blocked.status,1);assert.equal(await count(),0);await unlink(permit);
-  // Rebind only the throwaway fixture after corrupting its first response, so replay itself rejects.
-  const broken=JSON.parse(oldBytes.toString('utf8'));broken.calls[0].completion.text='{';const brokenBytes=JSON.stringify(broken,null,2)+'\n';await writeFile(old,brokenBytes);
-  const badSource=structuredClone(source);badSource.cases[0].recordingHash=hash(canonical(broken));const badSourceBytes=JSON.stringify(badSource,null,2)+'\n',badSourceHash=hash(badSourceBytes);await writeFile(sourcePath,badSourceBytes);await writeFile(runner,code.replaceAll(sourceHash,badSourceHash).replaceAll(recHashes[0]!,hash(brokenBytes)));
-  blocked=await invoke(args.map(x=>x===sourceHash?badSourceHash:x));assert.equal(blocked.status,1,blocked.out);assert.match(blocked.out,/Resume replay failed/);assert.equal(await count(),0);await writeFile(old,oldBytes);await writeFile(sourcePath,sourceBytes);await writeFile(runner,code);
-  let success=await invoke(args);assert.equal(success.status,0,success.out);assert.equal(await count(),8);let match=success.out.match(/Result: (.+\.json)/gu);assert(match);let result=JSON.parse(await readFile(match.at(-1)!.slice(8).trim(),'utf8'));assert.equal(result.mode,'mixed');assert.equal(result.scoringSchemaVersion,2);assert.equal(result.replayCalls,8);assert.equal(result.ledger.length,8);assert.equal(result.summary.usage.totalRequests,16);assert.equal(result.summary.usage.promptTokens,33303);assert.equal(result.summary.usage.completionTokens,3881);assert.deepEqual(result.cases.map((x:{executionMode:string})=>x.executionMode),['replay','replay','replay','replay','live','live','live','live']);
-  const replay=await invoke(['--chain','standard-extract','--recording','live-20261115-baseline']);assert.equal(replay.status,0,replay.out);const replayMatch=replay.out.match(/Result: (.+\.json)/u);assert(replayMatch);const replayResult=JSON.parse(await readFile(replayMatch[1]!.trim(),'utf8'));assert.deepEqual(replayResult.cases.map((x:{metrics:unknown})=>x.metrics),result.cases.map((x:{metrics:unknown})=>x.metrics));assert.equal(await count(),8);
-  const oldBaseline=await invoke(['--chain','standard-extract','--recording','live-20261115-baseline','--baseline',sourcePath]);assert.equal(oldBaseline.status,1);assert.match(oldBaseline.out,/Incompatible baseline/);assert.equal(await count(),8);
-  let again=await invoke(args);assert.equal(again.status,1);assert.equal(await count(),8);
-  // Remove only isolated test artifacts to exercise independent failure paths.
-  async function reset(){for(const id of ids.slice(4)){const f=path.join(dir,'evals/cases/standard-extract',id,'recordings/live-20261115-baseline.json');try{await unlink(f)}catch{}}for(const f of await readdir(path.join(dir,'evals/results')))if(f.startsWith('resume-'))await unlink(path.join(dir,'evals/results',f));await writeFile(log,'');}
-  for(const [env,n] of [[{EVAL01_FAIL_AT:'1'},1],[{EVAL01_FAIL_AT:'4'},4],[{EVAL01_BAD_AT:'1'},1],[{EVAL01_SCHEMA_AT:'1'},1],[{EVAL01_QUALITY:'1'},2]] as Array<[Record<string,string>,number]>){await reset();const r=await invoke(args,env);assert.equal(r.status,1,r.out);assert.equal(await count(),n);const matches=r.out.match(/Result: (.+\.json)/gu);assert(matches);const failed=JSON.parse(await readFile(matches.at(-1)!.slice(8).trim(),'utf8'));if(env.EVAL01_QUALITY){assert.equal(failed.cases[4].status,'FAIL');assert.equal(failed.cases[4].metrics.facts.passed,2);assert.equal(failed.cases[4].metrics.facts.total,3);assert.equal(failed.cases[4].error,undefined);}if(env.EVAL01_BAD_AT)assert.equal(failed.cases[4].error.code,'LLM_INVALID_JSON');if(env.EVAL01_SCHEMA_AT)assert.equal(failed.cases[4].error.code,'LLM_SCHEMA_INVALID');const again=await invoke(args,env);assert.equal(again.status,1);assert.equal(await count(),n);}
- }finally{await rm(dir,{recursive:true,force:true});}
+test('EVAL01 isolated resume preflight, bounded calls and one-use permit', async () => {
+  const { cp, mkdir, writeFile, readdir, unlink } = await import('node:fs/promises');
+  const { createHash } = await import('node:crypto');
+  const dir = await mkdtemp(path.join(process.cwd(), '.test-eval01-resume-'));
+  const hash = (v: Buffer | string) => createHash('sha256').update(v).digest('hex');
+  const canonical = (v: unknown) =>
+    JSON.stringify(v, function (_k, x) {
+      return x && typeof x === 'object' && !Array.isArray(x)
+        ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => a.localeCompare(b, 'en')))
+        : x;
+    });
+  const ids = [
+    'basic-01-timeout',
+    'basic-02-cutoff',
+    'basic-03-scope',
+    'basic-04-repeat',
+    'basic-05-reconcile',
+    'basic-06-rate',
+    'trap-01-forecast',
+    'trap-02-units',
+  ];
+  const frozen = [
+    'c9ef7235c3cbfa32600b3ea7a138beac9ce3971d96b8b31ce476c45294493feb',
+    'c196ff11e93c40987def15b483c75c3293353cc11a4ff894f32506d84691b942',
+    '1412e1f8614432fd2eea9b97fd3da4ee437c4130646b8dc2930a43528d7ee9b1',
+    'cb39cc3063a8942274dc0c2ea86305e3cbf04fff1058f5008be76bd57fff80f3',
+  ];
+  try {
+    for (const sub of ['services', 'rules', 'scripts/eval', 'evals/cases', 'evals/thresholds.json'])
+      await cp(path.join(process.cwd(), sub), path.join(dir, sub), { recursive: true });
+    // Match the runner's normalized service tree digest using the copied files.
+    const productRoots = ['services/llm', 'services/wiki', 'services/storage'];
+    const productFiles = (
+      await Promise.all(
+        productRoots.map((sub) => readdir(path.join(dir, sub), { recursive: true, withFileTypes: true })),
+      )
+    )
+      .flat()
+      .filter((entry) => entry.isFile())
+      .map((entry) => path.relative(dir, path.join(entry.parentPath, entry.name)).split(path.sep).join('/'))
+      .sort();
+    const product = await Promise.all(
+      productFiles.map(async (name) => {
+        const text = await readFile(path.join(dir, name), 'utf8');
+        return [name, hash(text.replace(/\r\n?/gu, '\n'))];
+      }),
+    );
+    const fixtureProductHash = hash(JSON.stringify(product));
+    // A checkout may already contain all eight live recordings. The synthetic source run
+    // represents the earlier four-case stop, so clear only its temporary remaining copies.
+    for (const id of ids.slice(4)) {
+      const target = path.resolve(dir, 'evals/cases/standard-extract', id, 'recordings/live-20261115-baseline.json');
+      assert(target.startsWith(path.resolve(dir) + path.sep));
+      await rm(target, { force: true });
+    }
+    await mkdir(path.join(dir, 'evals/results'), { recursive: true });
+    let cases: any[] = [],
+      recHashes: string[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      const root = path.join(dir, 'evals/cases/standard-extract', ids[i]!, 'recordings'),
+        rec = JSON.parse(await readFile(path.join(root, 'synthetic-v1.json'), 'utf8'));
+      let row: any = {
+        id: ids[i],
+        status: i < 3 ? 'PASS' : i === 3 ? 'FAIL' : 'NOT_RUN',
+        caseHash: rec.caseHash,
+        goldHash: rec.goldHash,
+        bodyHash: rec.bodyHash,
+      };
+      if (i < 4) {
+        rec.origin = 'live';
+        rec.provider = { name: 'openai-compatible', model: 'gpt-6.1-terra' };
+        const bytes = JSON.stringify(rec, null, 2) + '\n';
+        await writeFile(path.join(root, 'live-20261115-baseline.json'), bytes);
+        recHashes.push(hash(bytes));
+        row.recordingHash = hash(canonical(rec));
+        row.provider = rec.provider;
+      }
+      cases.push(row);
+    }
+    const sample = JSON.parse(
+      await readFile(path.join(dir, 'evals/cases/standard-extract', ids[0]!, 'recordings/synthetic-v1.json'), 'utf8'),
+    );
+    const thresholdsFile = path.join(dir, 'evals/thresholds.json');
+    const thresholdBytes = await readFile(thresholdsFile);
+    const { weeklyReview, ...threshold } = JSON.parse(thresholdBytes.toString('utf8'));
+    const source = {
+      runId: '2026-11-15T10-34-38-191Z-832c444a',
+      schemaVersion: 1,
+      scoringSchemaVersion: 1,
+      mode: 'live',
+      chain: 'standard-extract',
+      rulesVersion: sample.rulesVersion,
+      thresholdHash: hash(canonical(threshold)),
+      cases,
+      ledger: Array.from({ length: 8 }, (_, i) => ({
+        caseId: ids[Math.floor(i / 2)],
+        stage: i % 2 ? 'planning' : 'extracting',
+        status: 'success',
+        unknownUsage: false,
+        usage: { promptTokens: i ? 0 : 33295, completionTokens: i ? 0 : 3865 },
+      })),
+    };
+    const sourceBytes = JSON.stringify(source, null, 2) + '\n',
+      sourcePath = path.join(dir, 'evals/results/source.json'),
+      sourceHash = hash(sourceBytes);
+    await writeFile(sourcePath, sourceBytes);
+    const runner = path.join(dir, 'scripts/eval/run.mjs');
+    const frozenProductHash = '20d80ac6f25b61d97862ff926823dd716649771d9ab962c61407f24e3ae93602';
+    let code = await readFile(runner, 'utf8');
+    assert.ok(code.includes(frozenProductHash), 'Expected the frozen fingerprint in the copied runner.');
+    code = code
+      .replace(frozenProductHash, fixtureProductHash)
+      .replaceAll('ca9a118ee1f7bba97facaf49c186675537e8ad5612a6d2398b8d33ecd3387b61', sourceHash);
+    for (let i = 0; i < 4; i++) code = code.replaceAll(frozen[i]!, recHashes[i]!);
+    await writeFile(runner, code);
+    const preload = path.join(dir, 'fake.mjs');
+    await writeFile(
+      preload,
+      `import {readFileSync,appendFileSync} from 'node:fs';\nlet n=0;const ids=${JSON.stringify(ids.slice(4))};globalThis.fetch=async(_url,init)=>{n++;appendFileSync(process.env.EVAL01_CALL_LOG,'call\\n');if(Number(process.env.EVAL01_FAIL_AT)===n)return new Response('{}',{status:500});let rec=JSON.parse(readFileSync('evals/cases/standard-extract/'+ids[Math.floor((n-1)/2)]+'/recordings/synthetic-v1.json'));let text=rec.calls[(n-1)%2].completion.text;if(process.env.EVAL01_QUALITY==='1'){let obj=JSON.parse(text);if(n===1)obj.facts.pop();if(n===2){let payload=JSON.parse(JSON.parse(init.body).messages[1].content.split('\\n').at(-1));obj.pages[0].factUnitIds=payload.factUnits.map(x=>x.id);}text=JSON.stringify(obj);}if(Number(process.env.EVAL01_BAD_AT)===n)text='not json';if(Number(process.env.EVAL01_SCHEMA_AT)===n)text='{}';return new Response(JSON.stringify({choices:[{message:{content:text},finish_reason:'stop'}],usage:{prompt_tokens:1,completion_tokens:2}}),{status:200});};`,
+    );
+    const log = path.join(dir, 'calls'),
+      args = [
+        '--chain',
+        'standard-extract',
+        '--mode',
+        'live',
+        '--record',
+        '--recording',
+        'live-20261115-baseline',
+        '--resume-from',
+        sourcePath,
+        '--resume-sha256',
+        sourceHash,
+      ];
+    async function invoke(a: string[], extra: Record<string, string> = {}) {
+      const child = spawn(
+        process.execPath,
+        ['--import', 'tsx', '--import', './fake.mjs', 'scripts/eval/run.mjs', ...a],
+        {
+          cwd: dir,
+          env: {
+            ...process.env,
+            FMCG_LLM_BASE_URL: 'http://127.0.0.1:1',
+            FMCG_LLM_MODEL: 'gpt-6.1-terra',
+            FMCG_LLM_API_KEY: 'synthetic-test-key',
+            FMCG_LLM_CONFIG_FILE: path.join(dir, 'none'),
+            EVAL01_CALL_LOG: log,
+            ...extra,
+          },
+          stdio: ['ignore', 'pipe', 'pipe'],
+        },
+      );
+      let out = '';
+      child.stdout.on('data', (b) => (out += b));
+      child.stderr.on('data', (b) => (out += b));
+      const status = await new Promise<number | null>((resolve) => child.on('close', resolve));
+      return { status, out };
+    }
+    const count = async () => {
+      try {
+        return (await readFile(log, 'utf8')).split('\n').filter(Boolean).length;
+      } catch {
+        return 0;
+      }
+    };
+    for (const bad of [
+      args.filter((_, i) => i !== 2 && i !== 3),
+      args.filter((_, i) => i !== 3),
+      args.filter((_, i) => i !== 4),
+      [...args, '--case', 'basic-01-timeout'],
+      args.map((x) => (x === sourceHash ? '0'.repeat(64) : x)),
+    ]) {
+      let r = await invoke(bad);
+      assert.equal(r.status, 1, r.out);
+      assert.equal(await count(), 0);
+    }
+    await writeFile(thresholdsFile, JSON.stringify({ ...threshold, factRecallPerCase: 0.95, weeklyReview }));
+    const changedThreshold = await invoke(args);
+    assert.equal(changedThreshold.status, 1, changedThreshold.out);
+    assert.match(changedThreshold.out, /Incompatible resume source/u);
+    assert.equal(await count(), 0);
+    await writeFile(thresholdsFile, thresholdBytes);
+    const service = path.join(dir, 'services/storage/files.ts');
+    const serviceBytes = await readFile(service);
+    await writeFile(service, Buffer.concat([serviceBytes, Buffer.from('\n// Change the fixture fingerprint.\n')]));
+    let blocked = await invoke(args);
+    assert.equal(blocked.status, 1, blocked.out);
+    assert.match(blocked.out, /Product fingerprint mismatch/u);
+    assert.equal(await count(), 0);
+    await writeFile(service, serviceBytes);
+    // Existing remaining recording, missing or altered prior recording, and occupied permit all refuse before fetch.
+    const old = path.join(dir, 'evals/cases/standard-extract', ids[0]!, 'recordings/live-20261115-baseline.json'),
+      oldBytes = await readFile(old);
+    await unlink(old);
+    blocked = await invoke(args);
+    assert.equal(blocked.status, 1);
+    assert.equal(await count(), 0);
+    await writeFile(old, oldBytes);
+    await writeFile(old, Buffer.concat([oldBytes, Buffer.from(' ')]));
+    blocked = await invoke(args);
+    assert.equal(blocked.status, 1);
+    assert.equal(await count(), 0);
+    await writeFile(old, oldBytes);
+    const future = path.join(dir, 'evals/cases/standard-extract', ids[4]!, 'recordings/live-20261115-baseline.json');
+    await writeFile(future, '{}');
+    blocked = await invoke(args);
+    assert.equal(blocked.status, 1);
+    assert.equal(await count(), 0);
+    await unlink(future);
+    const permit = path.join(dir, 'evals/results', 'resume-' + sourceHash + '.json');
+    await writeFile(permit, '{}');
+    blocked = await invoke(args);
+    assert.equal(blocked.status, 1);
+    assert.equal(await count(), 0);
+    await unlink(permit);
+    // Rebind only the throwaway fixture after corrupting its first response, so replay itself rejects.
+    const broken = JSON.parse(oldBytes.toString('utf8'));
+    broken.calls[0].completion.text = '{';
+    const brokenBytes = JSON.stringify(broken, null, 2) + '\n';
+    await writeFile(old, brokenBytes);
+    const badSource = structuredClone(source);
+    badSource.cases[0].recordingHash = hash(canonical(broken));
+    const badSourceBytes = JSON.stringify(badSource, null, 2) + '\n',
+      badSourceHash = hash(badSourceBytes);
+    await writeFile(sourcePath, badSourceBytes);
+    await writeFile(runner, code.replaceAll(sourceHash, badSourceHash).replaceAll(recHashes[0]!, hash(brokenBytes)));
+    blocked = await invoke(args.map((x) => (x === sourceHash ? badSourceHash : x)));
+    assert.equal(blocked.status, 1, blocked.out);
+    assert.match(blocked.out, /Resume replay failed/);
+    assert.equal(await count(), 0);
+    await writeFile(old, oldBytes);
+    await writeFile(sourcePath, sourceBytes);
+    await writeFile(runner, code);
+    let success = await invoke(args);
+    assert.equal(success.status, 0, success.out);
+    assert.equal(await count(), 8);
+    let match = success.out.match(/Result: (.+\.json)/gu);
+    assert(match);
+    let result = JSON.parse(await readFile(match.at(-1)!.slice(8).trim(), 'utf8'));
+    assert.equal(result.mode, 'mixed');
+    assert.equal(result.scoringSchemaVersion, 2);
+    assert.equal(result.replayCalls, 8);
+    assert.equal(result.ledger.length, 8);
+    assert.equal(result.summary.usage.totalRequests, 16);
+    assert.equal(result.summary.usage.promptTokens, 33303);
+    assert.equal(result.summary.usage.completionTokens, 3881);
+    assert.deepEqual(
+      result.cases.map((x: { executionMode: string }) => x.executionMode),
+      ['replay', 'replay', 'replay', 'replay', 'live', 'live', 'live', 'live'],
+    );
+    const replay = await invoke(['--chain', 'standard-extract', '--recording', 'live-20261115-baseline']);
+    assert.equal(replay.status, 0, replay.out);
+    const replayMatch = replay.out.match(/Result: (.+\.json)/u);
+    assert(replayMatch);
+    const replayResult = JSON.parse(await readFile(replayMatch[1]!.trim(), 'utf8'));
+    assert.deepEqual(
+      replayResult.cases.map((x: { metrics: unknown }) => x.metrics),
+      result.cases.map((x: { metrics: unknown }) => x.metrics),
+    );
+    assert.equal(await count(), 8);
+    const oldBaseline = await invoke([
+      '--chain',
+      'standard-extract',
+      '--recording',
+      'live-20261115-baseline',
+      '--baseline',
+      sourcePath,
+    ]);
+    assert.equal(oldBaseline.status, 1);
+    assert.match(oldBaseline.out, /Incompatible baseline/);
+    assert.equal(await count(), 8);
+    let again = await invoke(args);
+    assert.equal(again.status, 1);
+    assert.equal(await count(), 8);
+    // Remove only isolated test artifacts to exercise independent failure paths.
+    async function reset() {
+      for (const id of ids.slice(4)) {
+        const f = path.join(dir, 'evals/cases/standard-extract', id, 'recordings/live-20261115-baseline.json');
+        try {
+          await unlink(f);
+        } catch {}
+      }
+      for (const f of await readdir(path.join(dir, 'evals/results')))
+        if (f.startsWith('resume-')) await unlink(path.join(dir, 'evals/results', f));
+      await writeFile(log, '');
+    }
+    for (const [env, n] of [
+      [{ EVAL01_FAIL_AT: '1' }, 1],
+      [{ EVAL01_FAIL_AT: '4' }, 4],
+      [{ EVAL01_BAD_AT: '1' }, 1],
+      [{ EVAL01_SCHEMA_AT: '1' }, 1],
+      [{ EVAL01_QUALITY: '1' }, 2],
+    ] as Array<[Record<string, string>, number]>) {
+      await reset();
+      const r = await invoke(args, env);
+      assert.equal(r.status, 1, r.out);
+      assert.equal(await count(), n);
+      const matches = r.out.match(/Result: (.+\.json)/gu);
+      assert(matches);
+      const failed = JSON.parse(await readFile(matches.at(-1)!.slice(8).trim(), 'utf8'));
+      if (env.EVAL01_QUALITY) {
+        assert.equal(failed.cases[4].status, 'FAIL');
+        assert.equal(failed.cases[4].metrics.facts.passed, 2);
+        assert.equal(failed.cases[4].metrics.facts.total, 3);
+        assert.equal(failed.cases[4].error, undefined);
+      }
+      if (env.EVAL01_BAD_AT) assert.equal(failed.cases[4].error.code, 'LLM_INVALID_JSON');
+      if (env.EVAL01_SCHEMA_AT) assert.equal(failed.cases[4].error.code, 'LLM_SCHEMA_INVALID');
+      const again = await invoke(args, env);
+      assert.equal(again.status, 1);
+      assert.equal(await count(), n);
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

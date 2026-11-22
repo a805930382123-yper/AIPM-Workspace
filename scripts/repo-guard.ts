@@ -128,10 +128,7 @@ export function loadAllowlist(
   return parsed as AllowlistDocument;
 }
 
-function validateAllowlist(
-  doc: AllowlistDocument,
-  violations: GuardViolation[],
-): Map<string, AllowlistEntry> {
+function validateAllowlist(doc: AllowlistDocument, violations: GuardViolation[]): Map<string, AllowlistEntry> {
   const validEntries = new Map<string, AllowlistEntry>();
   const seenPaths = new Set<string>();
 
@@ -347,7 +344,9 @@ function isExecutedDirectly(): boolean {
 function main(): void {
   const result = checkRepoGuard();
   if (!result.ok) {
-    console.error(`repo-guard FAILED (${result.violations.length} violation(s), checked ${result.checkedFiles} files):`);
+    console.error(
+      `repo-guard FAILED (${result.violations.length} violation(s), checked ${result.checkedFiles} files):`,
+    );
     for (const v of result.violations) {
       console.error(`  - [${v.rule}] ${v.message}`);
     }

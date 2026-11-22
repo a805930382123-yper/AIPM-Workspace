@@ -4,10 +4,26 @@ import { assertNoKnownSecret, LlmError, sanitizeProviderText, type LlmProvider }
 import { validateSchema, type JsonSchemaNode } from '../llm/schema-validator.ts';
 import { assertRawNotMeeting, SourcePolicyError } from '../meeting/source-policy.ts';
 import type { RawStore } from '../raw/store.ts';
-import { JSON_SCAN_BUDGET, listJsonRecords, readJsonRecord, scanJsonRecords, StorageError, writeJsonAtomic } from '../storage/files.ts';
+import {
+  JSON_SCAN_BUDGET,
+  listJsonRecords,
+  readJsonRecord,
+  scanJsonRecords,
+  StorageError,
+  writeJsonAtomic,
+} from '../storage/files.ts';
 import { isUuid } from '../storage/record-validators.ts';
 import { basisReviewUnavailable, WorkBasisReviews, workAnalysisSendInput } from './basis-review.ts';
-import type { WorkAnalysis, WorkAnalysisOutput, WorkAnalysisOutputV2, WorkAnalysisRun, WorkAnalysisRunWithReview, WorkAnalysisSource, WorkAnalysisStageContext, WorkItem } from './types.ts';
+import type {
+  WorkAnalysis,
+  WorkAnalysisOutput,
+  WorkAnalysisOutputV2,
+  WorkAnalysisRun,
+  WorkAnalysisRunWithReview,
+  WorkAnalysisSource,
+  WorkAnalysisStageContext,
+  WorkItem,
+} from './types.ts';
 
 const MAX_SOURCES = 8;
 const MAX_RAW_BYTES = 128 * 1024;
@@ -21,11 +37,17 @@ const outputSchema: JsonSchemaNode = {
   additionalProperties: false,
   properties: {
     observations: {
-      type: 'array', maxItems: 24, items: {
+      type: 'array',
+      maxItems: 24,
+      items: {
         type: 'object',
         required: ['rawId', 'quote', 'observation'],
         additionalProperties: false,
-        properties: { rawId: { type: 'string', minLength: 36, maxLength: 36 }, quote: resultText, observation: resultText },
+        properties: {
+          rawId: { type: 'string', minLength: 36, maxLength: 36 },
+          quote: resultText,
+          observation: resultText,
+        },
       },
     },
     suggestions: { type: 'array', maxItems: 12, items: resultText },
@@ -33,7 +55,11 @@ const outputSchema: JsonSchemaNode = {
   },
 };
 
-const observationIndexes: JsonSchemaNode = { type: 'array', maxItems: 24, items: { type: 'integer', minimum: 0, maximum: 23 } };
+const observationIndexes: JsonSchemaNode = {
+  type: 'array',
+  maxItems: 24,
+  items: { type: 'integer', minimum: 0, maximum: 23 },
+};
 const themeList: JsonSchemaNode = { type: 'array', maxItems: 8, items: resultText };
 const outputSchemaV2: JsonSchemaNode = {
   ...outputSchema,
@@ -42,14 +68,27 @@ const outputSchemaV2: JsonSchemaNode = {
     ...outputSchema.properties,
     roundSummary: { type: 'string', minLength: 1, maxLength: 600 },
     themes: {
-      type: 'array', minItems: 1, maxItems: 8,
+      type: 'array',
+      minItems: 1,
+      maxItems: 8,
       items: {
-        type: 'object', additionalProperties: false,
-        required: ['title', 'conclusion', 'evidence', 'counterEvidence', 'openQuestions', 'nextSteps', 'confirmedConflict'],
+        type: 'object',
+        additionalProperties: false,
+        required: [
+          'title',
+          'conclusion',
+          'evidence',
+          'counterEvidence',
+          'openQuestions',
+          'nextSteps',
+          'confirmedConflict',
+        ],
         properties: {
           title: { type: 'string', minLength: 1, maxLength: 120 },
           conclusion: {
-            type: ['object', 'null'], additionalProperties: false, required: ['kind', 'text'],
+            type: ['object', 'null'],
+            additionalProperties: false,
+            required: ['kind', 'text'],
             properties: { kind: { type: 'string', enum: ['evidence_supported', 'hypothesis'] }, text: resultText },
           },
           evidence: observationIndexes,
@@ -57,8 +96,14 @@ const outputSchemaV2: JsonSchemaNode = {
           openQuestions: themeList,
           nextSteps: themeList,
           confirmedConflict: {
-            type: ['object', 'null'], additionalProperties: false, required: ['confirmedQuote', 'observationIndexes', 'suggestedRevision'],
-            properties: { confirmedQuote: resultText, observationIndexes: { ...observationIndexes, minItems: 1 }, suggestedRevision: resultText },
+            type: ['object', 'null'],
+            additionalProperties: false,
+            required: ['confirmedQuote', 'observationIndexes', 'suggestedRevision'],
+            properties: {
+              confirmedQuote: resultText,
+              observationIndexes: { ...observationIndexes, minItems: 1 },
+              suggestedRevision: resultText,
+            },
           },
         },
       },
@@ -92,79 +137,156 @@ const record = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
 
 export function validWorkAnalysis(value: unknown): value is WorkAnalysis {
-  return record(value) && typeof value.goal === 'string' && !!value.goal.trim()
-    && [value.dataScope, value.confirmedConclusions, value.openQuestions].every(field => field === undefined || typeof field === 'string');
+  return (
+    record(value) &&
+    typeof value.goal === 'string' &&
+    !!value.goal.trim() &&
+    [value.dataScope, value.confirmedConclusions, value.openQuestions].every(
+      (field) => field === undefined || typeof field === 'string',
+    )
+  );
 }
 
-function validOutput(value: unknown, input: WorkAnalysisRun['input'], version2: boolean): value is WorkAnalysisOutput | WorkAnalysisOutputV2 {
+function validOutput(
+  value: unknown,
+  input: WorkAnalysisRun['input'],
+  version2: boolean,
+): value is WorkAnalysisOutput | WorkAnalysisOutputV2 {
   if (validateSchema(value, version2 ? outputSchemaV2 : outputSchema).length) return false;
   const { observations, suggestions, openQuestions } = value as WorkAnalysisOutput;
-  if (![...suggestions, ...openQuestions].every(text => text.trim())
-    || !observations.every(({ rawId, quote, observation }) =>
-      quote.trim() && observation.trim() && input.sources.some(source => source.rawId === rawId && source.body.includes(quote)))) return false;
+  if (
+    ![...suggestions, ...openQuestions].every((text) => text.trim()) ||
+    !observations.every(
+      ({ rawId, quote, observation }) =>
+        quote.trim() &&
+        observation.trim() &&
+        input.sources.some((source) => source.rawId === rawId && source.body.includes(quote)),
+    )
+  )
+    return false;
   if (!version2) return observations.length + suggestions.length + openQuestions.length > 0;
 
   const { roundSummary, themes } = value as WorkAnalysisOutputV2;
-  const validIndexes = (indexes: number[]) => new Set(indexes).size === indexes.length
-    && indexes.every(index => index < observations.length);
-  return !!roundSummary.trim() && themes.every(theme => {
-    const { title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict } = theme;
-    return title.trim() && (!conclusion || conclusion.text.trim())
-      && [...openQuestions, ...nextSteps].every(text => text.trim())
-      && (conclusion?.kind === 'evidence_supported' ? evidence.length > 0 : openQuestions.length > 0)
-      && validIndexes([...evidence, ...counterEvidence])
-      && (!confirmedConflict || (confirmedConflict.confirmedQuote.trim() && confirmedConflict.suggestedRevision.trim()
-        && input.confirmedConclusions?.includes(confirmedConflict.confirmedQuote)
-        && validIndexes(confirmedConflict.observationIndexes)));
-  });
+  const validIndexes = (indexes: number[]) =>
+    new Set(indexes).size === indexes.length && indexes.every((index) => index < observations.length);
+  return (
+    !!roundSummary.trim() &&
+    themes.every((theme) => {
+      const { title, conclusion, evidence, counterEvidence, openQuestions, nextSteps, confirmedConflict } = theme;
+      return (
+        title.trim() &&
+        (!conclusion || conclusion.text.trim()) &&
+        [...openQuestions, ...nextSteps].every((text) => text.trim()) &&
+        (conclusion?.kind === 'evidence_supported' ? evidence.length > 0 : openQuestions.length > 0) &&
+        validIndexes([...evidence, ...counterEvidence]) &&
+        (!confirmedConflict ||
+          (confirmedConflict.confirmedQuote.trim() &&
+            confirmedConflict.suggestedRevision.trim() &&
+            input.confirmedConclusions?.includes(confirmedConflict.confirmedQuote) &&
+            validIndexes(confirmedConflict.observationIndexes)))
+      );
+    })
+  );
 }
 
 function validRun(value: unknown, itemId: string, id: string): value is WorkAnalysisRun {
-  if (!record(value) || !isUuid(id) || value.id !== id || value.itemId !== itemId
-    || typeof value.baseRevision !== 'number' || !Number.isSafeInteger(value.baseRevision) || value.baseRevision < 1
-    || typeof value.startedAt !== 'string' || !Number.isFinite(Date.parse(value.startedAt))
-    || !record(value.provider) || typeof value.provider.name !== 'string' || typeof value.provider.model !== 'string'
-    || !record(value.input)) return false;
+  if (
+    !record(value) ||
+    !isUuid(id) ||
+    value.id !== id ||
+    value.itemId !== itemId ||
+    typeof value.baseRevision !== 'number' ||
+    !Number.isSafeInteger(value.baseRevision) ||
+    value.baseRevision < 1 ||
+    typeof value.startedAt !== 'string' ||
+    !Number.isFinite(Date.parse(value.startedAt)) ||
+    !record(value.provider) ||
+    typeof value.provider.name !== 'string' ||
+    typeof value.provider.model !== 'string' ||
+    !record(value.input)
+  )
+    return false;
   const { sources } = value.input;
-  if (!validWorkAnalysis(value.input) || !Array.isArray(sources) || sources.length < 1 || sources.length > MAX_SOURCES
-    || !sources.every(source => record(source) && isUuid(source.rawId) && typeof source.title === 'string' && typeof source.body === 'string')) return false;
+  if (
+    !validWorkAnalysis(value.input) ||
+    !Array.isArray(sources) ||
+    sources.length < 1 ||
+    sources.length > MAX_SOURCES ||
+    !sources.every(
+      (source) =>
+        record(source) && isUuid(source.rawId) && typeof source.title === 'string' && typeof source.body === 'string',
+    )
+  )
+    return false;
   const version2 = value.outputVersion === 2;
   const { roundQuestion, stageContext } = value.input as Record<string, unknown>;
   if (version2) {
     const { sourceRawIds } = value;
     if (!Array.isArray(sourceRawIds) || !sourceRawIds.every(isUuid)) return false;
     const provenance = new Set(sourceRawIds);
-    if (provenance.size !== sourceRawIds.length || !sources.every(source => provenance.has(source.rawId))) return false;
-    if (roundQuestion !== undefined && (typeof roundQuestion !== 'string' || !roundQuestion.trim()
-      || roundQuestion !== roundQuestion.trim() || roundQuestion.length > MAX_QUESTION_CHARS)) return false;
-    if (stageContext !== undefined && (!record(stageContext)
-      || typeof stageContext.historyIndex !== 'number' || !Number.isSafeInteger(stageContext.historyIndex) || stageContext.historyIndex < 0
-      || typeof stageContext.at !== 'string' || !Number.isFinite(Date.parse(stageContext.at))
-      || typeof stageContext.body !== 'string' || !stageContext.body.trim() || stageContext.body.length > MAX_STAGE_CHARS
-      || !(stageContext.source === 'manual' ? stageContext.analysisRunId === undefined
-        : stageContext.source === 'ai_assisted' && isUuid(stageContext.analysisRunId)))) return false;
-  } else if (value.outputVersion !== undefined || value.sourceRawIds !== undefined || roundQuestion !== undefined || stageContext !== undefined) {
+    if (provenance.size !== sourceRawIds.length || !sources.every((source) => provenance.has(source.rawId)))
+      return false;
+    if (
+      roundQuestion !== undefined &&
+      (typeof roundQuestion !== 'string' ||
+        !roundQuestion.trim() ||
+        roundQuestion !== roundQuestion.trim() ||
+        roundQuestion.length > MAX_QUESTION_CHARS)
+    )
+      return false;
+    if (
+      stageContext !== undefined &&
+      (!record(stageContext) ||
+        typeof stageContext.historyIndex !== 'number' ||
+        !Number.isSafeInteger(stageContext.historyIndex) ||
+        stageContext.historyIndex < 0 ||
+        typeof stageContext.at !== 'string' ||
+        !Number.isFinite(Date.parse(stageContext.at)) ||
+        typeof stageContext.body !== 'string' ||
+        !stageContext.body.trim() ||
+        stageContext.body.length > MAX_STAGE_CHARS ||
+        !(stageContext.source === 'manual'
+          ? stageContext.analysisRunId === undefined
+          : stageContext.source === 'ai_assisted' && isUuid(stageContext.analysisRunId)))
+    )
+      return false;
+  } else if (
+    value.outputVersion !== undefined ||
+    value.sourceRawIds !== undefined ||
+    roundQuestion !== undefined ||
+    stageContext !== undefined
+  ) {
     return false;
   }
 
   if (value.status === 'running') return value.output === undefined && value.error === undefined;
   if (typeof value.finishedAt !== 'string' || !Number.isFinite(Date.parse(value.finishedAt))) return false;
-  if (value.status === 'completed') return value.error === undefined && validOutput(value.output, value.input as WorkAnalysisRun['input'], version2);
-  return value.status === 'failed' && value.output === undefined && record(value.error)
-    && typeof value.error.code === 'string' && typeof value.error.message === 'string';
+  if (value.status === 'completed')
+    return value.error === undefined && validOutput(value.output, value.input as WorkAnalysisRun['input'], version2);
+  return (
+    value.status === 'failed' &&
+    value.output === undefined &&
+    record(value.error) &&
+    typeof value.error.code === 'string' &&
+    typeof value.error.message === 'string'
+  );
 }
 
 const runDirectory = (root: string, itemId: string) => path.join(root, 'work-items', 'analysis-runs', itemId);
 const runFile = (root: string, itemId: string, id: string) => path.join(runDirectory(root, itemId), `${id}.json`);
 
 export function readWorkAnalysisRun(root: string, itemId: string, id: string) {
-  return readJsonRecord(root, runFile(root, itemId, id), (value): value is WorkAnalysisRun => validRun(value, itemId, id));
+  return readJsonRecord(root, runFile(root, itemId, id), (value): value is WorkAnalysisRun =>
+    validRun(value, itemId, id),
+  );
 }
 
 export class WorkAnalysisRuns {
   private readonly active = new Map<string, string>();
   readonly basisReviews: WorkBasisReviews;
-  isRunning(itemId: string) { return this.active.has(itemId) || this.basisReviews.isRunning(itemId); }
+  isRunning(itemId: string) {
+    return this.active.has(itemId) || this.basisReviews.isRunning(itemId);
+  }
 
   constructor(
     private readonly root: string,
@@ -172,22 +294,34 @@ export class WorkAnalysisRuns {
     private readonly raws: Pick<RawStore, 'get'>,
     private readonly providerFactory: () => Promise<LlmProvider | undefined>,
   ) {
-    this.basisReviews = new WorkBasisReviews(root, async (itemId, runId) => {
-      const item = await getItem(itemId);
-      if (item.kind !== 'product_analysis') throw new StorageError('WORK_ANALYSIS_KIND', '请选择产品分析事项。', 400);
-      return readWorkAnalysisRun(root, itemId, runId);
-    }, raws, providerFactory);
+    this.basisReviews = new WorkBasisReviews(
+      root,
+      async (itemId, runId) => {
+        const item = await getItem(itemId);
+        if (item.kind !== 'product_analysis') throw new StorageError('WORK_ANALYSIS_KIND', '请选择产品分析事项。', 400);
+        return readWorkAnalysisRun(root, itemId, runId);
+      },
+      raws,
+      providerFactory,
+    );
   }
 
   async list(itemId: string): Promise<WorkAnalysisRunWithReview[]> {
     const item = await this.getItem(itemId);
     if (item.kind !== 'product_analysis') throw new StorageError('WORK_ANALYSIS_KIND', '请选择产品分析事项。', 400);
-    const records = await listJsonRecords(runDirectory(this.root, itemId),
-      (value, file): value is WorkAnalysisRun => validRun(value, itemId, path.basename(file, '.json')), this.root);
+    const records = await listJsonRecords(
+      runDirectory(this.root, itemId),
+      (value, file): value is WorkAnalysisRun => validRun(value, itemId, path.basename(file, '.json')),
+      this.root,
+    );
     const runs: WorkAnalysisRunWithReview[] = [];
     for (const { value } of records) {
       if (value.status === 'running' && this.active.get(itemId) !== value.id) {
-        runs.push({ ...value, status: 'interrupted', error: { code: 'WORK_ANALYSIS_INTERRUPTED', message: '本轮分析已中断。可在原事项发起新一轮。' } });
+        runs.push({
+          ...value,
+          status: 'interrupted',
+          error: { code: 'WORK_ANALYSIS_INTERRUPTED', message: '本轮分析已中断。可在原事项发起新一轮。' },
+        });
       } else if (value.status === 'completed') {
         const basisReview = await this.basisReviews.latest(value).catch(() => basisReviewUnavailable);
         runs.push(basisReview ? { ...value, basisReview } : value);
@@ -199,25 +333,46 @@ export class WorkAnalysisRuns {
   }
 
   async reminderBasis(itemId: string) {
-    const { records, issues } = await scanJsonRecords(runDirectory(this.root, itemId),
-      (value, file): value is WorkAnalysisRun => validRun(value, itemId, path.basename(file, '.json')), this.root);
-    const latest = records.map(({ value }) => value).filter(run => run.status === 'completed')
+    const { records, issues } = await scanJsonRecords(
+      runDirectory(this.root, itemId),
+      (value, file): value is WorkAnalysisRun => validRun(value, itemId, path.basename(file, '.json')),
+      this.root,
+    );
+    const latest = records
+      .map(({ value }) => value)
+      .filter((run) => run.status === 'completed')
       .sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt) || a.id.localeCompare(b.id))[0];
-    return { issues, coveredRawIds: latest?.sourceRawIds ?? latest?.input.sources.map(source => source.rawId) ?? [] };
+    return { issues, coveredRawIds: latest?.sourceRawIds ?? latest?.input.sources.map((source) => source.rawId) ?? [] };
   }
 
   async start(itemId: string, value: unknown): Promise<WorkAnalysisRun> {
-    if (!record(value) || typeof value.baseRevision !== 'number' || !Number.isSafeInteger(value.baseRevision) || value.baseRevision < 1) {
+    if (
+      !record(value) ||
+      typeof value.baseRevision !== 'number' ||
+      !Number.isSafeInteger(value.baseRevision) ||
+      value.baseRevision < 1
+    ) {
       throw new StorageError('INVALID_WORK_ITEM', '请提供事项的已保存版本。', 400);
     }
-    if (!Array.isArray(value.rawIds) || !value.rawIds.every(isUuid)
-      || value.rawIds.length < 1 || value.rawIds.length > MAX_SOURCES || new Set(value.rawIds).size !== value.rawIds.length) {
+    if (
+      !Array.isArray(value.rawIds) ||
+      !value.rawIds.every(isUuid) ||
+      value.rawIds.length < 1 ||
+      value.rawIds.length > MAX_SOURCES ||
+      new Set(value.rawIds).size !== value.rawIds.length
+    ) {
       throw new StorageError('INVALID_WORK_ANALYSIS_SOURCES', '请选择 1 到 8 条不同的关联 Raw。', 400);
     }
     const version2 = value.outputVersion === 2;
-    const allowedFields = version2 ? ['baseRevision', 'rawIds', 'outputVersion', 'roundQuestion', 'stageHistoryIndex'] : ['baseRevision', 'rawIds'];
-    if (Object.keys(value).some(key => !allowedFields.includes(key))) {
-      throw new StorageError('INVALID_WORK_ANALYSIS_INPUT', '请使用支持的分析请求字段。承接正文须从已保存的阶段成果中选择。', 400);
+    const allowedFields = version2
+      ? ['baseRevision', 'rawIds', 'outputVersion', 'roundQuestion', 'stageHistoryIndex']
+      : ['baseRevision', 'rawIds'];
+    if (Object.keys(value).some((key) => !allowedFields.includes(key))) {
+      throw new StorageError(
+        'INVALID_WORK_ANALYSIS_INPUT',
+        '请使用支持的分析请求字段。承接正文须从已保存的阶段成果中选择。',
+        400,
+      );
     }
     let roundQuestion: string | undefined;
     if (value.roundQuestion !== undefined) {
@@ -227,7 +382,10 @@ export class WorkAnalysisRuns {
       roundQuestion = value.roundQuestion.trim() || undefined;
     }
     const stageHistoryIndex = value.stageHistoryIndex;
-    if (stageHistoryIndex !== undefined && (typeof stageHistoryIndex !== 'number' || !Number.isSafeInteger(stageHistoryIndex) || stageHistoryIndex < 0)) {
+    if (
+      stageHistoryIndex !== undefined &&
+      (typeof stageHistoryIndex !== 'number' || !Number.isSafeInteger(stageHistoryIndex) || stageHistoryIndex < 0)
+    ) {
       throw new StorageError('INVALID_WORK_ANALYSIS_STAGE', '请选择一条已保存的阶段成果。', 400);
     }
     if (this.active.has(itemId)) throw new StorageError('WORK_ANALYSIS_RUNNING', '该事项已有一轮分析正在运行。', 409);
@@ -236,17 +394,28 @@ export class WorkAnalysisRuns {
     try {
       const item = await this.getItem(itemId);
       if (item.kind !== 'product_analysis') throw new StorageError('WORK_ANALYSIS_KIND', '请选择产品分析事项。', 400);
-      if (item.revision !== value.baseRevision) throw new StorageError('REVISION_CONFLICT', '事项版本已更新，请重新读取后发起分析。', 409);
+      if (item.revision !== value.baseRevision)
+        throw new StorageError('REVISION_CONFLICT', '事项版本已更新，请重新读取后发起分析。', 409);
       if (item.status === 'closed') throw new StorageError('WORK_ANALYSIS_CLOSED', '请先重开已完成的事项。', 409);
       let stageContext: WorkAnalysisStageContext | undefined;
       let inheritedRawIds: string[] = [];
       if (stageHistoryIndex !== undefined) {
         const entry = item.history[stageHistoryIndex];
         if (entry?.kind !== 'stage_result' || !entry.body.trim() || entry.body.length > MAX_STAGE_CHARS) {
-          throw new StorageError('INVALID_WORK_ANALYSIS_STAGE', '请选择一条已保存的阶段成果（正文须为 1 到 20000 字）。', 400);
+          throw new StorageError(
+            'INVALID_WORK_ANALYSIS_STAGE',
+            '请选择一条已保存的阶段成果（正文须为 1 到 20000 字）。',
+            400,
+          );
         }
         const { at, body, analysisRunId } = entry;
-        stageContext = { historyIndex: stageHistoryIndex, at, body, source: analysisRunId ? 'ai_assisted' : 'manual', analysisRunId };
+        stageContext = {
+          historyIndex: stageHistoryIndex,
+          at,
+          body,
+          source: analysisRunId ? 'ai_assisted' : 'manual',
+          analysisRunId,
+        };
         if (analysisRunId) {
           let previous: WorkAnalysisRun | undefined;
           try {
@@ -255,20 +424,30 @@ export class WorkAnalysisRuns {
             if (!(error instanceof StorageError)) throw error;
           }
           if (previous?.status !== 'completed') {
-            throw new StorageError('WORK_ANALYSIS_STAGE_UNAVAILABLE', '该成果引用的分析轮次不可用，请重新选择阶段成果。', 409);
+            throw new StorageError(
+              'WORK_ANALYSIS_STAGE_UNAVAILABLE',
+              '该成果引用的分析轮次不可用，请重新选择阶段成果。',
+              409,
+            );
           }
-          inheritedRawIds = previous.sourceRawIds ?? previous.input.sources.map(source => source.rawId);
+          inheritedRawIds = previous.sourceRawIds ?? previous.input.sources.map((source) => source.rawId);
         }
       }
       const sources: WorkAnalysisSource[] = [];
       let bytes = 0;
       for (const rawId of value.rawIds) {
-        if (!item.rawIds.includes(rawId)) throw new StorageError('INVALID_WORK_ANALYSIS_SOURCES', '只能选择该事项已关联的 Raw。', 400);
+        if (!item.rawIds.includes(rawId))
+          throw new StorageError('INVALID_WORK_ANALYSIS_SOURCES', '只能选择该事项已关联的 Raw。', 400);
         const raw = await this.raws.get(rawId);
         if (!raw) throw new StorageError('WORK_ANALYSIS_SOURCE_MISSING', '所选 Raw 来源已不存在，请重新选择。', 409);
         assertRawNotMeeting(raw);
         bytes += Buffer.byteLength(raw.body, 'utf8');
-        if (bytes > MAX_RAW_BYTES) throw new StorageError('WORK_ANALYSIS_INPUT_TOO_LARGE', '所选 Raw 原文合计超过 128 KiB，请减少本轮资料。', 413);
+        if (bytes > MAX_RAW_BYTES)
+          throw new StorageError(
+            'WORK_ANALYSIS_INPUT_TOO_LARGE',
+            '所选 Raw 原文合计超过 128 KiB，请减少本轮资料。',
+            413,
+          );
         sources.push({ rawId, title: raw.title, body: raw.body });
       }
       for (const rawId of inheritedRawIds) {
@@ -290,28 +469,49 @@ export class WorkAnalysisRuns {
       const sendInput = workAnalysisSendInput(input);
       assertNoKnownSecret(sendInput, provider.secrets);
       const run: WorkAnalysisRun = {
-        id, itemId, baseRevision: item.revision, startedAt: new Date().toISOString(), status: 'running',
-        provider: { name: provider.name, model: provider.model }, input,
+        id,
+        itemId,
+        baseRevision: item.revision,
+        startedAt: new Date().toISOString(),
+        status: 'running',
+        provider: { name: provider.name, model: provider.model },
+        input,
         ...(version2 ? { outputVersion: 2, sourceRawIds: [...new Set([...value.rawIds, ...inheritedRawIds])] } : {}),
       };
       // Use the existing file budget and leave room for the bounded response and its JSON indentation.
-      if (version2 && Buffer.byteLength(JSON.stringify(run, null, 2)) > JSON_SCAN_BUDGET.fileBytes - 2 * MAX_RESPONSE_BYTES) {
-        throw new StorageError('WORK_ANALYSIS_INPUT_TOO_LARGE', '本轮资料或承接来源超出分析记录容量，请减少资料或重新选择阶段成果。', 413);
+      if (
+        version2 &&
+        Buffer.byteLength(JSON.stringify(run, null, 2)) > JSON_SCAN_BUDGET.fileBytes - 2 * MAX_RESPONSE_BYTES
+      ) {
+        throw new StorageError(
+          'WORK_ANALYSIS_INPUT_TOO_LARGE',
+          '本轮资料或承接来源超出分析记录容量，请减少资料或重新选择阶段成果。',
+          413,
+        );
       }
       const file = runFile(this.root, itemId, id);
       await writeJsonAtomic(file, run);
       try {
         const result = await provider.complete({
-          system: version2 ? systemV2 : system, user: JSON.stringify(sendInput), purpose: 'knowledge',
-          structuredOutput: { name: version2 ? 'work_product_analysis_v2' : 'work_product_analysis', schema: version2 ? outputSchemaV2 : outputSchema },
-          timeoutMs: 120_000, maxOutputBytes: MAX_RESPONSE_BYTES,
+          system: version2 ? systemV2 : system,
+          user: JSON.stringify(sendInput),
+          purpose: 'knowledge',
+          structuredOutput: {
+            name: version2 ? 'work_product_analysis_v2' : 'work_product_analysis',
+            schema: version2 ? outputSchemaV2 : outputSchema,
+          },
+          timeoutMs: 120_000,
+          maxOutputBytes: MAX_RESPONSE_BYTES,
         });
         if (result.finishReason !== null && result.finishReason !== 'stop') {
           throw new LlmError('WORK_ANALYSIS_OUTPUT_INVALID', '本轮分析未正常完成，没有生成草稿。');
         }
         let output: unknown;
-        try { output = JSON.parse(result.text); }
-        catch { throw new LlmError('WORK_ANALYSIS_OUTPUT_INVALID', '模型输出不是有效 JSON，没有生成草稿。'); }
+        try {
+          output = JSON.parse(result.text);
+        } catch {
+          throw new LlmError('WORK_ANALYSIS_OUTPUT_INVALID', '模型输出不是有效 JSON，没有生成草稿。');
+        }
         assertNoKnownSecret(output, provider.secrets);
         if (!validOutput(output, input, version2)) {
           throw new LlmError('WORK_ANALYSIS_OUTPUT_INVALID', '模型输出格式或原文依据校验失败，没有生成草稿。');
@@ -320,9 +520,10 @@ export class WorkAnalysisRuns {
         run.output = output;
       } catch (error) {
         run.status = 'failed';
-        run.error = error instanceof LlmError
-          ? { code: error.code, message: sanitizeProviderText(error.message, provider.secrets) }
-          : { code: 'WORK_ANALYSIS_FAILED', message: '本轮分析失败，没有生成草稿。' };
+        run.error =
+          error instanceof LlmError
+            ? { code: error.code, message: sanitizeProviderText(error.message, provider.secrets) }
+            : { code: 'WORK_ANALYSIS_FAILED', message: '本轮分析失败，没有生成草稿。' };
       }
       run.finishedAt = new Date().toISOString();
       await writeJsonAtomic(file, run);

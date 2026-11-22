@@ -1,28 +1,230 @@
 import path from 'node:path';
-import type {WikiRecord,WikiStore} from './store.ts';
-import type {RawStore} from '../raw/store.ts';
-import type {AnswerCitation,AnswerSection,QuestionDraftInput} from './question-input.ts';
-import {questionHash,validQuestionInput} from './question-input.ts';
-import {SerialQueue,readJsonRecord,scanJsonRecords,writeJsonAtomic} from '../storage/files.ts';
-import {assertWikiSourcesAllowed} from './source-lineage.ts';
-const queues=new Map<string,SerialQueue>();
-export function inspectionQueue(root:string){let queue=queues.get(root);if(!queue){queue=new SerialQueue();queues.set(root,queue);}return queue;}
-export type InspectionFinding={id:string;fingerprint:string;type:'duplicate'|'conflict'|'outdated'|'source_impact';origin:'model'|'snapshot';wikiIds:string[];summary:string;reason:string;differences:string;nextStep:'preserve_differences'|'add_note'|'change_topic'|'defer';evidence:AnswerCitation[];status:'pending'|'viewed'|'deferred'|'committed';statusReason?:string;basisChanged?:boolean;comparison?:{kind:string;recordId:string;wikiId:string;beforeRevision:number;currentRevision:number;beforeSha:string;currentSha:string};};
-export type InspectionDraftInput={kind:'inspection';inspectionId:string;inspectionRevision:number;selectionDigest:string;selectedFindingIds:string[];findings:InspectionFinding[];changeFindingIds:Record<string,string[]>;wikiSnapshots:WikiRecord[];rawSnapshots:Array<{id:string;bodySha256:string}>;citations:AnswerCitation[];sections:AnswerSection[]};
-export type InspectionDerivation={inspectionId:string;findingIds:string[];wikiIds:string[];rawIds:string[];manualWikiIds:string[]};
-export type EvidenceDraftInput=QuestionDraftInput|InspectionDraftInput;
-const object=(v:unknown):v is Record<string,any>=>!!v&&typeof v==='object'&&!Array.isArray(v),uuid=(v:unknown)=>typeof v==='string'&&/^[a-f0-9-]{36}$/i.test(v);
-export function validInspectionInput(v:unknown):v is InspectionDraftInput{return object(v)&&v.kind==='inspection'&&uuid(v.inspectionId)&&Number.isInteger(v.inspectionRevision)&&v.inspectionRevision>0&&typeof v.selectionDigest==='string'&&Array.isArray(v.selectedFindingIds)&&v.selectedFindingIds.length>0&&new Set(v.selectedFindingIds).size===v.selectedFindingIds.length&&object(v.changeFindingIds)&&Object.values(v.changeFindingIds).every(ids=>Array.isArray(ids)&&ids.every(id=>v.selectedFindingIds.includes(id)))&&Array.isArray(v.findings)&&v.findings.length===v.selectedFindingIds.length&&v.findings.every((f:any)=>object(f)&&v.selectedFindingIds.includes(f.id)&&typeof f.fingerprint==='string')&&Array.isArray(v.wikiSnapshots)&&v.wikiSnapshots.length<=8&&v.wikiSnapshots.every((p:any)=>object(p)&&uuid(p.id)&&Number.isInteger(p.revision)&&typeof p.body==='string'&&Array.isArray(p.sources))&&Array.isArray(v.rawSnapshots)&&v.rawSnapshots.every((r:any)=>object(r)&&uuid(r.id)&&typeof r.bodySha256==='string')&&Array.isArray(v.citations)&&v.citations.every((c:any)=>object(c)&&c.kind==='wiki'&&uuid(c.recordId)&&typeof c.id==='string'&&typeof c.quote==='string'&&Number.isInteger(c.start)&&Number.isInteger(c.end)&&c.start>=0&&c.end>c.start&&c.quote.length===c.end-c.start&&Array.isArray(c.rawIds)&&Array.isArray(c.manualWikiIds))&&Array.isArray(v.sections)&&v.sections.every((s:any)=>object(s)&&typeof s.text==='string'&&Array.isArray(s.citationIds)&&['conflict','insufficient','advice'].includes(s.kind));}
-export const validEvidenceInput=(v:unknown):v is EvidenceDraftInput=>validQuestionInput(v)||validInspectionInput(v);
-export const inspectionSelectionDigest=(input:Omit<InspectionDraftInput,'selectionDigest'>)=>questionHash(input);
-export async function verifyInspectionInput(input:InspectionDraftInput,wiki:WikiStore,raws:RawStore,appliedTargets:WikiRecord[]=[]){
- if(!validInspectionInput(input)){throw Object.assign(Error('检查输入结构非法。'),{code:'INSPECTION_INPUT_INVALID',status:409});}const {selectionDigest,...basis}=input;if(inspectionSelectionDigest(basis)!==selectionDigest)throw Object.assign(Error('检查选集摘要已改变。'),{code:'INSPECTION_INPUT_CHANGED',status:409});
- const result=await readJsonRecord<any>(wiki.root,path.join(wiki.root,'state/knowledge-inspections',input.inspectionId+'.json'),(v):v is any=>object(v)&&v.id===input.inspectionId&&Array.isArray(v.findings)&&Array.isArray(v.drafts));
- if(!result||!result.drafts.some((d:any)=>d.inputDigest===questionHash(input))||input.findings.some(f=>!result.findings.some((original:any)=>original.id===f.id&&original.fingerprint===f.fingerprint)))throw Object.assign(Error('原检查及选择依据已改变。'),{code:'INSPECTION_INPUT_CHANGED',status:409});
- const {isCommitManifest}=await import('../storage/record-validators.ts');const history=(await scanJsonRecords<any>(path.join(wiki.root,'state/wiki-commits'),(v):v is any=>isCommitManifest(v),wiki.root)).records.map(r=>r.value).filter(m=>m.status==='completed'&&m.inspectionInput&&questionHash(m.inspectionInput)===questionHash(input));const ownApplied=[...appliedTargets,...history.flatMap(m=>m.snapshot.pageRecords)];
- for(const p of input.wikiSnapshots){const now=await wiki.get(p.id),applied=now&&ownApplied.some(t=>t.id===now.id&&wiki.pageContent(t)===wiki.pageContent(now));if(!now||(!applied&&(now.revision!==p.revision||questionHash(now.body)!==questionHash(p.body))))throw Object.assign(Error('检查依据页版本已变化，请重新检查。'),{code:'INSPECTION_BASIS_CHANGED',status:409});await assertWikiSourcesAllowed(wiki,raws,now);}
- for(const r of input.rawSnapshots){const now=await raws.get(r.id);if(!now||now.bodySha256!==r.bodySha256||questionHash(now.body)!==r.bodySha256)throw Object.assign(Error('检查底层原文已变化或不可访问。'),{code:'INSPECTION_BASIS_CHANGED',status:409});}
- for(const c of input.citations){const p=input.wikiSnapshots.find(p=>p.id===c.recordId);if(!p||p.revision!==c.revision||p.body.slice(c.start,c.end)!==c.quote)throw Object.assign(Error('检查引用与实际读取页不匹配。'),{code:'INSPECTION_EVIDENCE_INVALID',status:409});}
+import type { WikiRecord, WikiStore } from './store.ts';
+import type { RawStore } from '../raw/store.ts';
+import type { AnswerCitation, AnswerSection, QuestionDraftInput } from './question-input.ts';
+import { questionHash, validQuestionInput } from './question-input.ts';
+import { SerialQueue, readJsonRecord, scanJsonRecords, writeJsonAtomic } from '../storage/files.ts';
+import { assertWikiSourcesAllowed } from './source-lineage.ts';
+const queues = new Map<string, SerialQueue>();
+export function inspectionQueue(root: string) {
+  let queue = queues.get(root);
+  if (!queue) {
+    queue = new SerialQueue();
+    queues.set(root, queue);
+  }
+  return queue;
 }
-export async function verifyEvidenceInput(input:EvidenceDraftInput,wiki:WikiStore,raws:RawStore,applied:WikiRecord[]=[]){if(input.kind==='inspection')return verifyInspectionInput(input,wiki,raws,applied);const {verifyQuestionInput}=await import('../llm/knowledge-answers.ts');return verifyQuestionInput(input,wiki,raws,applied);}
-export async function markInspectionCommitted(root:string,input:InspectionDraftInput,operationId:string,wikiIds:string[],changeTargets:Record<string,string>){return inspectionQueue(root).run(async()=>{const file=path.join(root,'state/knowledge-inspections',input.inspectionId+'.json'),r=await readJsonRecord<any>(root,file,(v):v is any=>object(v)&&v.id===input.inspectionId&&Array.isArray(v.findings));if(!r)throw Error('检查记录缺失，不能更新处理状态');r.commitResults??=[];if(r.commitResults.some((v:any)=>v.operationId===operationId))return;r.commitResults.push({operationId,wikiIds,changeTargets,selectionDigest:input.selectionDigest});const completed=new Set(r.commitResults.filter((v:any)=>v.selectionDigest===input.selectionDigest).flatMap((v:any)=>Object.keys(v.changeTargets)));for(const finding of r.findings){const required=Object.entries(input.changeFindingIds).filter(([,ids])=>ids.includes(finding.id)).map(([id])=>id);if(required.length&&required.every(id=>completed.has(id))){finding.status='committed';finding.statusReason='已审核提交 '+operationId;}}r.revision++;r.updatedAt=new Date().toISOString();await writeJsonAtomic(file,r);});}
+export type InspectionFinding = {
+  id: string;
+  fingerprint: string;
+  type: 'duplicate' | 'conflict' | 'outdated' | 'source_impact';
+  origin: 'model' | 'snapshot';
+  wikiIds: string[];
+  summary: string;
+  reason: string;
+  differences: string;
+  nextStep: 'preserve_differences' | 'add_note' | 'change_topic' | 'defer';
+  evidence: AnswerCitation[];
+  status: 'pending' | 'viewed' | 'deferred' | 'committed';
+  statusReason?: string;
+  basisChanged?: boolean;
+  comparison?: {
+    kind: string;
+    recordId: string;
+    wikiId: string;
+    beforeRevision: number;
+    currentRevision: number;
+    beforeSha: string;
+    currentSha: string;
+  };
+};
+export type InspectionDraftInput = {
+  kind: 'inspection';
+  inspectionId: string;
+  inspectionRevision: number;
+  selectionDigest: string;
+  selectedFindingIds: string[];
+  findings: InspectionFinding[];
+  changeFindingIds: Record<string, string[]>;
+  wikiSnapshots: WikiRecord[];
+  rawSnapshots: Array<{ id: string; bodySha256: string }>;
+  citations: AnswerCitation[];
+  sections: AnswerSection[];
+};
+export type InspectionDerivation = {
+  inspectionId: string;
+  findingIds: string[];
+  wikiIds: string[];
+  rawIds: string[];
+  manualWikiIds: string[];
+};
+export type EvidenceDraftInput = QuestionDraftInput | InspectionDraftInput;
+const object = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v),
+  uuid = (v: unknown) => typeof v === 'string' && /^[a-f0-9-]{36}$/i.test(v);
+export function validInspectionInput(v: unknown): v is InspectionDraftInput {
+  return (
+    object(v) &&
+    v.kind === 'inspection' &&
+    uuid(v.inspectionId) &&
+    Number.isInteger(v.inspectionRevision) &&
+    v.inspectionRevision > 0 &&
+    typeof v.selectionDigest === 'string' &&
+    Array.isArray(v.selectedFindingIds) &&
+    v.selectedFindingIds.length > 0 &&
+    new Set(v.selectedFindingIds).size === v.selectedFindingIds.length &&
+    object(v.changeFindingIds) &&
+    Object.values(v.changeFindingIds).every(
+      (ids) => Array.isArray(ids) && ids.every((id) => v.selectedFindingIds.includes(id)),
+    ) &&
+    Array.isArray(v.findings) &&
+    v.findings.length === v.selectedFindingIds.length &&
+    v.findings.every(
+      (f: any) => object(f) && v.selectedFindingIds.includes(f.id) && typeof f.fingerprint === 'string',
+    ) &&
+    Array.isArray(v.wikiSnapshots) &&
+    v.wikiSnapshots.length <= 8 &&
+    v.wikiSnapshots.every(
+      (p: any) =>
+        object(p) &&
+        uuid(p.id) &&
+        Number.isInteger(p.revision) &&
+        typeof p.body === 'string' &&
+        Array.isArray(p.sources),
+    ) &&
+    Array.isArray(v.rawSnapshots) &&
+    v.rawSnapshots.every((r: any) => object(r) && uuid(r.id) && typeof r.bodySha256 === 'string') &&
+    Array.isArray(v.citations) &&
+    v.citations.every(
+      (c: any) =>
+        object(c) &&
+        c.kind === 'wiki' &&
+        uuid(c.recordId) &&
+        typeof c.id === 'string' &&
+        typeof c.quote === 'string' &&
+        Number.isInteger(c.start) &&
+        Number.isInteger(c.end) &&
+        c.start >= 0 &&
+        c.end > c.start &&
+        c.quote.length === c.end - c.start &&
+        Array.isArray(c.rawIds) &&
+        Array.isArray(c.manualWikiIds),
+    ) &&
+    Array.isArray(v.sections) &&
+    v.sections.every(
+      (s: any) =>
+        object(s) &&
+        typeof s.text === 'string' &&
+        Array.isArray(s.citationIds) &&
+        ['conflict', 'insufficient', 'advice'].includes(s.kind),
+    )
+  );
+}
+export const validEvidenceInput = (v: unknown): v is EvidenceDraftInput =>
+  validQuestionInput(v) || validInspectionInput(v);
+export const inspectionSelectionDigest = (input: Omit<InspectionDraftInput, 'selectionDigest'>) => questionHash(input);
+export async function verifyInspectionInput(
+  input: InspectionDraftInput,
+  wiki: WikiStore,
+  raws: RawStore,
+  appliedTargets: WikiRecord[] = [],
+) {
+  if (!validInspectionInput(input)) {
+    throw Object.assign(Error('检查输入结构非法。'), { code: 'INSPECTION_INPUT_INVALID', status: 409 });
+  }
+  const { selectionDigest, ...basis } = input;
+  if (inspectionSelectionDigest(basis) !== selectionDigest)
+    throw Object.assign(Error('检查选集摘要已改变。'), { code: 'INSPECTION_INPUT_CHANGED', status: 409 });
+  const result = await readJsonRecord<any>(
+    wiki.root,
+    path.join(wiki.root, 'state/knowledge-inspections', input.inspectionId + '.json'),
+    (v): v is any => object(v) && v.id === input.inspectionId && Array.isArray(v.findings) && Array.isArray(v.drafts),
+  );
+  if (
+    !result ||
+    !result.drafts.some((d: any) => d.inputDigest === questionHash(input)) ||
+    input.findings.some(
+      (f) => !result.findings.some((original: any) => original.id === f.id && original.fingerprint === f.fingerprint),
+    )
+  )
+    throw Object.assign(Error('原检查及选择依据已改变。'), { code: 'INSPECTION_INPUT_CHANGED', status: 409 });
+  const { isCommitManifest } = await import('../storage/record-validators.ts');
+  const history = (
+    await scanJsonRecords<any>(
+      path.join(wiki.root, 'state/wiki-commits'),
+      (v): v is any => isCommitManifest(v),
+      wiki.root,
+    )
+  ).records
+    .map((r) => r.value)
+    .filter(
+      (m) => m.status === 'completed' && m.inspectionInput && questionHash(m.inspectionInput) === questionHash(input),
+    );
+  const ownApplied = [...appliedTargets, ...history.flatMap((m) => m.snapshot.pageRecords)];
+  for (const p of input.wikiSnapshots) {
+    const now = await wiki.get(p.id),
+      applied = now && ownApplied.some((t) => t.id === now.id && wiki.pageContent(t) === wiki.pageContent(now));
+    if (!now || (!applied && (now.revision !== p.revision || questionHash(now.body) !== questionHash(p.body))))
+      throw Object.assign(Error('检查依据页版本已变化，请重新检查。'), {
+        code: 'INSPECTION_BASIS_CHANGED',
+        status: 409,
+      });
+    await assertWikiSourcesAllowed(wiki, raws, now);
+  }
+  for (const r of input.rawSnapshots) {
+    const now = await raws.get(r.id);
+    if (!now || now.bodySha256 !== r.bodySha256 || questionHash(now.body) !== r.bodySha256)
+      throw Object.assign(Error('检查底层原文已变化或不可访问。'), { code: 'INSPECTION_BASIS_CHANGED', status: 409 });
+  }
+  for (const c of input.citations) {
+    const p = input.wikiSnapshots.find((p) => p.id === c.recordId);
+    if (!p || p.revision !== c.revision || p.body.slice(c.start, c.end) !== c.quote)
+      throw Object.assign(Error('检查引用与实际读取页不匹配。'), { code: 'INSPECTION_EVIDENCE_INVALID', status: 409 });
+  }
+}
+export async function verifyEvidenceInput(
+  input: EvidenceDraftInput,
+  wiki: WikiStore,
+  raws: RawStore,
+  applied: WikiRecord[] = [],
+) {
+  if (input.kind === 'inspection') return verifyInspectionInput(input, wiki, raws, applied);
+  const { verifyQuestionInput } = await import('../llm/knowledge-answers.ts');
+  return verifyQuestionInput(input, wiki, raws, applied);
+}
+export async function markInspectionCommitted(
+  root: string,
+  input: InspectionDraftInput,
+  operationId: string,
+  wikiIds: string[],
+  changeTargets: Record<string, string>,
+) {
+  return inspectionQueue(root).run(async () => {
+    const file = path.join(root, 'state/knowledge-inspections', input.inspectionId + '.json'),
+      r = await readJsonRecord<any>(
+        root,
+        file,
+        (v): v is any => object(v) && v.id === input.inspectionId && Array.isArray(v.findings),
+      );
+    if (!r) throw Error('检查记录缺失，不能更新处理状态');
+    r.commitResults ??= [];
+    if (r.commitResults.some((v: any) => v.operationId === operationId)) return;
+    r.commitResults.push({ operationId, wikiIds, changeTargets, selectionDigest: input.selectionDigest });
+    const completed = new Set(
+      r.commitResults
+        .filter((v: any) => v.selectionDigest === input.selectionDigest)
+        .flatMap((v: any) => Object.keys(v.changeTargets)),
+    );
+    for (const finding of r.findings) {
+      const required = Object.entries(input.changeFindingIds)
+        .filter(([, ids]) => ids.includes(finding.id))
+        .map(([id]) => id);
+      if (required.length && required.every((id) => completed.has(id))) {
+        finding.status = 'committed';
+        finding.statusReason = '已审核提交 ' + operationId;
+      }
+    }
+    r.revision++;
+    r.updatedAt = new Date().toISOString();
+    await writeJsonAtomic(file, r);
+  });
+}

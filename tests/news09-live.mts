@@ -1,2 +1,62 @@
-import {readAdditionalResearch} from '../services/news/additional-research.ts';import {mkdir,writeFile} from 'node:fs/promises';import {createHash} from 'node:crypto';import path from 'node:path';type LogEntry={url:string;startedAt:string;status?:number;ms?:number;bytes?:number;sha256?:string;snapshot?:string;error?:string};const dir=path.resolve('node_modules/.cache/news09-live-2');await mkdir(dir,{recursive:true});const orig=fetch,log:LogEntry[]=[],pending:Promise<void>[]=[];globalThis.fetch=async(input,init)=>{const url=String(input),t=Date.now(),entry:LogEntry={url,startedAt:new Date().toISOString()};log.push(entry);try{const res=await orig(input,init);entry.status=res.status;entry.ms=Date.now()-t;const id=log.indexOf(entry)+1;pending.push((async()=>{const b=Buffer.from(await res.clone().arrayBuffer());entry.bytes=b.length;entry.sha256=createHash('sha256').update(b).digest('hex');entry.snapshot=`${id}.bin`;await writeFile(path.join(dir,`${id}.bin`),b)})());return res}catch(e){entry.ms=Date.now()-t;entry.error=String(e);throw e}};const result=await readAdditionalResearch(new Date());await Promise.all(pending);await writeFile(path.join(dir,'result.json'),JSON.stringify({result,log},null,2));console.log(JSON.stringify({result: {sources:result.sources,items:result.items.map(({title,url,publishedAt,research})=>({title,url,publishedAt,research})),shortageReasons:result.shortageReasons},log},null,2));
-
+import { readAdditionalResearch } from '../services/news/additional-research.ts';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+type LogEntry = {
+  url: string;
+  startedAt: string;
+  status?: number;
+  ms?: number;
+  bytes?: number;
+  sha256?: string;
+  snapshot?: string;
+  error?: string;
+};
+const dir = path.resolve('node_modules/.cache/news09-live-2');
+await mkdir(dir, { recursive: true });
+const orig = fetch,
+  log: LogEntry[] = [],
+  pending: Promise<void>[] = [];
+globalThis.fetch = async (input, init) => {
+  const url = String(input),
+    t = Date.now(),
+    entry: LogEntry = { url, startedAt: new Date().toISOString() };
+  log.push(entry);
+  try {
+    const res = await orig(input, init);
+    entry.status = res.status;
+    entry.ms = Date.now() - t;
+    const id = log.indexOf(entry) + 1;
+    pending.push(
+      (async () => {
+        const b = Buffer.from(await res.clone().arrayBuffer());
+        entry.bytes = b.length;
+        entry.sha256 = createHash('sha256').update(b).digest('hex');
+        entry.snapshot = `${id}.bin`;
+        await writeFile(path.join(dir, `${id}.bin`), b);
+      })(),
+    );
+    return res;
+  } catch (e) {
+    entry.ms = Date.now() - t;
+    entry.error = String(e);
+    throw e;
+  }
+};
+const result = await readAdditionalResearch(new Date());
+await Promise.all(pending);
+await writeFile(path.join(dir, 'result.json'), JSON.stringify({ result, log }, null, 2));
+console.log(
+  JSON.stringify(
+    {
+      result: {
+        sources: result.sources,
+        items: result.items.map(({ title, url, publishedAt, research }) => ({ title, url, publishedAt, research })),
+        shortageReasons: result.shortageReasons,
+      },
+      log,
+    },
+    null,
+    2,
+  ),
+);

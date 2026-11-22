@@ -6,14 +6,25 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import type { Prompt, PromptInput, PromptVersion } from '../app/api';
 
-const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'http://localhost/', pretendToBeVisual: true });
+const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', {
+  url: 'http://localhost/',
+  pretendToBeVisual: true,
+});
 const { window } = dom;
 for (const [name, value] of Object.entries({
-  window, document: window.document, navigator: window.navigator, HTMLElement: window.HTMLElement,
-  HTMLInputElement: window.HTMLInputElement, HTMLTextAreaElement: window.HTMLTextAreaElement,
-  Event: window.Event, MouseEvent: window.MouseEvent, KeyboardEvent: window.KeyboardEvent,
-  Node: window.Node, IS_REACT_ACT_ENVIRONMENT: true,
-})) Object.defineProperty(globalThis, name, { value, writable: true, configurable: true });
+  window,
+  document: window.document,
+  navigator: window.navigator,
+  HTMLElement: window.HTMLElement,
+  HTMLInputElement: window.HTMLInputElement,
+  HTMLTextAreaElement: window.HTMLTextAreaElement,
+  Event: window.Event,
+  MouseEvent: window.MouseEvent,
+  KeyboardEvent: window.KeyboardEvent,
+  Node: window.Node,
+  IS_REACT_ACT_ENVIRONMENT: true,
+}))
+  Object.defineProperty(globalThis, name, { value, writable: true, configurable: true });
 const { act } = await import('react');
 const { createRoot } = await import('react-dom/client');
 const { PromptLibraryPage } = await import('../app/pages/PromptLibraryPage.tsx');
@@ -24,69 +35,142 @@ const B = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 
 function makePrompt(overrides: Partial<Prompt> = {}): Prompt {
   return {
-    id: A, name: '模板甲', category: 'customer', scenario: '用浏览器整理资料', body: '请总结 {{甲变量}}。',
-    variables: ['甲变量'], inputRequirements: '输入要求甲', outputRequirements: '输出要求甲',
-    relatedWikiIds: [], examples: '', tags: ['甲'], favorite: false,
-    createdAt: '2026-10-01T00:00:00.000Z', updatedAt: '2026-10-01T00:00:00.000Z', version: 1, source: 'manual',
+    id: A,
+    name: '模板甲',
+    category: 'customer',
+    scenario: '用浏览器整理资料',
+    body: '请总结 {{甲变量}}。',
+    variables: ['甲变量'],
+    inputRequirements: '输入要求甲',
+    outputRequirements: '输出要求甲',
+    relatedWikiIds: [],
+    examples: '',
+    tags: ['甲'],
+    favorite: false,
+    createdAt: '2026-10-01T00:00:00.000Z',
+    updatedAt: '2026-10-01T00:00:00.000Z',
+    version: 1,
+    source: 'manual',
     ...overrides,
   };
 }
 const promptA = makePrompt();
 const promptB = makePrompt({
-  id: B, name: '模板乙', category: 'office', scenario: '场景乙', body: '没有变量的正文。', variables: [],
-  inputRequirements: '', outputRequirements: '', tags: [], version: 3,
+  id: B,
+  name: '模板乙',
+  category: 'office',
+  scenario: '场景乙',
+  body: '没有变量的正文。',
+  variables: [],
+  inputRequirements: '',
+  outputRequirements: '',
+  tags: [],
+  version: 3,
 });
 
-const versionOf = (prompt: Prompt): PromptVersion => ({ version: prompt.version, savedAt: prompt.updatedAt, changeSource: 'manual', snapshot: prompt });
+const versionOf = (prompt: Prompt): PromptVersion => ({
+  version: prompt.version,
+  savedAt: prompt.updatedAt,
+  changeSource: 'manual',
+  snapshot: prompt,
+});
 // 甲: one version. 乙: two versions with distinct names and bodies, so a history response that crossed
 // into the wrong template would be visible as another name/body rather than as an empty pane.
 const versionHistory: Record<string, PromptVersion[]> = {
   [A]: [versionOf(promptA)],
   [B]: [
-    { ...versionOf(promptB), version: 2, savedAt: '2026-10-02T00:00:00.000Z', changeSource: 'ai_optimized', snapshot: { ...promptB, version: 2, name: '模板乙（旧版）', body: '乙的旧版正文。' } },
+    {
+      ...versionOf(promptB),
+      version: 2,
+      savedAt: '2026-10-02T00:00:00.000Z',
+      changeSource: 'ai_optimized',
+      snapshot: { ...promptB, version: 2, name: '模板乙（旧版）', body: '乙的旧版正文。' },
+    },
     versionOf(promptB),
   ],
 };
-const reply = (data: unknown, status = 200) => ({
-  ok: status >= 200 && status < 300, status, text: async () => JSON.stringify(data),
-}) as unknown as Response;
-const tick = () => new Promise(resolve => setTimeout(resolve, 0));
-const settle = async (ms = 140) => { await act(async () => { await new Promise(resolve => setTimeout(resolve, ms)); }); };
+const reply = (data: unknown, status = 200) =>
+  ({
+    ok: status >= 200 && status < 300,
+    status,
+    text: async () => JSON.stringify(data),
+  }) as unknown as Response;
+const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+const settle = async (ms = 140) => {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  });
+};
 const byText = (text: string, root: ParentNode = window.document) =>
-  [...root.querySelectorAll('button')].find(button => (button.textContent ?? '').includes(text)) as HTMLButtonElement | undefined;
-const required = <T,>(value: T | null | undefined, what = '目标元素'): T => { assert.ok(value, `找不到${what}`); return value; };
+  [...root.querySelectorAll('button')].find((button) => (button.textContent ?? '').includes(text)) as
+    HTMLButtonElement | undefined;
+const required = <T,>(value: T | null | undefined, what = '目标元素'): T => {
+  assert.ok(value, `找不到${what}`);
+  return value;
+};
 async function click(target: HTMLElement) {
-  await act(async () => { target.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true })); await tick(); });
+  await act(async () => {
+    target.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+    await tick();
+  });
 }
 async function type(target: HTMLInputElement | HTMLTextAreaElement, value: string) {
-  const proto = target instanceof window.HTMLTextAreaElement ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+  const proto =
+    target instanceof window.HTMLTextAreaElement
+      ? window.HTMLTextAreaElement.prototype
+      : window.HTMLInputElement.prototype;
   const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
   assert.ok(setter, 'value setter');
-  await act(async () => { setter.call(target, value); target.dispatchEvent(new window.Event('input', { bubbles: true })); await tick(); });
+  await act(async () => {
+    setter.call(target, value);
+    target.dispatchEvent(new window.Event('input', { bubbles: true }));
+    await tick();
+  });
 }
 async function submit() {
   const form = required(window.document.querySelector('form') as HTMLFormElement | null, '编辑表单');
-  await act(async () => { form.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true })); await tick(); await tick(); });
+  await act(async () => {
+    form.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    await tick();
+    await tick();
+  });
 }
 async function mount() {
   const container = window.document.getElementById('root') as HTMLElement;
   const root = createRoot(container);
-  await act(async () => { root.render(<PromptLibraryPage onChanged={() => undefined} onOpenWiki={() => undefined} />); await tick(); });
-  return { root, unmount: async () => { await act(async () => { root.unmount(); }); } };
+  await act(async () => {
+    root.render(<PromptLibraryPage onChanged={() => undefined} onOpenWiki={() => undefined} />);
+    await tick();
+  });
+  return {
+    root,
+    unmount: async () => {
+      await act(async () => {
+        root.unmount();
+      });
+    },
+  };
 }
 
-const listNames = () => [...window.document.querySelectorAll('.prompt-list-item b')].map(node => (node.textContent ?? '').trim());
+const listNames = () =>
+  [...window.document.querySelectorAll('.prompt-list-item b')].map((node) => (node.textContent ?? '').trim());
 /** Code-unit sort puts 乙 before 甲, so both sides are sorted with the same comparator. */
 const bothNames = () => ['模板甲', '模板乙'].sort();
 const versionRow = (text: string) =>
-  [...window.document.querySelectorAll('.prompt-version-row')].find(row => (row.textContent ?? '').includes(text)) as HTMLElement | undefined;
-const searchBox = () => required(window.document.querySelector('input[aria-label="搜索 Prompt"]') as HTMLInputElement | null, '搜索框');
-const variableField = () => required(window.document.querySelector('.prompt-fields input') as HTMLInputElement | null, '变量输入');
+  [...window.document.querySelectorAll('.prompt-version-row')].find((row) => (row.textContent ?? '').includes(text)) as
+    HTMLElement | undefined;
+const searchBox = () =>
+  required(window.document.querySelector('input[aria-label="搜索 Prompt"]') as HTMLInputElement | null, '搜索框');
+const variableField = () =>
+  required(window.document.querySelector('.prompt-fields input') as HTMLInputElement | null, '变量输入');
 const renderedBody = () => window.document.querySelector('[data-testid="prompt-final"]');
 const detailTitle = () => required(window.document.querySelector('.prompt-detail h2'), '详情标题').textContent ?? '';
 const isEnabled = (text: string) => !required(byText(text), `${text}按钮`).disabled;
 /** Clicks a text button whatever its disabled state; jsdom+React drop clicks on disabled buttons. */
-const clickIfEnabled = async (text: string) => { const button = required(byText(text), `${text}按钮`); if (!button.disabled) await click(button); };
+const clickIfEnabled = async (text: string) => {
+  const button = required(byText(text), `${text}按钮`);
+  if (!button.disabled) await click(button);
+};
 
 type Call = { url: string; method: string; body: unknown; status: number };
 /**
@@ -110,15 +194,32 @@ type Harness = {
 function stubFetch(): Harness {
   const gates: Gate[] = [];
   const harness: Harness = {
-    calls: [], clipboard: [], hold: new Set(), releases: new Map(), failures: new Map(),
+    calls: [],
+    clipboard: [],
+    hold: new Set(),
+    releases: new Map(),
+    failures: new Map(),
     writeText: async () => undefined,
-    gate: test => { const entry: Gate = { test, waiting: [] }; gates.push(entry); return entry; },
-    release: target => { const next = target.waiting.shift(); assert.ok(next, '没有等待中的请求可以释放'); next(); },
-    waiting: target => target.waiting.length,
+    gate: (test) => {
+      const entry: Gate = { test, waiting: [] };
+      gates.push(entry);
+      return entry;
+    },
+    release: (target) => {
+      const next = target.waiting.shift();
+      assert.ok(next, '没有等待中的请求可以释放');
+      next();
+    },
+    waiting: (target) => target.waiting.length,
   };
   Object.defineProperty(window.navigator, 'clipboard', {
     configurable: true,
-    value: { writeText: async (value: string) => { harness.clipboard.push(value); return harness.writeText(value); } },
+    value: {
+      writeText: async (value: string) => {
+        harness.clipboard.push(value);
+        return harness.writeText(value);
+      },
+    },
   });
   // Records the create stub has really committed, so a "saved but ignored by the UI" record still
   // shows up in the list exactly like it does on the server.
@@ -141,12 +242,22 @@ function stubFetch(): Harness {
     // The most recently registered matching gate wins, so a test can re-arm the same URL later.
     let gate: Gate | undefined;
     for (const entry of gates) if (entry.test(url, method)) gate = entry;
-    if (gate) await new Promise<void>(resolve => { gate.waiting.push(resolve); });
+    if (gate)
+      await new Promise<void>((resolve) => {
+        gate.waiting.push(resolve);
+      });
     if (forced) return reply({ error: { code: forced.code, message: forced.message } }, forced.status);
-    if (url === '/api/prompts/schema') return reply({ categories: [
-      { id: 'industry_learning', label: '行业学习' }, { id: 'business_analysis', label: '业务分析' },
-      { id: 'customer', label: '客户' }, { id: 'product', label: '产品' }, { id: 'ai', label: 'AI' }, { id: 'office', label: '日常办公' },
-    ] });
+    if (url === '/api/prompts/schema')
+      return reply({
+        categories: [
+          { id: 'industry_learning', label: '行业学习' },
+          { id: 'business_analysis', label: '业务分析' },
+          { id: 'customer', label: '客户' },
+          { id: 'product', label: '产品' },
+          { id: 'ai', label: 'AI' },
+          { id: 'office', label: '日常办公' },
+        ],
+      });
     if (url === '/api/wiki') return reply({ items: [] });
     if (method === 'GET' && /^\/api\/prompts\/[^/]+\/feedback\?version=\d+$/.test(url)) return reply({ items: [] });
     // GET only: a POST to the same path is a create, handled further down. Without the method guard
@@ -157,19 +268,25 @@ function stubFetch(): Harness {
       const tag = query.get('tag');
       const favorite = query.get('favorite');
       const q = query.get('q');
-      const list = items().filter(item =>
-        (!category || item.category === category)
-        && (!tag || item.tags.includes(tag))
-        && (favorite !== 'true' || item.favorite)
-        // Same searchable fields as the server (name, tags, body, scenario, category label).
-        && (!q || [item.name, ...item.tags, item.body, item.scenario].some(field => field.includes(q))));
-      return reply({ items: list, categoryCounts: { industry_learning: 0, business_analysis: 0, customer: 1, product: 0, ai: 0, office: 1 } });
+      const list = items().filter(
+        (item) =>
+          (!category || item.category === category) &&
+          (!tag || item.tags.includes(tag)) &&
+          (favorite !== 'true' || item.favorite) &&
+          // Same searchable fields as the server (name, tags, body, scenario, category label).
+          (!q || [item.name, ...item.tags, item.body, item.scenario].some((field) => field.includes(q))),
+      );
+      return reply({
+        items: list,
+        categoryCounts: { industry_learning: 0, business_analysis: 0, customer: 1, product: 0, ai: 0, office: 1 },
+      });
     }
     const detail = /^\/api\/prompts\/([0-9a-f-]{36})$/.exec(url);
     if (detail && method === 'GET') {
       const id = detail[1];
       const send = () => reply({ prompt: id === A ? promptA : promptB, wikiLinks: [] });
-      if (harness.hold.has(id)) return await new Promise<Response>(resolve => harness.releases.set(id, () => resolve(send())));
+      if (harness.hold.has(id))
+        return await new Promise<Response>((resolve) => harness.releases.set(id, () => resolve(send())));
       return send();
     }
     const render = /^\/api\/prompts\/([0-9a-f-]{36})\/render$/.exec(url);
@@ -178,14 +295,24 @@ function stubFetch(): Harness {
       const values = (body as { values: Record<string, string> }).values ?? {};
       // The real server-side rule, reused here so the stub cannot invent a friendlier behaviour.
       const result = renderTemplate(target.body, values);
-      if (result.missingVariables.length) return reply({ error: { code: 'MISSING_VARIABLES', message: `还有未填写的变量：${result.missingVariables.join('、')}。`, details: { missingVariables: result.missingVariables } } }, 422);
+      if (result.missingVariables.length)
+        return reply(
+          {
+            error: {
+              code: 'MISSING_VARIABLES',
+              message: `还有未填写的变量：${result.missingVariables.join('、')}。`,
+              details: { missingVariables: result.missingVariables },
+            },
+          },
+          422,
+        );
       return reply({ id: target.id, version: target.version, body: result.body, missingVariables: [] });
     }
     const versions = /^\/api\/prompts\/([0-9a-f-]{36})\/versions$/.exec(url);
     if (versions) return reply({ items: versionHistory[versions[1]] ?? [] });
     const one = /^\/api\/prompts\/([0-9a-f-]{36})\/versions\/(\d+)$/.exec(url);
     if (one) {
-      const found = (versionHistory[one[1]] ?? []).find(item => item.version === Number(one[2]));
+      const found = (versionHistory[one[1]] ?? []).find((item) => item.version === Number(one[2]));
       if (found) return reply({ version: found });
       return reply({ error: { code: 'NOT_FOUND', message: `这条 Prompt 没有第 ${one[2]} 版。` } }, 404);
     }
@@ -199,8 +326,18 @@ function stubFetch(): Harness {
       const input = rest as unknown as PromptInput;
       const claimed = createSessions.get(requestId);
       if (claimed !== undefined) {
-        if (claimed === JSON.stringify(input)) return reply({ prompt: { ...promptA, ...input, id: requestId }, reused: true });
-        return reply({ error: { code: 'REQUEST_ID_CONFLICT', message: `同一个 requestId 已用于另一组初始内容，本次未写入；请重新发起一次新建。`, details: { id: requestId } } }, 409);
+        if (claimed === JSON.stringify(input))
+          return reply({ prompt: { ...promptA, ...input, id: requestId }, reused: true });
+        return reply(
+          {
+            error: {
+              code: 'REQUEST_ID_CONFLICT',
+              message: `同一个 requestId 已用于另一组初始内容，本次未写入；请重新发起一次新建。`,
+              details: { id: requestId },
+            },
+          },
+          409,
+        );
       }
       createSessions.set(requestId, JSON.stringify(input));
       const saved: Prompt = { ...promptA, ...input, id: requestId };
@@ -234,13 +371,20 @@ test('B07 UI：切换模板时身份、变量、预览与消息互不串页，�
     harness.hold.delete(A);
     harness.releases.get(A)?.();
     await settle(60);
-    assert.ok(required(window.document.querySelector('.prompt-detail h2')).textContent?.includes('模板乙'), '迟到的旧详情不得覆盖当前选择');
+    assert.ok(
+      required(window.document.querySelector('.prompt-detail h2')).textContent?.includes('模板乙'),
+      '迟到的旧详情不得覆盖当前选择',
+    );
 
     // back to 甲: variables are empty again (nothing leaked from the previous visit)
     await click(required(byText('模板甲'), '模板甲列表项'));
     await settle(40);
     const fields = [...window.document.querySelectorAll('.prompt-fields input')] as HTMLInputElement[];
-    assert.deepEqual(fields.map(field => field.value), [''], '换回来时变量是空的');
+    assert.deepEqual(
+      fields.map((field) => field.value),
+      [''],
+      '换回来时变量是空的',
+    );
     assert.equal(window.document.querySelector('[data-testid="prompt-final"]'), null, '没有预览残留');
     await type(fields[0], '华东商超');
     assert.equal((window.document.querySelector('.prompt-fields input') as HTMLInputElement).value, '华东商超');
@@ -250,7 +394,9 @@ test('B07 UI：切换模板时身份、变量、预览与消息互不串页，�
     await click(required(byText('模板甲'), '模板甲列表项'));
     await settle(40);
     assert.equal((window.document.querySelector('.prompt-fields input') as HTMLInputElement).value, '');
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('B07 UI：未填变量时不能复制、不出现成功提示，剪贴板失败时给出可手动选择的最终正文', async () => {
@@ -275,7 +421,9 @@ test('B07 UI：未填变量时不能复制、不出现成功提示，剪贴板�
     assert.equal(final.textContent, '请总结 华东商超。');
 
     // 剪贴板失败：显示失败原因 + 可手动选取的文本，绝不显示成功
-    harness.writeText = async () => { throw new Error('浏览器拒绝了剪贴板写入'); };
+    harness.writeText = async () => {
+      throw new Error('浏览器拒绝了剪贴板写入');
+    };
     await click(required(byText('复制最终正文'), '复制按钮'));
     await settle(30);
     assert.equal(window.document.querySelector('.prompt-copy-ok'), null, '失败时不得显示成功提示');
@@ -288,15 +436,21 @@ test('B07 UI：未填变量时不能复制、不出现成功提示，剪贴板�
     // 剪贴板成功：先真实调用 writeText，成功后才提示
     harness.writeText = async () => undefined;
     const attemptsBefore = harness.clipboard.length;
-    const mutationsBefore = harness.calls.filter(call => call.method === 'PUT' || call.method === 'POST').length;
+    const mutationsBefore = harness.calls.filter((call) => call.method === 'PUT' || call.method === 'POST').length;
     await click(required(byText('复制最终正文'), '复制按钮'));
     await settle(30);
     assert.deepEqual(harness.clipboard.slice(attemptsBefore), ['请总结 华东商超。'], '复制的是这一次生成的最终正文');
     assert.ok(required(window.document.querySelector('.prompt-copy-ok')).textContent?.includes('已复制'));
     // 复制不改变模板：不产生任何新的写请求
-    assert.equal(harness.calls.filter(call => call.method === 'PUT' || call.method === 'POST').length, mutationsBefore, '复制不得写入任何内容');
+    assert.equal(
+      harness.calls.filter((call) => call.method === 'PUT' || call.method === 'POST').length,
+      mutationsBefore,
+      '复制不得写入任何内容',
+    );
     assert.ok(required(window.document.querySelector('.prompt-detail h2')).textContent?.includes('模板甲'));
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('B07 UI：无变量模板可直接复制；查看历史版本为只读，且不请求当前版本的渲染', async () => {
@@ -313,21 +467,29 @@ test('B07 UI：无变量模板可直接复制；查看历史版本为只读，�
     assert.ok(required(window.document.querySelector('.prompt-copy-ok')).textContent?.includes('已复制'));
 
     // 历史版本：只读横幅、没有变量输入、没有渲染请求
-    const before = harness.calls.filter(call => call.url.endsWith('/render')).length;
-    const versionRow = [...window.document.querySelectorAll('.prompt-version-row')].find(row => (row.textContent ?? '').includes('第 3 版'));
+    const before = harness.calls.filter((call) => call.url.endsWith('/render')).length;
+    const versionRow = [...window.document.querySelectorAll('.prompt-version-row')].find((row) =>
+      (row.textContent ?? '').includes('第 3 版'),
+    );
     await click(required(versionRow as HTMLElement | undefined, '版本历史行'));
     await settle(30);
     const banner = required(window.document.querySelector('.history-banner'));
     assert.ok(banner.textContent?.includes('正在查看第 3 版'), '必须明确当前查看的是哪一版');
     assert.equal(window.document.querySelector('.prompt-fields'), null, '历史版本只读，不提供变量填写');
     assert.equal(byText('生成最终正文'), undefined);
-    assert.equal(harness.calls.filter(call => call.url.endsWith('/render')).length, before, '查看旧版不得调用当前版本的渲染');
+    assert.equal(
+      harness.calls.filter((call) => call.url.endsWith('/render')).length,
+      before,
+      '查看旧版不得调用当前版本的渲染',
+    );
     // 返回当前版本
     await click(required(byText('返回当前版本'), '返回按钮'));
     await settle(30);
     assert.equal(window.document.querySelector('.history-banner'), null);
     assert.ok(required(window.document.querySelector('.prompt-detail h2')).textContent?.includes('模板乙'));
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('B07 UI：保存冲突时保留用户输入并提示刷新；删除必须二次确认目标', async () => {
@@ -340,12 +502,20 @@ test('B07 UI：保存冲突时保留用户输入并提示刷新；删除必须�
     await settle(20);
     const nameField = required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement;
     await type(nameField, '我改过的名字');
-    harness.failures.set(`/api/prompts/${A}`, { status: 409, code: 'VERSION_CONFLICT', message: '这条 Prompt 已经被保存为第 2 版，请刷新后重新编辑；你刚才的输入没有被覆盖。' });
+    harness.failures.set(`/api/prompts/${A}`, {
+      status: 409,
+      code: 'VERSION_CONFLICT',
+      message: '这条 Prompt 已经被保存为第 2 版，请刷新后重新编辑；你刚才的输入没有被覆盖。',
+    });
     await submit();
     await settle(30);
     const message = required(window.document.querySelector('.error-message'));
     assert.ok(message.textContent?.includes('第 2 版'));
-    assert.equal((required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value, '我改过的名字', '冲突后用户输入必须保留');
+    assert.equal(
+      (required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value,
+      '我改过的名字',
+      '冲突后用户输入必须保留',
+    );
     harness.failures.clear();
 
     // 删除确认
@@ -355,13 +525,18 @@ test('B07 UI：保存冲突时保留用户输入并提示刷新；删除必须�
     await settle(20);
     const dialog = required(window.document.querySelector('[role="dialog"]'));
     assert.ok(dialog.textContent?.includes('模板甲'), '删除对话框必须显示目标名称');
-    assert.equal(harness.calls.filter(call => call.method === 'DELETE').length, 0, '确认之前不得删除');
+    assert.equal(harness.calls.filter((call) => call.method === 'DELETE').length, 0, '确认之前不得删除');
     await click(required(byText('确认删除'), '确认删除'));
     await settle(30);
-    const deleted = harness.calls.filter(call => call.method === 'DELETE');
-    assert.deepEqual(deleted.map(call => call.url), [`/api/prompts/${A}`]);
+    const deleted = harness.calls.filter((call) => call.method === 'DELETE');
+    assert.deepEqual(
+      deleted.map((call) => call.url),
+      [`/api/prompts/${A}`],
+    );
     assert.deepEqual((deleted[0].body as { baseVersion: number }).baseVersion, 1);
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('B07/B08 UI：Generator 与 Optimizer 入口已开放，Library 新建仍走 requestId 且只提交可编辑字段', async () => {
@@ -371,27 +546,63 @@ test('B07/B08 UI：Generator 与 Optimizer 入口已开放，Library 新建仍�
     await settle();
     const navigation = required(window.document.querySelector('nav[aria-label="Prompt 工作台功能"]'), '工作台导航');
     const aiActions = [...navigation.querySelectorAll('button')];
-    assert.deepEqual(aiActions.map(button => button.textContent?.trim()), ['模板库','生成','优化']);
+    assert.deepEqual(
+      aiActions.map((button) => button.textContent?.trim()),
+      ['模板库', '生成', '优化'],
+    );
     assert.equal(aiActions[0].getAttribute('aria-current'), 'page');
-    assert.ok(aiActions.every(button => !button.disabled), 'B08 入口已开放');
+    assert.ok(
+      aiActions.every((button) => !button.disabled),
+      'B08 入口已开放',
+    );
 
     await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     const form = required(window.document.querySelector('.prompt-editor'), '编辑器');
     const inputs = [...form.querySelectorAll('input')] as HTMLInputElement[];
-    await type(required(inputs.find(input => input.getAttribute('placeholder')?.includes('经销商访谈提纲')) as HTMLInputElement, '名称输入'), '新的模板');
-    await type(required(form.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement | null, '正文输入'), '请处理 {{输入项}}。');
-    assert.ok(required(window.document.querySelector('.field-hint')).textContent?.includes('{{输入项}}'), '编辑器实时显示识别到的变量');
+    await type(
+      required(
+        inputs.find((input) => input.getAttribute('placeholder')?.includes('经销商访谈提纲')) as HTMLInputElement,
+        '名称输入',
+      ),
+      '新的模板',
+    );
+    await type(
+      required(form.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement | null, '正文输入'),
+      '请处理 {{输入项}}。',
+    );
+    assert.ok(
+      required(window.document.querySelector('.field-hint')).textContent?.includes('{{输入项}}'),
+      '编辑器实时显示识别到的变量',
+    );
     await submit();
     await settle(40);
-    const created = harness.calls.find(call => call.method === 'POST');
+    const created = harness.calls.find((call) => call.method === 'POST');
     assert.ok(created, '必须发出创建请求');
     const payload = created.body as Record<string, unknown>;
     assert.match(String(payload.requestId), /^[0-9a-f-]{36}$/, 'requestId 必须是 UUID');
-    assert.deepEqual(Object.keys(payload).sort(), ['body', 'category', 'examples', 'favorite', 'inputRequirements', 'name', 'outputRequirements', 'relatedWikiIds', 'requestId', 'scenario', 'tags'].sort(), '只能提交可编辑字段与 requestId');
+    assert.deepEqual(
+      Object.keys(payload).sort(),
+      [
+        'body',
+        'category',
+        'examples',
+        'favorite',
+        'inputRequirements',
+        'name',
+        'outputRequirements',
+        'relatedWikiIds',
+        'requestId',
+        'scenario',
+        'tags',
+      ].sort(),
+      '只能提交可编辑字段与 requestId',
+    );
     assert.equal(payload.variables, undefined, '变量由服务端提取');
     assert.equal(payload.version, undefined);
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 // ------------------------------------------------------------------------------------------------
@@ -449,10 +660,17 @@ test('返修 F07-02：变量改动后旧渲染结果不能再作为本次结果�
     assert.equal(required(byText('复制最终正文'), '复制按钮').disabled, true);
 
     // 模板与版本不因填值/生成/复制而改变
-    assert.deepEqual(harness.calls.filter(call => call.method === 'PUT' || (call.method === 'POST' && !call.url.endsWith('/render'))), [],
-      '填值、生成与复制不得产生任何写请求');
+    assert.deepEqual(
+      harness.calls.filter(
+        (call) => call.method === 'PUT' || (call.method === 'POST' && !call.url.endsWith('/render')),
+      ),
+      [],
+      '填值、生成与复制不得产生任何写请求',
+    );
     assert.ok(detailTitle().includes('模板甲'));
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选择', async () => {
@@ -478,7 +696,10 @@ test('返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选�
     await settle(40);
     assert.ok(window.document.querySelector('.history-banner') === null, '迟到的历史响应不得打开历史视图');
     assert.equal(detailTitle(), '模板甲', '左侧选中甲时右侧必须还是甲');
-    assert.ok(!(window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('乙的旧版正文'), '不得串入乙的正文');
+    assert.ok(
+      !(window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('乙的旧版正文'),
+      '不得串入乙的正文',
+    );
     assert.ok(window.document.querySelector('.prompt-detail-panel .error-message') === null, '成功响应不得带出错误');
 
     // 同一模板连续点两版：先点的迟到响应不得替换后点的
@@ -493,13 +714,20 @@ test('返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选�
     assert.ok(required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 3 版'));
     harness.release(two);
     await settle(30);
-    assert.ok(required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 3 版'), '迟到的第 2 版不得替换已显示的第 3 版');
+    assert.ok(
+      required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 3 版'),
+      '迟到的第 2 版不得替换已显示的第 3 版',
+    );
     assert.ok(!(window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('乙的旧版正文'));
 
     // 甲 ← 乙 方向的失败响应：迟到的错误不得显示在别的记录上
     await click(required(byText('模板甲'), '模板甲列表项'));
     await settle(40);
-    harness.failures.set(`/api/prompts/${A}/versions/1`, { status: 500, code: 'INTERNAL_ERROR', message: '这一版读取失败。' });
+    harness.failures.set(`/api/prompts/${A}/versions/1`, {
+      status: 500,
+      code: 'INTERNAL_ERROR',
+      message: '这一版读取失败。',
+    });
     const failing = harness.gate((url, method) => method === 'GET' && url === `/api/prompts/${A}/versions/1`);
     await click(required(versionRow('第 1 版'), '甲第 1 版'));
     await settle(20);
@@ -524,7 +752,9 @@ test('返修 F07-03：延迟的历史版本响应不串页，也不覆盖新选�
     await settle(40);
     assert.ok(required(window.document.querySelector('.prompt-editor')), '迟到的历史响应不得关掉新建表单');
     assert.ok(window.document.querySelector('.history-banner') === null);
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-04：迟到的 render 既不锁死新记录，也不误解锁新记录自己的请求', async () => {
@@ -563,7 +793,9 @@ test('返修 F07-04：迟到的 render 既不锁死新记录，也不误解锁�
     await click(required(byText('复制最终正文'), '复制按钮'));
     await settle(20);
     assert.deepEqual(harness.clipboard, ['没有变量的正文。'], '乙仍能继续复制自己的正文');
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-05：迟到的保存响应不得清空之后新建的表单', async () => {
@@ -584,25 +816,43 @@ test('返修 F07-05：迟到的保存响应不得清空之后新建的表单', a
     await click(required(byText('手动新建'), '新建按钮'));
     await settle(20);
     const form = required(window.document.querySelector('.prompt-editor'), '新建编辑器');
-    await type(required(form.querySelector('.prompt-editor input') as HTMLInputElement, '名称输入'), '新模板未保存内容');
-    await type(required(form.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement, '正文输入'), '新的正文 {{新变量}}。');
+    await type(
+      required(form.querySelector('.prompt-editor input') as HTMLInputElement, '名称输入'),
+      '新模板未保存内容',
+    );
+    await type(
+      required(form.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement, '正文输入'),
+      '新的正文 {{新变量}}。',
+    );
 
     harness.release(putGate);
     await settle(40);
-    assert.equal((required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value, '新模板未保存内容', '人工输入必须保留');
-    assert.equal((required(window.document.querySelector('.prompt-body-field textarea')) as HTMLTextAreaElement).value, '新的正文 {{新变量}}。');
+    assert.equal(
+      (required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value,
+      '新模板未保存内容',
+      '人工输入必须保留',
+    );
+    assert.equal(
+      (required(window.document.querySelector('.prompt-body-field textarea')) as HTMLTextAreaElement).value,
+      '新的正文 {{新变量}}。',
+    );
     assert.ok(window.document.querySelector('.success-message') === null, '旧保存的提示不得串到新表单');
     assert.ok(window.document.querySelector('.error-message') === null);
-    assert.equal(harness.calls.filter(call => call.method === 'PUT').length, 1, '已提交的旧操作不得重复提交');
-    assert.ok(harness.calls.filter(call => call.method === 'GET' && call.url.startsWith('/api/prompts')).length >= 2, '列表统计仍然刷新');
+    assert.equal(harness.calls.filter((call) => call.method === 'PUT').length, 1, '已提交的旧操作不得重复提交');
+    assert.ok(
+      harness.calls.filter((call) => call.method === 'GET' && call.url.startsWith('/api/prompts')).length >= 2,
+      '列表统计仍然刷新',
+    );
 
     // 新表单继续可用，且用的是新的 requestId
     await submit();
     await settle(40);
-    const posts = harness.calls.filter(call => call.method === 'POST');
+    const posts = harness.calls.filter((call) => call.method === 'POST');
     assert.equal(posts.length, 1, '只应发生一次创建请求');
     assert.equal((posts[0].body as { name: string }).name, '新模板未保存内容');
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-05：迟到的冲突响应不得把错误串到新表单', async () => {
@@ -613,7 +863,11 @@ test('返修 F07-05：迟到的冲突响应不得把错误串到新表单', asyn
     await click(required(byText('编辑'), '编辑按钮'));
     await settle(20);
     const gate = harness.gate((url, method) => method === 'PUT' && url === `/api/prompts/${A}`);
-    harness.failures.set(`/api/prompts/${A}`, { status: 409, code: 'VERSION_CONFLICT', message: '这条 Prompt 已经被保存为第 2 版，请刷新后重新编辑；你刚才的输入没有被覆盖。' });
+    harness.failures.set(`/api/prompts/${A}`, {
+      status: 409,
+      code: 'VERSION_CONFLICT',
+      message: '这条 Prompt 已经被保存为第 2 版，请刷新后重新编辑；你刚才的输入没有被覆盖。',
+    });
     await submit();
     await settle(20);
     assert.equal(harness.waiting(gate), 1);
@@ -624,8 +878,13 @@ test('返修 F07-05：迟到的冲突响应不得把错误串到新表单', asyn
     harness.release(gate);
     await settle(40);
     assert.ok(window.document.querySelector('.error-message') === null, '迟到的冲突提示不得显示在新表单上');
-    assert.equal((required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value, '另一个新模板');
-  } finally { await unmount(); }
+    assert.equal(
+      (required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value,
+      '另一个新模板',
+    );
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误清新建表单', async () => {
@@ -636,7 +895,9 @@ test('返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误�
     assert.deepEqual(listNames().sort(), bothNames());
 
     // 延迟 q=B07模板乙 的真实响应，随后改成“浏览器”（只匹配甲）
-    const stale = harness.gate((url, method) => method === 'GET' && url.includes('q=') && decodeURIComponent(url).includes('B07模板乙'));
+    const stale = harness.gate(
+      (url, method) => method === 'GET' && url.includes('q=') && decodeURIComponent(url).includes('B07模板乙'),
+    );
     await type(searchBox(), 'B07模板乙');
     await settle(130);
     assert.equal(harness.waiting(stale), 1, '旧查询仍在途中');
@@ -650,7 +911,9 @@ test('返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误�
     assert.deepEqual(listNames(), ['模板甲'], '迟到的旧查询不得覆盖当前列表');
 
     // 清空查询恢复
-    await click(required(window.document.querySelector('button[aria-label="清空搜索"]') as HTMLButtonElement | null, '清空搜索'));
+    await click(
+      required(window.document.querySelector('button[aria-label="清空搜索"]') as HTMLButtonElement | null, '清空搜索'),
+    );
     await settle(150);
     assert.deepEqual(listNames().sort(), bothNames());
 
@@ -680,11 +943,20 @@ test('返修 F07-06：迟到的旧查询响应不覆盖当前筛选，也不误�
     await type(required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement, '筛选期间的新模板');
     await type(searchBox(), '模板');
     await settle(150);
-    assert.equal((required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value, '筛选期间的新模板', '筛选不得清掉新建表单');
+    assert.equal(
+      (required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value,
+      '筛选期间的新模板',
+      '筛选不得清掉新建表单',
+    );
     await type(searchBox(), '');
     await settle(150);
-    assert.equal((required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value, '筛选期间的新模板');
-  } finally { await unmount(); }
+    assert.equal(
+      (required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value,
+      '筛选期间的新模板',
+    );
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-04 残留：同模板打开历史/返回当前都作废在途 render，错误与缺值不得回灌', async () => {
@@ -697,7 +969,9 @@ test('返修 F07-04 残留：同模板打开历史/返回当前都作废在途 r
       const state = { armed: true };
       return {
         gate: harness.gate((url, method) => state.armed && method === 'POST' && url === `/api/prompts/${A}/render`),
-        disarm: () => { state.armed = false; },
+        disarm: () => {
+          state.armed = false;
+        },
       };
     };
     // 甲当前版缺变量：真实 422 被扣住，随后打开同一模板的第 1 版（selectionVersion 不变）
@@ -714,15 +988,25 @@ test('返修 F07-04 残留：同模板打开历史/返回当前都作废在途 r
     await settle(40);
     assert.ok(window.document.querySelector('.error-message') === null, '迟到的生成错误不得盖到历史只读页上');
     assert.equal(window.document.querySelectorAll('.prompt-missing-note').length, 0, '历史页不得出现缺变量提示');
-    assert.ok(required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 1 版'), '历史视图必须保持不变');
+    assert.ok(
+      required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 1 版'),
+      '历史视图必须保持不变',
+    );
 
     // 返回当前：旧错误与旧服务端缺值状态都不得回灌
     await click(required(byText('返回当前版本'), '返回当前版本'));
     await settle(40);
     assert.ok(window.document.querySelector('.error-message') === null, '返回当前后旧的生成错误不得保留');
-    assert.ok(window.document.querySelector('.prompt-missing-note[role="alert"]') === null, '返回当前后旧的服务端缺值状态不得保留');
-    assert.ok(required(window.document.querySelector('.prompt-missing-note[role="status"]')).textContent?.includes('还缺少：甲变量'),
-      '缺变量提示只能由当前填写状态实时决定');
+    assert.ok(
+      window.document.querySelector('.prompt-missing-note[role="alert"]') === null,
+      '返回当前后旧的服务端缺值状态不得保留',
+    );
+    assert.ok(
+      required(window.document.querySelector('.prompt-missing-note[role="status"]')).textContent?.includes(
+        '还缺少：甲变量',
+      ),
+      '缺变量提示只能由当前填写状态实时决定',
+    );
 
     // 在途 render 期间打开历史再返回当前，释放后同样不得回灌
     const second = holdRender();
@@ -737,7 +1021,10 @@ test('返修 F07-04 残留：同模板打开历史/返回当前都作废在途 r
     harness.release(second.gate);
     await settle(40);
     assert.ok(window.document.querySelector('.error-message') === null, '返回当前后释放的旧错误不得显示');
-    assert.ok(window.document.querySelector('.prompt-missing-note[role="alert"]') === null, '返回当前后释放的旧缺值状态不得显示');
+    assert.ok(
+      window.document.querySelector('.prompt-missing-note[role="alert"]') === null,
+      '返回当前后释放的旧缺值状态不得显示',
+    );
 
     // 新上下文必须能正常工作
     await type(variableField(), '华东');
@@ -756,9 +1043,15 @@ test('返修 F07-04 残留：同模板打开历史/返回当前都作废在途 r
     await type(required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement, '生成期间的新模板');
     harness.release(third.gate);
     await settle(40);
-    assert.equal((required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value, '生成期间的新模板', '旧 render 不得清掉新表单');
+    assert.equal(
+      (required(window.document.querySelector('.prompt-editor input')) as HTMLInputElement).value,
+      '生成期间的新模板',
+      '旧 render 不得清掉新表单',
+    );
     assert.ok(window.document.querySelector('.error-message') === null, '旧 render 的错误不得串到新表单');
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally 不得清掉后一张表单的占用', async () => {
@@ -766,24 +1059,34 @@ test('返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally �
   const { unmount } = await mount();
   try {
     await settle();
-    const editorInput = () => required(window.document.querySelector('.prompt-editor input') as HTMLInputElement | null, '名称输入');
+    const editorInput = () =>
+      required(window.document.querySelector('.prompt-editor input') as HTMLInputElement | null, '名称输入');
     const openForm = async (name: string) => {
       await click(required(byText('手动新建'), '新建按钮'));
       await settle(20);
       await type(editorInput(), name);
-      await type(required(window.document.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement | null, '正文输入'), `${name}的正文。`);
+      await type(
+        required(
+          window.document.querySelector('.prompt-body-field textarea') as HTMLTextAreaElement | null,
+          '正文输入',
+        ),
+        `${name}的正文。`,
+      );
     };
     /** One-shot gate: the flag stops it from also swallowing the requests that come after it. */
     const holdCreate = () => {
       const state = { armed: true };
       return {
         gate: harness.gate((url, method) => state.armed && method === 'POST' && url === '/api/prompts'),
-        disarm: () => { state.armed = false; },
+        disarm: () => {
+          state.armed = false;
+        },
       };
     };
-    const requestIds = () => harness.calls
-      .filter(call => call.method === 'POST' && call.url === '/api/prompts')
-      .map(call => String((call.body as { requestId?: string }).requestId));
+    const requestIds = () =>
+      harness.calls
+        .filter((call) => call.method === 'POST' && call.url === '/api/prompts')
+        .map((call) => String((call.body as { requestId?: string }).requestId));
 
     // 丁：创建提交后响应被扣住
     const ding = holdCreate();
@@ -815,8 +1118,10 @@ test('返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally �
     assert.equal(ids.length, 3, '三次创建请求');
     assert.notEqual(ids[2], dingId, '己不得复用丁的 requestId');
     assert.notEqual(ids[2], wuId, '己不得复用戊仍在途的 requestId');
-    assert.ok(window.document.querySelector('.error-message') === null,
-      `己不得保存失败（复用戊的 requestId 会得到 409）—— 实际提示：${window.document.querySelector('.error-message')?.textContent ?? '（无）'}`);
+    assert.ok(
+      window.document.querySelector('.error-message') === null,
+      `己不得保存失败（复用戊的 requestId 会得到 409）—— 实际提示：${window.document.querySelector('.error-message')?.textContent ?? '（无）'}`,
+    );
     assert.ok(window.document.querySelector('.prompt-editor') === null, '己保存成功后表单正常关闭');
 
     // 戊的迟到成功：不报错、不重复提交，被 UI 忽略的记录仍出现在列表里
@@ -825,8 +1130,11 @@ test('返修 F07-05 残留：重叠新建各有独立 requestId，旧 finally �
     assert.ok(window.document.querySelector('.error-message') === null, '戊的迟到成功不得报错');
     assert.equal(requestIds().length, 3, '已提交的操作不得重复提交');
     const listed = listNames();
-    for (const name of ['丁模板', '戊模板', '己模板']) assert.ok(listed.includes(name), `${name} 已保存，必须出现在列表里`);
-  } finally { await unmount(); }
+    for (const name of ['丁模板', '戊模板', '己模板'])
+      assert.ok(listed.includes(name), `${name} 已保存，必须出现在列表里`);
+  } finally {
+    await unmount();
+  }
 });
 
 test('返修 F07-07：重复点击当前模板仍能看到完整历史，重复选择不得清空版本列表', async () => {
@@ -836,10 +1144,13 @@ test('返修 F07-07：重复点击当前模板仍能看到完整历史，重复�
     await settle();
     const rows = () => window.document.querySelectorAll('.prompt-version-row').length;
     const historyCount = () => {
-      const header = [...window.document.querySelectorAll('.prompt-section h3')].find(node => (node.textContent ?? '').startsWith('版本历史'));
+      const header = [...window.document.querySelectorAll('.prompt-section h3')].find((node) =>
+        (node.textContent ?? '').startsWith('版本历史'),
+      );
       return header ? Number((header.textContent ?? '').replace(/[^0-9]/g, '')) : -1;
     };
-    const loadingHistory = () => (window.document.querySelector('.prompt-version-list')?.textContent ?? '').includes('正在读取版本');
+    const loadingHistory = () =>
+      (window.document.querySelector('.prompt-version-list')?.textContent ?? '').includes('正在读取版本');
     // 自动选中甲的初次读取：历史正常
     assert.equal(detailTitle(), '模板甲');
     assert.equal(rows(), 1, '甲的初次历史必须加载');
@@ -885,11 +1196,17 @@ test('返修 F07-07：重复点击当前模板仍能看到完整历史，重复�
     assert.equal(historyCount(), 2);
     assert.equal(loadingHistory(), false);
     assert.equal(detailTitle(), '模板乙');
-    assert.ok((window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('没有变量的正文。'), '不得串入别的模板正文');
-    assert.ok(!(window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('请总结'), '不得串入甲的正文');
+    assert.ok(
+      (window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('没有变量的正文。'),
+      '不得串入别的模板正文',
+    );
+    assert.ok(
+      !(window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('请总结'),
+      '不得串入甲的正文',
+    );
 
     // 版本查看只读；历史页点该模板返回当前，且返回后历史照常
-    const rendersBefore = harness.calls.filter(call => call.url.endsWith('/render')).length;
+    const rendersBefore = harness.calls.filter((call) => call.url.endsWith('/render')).length;
     await click(required(versionRow('第 2 版'), '乙第 2 版'));
     await settle(40);
     assert.ok(required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 2 版'));
@@ -899,7 +1216,11 @@ test('返修 F07-07：重复点击当前模板仍能看到完整历史，重复�
     assert.ok(window.document.querySelector('.history-banner') === null, '点当前模板必须回到当前视图');
     assert.equal(detailTitle(), '模板乙');
     assert.equal(rows(), 2, '返回当前后历史必须仍然完整');
-    assert.equal(harness.calls.filter(call => call.url.endsWith('/render')).length, rendersBefore, '查看版本与返回都不得触发生成');
+    assert.equal(
+      harness.calls.filter((call) => call.url.endsWith('/render')).length,
+      rendersBefore,
+      '查看版本与返回都不得触发生成',
+    );
 
     // 编辑页选择同一模板：回到当前视图，历史照常
     await click(required(byText('编辑'), '编辑按钮'));
@@ -919,7 +1240,9 @@ test('返修 F07-07：重复点击当前模板仍能看到完整历史，重复�
     await settle(60);
     assert.equal(rows(), 2);
     assert.ok(window.document.querySelector('.error-message') === null);
-  } finally { await first.unmount(); }
+  } finally {
+    await first.unmount();
+  }
 
   // 刷新（重新挂载）：历史仍然完整，重复点击仍然有效
   const refreshed = await mount();
@@ -931,7 +1254,9 @@ test('返修 F07-07：重复点击当前模板仍能看到完整历史，重复�
     await click(required(byText('模板乙'), '模板乙列表项'));
     await settle(60);
     assert.equal(window.document.querySelectorAll('.prompt-version-row').length, 2, '刷新后重复点击当前行仍然有效');
-  } finally { await refreshed.unmount(); }
+  } finally {
+    await refreshed.unmount();
+  }
 });
 
 test('返修 F07-07：初次历史仍在途中时重复点当前行，必须重新读取并最终加载完整历史', async () => {
@@ -962,13 +1287,21 @@ test('返修 F07-07：初次历史仍在途中时重复点当前行，必须重�
     harness.release(versionsGate);
     await settle(40);
     assert.equal(window.document.querySelectorAll('.prompt-version-row').length, 2, '重复点击后历史必须最终加载完整');
-    assert.ok(!(window.document.querySelector('.prompt-version-list')?.textContent ?? '').includes('正在读取版本'), '不得停留在假的加载状态');
+    assert.ok(
+      !(window.document.querySelector('.prompt-version-list')?.textContent ?? '').includes('正在读取版本'),
+      '不得停留在假的加载状态',
+    );
     assert.equal(detailTitle(), '模板乙');
     // 加载出来的历史必须真的可用：第 2 版能打开并显示它自己的旧正文
     await click(required(versionRow('第 2 版'), '乙第 2 版'));
     await settle(40);
     assert.ok(required(window.document.querySelector('.history-banner')).textContent?.includes('正在查看第 2 版'));
-    assert.ok((window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('乙的旧版正文。'), '第 2 版内容必须可查');
+    assert.ok(
+      (window.document.querySelector('.prompt-detail')?.textContent ?? '').includes('乙的旧版正文。'),
+      '第 2 版内容必须可查',
+    );
     assert.ok(window.document.querySelector('.error-message') === null, '重复点击不得带出错误');
-  } finally { await unmount(); }
+  } finally {
+    await unmount();
+  }
 });

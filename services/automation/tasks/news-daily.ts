@@ -6,12 +6,23 @@ import { AutomationCheckError, type TaskDefinition } from '../scheduler.ts';
 
 export const dailyNewsType = 'news.daily';
 const names = { fmcg: '快消研报', ai: 'AI 前沿' } as const;
-const status = { running: '读取中', ready: '已准备', source_only: '来源材料', empty: '无合格条目', failed: '失败', interrupted: '已中断' } as const;
+const status = {
+  running: '读取中',
+  ready: '已准备',
+  source_only: '来源材料',
+  empty: '无合格条目',
+  failed: '失败',
+  interrupted: '已中断',
+} as const;
 
 export function createDailyNews(news: NewsService, pipeline: NewsPipeline): TaskDefinition {
   return {
-    type: dailyNewsType, name: '每日资讯准备与预筛', defaultPlan: { kind: 'daily', time: '07:30', timezone: 'Asia/Shanghai' },
-    allowsCatchUp: true, mayCallModel: true, tracksSourceRequests: true,
+    type: dailyNewsType,
+    name: '每日资讯准备与预筛',
+    defaultPlan: { kind: 'daily', time: '07:30', timezone: 'Asia/Shanghai' },
+    allowsCatchUp: true,
+    mayCallModel: true,
+    tracksSourceRequests: true,
     async execute({ signal, step, provider: activeProvider }) {
       // Reuse the current day's source preparation, including an in-flight manual page request.
       const preparation: { edition?: NewsEdition | null } = {};
@@ -24,14 +35,31 @@ export function createDailyNews(news: NewsService, pipeline: NewsPipeline): Task
         await step('来源 · ' + names[section], () => {
           const part = edition?.sections[section];
           if (!part) return '未找到当日栏目记录。';
-          const health = part.sources.map(source => `${source.name} ${source.status === 'ok' ? '正常' : source.status === 'empty' ? '无条目' : '失败'}`).join('、');
-          return [`${status[part.status]}，${part.items.length} 条`, health, ...(part.shortageReasons ?? []), part.error].filter(Boolean).join('；');
+          const health = part.sources
+            .map(
+              (source) =>
+                `${source.name} ${source.status === 'ok' ? '正常' : source.status === 'empty' ? '无条目' : '失败'}`,
+            )
+            .join('、');
+          return [
+            `${status[part.status]}，${part.items.length} 条`,
+            health,
+            ...(part.shortageReasons ?? []),
+            part.error,
+          ]
+            .filter(Boolean)
+            .join('；');
         });
       }
       const candidates = await pipeline.stageEdition(edition);
       if (!candidates.length || !edition) {
-        if (!edition || Object.values(edition.sections).every(part => ['failed', 'interrupted'].includes(part.status))) {
-          await step('准备收件箱', () => { throw new AutomationCheckError('当天来源准备失败或中断。请在每日资讯中重试来源。'); });
+        if (
+          !edition ||
+          Object.values(edition.sections).every((part) => ['failed', 'interrupted'].includes(part.status))
+        ) {
+          await step('准备收件箱', () => {
+            throw new AutomationCheckError('当天来源准备失败或中断。请在每日资讯中重试来源。');
+          });
         } else await step('准备收件箱', () => '没有尚待预筛的新条目。');
         return;
       }
@@ -49,10 +77,19 @@ export function createDailyNews(news: NewsService, pipeline: NewsPipeline): Task
           let outcome: NewsScore[] | string = '未配置产品 Provider，条目保留为未预筛。';
           if (provider) {
             try {
-              outcome = await screenNews(provider, settings.topics, batch.map(({ id, item }) => ({
-                candidateId: id, title: item.title, source: item.sourceName, publishedAt: item.publishedAt,
-                evidenceKind: item.evidenceKind, excerpt: item.excerpt,
-              })), signal);
+              outcome = await screenNews(
+                provider,
+                settings.topics,
+                batch.map(({ id, item }) => ({
+                  candidateId: id,
+                  title: item.title,
+                  source: item.sourceName,
+                  publishedAt: item.publishedAt,
+                  evidenceKind: item.evidenceKind,
+                  excerpt: item.excerpt,
+                })),
+                signal,
+              );
             } catch {
               signal.throwIfAborted();
               outcome = 'AI 预筛失败或响应不合规，本批条目保留为未预筛。';
@@ -61,7 +98,7 @@ export function createDailyNews(news: NewsService, pipeline: NewsPipeline): Task
           await pipeline.recordScreening(edition.date, batch, outcome);
           if (typeof outcome === 'string') throw new AutomationCheckError(outcome);
           return `已预筛 ${batch.length} 条。`;
-        }).catch(error => {
+        }).catch((error) => {
           if (!(error instanceof AutomationCheckError) || signal.aborted) throw error;
           failed = true;
         });

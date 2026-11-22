@@ -3,8 +3,16 @@ export type AutomationPlan =
   | { kind: 'daily'; time: string; timezone: 'Asia/Shanghai' }
   | { kind: 'weekly'; weekday: 1 | 2 | 3 | 4 | 5 | 6 | 7; time: string; timezone: 'Asia/Shanghai' };
 
-export const automationRunStatuses = ['queued', 'running', 'succeeded', 'failed', 'cancelled', 'interrupted', 'skipped'] as const;
-export type AutomationRunStatus = typeof automationRunStatuses[number];
+export const automationRunStatuses = [
+  'queued',
+  'running',
+  'succeeded',
+  'failed',
+  'cancelled',
+  'interrupted',
+  'skipped',
+] as const;
+export type AutomationRunStatus = (typeof automationRunStatuses)[number];
 export type AutomationTrigger = 'schedule' | 'manual' | 'catch-up';
 
 export type AutomationRunSummary = {
@@ -40,7 +48,14 @@ export type AutomationRun = AutomationRunSummary & {
   usage: AutomationUsage;
   sourceRequests?: number;
   candidateId?: string;
-  artifacts: { rawIds: string[]; jobIds: string[]; draftIds: string[]; lintSnapshotId?: string; inspectionIds?: string[]; weeklyReviewWeekKey?: string };
+  artifacts: {
+    rawIds: string[];
+    jobIds: string[];
+    draftIds: string[];
+    lintSnapshotId?: string;
+    inspectionIds?: string[];
+    weeklyReviewWeekKey?: string;
+  };
   budget: null;
 };
 

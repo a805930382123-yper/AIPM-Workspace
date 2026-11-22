@@ -2,14 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, ReactNode, RefObject } from 'react';
 import type { AutomationRun, KnowledgeInspection, WikiLintSnapshot } from '../../api';
 import { automationLintSnapshot, automationTime, getInspection } from '../../api';
-import {
-  describeError,
-  isActive,
-  runError,
-  runStatusTone,
-  statusLabels,
-  triggerLabels,
-} from './automationMeta';
+import { describeError, isActive, runError, runStatusTone, statusLabels, triggerLabels } from './automationMeta';
 
 const FOCUSABLE_SELECTOR =
   'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex]:not([tabindex="-1"])';
@@ -20,10 +13,10 @@ function LintRunDetails({ id, onOpenLint }: { id: string; onOpenLint?: () => voi
   useEffect(() => {
     const controller = new AbortController();
     void automationLintSnapshot(id, controller.signal)
-      .then(value => {
+      .then((value) => {
         if (!controller.signal.aborted) setSnapshot(value);
       })
-      .catch(reason => {
+      .catch((reason) => {
         if (!controller.signal.aborted) setError(describeError(reason));
       });
     return () => controller.abort();
@@ -53,10 +46,12 @@ function LintRunDetails({ id, onOpenLint }: { id: string; onOpenLint?: () => voi
               : `新增 ${snapshot.diff.addedCount} 项 · 消除 ${snapshot.diff.resolvedCount} 项 · 未变化 ${snapshot.diff.unchangedCount} 项`}
           </p>
           {!snapshot.diff.isBaseline &&
-            ([
-              ['新增问题', snapshot.diff.added],
-              ['已消除问题', snapshot.diff.resolved],
-            ] as const).map(([label, findings]) => (
+            (
+              [
+                ['新增问题', snapshot.diff.added],
+                ['已消除问题', snapshot.diff.resolved],
+              ] as const
+            ).map(([label, findings]) => (
               <details key={label}>
                 <summary>
                   {label}（{findings.length} 项）
@@ -65,7 +60,7 @@ function LintRunDetails({ id, onOpenLint }: { id: string; onOpenLint?: () => voi
                   <p>无{label}。</p>
                 ) : (
                   <ul className="automation-list">
-                    {findings.map(finding => (
+                    {findings.map((finding) => (
                       <li key={finding.fingerprint}>
                         <div>
                           <strong>
@@ -92,15 +87,15 @@ function InspectionRunDetails({ id, onOpenInspection }: { id: string; onOpenInsp
   useEffect(() => {
     const controller = new AbortController();
     void getInspection(id, controller.signal)
-      .then(value => {
+      .then((value) => {
         if (!controller.signal.aborted) setRecord(value);
       })
-      .catch(reason => {
+      .catch((reason) => {
         if (!controller.signal.aborted) setError(describeError(reason));
       });
     return () => controller.abort();
   }, [id]);
-  const pendingCount = record?.findings.filter(finding => finding.status === 'pending').length ?? 0;
+  const pendingCount = record?.findings.filter((finding) => finding.status === 'pending').length ?? 0;
   return (
     <div className="automation-artifact">
       <div className="automation-heading">
@@ -126,7 +121,7 @@ function InspectionRunDetails({ id, onOpenInspection }: { id: string; onOpenInsp
             <details>
               <summary>查看发现摘要</summary>
               <ul className="automation-list">
-                {record.findings.map(finding => (
+                {record.findings.map((finding) => (
                   <li key={finding.id}>
                     <div>{finding.summary}</div>
                   </li>
@@ -296,17 +291,17 @@ export function RunDetailContent({
           <h3>产物</h3>
           {detail.candidateId && <p className="automation-candidate-ref">候选 {detail.candidateId}</p>}
           <div className="automation-artifact-chips">
-            {detail.artifacts.rawIds.map(id => (
+            {detail.artifacts.rawIds.map((id) => (
               <button type="button" key={id} className="automation-artifact-chip" onClick={() => onOpenRaw(id)}>
                 Raw {id}
               </button>
             ))}
-            {detail.artifacts.draftIds.map(id => (
+            {detail.artifacts.draftIds.map((id) => (
               <button type="button" key={id} className="automation-artifact-chip" onClick={() => onOpenDraft(id)}>
                 草稿 {id}
               </button>
             ))}
-            {detail.artifacts.jobIds.map(id => (
+            {detail.artifacts.jobIds.map((id) => (
               <a
                 key={id}
                 className="automation-artifact-chip"
@@ -331,9 +326,7 @@ export function RunDetailContent({
               ))}
             {!weeklyReviewWeekKey &&
               !detail.artifacts.lintSnapshotId &&
-              !Object.values(detail.artifacts).some(value => Array.isArray(value) && value.length) && (
-                <p>无产物。</p>
-              )}
+              !Object.values(detail.artifacts).some((value) => Array.isArray(value) && value.length) && <p>无产物。</p>}
           </div>
           {detail.artifacts.lintSnapshotId && (
             <LintRunDetails
@@ -342,7 +335,7 @@ export function RunDetailContent({
               onOpenLint={onOpenLint}
             />
           )}
-          {detail.artifacts.inspectionIds?.map(id => (
+          {detail.artifacts.inspectionIds?.map((id) => (
             <InspectionRunDetails key={id} id={id} onOpenInspection={onOpenInspection} />
           ))}
         </>
@@ -377,8 +370,8 @@ export function RunDetailDrawer({
     const drawer = drawerRef.current;
     if (!drawer) return;
     const raw = [...drawer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)];
-    const laidOut = raw.filter(node => node.getClientRects().length > 0);
-    const items = laidOut.length > 0 ? laidOut : raw.filter(node => !node.closest('[hidden]'));
+    const laidOut = raw.filter((node) => node.getClientRects().length > 0);
+    const items = laidOut.length > 0 ? laidOut : raw.filter((node) => !node.closest('[hidden]'));
     if (!items.length) {
       event.preventDefault();
       drawer.focus();
@@ -402,7 +395,7 @@ export function RunDetailDrawer({
     <div
       className="automation-drawer-backdrop"
       role="presentation"
-      onMouseDown={event => {
+      onMouseDown={(event) => {
         if (event.target === event.currentTarget && !pending) onClose();
       }}
     >

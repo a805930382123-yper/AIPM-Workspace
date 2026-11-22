@@ -1,14 +1,168 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {randomUUID} from 'node:crypto';
-import {lw03Fixture} from './lw03-fixture.ts';
-import {storageHttp} from './support/kb02-storage-http.ts';
-test('LW03 public HTTP check/evidence/decision/draft/partial confirm uses current evidence and precise own transaction exemption',async()=>{const f=await lw03Fixture(),http=await storageHttp(f as any,f.runner,{knowledge:true});try{const start=await http.request('/api/knowledge/inspections',{requestId:randomUUID(),wikiIds:f.pages.slice(0,2).map(p=>p.id),includeRelated:false});assert.equal(start.status,202);const r=(await f.inspections.wait(start.json.id))!,finding=r.findings[0],citation=finding.evidence[0];const e=await http.request('/api/knowledge/inspections/'+r.id+'/findings/'+finding.id+'/evidence/'+citation.id);assert.equal(e.status,200);assert.equal(e.json.quote,citation.quote);const bad=await http.request('/api/knowledge/inspections/'+r.id+'/draft',{baseRevision:r.revision,selectedFindingIds:['bad'],key:'bad'});assert.equal(bad.status,400);const saved=await http.request('/api/knowledge/inspections/'+r.id+'/draft',{baseRevision:r.revision,selectedFindingIds:[finding.id],key:'http-save'});assert.equal(saved.status,200,JSON.stringify(saved));let d=(await f.drafts.getKnowledge(saved.json.draftId))!;let confirm=await http.request('/api/drafts/'+d.id+'/confirm',{baseRevision:d.revision,selectedPageIds:[d.pages[0].pageId],idempotencyKey:randomUUID()});assert(confirm.status>=400);d=await f.approve(d.id,['change-0']);confirm=await http.request('/api/drafts/'+d.id+'/confirm',{baseRevision:d.revision,selectedPageIds:[d.pages[0].pageId],idempotencyKey:randomUUID()});assert.equal(confirm.status,201,JSON.stringify(confirm));const view=await http.request('/api/drafts/'+d.id);assert.equal(view.status,200);assert.equal(view.json.questionBasisChanged,false);const other=f.pages[1];await f.wiki.update(other.id,other.revision,{...other,body:other.body+'\n外部编辑'});const stale=await http.request('/api/drafts/'+d.id);assert.equal(stale.status,200);assert.equal(stale.json.questionBasisChanged,true);await assert.rejects(f.approve(d.id,['change-1']),{code:'INSPECTION_BASIS_CHANGED'});assert.equal((await http.request('/api/knowledge/inspections/'+r.id+'/findings/'+finding.id+'/evidence/'+finding.evidence[1].id)).status,409);}finally{await http.close();}});
+import { randomUUID } from 'node:crypto';
+import { lw03Fixture } from './lw03-fixture.ts';
+import { storageHttp } from './support/kb02-storage-http.ts';
+test('LW03 public HTTP check/evidence/decision/draft/partial confirm uses current evidence and precise own transaction exemption', async () => {
+  const f = await lw03Fixture(),
+    http = await storageHttp(f as any, f.runner, { knowledge: true });
+  try {
+    const start = await http.request('/api/knowledge/inspections', {
+      requestId: randomUUID(),
+      wikiIds: f.pages.slice(0, 2).map((p) => p.id),
+      includeRelated: false,
+    });
+    assert.equal(start.status, 202);
+    const r = (await f.inspections.wait(start.json.id))!,
+      finding = r.findings[0],
+      citation = finding.evidence[0];
+    const e = await http.request(
+      '/api/knowledge/inspections/' + r.id + '/findings/' + finding.id + '/evidence/' + citation.id,
+    );
+    assert.equal(e.status, 200);
+    assert.equal(e.json.quote, citation.quote);
+    const bad = await http.request('/api/knowledge/inspections/' + r.id + '/draft', {
+      baseRevision: r.revision,
+      selectedFindingIds: ['bad'],
+      key: 'bad',
+    });
+    assert.equal(bad.status, 400);
+    const saved = await http.request('/api/knowledge/inspections/' + r.id + '/draft', {
+      baseRevision: r.revision,
+      selectedFindingIds: [finding.id],
+      key: 'http-save',
+    });
+    assert.equal(saved.status, 200, JSON.stringify(saved));
+    let d = (await f.drafts.getKnowledge(saved.json.draftId))!;
+    let confirm = await http.request('/api/drafts/' + d.id + '/confirm', {
+      baseRevision: d.revision,
+      selectedPageIds: [d.pages[0].pageId],
+      idempotencyKey: randomUUID(),
+    });
+    assert(confirm.status >= 400);
+    d = await f.approve(d.id, ['change-0']);
+    confirm = await http.request('/api/drafts/' + d.id + '/confirm', {
+      baseRevision: d.revision,
+      selectedPageIds: [d.pages[0].pageId],
+      idempotencyKey: randomUUID(),
+    });
+    assert.equal(confirm.status, 201, JSON.stringify(confirm));
+    const view = await http.request('/api/drafts/' + d.id);
+    assert.equal(view.status, 200);
+    assert.equal(view.json.questionBasisChanged, false);
+    const other = f.pages[1];
+    await f.wiki.update(other.id, other.revision, { ...other, body: other.body + '\n外部编辑' });
+    const stale = await http.request('/api/drafts/' + d.id);
+    assert.equal(stale.status, 200);
+    assert.equal(stale.json.questionBasisChanged, true);
+    await assert.rejects(f.approve(d.id, ['change-1']), { code: 'INSPECTION_BASIS_CHANGED' });
+    assert.equal(
+      (
+        await http.request(
+          '/api/knowledge/inspections/' + r.id + '/findings/' + finding.id + '/evidence/' + finding.evidence[1].id,
+        )
+      ).status,
+      409,
+    );
+  } finally {
+    await http.close();
+  }
+});
 
-test('LW03 no_change is truthful; invalid/delete/new targets and unselected findings cannot generate executable changes',async()=>{for(const kind of ['create','unknown','unselected','no_change']){const f=await lw03Fixture(),r=await f.check(f.pages.slice(0,2).map(p=>p.id));f.mutate((stage,v)=>{if(stage==='inspection_maintenance'){if(kind==='create')v.changes[0].action='create';if(kind==='unknown')v.changes[0].targetWikiId=randomUUID();if(kind==='unselected')v.changes[0].findingIds=['not-selected'];if(kind==='no_change')v.changes.forEach((c:any)=>c.action='no_change');}return v;});if(kind==='no_change'){const result=await f.inspections.draft(r.id,{baseRevision:r.revision,selectedFindingIds:[r.findings[0].id],key:'no-change'});assert.equal(result.status,'no_change');assert.equal((await f.drafts.listKnowledge()).length,0);}else await assert.rejects(f.inspections.draft(r.id,{baseRevision:r.revision,selectedFindingIds:[r.findings[0].id],key:'invalid'}));}});
+test('LW03 no_change is truthful; invalid/delete/new targets and unselected findings cannot generate executable changes', async () => {
+  for (const kind of ['create', 'unknown', 'unselected', 'no_change']) {
+    const f = await lw03Fixture(),
+      r = await f.check(f.pages.slice(0, 2).map((p) => p.id));
+    f.mutate((stage, v) => {
+      if (stage === 'inspection_maintenance') {
+        if (kind === 'create') v.changes[0].action = 'create';
+        if (kind === 'unknown') v.changes[0].targetWikiId = randomUUID();
+        if (kind === 'unselected') v.changes[0].findingIds = ['not-selected'];
+        if (kind === 'no_change') v.changes.forEach((c: any) => (c.action = 'no_change'));
+      }
+      return v;
+    });
+    if (kind === 'no_change') {
+      const result = await f.inspections.draft(r.id, {
+        baseRevision: r.revision,
+        selectedFindingIds: [r.findings[0].id],
+        key: 'no-change',
+      });
+      assert.equal(result.status, 'no_change');
+      assert.equal((await f.drafts.listKnowledge()).length, 0);
+    } else
+      await assert.rejects(
+        f.inspections.draft(r.id, { baseRevision: r.revision, selectedFindingIds: [r.findings[0].id], key: 'invalid' }),
+      );
+  }
+});
 import express from 'express';
-import {once} from 'node:events';
-import type {AddressInfo} from 'node:net';
-import {validateBaseRevision,validateWikiInput} from '../server/wiki-validation.ts';
+import { once } from 'node:events';
+import type { AddressInfo } from 'node:net';
+import { validateBaseRevision, validateWikiInput } from '../server/wiki-validation.ts';
 
-test('LW03 public Wiki PUT cannot erase inspection lineage by clearing sources or spoofing provenance',async()=>{const f=await lw03Fixture(),r=await f.check(f.pages.slice(0,2).map(p=>p.id)),saved=await f.inspections.draft(r.id,{baseRevision:r.revision,selectedFindingIds:[r.findings[0].id],key:'protected'}),d=await f.approve(saved.draftId!);await f.commit(d);const page=(await f.wiki.get(f.pages[0].id))!,lineage=structuredClone(page.inspectionDerivations),rawId=page.sources[0],app=express();app.use(express.json());app.put('/api/wiki/:id',async(req,res,next)=>{try{res.json(await f.wiki.update(req.params.id,validateBaseRevision(req.body.baseRevision),validateWikiInput(req.body)));}catch(e){next(e);}});const server=app.listen(0,'127.0.0.1');await once(server,'listening');try{const response=await fetch('http://127.0.0.1:'+(server.address() as AddressInfo).port+'/api/wiki/'+page.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...page,baseRevision:page.revision,sources:[],inspectionDerivations:[]})});assert.equal(response.status,200);const changed=await response.json() as typeof page;assert.equal(changed.sources.length,0);assert.deepEqual(changed.inspectionDerivations,lineage);const get=f.rawStore.get.bind(f.rawStore);f.rawStore.get=async id=>{const raw=await get(id);return id===rawId&&raw?{...raw,origin:{kind:'meeting',meeting_id:randomUUID(),import_id:randomUUID(),original_sha256:raw.bodySha256,registered_confidentiality:'Restricted',processing_policy:'meeting_local_only'}}:raw;};const used=f.requests.length,blocked=await f.check([page.id]);assert.equal(blocked.scope.read.length,0);assert.equal(blocked.status,'partial');assert.equal(f.requests.length,used);}finally{await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}});
+test('LW03 public Wiki PUT cannot erase inspection lineage by clearing sources or spoofing provenance', async () => {
+  const f = await lw03Fixture(),
+    r = await f.check(f.pages.slice(0, 2).map((p) => p.id)),
+    saved = await f.inspections.draft(r.id, {
+      baseRevision: r.revision,
+      selectedFindingIds: [r.findings[0].id],
+      key: 'protected',
+    }),
+    d = await f.approve(saved.draftId!);
+  await f.commit(d);
+  const page = (await f.wiki.get(f.pages[0].id))!,
+    lineage = structuredClone(page.inspectionDerivations),
+    rawId = page.sources[0],
+    app = express();
+  app.use(express.json());
+  app.put('/api/wiki/:id', async (req, res, next) => {
+    try {
+      res.json(
+        await f.wiki.update(req.params.id, validateBaseRevision(req.body.baseRevision), validateWikiInput(req.body)),
+      );
+    } catch (e) {
+      next(e);
+    }
+  });
+  const server = app.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  try {
+    const response = await fetch(
+      'http://127.0.0.1:' + (server.address() as AddressInfo).port + '/api/wiki/' + page.id,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...page, baseRevision: page.revision, sources: [], inspectionDerivations: [] }),
+      },
+    );
+    assert.equal(response.status, 200);
+    const changed = (await response.json()) as typeof page;
+    assert.equal(changed.sources.length, 0);
+    assert.deepEqual(changed.inspectionDerivations, lineage);
+    const get = f.rawStore.get.bind(f.rawStore);
+    f.rawStore.get = async (id) => {
+      const raw = await get(id);
+      return id === rawId && raw
+        ? {
+            ...raw,
+            origin: {
+              kind: 'meeting',
+              meeting_id: randomUUID(),
+              import_id: randomUUID(),
+              original_sha256: raw.bodySha256,
+              registered_confidentiality: 'Restricted',
+              processing_policy: 'meeting_local_only',
+            },
+          }
+        : raw;
+    };
+    const used = f.requests.length,
+      blocked = await f.check([page.id]);
+    assert.equal(blocked.scope.read.length, 0);
+    assert.equal(blocked.status, 'partial');
+    assert.equal(f.requests.length, used);
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
+  }
+});

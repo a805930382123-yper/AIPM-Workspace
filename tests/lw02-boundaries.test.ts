@@ -1,61 +1,374 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile,readdir} from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import {randomUUID} from 'node:crypto';
-import {lw02Fixture} from './lw02-fixture.ts';
-import {WikiCommitService} from '../services/wiki/commits.ts';
+import { randomUUID } from 'node:crypto';
+import { lw02Fixture } from './lw02-fixture.ts';
+import { WikiCommitService } from '../services/wiki/commits.ts';
 
-test('LW02 bounded Raw supplement and distinct roots: A through two pages plus B still counts two',async()=>{
-  const f=await lw02Fixture(),a=await f.rawStore.create({title:'合成A',sourceType:'report',sourceName:'A',tags:[],body:'2025有效门店100家。\n'+'渠道原始说明。'.repeat(1500)}),b=await f.rawStore.create({title:'合成B',sourceType:'report',sourceName:'B',tags:[],body:'2026签约门店120家；另一口径90家，待核。\n'+'渠道口径材料。'.repeat(1500)});
-  await f.seed('渠道说明A','有效门店统计：2025年100家。',[a.id]);await f.seed('渠道补充A','有效门店统计：人工提示活跃口径。',[a.id]);await f.seed('渠道说明B','有效门店统计：2026年120与90家有分歧。',[b.id]);f.mode('raw');const answer=await f.ask();assert.equal(answer.status,'completed');assert.equal(answer.attempts,2);assert.equal(answer.readRaw.length,2);assert(answer.readRaw.reduce((n,r)=>n+r.quote.length,0)<=24000);assert.equal(answer.independentRawIds.length,2);assert.equal(answer.usedWikiIds.length,3);for(const c of answer.citations.filter(c=>c.kind==='raw'))assert.equal((await f.rawStore.get(c.recordId))!.body.slice(c.start,c.end),c.quote);
+test('LW02 bounded Raw supplement and distinct roots: A through two pages plus B still counts two', async () => {
+  const f = await lw02Fixture(),
+    a = await f.rawStore.create({
+      title: '合成A',
+      sourceType: 'report',
+      sourceName: 'A',
+      tags: [],
+      body: '2025有效门店100家。\n' + '渠道原始说明。'.repeat(1500),
+    }),
+    b = await f.rawStore.create({
+      title: '合成B',
+      sourceType: 'report',
+      sourceName: 'B',
+      tags: [],
+      body: '2026签约门店120家；另一口径90家，待核。\n' + '渠道口径材料。'.repeat(1500),
+    });
+  await f.seed('渠道说明A', '有效门店统计：2025年100家。', [a.id]);
+  await f.seed('渠道补充A', '有效门店统计：人工提示活跃口径。', [a.id]);
+  await f.seed('渠道说明B', '有效门店统计：2026年120与90家有分歧。', [b.id]);
+  f.mode('raw');
+  const answer = await f.ask();
+  assert.equal(answer.status, 'completed');
+  assert.equal(answer.attempts, 2);
+  assert.equal(answer.readRaw.length, 2);
+  assert(answer.readRaw.reduce((n, r) => n + r.quote.length, 0) <= 24000);
+  assert.equal(answer.independentRawIds.length, 2);
+  assert.equal(answer.usedWikiIds.length, 3);
+  for (const c of answer.citations.filter((c) => c.kind === 'raw'))
+    assert.equal((await f.rawStore.get(c.recordId))!.body.slice(c.start, c.end), c.quote);
 });
 
-test('LW02 insufficient, partial, invented citation and two failed executions still explicitly retry without resetting ledger',async()=>{
-  const f=await lw02Fixture();let r=await f.ask('宇航燃料方案是什么？');assert.equal(r.status,'insufficient');assert.equal(f.requests.length,0);await assert.rejects(f.answers.save(r.id,{key:'none',resultRevision:r.revision,preview:f.preview(r)}),{code:'ANSWER_NOT_SAVABLE'});
-  await f.seed('渠道资料','有效门店统计需区分签约门店与活跃门店。');f.mode('partial');r=await f.ask();assert.equal(r.status,'partial');f.mode('invalid');r=await f.ask();assert.equal(r.status,'failed');assert.equal(r.error!.code,'ANSWER_CITATION_UNREAD');f.mode('normal');f.fail(2);const id=randomUUID();r=await f.ask(undefined,id);assert.equal(r.attempts,1);r=await f.ask(undefined,id,true);assert.equal(r.attempts,2);r=await f.ask(undefined,id,true);assert.equal(r.status,'completed');assert.equal(r.attempts,3);
+test('LW02 insufficient, partial, invented citation and two failed executions still explicitly retry without resetting ledger', async () => {
+  const f = await lw02Fixture();
+  let r = await f.ask('宇航燃料方案是什么？');
+  assert.equal(r.status, 'insufficient');
+  assert.equal(f.requests.length, 0);
+  await assert.rejects(f.answers.save(r.id, { key: 'none', resultRevision: r.revision, preview: f.preview(r) }), {
+    code: 'ANSWER_NOT_SAVABLE',
+  });
+  await f.seed('渠道资料', '有效门店统计需区分签约门店与活跃门店。');
+  f.mode('partial');
+  r = await f.ask();
+  assert.equal(r.status, 'partial');
+  f.mode('invalid');
+  r = await f.ask();
+  assert.equal(r.status, 'failed');
+  assert.equal(r.error!.code, 'ANSWER_CITATION_UNREAD');
+  f.mode('normal');
+  f.fail(2);
+  const id = randomUUID();
+  r = await f.ask(undefined, id);
+  assert.equal(r.attempts, 1);
+  r = await f.ask(undefined, id, true);
+  assert.equal(r.attempts, 2);
+  r = await f.ask(undefined, id, true);
+  assert.equal(r.status, 'completed');
+  assert.equal(r.attempts, 3);
 });
 
-test('LW02 selected text, classification and complete citation set cannot be independently forged',async()=>{
-  const f=await lw02Fixture();await f.seed('渠道资料','有效门店统计需区分签约门店与活跃门店。');f.mode('inference');const r=await f.ask(),preview=f.preview(r),calls=f.requests.length;
-  await assert.rejects(f.answers.save(r.id,{key:'forged',resultRevision:r.revision,preview:{...preview,selectedText:r.sections[1].text,selectedSectionIds:[r.sections[0].id],inferences:''}}),{code:'SAVE_SELECTION_MISMATCH'});
-  await assert.rejects(f.answers.save(r.id,{key:'missing-ref',resultRevision:r.revision,preview:{...preview,citationIds:[]}}),{code:'SAVE_SELECTION_MISMATCH'});assert.equal(f.requests.length,calls);assert.equal((await f.drafts.listKnowledge()).length,0);
+test('LW02 selected text, classification and complete citation set cannot be independently forged', async () => {
+  const f = await lw02Fixture();
+  await f.seed('渠道资料', '有效门店统计需区分签约门店与活跃门店。');
+  f.mode('inference');
+  const r = await f.ask(),
+    preview = f.preview(r),
+    calls = f.requests.length;
+  await assert.rejects(
+    f.answers.save(r.id, {
+      key: 'forged',
+      resultRevision: r.revision,
+      preview: { ...preview, selectedText: r.sections[1].text, selectedSectionIds: [r.sections[0].id], inferences: '' },
+    }),
+    { code: 'SAVE_SELECTION_MISMATCH' },
+  );
+  await assert.rejects(
+    f.answers.save(r.id, { key: 'missing-ref', resultRevision: r.revision, preview: { ...preview, citationIds: [] } }),
+    { code: 'SAVE_SELECTION_MISMATCH' },
+  );
+  assert.equal(f.requests.length, calls);
+  assert.equal((await f.drafts.listKnowledge()).length, 0);
 });
 
-test('LW02 save failure after planned draft ID reuses proposal and same draft across restart; key mismatch rejects',async()=>{
-  const f=await lw02Fixture();await f.seed('渠道资料','有效门店统计有签约口径。');const r=await f.ask(),preview=f.preview(r),create=f.drafts.createQuestion.bind(f.drafts);f.drafts.createQuestion=async()=>{throw Error('controlled draft write failure');};await assert.rejects(f.answers.save(r.id,{key:'save',resultRevision:r.revision,preview}));const calls=f.requests.length;f.drafts.createQuestion=create;const recovered=f.newAnswers();await recovered.initialize();const saved=await recovered.save(r.id,{key:'save',resultRevision:r.revision,preview});assert.equal(f.requests.length,calls);const repeat=await recovered.save(r.id,{key:'save',resultRevision:r.revision,preview});assert.equal(repeat.draftId,saved.draftId);assert.equal((await f.drafts.listKnowledge()).length,1);await assert.rejects(recovered.save(r.id,{key:'save',resultRevision:r.revision,preview:{...preview,conclusion:preview.conclusion+'人工编辑'}}),{code:'SAVE_KEY_MISMATCH'});const different=await recovered.save(r.id,{key:'new-key',resultRevision:r.revision,preview:{...preview,conclusion:'另一编辑'}});assert.equal(different.draftId,saved.draftId);
+test('LW02 save failure after planned draft ID reuses proposal and same draft across restart; key mismatch rejects', async () => {
+  const f = await lw02Fixture();
+  await f.seed('渠道资料', '有效门店统计有签约口径。');
+  const r = await f.ask(),
+    preview = f.preview(r),
+    create = f.drafts.createQuestion.bind(f.drafts);
+  f.drafts.createQuestion = async () => {
+    throw Error('controlled draft write failure');
+  };
+  await assert.rejects(f.answers.save(r.id, { key: 'save', resultRevision: r.revision, preview }));
+  const calls = f.requests.length;
+  f.drafts.createQuestion = create;
+  const recovered = f.newAnswers();
+  await recovered.initialize();
+  const saved = await recovered.save(r.id, { key: 'save', resultRevision: r.revision, preview });
+  assert.equal(f.requests.length, calls);
+  const repeat = await recovered.save(r.id, { key: 'save', resultRevision: r.revision, preview });
+  assert.equal(repeat.draftId, saved.draftId);
+  assert.equal((await f.drafts.listKnowledge()).length, 1);
+  await assert.rejects(
+    recovered.save(r.id, {
+      key: 'save',
+      resultRevision: r.revision,
+      preview: { ...preview, conclusion: preview.conclusion + '人工编辑' },
+    }),
+    { code: 'SAVE_KEY_MISMATCH' },
+  );
+  const different = await recovered.save(r.id, {
+    key: 'new-key',
+    resultRevision: r.revision,
+    preview: { ...preview, conclusion: '另一编辑' },
+  });
+  assert.equal(different.draftId, saved.draftId);
 });
 
-for(const phase of ['pages','index','log','state'] as const)test(`LW02 update its own evidence Wiki: ${phase} failure resumes only exact frozen write; lost response and save reuse`,async()=>{
-  const f=await lw02Fixture(),raw=await f.rawStore.create({title:'A',sourceType:'report',sourceName:'A',tags:[],body:'有效门店统计按活跃口径。'}),page=await f.seed('渠道原主题','有效门店统计按活跃口径。\n人工补充不可丢。',[raw.id]),r=await f.ask(),preview=f.preview(r,{targetWikiId:page.id,title:page.title,conclusion:'新增审核后的渠道整理。'}),saved=await f.answers.save(r.id,{key:'update',resultRevision:r.revision,preview}),d=await f.approve(saved.draftId!);
-  let fired=false;const fail=()=>{if(!fired){fired=true;throw Error('controlled '+phase);}},write=f.wiki.writePageLocked.bind(f.wiki),index=f.wiki.rebuildIndexLocked.bind(f.wiki),log=f.wiki.appendLogLocked.bind(f.wiki),state=f.drafts.markMaintenanceCommitted.bind(f.drafts);
-  if(phase==='pages')f.wiki.writePageLocked=async p=>{await write(p);fail();};if(phase==='index')f.wiki.rebuildIndexLocked=async()=>{await index();fail();};if(phase==='log')f.wiki.appendLogLocked=async entries=>{await log(entries);fail();};if(phase==='state')f.drafts.markMaintenanceCommitted=async(...args)=>{const result=await state(...args);fail();return result;};
-  await assert.rejects(f.commit(d,'commit-key'));f.wiki.writePageLocked=write;f.wiki.rebuildIndexLocked=index;f.wiki.appendLogLocked=log;f.drafts.markMaintenanceCommitted=state;
-  const commits=new WikiCommitService({root:f.root,wikiStore:f.wiki,drafts:f.drafts,rawStore:f.rawStore,rawStates:f.rawStates}),recovery=await commits.reconcile();assert.equal(recovery.conflicts.length,0,JSON.stringify(recovery.conflicts));assert.equal((await f.wiki.get(page.id))!.revision,2);assert((await f.wiki.get(page.id))!.body.includes('人工补充不可丢'));const again=await f.wiki.withLock(()=>commits.confirm({draftId:d.id,baseRevision:d.revision,selectedPageIds:d.pages.map(p=>p.pageId),idempotencyKey:'commit-key',operationId:randomUUID(),now:new Date().toISOString()}));assert(again.reused);const saveAgain=await f.answers.save(r.id,{key:'update',resultRevision:r.revision,preview});assert.equal(saveAgain.draftId,d.id);const lines=(await readFile(path.join(f.root,'knowledge/logs/wiki.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));assert.equal(lines.filter(line=>line.operationId===again.manifest.operationId).length,1);
+for (const phase of ['pages', 'index', 'log', 'state'] as const)
+  test(`LW02 update its own evidence Wiki: ${phase} failure resumes only exact frozen write; lost response and save reuse`, async () => {
+    const f = await lw02Fixture(),
+      raw = await f.rawStore.create({
+        title: 'A',
+        sourceType: 'report',
+        sourceName: 'A',
+        tags: [],
+        body: '有效门店统计按活跃口径。',
+      }),
+      page = await f.seed('渠道原主题', '有效门店统计按活跃口径。\n人工补充不可丢。', [raw.id]),
+      r = await f.ask(),
+      preview = f.preview(r, { targetWikiId: page.id, title: page.title, conclusion: '新增审核后的渠道整理。' }),
+      saved = await f.answers.save(r.id, { key: 'update', resultRevision: r.revision, preview }),
+      d = await f.approve(saved.draftId!);
+    let fired = false;
+    const fail = () => {
+        if (!fired) {
+          fired = true;
+          throw Error('controlled ' + phase);
+        }
+      },
+      write = f.wiki.writePageLocked.bind(f.wiki),
+      index = f.wiki.rebuildIndexLocked.bind(f.wiki),
+      log = f.wiki.appendLogLocked.bind(f.wiki),
+      state = f.drafts.markMaintenanceCommitted.bind(f.drafts);
+    if (phase === 'pages')
+      f.wiki.writePageLocked = async (p) => {
+        await write(p);
+        fail();
+      };
+    if (phase === 'index')
+      f.wiki.rebuildIndexLocked = async () => {
+        await index();
+        fail();
+      };
+    if (phase === 'log')
+      f.wiki.appendLogLocked = async (entries) => {
+        await log(entries);
+        fail();
+      };
+    if (phase === 'state')
+      f.drafts.markMaintenanceCommitted = async (...args) => {
+        const result = await state(...args);
+        fail();
+        return result;
+      };
+    await assert.rejects(f.commit(d, 'commit-key'));
+    f.wiki.writePageLocked = write;
+    f.wiki.rebuildIndexLocked = index;
+    f.wiki.appendLogLocked = log;
+    f.drafts.markMaintenanceCommitted = state;
+    const commits = new WikiCommitService({
+        root: f.root,
+        wikiStore: f.wiki,
+        drafts: f.drafts,
+        rawStore: f.rawStore,
+        rawStates: f.rawStates,
+      }),
+      recovery = await commits.reconcile();
+    assert.equal(recovery.conflicts.length, 0, JSON.stringify(recovery.conflicts));
+    assert.equal((await f.wiki.get(page.id))!.revision, 2);
+    assert((await f.wiki.get(page.id))!.body.includes('人工补充不可丢'));
+    const again = await f.wiki.withLock(() =>
+      commits.confirm({
+        draftId: d.id,
+        baseRevision: d.revision,
+        selectedPageIds: d.pages.map((p) => p.pageId),
+        idempotencyKey: 'commit-key',
+        operationId: randomUUID(),
+        now: new Date().toISOString(),
+      }),
+    );
+    assert(again.reused);
+    const saveAgain = await f.answers.save(r.id, { key: 'update', resultRevision: r.revision, preview });
+    assert.equal(saveAgain.draftId, d.id);
+    const lines = (await readFile(path.join(f.root, 'knowledge/logs/wiki.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line));
+    assert.equal(lines.filter((line) => line.operationId === again.manifest.operationId).length, 1);
+  });
+
+test('LW02 basis stale before save or externally changed after failed update refuses and preserves manual content', async () => {
+  const f = await lw02Fixture(),
+    page = await f.seed('渠道原主题', '有效门店统计按活跃口径。'),
+    r = await f.ask();
+  await f.wiki.update(page.id, 1, { ...page, body: page.body + '\n用户先改' });
+  const used = f.requests.length;
+  await assert.rejects(f.answers.save(r.id, { key: 'stale', resultRevision: r.revision, preview: f.preview(r) }), {
+    code: 'ANSWER_BASIS_CHANGED',
+  });
+  assert.equal(f.requests.length, used);
+  const next = await f.ask(),
+    saved = await f.answers.save(next.id, {
+      key: 'next',
+      resultRevision: next.revision,
+      preview: f.preview(next, { title: page.title, targetWikiId: page.id }),
+    }),
+    d = await f.approve(saved.draftId!),
+    index = f.wiki.rebuildIndexLocked.bind(f.wiki);
+  f.wiki.rebuildIndexLocked = async () => {
+    throw Error('index');
+  };
+  await assert.rejects(f.commit(d));
+  f.wiki.rebuildIndexLocked = index;
+  const current = (await f.wiki.get(page.id))!;
+  await f.wiki.update(page.id, current.revision, { ...current, body: current.body + '\n用户再次改' });
+  const result = await f.commits.reconcile();
+  assert.equal(result.resumed.length, 0);
+  assert((await f.wiki.get(page.id))!.body.endsWith('用户再次改'));
 });
 
-test('LW02 basis stale before save or externally changed after failed update refuses and preserves manual content',async()=>{
-  const f=await lw02Fixture(),page=await f.seed('渠道原主题','有效门店统计按活跃口径。'),r=await f.ask();await f.wiki.update(page.id,1,{...page,body:page.body+'\n用户先改'});const used=f.requests.length;await assert.rejects(f.answers.save(r.id,{key:'stale',resultRevision:r.revision,preview:f.preview(r)}),{code:'ANSWER_BASIS_CHANGED'});assert.equal(f.requests.length,used);
-  const next=await f.ask(),saved=await f.answers.save(next.id,{key:'next',resultRevision:next.revision,preview:f.preview(next,{title:page.title,targetWikiId:page.id})}),d=await f.approve(saved.draftId!),index=f.wiki.rebuildIndexLocked.bind(f.wiki);f.wiki.rebuildIndexLocked=async()=>{throw Error('index');};await assert.rejects(f.commit(d));f.wiki.rebuildIndexLocked=index;const current=(await f.wiki.get(page.id))!;await f.wiki.update(page.id,current.revision,{...current,body:current.body+'\n用户再次改'});const result=await f.commits.reconcile();assert.equal(result.resumed.length,0);assert((await f.wiki.get(page.id))!.body.endsWith('用户再次改'));
+test('LW02 source tightening blocks GET, cached POST, citations, save and derived page with sources removed', async () => {
+  const f = await lw02Fixture(),
+    raw = await f.rawStore.create({
+      title: 'A',
+      sourceType: 'report',
+      sourceName: 'A',
+      tags: [],
+      body: '有效门店统计合成内容。',
+    });
+  await f.seed('原渠道资料', '有效门店统计合成内容。', [raw.id]);
+  const r = await f.ask(),
+    preview = f.preview(r),
+    save = await f.answers.save(r.id, { key: 'derive', resultRevision: r.revision, preview }),
+    result = await f.commit(await f.approve(save.draftId!)),
+    derived = result.manifest.snapshot.pageRecords[0];
+  await f.wiki.update(derived.id, derived.revision, { ...derived, sources: [] });
+  const get = f.rawStore.get.bind(f.rawStore);
+  f.rawStore.get = async (id) => {
+    const record = await get(id);
+    return id === raw.id ? ({ ...record!, origin: { invalid: true } } as any) : record;
+  };
+  const calls = f.requests.length;
+  for (const run of [
+    () => f.answers.read(r.id),
+    () => f.ask(r.question, r.id),
+    () => f.answers.citation(r.id, r.citations[0].id),
+    () => f.answers.save(r.id, { key: 'derive', resultRevision: r.revision, preview }),
+  ])
+    await assert.rejects(run(), { code: 'MEETING_SOURCE_RESTRICTED' });
+  const again = await f.ask('渠道统计专题整理有哪些结论？');
+  assert.equal(again.status, 'insufficient');
+  assert.equal(f.requests.length, calls);
 });
 
-test('LW02 source tightening blocks GET, cached POST, citations, save and derived page with sources removed',async()=>{
-  const f=await lw02Fixture(),raw=await f.rawStore.create({title:'A',sourceType:'report',sourceName:'A',tags:[],body:'有效门店统计合成内容。'});await f.seed('原渠道资料','有效门店统计合成内容。',[raw.id]);const r=await f.ask(),preview=f.preview(r),save=await f.answers.save(r.id,{key:'derive',resultRevision:r.revision,preview}),result=await f.commit(await f.approve(save.draftId!)),derived=result.manifest.snapshot.pageRecords[0];await f.wiki.update(derived.id,derived.revision,{...derived,sources:[]});const get=f.rawStore.get.bind(f.rawStore);f.rawStore.get=async id=>{const record=await get(id);return id===raw.id?{...record!,origin:{invalid:true}} as any:record;};
-  const calls=f.requests.length;for(const run of [()=>f.answers.read(r.id),()=>f.ask(r.question,r.id),()=>f.answers.citation(r.id,r.citations[0].id),()=>f.answers.save(r.id,{key:'derive',resultRevision:r.revision,preview})])await assert.rejects(run(),{code:'MEETING_SOURCE_RESTRICTED'});const again=await f.ask('渠道统计专题整理有哪些结论？');assert.equal(again.status,'insufficient');assert.equal(f.requests.length,calls);
+test('LW02 no_change persists truthful state without Draft, Raw or empty Wiki version', async () => {
+  const f = await lw02Fixture(),
+    page = await f.seed('渠道现有主题', '有效门店统计按活跃口径。');
+  f.mode('no_change');
+  const r = await f.ask(),
+    preview = f.preview(r, { title: page.title, targetWikiId: page.id }),
+    saved = await f.answers.save(r.id, { key: 'covered', resultRevision: r.revision, preview });
+  assert.equal(saved.status, 'no_change');
+  assert.equal((await f.drafts.listKnowledge()).length, 0);
+  assert.equal((await f.wiki.get(page.id))!.revision, 1);
+  assert.equal((await f.rawStore.list()).length, 0);
+  assert.equal((await readdir(path.join(f.root, 'drafts'))).filter((name) => name.endsWith('.json')).length, 0);
 });
 
-test('LW02 no_change persists truthful state without Draft, Raw or empty Wiki version',async()=>{
-  const f=await lw02Fixture(),page=await f.seed('渠道现有主题','有效门店统计按活跃口径。');f.mode('no_change');const r=await f.ask(),preview=f.preview(r,{title:page.title,targetWikiId:page.id}),saved=await f.answers.save(r.id,{key:'covered',resultRevision:r.revision,preview});assert.equal(saved.status,'no_change');assert.equal((await f.drafts.listKnowledge()).length,0);assert.equal((await f.wiki.get(page.id))!.revision,1);assert.equal((await f.rawStore.list()).length,0);assert.equal((await readdir(path.join(f.root,'drafts'))).filter(name=>name.endsWith('.json')).length,0);
+test('LW02 Source and derived topic share one Raw root; known inference cannot be promoted to fact on re-query', async () => {
+  const f = await lw02Fixture(),
+    raw = await f.rawStore.create({
+      title: '原渠道资料',
+      sourceType: 'report',
+      sourceName: '合成',
+      tags: [],
+      body: '有效门店统计按活跃口径。',
+    }),
+    source = await f.wiki.create({
+      title: '原资料来源笔记',
+      type: 'source',
+      category: 'channel',
+      body: '有效门店统计按活跃口径。',
+      sources: [raw.id],
+      tags: [],
+      aliases: [],
+      knowledge_status: 'source_supported',
+      confidence: 'medium',
+      source_level: 'D',
+      review_status: 'unreviewed',
+    });
+  await f.seed('渠道主题', '有效门店统计按活跃口径。', [raw.id]);
+  let answer = await f.ask();
+  assert(answer.readWiki.some((p) => p.id === source.id));
+  assert.equal(answer.independentRawIds.length, 1);
+  f.mode('inference');
+  answer = await f.ask();
+  const save = await f.answers.save(answer.id, {
+      key: 'inferred',
+      resultRevision: answer.revision,
+      preview: f.preview(answer),
+    }),
+    committed = await f.commit(await f.approve(save.draftId!)),
+    page = committed.manifest.snapshot.pageRecords[0];
+  f.mode('normal');
+  const again = await f.ask(page.title + '的有效门店统计结论？');
+  assert(again.citations.some((c) => c.recordId === page.id));
+  assert.equal(again.sections[0].kind, 'inference');
+  assert.equal(again.independentRawIds.length, 1);
 });
 
-test('LW02 Source and derived topic share one Raw root; known inference cannot be promoted to fact on re-query',async()=>{
-  const f=await lw02Fixture(),raw=await f.rawStore.create({title:'原渠道资料',sourceType:'report',sourceName:'合成',tags:[],body:'有效门店统计按活跃口径。'}),source=await f.wiki.create({title:'原资料来源笔记',type:'source',category:'channel',body:'有效门店统计按活跃口径。',sources:[raw.id],tags:[],aliases:[],knowledge_status:'source_supported',confidence:'medium',source_level:'D',review_status:'unreviewed'});await f.seed('渠道主题','有效门店统计按活跃口径。',[raw.id]);
-  let answer=await f.ask();assert(answer.readWiki.some(p=>p.id===source.id));assert.equal(answer.independentRawIds.length,1);f.mode('inference');answer=await f.ask();const save=await f.answers.save(answer.id,{key:'inferred',resultRevision:answer.revision,preview:f.preview(answer)}),committed=await f.commit(await f.approve(save.draftId!)),page=committed.manifest.snapshot.pageRecords[0];f.mode('normal');const again=await f.ask(page.title+'的有效门店统计结论？');assert(again.citations.some(c=>c.recordId===page.id));assert.equal(again.sections[0].kind,'inference');assert.equal(again.independentRawIds.length,1);
-});
-
-test('LW02 wrong Raw offsets and requests outside actual Wiki roots are rejected; public QA unassignment still blocks commit',async()=>{
-  const f=await lw02Fixture(),raw=await f.rawStore.create({title:'A',sourceType:'report',sourceName:'合成',tags:[],body:'有效门店统计按活跃口径。'});await f.seed('渠道主题','有效门店统计按活跃口径。',[raw.id]);f.mode('raw');const original=f.provider.complete.bind(f.provider);
-  f.provider.complete=async request=>{const response=await original(request),v=JSON.parse(response.text);if(v.citations?.some((c:any)=>c.kind==='raw'))v.citations.find((c:any)=>c.kind==='raw').start++;return {...response,text:JSON.stringify(v)};};let r=await f.ask();assert.equal(r.status,'failed');assert.equal(r.error!.code,'ANSWER_CITATION_INVALID');
-  f.provider.complete=async request=>{const response=await original(request),v=JSON.parse(response.text);if(v.needsRaw?.length)v.needsRaw[0].rawId=randomUUID();return {...response,text:JSON.stringify(v)};};r=await f.ask();assert.equal(r.status,'failed');assert.equal(r.error!.code,'ANSWER_RAW_NOT_ALLOWED');
-  f.provider.complete=original;f.mode('normal');r=await f.ask();const saved=await f.answers.save(r.id,{key:'gate',resultRevision:r.revision,preview:f.preview(r)});let d=(await f.drafts.getKnowledge(saved.draftId!))!;assert('input'in d);d=await f.drafts.reviewQuestionOperation(d.id,{baseRevision:d.revision,action:'move',unitIds:[d.humanReview!.units[0].id],pageId:null});const approved=await f.approve(d.id);await assert.rejects(f.commit(approved),{code:'HUMAN_REVIEW_INCOMPLETE'});assert.equal((await f.wiki.allRecords()).length,1);
+test('LW02 wrong Raw offsets and requests outside actual Wiki roots are rejected; public QA unassignment still blocks commit', async () => {
+  const f = await lw02Fixture(),
+    raw = await f.rawStore.create({
+      title: 'A',
+      sourceType: 'report',
+      sourceName: '合成',
+      tags: [],
+      body: '有效门店统计按活跃口径。',
+    });
+  await f.seed('渠道主题', '有效门店统计按活跃口径。', [raw.id]);
+  f.mode('raw');
+  const original = f.provider.complete.bind(f.provider);
+  f.provider.complete = async (request) => {
+    const response = await original(request),
+      v = JSON.parse(response.text);
+    if (v.citations?.some((c: any) => c.kind === 'raw')) v.citations.find((c: any) => c.kind === 'raw').start++;
+    return { ...response, text: JSON.stringify(v) };
+  };
+  let r = await f.ask();
+  assert.equal(r.status, 'failed');
+  assert.equal(r.error!.code, 'ANSWER_CITATION_INVALID');
+  f.provider.complete = async (request) => {
+    const response = await original(request),
+      v = JSON.parse(response.text);
+    if (v.needsRaw?.length) v.needsRaw[0].rawId = randomUUID();
+    return { ...response, text: JSON.stringify(v) };
+  };
+  r = await f.ask();
+  assert.equal(r.status, 'failed');
+  assert.equal(r.error!.code, 'ANSWER_RAW_NOT_ALLOWED');
+  f.provider.complete = original;
+  f.mode('normal');
+  r = await f.ask();
+  const saved = await f.answers.save(r.id, { key: 'gate', resultRevision: r.revision, preview: f.preview(r) });
+  let d = (await f.drafts.getKnowledge(saved.draftId!))!;
+  assert('input' in d);
+  d = await f.drafts.reviewQuestionOperation(d.id, {
+    baseRevision: d.revision,
+    action: 'move',
+    unitIds: [d.humanReview!.units[0].id],
+    pageId: null,
+  });
+  const approved = await f.approve(d.id);
+  await assert.rejects(f.commit(approved), { code: 'HUMAN_REVIEW_INCOMPLETE' });
+  assert.equal((await f.wiki.allRecords()).length, 1);
 });

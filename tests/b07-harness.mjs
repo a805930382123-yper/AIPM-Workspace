@@ -11,15 +11,15 @@ import { once } from 'node:events';
 import { mkdtemp, readFile, readdir } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
-export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-export const digest = data => createHash('sha256').update(data).digest('hex');
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const digest = (data) => createHash('sha256').update(data).digest('hex');
 export const uuid = () => randomUUID();
 
 export async function filesUnder(root) {
   const items = [];
   for (const entry of await readdir(root, { withFileTypes: true }).catch(() => [])) {
     const file = path.join(root, entry.name);
-    if (entry.isDirectory()) items.push(...await filesUnder(file));
+    if (entry.isDirectory()) items.push(...(await filesUnder(file)));
     else items.push(file);
   }
   return items;
@@ -27,14 +27,18 @@ export async function filesUnder(root) {
 
 export async function fileSnapshot(root) {
   const files = (await filesUnder(root)).sort();
-  return Object.fromEntries(await Promise.all(files.map(async file => [path.relative(root, file).replaceAll('\\', '/'), digest(await readFile(file))])));
+  return Object.fromEntries(
+    await Promise.all(
+      files.map(async (file) => [path.relative(root, file).replaceAll('\\', '/'), digest(await readFile(file))]),
+    ),
+  );
 }
 
 export async function freePort() {
   const socket = net.createServer();
-  await new Promise(resolve => socket.listen(0, '127.0.0.1', resolve));
+  await new Promise((resolve) => socket.listen(0, '127.0.0.1', resolve));
   const value = socket.address().port;
-  await new Promise(resolve => socket.close(resolve));
+  await new Promise((resolve) => socket.close(resolve));
   return value;
 }
 
@@ -45,7 +49,12 @@ export async function request(service, url, method = 'GET', body) {
     signal: AbortSignal.timeout(30000),
   });
   const text = await response.text();
-  let json; try { json = JSON.parse(text); } catch { /* non-JSON bodies (markdown export) are read as text */ }
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    /* non-JSON bodies (markdown export) are read as text */
+  }
   return { status: response.status, json, text, headers: response.headers };
 }
 
@@ -61,7 +70,11 @@ export async function expectError(service, url, method, body, status, code) {
   const result = await request(service, url, method, body);
   assert.equal(result.status, status, `${method} ${url} -> ${result.status} body=${result.text}`);
   assert.ok(result.json?.error, `expected an {error:{...}} envelope, got ${result.text}`);
-  assert.equal(result.json.error.code, code, `expected error code ${code}, got ${result.json.error.code} (${result.text})`);
+  assert.equal(
+    result.json.error.code,
+    code,
+    `expected error code ${code}, got ${result.json.error.code} (${result.text})`,
+  );
   assert.equal(typeof result.json.error.message, 'string');
   assert.ok(result.json.error.message.length > 0, 'error message must be readable');
   return result.json.error;
@@ -70,18 +83,31 @@ export async function expectError(service, url, method, body, status, code) {
 /** The ten editable fields of a stored Prompt, ready to send back as an update payload. */
 export function toEditInput(prompt) {
   return {
-    name: prompt.name, category: prompt.category, scenario: prompt.scenario, body: prompt.body,
-    inputRequirements: prompt.inputRequirements, outputRequirements: prompt.outputRequirements,
-    relatedWikiIds: prompt.relatedWikiIds, examples: prompt.examples, tags: prompt.tags, favorite: prompt.favorite,
+    name: prompt.name,
+    category: prompt.category,
+    scenario: prompt.scenario,
+    body: prompt.body,
+    inputRequirements: prompt.inputRequirements,
+    outputRequirements: prompt.outputRequirements,
+    relatedWikiIds: prompt.relatedWikiIds,
+    examples: prompt.examples,
+    tags: prompt.tags,
+    favorite: prompt.favorite,
   };
 }
 
 export function promptInput(overrides = {}) {
   return {
-    name: '客户访谈提纲', category: 'customer', scenario: '拜访重点客户前准备问题清单',
+    name: '客户访谈提纲',
+    category: 'customer',
+    scenario: '拜访重点客户前准备问题清单',
     body: '请围绕 {{客户名称}} 的 {{访谈主题}} 输出访谈提纲。',
-    inputRequirements: '客户名称、访谈主题', outputRequirements: '三段式提纲，每段不超过 5 条',
-    relatedWikiIds: [], examples: '示例：客户名称=华东某连锁商超', tags: ['访谈', '客户'], favorite: false,
+    inputRequirements: '客户名称、访谈主题',
+    outputRequirements: '三段式提纲，每段不超过 5 条',
+    relatedWikiIds: [],
+    examples: '示例：客户名称=华东某连锁商超',
+    tags: ['访谈', '客户'],
+    favorite: false,
     ...overrides,
   };
 }
@@ -91,7 +117,7 @@ export function promptInput(overrides = {}) {
  * patches fs only inside this data root; `dataRoot` lets a test reuse a directory across restarts.
  */
 export async function createHarness({ dataRoot, faultHook } = {}) {
-  const root = dataRoot ?? await mkdtemp(path.join(os.tmpdir(), 'fmcg-b07-builder-'));
+  const root = dataRoot ?? (await mkdtemp(path.join(os.tmpdir(), 'fmcg-b07-builder-')));
   const services = [];
   async function start(dir = root) {
     const apiPort = await freePort();
@@ -102,16 +128,28 @@ export async function createHarness({ dataRoot, faultHook } = {}) {
     const child = spawn(process.execPath, imports, {
       cwd: process.cwd(),
       // No LLM configuration at all: the manual Prompt Library must work with zero provider.
-      env: { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(apiPort), FMCG_LLM_BASE_URL: '', FMCG_LLM_MODEL: '', FMCG_LLM_API_KEY: '' },
-      windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        FMCG_DATA_DIR: dir,
+        FMCG_PORT: String(apiPort),
+        FMCG_LLM_BASE_URL: '',
+        FMCG_LLM_MODEL: '',
+        FMCG_LLM_API_KEY: '',
+      },
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     const service = { child, dir, base: `http://127.0.0.1:${apiPort}`, port: apiPort, logs: '' };
-    child.stdout.on('data', chunk => service.logs += chunk);
-    child.stderr.on('data', chunk => service.logs += chunk);
+    child.stdout.on('data', (chunk) => (service.logs += chunk));
+    child.stderr.on('data', (chunk) => (service.logs += chunk));
     services.push(service);
     for (let n = 0; n < 200; n++) {
       if (child.exitCode !== null) throw new Error(`product start failed (exit ${child.exitCode}): ${service.logs}`);
-      try { if ((await fetch(`${service.base}/api/health`, { signal: AbortSignal.timeout(250) })).ok) return service; } catch { /* still booting */ }
+      try {
+        if ((await fetch(`${service.base}/api/health`, { signal: AbortSignal.timeout(250) })).ok) return service;
+      } catch {
+        /* still booting */
+      }
       await delay(100);
     }
     await stop(service);
@@ -124,7 +162,9 @@ export async function createHarness({ dataRoot, faultHook } = {}) {
       await done;
     }
   }
-  async function close() { for (const service of services) await stop(service); }
+  async function close() {
+    for (const service of services) await stop(service);
+  }
   return { root, services, start, stop, close };
 }
 
@@ -146,7 +186,9 @@ export function createRecorder() {
       item.durationMs = Date.now() - started;
       items.push(item);
       const mark = item.status === 'PASS' ? 'PASS' : 'FAIL';
-      console.log(`[${mark}] ${id} ${title} (${item.durationMs}ms)${item.status === 'FAIL' ? `\n      ${item.detail}` : ''}`);
+      console.log(
+        `[${mark}] ${id} ${title} (${item.durationMs}ms)${item.status === 'FAIL' ? `\n      ${item.detail}` : ''}`,
+      );
       return item;
     },
     skip(id, title, detail) {

@@ -19,8 +19,14 @@ import { RawStore } from '../services/raw/store.ts';
 import { pdfFixture } from './support/pdf01-fixture.ts';
 
 const sha = (data: Buffer | string) => createHash('sha256').update(data).digest('hex');
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-const answer = (page: number) => ({ blank: false, content: `第 ${page} 页内容`, visuals: '按图显示，无法读出的数值未补造。', inference: '', questions: [] });
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const answer = (page: number) => ({
+  blank: false,
+  content: `第 ${page} 页内容`,
+  visuals: '按图显示，无法读出的数值未补造。',
+  inference: '',
+  questions: [],
+});
 
 async function listen(server: http.Server) {
   server.listen(0, '127.0.0.1');
@@ -29,7 +35,7 @@ async function listen(server: http.Server) {
 }
 
 function close(server: http.Server) {
-  return new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  return new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
 }
 
 async function fakeProvider() {
@@ -58,23 +64,46 @@ async function fakeProvider() {
       }
       calls.push({ page, text, image, userContent });
       const reply = await respond(page ?? 0);
-      const body = reply.status === 200 ? { choices: [{ message: { content: typeof reply.value === 'string' ? reply.value : JSON.stringify(reply.value) }, finish_reason: 'stop' }] }
-        : { error: { message: String(reply.value) } };
+      const body =
+        reply.status === 200
+          ? {
+              choices: [
+                {
+                  message: { content: typeof reply.value === 'string' ? reply.value : JSON.stringify(reply.value) },
+                  finish_reason: 'stop',
+                },
+              ],
+            }
+          : { error: { message: String(reply.value) } };
       res.writeHead(reply.status, { 'content-type': 'application/json' }).end(JSON.stringify(body));
     } catch {
       res.writeHead(500).end();
     }
   });
-  const url = await listen(server) + '/v1';
-  return { url, calls, setResponse: (fn: typeof respond) => { respond = fn; }, close: () => close(server) };
+  const url = (await listen(server)) + '/v1';
+  return {
+    url,
+    calls,
+    setResponse: (fn: typeof respond) => {
+      respond = fn;
+    },
+    close: () => close(server),
+  };
 }
 
 function client(base: string) {
   const request = async (url: string, input?: unknown) => {
-    const response = await fetch(base + url, input === undefined ? {} : input instanceof FormData ? { method: 'POST', body: input }
-      : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) });
+    const response = await fetch(
+      base + url,
+      input === undefined
+        ? {}
+        : input instanceof FormData
+          ? { method: 'POST', body: input }
+          : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) },
+    );
     const type = response.headers.get('content-type') ?? '';
-    return type.includes('application/json') ? { status: response.status, json: await response.json() as any, bytes: undefined }
+    return type.includes('application/json')
+      ? { status: response.status, json: (await response.json()) as any, bytes: undefined }
       : { status: response.status, json: undefined, bytes: Buffer.from(await response.arrayBuffer()) };
   };
   const upload = async (bytes: Buffer, fileName = 'fixture.pdf') => {
@@ -88,7 +117,8 @@ function client(base: string) {
       const view = await request(route);
       if (view.json?.job?.status === status) return view.json;
       if (status === 'completed' && view.json?.job?.status === 'failed') assert.fail(JSON.stringify(view.json.job));
-      if (status === 'failed' && view.json?.job?.status === 'completed') assert.fail('job completed when failure was expected');
+      if (status === 'failed' && view.json?.job?.status === 'completed')
+        assert.fail('job completed when failure was expected');
       await delay(15);
     }
     assert.fail(`PDF did not reach ${status}`);
@@ -97,7 +127,7 @@ function client(base: string) {
 }
 
 async function local(fixtureRoot?: string, provider?: LlmProvider) {
-  const root = fixtureRoot ?? await mkdtemp(path.join(os.tmpdir(), 'pdf01-local-'));
+  const root = fixtureRoot ?? (await mkdtemp(path.join(os.tmpdir(), 'pdf01-local-')));
   const raws = new RawStore(root);
   const assets = new AssetStore(root);
   await Promise.all([raws.initialize(), assets.initialize()]);
@@ -105,13 +135,19 @@ async function local(fixtureRoot?: string, provider?: LlmProvider) {
   app.use(express.json());
   registerRawImportRoute(app, { store: raws, assets });
   registerRawPdfRoutes(app, new PdfPageService({ root, raws, assets, provider: async () => provider }));
-  app.use(((e, _req, res, _next) => res.status(e.status ?? 500).json({ error: { code: e.code, message: e.message } })) as express.ErrorRequestHandler);
+  app.use(((e, _req, res, _next) =>
+    res.status(e.status ?? 500).json({ error: { code: e.code, message: e.message } })) as express.ErrorRequestHandler);
   const server = http.createServer(app);
   return { ...client(await listen(server)), root, raws, assets, close: () => close(server) };
 }
 
 function provider(url: string, model = 'fixture-vision') {
-  return new OpenAiCompatibleProvider({ baseUrl: url, model, apiKey: 'synthetic-pdf01-test-key', source: 'local-file' });
+  return new OpenAiCompatibleProvider({
+    baseUrl: url,
+    model,
+    apiKey: 'synthetic-pdf01-test-key',
+    source: 'local-file',
+  });
 }
 
 async function pixels(bytes: Buffer): Promise<{ width: number; height: number; colors: Set<string> }> {
@@ -121,7 +157,9 @@ async function pixels(bytes: Buffer): Promise<{ width: number; height: number; c
   context.drawImage(image, 0, 0);
   const rgba = context.getImageData(0, 0, image.width, image.height).data;
   const colors = new Set<string>();
-  for (let i = 0; i < rgba.length; i += 4) if (rgba[i] !== 255 || rgba[i + 1] !== 255 || rgba[i + 2] !== 255) colors.add(`${rgba[i]},${rgba[i + 1]},${rgba[i + 2]}`);
+  for (let i = 0; i < rgba.length; i += 4)
+    if (rgba[i] !== 255 || rgba[i + 1] !== 255 || rgba[i + 2] !== 255)
+      colors.add(`${rgba[i]},${rgba[i + 1]},${rgba[i + 2]}`);
   return { width: image.width, height: image.height, colors };
 }
 
@@ -155,8 +193,14 @@ test('PDF mixed pages retain exact bytes, text offsets, embedded image and vecto
     assert.equal((await api.request(route + '/understand', {})).status, 202);
     const done = await api.wait(route, 'completed');
     assert.deepEqual([done.job.completedPages, done.job.totalPages, done.job.attempts], [4, 4, 4]);
-    assert.deepEqual(fake.calls.map(call => call.image && sha(call.image)), images.map(sha));
-    assert.deepEqual(fake.calls.map(call => call.text), ['Original page 1 revenue 120', '', '', 'Original page 4 revenue 120']);
+    assert.deepEqual(
+      fake.calls.map((call) => call.image && sha(call.image)),
+      images.map(sha),
+    );
+    assert.deepEqual(
+      fake.calls.map((call) => call.text),
+      ['Original page 1 revenue 120', '', '', 'Original page 4 revenue 120'],
+    );
     assert.deepEqual((await api.request(`${route}/pages/3`)).json.understanding, answer(3));
     assert.deepEqual((await api.request(before.originalUrl)).bytes, bytes);
     assert.equal((await api.raws.get(raw.id))?.bodySha256, raw.bodySha256);
@@ -165,7 +209,10 @@ test('PDF mixed pages retain exact bytes, text offsets, embedded image and vecto
     assert.equal((await api.request(`/api/raw/${randomUUID()}/pdf`)).status, 404);
     assert.equal((await api.request(route + '/understand', {})).status, 200);
     assert.equal(fake.calls.length, 4);
-  } finally { await api.close(); await fake.close(); }
+  } finally {
+    await api.close();
+    await fake.close();
+  }
 });
 
 test('Real server entry accepts scanned PDF and calls local configured HTTP Provider only for explicit page understanding', async () => {
@@ -174,22 +221,38 @@ test('Real server entry accepts scanned PDF and calls local configured HTTP Prov
   try {
     const root = await mkdtemp(path.join(os.tmpdir(), 'pdf01-entry-'));
     const config = path.join(root, 'fake-provider.env');
-    await writeFile(config, `FMCG_LLM_BASE_URL=${fake.url}\nFMCG_LLM_MODEL=fixture-vision\nFMCG_LLM_API_KEY=synthetic-pdf01-test-key\n`);
+    await writeFile(
+      config,
+      `FMCG_LLM_BASE_URL=${fake.url}\nFMCG_LLM_MODEL=fixture-vision\nFMCG_LLM_API_KEY=synthetic-pdf01-test-key\n`,
+    );
     const reservation = net.createServer();
     reservation.listen(0, '127.0.0.1');
     await once(reservation, 'listening');
     const port = (reservation.address() as AddressInfo).port;
-    await new Promise<void>((resolve, reject) => reservation.close(error => error ? reject(error) : resolve()));
-    const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(FMCG_LLM_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(key)));
+    await new Promise<void>((resolve, reject) => reservation.close((error) => (error ? reject(error) : resolve())));
+    const env = Object.fromEntries(
+      Object.entries(process.env).filter(
+        ([key]) => !/^(FMCG_LLM_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(key),
+      ),
+    );
     child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-      cwd: process.cwd(), windowsHide: true, stdio: 'ignore',
+      cwd: process.cwd(),
+      windowsHide: true,
+      stdio: 'ignore',
       env: { ...env, FMCG_DATA_DIR: root, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config },
     });
     const api = client(`http://127.0.0.1:${port}`);
     let healthy = false;
     for (let i = 0; i < 200; i++) {
       if (child.exitCode !== null) assert.fail(`server exited ${child.exitCode}`);
-      try { if ((await api.request('/api/health')).status === 200) { healthy = true; break; } } catch { /* waiting */ }
+      try {
+        if ((await api.request('/api/health')).status === 200) {
+          healthy = true;
+          break;
+        }
+      } catch {
+        /* waiting */
+      }
       await delay(80);
     }
     assert(healthy);
@@ -197,7 +260,10 @@ test('Real server entry accepts scanned PDF and calls local configured HTTP Prov
     assert.equal(raw.body, '');
     assert.equal(raw.bodySha256, sha(''));
     const route = `/api/raw/${raw.id}/pdf`;
-    assert.equal((await api.request(`/api/raw/${raw.id}/extract`, { mode: 'standard' })).json.error.code, 'PDF_TEXT_LAYER_REQUIRED');
+    assert.equal(
+      (await api.request(`/api/raw/${raw.id}/extract`, { mode: 'standard' })).json.error.code,
+      'PDF_TEXT_LAYER_REQUIRED',
+    );
     const image = (await api.request(route + '/pages/1/image')).bytes!;
     assert.equal(fake.calls.length, 0);
     assert.equal((await api.request(route + '/understand', {})).status, 202);
@@ -205,17 +271,29 @@ test('Real server entry accepts scanned PDF and calls local configured HTTP Prov
     assert.equal(fake.calls.length, 1);
     assert.deepEqual(fake.calls[0].image, image);
     assert.equal(fake.calls[0].text, '');
-    await provider(fake.url).complete({ system: 'plain', user: 'text-only-contract', timeoutMs: 5000, maxOutputBytes: 8192 });
+    await provider(fake.url).complete({
+      system: 'plain',
+      user: 'text-only-contract',
+      timeoutMs: 5000,
+      maxOutputBytes: 8192,
+    });
     assert.equal(fake.calls[1].userContent, 'text-only-contract');
   } finally {
-    if (child?.exitCode === null && child.signalCode === null) { const stopped = once(child, 'exit'); child.kill(); await stopped; }
+    if (child?.exitCode === null && child.signalCode === null) {
+      const stopped = once(child, 'exit');
+      child.kill();
+      await stopped;
+    }
     await fake.close();
   }
 });
 
 test('A 62-page document renders, sends and settles every page sequentially, including an explicit blank page', async () => {
   const fake = await fakeProvider();
-  fake.setResponse(async page => ({ status: 200, value: page === 1 ? { blank: true, content: '', visuals: '', inference: '', questions: [] } : answer(page) }));
+  fake.setResponse(async (page) => ({
+    status: 200,
+    value: page === 1 ? { blank: true, content: '', visuals: '', inference: '', questions: [] } : answer(page),
+  }));
   const api = await local(undefined, provider(fake.url));
   try {
     const kinds = ['text', 'scan', 'vector'] as const;
@@ -230,16 +308,27 @@ test('A 62-page document renders, sends and settles every page sequentially, inc
     await api.request(route + '/understand', {});
     const done = await api.wait(route, 'completed');
     assert.deepEqual([done.job.completedPages, done.job.totalPages, done.job.attempts], [62, 62, 62]);
-    assert.deepEqual(fake.calls.map(call => call.page), Array.from({ length: 62 }, (_, i) => i + 1));
-    assert(fake.calls.every(call => call.image?.length));
+    assert.deepEqual(
+      fake.calls.map((call) => call.page),
+      Array.from({ length: 62 }, (_, i) => i + 1),
+    );
+    assert(fake.calls.every((call) => call.image?.length));
     assert.equal((await api.request(`${route}/pages/1`)).json.understanding.blank, true);
     assert.equal((await api.request(`${route}/pages/62`)).json.understanding.content, '第 62 页内容');
     const files = await readdir(path.join(api.root, 'state', 'raw-pdf', rawId));
-    assert.equal(files.filter(file => file.endsWith('.png')).length, 62);
-    const manifest = JSON.parse(await readFile(path.join(api.root, 'state', 'raw-pdf', rawId, 'manifest.json'), 'utf8'));
-    assert.deepEqual(manifest.results.map((value: {imageSha256: string}) => value.imageSha256), fake.calls.map(call => sha(call.image!)));
+    assert.equal(files.filter((file) => file.endsWith('.png')).length, 62);
+    const manifest = JSON.parse(
+      await readFile(path.join(api.root, 'state', 'raw-pdf', rawId, 'manifest.json'), 'utf8'),
+    );
+    assert.deepEqual(
+      manifest.results.map((value: { imageSha256: string }) => value.imageSha256),
+      fake.calls.map((call) => sha(call.image!)),
+    );
     assert.deepEqual((await api.request(initial.originalUrl)).bytes, bytes);
-  } finally { await api.close(); await fake.close(); }
+  } finally {
+    await api.close();
+    await fake.close();
+  }
 });
 
 test('Middle-page invalid JSON, rejected images and changed Provider preserve successful pages and resume only unfinished pages', async () => {
@@ -250,10 +339,13 @@ test('Middle-page invalid JSON, rejected images and changed Provider preserve su
     const bytes = pdfFixture(['text', 'scan', 'vector']);
     const uploaded = await api.upload(bytes);
     const route = `/api/raw/${uploaded.json.raw.id}/pdf`;
-    fake.setResponse(async page => ({ status: 200, value: page === 2 ? 'invalid JSON' : answer(page) }));
+    fake.setResponse(async (page) => ({ status: 200, value: page === 2 ? 'invalid JSON' : answer(page) }));
     await api.request(route + '/understand', {});
     let failed = await api.wait(route, 'failed');
-    assert.deepEqual([failed.job.completedPages, failed.job.failedPage, failed.job.attempts, failed.job.error.code], [1, 2, 2, 'PDF_PAGE_OUTPUT_INVALID']);
+    assert.deepEqual(
+      [failed.job.completedPages, failed.job.failedPage, failed.job.attempts, failed.job.error.code],
+      [1, 2, 2, 'PDF_PAGE_OUTPUT_INVALID'],
+    );
     assert.equal((await api.request(`${route}/pages/2`)).json.understanding, undefined);
     other = await local(api.root, provider(fake.url, 'other-model'));
     await other.request(route + '/understand', {});
@@ -268,25 +360,37 @@ test('Middle-page invalid JSON, rejected images and changed Provider preserve su
     assert.deepEqual([failed.job.completedPages, failed.job.failedPage, failed.job.attempts], [1, 2, 3]);
     assert.match(failed.job.error.message, /支持图像/);
     assert(fake.calls[2].image);
-    fake.setResponse(async page => ({ status: 200, value: answer(page) }));
+    fake.setResponse(async (page) => ({ status: 200, value: answer(page) }));
     await api.request(route + '/understand', {});
     const done = await api.wait(route, 'completed');
     assert.equal(done.job.attempts, 5);
-    assert.deepEqual(fake.calls.map(call => call.page), [1, 2, 2, 2, 3]);
+    assert.deepEqual(
+      fake.calls.map((call) => call.page),
+      [1, 2, 2, 2, 3],
+    );
     assert.deepEqual((await api.request(done.originalUrl)).bytes, bytes);
-  } finally { await other?.close(); await api.close(); await fake.close(); }
+  } finally {
+    await other?.close();
+    await api.close();
+    await fake.close();
+  }
 });
 
 test('Cancel ignores a late page response and explicit continue retains the already completed first page', async () => {
   const fake = await fakeProvider();
   const api = await local(undefined, provider(fake.url));
   let release: (() => void) | undefined;
-  const hold = new Promise<void>(resolve => { release = resolve; });
+  const hold = new Promise<void>((resolve) => {
+    release = resolve;
+  });
   try {
     const uploaded = await api.upload(pdfFixture(['text', 'vector', 'scan']));
     const route = `/api/raw/${uploaded.json.raw.id}/pdf`;
-    fake.setResponse(async page => {
-      if (page === 2 && fake.calls.length === 2) { await hold; return { status: 200, value: { ...answer(page), content: '迟到旧结果' } }; }
+    fake.setResponse(async (page) => {
+      if (page === 2 && fake.calls.length === 2) {
+        await hold;
+        return { status: 200, value: { ...answer(page), content: '迟到旧结果' } };
+      }
       return { status: 200, value: answer(page) };
     });
     await api.request(route + '/understand', {});
@@ -300,9 +404,16 @@ test('Cancel ignores a late page response and explicit continue retains the alre
     const done = await api.wait(route, 'completed');
     assert.equal(done.job.attempts, 4);
     release?.();
-    assert.deepEqual(fake.calls.map(call => call.page), [1, 2, 2, 3]);
+    assert.deepEqual(
+      fake.calls.map((call) => call.page),
+      [1, 2, 2, 3],
+    );
     assert.equal((await api.request(`${route}/pages/2`)).json.understanding.content, '第 2 页内容');
-  } finally { release?.(); await api.close(); await fake.close(); }
+  } finally {
+    release?.();
+    await api.close();
+    await fake.close();
+  }
 });
 
 test('Killing a process during a page leaves durable attempts and a fresh service sends nothing until explicit continue', async () => {
@@ -311,17 +422,27 @@ test('Killing a process during a page leaves durable attempts and a fresh servic
   let child: ChildProcess | undefined;
   let restarted: Awaited<ReturnType<typeof local>> | undefined;
   let release: (() => void) | undefined;
-  const hold = new Promise<void>(resolve => { release = resolve; });
+  const hold = new Promise<void>((resolve) => {
+    release = resolve;
+  });
   try {
     const uploaded = await api.upload(pdfFixture(['text', 'vector', 'scan']));
     const id = uploaded.json.raw.id;
     const route = `/api/raw/${id}/pdf`;
-    fake.setResponse(async page => {
+    fake.setResponse(async (page) => {
       if (page === 2 && fake.calls.length === 2) await hold;
       return { status: 200, value: answer(page) };
     });
-    const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(FMCG_LLM_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(key)));
-    child = fork('tests/support/pdf01-restart-child.ts', [api.root, id, fake.url], { env, execArgv: ['--import', 'tsx'], stdio: ['ignore', 'ignore', 'ignore', 'ipc'] });
+    const env = Object.fromEntries(
+      Object.entries(process.env).filter(
+        ([key]) => !/^(FMCG_LLM_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(key),
+      ),
+    );
+    child = fork('tests/support/pdf01-restart-child.ts', [api.root, id, fake.url], {
+      env,
+      execArgv: ['--import', 'tsx'],
+      stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+    });
     for (let i = 0; i < 600 && fake.calls.length < 2; i++) await delay(15);
     assert.equal(fake.calls.length, 2);
     const stopped = once(child, 'exit');
@@ -329,16 +450,28 @@ test('Killing a process during a page leaves durable attempts and a fresh servic
     await stopped;
     restarted = await local(api.root, provider(fake.url));
     const orphan = (await restarted.request(route)).json;
-    assert.deepEqual([orphan.job.status, orphan.job.completedPages, orphan.job.attempts, orphan.job.error.code], ['failed', 1, 2, 'PDF_UNDERSTANDING_INTERRUPTED']);
+    assert.deepEqual(
+      [orphan.job.status, orphan.job.completedPages, orphan.job.attempts, orphan.job.error.code],
+      ['failed', 1, 2, 'PDF_UNDERSTANDING_INTERRUPTED'],
+    );
     assert.equal(fake.calls.length, 2);
     await restarted.request(route + '/understand', {});
     const done = await restarted.wait(route, 'completed');
     assert.deepEqual([done.job.completedPages, done.job.attempts], [3, 4]);
-    assert.deepEqual(fake.calls.map(call => call.page), [1, 2, 2, 3]);
+    assert.deepEqual(
+      fake.calls.map((call) => call.page),
+      [1, 2, 2, 3],
+    );
   } finally {
     release?.();
-    if (child?.exitCode === null && child.signalCode === null) { const stopped = once(child, 'exit'); child.kill(); await stopped; }
-    await restarted?.close(); await api.close(); await fake.close();
+    if (child?.exitCode === null && child.signalCode === null) {
+      const stopped = once(child, 'exit');
+      child.kill();
+      await stopped;
+    }
+    await restarted?.close();
+    await api.close();
+    await fake.close();
   }
 });
 
@@ -353,23 +486,41 @@ test('Known secrets, Meeting origin, missing state and changed asset never produ
     await api.request(sourceRoute + '/understand', {});
     assert.equal((await api.wait(sourceRoute, 'failed')).job.error.code, 'LLM_OUTPUT_CONTAINS_SECRET');
     assert.equal(fake.calls.length, 0);
-    const meeting = await api.raws.createMeetingRegistration({ id: randomUUID(), title: '合成会议', sourceName: '隔离', tags: [], body: '原文', importedAt: new Date().toISOString(),
-      origin: { kind: 'meeting', meeting_id: randomUUID(), import_id: randomUUID(), original_sha256: sha('原文'), registered_confidentiality: 'Restricted', processing_policy: 'meeting_local_only' } });
-    assert.equal((await api.request(`/api/raw/${meeting.record.id}/pdf/understand`, {})).json.error.code, 'MEETING_SOURCE_RESTRICTED');
+    const meeting = await api.raws.createMeetingRegistration({
+      id: randomUUID(),
+      title: '合成会议',
+      sourceName: '隔离',
+      tags: [],
+      body: '原文',
+      importedAt: new Date().toISOString(),
+      origin: {
+        kind: 'meeting',
+        meeting_id: randomUUID(),
+        import_id: randomUUID(),
+        original_sha256: sha('原文'),
+        registered_confidentiality: 'Restricted',
+        processing_policy: 'meeting_local_only',
+      },
+    });
+    assert.equal(
+      (await api.request(`/api/raw/${meeting.record.id}/pdf/understand`, {})).json.error.code,
+      'MEETING_SOURCE_RESTRICTED',
+    );
     assert.equal(fake.calls.length, 0);
 
     const bytes = pdfFixture(['vector']);
     const uploaded = await api.upload(bytes);
     const id = uploaded.json.raw.id;
     const route = `/api/raw/${id}/pdf`;
-    fake.setResponse(async page => ({ status: 200, value: { ...answer(page), content: secret } }));
+    fake.setResponse(async (page) => ({ status: 200, value: { ...answer(page), content: secret } }));
     await api.request(route + '/understand', {});
     const failed = await api.wait(route, 'failed');
     assert.equal(failed.job.error.code, 'LLM_OUTPUT_CONTAINS_SECRET');
     assert.equal(failed.job.completedPages, 0);
     assert(!(await readFile(path.join(api.root, 'state', 'raw-pdf', id, 'manifest.json'), 'utf8')).includes(secret));
     const asset = path.join(api.root, 'knowledge', 'raw', 'assets', uploaded.json.asset.storedFile);
-    const altered = Buffer.from(bytes); altered[altered.length - 2] ^= 1;
+    const altered = Buffer.from(bytes);
+    altered[altered.length - 2] ^= 1;
     await writeFile(asset, altered);
     assert.equal((await api.request(route + '/understand', {})).json.error.code, 'PDF_ASSET_CHANGED');
     assert.equal(fake.calls.length, 1);
@@ -381,5 +532,8 @@ test('Known secrets, Meeting origin, missing state and changed asset never produ
     assert.equal(refused.json.error.code, 'STORAGE_READ_FAILED');
     assert.equal(fake.calls.length, 1);
     assert.deepEqual((await api.assets.readBoundPdf((await api.raws.get(blockedId))!)).bytes, bytes);
-  } finally { await api.close(); await fake.close(); }
+  } finally {
+    await api.close();
+    await fake.close();
+  }
 });

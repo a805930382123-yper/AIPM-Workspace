@@ -34,12 +34,7 @@ export type ReminderEditor = Omit<ReminderSettings, 'staleDays' | 'maxToastsPerR
   maxToastsPerRun: string;
 };
 
-export type WorkflowGroupId =
-  | 'news.daily'
-  | 'wiki.health'
-  | 'work.reminders'
-  | 'review.weekly'
-  | 'system.selfcheck';
+export type WorkflowGroupId = 'news.daily' | 'wiki.health' | 'work.reminders' | 'review.weekly' | 'system.selfcheck';
 
 export type WorkflowMeta = {
   title: string;
@@ -105,8 +100,7 @@ export const runError = (error: string) =>
 
 export const isActive = (status: AutomationRunStatus) => status === 'queued' || status === 'running';
 
-export const describeError = (error: unknown) =>
-  error instanceof Error ? error.message : '请求失败，请稍后重试。';
+export const describeError = (error: unknown) => (error instanceof Error ? error.message : '请求失败，请稍后重试。');
 
 export function describePlan(plan: AutomationPlan): string {
   if (plan.kind === 'interval') return `每 ${plan.minutes} 分钟`;
@@ -208,9 +202,9 @@ export const canConfirmCandidate = (row: CandidateView) =>
   !row.confirmation && !row.savedRawId && row.disposition !== 'ignored';
 
 export const isOrganizingCandidate = (row: CandidateView) =>
-  ['queued_raw', 'saving_raw', 'queued_organize', 'organizing'].some(phase => phase === row.execution?.phase);
+  ['queued_raw', 'saving_raw', 'queued_organize', 'organizing'].some((phase) => phase === row.execution?.phase);
 
 export const isFailedCandidate = (row: CandidateView) =>
   Boolean(row.saveIssue) ||
   (!row.draftPending &&
-    ['raw_failed', 'organize_failed', 'interrupted'].some(phase => phase === row.execution?.phase));
+    ['raw_failed', 'organize_failed', 'interrupted'].some((phase) => phase === row.execution?.phase));

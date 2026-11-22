@@ -18,11 +18,19 @@ const item = (n: number, sourceId: string): NewsItem => ({
   id: `report-${n}`,
   url: `https://reports.example.test/${n}`,
   title: `中国食品零售渠道第 ${n} 项消费者调研`,
-  sourceId, sourceName: sourceId,
-  publishedAt: '2026-11-19', fetchedAt,
-  excerpt: '中国食品零售消费者调研显示，商超渠道饮料销量同比增长 12%。2026年第三季度调查覆盖3100个家庭，便利店渠道的即饮品类渗透率达到35%。',
+  sourceId,
+  sourceName: sourceId,
+  publishedAt: '2026-11-19',
+  fetchedAt,
+  excerpt:
+    '中国食品零售消费者调研显示，商超渠道饮料销量同比增长 12%。2026年第三季度调查覆盖3100个家庭，便利店渠道的即饮品类渗透率达到35%。',
   evidenceKind: 'article_excerpt',
-  research: { kind: '报告正文摘录', dataPeriod: '2026年第三季度', pdfUrl: `https://reports.example.test/${n}.pdf`, pageRange: '第 3 页' },
+  research: {
+    kind: '报告正文摘录',
+    dataPeriod: '2026年第三季度',
+    pdfUrl: `https://reports.example.test/${n}.pdf`,
+    pageRange: '第 3 页',
+  },
 });
 const initial = () => [item(1, 'worldpanel'), item(2, 'worldpanel'), item(3, 'niq'), item(4, 'niq'), item(5, 'mintel')];
 
@@ -35,8 +43,12 @@ async function setup(t: TestContext, reports: NewsItem[]) {
   const noModel = () => assert.fail('不应调用模型');
   const clock = () => new Date(control.now);
   const news = new NewsService({
-    root, clock, rawStore: raws, aiEnabled: true, providerFactory: async () => noModel(),
-    stageResearchOverflow: edition => {
+    root,
+    clock,
+    rawStore: raws,
+    aiEnabled: true,
+    providerFactory: async () => noModel(),
+    stageResearchOverflow: (edition) => {
       if (control.failInbox) return Promise.reject(Error('测试注入的收件箱暂不可写'));
       return pipeline.stageEdition(edition, 'research-overflow');
     },
@@ -49,16 +61,28 @@ async function setup(t: TestContext, reports: NewsItem[]) {
     },
   });
   const context: TaskContext = {
-    runId: randomUUID(), signal: new AbortController().signal, provider: noModel,
-    link: async () => {}, step: async (_name, work) => { await work(); },
+    runId: randomUUID(),
+    signal: new AbortController().signal,
+    provider: noModel,
+    link: async () => {},
+    step: async (_name, work) => {
+      await work();
+    },
   };
   let operation: Promise<void> | undefined;
   const pipeline: NewsPipeline = new NewsPipeline({
-    root, news, clock,
-    scheduler: { canStartAuthorized: () => true, runAuthorized: (_type, _id, _candidateId, work) => operation = work(context) },
+    root,
+    news,
+    clock,
+    scheduler: {
+      canStartAuthorized: () => true,
+      runAuthorized: (_type, _id, _candidateId, work) => (operation = work(context)),
+    },
     runner: { start: async () => noModel(), readJob: async () => noModel(), waitForSettlement: async () => noModel() },
-    drafts: { get: async () => undefined }, wiki: { withLock: async work => work() },
-    states: { get: async () => assert.fail('本用例只保存 Raw') }, withProvider: async work => work(),
+    drafts: { get: async () => undefined },
+    wiki: { withLock: async (work) => work() },
+    states: { get: async () => assert.fail('本用例只保存 Raw') },
+    withProvider: async (work) => work(),
   });
   const check = async (attempt: number) => {
     await news.check('fmcg', 'all', attempt);
@@ -69,7 +93,7 @@ async function setup(t: TestContext, reports: NewsItem[]) {
     await pipeline.tick();
     assert.ok(operation);
     await operation;
-    const row = (await pipeline.list()).items.find(candidate => candidate.id === id);
+    const row = (await pipeline.list()).items.find((candidate) => candidate.id === id);
     assert.equal(row?.execution?.phase, 'saved');
     assert.ok(row?.savedRawId);
     return row.savedRawId;
@@ -77,7 +101,7 @@ async function setup(t: TestContext, reports: NewsItem[]) {
   return { news, pipeline, raws, control, context, check, saveCandidate };
 }
 
-test('快消满额后保留展示及 Raw，合格溢出可在收件箱确认保存并排除重复', async t => {
+test('快消满额后保留展示及 Raw，合格溢出可在收件箱确认保存并排除重复', async (t) => {
   const h = await setup(t, initial());
   const first = (await h.check(0)).sections.fmcg!;
   assert.equal(first.items.length, 5);
@@ -85,7 +109,8 @@ test('快消满额后保留展示及 Raw，合格溢出可在收件箱确认保�
   assert.equal((await h.pipeline.list()).items.length, 0);
 
   const overflow = item(6, 'mintel');
-  h.control.reports = [overflow,
+  h.control.reports = [
+    overflow,
     { ...item(7, 'niq'), url: `${overflow.url}?utm_source=duplicate` },
     { ...item(8, 'niq'), title: first.items[0]!.title + '！' },
     { ...item(9, 'niq'), research: first.items[0]!.research },
@@ -96,7 +121,10 @@ test('快消满额后保留展示及 Raw，合格溢出可在收件箱确认保�
   assert.deepEqual(second.sections.fmcg!.items, first.items);
   assert.match(second.sections.fmcg!.checkMessage!, /满5条.*1 条合格研报.*收件箱/);
   const list = await h.pipeline.list();
-  assert.deepEqual(list.items.map(row => row.item), [overflow]);
+  assert.deepEqual(
+    list.items.map((row) => row.item),
+    [overflow],
+  );
   const candidate = list.items[0]!;
   assert.equal(candidate.id, `${date}/fmcg/${overflow.id}`);
   assert.equal(candidate.screening, undefined);
@@ -112,7 +140,10 @@ test('快消满额后保留展示及 Raw，合格溢出可在收件箱确认保�
   assert.equal(raw?.publishedAt, overflow.publishedAt);
   assert.equal(raw?.body, overflow.excerpt);
   assert.ok(raw?.extractionNote?.includes(overflow.research!.pdfUrl!));
-  assert.deepEqual((await h.news.savedRaws(date)).items.map(row => row.rawId), [original.rawId]);
+  assert.deepEqual(
+    (await h.news.savedRaws(date)).items.map((row) => row.rawId),
+    [original.rawId],
+  );
 
   h.control.now = '2026-11-21T02:00:00.000Z';
   assert.deepEqual((await h.check(0)).sections.fmcg!.items, []);
@@ -120,30 +151,41 @@ test('快消满额后保留展示及 Raw，合格溢出可在收件箱确认保�
   assert.equal((await h.pipeline.list(date)).items[0]!.savedRawId, rawId);
 });
 
-test('自动准备和同源超限走同一收件箱，重复执行保留候选及展示', async t => {
+test('自动准备和同源超限走同一收件箱，重复执行保留候选及展示', async (t) => {
   const reports = [...initial(), item(6, 'worldpanel'), item(7, 'worldpanel')];
   const h = await setup(t, reports);
   const task = createDailyNews(h.news, h.pipeline);
   const batches: string[][] = [];
-  const context: TaskContext = { ...h.context, provider: () => ({
-    name: '合成预筛', model: '合成预筛', async complete({ user }) {
-      const { items } = JSON.parse(user) as { items: ScreenInput[] };
-      batches.push(items.map(row => row.candidateId));
-      const text = JSON.stringify({ items: items.map(({ candidateId }) => ({
-        candidateId, relevance: 2, categories: ['渠道'], reason: '提供了零售渠道数据。', suggestedMode: 'standard',
-      })) });
-      return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
-    },
-  }) };
+  const context: TaskContext = {
+    ...h.context,
+    provider: () => ({
+      name: '合成预筛',
+      model: '合成预筛',
+      async complete({ user }) {
+        const { items } = JSON.parse(user) as { items: ScreenInput[] };
+        batches.push(items.map((row) => row.candidateId));
+        const text = JSON.stringify({
+          items: items.map(({ candidateId }) => ({
+            candidateId,
+            relevance: 2,
+            categories: ['渠道'],
+            reason: '提供了零售渠道数据。',
+            suggestedMode: 'standard',
+          })),
+        });
+        return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
+      },
+    }),
+  };
   await task.execute(context);
   const edition = (await h.news.edition(date))!;
   assert.equal(edition.sections.fmcg!.items.length, 5);
-  assert.equal(edition.sections.fmcg!.items.filter(row => row.sourceId === 'worldpanel').length, 2);
+  assert.equal(edition.sections.fmcg!.items.filter((row) => row.sourceId === 'worldpanel').length, 2);
   assert.equal(edition.researchOverflow?.length, 2);
   const first = await h.pipeline.list();
-  assert.deepEqual(new Set(first.items.map(row => row.item.id)), new Set(reports.map(row => row.id)));
-  assert.deepEqual(batches, [edition.sections.fmcg!.items.map(row => `${date}/fmcg/${row.id}`)]);
-  assert.equal(first.items.filter(row => !row.screening && row.origin === 'research-overflow').length, 2);
+  assert.deepEqual(new Set(first.items.map((row) => row.item.id)), new Set(reports.map((row) => row.id)));
+  assert.deepEqual(batches, [edition.sections.fmcg!.items.map((row) => `${date}/fmcg/${row.id}`)]);
+  assert.equal(first.items.filter((row) => !row.screening && row.origin === 'research-overflow').length, 2);
   await task.execute(context);
   assert.deepEqual((await h.pipeline.list()).items, first.items);
   assert.equal(batches.length, 1);
@@ -156,7 +198,7 @@ test('自动准备和同源超限走同一收件箱，重复执行保留候选�
   assert.equal((await h.pipeline.list()).items.length, 1);
 });
 
-test('收件箱写入失败时保留已发布内容并可重试同一次来源结果', async t => {
+test('收件箱写入失败时保留已发布内容并可重试同一次来源结果', async (t) => {
   const h = await setup(t, initial());
   const first = (await h.check(0)).sections.fmcg!;
   const overflow = item(6, 'mintel');
@@ -172,6 +214,9 @@ test('收件箱写入失败时保留已发布内容并可重试同一次来源�
   const recovered = (await h.check(2)).sections.fmcg!;
   assert.equal(recovered.status, 'source_only');
   assert.deepEqual(recovered.items, first.items);
-  assert.deepEqual((await h.pipeline.list()).items.map(row => row.item), [overflow]);
+  assert.deepEqual(
+    (await h.pipeline.list()).items.map((row) => row.item),
+    [overflow],
+  );
   assert.equal(h.control.checks, 2);
 });

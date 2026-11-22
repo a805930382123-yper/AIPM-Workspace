@@ -13,7 +13,11 @@ export type RawMeetingOrigin = {
 
 export class SourcePolicyError extends Error {
   readonly code = 'MEETING_SOURCE_RESTRICTED';
-  constructor(message: string, public status = 403, public details?: unknown) {
+  constructor(
+    message: string,
+    public status = 403,
+    public details?: unknown,
+  ) {
     super(message);
     this.name = 'SourcePolicyError';
   }
@@ -22,13 +26,18 @@ export class SourcePolicyError extends Error {
 function exactOrigin(value: unknown): value is RawMeetingOrigin {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const item = value as Record<string, unknown>;
-  return Object.keys(item).length === 6
-    && item.kind === 'meeting'
-    && typeof item.meeting_id === 'string' && UUID_PATTERN.test(item.meeting_id)
-    && typeof item.import_id === 'string' && UUID_PATTERN.test(item.import_id)
-    && typeof item.original_sha256 === 'string' && /^[0-9a-f]{64}$/.test(item.original_sha256)
-    && CONFIDENTIALITY.includes(item.registered_confidentiality as Confidentiality)
-    && item.processing_policy === 'meeting_local_only';
+  return (
+    Object.keys(item).length === 6 &&
+    item.kind === 'meeting' &&
+    typeof item.meeting_id === 'string' &&
+    UUID_PATTERN.test(item.meeting_id) &&
+    typeof item.import_id === 'string' &&
+    UUID_PATTERN.test(item.import_id) &&
+    typeof item.original_sha256 === 'string' &&
+    /^[0-9a-f]{64}$/.test(item.original_sha256) &&
+    CONFIDENTIALITY.includes(item.registered_confidentiality as Confidentiality) &&
+    item.processing_policy === 'meeting_local_only'
+  );
 }
 
 export function meetingOrigin(record: unknown): RawMeetingOrigin | null {

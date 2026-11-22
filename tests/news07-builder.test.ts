@@ -1,7 +1,121 @@
-import {test} from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {readResearchSources} from '../services/news/research-sources.ts';
-import {normalizedUrl,normalizedTitle} from '../services/news/normalize.ts';
-test('历史排除不占详情预算，同标题失败后可补位',async()=>{const orig=globalThis.fetch, requests:string[]=[];const cards=[...Array.from({length:4},(_,i)=>({id:`old-${i}`,title:`中国快消历史${i}`})),{id:'bad',title:'中国快消同标题'},{id:'good',title:'中国快消同标题'},...Array.from({length:4},(_,i)=>({id:`new-${i}`,title:`中国快消新研究${i}`}))];globalThis.fetch=async input=>{const url=String(input);requests.push(url);if(url.includes('nielseniq.cn'))return new Response('',{status:503});if(url.endsWith('chinese-simplified'))return new Response(cards.map(c=>`<div class="blog-post-title"><div class="post-meta"><div class="small-text">November 3, 2026</div></div><a href="/insights/${c.id}">${c.title}</a></div>`).join(''),{headers:{'content-type':'text/html'}});if(url.endsWith('/bad'))return new Response('',{status:503});return new Response(`<div class="article w-richtext"><p>${'消费者研究显示快消销售额同比增长0.9%。'+'研究分析渠道结构和消费者购买行为。'.repeat(8)}</p></div>`,{headers:{'content-type':'text/html'}})};try{const x=await readResearchSources(new Date('2026-11-08T12:00:00Z'),{urls:new Set([normalizedUrl('https://worldpanelbynumerator.com/insights/old-0?utm_source=x')]),titles:new Set(cards.slice(1,4).map(c=>normalizedTitle(c.title)))});assert.equal(x.items.length,5);assert.ok(x.items.some(i=>i.url.endsWith('/good')));assert.ok(!requests.some(u=>/\/insights\/old-/u.test(u)));assert.equal(requests.filter(u=>u.includes('/insights/')&&!u.includes('nielseniq')).length,6);assert.ok(x.shortageReasons?.some(r=>r.includes('历史或重复')));}finally{globalThis.fetch=orig;}});
-test('详情预算仅在有未读合格候选时报告',async()=>{const orig=globalThis.fetch;try{for(const count of [8,9]){const requests:string[]=[];globalThis.fetch=async input=>{const url=String(input);requests.push(url);if(url.includes('nielseniq.cn'))return new Response('',{status:503});if(url.endsWith('chinese-simplified'))return new Response(Array.from({length:count},(_,i)=>`<div class="blog-post-title"><div class="post-meta"><div class="small-text">November 3, 2026</div></div><a href="/insights/item-${i}">中国快消研究${i}</a></div>`).join(''),{headers:{'content-type':'text/html'}});return new Response('',{status:503});};const x=await readResearchSources(new Date('2026-11-08T12:00:00Z'));assert.equal(requests.filter(u=>u.includes('/insights/item-')).length,8);assert.equal(x.shortageReasons?.some(r=>r.includes('Worldpanel')&&r.includes('详情读取预算')),count===9);}}finally{globalThis.fetch=orig;}});
-test('服务最终跨源去重记录不足原因',async()=>{const {mkdtemp,rm}=await import('node:fs/promises');const {tmpdir}=await import('node:os');const {join}=await import('node:path');const {NewsService}=await import('../services/news/service.ts');const root=await mkdtemp(join(tmpdir(),'news07-'));const now=new Date('2026-11-08T12:00:00Z');try{const items=Array.from({length:5},(_,i)=>({id:String(i),title:i===4?'消费研究0':`消费研究${i}`,sourceId:i===2?'third':i<3?'worldpanel':'niq',sourceName:'fixture',url:`https://example.com/${i}`,publishedAt:now.toISOString(),fetchedAt:now.toISOString(),excerpt:'食品零售研究显示，相关品类销量同比增长 6%。',evidenceKind:'article_excerpt' as const}));const svc=new NewsService({root,clock:()=>now,aiEnabled:false,providerFactory:async()=>undefined,readSources:async n=>({items:n==='fmcg'?items:[],sources:[{name:'fixture',checkedAt:now.toISOString(),status:'ok'}],shortageReasons:['合格候选不足。']})});await svc.ensure();let section;for(let i=0;i<100;i++){section=(await svc.today()).edition?.sections.fmcg;if(section?.status!=='running')break;await new Promise(r=>setTimeout(r,10));}assert.equal(section?.items.length,4);assert.ok(section?.shortageReasons?.some(r=>r.includes('重复')));}finally{await rm(root,{recursive:true,force:true});}});
+import { readResearchSources } from '../services/news/research-sources.ts';
+import { normalizedUrl, normalizedTitle } from '../services/news/normalize.ts';
+test('历史排除不占详情预算，同标题失败后可补位', async () => {
+  const orig = globalThis.fetch,
+    requests: string[] = [];
+  const cards = [
+    ...Array.from({ length: 4 }, (_, i) => ({ id: `old-${i}`, title: `中国快消历史${i}` })),
+    { id: 'bad', title: '中国快消同标题' },
+    { id: 'good', title: '中国快消同标题' },
+    ...Array.from({ length: 4 }, (_, i) => ({ id: `new-${i}`, title: `中国快消新研究${i}` })),
+  ];
+  globalThis.fetch = async (input) => {
+    const url = String(input);
+    requests.push(url);
+    if (url.includes('nielseniq.cn')) return new Response('', { status: 503 });
+    if (url.endsWith('chinese-simplified'))
+      return new Response(
+        cards
+          .map(
+            (c) =>
+              `<div class="blog-post-title"><div class="post-meta"><div class="small-text">November 3, 2026</div></div><a href="/insights/${c.id}">${c.title}</a></div>`,
+          )
+          .join(''),
+        { headers: { 'content-type': 'text/html' } },
+      );
+    if (url.endsWith('/bad')) return new Response('', { status: 503 });
+    return new Response(
+      `<div class="article w-richtext"><p>${'消费者研究显示快消销售额同比增长0.9%。' + '研究分析渠道结构和消费者购买行为。'.repeat(8)}</p></div>`,
+      { headers: { 'content-type': 'text/html' } },
+    );
+  };
+  try {
+    const x = await readResearchSources(new Date('2026-11-08T12:00:00Z'), {
+      urls: new Set([normalizedUrl('https://worldpanelbynumerator.com/insights/old-0?utm_source=x')]),
+      titles: new Set(cards.slice(1, 4).map((c) => normalizedTitle(c.title))),
+    });
+    assert.equal(x.items.length, 5);
+    assert.ok(x.items.some((i) => i.url.endsWith('/good')));
+    assert.ok(!requests.some((u) => /\/insights\/old-/u.test(u)));
+    assert.equal(requests.filter((u) => u.includes('/insights/') && !u.includes('nielseniq')).length, 6);
+    assert.ok(x.shortageReasons?.some((r) => r.includes('历史或重复')));
+  } finally {
+    globalThis.fetch = orig;
+  }
+});
+test('详情预算仅在有未读合格候选时报告', async () => {
+  const orig = globalThis.fetch;
+  try {
+    for (const count of [8, 9]) {
+      const requests: string[] = [];
+      globalThis.fetch = async (input) => {
+        const url = String(input);
+        requests.push(url);
+        if (url.includes('nielseniq.cn')) return new Response('', { status: 503 });
+        if (url.endsWith('chinese-simplified'))
+          return new Response(
+            Array.from(
+              { length: count },
+              (_, i) =>
+                `<div class="blog-post-title"><div class="post-meta"><div class="small-text">November 3, 2026</div></div><a href="/insights/item-${i}">中国快消研究${i}</a></div>`,
+            ).join(''),
+            { headers: { 'content-type': 'text/html' } },
+          );
+        return new Response('', { status: 503 });
+      };
+      const x = await readResearchSources(new Date('2026-11-08T12:00:00Z'));
+      assert.equal(requests.filter((u) => u.includes('/insights/item-')).length, 8);
+      assert.equal(
+        x.shortageReasons?.some((r) => r.includes('Worldpanel') && r.includes('详情读取预算')),
+        count === 9,
+      );
+    }
+  } finally {
+    globalThis.fetch = orig;
+  }
+});
+test('服务最终跨源去重记录不足原因', async () => {
+  const { mkdtemp, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { NewsService } = await import('../services/news/service.ts');
+  const root = await mkdtemp(join(tmpdir(), 'news07-'));
+  const now = new Date('2026-11-08T12:00:00Z');
+  try {
+    const items = Array.from({ length: 5 }, (_, i) => ({
+      id: String(i),
+      title: i === 4 ? '消费研究0' : `消费研究${i}`,
+      sourceId: i === 2 ? 'third' : i < 3 ? 'worldpanel' : 'niq',
+      sourceName: 'fixture',
+      url: `https://example.com/${i}`,
+      publishedAt: now.toISOString(),
+      fetchedAt: now.toISOString(),
+      excerpt: '食品零售研究显示，相关品类销量同比增长 6%。',
+      evidenceKind: 'article_excerpt' as const,
+    }));
+    const svc = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: false,
+      providerFactory: async () => undefined,
+      readSources: async (n) => ({
+        items: n === 'fmcg' ? items : [],
+        sources: [{ name: 'fixture', checkedAt: now.toISOString(), status: 'ok' }],
+        shortageReasons: ['合格候选不足。'],
+      }),
+    });
+    await svc.ensure();
+    let section;
+    for (let i = 0; i < 100; i++) {
+      section = (await svc.today()).edition?.sections.fmcg;
+      if (section?.status !== 'running') break;
+      await new Promise((r) => setTimeout(r, 10));
+    }
+    assert.equal(section?.items.length, 4);
+    assert.ok(section?.shortageReasons?.some((r) => r.includes('重复')));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

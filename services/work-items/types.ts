@@ -1,5 +1,5 @@
 export const workStatuses = ['triage', 'in_progress', 'waiting', 'retest', 'closed'] as const;
-export type WorkStatus = typeof workStatuses[number];
+export type WorkStatus = (typeof workStatuses)[number];
 export type WorkItemKind = 'customer_issue' | 'product_analysis';
 
 export type WorkAnalysis = {
@@ -45,7 +45,11 @@ export type WorkAnalysisRun = {
   status: 'running' | 'completed' | 'failed' | 'interrupted';
   provider: { name: string; model: string };
   outputVersion?: 2;
-  input: WorkAnalysis & { sources: WorkAnalysisSource[]; roundQuestion?: string; stageContext?: WorkAnalysisStageContext };
+  input: WorkAnalysis & {
+    sources: WorkAnalysisSource[];
+    roundQuestion?: string;
+    stageContext?: WorkAnalysisStageContext;
+  };
   sourceRawIds?: string[];
   output?: WorkAnalysisOutput | WorkAnalysisOutputV2;
   error?: { code: string; message: string };
@@ -67,7 +71,7 @@ export type WorkBasisReview = {
   provider: WorkAnalysisRun['provider'];
   startedAt: string;
 } & (
-  { status: 'running' }
+  | { status: 'running' }
   | { status: 'completed'; finishedAt: string; result: { checks: WorkBasisCheck[] } }
   | { status: 'failed'; finishedAt: string; error: { code: string; message: string } }
   | { status: 'interrupted'; error: { code: string; message: string } }
@@ -78,10 +82,11 @@ export type WorkAnalysisRunWithReview = WorkAnalysisRun & {
 };
 
 export type WorkAnalysisRunInput = { baseRevision: number; rawIds: string[] } & (
-  { outputVersion?: never; roundQuestion?: never; stageHistoryIndex?: never }
+  | { outputVersion?: never; roundQuestion?: never; stageHistoryIndex?: never }
   | { outputVersion: 2; roundQuestion?: string; stageHistoryIndex?: number }
 );
-export type WorkItemCreate = { kind?: 'customer_issue'; title: string; feedback: string }
+export type WorkItemCreate =
+  | { kind?: 'customer_issue'; title: string; feedback: string }
   | { kind: 'product_analysis'; title: string; goal: string };
 
 export type WorkHistoryInput =
@@ -111,12 +116,19 @@ export type WorkItem = {
   rawIds: string[];
   history: WorkHistory[];
   screenshots: WorkScreenshot[];
-} & ({ kind?: 'customer_issue'; feedback: string; analysis?: never }
-  | { kind: 'product_analysis'; analysis: WorkAnalysis; feedback?: never });
+} & (
+  | { kind?: 'customer_issue'; feedback: string; analysis?: never }
+  | { kind: 'product_analysis'; analysis: WorkAnalysis; feedback?: never }
+);
 
-export type WorkItemSummary = Pick<WorkItem, 'id' | 'revision' | 'title' | 'status' | 'followUpOn' | 'updatedAt'> & { kind: WorkItemKind };
+export type WorkItemSummary = Pick<WorkItem, 'id' | 'revision' | 'title' | 'status' | 'followUpOn' | 'updatedAt'> & {
+  kind: WorkItemKind;
+};
 
-export type WorkContextInput = Pick<WorkItem, 'customer' | 'project' | 'occurredAt' | 'waitingFor' | 'nextStep' | 'followUpOn'>;
+export type WorkContextInput = Pick<
+  WorkItem,
+  'customer' | 'project' | 'occurredAt' | 'waitingFor' | 'nextStep' | 'followUpOn'
+>;
 export type WorkItemUpdate = WorkContextInput & {
   baseRevision: number;
   status?: WorkStatus;

@@ -1,3 +1,140 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {JSDOM} from 'jsdom';import React,{act} from 'react';import {createRoot} from 'react-dom/client';
-test('跨期保存时另一日期在途状态不丢失，同期旧响应不覆盖',async()=>{const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:5173/',pretendToBeVisual:true});Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,Event:dom.window.Event,IS_REACT_ACT_ENVIRONMENT:true});const item=(id:string)=>({id,title:id,sourceId:'s',sourceName:'s',url:'https://example.com/'+id,publishedAt:'2026-11-01',fetchedAt:'2026-11-01T00:00:00Z',excerpt:id,evidenceKind:'article_excerpt'});const dates=['2026-11-08','2026-11-09'],resolvers:Record<string,(r:Response)=>void>={};let posted='';globalThis.fetch=async(input,init)=>{const url=String(input);if(url.endsWith('/today'))return Response.json({date:'2026-11-10',aiEnabled:false,edition:null,fallbacks:{},recentFmcg:dates.map((date,i)=>({date,item:item(String(i))}))});if(url.endsWith('/history'))return Response.json({items:[],errors:[]});if(url.endsWith('/saved-raws')){const date=url.split('/').at(-2)!;if(dates.includes(date))return new Promise<Response>(r=>{resolvers[date]=r});return Response.json({items:[]});}if(url.endsWith('/save-raw')&&init?.method==='POST'){posted=url;return Response.json({rawId:'a',status:'saved',created:true})}throw Error(url)};const {NewsPage}=await import('../app/pages/NewsPage.tsx');const root=createRoot(document.getElementById('root')!);try{await act(async()=>{root.render(React.createElement(NewsPage));await new Promise(r=>setTimeout(r,30))});const buttons=[...document.querySelectorAll('button')].filter(b=>b.textContent==='保存到 Raw');assert.equal(buttons.length,2);await act(async()=>{buttons[0].click();await new Promise(r=>setTimeout(r,10))});assert.match(posted,/2026-11-08/);await act(async()=>{resolvers[dates[0]](Response.json({items:[]}));resolvers[dates[1]](Response.json({items:[{section:'fmcg',itemId:'1',rawId:'b',status:'saved'}]}));await new Promise(r=>setTimeout(r,20))});assert.equal([...document.querySelectorAll('button')].filter(b=>b.textContent==='查看 Raw').length,2);}finally{await act(async()=>root.unmount());dom.window.close();}});
-test('快消已有五条但部分来源失败时仍提示覆盖不完整',async()=>{const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:5173/',pretendToBeVisual:true});Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,Event:dom.window.Event,IS_REACT_ACT_ENVIRONMENT:true});const date='2026-11-10',items=Array.from({length:5},(_,i)=>({id:String(i),title:'报告'+i,sourceId:'s',sourceName:'s',url:'https://example.com/'+i,publishedAt:'2026-11-01',fetchedAt:'2026-11-01T00:00:00Z',excerpt:'摘要',evidenceKind:'article_excerpt'}));globalThis.fetch=async input=>{const url=String(input);if(url.endsWith('/today'))return Response.json({date,aiEnabled:false,edition:{schemaVersion:1,date,updatedAt:'a',sections:{fmcg:{contentVersion:'research-v1',status:'source_only',attempt:1,startedAt:'',sources:[{name:'source',checkedAt:'',status:'failed'}],items}}},fallbacks:{},recentFmcg:[]});if(url.endsWith('/history')||url.endsWith('/saved-raws'))return Response.json({items:[],errors:[]});throw Error(url)};const {NewsPage}=await import('../app/pages/NewsPage.tsx');const root=createRoot(document.getElementById('root')!);try{await act(async()=>{root.render(React.createElement(NewsPage));await new Promise(r=>setTimeout(r,30))});assert.match(document.body.textContent!,/部分来源不可用（1 个失败）/);assert.match(document.body.textContent!,/合计 5\/5/);}finally{await act(async()=>root.unmount());dom.window.close();}});
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { JSDOM } from 'jsdom';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+test('跨期保存时另一日期在途状态不丢失，同期旧响应不覆盖', async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost:5173/', pretendToBeVisual: true });
+  Object.assign(globalThis, {
+    window: dom.window,
+    document: dom.window.document,
+    HTMLElement: dom.window.HTMLElement,
+    Event: dom.window.Event,
+    IS_REACT_ACT_ENVIRONMENT: true,
+  });
+  const item = (id: string) => ({
+    id,
+    title: id,
+    sourceId: 's',
+    sourceName: 's',
+    url: 'https://example.com/' + id,
+    publishedAt: '2026-11-01',
+    fetchedAt: '2026-11-01T00:00:00Z',
+    excerpt: id,
+    evidenceKind: 'article_excerpt',
+  });
+  const dates = ['2026-11-08', '2026-11-09'],
+    resolvers: Record<string, (r: Response) => void> = {};
+  let posted = '';
+  globalThis.fetch = async (input, init) => {
+    const url = String(input);
+    if (url.endsWith('/today'))
+      return Response.json({
+        date: '2026-11-10',
+        aiEnabled: false,
+        edition: null,
+        fallbacks: {},
+        recentFmcg: dates.map((date, i) => ({ date, item: item(String(i)) })),
+      });
+    if (url.endsWith('/history')) return Response.json({ items: [], errors: [] });
+    if (url.endsWith('/saved-raws')) {
+      const date = url.split('/').at(-2)!;
+      if (dates.includes(date))
+        return new Promise<Response>((r) => {
+          resolvers[date] = r;
+        });
+      return Response.json({ items: [] });
+    }
+    if (url.endsWith('/save-raw') && init?.method === 'POST') {
+      posted = url;
+      return Response.json({ rawId: 'a', status: 'saved', created: true });
+    }
+    throw Error(url);
+  };
+  const { NewsPage } = await import('../app/pages/NewsPage.tsx');
+  const root = createRoot(document.getElementById('root')!);
+  try {
+    await act(async () => {
+      root.render(React.createElement(NewsPage));
+      await new Promise((r) => setTimeout(r, 30));
+    });
+    const buttons = [...document.querySelectorAll('button')].filter((b) => b.textContent === '保存到 Raw');
+    assert.equal(buttons.length, 2);
+    await act(async () => {
+      buttons[0].click();
+      await new Promise((r) => setTimeout(r, 10));
+    });
+    assert.match(posted, /2026-11-08/);
+    await act(async () => {
+      resolvers[dates[0]](Response.json({ items: [] }));
+      resolvers[dates[1]](Response.json({ items: [{ section: 'fmcg', itemId: '1', rawId: 'b', status: 'saved' }] }));
+      await new Promise((r) => setTimeout(r, 20));
+    });
+    assert.equal([...document.querySelectorAll('button')].filter((b) => b.textContent === '查看 Raw').length, 2);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+  }
+});
+test('快消已有五条但部分来源失败时仍提示覆盖不完整', async () => {
+  const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost:5173/', pretendToBeVisual: true });
+  Object.assign(globalThis, {
+    window: dom.window,
+    document: dom.window.document,
+    HTMLElement: dom.window.HTMLElement,
+    Event: dom.window.Event,
+    IS_REACT_ACT_ENVIRONMENT: true,
+  });
+  const date = '2026-11-10',
+    items = Array.from({ length: 5 }, (_, i) => ({
+      id: String(i),
+      title: '报告' + i,
+      sourceId: 's',
+      sourceName: 's',
+      url: 'https://example.com/' + i,
+      publishedAt: '2026-11-01',
+      fetchedAt: '2026-11-01T00:00:00Z',
+      excerpt: '摘要',
+      evidenceKind: 'article_excerpt',
+    }));
+  globalThis.fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith('/today'))
+      return Response.json({
+        date,
+        aiEnabled: false,
+        edition: {
+          schemaVersion: 1,
+          date,
+          updatedAt: 'a',
+          sections: {
+            fmcg: {
+              contentVersion: 'research-v1',
+              status: 'source_only',
+              attempt: 1,
+              startedAt: '',
+              sources: [{ name: 'source', checkedAt: '', status: 'failed' }],
+              items,
+            },
+          },
+        },
+        fallbacks: {},
+        recentFmcg: [],
+      });
+    if (url.endsWith('/history') || url.endsWith('/saved-raws')) return Response.json({ items: [], errors: [] });
+    throw Error(url);
+  };
+  const { NewsPage } = await import('../app/pages/NewsPage.tsx');
+  const root = createRoot(document.getElementById('root')!);
+  try {
+    await act(async () => {
+      root.render(React.createElement(NewsPage));
+      await new Promise((r) => setTimeout(r, 30));
+    });
+    assert.match(document.body.textContent!, /部分来源不可用（1 个失败）/);
+    assert.match(document.body.textContent!, /合计 5\/5/);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+  }
+});

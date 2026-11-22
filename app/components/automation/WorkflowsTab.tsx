@@ -144,7 +144,7 @@ function TaskFacts({
             <button
               type="button"
               className="text-button"
-              onClick={event => onOpenRun(task.lastRun!.id, event.currentTarget)}
+              onClick={(event) => onOpenRun(task.lastRun!.id, event.currentTarget)}
             >
               {statusLabels[task.lastRun.status]} · {automationTime(task.lastRun.scheduledAt)}
             </button>
@@ -181,7 +181,7 @@ function TaskActions({
         type="button"
         className="primary-button"
         disabled={pending || !hasStatus || Boolean(task.lastRun && isActive(task.lastRun.status))}
-        onClick={event => onRunTask(task.type, event.currentTarget)}
+        onClick={(event) => onRunTask(task.type, event.currentTarget)}
       >
         立即运行
       </button>
@@ -224,14 +224,14 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
   } = props;
 
   const tasks = schedules?.items ?? [];
-  const byType = new Map(tasks.map(task => [task.type, task]));
+  const byType = new Map(tasks.map((task) => [task.type, task]));
   const newsTask = byType.get('news.daily');
   const lintTask = byType.get('wiki.lint');
   const inspectTask = byType.get('wiki.inspect');
   const remindersTask = byType.get('work.reminders');
   const weeklyTask = byType.get('review.weekly');
   const selfcheckTask = byType.get('system.selfcheck');
-  const extraTasks = tasks.filter(task => !knownTypes.has(task.type));
+  const extraTasks = tasks.filter((task) => !knownTypes.has(task.type));
 
   const lint = health?.lint;
   const inspection = health?.inspection;
@@ -286,11 +286,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           onRunTask={onRunTask}
           extra={
             <>
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => onOpenInbox('candidates', 'all')}
-              >
+              <button type="button" className="secondary-button" onClick={() => onOpenInbox('candidates', 'all')}>
                 前往收件箱
               </button>
               <button
@@ -312,7 +308,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
     const subTasks = [lintTask, inspectTask].filter((item): item is AutomationSchedule => Boolean(item));
     if (!subTasks.length) return null;
     const meta = workflowMeta['wiki.health'];
-    const enabledCount = subTasks.filter(item => item.enabled).length;
+    const enabledCount = subTasks.filter((item) => item.enabled).length;
     const openKnowledgeAction =
       onOpenInspection && inspection && inspection.pendingCount > 0
         ? () => onOpenInspection(inspection.inspectionId)
@@ -331,18 +327,13 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
             <Badges
               items={[
                 {
-                  label:
-                    enabledCount === subTasks.length
-                      ? '全部已启用'
-                      : enabledCount > 0
-                        ? '部分已启用'
-                        : '已停用',
+                  label: enabledCount === subTasks.length ? '全部已启用' : enabledCount > 0 ? '部分已启用' : '已停用',
                   tone: enabledCount > 0 ? 'ok' : 'muted',
                 },
                 { label: subTasks.length > 1 ? '双轨巡检' : '单轨巡检', tone: 'neutral' },
                 {
-                  label: subTasks.some(item => item.mayCallModel) ? '主动巡检可能调用模型' : '无需模型调用',
-                  tone: subTasks.some(item => item.mayCallModel) ? 'accent' : 'neutral',
+                  label: subTasks.some((item) => item.mayCallModel) ? '主动巡检可能调用模型' : '无需模型调用',
+                  tone: subTasks.some((item) => item.mayCallModel) ? 'accent' : 'neutral',
                 },
                 { label: meta.boundary, tone: 'safe' },
               ]}
@@ -366,13 +357,13 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           </p>
         )}
         {showHealth && !health && !healthError && <p role="status">正在读取巡检摘要…</p>}
-        {health?.issues.map(issue => (
+        {health?.issues.map((issue) => (
           <p key={issue.file} className="form-error" role="alert">
             {issueLabels[issue.reason]} · {issue.file}
           </p>
         ))}
         <div className="automation-subtasks">
-          {subTasks.map(subtask => {
+          {subTasks.map((subtask) => {
             const isLint = subtask.type === 'wiki.lint';
             const summaryText = isLint
               ? lint
@@ -458,11 +449,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           extra={
             showReminders && (
               <>
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={() => onOpenInbox('reminders')}
-                >
+                <button type="button" className="secondary-button" onClick={() => onOpenInbox('reminders')}>
                   前往提醒
                 </button>
                 <button
@@ -514,7 +501,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
             </p>
           )}
           {!weeklyList && !weeklyReadError && <p role="status">正在读取周报设置…</p>}
-          {weeklyList?.issues?.map(issue => (
+          {weeklyList?.issues?.map((issue) => (
             <p key={issue.file} className="form-error" role="alert">
               {issueLabels[issue.reason]} · {issue.file}
             </p>
@@ -526,9 +513,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
                   type="checkbox"
                   checked={weeklyList.settings.aiSummaryEnabled}
                   disabled={weeklyPending || !writeToken}
-                  onChange={event =>
-                    onToggleWeeklyAi(event.target.checked, weeklyList.settings.revision)
-                  }
+                  onChange={(event) => onToggleWeeklyAi(event.target.checked, weeklyList.settings.revision)}
                 />
                 启用自动 AI 周报总结
               </label>
@@ -546,12 +531,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           )}
           {(weeklyConflict || weeklyReadError) && (
             <div className="automation-actions">
-              <button
-                type="button"
-                className="text-button"
-                disabled={weeklyPending}
-                onClick={onReloadWeekly}
-              >
+              <button type="button" className="text-button" disabled={weeklyPending} onClick={onReloadWeekly}>
                 重新读取设置
               </button>
             </div>
@@ -565,11 +545,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
           onRunTask={onRunTask}
           extra={
             onOpenWeeklyReview && (
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => onOpenWeeklyReview(weeklyTargetKey)}
-              >
+              <button type="button" className="secondary-button" onClick={() => onOpenWeeklyReview(weeklyTargetKey)}>
                 {latestWeekly ? `查看最近周报（${latestWeekly.weekKey}）` : '前往自动周报'}
               </button>
             )
@@ -650,7 +626,7 @@ export function WorkflowsTab(props: WorkflowsTabProps) {
         </p>
       )}
       {!schedules && !schedulesError && <p role="status">正在读取任务计划…</p>}
-      {schedules?.issues?.map(issue => (
+      {schedules?.issues?.map((issue) => (
         <p key={issue.file} className="form-error" role="alert">
           {issueLabels[issue.reason]}：{issue.file}
         </p>

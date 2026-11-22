@@ -5,5 +5,8 @@ import './styles.css';
 import './raw.css';
 import './b04.css';
 
-createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
-
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);

@@ -11,7 +11,12 @@
 //   * The body is only ever checked with `trim()` for emptiness; the stored string is untouched.
 
 export type PlaceholderSpan = { name: string; start: number; end: number };
-export type MalformedSpan = { text: string; start: number; end: number; reason: 'empty' | 'braces' | 'newline' | 'unclosed' };
+export type MalformedSpan = {
+  text: string;
+  start: number;
+  end: number;
+  reason: 'empty' | 'braces' | 'newline' | 'unclosed';
+};
 export type PlaceholderScan = { variables: PlaceholderSpan[]; malformed: MalformedSpan[] };
 
 /**
@@ -23,7 +28,10 @@ export function scanPlaceholders(body: string): PlaceholderScan {
   const malformed: MalformedSpan[] = [];
   let index = 0;
   while (index < body.length - 1) {
-    if (body[index] !== '{' || body[index + 1] !== '{') { index += 1; continue; }
+    if (body[index] !== '{' || body[index + 1] !== '{') {
+      index += 1;
+      continue;
+    }
     const close = body.indexOf('}}', index + 2);
     if (close < 0) {
       malformed.push({ text: body.slice(index), start: index, end: body.length, reason: 'unclosed' });
@@ -33,8 +41,10 @@ export function scanPlaceholders(body: string): PlaceholderScan {
     const content = body.slice(index + 2, close);
     const name = content.trim();
     if (!name) malformed.push({ text: body.slice(index, end), start: index, end, reason: 'empty' });
-    else if (/[{}]/.test(content)) malformed.push({ text: body.slice(index, end), start: index, end, reason: 'braces' });
-    else if (/[\r\n]/.test(content)) malformed.push({ text: body.slice(index, end), start: index, end, reason: 'newline' });
+    else if (/[{}]/.test(content))
+      malformed.push({ text: body.slice(index, end), start: index, end, reason: 'braces' });
+    else if (/[\r\n]/.test(content))
+      malformed.push({ text: body.slice(index, end), start: index, end, reason: 'newline' });
     else variables.push({ name, start: index, end });
     index = end;
   }
@@ -68,8 +78,8 @@ export function isFilledValue(value: unknown): value is string {
  */
 export function renderTemplate(body: string, values: Record<string, string>): RenderResult {
   const spans = scanPlaceholders(body).variables;
-  const names = [...new Set(spans.map(span => span.name))];
-  const missingVariables = names.filter(name => !isFilledValue(values[name]));
+  const names = [...new Set(spans.map((span) => span.name))];
+  const missingVariables = names.filter((name) => !isFilledValue(values[name]));
   let rendered = '';
   let cursor = 0;
   for (const span of spans) {

@@ -1,3 +1,84 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {readAdditionalResearch} from '../services/news/additional-research.ts';
-test('统计正文量化且明确日期，PwC不可用不影响统计',async()=>{const orig=globalThis.fetch,requests:string[]=[];globalThis.fetch=async input=>{const url=String(input);requests.push(url);if(url.includes('pwccn'))return new Response('',{status:503});if(url.endsWith('/sj/zxfbhjd/'))return new Response('<li><a href="/sj/zxfbhjd/202611/t20261101_12345.html">社会消费品零售总额（含汽车）</a> 2026-11-01</li>',{headers:{'content-type':'text/html'}});if(url.includes('index_'))return new Response('<html></html>',{headers:{'content-type':'text/html'}});return new Response('<div class="trs_editor_view"><p>限额以上单位中，粮油食品类商品零售额同比增长5.1%。</p></div>',{headers:{'content-type':'text/html'}})};try{const r=await readAdditionalResearch(new Date('2026-11-12T04:00:00Z'),undefined,true);assert.equal(r.items.length,1);assert.match(r.items[0].excerpt,/粮油食品/);assert.equal(r.items[0].publishedAt,'2026-11-01');assert.equal(r.sources.find(x=>x.name==='PwC')?.status,'failed');assert.equal(requests.filter(x=>x.includes('stats.gov.cn')).length,5);}finally{globalThis.fetch=orig;}});
-test('合并选择单源两条、联合PDF去重并继续补位',async()=>{const {NewsService}=await import('../services/news/service.ts'),{mkdtemp,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),path=await import('node:path');const root=await mkdtemp(path.join(tmpdir(),'news09-')),now=new Date('2026-11-12T04:00:00Z');const items=Array.from({length:8},(_,i)=>({id:String(i),title:'报告'+i,sourceId:i<3?'a':i<5?'b':i<7?'c':'d',sourceName:'test',url:'https://example.com/'+i,publishedAt:'2026-11-01',fetchedAt:now.toISOString(),excerpt:'饮料零售研究显示，相关品类销量同比增长 6%。',evidenceKind:'article_excerpt' as const,...(i===3||i===5?{research:{kind:'报告',dataPeriod:null,pdfUrl:'https://example.com/shared.pdf'}}:{})}));try{const svc=new NewsService({root,clock:()=>now,aiEnabled:false,providerFactory:async()=>{throw Error('forbidden')},readSources:async n=>({items:n==='fmcg'?items:[],sources:[{name:'test',checkedAt:now.toISOString(),status:'ok'}]})});await svc.ensure();let part;for(let n=0;n<100;n++){part=(await svc.today()).edition?.sections.fmcg;if(part?.status!=='running')break;await new Promise(r=>setTimeout(r,10));}assert.equal(part?.items.length,5);assert.ok([...new Set(part!.items.map(x=>x.sourceId))].every(id=>part!.items.filter(x=>x.sourceId===id).length<=2));assert.equal(part!.items.filter(x=>x.research?.pdfUrl).length,1);}finally{await rm(root,{recursive:true,force:true});}});
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readAdditionalResearch } from '../services/news/additional-research.ts';
+test('统计正文量化且明确日期，PwC不可用不影响统计', async () => {
+  const orig = globalThis.fetch,
+    requests: string[] = [];
+  globalThis.fetch = async (input) => {
+    const url = String(input);
+    requests.push(url);
+    if (url.includes('pwccn')) return new Response('', { status: 503 });
+    if (url.endsWith('/sj/zxfbhjd/'))
+      return new Response(
+        '<li><a href="/sj/zxfbhjd/202611/t20261101_12345.html">社会消费品零售总额（含汽车）</a> 2026-11-01</li>',
+        { headers: { 'content-type': 'text/html' } },
+      );
+    if (url.includes('index_')) return new Response('<html></html>', { headers: { 'content-type': 'text/html' } });
+    return new Response(
+      '<div class="trs_editor_view"><p>限额以上单位中，粮油食品类商品零售额同比增长5.1%。</p></div>',
+      { headers: { 'content-type': 'text/html' } },
+    );
+  };
+  try {
+    const r = await readAdditionalResearch(new Date('2026-11-12T04:00:00Z'), undefined, true);
+    assert.equal(r.items.length, 1);
+    assert.match(r.items[0].excerpt, /粮油食品/);
+    assert.equal(r.items[0].publishedAt, '2026-11-01');
+    assert.equal(r.sources.find((x) => x.name === 'PwC')?.status, 'failed');
+    assert.equal(requests.filter((x) => x.includes('stats.gov.cn')).length, 5);
+  } finally {
+    globalThis.fetch = orig;
+  }
+});
+test('合并选择单源两条、联合PDF去重并继续补位', async () => {
+  const { NewsService } = await import('../services/news/service.ts'),
+    { mkdtemp, rm } = await import('node:fs/promises'),
+    { tmpdir } = await import('node:os'),
+    path = await import('node:path');
+  const root = await mkdtemp(path.join(tmpdir(), 'news09-')),
+    now = new Date('2026-11-12T04:00:00Z');
+  const items = Array.from({ length: 8 }, (_, i) => ({
+    id: String(i),
+    title: '报告' + i,
+    sourceId: i < 3 ? 'a' : i < 5 ? 'b' : i < 7 ? 'c' : 'd',
+    sourceName: 'test',
+    url: 'https://example.com/' + i,
+    publishedAt: '2026-11-01',
+    fetchedAt: now.toISOString(),
+    excerpt: '饮料零售研究显示，相关品类销量同比增长 6%。',
+    evidenceKind: 'article_excerpt' as const,
+    ...(i === 3 || i === 5
+      ? { research: { kind: '报告', dataPeriod: null, pdfUrl: 'https://example.com/shared.pdf' } }
+      : {}),
+  }));
+  try {
+    const svc = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: false,
+      providerFactory: async () => {
+        throw Error('forbidden');
+      },
+      readSources: async (n) => ({
+        items: n === 'fmcg' ? items : [],
+        sources: [{ name: 'test', checkedAt: now.toISOString(), status: 'ok' }],
+      }),
+    });
+    await svc.ensure();
+    let part;
+    for (let n = 0; n < 100; n++) {
+      part = (await svc.today()).edition?.sections.fmcg;
+      if (part?.status !== 'running') break;
+      await new Promise((r) => setTimeout(r, 10));
+    }
+    assert.equal(part?.items.length, 5);
+    assert.ok(
+      [...new Set(part!.items.map((x) => x.sourceId))].every(
+        (id) => part!.items.filter((x) => x.sourceId === id).length <= 2,
+      ),
+    );
+    assert.equal(part!.items.filter((x) => x.research?.pdfUrl).length, 1);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

@@ -7,25 +7,362 @@ import { NewsService } from '../services/news/service.ts';
 import { registerNewsRoutes } from '../server/news-api.ts';
 import type { NewsItem, NewsSectionName, SourceResult } from '../services/news/types.ts';
 
-const now=new Date('2026-11-07T04:00:00Z');
-const item=(id:string,date='2026-11-07T03:00:00Z'):NewsItem=>({id,title:id,sourceId:'test',sourceName:'test',url:`https://example.com/${id}`,publishedAt:date,fetchedAt:now.toISOString(),excerpt:'饮料零售研究显示，相关品类销量同比增长 6%。',evidenceKind:'article_excerpt'});
-const source=(items:NewsItem[]):SourceResult=>({items,sources:[{name:'test',checkedAt:now.toISOString(),status:items.length?'ok':'empty'}]});
-async function settle(s:NewsService){for(let i=0;i<100;i++){const v=await s.today();if(Object.values(v.edition?.sections||{}).every(x=>x.status!=='running'))return v;await new Promise(r=>setTimeout(r,10));}throw Error('timeout');}
-const temp=async()=>{const dir=path.join(process.cwd(),'node_modules/.cache/news01-check');await mkdir(dir,{recursive:true});return mkdtemp(path.join(dir,'test-'));};
+const now = new Date('2026-11-07T04:00:00Z');
+const item = (id: string, date = '2026-11-07T03:00:00Z'): NewsItem => ({
+  id,
+  title: id,
+  sourceId: 'test',
+  sourceName: 'test',
+  url: `https://example.com/${id}`,
+  publishedAt: date,
+  fetchedAt: now.toISOString(),
+  excerpt: '饮料零售研究显示，相关品类销量同比增长 6%。',
+  evidenceKind: 'article_excerpt',
+});
+const source = (items: NewsItem[]): SourceResult => ({
+  items,
+  sources: [{ name: 'test', checkedAt: now.toISOString(), status: items.length ? 'ok' : 'empty' }],
+});
+async function settle(s: NewsService) {
+  for (let i = 0; i < 100; i++) {
+    const v = await s.today();
+    if (Object.values(v.edition?.sections || {}).every((x) => x.status !== 'running')) return v;
+    await new Promise((r) => setTimeout(r, 10));
+  }
+  throw Error('timeout');
+}
+const temp = async () => {
+  const dir = path.join(process.cwd(), 'node_modules/.cache/news01-check');
+  await mkdir(dir, { recursive: true });
+  return mkdtemp(path.join(dir, 'test-'));
+};
 
-test('并发 ensure 合并结果、关闭 AI 不创建 provider，研究版历史去重与日期窗口',async()=>{const root=await temp();try{await mkdir(path.join(root,'state/news'),{recursive:true});await writeFile(path.join(root,'state/news/2026-11-06.json'),JSON.stringify({schemaVersion:1,date:'2026-11-06',updatedAt:now.toISOString(),sections:{fmcg:{contentVersion:'research-v1',status:'source_only',attempt:1,startedAt:now.toISOString(),sources:[],items:[item('duplicate')]}}}));let calls:NewsSectionName[]=[],factories=0;const s=new NewsService({root,clock:()=>now,aiEnabled:false,providerFactory:async()=>{factories++;return undefined},readSources:async n=>{calls.push(n);return source(n==='fmcg'?[item('duplicate'),item('new'),item('old','2025-10-01T00:00:00Z')]:[item('ai')])}});await Promise.all([s.ensure(),s.ensure(),s.ensure()]);const view=await settle(s);assert.deepEqual(calls.sort(),['ai','fmcg']);assert.equal(factories,0);assert.deepEqual(view.edition!.sections.fmcg!.items.map(x=>x.id),['new']);assert.equal(view.edition!.sections.ai!.status,'source_only');await s.ensure();assert.equal(calls.length,2);}finally{await rm(root,{recursive:true,force:true});}});
+test('并发 ensure 合并结果、关闭 AI 不创建 provider，研究版历史去重与日期窗口', async () => {
+  const root = await temp();
+  try {
+    await mkdir(path.join(root, 'state/news'), { recursive: true });
+    await writeFile(
+      path.join(root, 'state/news/2026-11-06.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        date: '2026-11-06',
+        updatedAt: now.toISOString(),
+        sections: {
+          fmcg: {
+            contentVersion: 'research-v1',
+            status: 'source_only',
+            attempt: 1,
+            startedAt: now.toISOString(),
+            sources: [],
+            items: [item('duplicate')],
+          },
+        },
+      }),
+    );
+    let calls: NewsSectionName[] = [],
+      factories = 0;
+    const s = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: false,
+      providerFactory: async () => {
+        factories++;
+        return undefined;
+      },
+      readSources: async (n) => {
+        calls.push(n);
+        return source(
+          n === 'fmcg' ? [item('duplicate'), item('new'), item('old', '2025-10-01T00:00:00Z')] : [item('ai')],
+        );
+      },
+    });
+    await Promise.all([s.ensure(), s.ensure(), s.ensure()]);
+    const view = await settle(s);
+    assert.deepEqual(calls.sort(), ['ai', 'fmcg']);
+    assert.equal(factories, 0);
+    assert.deepEqual(
+      view.edition!.sections.fmcg!.items.map((x) => x.id),
+      ['new'],
+    );
+    assert.equal(view.edition!.sections.ai!.status, 'source_only');
+    await s.ensure();
+    assert.equal(calls.length, 2);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-test('fake 分析严格引用、失败重试与中断不自动重发',async()=>{const root=await temp();try{let calls=0,models=0;const deps={root,clock:()=>now,aiEnabled:true,readSources:async(n:NewsSectionName)=>{calls++;return source([item(n)])},providerFactory:async()=>({name:'fake',model:'fake',complete:async()=>{models++;return {text:JSON.stringify({items:[{id:models===1?'unknown':'ai',fact:'事实',whyItMatters:'原因',possibleImpact:'影响'}]}),finishReason:'stop',bytes:100}}})};const s=new NewsService(deps);await s.ensure();const v=await settle(s);assert.equal(calls,2);assert.equal(models,1);assert.equal(v.edition!.sections.fmcg!.status,'source_only');assert.equal(v.edition!.sections.ai!.status,'failed');const failed='ai' as const;const other='fmcg' as const;const before=v.edition!.sections[other];await s.retry(failed,v.edition!.sections[failed]!.attempt);await settle(s);assert.equal((await s.today()).edition!.sections[other]!.attempt,before!.attempt);
- const file=path.join(root,'state/news/2026-11-07.json'),record=JSON.parse(await readFile(file,'utf8'));record.sections.fmcg.status='running';await writeFile(file,JSON.stringify(record));const restart=new NewsService(deps);const count=calls;assert.equal((await restart.today()).edition!.sections.fmcg!.status,'interrupted');await restart.ensure();assert.equal(calls,count);
- }finally{await rm(root,{recursive:true,force:true});}});
+test('fake 分析严格引用、失败重试与中断不自动重发', async () => {
+  const root = await temp();
+  try {
+    let calls = 0,
+      models = 0;
+    const deps = {
+      root,
+      clock: () => now,
+      aiEnabled: true,
+      readSources: async (n: NewsSectionName) => {
+        calls++;
+        return source([item(n)]);
+      },
+      providerFactory: async () => ({
+        name: 'fake',
+        model: 'fake',
+        complete: async () => {
+          models++;
+          return {
+            text: JSON.stringify({
+              items: [
+                { id: models === 1 ? 'unknown' : 'ai', fact: '事实', whyItMatters: '原因', possibleImpact: '影响' },
+              ],
+            }),
+            finishReason: 'stop',
+            bytes: 100,
+          };
+        },
+      }),
+    };
+    const s = new NewsService(deps);
+    await s.ensure();
+    const v = await settle(s);
+    assert.equal(calls, 2);
+    assert.equal(models, 1);
+    assert.equal(v.edition!.sections.fmcg!.status, 'source_only');
+    assert.equal(v.edition!.sections.ai!.status, 'failed');
+    const failed = 'ai' as const;
+    const other = 'fmcg' as const;
+    const before = v.edition!.sections[other];
+    await s.retry(failed, v.edition!.sections[failed]!.attempt);
+    await settle(s);
+    assert.equal((await s.today()).edition!.sections[other]!.attempt, before!.attempt);
+    const file = path.join(root, 'state/news/2026-11-07.json'),
+      record = JSON.parse(await readFile(file, 'utf8'));
+    record.sections.fmcg.status = 'running';
+    await writeFile(file, JSON.stringify(record));
+    const restart = new NewsService(deps);
+    const count = calls;
+    assert.equal((await restart.today()).edition!.sections.fmcg!.status, 'interrupted');
+    await restart.ensure();
+    assert.equal(calls, count);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-test('POST 门禁和日期/损坏保护',async()=>{const root=await temp();let calls=0;const s=new NewsService({root,clock:()=>now,aiEnabled:false,providerFactory:async()=>{calls++;return undefined},readSources:async()=>{calls++;return source([])}});const app=express();app.use(express.json());registerNewsRoutes(app,s);const server=app.listen(0,'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));try{const address=server.address();if(!address||typeof address==='string')throw Error('port');const base=`http://127.0.0.1:${address.port}`;const bad=await fetch(base+'/api/news/today/ensure',{method:'POST',headers:{'content-type':'application/json',origin:'null'},body:'{}'});assert.equal(bad.status,403);assert.equal(calls,0);assert.equal((await fetch(base+'/api/news/editions/2026-99-99')).status,400);await mkdir(path.join(root,'state/news'),{recursive:true});const file=path.join(root,'state/news/2026-11-07.json');await writeFile(file,'not json');const result=await fetch(base+'/api/news/today/ensure',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});assert.equal(result.status,500);assert.equal(await readFile(file,'utf8'),'not json');assert.equal(calls,0);}finally{await new Promise<void>(r=>server.close(()=>r()));await rm(root,{recursive:true,force:true});}});
+test('POST 门禁和日期/损坏保护', async () => {
+  const root = await temp();
+  let calls = 0;
+  const s = new NewsService({
+    root,
+    clock: () => now,
+    aiEnabled: false,
+    providerFactory: async () => {
+      calls++;
+      return undefined;
+    },
+    readSources: async () => {
+      calls++;
+      return source([]);
+    },
+  });
+  const app = express();
+  app.use(express.json());
+  registerNewsRoutes(app, s);
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise<void>((r) => server.once('listening', r));
+  try {
+    const address = server.address();
+    if (!address || typeof address === 'string') throw Error('port');
+    const base = `http://127.0.0.1:${address.port}`;
+    const bad = await fetch(base + '/api/news/today/ensure', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', origin: 'null' },
+      body: '{}',
+    });
+    assert.equal(bad.status, 403);
+    assert.equal(calls, 0);
+    assert.equal((await fetch(base + '/api/news/editions/2026-99-99')).status, 400);
+    await mkdir(path.join(root, 'state/news'), { recursive: true });
+    const file = path.join(root, 'state/news/2026-11-07.json');
+    await writeFile(file, 'not json');
+    const result = await fetch(base + '/api/news/today/ensure', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+    assert.equal(result.status, 500);
+    assert.equal(await readFile(file, 'utf8'), 'not json');
+    assert.equal(calls, 0);
+  } finally {
+    await new Promise<void>((r) => server.close(() => r()));
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-test('fake 错误与超限响应不保存为成功，超大记录不被覆盖',async()=>{for(const text of ['', '{', JSON.stringify({items:[{id:'unknown',fact:'x',whyItMatters:'y',possibleImpact:'z'}]}), 'x'.repeat(30001)]){const root=await temp();try{const s=new NewsService({root,clock:()=>now,aiEnabled:true,readSources:async n=>source([item(n)]),providerFactory:async()=>({name:'fake',model:'fake',complete:async()=>({text,finishReason:'stop',bytes:text.length})})});await s.ensure();const view=await settle(s);assert.equal(view.edition!.sections.ai!.status,'failed');assert.equal(view.edition!.sections.fmcg!.status,'source_only');}finally{await rm(root,{recursive:true,force:true});}}
-const root=await temp();try{await mkdir(path.join(root,'state/news'),{recursive:true});const file=path.join(root,'state/news/2026-11-07.json'),huge='x'.repeat(2*1024*1024+1);await writeFile(file,huge);const s=new NewsService({root,clock:()=>now,aiEnabled:false,readSources:async()=>source([]),providerFactory:async()=>undefined});await assert.rejects(s.ensure());assert.equal((await readFile(file,'utf8')).length,huge.length);}finally{await rm(root,{recursive:true,force:true});}});
+test('fake 错误与超限响应不保存为成功，超大记录不被覆盖', async () => {
+  for (const text of [
+    '',
+    '{',
+    JSON.stringify({ items: [{ id: 'unknown', fact: 'x', whyItMatters: 'y', possibleImpact: 'z' }] }),
+    'x'.repeat(30001),
+  ]) {
+    const root = await temp();
+    try {
+      const s = new NewsService({
+        root,
+        clock: () => now,
+        aiEnabled: true,
+        readSources: async (n) => source([item(n)]),
+        providerFactory: async () => ({
+          name: 'fake',
+          model: 'fake',
+          complete: async () => ({ text, finishReason: 'stop', bytes: text.length }),
+        }),
+      });
+      await s.ensure();
+      const view = await settle(s);
+      assert.equal(view.edition!.sections.ai!.status, 'failed');
+      assert.equal(view.edition!.sections.fmcg!.status, 'source_only');
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+  const root = await temp();
+  try {
+    await mkdir(path.join(root, 'state/news'), { recursive: true });
+    const file = path.join(root, 'state/news/2026-11-07.json'),
+      huge = 'x'.repeat(2 * 1024 * 1024 + 1);
+    await writeFile(file, huge);
+    const s = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: false,
+      readSources: async () => source([]),
+      providerFactory: async () => undefined,
+    });
+    await assert.rejects(s.ensure());
+    assert.equal((await readFile(file, 'utf8')).length, huge.length);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-test('fake 截断响应不能标记成功',async()=>{const root=await temp();try{const s=new NewsService({root,clock:()=>now,aiEnabled:true,readSources:async n=>source([item(n)]),providerFactory:async()=>({name:'fake',model:'fake',complete:async()=>({text:JSON.stringify({items:[{id:'ai',fact:'事实',whyItMatters:'原因',possibleImpact:'影响'}]}),finishReason:'length',bytes:100})})});await s.ensure();const v=await settle(s);assert.equal(v.edition!.sections.ai!.status,'failed');}finally{await rm(root,{recursive:true,force:true});}});
+test('fake 截断响应不能标记成功', async () => {
+  const root = await temp();
+  try {
+    const s = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: true,
+      readSources: async (n) => source([item(n)]),
+      providerFactory: async () => ({
+        name: 'fake',
+        model: 'fake',
+        complete: async () => ({
+          text: JSON.stringify({ items: [{ id: 'ai', fact: '事实', whyItMatters: '原因', possibleImpact: '影响' }] }),
+          finishReason: 'length',
+          bytes: 100,
+        }),
+      }),
+    });
+    await s.ensure();
+    const v = await settle(s);
+    assert.equal(v.edition!.sections.ai!.status, 'failed');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-test('中国研报优先去重，AI保留源顺序，两栏最多五条',async()=>{const root=await temp();try{const rows=[item('global-new','2026-11-07T03:50:00Z'),item('china-old','2026-11-07T02:00:00Z'),item('plain-zh','2026-11-07T03:40:00Z'),item('four'),item('five'),item('six')];rows.forEach((row,i)=>row.sourceId='source'+Math.floor(i/2));rows[0].title='全球消费趋势';rows[1].title='中国消费趋势';rows[2].title='消费趋势中文研究';const s=new NewsService({root,clock:()=>now,aiEnabled:false,providerFactory:async()=>undefined,readSources:async()=>source([...rows,rows[0]])});await s.ensure();const view=await settle(s);const f=view.edition!.sections.fmcg!.items,a=view.edition!.sections.ai!.items;assert.equal(f.length,5);assert.equal(a.length,5);assert.equal(f[0].id,'china-old');assert.equal(f[1].id,'global-new');assert.equal(a[0].id,'global-new');assert.deepEqual(a.map(x=>x.id),rows.slice(0,5).map(x=>x.id));assert.equal(new Set(f.map(x=>x.url)).size,5);}finally{await rm(root,{recursive:true,force:true});}});
+test('中国研报优先去重，AI保留源顺序，两栏最多五条', async () => {
+  const root = await temp();
+  try {
+    const rows = [
+      item('global-new', '2026-11-07T03:50:00Z'),
+      item('china-old', '2026-11-07T02:00:00Z'),
+      item('plain-zh', '2026-11-07T03:40:00Z'),
+      item('four'),
+      item('five'),
+      item('six'),
+    ];
+    rows.forEach((row, i) => (row.sourceId = 'source' + Math.floor(i / 2)));
+    rows[0].title = '全球消费趋势';
+    rows[1].title = '中国消费趋势';
+    rows[2].title = '消费趋势中文研究';
+    const s = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: false,
+      providerFactory: async () => undefined,
+      readSources: async () => source([...rows, rows[0]]),
+    });
+    await s.ensure();
+    const view = await settle(s);
+    const f = view.edition!.sections.fmcg!.items,
+      a = view.edition!.sections.ai!.items;
+    assert.equal(f.length, 5);
+    assert.equal(a.length, 5);
+    assert.equal(f[0].id, 'china-old');
+    assert.equal(f[1].id, 'global-new');
+    assert.equal(a[0].id, 'global-new');
+    assert.deepEqual(
+      a.map((x) => x.id),
+      rows.slice(0, 5).map((x) => x.id),
+    );
+    assert.equal(new Set(f.map((x) => x.url)).size, 5);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-test('AIHOT直传前五条：融资、旧日期、无日期和重复不作本地过滤',async()=>{const root=await temp();const orig=globalThis.fetch;try{const {readNewsSources}=await import('../services/news/sources.ts');const rows=Array.from({length:6},(_,i)=>({id:String(i),title:i===0?'AI公司融资消息':'来源消息'+i,summary:'来源摘要',publishedAt:i===1?'2020-01-01T00:00:00Z':i===2?null:now.toISOString(),links:{original:'https://example.com/'+(i===3?0:i)}}));rows[3].title=rows[0].title;globalThis.fetch=async input=>{assert.match(String(input),/mode=selected&window=24h&limit=5/u);return new Response(JSON.stringify({items:rows}),{headers:{'content-type':'application/json'}})};await mkdir(path.join(root,'state/news'),{recursive:true});await writeFile(path.join(root,'state/news/2026-11-06.json'),JSON.stringify({schemaVersion:1,date:'2026-11-06',updatedAt:now.toISOString(),sections:{ai:{status:'source_only',attempt:1,startedAt:now.toISOString(),sources:[],items:[item('0')]}}}));const s=new NewsService({root,clock:()=>now,aiEnabled:false,providerFactory:async()=>undefined,readSources:async n=>n==='ai'?readNewsSources(n,now,undefined,new Set(['aihot'])):source([])});await s.ensure();const v=await settle(s),a=v.edition!.sections.ai!.items;assert.equal(a.length,5);assert.deepEqual(a.map(x=>x.title),rows.slice(0,5).map(x=>x.title));assert.equal(a[1].publishedAt,rows[1].publishedAt);assert.equal(a[2].publishedAt,null);assert.equal(a[0].url,a[3].url);}finally{globalThis.fetch=orig;await rm(root,{recursive:true,force:true});}});
+test('AIHOT直传前五条：融资、旧日期、无日期和重复不作本地过滤', async () => {
+  const root = await temp();
+  const orig = globalThis.fetch;
+  try {
+    const { readNewsSources } = await import('../services/news/sources.ts');
+    const rows = Array.from({ length: 6 }, (_, i) => ({
+      id: String(i),
+      title: i === 0 ? 'AI公司融资消息' : '来源消息' + i,
+      summary: '来源摘要',
+      publishedAt: i === 1 ? '2020-01-01T00:00:00Z' : i === 2 ? null : now.toISOString(),
+      links: { original: 'https://example.com/' + (i === 3 ? 0 : i) },
+    }));
+    rows[3].title = rows[0].title;
+    globalThis.fetch = async (input) => {
+      assert.match(String(input), /mode=selected&window=24h&limit=5/u);
+      return new Response(JSON.stringify({ items: rows }), { headers: { 'content-type': 'application/json' } });
+    };
+    await mkdir(path.join(root, 'state/news'), { recursive: true });
+    await writeFile(
+      path.join(root, 'state/news/2026-11-06.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        date: '2026-11-06',
+        updatedAt: now.toISOString(),
+        sections: {
+          ai: { status: 'source_only', attempt: 1, startedAt: now.toISOString(), sources: [], items: [item('0')] },
+        },
+      }),
+    );
+    const s = new NewsService({
+      root,
+      clock: () => now,
+      aiEnabled: false,
+      providerFactory: async () => undefined,
+      readSources: async (n) => (n === 'ai' ? readNewsSources(n, now, undefined, new Set(['aihot'])) : source([])),
+    });
+    await s.ensure();
+    const v = await settle(s),
+      a = v.edition!.sections.ai!.items;
+    assert.equal(a.length, 5);
+    assert.deepEqual(
+      a.map((x) => x.title),
+      rows.slice(0, 5).map((x) => x.title),
+    );
+    assert.equal(a[1].publishedAt, rows[1].publishedAt);
+    assert.equal(a[2].publishedAt, null);
+    assert.equal(a[0].url, a[3].url);
+  } finally {
+    globalThis.fetch = orig;
+    await rm(root, { recursive: true, force: true });
+  }
+});

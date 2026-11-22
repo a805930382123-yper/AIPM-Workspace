@@ -35,19 +35,27 @@ export function registerWorkItemRoutes(app: Express, store: WorkItemStore, analy
   app.post('/api/work-items/:id/analysis-runs/:runId/basis-review', async (req, res) => {
     res.json(await analysis.basisReviews.start(req.params.id, req.params.runId, req.body));
   });
-  app.post('/api/work-items/:id/screenshots', (req, res, next) => {
-    upload(req, res, error => {
-      if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
-        return next(new StorageError('WORK_SCREENSHOT_TOO_LARGE', '截图不能超过 5 MiB。', 413));
-      }
-      next(error);
-    });
-  }, async (req, res) => {
-    if (!req.file) throw new StorageError('INVALID_WORK_SCREENSHOT', '请选择一张 PNG 或 JPEG 截图。', 400);
-    const revision = req.body.baseRevision;
-    const baseRevision = typeof revision === 'string' && /^\d+$/.test(revision) ? Number(revision) : NaN;
-    res.status(201).json(await store.addScreenshot(req.params.id, baseRevision, req.body.note, req.file.mimetype, req.file.buffer));
-  });
+  app.post(
+    '/api/work-items/:id/screenshots',
+    (req, res, next) => {
+      upload(req, res, (error) => {
+        if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+          return next(new StorageError('WORK_SCREENSHOT_TOO_LARGE', '截图不能超过 5 MiB。', 413));
+        }
+        next(error);
+      });
+    },
+    async (req, res) => {
+      if (!req.file) throw new StorageError('INVALID_WORK_SCREENSHOT', '请选择一张 PNG 或 JPEG 截图。', 400);
+      const revision = req.body.baseRevision;
+      const baseRevision = typeof revision === 'string' && /^\d+$/.test(revision) ? Number(revision) : NaN;
+      res
+        .status(201)
+        .json(
+          await store.addScreenshot(req.params.id, baseRevision, req.body.note, req.file.mimetype, req.file.buffer),
+        );
+    },
+  );
   app.get('/api/work-items/:id/screenshots/:screenshotId', async (req, res) => {
     const { type, bytes } = await store.getScreenshot(req.params.id, req.params.screenshotId);
     res.set({ 'Content-Type': type, 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-store' }).send(bytes);

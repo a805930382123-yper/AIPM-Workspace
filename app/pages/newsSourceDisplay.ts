@@ -4,24 +4,57 @@ export type Platform = 'youtube' | 'x' | 'github' | 'blog';
 
 type LogoIdentity = { icon: keyof typeof files; portrait?: boolean };
 type PlatformChannel = { name: string; names: string[]; platform: Platform; homepage: string };
-type SourceDisplay = LogoIdentity & (
-  { kind: 'single'; names: string[] }
-  | { kind: 'persona_group'; name: string; channels: Record<string, PlatformChannel> }
-);
+type SourceDisplay = LogoIdentity &
+  (
+    | { kind: 'single'; names: string[] }
+    | { kind: 'persona_group'; name: string; channels: Record<string, PlatformChannel> }
+  );
 
 const sourceDisplays: Record<string, SourceDisplay> = {
   aihot: { kind: 'single', icon: 'aihot', names: ['AIHOT'] },
   'openai-cookbook': { kind: 'single', icon: 'openai', names: ['OpenAI Cookbook', 'OpenAI'] },
   'anthropic-engineering': { kind: 'single', icon: 'anthropic', names: ['Anthropic Engineering', 'Anthropic'] },
-  'huggingface-blog': { kind: 'single', icon: 'huggingface', names: ['Hugging Face 官方博客', 'Hugging Face Blog', 'Hugging Face'] },
-  'simon-prompt-engineering': { kind: 'single', icon: 'simonw', names: ['Simon Willison 提示词专题', 'Simon Willison', 'simonw'], portrait: true },
+  'huggingface-blog': {
+    kind: 'single',
+    icon: 'huggingface',
+    names: ['Hugging Face 官方博客', 'Hugging Face Blog', 'Hugging Face'],
+  },
+  'simon-prompt-engineering': {
+    kind: 'single',
+    icon: 'simonw',
+    names: ['Simon Willison 提示词专题', 'Simon Willison', 'simonw'],
+    portrait: true,
+  },
   karpathy: {
-    kind: 'persona_group', name: 'Andrej Karpathy', icon: 'karpathy', portrait: true,
+    kind: 'persona_group',
+    name: 'Andrej Karpathy',
+    icon: 'karpathy',
+    portrait: true,
     channels: {
-      'karpathy-youtube': { name: 'YouTube', names: ['Karpathy · YouTube'], platform: 'youtube', homepage: 'https://www.youtube.com/channel/UCXUPKJO5MZQN11PqgIvyuvQ' },
-      'karpathy-x': { name: 'X', names: ['Karpathy · X 公开帖', 'Karpathy X'], platform: 'x', homepage: 'https://x.com/karpathy' },
-      'karpathy-github': { name: 'GitHub', names: ['Karpathy · GitHub'], platform: 'github', homepage: 'https://github.com/karpathy?tab=repositories' },
-      'karpathy-blog': { name: 'Bear Blog', names: ['Karpathy · Bear Blog', 'Karpathy Blog'], platform: 'blog', homepage: 'https://karpathy.bearblog.dev/blog/' },
+      'karpathy-youtube': {
+        name: 'YouTube',
+        names: ['Karpathy · YouTube'],
+        platform: 'youtube',
+        homepage: 'https://www.youtube.com/channel/UCXUPKJO5MZQN11PqgIvyuvQ',
+      },
+      'karpathy-x': {
+        name: 'X',
+        names: ['Karpathy · X 公开帖', 'Karpathy X'],
+        platform: 'x',
+        homepage: 'https://x.com/karpathy',
+      },
+      'karpathy-github': {
+        name: 'GitHub',
+        names: ['Karpathy · GitHub'],
+        platform: 'github',
+        homepage: 'https://github.com/karpathy?tab=repositories',
+      },
+      'karpathy-blog': {
+        name: 'Bear Blog',
+        names: ['Karpathy · Bear Blog', 'Karpathy Blog'],
+        platform: 'blog',
+        homepage: 'https://karpathy.bearblog.dev/blog/',
+      },
     },
   },
   worldpanel: { kind: 'single', icon: 'worldpanel', names: ['Worldpanel by Numerator', 'Worldpanel'] },
@@ -32,9 +65,12 @@ const sourceDisplays: Record<string, SourceDisplay> = {
   mintel: { kind: 'single', icon: 'mintel', names: ['Mintel', '英敏特'] },
 };
 
-export const newsSourceIdentities = new Map<string, LogoIdentity & { names: string[] } & (
-  { channel: PlatformChannel; persona: { id: string; name: string } } | { channel?: undefined; persona?: undefined }
-)>();
+export const newsSourceIdentities = new Map<
+  string,
+  LogoIdentity & { names: string[] } & (
+      { channel: PlatformChannel; persona: { id: string; name: string } } | { channel?: undefined; persona?: undefined }
+    )
+>();
 
 for (const [id, display] of Object.entries(sourceDisplays)) {
   if (display.kind === 'single') {

@@ -2,7 +2,12 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { LlmError, type LlmCompletion, type LlmProvider } from '../llm/provider.ts';
 import type { AutomationUsage } from './types.ts';
 
-type AutomationContext = { runId: string; usage: AutomationUsage; save?: () => Promise<unknown>; countSource?: () => Promise<unknown> };
+type AutomationContext = {
+  runId: string;
+  usage: AutomationUsage;
+  save?: () => Promise<unknown>;
+  countSource?: () => Promise<unknown>;
+};
 const context = new AsyncLocalStorage<AutomationContext>();
 
 export function runInAutomationContext<T>(value: AutomationContext, execute: () => T): T {
@@ -15,7 +20,10 @@ export function getAutomationContext(): AutomationContext | undefined {
 
 export function assertFormalWriteAllowed(): void {
   if (getAutomationContext()) {
-    throw Object.assign(new Error('自动化任务不能写入正式 Wiki 或 Prompt。'), { code: 'AUTOMATION_FORMAL_WRITE_FORBIDDEN', status: 403 });
+    throw Object.assign(new Error('自动化任务不能写入正式 Wiki 或 Prompt。'), {
+      code: 'AUTOMATION_FORMAL_WRITE_FORBIDDEN',
+      status: 403,
+    });
   }
 }
 
@@ -27,7 +35,10 @@ export async function fetchNewsSource(...args: Parameters<typeof fetch>): Return
 export function meterAutomationProvider(provider: LlmProvider): LlmProvider {
   const { name, model, cacheIdentity, secrets } = provider;
   return {
-    name, model, cacheIdentity, secrets,
+    name,
+    model,
+    cacheIdentity,
+    secrets,
     async complete(request) {
       const run = getAutomationContext();
       const usage = run?.usage;
@@ -43,7 +54,8 @@ export function meterAutomationProvider(provider: LlmProvider): LlmProvider {
         completed = true;
         return result;
       } catch (error) {
-        if (error instanceof LlmError) tokens = (error.details as { usage?: LlmCompletion['usage'] } | undefined)?.usage;
+        if (error instanceof LlmError)
+          tokens = (error.details as { usage?: LlmCompletion['usage'] } | undefined)?.usage;
         throw error;
       } finally {
         const input = tokens?.promptTokens;

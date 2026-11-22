@@ -1,8 +1,70 @@
-export type ScenarioGuidance = { title:string; input:string; output:string; constraints:string; fields:Record<'role'|'goal'|'context'|'input'|'tasks'|'constraints'|'output',string> };
-const role='填写实际需要的专业角色；未确定时保留待补充。';
-export const scenarioGuidance:Record<string,ScenarioGuidance> = {
- customer_interview:{title:'经销商访谈准备',input:'对象岗位、渠道和区域，访谈目标，已知订货补货流程、已有资料和待核假设。',output:'按订货、补货和异常处理组织开放问题与追问，形成分主题提纲和待核实清单。',constraints:'未访谈内容只作问题或假设；缺对象或背景写待用户补充。',fields:{role,goal:'说明访谈目标和想核实的问题。',context:'写明岗位、渠道、区域及已知订货补货流程；未知待补充。',input:'列出已有资料和待核假设。',tasks:'按订货、补货、异常处理组织开放问题及追问。',constraints:'未访谈内容不得写成受访者结论；缺失背景待补充。',output:'分主题访谈提纲和待核实清单。'}},
- business_process:{title:'门店补货流程梳理',input:'门店和渠道、参与角色、触发条件、现有步骤、数据与系统边界及异常样例。',output:'梳理步骤、输入输出、责任角色和异常分支，形成流程列表与待确认责任/接口。',constraints:'区分已提供流程与改进建议，不补造未知负责人或系统能力。',fields:{role,goal:'说明要梳理的补货流程及目标。',context:'写明门店/渠道、角色、触发条件和已知现有步骤。',input:'提供数据、系统边界与异常样例；缺失内容待确认。',tasks:'梳理步骤、输入输出、责任角色和异常分支。',constraints:'区分已有流程和改进建议，不补造负责人或系统能力。',output:'流程列表及待确认责任与接口。'}},
- requirements:{title:'业务问题转 AI 需求访谈',input:'业务问题、目标用户、现有流程、影响、数据来源、约束和成功标准。',output:'围绕问题、用户、流程、数据及验证追问，形成需求提纲、边界和验证问题。',constraints:'AI 仅为候选方案；不虚构可行性、上线状态或收益，缺指标与证据标待确认。',fields:{role,goal:'说明业务问题、目标用户和预期验证目标。',context:'记录现有流程、影响及已有约束。',input:'提供数据来源、成功标准；缺指标或证据待确认。',tasks:'从问题、用户、流程、数据和验证逐项追问。',constraints:'AI 仅为候选方案，不虚构可行性、上线状态或收益。',output:'需求访谈提纲、边界与验证问题。'}},
- industry_learning:{title:'材料阅读与问题整理',input:'材料范围和来源、阅读目标、已有背景、希望回答的问题及证据要求。',output:'摘要核心观点，整理关系与问题，形成要点、出处线索、疑点和待确认问题。',constraints:'区分原文事实、整理和推断；没有原文或定位不得伪造引用，不补造缺页或图片。',fields:{role,goal:'说明阅读目标和希望回答的问题。',context:'提供材料范围、来源和已有背景。',input:'列出材料与证据要求；缺失材料待确认。',tasks:'摘要核心观点，整理关系和问题。',constraints:'区分原文事实、整理、推断；不伪造引用或补造缺页、图片。',output:'要点、出处线索、疑点及待确认问题。'}}
+export type ScenarioGuidance = {
+  title: string;
+  input: string;
+  output: string;
+  constraints: string;
+  fields: Record<'role' | 'goal' | 'context' | 'input' | 'tasks' | 'constraints' | 'output', string>;
+};
+const role = '填写实际需要的专业角色；未确定时保留待补充。';
+export const scenarioGuidance: Record<string, ScenarioGuidance> = {
+  customer_interview: {
+    title: '经销商访谈准备',
+    input: '对象岗位、渠道和区域，访谈目标，已知订货补货流程、已有资料和待核假设。',
+    output: '按订货、补货和异常处理组织开放问题与追问，形成分主题提纲和待核实清单。',
+    constraints: '未访谈内容只作问题或假设；缺对象或背景写待用户补充。',
+    fields: {
+      role,
+      goal: '说明访谈目标和想核实的问题。',
+      context: '写明岗位、渠道、区域及已知订货补货流程；未知待补充。',
+      input: '列出已有资料和待核假设。',
+      tasks: '按订货、补货、异常处理组织开放问题及追问。',
+      constraints: '未访谈内容不得写成受访者结论；缺失背景待补充。',
+      output: '分主题访谈提纲和待核实清单。',
+    },
+  },
+  business_process: {
+    title: '门店补货流程梳理',
+    input: '门店和渠道、参与角色、触发条件、现有步骤、数据与系统边界及异常样例。',
+    output: '梳理步骤、输入输出、责任角色和异常分支，形成流程列表与待确认责任/接口。',
+    constraints: '区分已提供流程与改进建议，不补造未知负责人或系统能力。',
+    fields: {
+      role,
+      goal: '说明要梳理的补货流程及目标。',
+      context: '写明门店/渠道、角色、触发条件和已知现有步骤。',
+      input: '提供数据、系统边界与异常样例；缺失内容待确认。',
+      tasks: '梳理步骤、输入输出、责任角色和异常分支。',
+      constraints: '区分已有流程和改进建议，不补造负责人或系统能力。',
+      output: '流程列表及待确认责任与接口。',
+    },
+  },
+  requirements: {
+    title: '业务问题转 AI 需求访谈',
+    input: '业务问题、目标用户、现有流程、影响、数据来源、约束和成功标准。',
+    output: '围绕问题、用户、流程、数据及验证追问，形成需求提纲、边界和验证问题。',
+    constraints: 'AI 仅为候选方案；不虚构可行性、上线状态或收益，缺指标与证据标待确认。',
+    fields: {
+      role,
+      goal: '说明业务问题、目标用户和预期验证目标。',
+      context: '记录现有流程、影响及已有约束。',
+      input: '提供数据来源、成功标准；缺指标或证据待确认。',
+      tasks: '从问题、用户、流程、数据和验证逐项追问。',
+      constraints: 'AI 仅为候选方案，不虚构可行性、上线状态或收益。',
+      output: '需求访谈提纲、边界与验证问题。',
+    },
+  },
+  industry_learning: {
+    title: '材料阅读与问题整理',
+    input: '材料范围和来源、阅读目标、已有背景、希望回答的问题及证据要求。',
+    output: '摘要核心观点，整理关系与问题，形成要点、出处线索、疑点和待确认问题。',
+    constraints: '区分原文事实、整理和推断；没有原文或定位不得伪造引用，不补造缺页或图片。',
+    fields: {
+      role,
+      goal: '说明阅读目标和希望回答的问题。',
+      context: '提供材料范围、来源和已有背景。',
+      input: '列出材料与证据要求；缺失材料待确认。',
+      tasks: '摘要核心观点，整理关系和问题。',
+      constraints: '区分原文事实、整理、推断；不伪造引用或补造缺页、图片。',
+      output: '要点、出处线索、疑点及待确认问题。',
+    },
+  },
 };

@@ -4,66 +4,1035 @@ import { ApiError, api } from '../api';
 import '../prompt.css';
 import { scenarioGuidance } from '../prompt-scenario-guidance';
 
-type Brief = { taskName:string; taskType:string; role:string; goal:string; context:string; input:string; tasks:string; constraints:string; output:string };
-type Candidate = { id:string; title:string; type:string; knowledgeStatus:string; selected:boolean };
-type Check = { id:string; label:string; status:'present'|'missing'; evidence:string };
-type Improvement = { dimensionId:string; issue:string; action:string };
-type DraftResult = { draftId:string; preview:PromptInput; provider?:{name:string;model:string}|null; stage?:string };
-type Recoverable={id:string;kind:string;stage:string;title:string;createdAt:string};
-const variablesIn=(body:string)=>[...new Set([...body.matchAll(/\{\{([^{}\r\n]+)\}\}/gu)].map(match=>match[1].trim()).filter(Boolean))];
-const fields: Array<[keyof Brief,string]> = [['role','角色'],['goal','目标'],['context','业务背景'],['input','输入资料'],['tasks','执行步骤'],['constraints','约束条件'],['output','输出格式']];
-const uuid = () => globalThis.crypto?.randomUUID?.() ?? 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
-function message(error:unknown) { if(error instanceof ApiError){const d=error.details&&typeof error.details==='object'?error.details as {stage?:unknown;category?:unknown;requestId?:unknown;nextAction?:unknown;retryable?:unknown;preserved?:unknown}:{};const actions:Record<string,string>={retry_stage:'重试当前阶段',retry_rewrite:'仅重试优化重写',rerun_check:'重新检查 Prompt',review_input:'检查输入内容',check_configuration:'检查连接配置',inspect_or_restore:'检查原文件或从备份恢复',review_preserved_result:'检查已保留结果',remove_secret:'移除凭证后重试'};const kept:Record<string,string>={originalBody:'原文',checks:'九维检查',improvements:'改进点'};const labels=[Array.isArray(d.preserved)?'已保留 '+d.preserved.filter((x):x is string=>typeof x==='string').map(x=>kept[x]??x).join('、'):'',typeof d.stage==='string'?`阶段 ${d.stage}`:'',typeof d.category==='string'?`类别 ${d.category}`:'',typeof d.requestId==='string'?`请求 ${d.requestId}`:'',typeof d.nextAction==='string'?`建议 ${actions[d.nextAction]??d.nextAction}`:'',typeof d.retryable==='boolean'?(d.retryable?'可重试':'不可重试'):''].filter(Boolean);return labels.length?`${error.message}（${labels.join(' · ')}）`:error.message;}return error instanceof Error?error.message:'请求失败，请重试。'; }
+type Brief = {
+  taskName: string;
+  taskType: string;
+  role: string;
+  goal: string;
+  context: string;
+  input: string;
+  tasks: string;
+  constraints: string;
+  output: string;
+};
+type Candidate = { id: string; title: string; type: string; knowledgeStatus: string; selected: boolean };
+type Check = { id: string; label: string; status: 'present' | 'missing'; evidence: string };
+type Improvement = { dimensionId: string; issue: string; action: string };
+type DraftResult = {
+  draftId: string;
+  preview: PromptInput;
+  provider?: { name: string; model: string } | null;
+  stage?: string;
+};
+type Recoverable = { id: string; kind: string; stage: string; title: string; createdAt: string };
+const variablesIn = (body: string) => [
+  ...new Set([...body.matchAll(/\{\{([^{}\r\n]+)\}\}/gu)].map((match) => match[1].trim()).filter(Boolean)),
+];
+const fields: Array<[keyof Brief, string]> = [
+  ['role', '角色'],
+  ['goal', '目标'],
+  ['context', '业务背景'],
+  ['input', '输入资料'],
+  ['tasks', '执行步骤'],
+  ['constraints', '约束条件'],
+  ['output', '输出格式'],
+];
+const uuid = () =>
+  globalThis.crypto?.randomUUID?.() ??
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 3) | 8).toString(16);
+  });
+function message(error: unknown) {
+  if (error instanceof ApiError) {
+    const d =
+      error.details && typeof error.details === 'object'
+        ? (error.details as {
+            stage?: unknown;
+            category?: unknown;
+            requestId?: unknown;
+            nextAction?: unknown;
+            retryable?: unknown;
+            preserved?: unknown;
+          })
+        : {};
+    const actions: Record<string, string> = {
+      retry_stage: '重试当前阶段',
+      retry_rewrite: '仅重试优化重写',
+      rerun_check: '重新检查 Prompt',
+      review_input: '检查输入内容',
+      check_configuration: '检查连接配置',
+      inspect_or_restore: '检查原文件或从备份恢复',
+      review_preserved_result: '检查已保留结果',
+      remove_secret: '移除凭证后重试',
+    };
+    const kept: Record<string, string> = { originalBody: '原文', checks: '九维检查', improvements: '改进点' };
+    const labels = [
+      Array.isArray(d.preserved)
+        ? '已保留 ' +
+          d.preserved
+            .filter((x): x is string => typeof x === 'string')
+            .map((x) => kept[x] ?? x)
+            .join('、')
+        : '',
+      typeof d.stage === 'string' ? `阶段 ${d.stage}` : '',
+      typeof d.category === 'string' ? `类别 ${d.category}` : '',
+      typeof d.requestId === 'string' ? `请求 ${d.requestId}` : '',
+      typeof d.nextAction === 'string' ? `建议 ${actions[d.nextAction] ?? d.nextAction}` : '',
+      typeof d.retryable === 'boolean' ? (d.retryable ? '可重试' : '不可重试') : '',
+    ].filter(Boolean);
+    return labels.length ? `${error.message}（${labels.join(' · ')}）` : error.message;
+  }
+  return error instanceof Error ? error.message : '请求失败，请重试。';
+}
 
-export function PromptAiWorkbench({ mode, onLibrary, onSaved, categories, initialTask = '' }: { mode:'generator'|'optimizer'; onLibrary:(promptId?:string)=>void; onSaved:(promptId?:string)=>void; categories:PromptCategory[]; initialTask?:string }) {
-  const [schema,setSchema]=useState<{templates:Array<{id:string;label:string}>}|null>(null);
-  const [prompts,setPrompts]=useState<Prompt[]>([]); const [promptsLoaded,setPromptsLoaded]=useState(false); const [wikis,setWikis]=useState<Wiki[]>([]);
-  const [template,setTemplate]=useState('customer_interview'); const [task,setTask]=useState(initialTask); const [brief,setBrief]=useState<Brief|null>(null); const [candidates,setCandidates]=useState<Candidate[]>([]);
-  const [original,setOriginal]=useState(''); const [supplement,setSupplement]=useState(''); const [target,setTarget]=useState(''); const [checks,setChecks]=useState<Check[]>([]); const [improvements,setImprovements]=useState<Improvement[]>([]);
-  const [originalSnapshot,setOriginalSnapshot]=useState(''); const [confirmed,setConfirmed]=useState(false); const [savedVersion,setSavedVersion]=useState<number|null>(null); const [savedPromptId,setSavedPromptId]=useState<string|null>(null); const [restoredBaseVersion,setRestoredBaseVersion]=useState<number|null>(null);
-  const [contextBudget,setContextBudget]=useState<{used:number;maxTotal:number}|null>(null); const [usedWiki,setUsedWiki]=useState<Array<{id:string;title:string;usedChars:number;sourceChars:number;truncated:boolean}>>([]);
-  const [preview,setPreview]=useState<PromptInput|null>(null); const [optimizerStage,setOptimizerStage]=useState(''); const [recoverable,setRecoverable]=useState<Recoverable[]>([]); const [draftId,setDraftId]=useState(''); const [busy,setBusy]=useState(false); const [error,setError]=useState(''); const [notice,setNotice]=useState('');
-  const sequence=useRef(0); const restoreGeneration=useRef(0); const activeController=useRef<AbortController|null>(null); const saveRequest=useRef('');
-  useEffect(()=>{let active=true; api<{templates:Array<{id:string;label:string}>}>('/api/prompt-ai/schema').then(v=>active&&setSchema(v)).catch(e=>active&&setError(message(e))); api<{items:Prompt[]}>('/api/prompts').then(v=>{if(active){setPrompts(v.items);setPromptsLoaded(true);}}).catch(e=>active&&setError(message(e))); api<{items:Wiki[]}>('/api/wiki').then(v=>active&&setWikis(v.items)).catch(e=>active&&setError(message(e))); api<{items:Recoverable[];needsRecovery?:boolean}>('/api/prompt-ai/drafts').then(v=>{if(!active)return;setRecoverable(v.items.filter(x=>x.kind==='optimizer'));if(v.needsRecovery)window.dispatchEvent(new Event('storage-recovery-discovered'));}).catch(e=>active&&setError(message(e))); return()=>{active=false;sequence.current++;restoreGeneration.current++;activeController.current?.abort();};},[]);
-  useEffect(()=>{if(mode==='generator'&&brief&&draftId===''&&candidates.length===0&&wikis.length)setCandidates(wikis.map(w=>({id:w.id,title:w.title,type:w.type,knowledgeStatus:w.knowledge_status,selected:false})));},[mode,brief,draftId,candidates.length,wikis]);
-  const edit=(fn:()=>void)=>{restoreGeneration.current++;activeController.current?.abort();activeController.current=null;sequence.current++; setBusy(false); setConfirmed(false); setSavedVersion(null); setSavedPromptId(null); fn(); setError(''); setNotice('');};
-  const runBrief=async()=>{const token=++sequence.current;const controller=new AbortController();activeController.current=controller; setBusy(true);setError('');setPreview(null);setNotice('');setSavedPromptId(null);try{const result=await api<{draftId:string;brief:Brief;wikiCandidates:Candidate[]}>('/api/prompt-ai/brief',{method:'POST',body:JSON.stringify({task,template}),signal:controller.signal});if(sequence.current!==token)return;setDraftId(result.draftId);setBrief(result.brief);setCandidates(result.wikiCandidates);saveRequest.current='';}catch(e){if(sequence.current===token)setError(message(e));}finally{if(sequence.current===token)setBusy(false);}};
-  const generate=async()=>{if(!brief)return;const token=++sequence.current;const controller=new AbortController();activeController.current=controller;setBusy(true);setError('');setNotice('');try{const result=await api<DraftResult & {relatedWiki:Array<{id:string;title:string;usedChars:number;sourceChars:number;truncated:boolean}>;contextBudget:{used:number;maxTotal:number}}>('/api/prompt-ai/generate',{method:'POST',body:JSON.stringify({brief,relatedWikiIds:candidates.filter(x=>x.selected).map(x=>x.id)}),signal:controller.signal});if(sequence.current!==token)return;setDraftId(result.draftId);setPreview(result.preview);setContextBudget(result.contextBudget);setUsedWiki(result.relatedWiki);setConfirmed(false);setSavedVersion(null);setSavedPromptId(null);saveRequest.current='';}catch(e){if(sequence.current===token)setError(message(e));}finally{if(sequence.current===token)setBusy(false);}};
-  const optimize=async()=>{const token=++sequence.current;const controller=new AbortController();activeController.current=controller;setBusy(true);setError('');setNotice('');try{const selected=prompts.find(p=>p.id===target);const result=await api<{draftId:string;originalBody:string;checks:Check[];improvements:Improvement[];stage:string}>('/api/prompt-ai/optimize/check',{method:'POST',body:JSON.stringify({body:original,supplement,...(selected?{targetPromptId:selected.id,baseVersion:selected.version}:{})}),signal:controller.signal});if(sequence.current!==token)return;setDraftId(result.draftId);setOriginalSnapshot(result.originalBody);setChecks(result.checks);setImprovements(result.improvements);setPreview(null);setOptimizerStage(result.stage);setRestoredBaseVersion(selected?.version??null);setConfirmed(false);setSavedPromptId(null);saveRequest.current='';}catch(e){if(sequence.current===token)setError(message(e));}finally{if(sequence.current===token)setBusy(false);}};
-  const rewrite=async()=>{if(!draftId||targetConflict)return;const token=++sequence.current;const controller=new AbortController();activeController.current=controller;setBusy(true);setError('');try{const result=await api<{preview:PromptInput;stage:string}>('/api/prompt-ai/drafts/'+draftId+'/rewrite',{method:'POST',body:JSON.stringify({requestId:uuid()}),signal:controller.signal});if(sequence.current!==token)return;setPreview(result.preview);setOptimizerStage(result.stage);}catch(e){if(sequence.current===token)setError(message(e));}finally{if(sequence.current===token)setBusy(false);}};
-  const recoverDraft=async(id:string)=>{const generation=++restoreGeneration.current;sequence.current++;activeController.current?.abort();activeController.current=null;setBusy(false);setError('');setNotice('');try{const d=await api<{id:string;status?:string;stage?:string;supplement?:string;originalBody?:string;checks?:Check[];improvements?:Improvement[];preview?:PromptInput;targetPromptId?:string;baseVersion?:number;confirmed?:{version:number}}>('/api/prompt-ai/drafts/'+id);if(generation!==restoreGeneration.current)return;setDraftId(id);setOriginalSnapshot(d.originalBody??'');setOriginal(d.originalBody??'');setSupplement(d.supplement??'');setTarget(d.targetPromptId??'');setChecks(d.checks??[]);setImprovements(d.improvements??[]);setPreview(d.preview??null);setOptimizerStage(d.stage??(d.preview?'ready':'checked'));setConfirmed(d.status==='confirmed');setSavedVersion(d.status==='confirmed'?d.confirmed?.version??null:null);setSavedPromptId(null);setRestoredBaseVersion(d.status==='confirmed'?null:d.baseVersion??null);setError('');}catch(e){if(generation===restoreGeneration.current)setError(message(e));}};
-  const save=async(saveMode:'new'|'version')=>{if(!preview||!draftId||confirmed||targetConflict)return;const token=++sequence.current;const requestId=saveMode==='new'?draftId:(saveRequest.current||(saveRequest.current=uuid()));setBusy(true);setError('');try{const result=await api<{prompt:Prompt}>(`/api/prompt-ai/drafts/${draftId}/confirm`,{method:'POST',body:JSON.stringify({requestId,mode:saveMode,input:preview})});
-    // A successful response means the asset committed even when this editor context is stale.
-    onSaved(result.prompt.id);
-    if(sequence.current!==token)return;
-    setNotice(`已保存「${result.prompt.name}」第 ${result.prompt.version} 版。`);setConfirmed(true);setSavedVersion(result.prompt.version);setSavedPromptId(result.prompt.id);
-    if(mode==='optimizer'){setPrompts(current=>current.some(item=>item.id===result.prompt.id)?current.map(item=>item.id===result.prompt.id?result.prompt:item):[result.prompt,...current]);setTarget(result.prompt.id);setOriginal(result.prompt.body);}
-  }catch(e){const details=e instanceof ApiError&&e.details&&typeof e.details==='object'?e.details as {committed?:unknown;promptId?:string;version?:number}:undefined;if(details?.committed===true&&details.promptId&&Number.isInteger(details.version)){onSaved(details.promptId);try{const reconciled=await api<{version:PromptVersion}>(`/api/prompts/${encodeURIComponent(details.promptId)}/versions/${details.version}`);if(sequence.current===token){setPreview(reconciled.version.snapshot);setConfirmed(true);setSavedVersion(reconciled.version.version);setSavedPromptId(details.promptId);setNotice(`已对账确认「${reconciled.version.snapshot.name}」第 ${reconciled.version.version} 版。`);}}catch{if(sequence.current===token)setError(`${message(e)} 已报告提交成功，但版本回执暂不可读；请刷新 Library 对账。`);}}else if(sequence.current===token)setError(message(e));}finally{if(sequence.current===token)setBusy(false);}};
-  const updateBrief=(key:keyof Brief,value:string)=>edit(()=>{setDraftId('');setPreview(null);setChecks([]);setImprovements([]);setOptimizerStage('');setBrief(previous=>previous?{...previous,[key]:value}:previous);});
-  const updateOriginal=(value:string)=>edit(()=>{setOriginal(value);setRestoredBaseVersion(null);setDraftId('');setPreview(null);setChecks([]);setImprovements([]);setOptimizerStage('');});
-  const updateSupplement=(value:string)=>edit(()=>{setSupplement(value);setRestoredBaseVersion(null);setDraftId('');setPreview(null);setChecks([]);setImprovements([]);setOptimizerStage('');});
-  const updatePreview=(key:keyof PromptInput,value:unknown)=>edit(()=>setPreview(previous=>previous?{...previous,[key]:value}:previous));
-  const guidance=scenarioGuidance[template];
-  const selectedTarget=prompts.find(p=>p.id===target);
-  const targetConflict=!confirmed&&restoredBaseVersion!==null&&target&&promptsLoaded?(!selectedTarget?'目标 Prompt 已不存在；请选择其他目标或粘贴原文后重新检查。':selectedTarget.version!==restoredBaseVersion?'目标 Prompt 版本冲突：已从第 '+restoredBaseVersion+' 版更新到第 '+selectedTarget.version+' 版；请重新检查后再保存。':''):'';
-  return <section className="prompt-ai-workbench panel">
-    <div className="editor-top"><div><p className="eyebrow">{mode==='generator'?'Prompt Generator':'Prompt Optimizer'} · 预览草稿</p><h2>{mode==='generator'?'从任务生成 Prompt':'检查并优化 Prompt'}</h2></div><button type="button" className="secondary-button" onClick={() => onLibrary()}>返回模板库</button></div>
-    {(error||targetConflict)&&<p className="prompt-message error-message" role="alert">{error||targetConflict}</p>}{notice&&<div className="prompt-message success-message" role="status"><span>{notice}</span>{confirmed && savedPromptId && <button type="button" className="text-button prompt-view-library" onClick={() => onLibrary(savedPromptId)}>在模板库中查看</button>}</div>}
-    {mode==='generator'&&<>
-      {!brief&&<div className="prompt-form-grid"><label className="field span-two">你想让 AI 帮你完成什么工作？<textarea value={task} maxLength={10000} onChange={e=>edit(()=>setTask(e.target.value))} placeholder="例如：第一次访谈经销商，了解订货流程并判断可能适合 AI 的环节" /></label><label className="field">场景模板<select aria-label="场景模板" value={template} onChange={e=>edit(()=>setTemplate(e.target.value))}>{schema?.templates.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</select>{guidance&&<span className="scenario-guidance"><b>{guidance.title} · 填写建议</b><small>输入：{guidance.input}</small><small>产出：{guidance.output}</small><small>事实与未知：{guidance.constraints}</small></span>}</label><div className="field"><span>&nbsp;</span><button className="primary-button" disabled={busy||!task.trim()} onClick={()=>void runBrief()}>{busy?'正在整理…':'生成 Brief'}</button><button className="secondary-button" disabled={busy||!task.trim()} onClick={()=>edit(()=>{setBrief({taskName:task.slice(0,200),taskType:schema?.templates.find(x=>x.id===template)?.label??'自定义任务',role:'待用户补充',goal:task,context:'待用户补充',input:'待用户提供',tasks:'待用户补充',constraints:'区分事实与推断，不得编造',output:'待用户补充'});setCandidates(wikis.map(w=>({id:w.id,title:w.title,type:w.type,knowledgeStatus:w.knowledge_status,selected:false})));setDraftId('');setPreview(null);})}>手动填写 Brief</button></div></div>}
-      {brief&&!preview&&<><label className="field scenario-template">场景模板<select aria-label="场景模板" value={template} onChange={e=>edit(()=>setTemplate(e.target.value))}>{schema?.templates.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</select>{guidance&&<span className="scenario-guidance"><b>{guidance.title} · 填写建议</b><small>输入：{guidance.input}</small><small>产出：{guidance.output}</small><small>事实与未知：{guidance.constraints}</small></span>}</label><div className="prompt-form-grid"><label className="field span-two">任务名称<input value={brief.taskName} onChange={e=>updateBrief('taskName',e.target.value)} /></label><label className="field span-two">任务类型<input value={brief.taskType} onChange={e=>updateBrief('taskType',e.target.value)} /></label>{fields.map(([key,label])=><label className="field span-two" key={key}>{label}{guidance&&<small className="scenario-field-hint">{guidance.fields[key as keyof typeof guidance.fields]}</small>}<textarea aria-label={label} value={brief[key]} onChange={e=>updateBrief(key,e.target.value)} /></label>)}</div>
-        <section className="prompt-section"><h3>相关 Wiki · 默认不选择 · 可选最多 6 页</h3>{candidates.length?candidates.map(item=><label className="wiki-ai-choice" key={item.id}><input type="checkbox" checked={item.selected} disabled={!item.selected&&candidates.filter(x=>x.selected).length>=6} onChange={e=>edit(()=>setCandidates(current=>current.map(x=>x.id===item.id?{...x,selected:e.target.checked}:x)))} /><span><b>{item.title}</b><small>{item.type} · {item.knowledgeStatus}</small></span></label>):<p className="muted-copy">知识库目前没有 Wiki，可以继续生成。</p>}</section>
-        <div className="editor-footer"><button className="secondary-button" onClick={()=>edit(()=>{setBrief(null);setCandidates([]);})}>返回修改任务</button><button className="primary-button" disabled={busy} onClick={()=>void generate()}>{busy?'正在生成…':'生成 Prompt'}</button></div></>}
-    </>}
-    {mode==='optimizer'&&<>
-      {!preview&&recoverable.length>0&&<section className="prompt-section"><label>恢复已保存的优化草稿<select defaultValue="" onChange={e=>e.target.value&&void recoverDraft(e.target.value)}><option value="">选择草稿</option>{recoverable.map(item=><option key={item.id} value={item.id}>{item.title} · {item.stage}</option>)}</select></label></section>}
-      {!preview&&['checked','failed'].includes(optimizerStage)&&<section className="prompt-section"><h3>九维检查已保存</h3><p>原 Prompt 与检查结果已持久化。{optimizerStage==='failed'?'重写失败，检查结果仍保留。':'可继续单独生成优化版本。'}</p><div className="prompt-check-grid">{checks.map(item=><article key={item.id} className="prompt-check"><b>{item.label} · {item.status==='present'?'已具备':'缺少'}</b><p>{item.evidence}</p></article>)}</div><section><h4>实际改进点</h4>{improvements.map(item=><p key={item.dimensionId}><b>{item.issue}</b>：{item.action}</p>)}</section><button className="primary-button" disabled={busy||!!targetConflict} onClick={()=>void rewrite()}>{busy?'正在重写…':'继续生成优化版'}</button></section>}
-      {!preview&&<div className="prompt-form-grid"><label className="field span-two">从 Library 选择原 Prompt（可选）<select value={target} onChange={e=>{const next=e.target.value;const p=prompts.find(x=>x.id===next);edit(()=>{setTarget(next);setRestoredBaseVersion(null);setOriginalSnapshot('');setDraftId('');setPreview(null);setChecks([]);setImprovements([]);setOptimizerStage('');if(p)setOriginal(p.body);});}}><option value="">粘贴其他 Prompt</option>{target&&promptsLoaded&&!selectedTarget&&<option value={target}>失效目标 · 请重新选择</option>}{prompts.map(p=><option key={p.id} value={p.id}>{p.name} · 第 {p.version} 版</option>)}</select></label><label className="field span-two">原 Prompt<textarea value={original} maxLength={100000} onChange={e=>updateOriginal(e.target.value)} rows={8} /></label><label className="field span-two">补充要求（可选）<textarea value={supplement} maxLength={10000} onChange={e=>updateSupplement(e.target.value)} /></label><div className="field"><span>&nbsp;</span><button className="primary-button" disabled={busy||!original.trim()||!!(target&&promptsLoaded&&!selectedTarget)} onClick={()=>void optimize()}>{busy?'正在检查…':'检查 Prompt'}</button></div></div>}
-      {preview&&<><section className="prompt-section"><h3>原 Prompt（本轮检查时的原样快照）</h3><pre className="prompt-body-view">{originalSnapshot}</pre></section><section className="prompt-section"><h3>九维检查</h3><div className="prompt-check-grid">{checks.map(item=><article key={item.id} className="prompt-check"><b>{item.label} · {item.status==='present'?'已具备':'缺少'}</b><p>{item.evidence}</p></article>)}</div></section><section className="prompt-section"><h3>实际改进点</h3>{improvements.length?improvements.map(item=><p key={item.dimensionId}><b>{item.issue}</b>：{item.action}</p>):<p>检查结果没有发现需要补充的维度。</p>}</section></>}
-    </>}
-    {preview&&<><div className="prompt-form-grid"><label className="field span-two">名称<input disabled={confirmed} value={preview.name} onChange={e=>updatePreview('name',e.target.value)} /></label><label className="field">分类<select disabled={confirmed} value={preview.category} onChange={e=>updatePreview('category',e.target.value)}>{categories.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</select></label><label className="field">场景<input disabled={confirmed} value={preview.scenario} onChange={e=>updatePreview('scenario',e.target.value)} /></label><label className="field span-two">正文<textarea disabled={confirmed} rows={12} value={preview.body} onChange={e=>updatePreview('body',e.target.value)} /></label><label className="field">输入要求<textarea disabled={confirmed} value={preview.inputRequirements} onChange={e=>updatePreview('inputRequirements',e.target.value)} /></label><label className="field">输出要求<textarea disabled={confirmed} value={preview.outputRequirements} onChange={e=>updatePreview('outputRequirements',e.target.value)} /></label><label className="field span-two">相关 Wiki<select disabled={confirmed} multiple size={Math.min(Math.max(wikis.length,3),6)} value={preview.relatedWikiIds} onChange={e=>updatePreview('relatedWikiIds',[...e.currentTarget.selectedOptions].map(x=>x.value))}>{preview.relatedWikiIds.filter(id=>!wikis.some(wiki=>wiki.id===id)).map(id=><option key={id} value={id}>失效关联 · {id}</option>)}{wikis.map(wiki=><option key={wiki.id} value={wiki.id}>{wiki.title} · {wiki.type}</option>)}</select><span className="field-hint">按住 Ctrl 多选。只显示标题与分类，关联不会写入 Wiki。</span></label><label className="field span-two">标签<input disabled={confirmed} value={preview.tags.join('，')} onChange={e=>updatePreview('tags',e.target.value.split(/[，,、;；]/).map(x=>x.trim()).filter(Boolean))} /></label><label className="field span-two">示例<textarea disabled={confirmed} value={preview.examples} onChange={e=>updatePreview('examples',e.target.value)} /></label><label className="field span-two">收藏<select disabled={confirmed} value={preview.favorite?'yes':'no'} onChange={e=>updatePreview('favorite',e.target.value==='yes')}><option value="no">不收藏</option><option value="yes">收藏</option></select></label></div>{mode==='generator'&&<section className="prompt-section"><h3>已选择 Wiki 背景</h3>{usedWiki.length?usedWiki.map(item=><span className="tag" key={item.id}>{item.title}</span>):<p>生成时没有选择 Wiki 背景。</p>}</section>}
-      <section className="prompt-section"><h3>识别到的变量</h3><p>{variablesIn(preview.body).length?variablesIn(preview.body).map(name=>`{{${name}}}`).join('、'):'没有变量'}</p></section>
-      {mode==='generator'&&<section className="prompt-section"><h3>实际采用的 Wiki 背景 · {contextBudget?.used??0}/{contextBudget?.maxTotal??12000} 字符</h3>{usedWiki.length?usedWiki.map(item=><p key={item.id}>{item.title}：采用 {item.usedChars}/{item.sourceChars} 字符{item.truncated?'（已截取）':''}</p>):<p>本次没有 Wiki 背景。</p>}</section>}
-      <div className="editor-footer"><button className="secondary-button" disabled={busy} onClick={()=>{edit(()=>{setPreview(null);setNotice('');});if(mode==='optimizer'){setDraftId('');setChecks([]);setImprovements([]);setOptimizerStage('');setRestoredBaseVersion(null);}}}>重新编辑{mode==='generator'?'Brief':'原 Prompt'}</button>{mode==='generator'&&<button className="secondary-button" disabled={busy} onClick={()=>void generate()}>重新生成</button>}{mode==='optimizer'&&<button className="secondary-button" disabled={busy} onClick={()=>edit(()=>{setPreview(null);setDraftId('');setChecks([]);setImprovements([]);setOptimizerStage('');setRestoredBaseVersion(null);})}>补充后重新优化</button>}<button className="secondary-button" onClick={()=>void navigator.clipboard.writeText(preview.body).then(()=>setNotice('Prompt 正文已复制。')).catch(()=>setError('复制失败，请手动选择正文。'))}>复制正文</button>{confirmed?<><span className="field-hint">已保存第 {savedVersion} 版；如需继续优化，请重新编辑并生成一轮新草稿。</span>{savedPromptId&&<button type="button" className="primary-button" onClick={()=>onLibrary(savedPromptId)}>在模板库中查看</button>}</>:<><button className="primary-button" disabled={busy||!!targetConflict} onClick={()=>void save('new')}>保存为新 Prompt</button>{mode==='optimizer'&&selectedTarget&&<button className="primary-button" disabled={busy||!!targetConflict} onClick={()=>void save('version')}>保存为第 {selectedTarget.version+1} 版</button>}</>}</div></>}
-  </section>;
+export function PromptAiWorkbench({
+  mode,
+  onLibrary,
+  onSaved,
+  categories,
+  initialTask = '',
+}: {
+  mode: 'generator' | 'optimizer';
+  onLibrary: (promptId?: string) => void;
+  onSaved: (promptId?: string) => void;
+  categories: PromptCategory[];
+  initialTask?: string;
+}) {
+  const [schema, setSchema] = useState<{ templates: Array<{ id: string; label: string }> } | null>(null);
+  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [promptsLoaded, setPromptsLoaded] = useState(false);
+  const [wikis, setWikis] = useState<Wiki[]>([]);
+  const [template, setTemplate] = useState('customer_interview');
+  const [task, setTask] = useState(initialTask);
+  const [brief, setBrief] = useState<Brief | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [original, setOriginal] = useState('');
+  const [supplement, setSupplement] = useState('');
+  const [target, setTarget] = useState('');
+  const [checks, setChecks] = useState<Check[]>([]);
+  const [improvements, setImprovements] = useState<Improvement[]>([]);
+  const [originalSnapshot, setOriginalSnapshot] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
+  const [savedVersion, setSavedVersion] = useState<number | null>(null);
+  const [savedPromptId, setSavedPromptId] = useState<string | null>(null);
+  const [restoredBaseVersion, setRestoredBaseVersion] = useState<number | null>(null);
+  const [contextBudget, setContextBudget] = useState<{ used: number; maxTotal: number } | null>(null);
+  const [usedWiki, setUsedWiki] = useState<
+    Array<{ id: string; title: string; usedChars: number; sourceChars: number; truncated: boolean }>
+  >([]);
+  const [preview, setPreview] = useState<PromptInput | null>(null);
+  const [optimizerStage, setOptimizerStage] = useState('');
+  const [recoverable, setRecoverable] = useState<Recoverable[]>([]);
+  const [draftId, setDraftId] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const sequence = useRef(0);
+  const restoreGeneration = useRef(0);
+  const activeController = useRef<AbortController | null>(null);
+  const saveRequest = useRef('');
+  useEffect(() => {
+    let active = true;
+    api<{ templates: Array<{ id: string; label: string }> }>('/api/prompt-ai/schema')
+      .then((v) => active && setSchema(v))
+      .catch((e) => active && setError(message(e)));
+    api<{ items: Prompt[] }>('/api/prompts')
+      .then((v) => {
+        if (active) {
+          setPrompts(v.items);
+          setPromptsLoaded(true);
+        }
+      })
+      .catch((e) => active && setError(message(e)));
+    api<{ items: Wiki[] }>('/api/wiki')
+      .then((v) => active && setWikis(v.items))
+      .catch((e) => active && setError(message(e)));
+    api<{ items: Recoverable[]; needsRecovery?: boolean }>('/api/prompt-ai/drafts')
+      .then((v) => {
+        if (!active) return;
+        setRecoverable(v.items.filter((x) => x.kind === 'optimizer'));
+        if (v.needsRecovery) window.dispatchEvent(new Event('storage-recovery-discovered'));
+      })
+      .catch((e) => active && setError(message(e)));
+    return () => {
+      active = false;
+      sequence.current++;
+      restoreGeneration.current++;
+      activeController.current?.abort();
+    };
+  }, []);
+  useEffect(() => {
+    if (mode === 'generator' && brief && draftId === '' && candidates.length === 0 && wikis.length)
+      setCandidates(
+        wikis.map((w) => ({
+          id: w.id,
+          title: w.title,
+          type: w.type,
+          knowledgeStatus: w.knowledge_status,
+          selected: false,
+        })),
+      );
+  }, [mode, brief, draftId, candidates.length, wikis]);
+  const edit = (fn: () => void) => {
+    restoreGeneration.current++;
+    activeController.current?.abort();
+    activeController.current = null;
+    sequence.current++;
+    setBusy(false);
+    setConfirmed(false);
+    setSavedVersion(null);
+    setSavedPromptId(null);
+    fn();
+    setError('');
+    setNotice('');
+  };
+  const runBrief = async () => {
+    const token = ++sequence.current;
+    const controller = new AbortController();
+    activeController.current = controller;
+    setBusy(true);
+    setError('');
+    setPreview(null);
+    setNotice('');
+    setSavedPromptId(null);
+    try {
+      const result = await api<{ draftId: string; brief: Brief; wikiCandidates: Candidate[] }>('/api/prompt-ai/brief', {
+        method: 'POST',
+        body: JSON.stringify({ task, template }),
+        signal: controller.signal,
+      });
+      if (sequence.current !== token) return;
+      setDraftId(result.draftId);
+      setBrief(result.brief);
+      setCandidates(result.wikiCandidates);
+      saveRequest.current = '';
+    } catch (e) {
+      if (sequence.current === token) setError(message(e));
+    } finally {
+      if (sequence.current === token) setBusy(false);
+    }
+  };
+  const generate = async () => {
+    if (!brief) return;
+    const token = ++sequence.current;
+    const controller = new AbortController();
+    activeController.current = controller;
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      const result = await api<
+        DraftResult & {
+          relatedWiki: Array<{ id: string; title: string; usedChars: number; sourceChars: number; truncated: boolean }>;
+          contextBudget: { used: number; maxTotal: number };
+        }
+      >('/api/prompt-ai/generate', {
+        method: 'POST',
+        body: JSON.stringify({ brief, relatedWikiIds: candidates.filter((x) => x.selected).map((x) => x.id) }),
+        signal: controller.signal,
+      });
+      if (sequence.current !== token) return;
+      setDraftId(result.draftId);
+      setPreview(result.preview);
+      setContextBudget(result.contextBudget);
+      setUsedWiki(result.relatedWiki);
+      setConfirmed(false);
+      setSavedVersion(null);
+      setSavedPromptId(null);
+      saveRequest.current = '';
+    } catch (e) {
+      if (sequence.current === token) setError(message(e));
+    } finally {
+      if (sequence.current === token) setBusy(false);
+    }
+  };
+  const optimize = async () => {
+    const token = ++sequence.current;
+    const controller = new AbortController();
+    activeController.current = controller;
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      const selected = prompts.find((p) => p.id === target);
+      const result = await api<{
+        draftId: string;
+        originalBody: string;
+        checks: Check[];
+        improvements: Improvement[];
+        stage: string;
+      }>('/api/prompt-ai/optimize/check', {
+        method: 'POST',
+        body: JSON.stringify({
+          body: original,
+          supplement,
+          ...(selected ? { targetPromptId: selected.id, baseVersion: selected.version } : {}),
+        }),
+        signal: controller.signal,
+      });
+      if (sequence.current !== token) return;
+      setDraftId(result.draftId);
+      setOriginalSnapshot(result.originalBody);
+      setChecks(result.checks);
+      setImprovements(result.improvements);
+      setPreview(null);
+      setOptimizerStage(result.stage);
+      setRestoredBaseVersion(selected?.version ?? null);
+      setConfirmed(false);
+      setSavedPromptId(null);
+      saveRequest.current = '';
+    } catch (e) {
+      if (sequence.current === token) setError(message(e));
+    } finally {
+      if (sequence.current === token) setBusy(false);
+    }
+  };
+  const rewrite = async () => {
+    if (!draftId || targetConflict) return;
+    const token = ++sequence.current;
+    const controller = new AbortController();
+    activeController.current = controller;
+    setBusy(true);
+    setError('');
+    try {
+      const result = await api<{ preview: PromptInput; stage: string }>(
+        '/api/prompt-ai/drafts/' + draftId + '/rewrite',
+        { method: 'POST', body: JSON.stringify({ requestId: uuid() }), signal: controller.signal },
+      );
+      if (sequence.current !== token) return;
+      setPreview(result.preview);
+      setOptimizerStage(result.stage);
+    } catch (e) {
+      if (sequence.current === token) setError(message(e));
+    } finally {
+      if (sequence.current === token) setBusy(false);
+    }
+  };
+  const recoverDraft = async (id: string) => {
+    const generation = ++restoreGeneration.current;
+    sequence.current++;
+    activeController.current?.abort();
+    activeController.current = null;
+    setBusy(false);
+    setError('');
+    setNotice('');
+    try {
+      const d = await api<{
+        id: string;
+        status?: string;
+        stage?: string;
+        supplement?: string;
+        originalBody?: string;
+        checks?: Check[];
+        improvements?: Improvement[];
+        preview?: PromptInput;
+        targetPromptId?: string;
+        baseVersion?: number;
+        confirmed?: { version: number };
+      }>('/api/prompt-ai/drafts/' + id);
+      if (generation !== restoreGeneration.current) return;
+      setDraftId(id);
+      setOriginalSnapshot(d.originalBody ?? '');
+      setOriginal(d.originalBody ?? '');
+      setSupplement(d.supplement ?? '');
+      setTarget(d.targetPromptId ?? '');
+      setChecks(d.checks ?? []);
+      setImprovements(d.improvements ?? []);
+      setPreview(d.preview ?? null);
+      setOptimizerStage(d.stage ?? (d.preview ? 'ready' : 'checked'));
+      setConfirmed(d.status === 'confirmed');
+      setSavedVersion(d.status === 'confirmed' ? (d.confirmed?.version ?? null) : null);
+      setSavedPromptId(null);
+      setRestoredBaseVersion(d.status === 'confirmed' ? null : (d.baseVersion ?? null));
+      setError('');
+    } catch (e) {
+      if (generation === restoreGeneration.current) setError(message(e));
+    }
+  };
+  const save = async (saveMode: 'new' | 'version') => {
+    if (!preview || !draftId || confirmed || targetConflict) return;
+    const token = ++sequence.current;
+    const requestId = saveMode === 'new' ? draftId : saveRequest.current || (saveRequest.current = uuid());
+    setBusy(true);
+    setError('');
+    try {
+      const result = await api<{ prompt: Prompt }>(`/api/prompt-ai/drafts/${draftId}/confirm`, {
+        method: 'POST',
+        body: JSON.stringify({ requestId, mode: saveMode, input: preview }),
+      });
+      // A successful response means the asset committed even when this editor context is stale.
+      onSaved(result.prompt.id);
+      if (sequence.current !== token) return;
+      setNotice(`已保存「${result.prompt.name}」第 ${result.prompt.version} 版。`);
+      setConfirmed(true);
+      setSavedVersion(result.prompt.version);
+      setSavedPromptId(result.prompt.id);
+      if (mode === 'optimizer') {
+        setPrompts((current) =>
+          current.some((item) => item.id === result.prompt.id)
+            ? current.map((item) => (item.id === result.prompt.id ? result.prompt : item))
+            : [result.prompt, ...current],
+        );
+        setTarget(result.prompt.id);
+        setOriginal(result.prompt.body);
+      }
+    } catch (e) {
+      const details =
+        e instanceof ApiError && e.details && typeof e.details === 'object'
+          ? (e.details as { committed?: unknown; promptId?: string; version?: number })
+          : undefined;
+      if (details?.committed === true && details.promptId && Number.isInteger(details.version)) {
+        onSaved(details.promptId);
+        try {
+          const reconciled = await api<{ version: PromptVersion }>(
+            `/api/prompts/${encodeURIComponent(details.promptId)}/versions/${details.version}`,
+          );
+          if (sequence.current === token) {
+            setPreview(reconciled.version.snapshot);
+            setConfirmed(true);
+            setSavedVersion(reconciled.version.version);
+            setSavedPromptId(details.promptId);
+            setNotice(`已对账确认「${reconciled.version.snapshot.name}」第 ${reconciled.version.version} 版。`);
+          }
+        } catch {
+          if (sequence.current === token)
+            setError(`${message(e)} 已报告提交成功，但版本回执暂不可读；请刷新 Library 对账。`);
+        }
+      } else if (sequence.current === token) setError(message(e));
+    } finally {
+      if (sequence.current === token) setBusy(false);
+    }
+  };
+  const updateBrief = (key: keyof Brief, value: string) =>
+    edit(() => {
+      setDraftId('');
+      setPreview(null);
+      setChecks([]);
+      setImprovements([]);
+      setOptimizerStage('');
+      setBrief((previous) => (previous ? { ...previous, [key]: value } : previous));
+    });
+  const updateOriginal = (value: string) =>
+    edit(() => {
+      setOriginal(value);
+      setRestoredBaseVersion(null);
+      setDraftId('');
+      setPreview(null);
+      setChecks([]);
+      setImprovements([]);
+      setOptimizerStage('');
+    });
+  const updateSupplement = (value: string) =>
+    edit(() => {
+      setSupplement(value);
+      setRestoredBaseVersion(null);
+      setDraftId('');
+      setPreview(null);
+      setChecks([]);
+      setImprovements([]);
+      setOptimizerStage('');
+    });
+  const updatePreview = (key: keyof PromptInput, value: unknown) =>
+    edit(() => setPreview((previous) => (previous ? { ...previous, [key]: value } : previous)));
+  const guidance = scenarioGuidance[template];
+  const selectedTarget = prompts.find((p) => p.id === target);
+  const targetConflict =
+    !confirmed && restoredBaseVersion !== null && target && promptsLoaded
+      ? !selectedTarget
+        ? '目标 Prompt 已不存在；请选择其他目标或粘贴原文后重新检查。'
+        : selectedTarget.version !== restoredBaseVersion
+          ? '目标 Prompt 版本冲突：已从第 ' +
+            restoredBaseVersion +
+            ' 版更新到第 ' +
+            selectedTarget.version +
+            ' 版；请重新检查后再保存。'
+          : ''
+      : '';
+  return (
+    <section className="prompt-ai-workbench panel">
+      <div className="editor-top">
+        <div>
+          <p className="eyebrow">{mode === 'generator' ? 'Prompt Generator' : 'Prompt Optimizer'} · 预览草稿</p>
+          <h2>{mode === 'generator' ? '从任务生成 Prompt' : '检查并优化 Prompt'}</h2>
+        </div>
+        <button type="button" className="secondary-button" onClick={() => onLibrary()}>
+          返回模板库
+        </button>
+      </div>
+      {(error || targetConflict) && (
+        <p className="prompt-message error-message" role="alert">
+          {error || targetConflict}
+        </p>
+      )}
+      {notice && (
+        <div className="prompt-message success-message" role="status">
+          <span>{notice}</span>
+          {confirmed && savedPromptId && (
+            <button type="button" className="text-button prompt-view-library" onClick={() => onLibrary(savedPromptId)}>
+              在模板库中查看
+            </button>
+          )}
+        </div>
+      )}
+      {mode === 'generator' && (
+        <>
+          {!brief && (
+            <div className="prompt-form-grid">
+              <label className="field span-two">
+                你想让 AI 帮你完成什么工作？
+                <textarea
+                  value={task}
+                  maxLength={10000}
+                  onChange={(e) => edit(() => setTask(e.target.value))}
+                  placeholder="例如：第一次访谈经销商，了解订货流程并判断可能适合 AI 的环节"
+                />
+              </label>
+              <label className="field">
+                场景模板
+                <select
+                  aria-label="场景模板"
+                  value={template}
+                  onChange={(e) => edit(() => setTemplate(e.target.value))}
+                >
+                  {schema?.templates.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+                {guidance && (
+                  <span className="scenario-guidance">
+                    <b>{guidance.title} · 填写建议</b>
+                    <small>输入：{guidance.input}</small>
+                    <small>产出：{guidance.output}</small>
+                    <small>事实与未知：{guidance.constraints}</small>
+                  </span>
+                )}
+              </label>
+              <div className="field">
+                <span>&nbsp;</span>
+                <button className="primary-button" disabled={busy || !task.trim()} onClick={() => void runBrief()}>
+                  {busy ? '正在整理…' : '生成 Brief'}
+                </button>
+                <button
+                  className="secondary-button"
+                  disabled={busy || !task.trim()}
+                  onClick={() =>
+                    edit(() => {
+                      setBrief({
+                        taskName: task.slice(0, 200),
+                        taskType: schema?.templates.find((x) => x.id === template)?.label ?? '自定义任务',
+                        role: '待用户补充',
+                        goal: task,
+                        context: '待用户补充',
+                        input: '待用户提供',
+                        tasks: '待用户补充',
+                        constraints: '区分事实与推断，不得编造',
+                        output: '待用户补充',
+                      });
+                      setCandidates(
+                        wikis.map((w) => ({
+                          id: w.id,
+                          title: w.title,
+                          type: w.type,
+                          knowledgeStatus: w.knowledge_status,
+                          selected: false,
+                        })),
+                      );
+                      setDraftId('');
+                      setPreview(null);
+                    })
+                  }
+                >
+                  手动填写 Brief
+                </button>
+              </div>
+            </div>
+          )}
+          {brief && !preview && (
+            <>
+              <label className="field scenario-template">
+                场景模板
+                <select
+                  aria-label="场景模板"
+                  value={template}
+                  onChange={(e) => edit(() => setTemplate(e.target.value))}
+                >
+                  {schema?.templates.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+                {guidance && (
+                  <span className="scenario-guidance">
+                    <b>{guidance.title} · 填写建议</b>
+                    <small>输入：{guidance.input}</small>
+                    <small>产出：{guidance.output}</small>
+                    <small>事实与未知：{guidance.constraints}</small>
+                  </span>
+                )}
+              </label>
+              <div className="prompt-form-grid">
+                <label className="field span-two">
+                  任务名称
+                  <input value={brief.taskName} onChange={(e) => updateBrief('taskName', e.target.value)} />
+                </label>
+                <label className="field span-two">
+                  任务类型
+                  <input value={brief.taskType} onChange={(e) => updateBrief('taskType', e.target.value)} />
+                </label>
+                {fields.map(([key, label]) => (
+                  <label className="field span-two" key={key}>
+                    {label}
+                    {guidance && (
+                      <small className="scenario-field-hint">
+                        {guidance.fields[key as keyof typeof guidance.fields]}
+                      </small>
+                    )}
+                    <textarea
+                      aria-label={label}
+                      value={brief[key]}
+                      onChange={(e) => updateBrief(key, e.target.value)}
+                    />
+                  </label>
+                ))}
+              </div>
+              <section className="prompt-section">
+                <h3>相关 Wiki · 默认不选择 · 可选最多 6 页</h3>
+                {candidates.length ? (
+                  candidates.map((item) => (
+                    <label className="wiki-ai-choice" key={item.id}>
+                      <input
+                        type="checkbox"
+                        checked={item.selected}
+                        disabled={!item.selected && candidates.filter((x) => x.selected).length >= 6}
+                        onChange={(e) =>
+                          edit(() =>
+                            setCandidates((current) =>
+                              current.map((x) => (x.id === item.id ? { ...x, selected: e.target.checked } : x)),
+                            ),
+                          )
+                        }
+                      />
+                      <span>
+                        <b>{item.title}</b>
+                        <small>
+                          {item.type} · {item.knowledgeStatus}
+                        </small>
+                      </span>
+                    </label>
+                  ))
+                ) : (
+                  <p className="muted-copy">知识库目前没有 Wiki，可以继续生成。</p>
+                )}
+              </section>
+              <div className="editor-footer">
+                <button
+                  className="secondary-button"
+                  onClick={() =>
+                    edit(() => {
+                      setBrief(null);
+                      setCandidates([]);
+                    })
+                  }
+                >
+                  返回修改任务
+                </button>
+                <button className="primary-button" disabled={busy} onClick={() => void generate()}>
+                  {busy ? '正在生成…' : '生成 Prompt'}
+                </button>
+              </div>
+            </>
+          )}
+        </>
+      )}
+      {mode === 'optimizer' && (
+        <>
+          {!preview && recoverable.length > 0 && (
+            <section className="prompt-section">
+              <label>
+                恢复已保存的优化草稿
+                <select defaultValue="" onChange={(e) => e.target.value && void recoverDraft(e.target.value)}>
+                  <option value="">选择草稿</option>
+                  {recoverable.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title} · {item.stage}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </section>
+          )}
+          {!preview && ['checked', 'failed'].includes(optimizerStage) && (
+            <section className="prompt-section">
+              <h3>九维检查已保存</h3>
+              <p>
+                原 Prompt 与检查结果已持久化。
+                {optimizerStage === 'failed' ? '重写失败，检查结果仍保留。' : '可继续单独生成优化版本。'}
+              </p>
+              <div className="prompt-check-grid">
+                {checks.map((item) => (
+                  <article key={item.id} className="prompt-check">
+                    <b>
+                      {item.label} · {item.status === 'present' ? '已具备' : '缺少'}
+                    </b>
+                    <p>{item.evidence}</p>
+                  </article>
+                ))}
+              </div>
+              <section>
+                <h4>实际改进点</h4>
+                {improvements.map((item) => (
+                  <p key={item.dimensionId}>
+                    <b>{item.issue}</b>：{item.action}
+                  </p>
+                ))}
+              </section>
+              <button className="primary-button" disabled={busy || !!targetConflict} onClick={() => void rewrite()}>
+                {busy ? '正在重写…' : '继续生成优化版'}
+              </button>
+            </section>
+          )}
+          {!preview && (
+            <div className="prompt-form-grid">
+              <label className="field span-two">
+                从 Library 选择原 Prompt（可选）
+                <select
+                  value={target}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    const p = prompts.find((x) => x.id === next);
+                    edit(() => {
+                      setTarget(next);
+                      setRestoredBaseVersion(null);
+                      setOriginalSnapshot('');
+                      setDraftId('');
+                      setPreview(null);
+                      setChecks([]);
+                      setImprovements([]);
+                      setOptimizerStage('');
+                      if (p) setOriginal(p.body);
+                    });
+                  }}
+                >
+                  <option value="">粘贴其他 Prompt</option>
+                  {target && promptsLoaded && !selectedTarget && <option value={target}>失效目标 · 请重新选择</option>}
+                  {prompts.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} · 第 {p.version} 版
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="field span-two">
+                原 Prompt
+                <textarea
+                  value={original}
+                  maxLength={100000}
+                  onChange={(e) => updateOriginal(e.target.value)}
+                  rows={8}
+                />
+              </label>
+              <label className="field span-two">
+                补充要求（可选）
+                <textarea value={supplement} maxLength={10000} onChange={(e) => updateSupplement(e.target.value)} />
+              </label>
+              <div className="field">
+                <span>&nbsp;</span>
+                <button
+                  className="primary-button"
+                  disabled={busy || !original.trim() || !!(target && promptsLoaded && !selectedTarget)}
+                  onClick={() => void optimize()}
+                >
+                  {busy ? '正在检查…' : '检查 Prompt'}
+                </button>
+              </div>
+            </div>
+          )}
+          {preview && (
+            <>
+              <section className="prompt-section">
+                <h3>原 Prompt（本轮检查时的原样快照）</h3>
+                <pre className="prompt-body-view">{originalSnapshot}</pre>
+              </section>
+              <section className="prompt-section">
+                <h3>九维检查</h3>
+                <div className="prompt-check-grid">
+                  {checks.map((item) => (
+                    <article key={item.id} className="prompt-check">
+                      <b>
+                        {item.label} · {item.status === 'present' ? '已具备' : '缺少'}
+                      </b>
+                      <p>{item.evidence}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+              <section className="prompt-section">
+                <h3>实际改进点</h3>
+                {improvements.length ? (
+                  improvements.map((item) => (
+                    <p key={item.dimensionId}>
+                      <b>{item.issue}</b>：{item.action}
+                    </p>
+                  ))
+                ) : (
+                  <p>检查结果没有发现需要补充的维度。</p>
+                )}
+              </section>
+            </>
+          )}
+        </>
+      )}
+      {preview && (
+        <>
+          <div className="prompt-form-grid">
+            <label className="field span-two">
+              名称
+              <input
+                disabled={confirmed}
+                value={preview.name}
+                onChange={(e) => updatePreview('name', e.target.value)}
+              />
+            </label>
+            <label className="field">
+              分类
+              <select
+                disabled={confirmed}
+                value={preview.category}
+                onChange={(e) => updatePreview('category', e.target.value)}
+              >
+                {categories.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              场景
+              <input
+                disabled={confirmed}
+                value={preview.scenario}
+                onChange={(e) => updatePreview('scenario', e.target.value)}
+              />
+            </label>
+            <label className="field span-two">
+              正文
+              <textarea
+                disabled={confirmed}
+                rows={12}
+                value={preview.body}
+                onChange={(e) => updatePreview('body', e.target.value)}
+              />
+            </label>
+            <label className="field">
+              输入要求
+              <textarea
+                disabled={confirmed}
+                value={preview.inputRequirements}
+                onChange={(e) => updatePreview('inputRequirements', e.target.value)}
+              />
+            </label>
+            <label className="field">
+              输出要求
+              <textarea
+                disabled={confirmed}
+                value={preview.outputRequirements}
+                onChange={(e) => updatePreview('outputRequirements', e.target.value)}
+              />
+            </label>
+            <label className="field span-two">
+              相关 Wiki
+              <select
+                disabled={confirmed}
+                multiple
+                size={Math.min(Math.max(wikis.length, 3), 6)}
+                value={preview.relatedWikiIds}
+                onChange={(e) =>
+                  updatePreview(
+                    'relatedWikiIds',
+                    [...e.currentTarget.selectedOptions].map((x) => x.value),
+                  )
+                }
+              >
+                {preview.relatedWikiIds
+                  .filter((id) => !wikis.some((wiki) => wiki.id === id))
+                  .map((id) => (
+                    <option key={id} value={id}>
+                      失效关联 · {id}
+                    </option>
+                  ))}
+                {wikis.map((wiki) => (
+                  <option key={wiki.id} value={wiki.id}>
+                    {wiki.title} · {wiki.type}
+                  </option>
+                ))}
+              </select>
+              <span className="field-hint">按住 Ctrl 多选。只显示标题与分类，关联不会写入 Wiki。</span>
+            </label>
+            <label className="field span-two">
+              标签
+              <input
+                disabled={confirmed}
+                value={preview.tags.join('，')}
+                onChange={(e) =>
+                  updatePreview(
+                    'tags',
+                    e.target.value
+                      .split(/[，,、;；]/)
+                      .map((x) => x.trim())
+                      .filter(Boolean),
+                  )
+                }
+              />
+            </label>
+            <label className="field span-two">
+              示例
+              <textarea
+                disabled={confirmed}
+                value={preview.examples}
+                onChange={(e) => updatePreview('examples', e.target.value)}
+              />
+            </label>
+            <label className="field span-two">
+              收藏
+              <select
+                disabled={confirmed}
+                value={preview.favorite ? 'yes' : 'no'}
+                onChange={(e) => updatePreview('favorite', e.target.value === 'yes')}
+              >
+                <option value="no">不收藏</option>
+                <option value="yes">收藏</option>
+              </select>
+            </label>
+          </div>
+          {mode === 'generator' && (
+            <section className="prompt-section">
+              <h3>已选择 Wiki 背景</h3>
+              {usedWiki.length ? (
+                usedWiki.map((item) => (
+                  <span className="tag" key={item.id}>
+                    {item.title}
+                  </span>
+                ))
+              ) : (
+                <p>生成时没有选择 Wiki 背景。</p>
+              )}
+            </section>
+          )}
+          <section className="prompt-section">
+            <h3>识别到的变量</h3>
+            <p>
+              {variablesIn(preview.body).length
+                ? variablesIn(preview.body)
+                    .map((name) => `{{${name}}}`)
+                    .join('、')
+                : '没有变量'}
+            </p>
+          </section>
+          {mode === 'generator' && (
+            <section className="prompt-section">
+              <h3>
+                实际采用的 Wiki 背景 · {contextBudget?.used ?? 0}/{contextBudget?.maxTotal ?? 12000} 字符
+              </h3>
+              {usedWiki.length ? (
+                usedWiki.map((item) => (
+                  <p key={item.id}>
+                    {item.title}：采用 {item.usedChars}/{item.sourceChars} 字符{item.truncated ? '（已截取）' : ''}
+                  </p>
+                ))
+              ) : (
+                <p>本次没有 Wiki 背景。</p>
+              )}
+            </section>
+          )}
+          <div className="editor-footer">
+            <button
+              className="secondary-button"
+              disabled={busy}
+              onClick={() => {
+                edit(() => {
+                  setPreview(null);
+                  setNotice('');
+                });
+                if (mode === 'optimizer') {
+                  setDraftId('');
+                  setChecks([]);
+                  setImprovements([]);
+                  setOptimizerStage('');
+                  setRestoredBaseVersion(null);
+                }
+              }}
+            >
+              重新编辑{mode === 'generator' ? 'Brief' : '原 Prompt'}
+            </button>
+            {mode === 'generator' && (
+              <button className="secondary-button" disabled={busy} onClick={() => void generate()}>
+                重新生成
+              </button>
+            )}
+            {mode === 'optimizer' && (
+              <button
+                className="secondary-button"
+                disabled={busy}
+                onClick={() =>
+                  edit(() => {
+                    setPreview(null);
+                    setDraftId('');
+                    setChecks([]);
+                    setImprovements([]);
+                    setOptimizerStage('');
+                    setRestoredBaseVersion(null);
+                  })
+                }
+              >
+                补充后重新优化
+              </button>
+            )}
+            <button
+              className="secondary-button"
+              onClick={() =>
+                void navigator.clipboard
+                  .writeText(preview.body)
+                  .then(() => setNotice('Prompt 正文已复制。'))
+                  .catch(() => setError('复制失败，请手动选择正文。'))
+              }
+            >
+              复制正文
+            </button>
+            {confirmed ? (
+              <>
+                <span className="field-hint">
+                  已保存第 {savedVersion} 版；如需继续优化，请重新编辑并生成一轮新草稿。
+                </span>
+                {savedPromptId && (
+                  <button type="button" className="primary-button" onClick={() => onLibrary(savedPromptId)}>
+                    在模板库中查看
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <button className="primary-button" disabled={busy || !!targetConflict} onClick={() => void save('new')}>
+                  保存为新 Prompt
+                </button>
+                {mode === 'optimizer' && selectedTarget && (
+                  <button
+                    className="primary-button"
+                    disabled={busy || !!targetConflict}
+                    onClick={() => void save('version')}
+                  >
+                    保存为第 {selectedTarget.version + 1} 版
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </>
+      )}
+    </section>
+  );
 }

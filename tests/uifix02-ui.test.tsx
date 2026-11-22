@@ -43,25 +43,30 @@ const { HomePage } = await import('../app/pages/HomePage.tsx');
 const { PeriodReview } = await import('../app/components/PeriodReview.tsx');
 const { AutomationPage } = await import('../app/pages/AutomationPage.tsx');
 
-const tick = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
+const tick = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 async function waitFor(check: () => boolean, label: string) {
   for (let attempt = 0; attempt < 80; attempt += 1) {
     if (check()) return;
-    await act(async () => { await tick(10); });
+    await act(async () => {
+      await tick(10);
+    });
   }
   assert.fail(`等待超时：${label}`);
 }
 function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
   return { promise, resolve, reject };
 }
 const jsonResponse = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 
 function findButton(container: ParentNode, text: string): HTMLButtonElement {
-  const found = [...container.querySelectorAll('button')].find(item => (item.textContent ?? '').includes(text));
+  const found = [...container.querySelectorAll('button')].find((item) => (item.textContent ?? '').includes(text));
   assert.ok(found, `找不到按钮：${text}`);
   return found as HTMLButtonElement;
 }
@@ -92,7 +97,12 @@ const emptyStats: Stats = {
   weekStartsOn: '2026-11-16',
 };
 
-const makeAction = (kind: HomeAction['kind'], id: string, title: string, status?: HomeAction['status']): HomeAction => ({
+const makeAction = (
+  kind: HomeAction['kind'],
+  id: string,
+  title: string,
+  status?: HomeAction['status'],
+): HomeAction => ({
   kind,
   id,
   title,
@@ -138,14 +148,25 @@ test('U2-01: 首页「待审核」统计卡统一触发审核筛选并区分 #ho
       return jsonResponse({
         date: '2026-11-19',
         dates: ['2026-11-19'],
-        items: [{
-          id: 'c1',
-          section: 'fmcg',
-          disposition: 'inbox',
-          draftPending: true,
-          execution: { runId: 'run1', draftId: 'd1', phase: 'draft_ready' },
-          item: { id: 'n1', title: '资讯一', sourceId: 's', sourceName: '源', url: 'https://example.test/1', fetchedAt: '2026-11-19T00:00:00Z', excerpt: '摘录', evidenceKind: 'article_excerpt' },
-        }],
+        items: [
+          {
+            id: 'c1',
+            section: 'fmcg',
+            disposition: 'inbox',
+            draftPending: true,
+            execution: { runId: 'run1', draftId: 'd1', phase: 'draft_ready' },
+            item: {
+              id: 'n1',
+              title: '资讯一',
+              sourceId: 's',
+              sourceName: '源',
+              url: 'https://example.test/1',
+              fetchedAt: '2026-11-19T00:00:00Z',
+              excerpt: '摘录',
+              evidenceKind: 'article_excerpt',
+            },
+          },
+        ],
         counts: { fetched: 1, pending: 0, organizing: 0, drafts: 1, failed: 0 },
       });
     }
@@ -158,19 +179,21 @@ test('U2-01: 首页「待审核」统计卡统一触发审核筛选并区分 #ho
   try {
     scrollCalls.length = 0;
     await act(async () => {
-      root.render(createElement(HomePage, {
-        stats: emptyStats,
-        items: [],
-        onOpenRaw: noop,
-        onOpenWiki: noop,
-        onOpenPrompt: noop,
-        onImport: noop,
-        onCreateWiki: noop,
-        onCreatePrompt: noop,
-        onGeneratePrompt: noop,
-        onLint: noop,
-        onOpenPipeline: noop,
-      }));
+      root.render(
+        createElement(HomePage, {
+          stats: emptyStats,
+          items: [],
+          onOpenRaw: noop,
+          onOpenWiki: noop,
+          onOpenPrompt: noop,
+          onImport: noop,
+          onCreateWiki: noop,
+          onCreatePrompt: noop,
+          onGeneratePrompt: noop,
+          onLint: noop,
+          onOpenPipeline: noop,
+        }),
+      );
       await tick();
     });
 
@@ -188,20 +211,26 @@ test('U2-01: 首页「待审核」统计卡统一触发审核筛选并区分 #ho
     assert.equal(subheading(), '今日资讯待审草稿');
 
     scrollCalls.length = 0;
-    const pendingStatCard = [...container.querySelectorAll('.stats-grid .stat-card')]
-      .find(btn => btn.textContent?.includes('待审核')) as HTMLButtonElement;
+    const pendingStatCard = [...container.querySelectorAll('.stats-grid .stat-card')].find((btn) =>
+      btn.textContent?.includes('待审核'),
+    ) as HTMLButtonElement;
     assert.ok(pendingStatCard, '底部「待审核」统计卡应存在');
     await click(pendingStatCard);
 
-    assert.ok(scrollCalls.some(call => call.id === 'home-actions'), '点击「待审核」统计卡应滚动到 #home-actions');
+    assert.ok(
+      scrollCalls.some((call) => call.id === 'home-actions'),
+      '点击「待审核」统计卡应滚动到 #home-actions',
+    );
     assert.equal(subheading(), '当前筛选待审草稿与工作流 2 项（共 5 项） · 稍后处理 1 项');
-    const actionTitles = [...homeActions.querySelectorAll('.home-action-row b')].map(el => el.textContent);
+    const actionTitles = [...homeActions.querySelectorAll('.home-action-row b')].map((el) => el.textContent);
     assert.deepEqual(actionTitles, ['待审草稿一', '待审工作流一', '稍后草稿一']);
 
     await click(findButton(homeActions, '显示全部事项'));
     assert.equal(subheading(), '当前待处理 4 项 · 稍后处理 1 项');
   } finally {
-    await act(async () => { root.unmount(); });
+    await act(async () => {
+      root.unmount();
+    });
   }
 
   // 验证读取失败且 actions 为空时仍显示“事项暂不可用”
@@ -209,24 +238,28 @@ test('U2-01: 首页「待审核」统计卡统一触发审核筛选并区分 #ho
   const errRoot = createRoot(container);
   try {
     await act(async () => {
-      errRoot.render(createElement(HomePage, {
-        stats: emptyStats,
-        items: [],
-        onOpenRaw: noop,
-        onOpenWiki: noop,
-        onOpenPrompt: noop,
-        onImport: noop,
-        onCreateWiki: noop,
-        onCreatePrompt: noop,
-        onGeneratePrompt: noop,
-        onLint: noop,
-      }));
+      errRoot.render(
+        createElement(HomePage, {
+          stats: emptyStats,
+          items: [],
+          onOpenRaw: noop,
+          onOpenWiki: noop,
+          onOpenPrompt: noop,
+          onImport: noop,
+          onCreateWiki: noop,
+          onCreatePrompt: noop,
+          onGeneratePrompt: noop,
+          onLint: noop,
+        }),
+      );
       await tick();
     });
     const subheading = container.querySelector('#home-actions .panel-heading p')?.textContent ?? '';
     assert.equal(subheading, '事项暂不可用');
   } finally {
-    await act(async () => { errRoot.unmount(); });
+    await act(async () => {
+      errRoot.unmount();
+    });
     globalThis.fetch = originalFetch;
   }
 });
@@ -244,9 +277,30 @@ test('U2-02: 首页「最近更新」已删除 Wiki 条目禁用不可点击且�
   const statsWithChanges: Stats = {
     ...emptyStats,
     recentChanges: [
-      { time: '2026-11-18T10:00:00.000Z', action: 'delete', id: 'wiki-del-1', title: '已删除页面', type: 'concept', revision: 4 },
-      { time: '2026-11-18T09:00:00.000Z', action: 'update', id: 'wiki-upd-1', title: '正常更新页面', type: 'concept', revision: 2 },
-      { time: '2026-11-18T08:00:00.000Z', action: 'create', id: 'wiki-cre-1', title: '新建页面', type: 'concept', revision: 1 },
+      {
+        time: '2026-11-18T10:00:00.000Z',
+        action: 'delete',
+        id: 'wiki-del-1',
+        title: '已删除页面',
+        type: 'concept',
+        revision: 4,
+      },
+      {
+        time: '2026-11-18T09:00:00.000Z',
+        action: 'update',
+        id: 'wiki-upd-1',
+        title: '正常更新页面',
+        type: 'concept',
+        revision: 2,
+      },
+      {
+        time: '2026-11-18T08:00:00.000Z',
+        action: 'create',
+        id: 'wiki-cre-1',
+        title: '新建页面',
+        type: 'concept',
+        revision: 1,
+      },
     ],
   };
 
@@ -255,24 +309,28 @@ test('U2-02: 首页「最近更新」已删除 Wiki 条目禁用不可点击且�
   const noop = () => {};
   try {
     await act(async () => {
-      root.render(createElement(HomePage, {
-        stats: statsWithChanges,
-        items: [],
-        onOpenRaw: noop,
-        onOpenWiki: (id?: string) => { openedWiki.push(id); },
-        onOpenPrompt: noop,
-        onImport: noop,
-        onCreateWiki: noop,
-        onCreatePrompt: noop,
-        onGeneratePrompt: noop,
-        onLint: noop,
-      }));
+      root.render(
+        createElement(HomePage, {
+          stats: statsWithChanges,
+          items: [],
+          onOpenRaw: noop,
+          onOpenWiki: (id?: string) => {
+            openedWiki.push(id);
+          },
+          onOpenPrompt: noop,
+          onImport: noop,
+          onCreateWiki: noop,
+          onCreatePrompt: noop,
+          onGeneratePrompt: noop,
+          onLint: noop,
+        }),
+      );
       await tick();
     });
 
     const rows = [...container.querySelectorAll('.recent-row')] as HTMLButtonElement[];
-    const deletedRow = rows.find(row => row.textContent?.includes('已删除页面'));
-    const updatedRow = rows.find(row => row.textContent?.includes('正常更新页面'));
+    const deletedRow = rows.find((row) => row.textContent?.includes('已删除页面'));
+    const updatedRow = rows.find((row) => row.textContent?.includes('正常更新页面'));
     assert.ok(deletedRow && updatedRow);
 
     assert.equal(deletedRow.disabled, true);
@@ -285,7 +343,9 @@ test('U2-02: 首页「最近更新」已删除 Wiki 条目禁用不可点击且�
     await click(updatedRow);
     assert.deepEqual(openedWiki, ['wiki-upd-1']);
   } finally {
-    await act(async () => { root.unmount(); });
+    await act(async () => {
+      root.unmount();
+    });
     globalThis.fetch = originalFetch;
   }
 });
@@ -294,7 +354,7 @@ test('U2-03: 周期回顾修改日期展示提示而非空白、拦截非法区�
   const pendingFetches: Array<{ url: string; resolve: (res: Response) => void }> = [];
   const originalFetch = globalThis.fetch;
   globalThis.fetch = ((input: unknown) =>
-    new Promise<Response>(resolve => {
+    new Promise<Response>((resolve) => {
       pendingFetches.push({ url: String(input), resolve });
     })) as typeof fetch;
 
@@ -366,7 +426,9 @@ test('U2-03: 周期回顾修改日期展示提示而非空白、拦截非法区�
     });
     assert.match(container.textContent ?? '', /覆盖 2026-11-01（含）至 2026-11-10（不含）/);
   } finally {
-    await act(async () => { root.unmount(); });
+    await act(async () => {
+      root.unmount();
+    });
     globalThis.fetch = originalFetch;
   }
 });
@@ -395,12 +457,16 @@ const newsSchedule: AutomationSchedule = {
   allowsCatchUp: true,
 };
 
-function makeCandidate(id: string, title: string, opts: {
-  relevance?: 0 | 1 | 2 | 3;
-  savedRawId?: string;
-  disposition?: CandidateView['disposition'];
-  runId?: string;
-} = {}): CandidateView {
+function makeCandidate(
+  id: string,
+  title: string,
+  opts: {
+    relevance?: 0 | 1 | 2 | 3;
+    savedRawId?: string;
+    disposition?: CandidateView['disposition'];
+    runId?: string;
+  } = {},
+): CandidateView {
   return {
     id,
     section: 'fmcg',
@@ -418,9 +484,18 @@ function makeCandidate(id: string, title: string, opts: {
       excerpt: '摘录内容。',
       evidenceKind: 'article_excerpt',
     },
-    screening: opts.relevance !== undefined ? {
-      score: { candidateId: id, relevance: opts.relevance, reason: '理由', categories: ['渠道'], suggestedMode: 'standard' },
-    } : undefined,
+    screening:
+      opts.relevance !== undefined
+        ? {
+            score: {
+              candidateId: id,
+              relevance: opts.relevance,
+              reason: '理由',
+              categories: ['渠道'],
+              suggestedMode: 'standard',
+            },
+          }
+        : undefined,
   };
 }
 
@@ -444,7 +519,8 @@ test('U2-04: 自动化收件箱支持当前可见范围「全选可确认项 / �
     if (url.endsWith('/status')) return jsonResponse(autoStatus);
     if (url.endsWith('/schedules')) return jsonResponse({ items: [newsSchedule], issues: [] });
     if (url.includes('/runs?')) return jsonResponse({ items: [], issues: [] });
-    if (url.endsWith('/pipeline/settings')) return jsonResponse({ revision: 1, concurrency: 2, topics: [], preScreenEnabled: true });
+    if (url.endsWith('/pipeline/settings'))
+      return jsonResponse({ revision: 1, concurrency: 2, topics: [], preScreenEnabled: true });
     if (url.endsWith('/candidates')) return jsonResponse(candidates);
     return jsonResponse({ error: { message: `Unexpected ${url}` } }, 404);
   }) as typeof fetch;
@@ -461,7 +537,10 @@ test('U2-04: 自动化收件箱支持当前可见范围「全选可确认项 / �
 
     const filters = container.querySelector('#news-candidates .automation-filters')!;
     assert.ok(findButton(filters, '全选可确认项（2 条）'));
-    assert.equal([...filters.querySelectorAll('button')].some(b => b.textContent?.includes('批量确认入库')), false);
+    assert.equal(
+      [...filters.querySelectorAll('button')].some((b) => b.textContent?.includes('批量确认入库')),
+      false,
+    );
 
     // 全选当前可见的 2 条可确认项（不含已入库与未展开的低分项）
     await click(findButton(filters, '全选可确认项（2 条）'));
@@ -486,7 +565,10 @@ test('U2-04: 自动化收件箱支持当前可见范围「全选可确认项 / �
     // 取消全选后清空并隐藏批量确认按钮
     await click(findButton(filters, '取消全选'));
     assert.ok(findButton(filters, '全选可确认项（3 条）'));
-    assert.equal([...filters.querySelectorAll('button')].some(b => b.textContent?.includes('批量确认入库')), false);
+    assert.equal(
+      [...filters.querySelectorAll('button')].some((b) => b.textContent?.includes('批量确认入库')),
+      false,
+    );
 
     // 切到「已忽略」视图时无可确认项，全选按钮不渲染
     const filterSelect = [...filters.querySelectorAll('select')][1] as HTMLSelectElement;
@@ -496,11 +578,13 @@ test('U2-04: 自动化收件箱支持当前可见范围「全选可确认项 / �
       await tick();
     });
     assert.equal(
-      [...filters.querySelectorAll('button')].some(b => /全选/.test(b.textContent ?? '')),
+      [...filters.querySelectorAll('button')].some((b) => /全选/.test(b.textContent ?? '')),
       false,
     );
   } finally {
-    await act(async () => { root.unmount(); });
+    await act(async () => {
+      root.unmount();
+    });
     globalThis.fetch = originalFetch;
   }
 });
@@ -561,7 +645,7 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     if (path.endsWith('/schedules')) return jsonResponse({ items: [newsSchedule, selfcheckSchedule], issues: [] });
     if (path.endsWith('/runs') && !init?.method) {
       const statusFilter = url.searchParams.get('status');
-      const items = [runHist1, runHist2].filter(run => !statusFilter || run.status === statusFilter);
+      const items = [runHist1, runHist2].filter((run) => !statusFilter || run.status === statusFilter);
       return jsonResponse({ items, issues: [] });
     }
     if (path.endsWith(`/tasks/${selfcheckSchedule.type}/run`) && init?.method === 'POST') {
@@ -569,7 +653,8 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     }
     const runMatch = /\/runs\/([^/]+)$/.exec(path);
     if (runMatch && allRuns[runMatch[1]]) return jsonResponse(allRuns[runMatch[1]]);
-    if (path.endsWith('/pipeline/settings')) return jsonResponse({ revision: 1, concurrency: 2, topics: [], preScreenEnabled: true });
+    if (path.endsWith('/pipeline/settings'))
+      return jsonResponse({ revision: 1, concurrency: 2, topics: [], preScreenEnabled: true });
     if (path.endsWith('/candidates')) return jsonResponse(candidates);
     return jsonResponse({ error: { message: `Unexpected ${path}` } }, 404);
   }) as typeof fetch;
@@ -583,7 +668,10 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
       await tick();
     });
     await click(findButton(container, '运行记录'));
-    await waitFor(() => !!container.querySelector('[aria-labelledby="automation-history"] li button'), '运行历史渲染完成');
+    await waitFor(
+      () => !!container.querySelector('[aria-labelledby="automation-history"] li button'),
+      '运行历史渲染完成',
+    );
 
     const historySection = container.querySelector('[aria-labelledby="automation-history"]')!;
     const detailBtn1 = [...historySection.querySelectorAll('li button')][0] as HTMLButtonElement;
@@ -596,7 +684,10 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     assert.ok(heading1);
     assert.equal(window.document.activeElement, heading1);
     assert.ok(
-      scrollCalls.some(call => call.id === 'automation-run-detail' && JSON.stringify(call.arg) === JSON.stringify({ block: 'nearest' })),
+      scrollCalls.some(
+        (call) =>
+          call.id === 'automation-run-detail' && JSON.stringify(call.arg) === JSON.stringify({ block: 'nearest' }),
+      ),
       '打开运行详情时应对 #automation-run-detail 调用 scrollIntoView({ block: "nearest" })',
     );
     await click(findButton(container, '关闭详情'));
@@ -618,7 +709,10 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     const viewRunBtn = findButton(container.querySelector('#news-candidates')!, '查看运行');
     await click(viewRunBtn);
     assert.equal(window.document.activeElement, container.querySelector('#automation-run-detail'));
-    await waitFor(() => (container.querySelector('[aria-labelledby="automation-run-detail"]')?.textContent ?? '').includes('成功'), '加载候选关联运行');
+    await waitFor(
+      () => (container.querySelector('[aria-labelledby="automation-run-detail"]')?.textContent ?? '').includes('成功'),
+      '加载候选关联运行',
+    );
     await click(findButton(container, '关闭详情'));
     assert.equal(window.document.activeElement, viewRunBtn, '关闭详情后应恢复焦点至「查看运行」按钮');
 
@@ -632,12 +726,17 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
 
     // 5. 若原触发按钮已从 DOM 卸载（isConnected === false），关闭详情不得报错或聚焦到断连节点
     await click(findButton(container, '运行记录'));
-    await waitFor(() => !!container.querySelector('[aria-labelledby="automation-history"] li button'), '运行历史重新渲染完成');
+    await waitFor(
+      () => !!container.querySelector('[aria-labelledby="automation-history"] li button'),
+      '运行历史重新渲染完成',
+    );
     const historySectionAfter = container.querySelector('[aria-labelledby="automation-history"]')!;
     const detailBtnAfter = [...historySectionAfter.querySelectorAll('li button')][0] as HTMLButtonElement;
     await click(detailBtnAfter);
     assert.equal(detailBtnAfter.isConnected, true);
-    const statusSelect = [...historySectionAfter.querySelectorAll('.automation-filters select')][1] as HTMLSelectElement;
+    const statusSelect = [
+      ...historySectionAfter.querySelectorAll('.automation-filters select'),
+    ][1] as HTMLSelectElement;
     await act(async () => {
       statusSelect.value = 'failed';
       statusSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
@@ -648,7 +747,9 @@ test('U2-05: 自动化运行详情打开时滚动并聚焦标题，关闭后恢�
     assert.equal(container.querySelector('#automation-run-detail'), null);
     assert.equal(window.document.activeElement?.isConnected, true, '焦点不得落在已卸载节点上');
   } finally {
-    await act(async () => { root.unmount(); });
+    await act(async () => {
+      root.unmount();
+    });
     globalThis.fetch = originalFetch;
   }
 });

@@ -8,16 +8,26 @@ function jobKey(file: string): string | undefined {
   const resolved = path.resolve(file);
   const absolute = process.platform === 'win32' ? resolved.toLowerCase() : resolved;
   const directory = path.dirname(absolute);
-  if (path.basename(directory) !== 'extraction-jobs' || path.basename(path.dirname(directory)) !== 'state' || path.extname(absolute) !== '.json') return undefined;
+  if (
+    path.basename(directory) !== 'extraction-jobs' ||
+    path.basename(path.dirname(directory)) !== 'state' ||
+    path.extname(absolute) !== '.json'
+  )
+    return undefined;
   return absolute;
 }
 function coordinate<T>(queues: Map<string, Promise<void>>, file: string, work: () => Promise<T>): Promise<T> {
   const key = jobKey(file);
   if (!key) return work();
   const result = (queues.get(key) ?? Promise.resolve()).then(work);
-  const settled = result.then(() => undefined, () => undefined);
+  const settled = result.then(
+    () => undefined,
+    () => undefined,
+  );
   queues.set(key, settled);
-  void settled.then(() => { if (queues.get(key) === settled) queues.delete(key); });
+  void settled.then(() => {
+    if (queues.get(key) === settled) queues.delete(key);
+  });
   return result;
 }
 

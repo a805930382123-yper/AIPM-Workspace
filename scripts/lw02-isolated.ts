@@ -1,16 +1,209 @@
 /** Real App/API/Draft/Commit in TEMP, synthetic sources and fake Provider; no configuration loader. */
-import express from 'express';import {createServer} from 'vite';import react from '@vitejs/plugin-react';
-import {mkdtemp,readFile,writeFile,realpath} from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import type {AddressInfo} from 'node:net';
-import {lw02Fixture} from '../tests/lw02-fixture.ts';import {PromptStore} from '../services/prompt/store.ts';import {LLMService} from '../services/llm/service.ts';import {getStats} from '../services/stats/index.ts';
-import {registerB04Routes} from '../server/llm-api.ts';import {registerKnowledgeRoutes} from '../server/knowledge-api.ts';import {registerHomeRoutes} from '../server/home-api.ts';import {validateWikiInput,validateBaseRevision} from '../server/wiki-validation.ts';import {validateRaw} from '../server/validation.ts';
-const reuse=process.argv.includes('--root'),root=reuse?path.resolve(process.argv[process.argv.indexOf('--root')+1]):await mkdtemp(path.join(os.tmpdir(),'lw02-browser-'));const relative=path.relative(await realpath(os.tmpdir()),await realpath(root));if(!relative||relative.startsWith('..')||path.isAbsolute(relative))throw Error('TEMP root required');
-const f=await lw02Fixture(root),prompts=new PromptStore(root);await prompts.initialize();await f.commits.reconcile();let fixtures:any;
-if(reuse)fixtures=JSON.parse(await readFile(path.join(root,'fixtures.json'),'utf8'));
-else{const a=await f.rawStore.create({title:'LW02 合成渠道资料A',sourceType:'report',sourceName:'虚构渠道访谈A',tags:['渠道'],body:'2025年有效门店100家，按活跃口径统计。\n2026年签约门店90家，记录仍待复核。'}),b=await f.rawStore.create({title:'LW02 合成渠道资料B',sourceType:'report',sourceName:'虚构渠道报告B',tags:['渠道'],body:'2026年签约门店120家，与另一记录90家不一致，需核对统计范围。'});const wa=await f.seed('渠道统计口径A','2025年有效门店100家，按活跃口径统计。\n2026年签约门店90家，记录仍待复核。\n人工补充：渠道负责人需电话核对。',[a.id]),wa2=await f.seed('渠道口径补充A','有效门店统计必须记录年份和活跃条件。',[a.id]),wb=await f.seed('渠道统计口径B','2026年签约门店120家，与90家记录存在分歧，待核统计范围。',[b.id]);fixtures={a:a.id,b:b.id,wa:wa.id,wa2:wa2.id,wb:wb.id,question:'有效门店统计的年份与签约口径有什么区别？'};await writeFile(path.join(root,'fixtures.json'),JSON.stringify(fixtures,null,2));}
-f.mode('inference');let delayMs=0;const complete=f.provider.complete.bind(f.provider);f.provider.complete=async request=>{if(delayMs)await new Promise(r=>setTimeout(r,delayMs));return complete(request);};const app=express();app.use(express.json({limit:'3mb'}));let failDraft=false,failCommit=false;const create=f.drafts.createQuestion.bind(f.drafts);f.drafts.createQuestion=async input=>{if(failDraft){failDraft=false;throw Error('LW02 controlled draft storage failure');}return create(input);};const index=f.wiki.rebuildIndexLocked.bind(f.wiki);f.wiki.rebuildIndexLocked=async()=>{if(failCommit){failCommit=false;throw Error('LW02 controlled index failure');}return index();};
-app.post('/__control/delay',(req,res)=>{delayMs=Math.max(0,Math.min(3000,Number(req.body.ms)||0));res.json({ok:true});});app.get('/__control/counters',(_req,res)=>res.json({provider:f.requests.length,realProviderCalls:0,configuration:'not-connected'}));app.get('/__control/requests',(_req,res)=>res.json(f.requests));app.post('/__control/mode',(req,res)=>{f.mode(req.body.mode);res.json({ok:true});});app.post('/__control/fail-provider',(req,res)=>{f.fail(req.body.count??1);res.json({ok:true});});app.post('/__control/fail-draft',(_req,res)=>{failDraft=true;res.json({ok:true});});app.post('/__control/fail-commit',(_req,res)=>{failCommit=true;res.json({ok:true});});app.post('/__control/recover',async(_req,res)=>res.json(await f.commits.reconcile()));
-app.get('/api/health',(_req,res)=>res.json({ok:true,isolated:true}));app.get('/api/raw',async(_req,res)=>res.json({items:await f.rawStore.list()}));app.get('/api/raw/:id',async(req,res)=>{const raw=await f.rawStore.get(req.params.id);if(!raw)return res.sendStatus(404);res.json(raw);});app.post('/api/raw',async(req,res)=>res.status(201).json(await f.rawStore.create(validateRaw(req.body))));app.get('/api/stats',async(_req,res)=>res.json(await getStats(root,f.rawStore,new Date(),prompts)));app.get('/api/recovery-issues',(_req,res)=>res.json({items:[],overflow:false}));
-app.get('/api/wiki/schema',async(_req,res)=>res.json(await f.wiki.schema()));app.get('/api/wiki',async(req,res)=>res.json({items:await f.wiki.list({q:typeof req.query.q==='string'?req.query.q:undefined}),categoryCounts:await f.wiki.categoryCounts()}));app.get('/api/wiki/:id/references',async(req,res)=>res.json({items:await f.wiki.references(req.params.id)}));app.get('/api/wiki/:id',async(req,res)=>{const p=await f.wiki.get(req.params.id);if(!p)return res.sendStatus(404);res.json({...p,links:(await f.wiki.links(p.id)).map(l=>({target:l.text,status:l.status==='found'?'resolved':l.status,candidates:l.candidates}))});});app.put('/api/wiki/:id',async(req,res)=>res.json(await f.wiki.update(req.params.id,validateBaseRevision(req.body.baseRevision),validateWikiInput(req.body))));app.get('/api/audits',(_req,res)=>res.json({items:[]}));app.get('/api/llm/config',(_req,res)=>res.json({configured:true,keyConfigured:false,provider:'fake',model:'lw02-engineering-only',missing:[],source:'none',environmentLocked:true}));
-registerB04Routes(app,{root,rawStore:f.rawStore,rawStates:f.rawStates,drafts:f.drafts,jobs:f.jobs,runner:f.runner,rulesDir:path.resolve('rules'),provider:()=>f.provider,llm:new LLMService('rules'),commits:f.commits,wikiStore:f.wiki});registerKnowledgeRoutes(app,{root,raws:f.rawStore,drafts:f.drafts,wiki:f.wiki,provider:()=>f.provider});registerHomeRoutes(app,{root,raws:f.rawStore,wiki:f.wiki,runner:f.runner,prompts});
-app.use(((error,_req,res,_next)=>res.status(error.status??500).json({error:{code:error.code??'ISOLATED_ERROR',message:error.message,details:error.details}})) as express.ErrorRequestHandler);
-const server=app.listen(0,'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const apiPort=(server.address()as AddressInfo).port,envDir=await mkdtemp(path.join(os.tmpdir(),'lw02-empty-env-')),vite=await createServer({configFile:false,root:process.cwd(),envDir,plugins:[react()],server:{host:'127.0.0.1',port:0,proxy:{'/api':`http://127.0.0.1:${apiPort}`}}});await vite.listen();const info={pid:process.pid,url:`http://127.0.0.1:${(vite.httpServer!.address()as AddressInfo).port}`,api:`http://127.0.0.1:${apiPort}`,root,fixtures,provider:'fake-only',configuration:'not-connected'};await writeFile(path.join(root,'isolated-session.json'),JSON.stringify(info,null,2));console.log(JSON.stringify(info,null,2));const close=async()=>{await vite.close();await new Promise<void>(r=>server.close(()=>r()));process.exit(0);};process.on('SIGINT',()=>void close());process.on('SIGTERM',()=>void close());
+import express from 'express';
+import { createServer } from 'vite';
+import react from '@vitejs/plugin-react';
+import { mkdtemp, readFile, writeFile, realpath } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import type { AddressInfo } from 'node:net';
+import { lw02Fixture } from '../tests/lw02-fixture.ts';
+import { PromptStore } from '../services/prompt/store.ts';
+import { LLMService } from '../services/llm/service.ts';
+import { getStats } from '../services/stats/index.ts';
+import { registerB04Routes } from '../server/llm-api.ts';
+import { registerKnowledgeRoutes } from '../server/knowledge-api.ts';
+import { registerHomeRoutes } from '../server/home-api.ts';
+import { validateWikiInput, validateBaseRevision } from '../server/wiki-validation.ts';
+import { validateRaw } from '../server/validation.ts';
+const reuse = process.argv.includes('--root'),
+  root = reuse
+    ? path.resolve(process.argv[process.argv.indexOf('--root') + 1])
+    : await mkdtemp(path.join(os.tmpdir(), 'lw02-browser-'));
+const relative = path.relative(await realpath(os.tmpdir()), await realpath(root));
+if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) throw Error('TEMP root required');
+const f = await lw02Fixture(root),
+  prompts = new PromptStore(root);
+await prompts.initialize();
+await f.commits.reconcile();
+let fixtures: any;
+if (reuse) fixtures = JSON.parse(await readFile(path.join(root, 'fixtures.json'), 'utf8'));
+else {
+  const a = await f.rawStore.create({
+      title: 'LW02 合成渠道资料A',
+      sourceType: 'report',
+      sourceName: '虚构渠道访谈A',
+      tags: ['渠道'],
+      body: '2025年有效门店100家，按活跃口径统计。\n2026年签约门店90家，记录仍待复核。',
+    }),
+    b = await f.rawStore.create({
+      title: 'LW02 合成渠道资料B',
+      sourceType: 'report',
+      sourceName: '虚构渠道报告B',
+      tags: ['渠道'],
+      body: '2026年签约门店120家，与另一记录90家不一致，需核对统计范围。',
+    });
+  const wa = await f.seed(
+      '渠道统计口径A',
+      '2025年有效门店100家，按活跃口径统计。\n2026年签约门店90家，记录仍待复核。\n人工补充：渠道负责人需电话核对。',
+      [a.id],
+    ),
+    wa2 = await f.seed('渠道口径补充A', '有效门店统计必须记录年份和活跃条件。', [a.id]),
+    wb = await f.seed('渠道统计口径B', '2026年签约门店120家，与90家记录存在分歧，待核统计范围。', [b.id]);
+  fixtures = {
+    a: a.id,
+    b: b.id,
+    wa: wa.id,
+    wa2: wa2.id,
+    wb: wb.id,
+    question: '有效门店统计的年份与签约口径有什么区别？',
+  };
+  await writeFile(path.join(root, 'fixtures.json'), JSON.stringify(fixtures, null, 2));
+}
+f.mode('inference');
+let delayMs = 0;
+const complete = f.provider.complete.bind(f.provider);
+f.provider.complete = async (request) => {
+  if (delayMs) await new Promise((r) => setTimeout(r, delayMs));
+  return complete(request);
+};
+const app = express();
+app.use(express.json({ limit: '3mb' }));
+let failDraft = false,
+  failCommit = false;
+const create = f.drafts.createQuestion.bind(f.drafts);
+f.drafts.createQuestion = async (input) => {
+  if (failDraft) {
+    failDraft = false;
+    throw Error('LW02 controlled draft storage failure');
+  }
+  return create(input);
+};
+const index = f.wiki.rebuildIndexLocked.bind(f.wiki);
+f.wiki.rebuildIndexLocked = async () => {
+  if (failCommit) {
+    failCommit = false;
+    throw Error('LW02 controlled index failure');
+  }
+  return index();
+};
+app.post('/__control/delay', (req, res) => {
+  delayMs = Math.max(0, Math.min(3000, Number(req.body.ms) || 0));
+  res.json({ ok: true });
+});
+app.get('/__control/counters', (_req, res) =>
+  res.json({ provider: f.requests.length, realProviderCalls: 0, configuration: 'not-connected' }),
+);
+app.get('/__control/requests', (_req, res) => res.json(f.requests));
+app.post('/__control/mode', (req, res) => {
+  f.mode(req.body.mode);
+  res.json({ ok: true });
+});
+app.post('/__control/fail-provider', (req, res) => {
+  f.fail(req.body.count ?? 1);
+  res.json({ ok: true });
+});
+app.post('/__control/fail-draft', (_req, res) => {
+  failDraft = true;
+  res.json({ ok: true });
+});
+app.post('/__control/fail-commit', (_req, res) => {
+  failCommit = true;
+  res.json({ ok: true });
+});
+app.post('/__control/recover', async (_req, res) => res.json(await f.commits.reconcile()));
+app.get('/api/health', (_req, res) => res.json({ ok: true, isolated: true }));
+app.get('/api/raw', async (_req, res) => res.json({ items: await f.rawStore.list() }));
+app.get('/api/raw/:id', async (req, res) => {
+  const raw = await f.rawStore.get(req.params.id);
+  if (!raw) return res.sendStatus(404);
+  res.json(raw);
+});
+app.post('/api/raw', async (req, res) => res.status(201).json(await f.rawStore.create(validateRaw(req.body))));
+app.get('/api/stats', async (_req, res) => res.json(await getStats(root, f.rawStore, new Date(), prompts)));
+app.get('/api/recovery-issues', (_req, res) => res.json({ items: [], overflow: false }));
+app.get('/api/wiki/schema', async (_req, res) => res.json(await f.wiki.schema()));
+app.get('/api/wiki', async (req, res) =>
+  res.json({
+    items: await f.wiki.list({ q: typeof req.query.q === 'string' ? req.query.q : undefined }),
+    categoryCounts: await f.wiki.categoryCounts(),
+  }),
+);
+app.get('/api/wiki/:id/references', async (req, res) => res.json({ items: await f.wiki.references(req.params.id) }));
+app.get('/api/wiki/:id', async (req, res) => {
+  const p = await f.wiki.get(req.params.id);
+  if (!p) return res.sendStatus(404);
+  res.json({
+    ...p,
+    links: (await f.wiki.links(p.id)).map((l) => ({
+      target: l.text,
+      status: l.status === 'found' ? 'resolved' : l.status,
+      candidates: l.candidates,
+    })),
+  });
+});
+app.put('/api/wiki/:id', async (req, res) =>
+  res.json(
+    await f.wiki.update(req.params.id, validateBaseRevision(req.body.baseRevision), validateWikiInput(req.body)),
+  ),
+);
+app.get('/api/audits', (_req, res) => res.json({ items: [] }));
+app.get('/api/llm/config', (_req, res) =>
+  res.json({
+    configured: true,
+    keyConfigured: false,
+    provider: 'fake',
+    model: 'lw02-engineering-only',
+    missing: [],
+    source: 'none',
+    environmentLocked: true,
+  }),
+);
+registerB04Routes(app, {
+  root,
+  rawStore: f.rawStore,
+  rawStates: f.rawStates,
+  drafts: f.drafts,
+  jobs: f.jobs,
+  runner: f.runner,
+  rulesDir: path.resolve('rules'),
+  provider: () => f.provider,
+  llm: new LLMService('rules'),
+  commits: f.commits,
+  wikiStore: f.wiki,
+});
+registerKnowledgeRoutes(app, { root, raws: f.rawStore, drafts: f.drafts, wiki: f.wiki, provider: () => f.provider });
+registerHomeRoutes(app, { root, raws: f.rawStore, wiki: f.wiki, runner: f.runner, prompts });
+app.use(((error, _req, res, _next) =>
+  res.status(error.status ?? 500).json({
+    error: { code: error.code ?? 'ISOLATED_ERROR', message: error.message, details: error.details },
+  })) as express.ErrorRequestHandler);
+const server = app.listen(0, '127.0.0.1');
+await new Promise<void>((r) => server.once('listening', r));
+const apiPort = (server.address() as AddressInfo).port,
+  envDir = await mkdtemp(path.join(os.tmpdir(), 'lw02-empty-env-')),
+  vite = await createServer({
+    configFile: false,
+    root: process.cwd(),
+    envDir,
+    plugins: [react()],
+    server: { host: '127.0.0.1', port: 0, proxy: { '/api': `http://127.0.0.1:${apiPort}` } },
+  });
+await vite.listen();
+const info = {
+  pid: process.pid,
+  url: `http://127.0.0.1:${(vite.httpServer!.address() as AddressInfo).port}`,
+  api: `http://127.0.0.1:${apiPort}`,
+  root,
+  fixtures,
+  provider: 'fake-only',
+  configuration: 'not-connected',
+};
+await writeFile(path.join(root, 'isolated-session.json'), JSON.stringify(info, null, 2));
+console.log(JSON.stringify(info, null, 2));
+const close = async () => {
+  await vite.close();
+  await new Promise<void>((r) => server.close(() => r()));
+  process.exit(0);
+};
+process.on('SIGINT', () => void close());
+process.on('SIGTERM', () => void close());

@@ -1,68 +1,774 @@
-import {useEffect,useRef,useState} from 'react';
-import {editStructuredNote,reviewStructuredNote,type RawDraftView as DraftView,type DraftEvidence} from '../api';
-import {NOTE_ROLES,noteCoverage,type StructuredNote,type NoteAttribution,type NoteExclusion} from '../../services/wiki/structured-note';
+import { useEffect, useRef, useState } from 'react';
+import { editStructuredNote, reviewStructuredNote, type RawDraftView as DraftView, type DraftEvidence } from '../api';
+import {
+  NOTE_ROLES,
+  noteCoverage,
+  type StructuredNote,
+  type NoteAttribution,
+  type NoteExclusion,
+} from '../../services/wiki/structured-note';
 
-const labels={source_supported:'原文支持',reorganized:'整理归纳',supplementary:'补充知识，未经原文支持',needs_verification:'待核实'};
-export function StructuredNoteEditor({view,body,disabled,onSaved,onDirty,onSaving,outcomeReview=false}:{view:DraftView;body:string;disabled:boolean;onSaved:(v:import('../api').DraftView)=>void;onDirty:(v:boolean)=>void;onSaving?:(v:boolean)=>void;outcomeReview?:boolean}){
-  const [note,setNote]=useState<StructuredNote>(()=>structuredClone(view.structuredNote!));
-  const [exclusions,setExclusions]=useState<NoteExclusion[]>(view.noteReview?.exclusions??[]),[questionIds,setQuestionIds]=useState<string[]>(view.noteReview?.questionIds??[]),[humanQuestions,setHumanQuestions]=useState<string[]>(view.noteReview?.humanQuestions??[]);
-  const [editing,setEditing]=useState(false),[saving,setSaving]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
-  const [warningsAcknowledged,setWarningsAcknowledged]=useState(false),[historyAcknowledged,setHistoryAcknowledged]=useState(false);
-  const [evidence,setEvidence]=useState<DraftEvidence|null>(null);const mark=useRef<HTMLElement>(null),generation=useRef(0);
-  const restoreSavedNote=()=>{
+const labels = {
+  source_supported: '原文支持',
+  reorganized: '整理归纳',
+  supplementary: '补充知识，未经原文支持',
+  needs_verification: '待核实',
+};
+export function StructuredNoteEditor({
+  view,
+  body,
+  disabled,
+  onSaved,
+  onDirty,
+  onSaving,
+  outcomeReview = false,
+}: {
+  view: DraftView;
+  body: string;
+  disabled: boolean;
+  onSaved: (v: import('../api').DraftView) => void;
+  onDirty: (v: boolean) => void;
+  onSaving?: (v: boolean) => void;
+  outcomeReview?: boolean;
+}) {
+  const [note, setNote] = useState<StructuredNote>(() => structuredClone(view.structuredNote!));
+  const [exclusions, setExclusions] = useState<NoteExclusion[]>(view.noteReview?.exclusions ?? []),
+    [questionIds, setQuestionIds] = useState<string[]>(view.noteReview?.questionIds ?? []),
+    [humanQuestions, setHumanQuestions] = useState<string[]>(view.noteReview?.humanQuestions ?? []);
+  const [editing, setEditing] = useState(false),
+    [saving, setSaving] = useState(false),
+    [error, setError] = useState(''),
+    [notice, setNotice] = useState('');
+  const [warningsAcknowledged, setWarningsAcknowledged] = useState(false),
+    [historyAcknowledged, setHistoryAcknowledged] = useState(false);
+  const [evidence, setEvidence] = useState<DraftEvidence | null>(null);
+  const mark = useRef<HTMLElement>(null),
+    generation = useRef(0);
+  const restoreSavedNote = () => {
     setNote(structuredClone(view.structuredNote!));
-    setExclusions(view.noteReview?.exclusions??[]);
-    setQuestionIds(view.noteReview?.questionIds??[]);
-    setHumanQuestions(view.noteReview?.humanQuestions??[]);
+    setExclusions(view.noteReview?.exclusions ?? []);
+    setQuestionIds(view.noteReview?.questionIds ?? []);
+    setHumanQuestions(view.noteReview?.humanQuestions ?? []);
     setError('');
   };
-  useEffect(()=>{generation.current++;restoreSavedNote();setEvidence(null);setSaving(false);return()=>{generation.current++;};},[view.id,view.revision]);
-  const directory=view.humanReview!.units.filter(u=>u.kind==='fact'||u.kind==='question').flatMap(u=>u.records.map(r=>({...r,kind:u.kind,evidence:u.evidence.filter(e=>r.evidenceIds.includes(e.id))})));
-  const facts=directory.filter(r=>r.kind==='fact'),questions=directory.filter(r=>r.kind==='question');
-  const dirty=JSON.stringify({note,exclusions,questionIds,humanQuestions})!==JSON.stringify({note:view.structuredNote,exclusions:view.noteReview?.exclusions??[],questionIds:view.noteReview?.questionIds??[],humanQuestions:view.noteReview?.humanQuestions??[]});
-  useEffect(()=>{onDirty(dirty);},[dirty,onDirty]);
-  useEffect(()=>{onSaving?.(saving);},[saving,onSaving]);
-  useEffect(()=>{if(evidence)mark.current?.scrollIntoView({behavior:'smooth',block:'center'});},[evidence]);
-  const coverage=noteCoverage(note,facts.map(f=>f.id),questions.map(q=>q.id),exclusions,questionIds);
-  const change=(fn:(next:StructuredNote)=>void)=>{setNote(current=>{const next=structuredClone(current);fn(next);return next;});setNotice('');};
-  const field=(label:string,value:string,write:(value:string)=>void)=><label className="field">{label}<textarea rows={2} value={value} onChange={e=>write(e.target.value)}/></label>;
-  const attribution=(leaf:NoteAttribution,write:(fn:(v:NoteAttribution)=>void)=>void,remove?:()=>void)=><div className="note-attribution"><span className={`note-role ${leaf.role}`}>{labels[leaf.role]}</span>{leaf.factIds.map(id=><button type="button" className="text-button" key={id} onClick={()=>{const e=facts.find(f=>f.id===id)?.evidence[0];if(e)setEvidence(e);}}>{id}</button>)}{leaf.role==='needs_verification'&&<p>原因：{leaf.reason}</p>}{editing&&<details><summary>编辑角色与事实引用</summary><label className="field">内容角色<select value={leaf.role} onChange={e=>write(v=>{v.role=e.target.value as NoteAttribution['role'];if(v.role==='supplementary')v.factIds=[];if(v.role==='needs_verification')v.reason??='';else delete v.reason;})}>{NOTE_ROLES.map(role=><option key={role} value={role}>{labels[role]}</option>)}</select></label>{leaf.role!=='supplementary'&&facts.map(f=><label className="draft-line" key={f.id}><input type="checkbox" aria-label={`引用 ${f.id}`} checked={leaf.factIds.includes(f.id)} onChange={e=>write(v=>{v.factIds=e.target.checked?[...v.factIds,f.id]:v.factIds.filter(id=>id!==f.id);})}/>{f.id}：{f.text}</label>)}{leaf.role==='needs_verification'&&field('待核实原因',leaf.reason??'',value=>write(v=>{v.reason=value;}))}</details>}{editing&&leaf.role==='supplementary'&&remove&&<button type="button" className="text-button danger" onClick={remove}>删除补充</button>}</div>;
-  const save=async()=>{const current=generation.current;setSaving(true);setError('');setNotice('');try{const result=await editStructuredNote(view.id,view.revision,note,exclusions,questionIds,humanQuestions);if(current!==generation.current)return;onSaved(result);if(outcomeReview)setEditing(false);setNotice(result.revision===view.revision?'内容未变化，保留原审批。':outcomeReview?'笔记已保存。如需入库，请重新选择本次成果。':'笔记已保存，人工修改待核对；全部旧审批已失效。');}catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'保存失败。');}finally{if(current===generation.current)setSaving(false);}};
-  const rawValid=!!view.preview?.rawExists&&view.preview.rawSha256Matches&&!!body;
-  return <section className="panel structured-note" aria-label="深度结构化笔记">
-    <div className="panel-heading">
-      <div><h2>深度阅读笔记</h2><p>{view.noteReview||dirty?'人工修改，待核对':'AI生成草稿，待人工核对'}</p></div>
-      <div className="action-group">
-        <button type="button" className="secondary-button" disabled={disabled||saving} onClick={()=>setEditing(!editing)}>{editing?'阅读笔记':'编辑笔记'}</button>
-        {(editing||dirty)&&<button type="button" className="text-button" disabled={disabled||saving} onClick={()=>{restoreSavedNote();setEditing(false);setNotice('');}}>取消笔记编辑</button>}
-        <button type="button" className="primary-button" disabled={disabled||saving||!rawValid} onClick={()=>void save()}>{saving?'正在保存笔记…':'保存笔记'}</button>
-      </div>
+  useEffect(() => {
+    generation.current++;
+    restoreSavedNote();
+    setEvidence(null);
+    setSaving(false);
+    return () => {
+      generation.current++;
+    };
+  }, [view.id, view.revision]);
+  const directory = view
+    .humanReview!.units.filter((u) => u.kind === 'fact' || u.kind === 'question')
+    .flatMap((u) =>
+      u.records.map((r) => ({ ...r, kind: u.kind, evidence: u.evidence.filter((e) => r.evidenceIds.includes(e.id)) })),
+    );
+  const facts = directory.filter((r) => r.kind === 'fact'),
+    questions = directory.filter((r) => r.kind === 'question');
+  const dirty =
+    JSON.stringify({ note, exclusions, questionIds, humanQuestions }) !==
+    JSON.stringify({
+      note: view.structuredNote,
+      exclusions: view.noteReview?.exclusions ?? [],
+      questionIds: view.noteReview?.questionIds ?? [],
+      humanQuestions: view.noteReview?.humanQuestions ?? [],
+    });
+  useEffect(() => {
+    onDirty(dirty);
+  }, [dirty, onDirty]);
+  useEffect(() => {
+    onSaving?.(saving);
+  }, [saving, onSaving]);
+  useEffect(() => {
+    if (evidence) mark.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [evidence]);
+  const coverage = noteCoverage(
+    note,
+    facts.map((f) => f.id),
+    questions.map((q) => q.id),
+    exclusions,
+    questionIds,
+  );
+  const change = (fn: (next: StructuredNote) => void) => {
+    setNote((current) => {
+      const next = structuredClone(current);
+      fn(next);
+      return next;
+    });
+    setNotice('');
+  };
+  const field = (label: string, value: string, write: (value: string) => void) => (
+    <label className="field">
+      {label}
+      <textarea rows={2} value={value} onChange={(e) => write(e.target.value)} />
+    </label>
+  );
+  const attribution = (
+    leaf: NoteAttribution,
+    write: (fn: (v: NoteAttribution) => void) => void,
+    remove?: () => void,
+  ) => (
+    <div className="note-attribution">
+      <span className={`note-role ${leaf.role}`}>{labels[leaf.role]}</span>
+      {leaf.factIds.map((id) => (
+        <button
+          type="button"
+          className="text-button"
+          key={id}
+          onClick={() => {
+            const e = facts.find((f) => f.id === id)?.evidence[0];
+            if (e) setEvidence(e);
+          }}
+        >
+          {id}
+        </button>
+      ))}
+      {leaf.role === 'needs_verification' && <p>原因：{leaf.reason}</p>}
+      {editing && (
+        <details>
+          <summary>编辑角色与事实引用</summary>
+          <label className="field">
+            内容角色
+            <select
+              value={leaf.role}
+              onChange={(e) =>
+                write((v) => {
+                  v.role = e.target.value as NoteAttribution['role'];
+                  if (v.role === 'supplementary') v.factIds = [];
+                  if (v.role === 'needs_verification') v.reason ??= '';
+                  else delete v.reason;
+                })
+              }
+            >
+              {NOTE_ROLES.map((role) => (
+                <option key={role} value={role}>
+                  {labels[role]}
+                </option>
+              ))}
+            </select>
+          </label>
+          {leaf.role !== 'supplementary' &&
+            facts.map((f) => (
+              <label className="draft-line" key={f.id}>
+                <input
+                  type="checkbox"
+                  aria-label={`引用 ${f.id}`}
+                  checked={leaf.factIds.includes(f.id)}
+                  onChange={(e) =>
+                    write((v) => {
+                      v.factIds = e.target.checked ? [...v.factIds, f.id] : v.factIds.filter((id) => id !== f.id);
+                    })
+                  }
+                />
+                {f.id}：{f.text}
+              </label>
+            ))}
+          {leaf.role === 'needs_verification' &&
+            field('待核实原因', leaf.reason ?? '', (value) =>
+              write((v) => {
+                v.reason = value;
+              }),
+            )}
+        </details>
+      )}
+      {editing && leaf.role === 'supplementary' && remove && (
+        <button type="button" className="text-button danger" onClick={remove}>
+          删除补充
+        </button>
+      )}
     </div>
-    {!rawValid&&<p className="form-error" role="alert">原文缺失、变更或尚未读完，已禁止保存。</p>}{error&&<p className="form-error" role="alert">{error} 输入已保留，可修正后重试。</p>}{notice&&<p role="status">{notice}</p>}
-    <div className="notice-warn">{outcomeReview?'保存后请重新查看成果与本次选择，再确认入库。':'保存后请逐页审核知识卡片，并明确核对深度笔记，再显式确认创建Source及所选知识页。'}{view.noteReview||dirty?'历史模型报告，编辑后未复核。':'模型报告仅反映生成时检查，不替代人工审查。'}</div>
-    <details><summary>{view.noteReview||dirty?'历史模型报告，编辑后未复核':'生成时模型报告'}</summary><pre>{JSON.stringify(view.qualityReport,null,2)}</pre></details>{view.noteWarnings?.map(w=><p className="notice-warn" key={w}>{w}</p>)}
-    <fieldset disabled={disabled||saving} className="note-form"><legend className="sr-only">笔记内容</legend>
-    {editing?field('知识定位',note.orientation,value=>change(n=>{n.orientation=value;})):<p className="note-prose">知识定位：{note.orientation}</p>}
-    {note.sections.map((section,si)=><section key={section.id} className="note-section" aria-label={`笔记章节 ${si+1}`}>
-      {editing?<><div className="action-group"><button type="button" className="secondary-button" disabled={si===0} onClick={()=>change(n=>{[n.sections[si-1],n.sections[si]]=[n.sections[si],n.sections[si-1]];})}>章节上移</button><button type="button" className="secondary-button" disabled={si===note.sections.length-1} onClick={()=>change(n=>{[n.sections[si+1],n.sections[si]]=[n.sections[si],n.sections[si+1]];})}>章节下移</button><button type="button" className="text-button danger" onClick={()=>change(n=>{n.sections.splice(si,1);})}>删除章节</button></div>{field('章节标题',section.title,value=>change(n=>{n.sections[si].title=value;}))}{field('阅读问题',section.question,value=>change(n=>{n.sections[si].question=value;}))}</>:<><h3>{section.title}</h3><p>阅读问题：{section.question}</p></>}
-      {section.blocks.map((block,bi)=>{
-        const edit=(fn:(b:typeof block)=>void)=>change(n=>fn(n.sections[si].blocks[bi] as typeof block));
-        const removeBlock=()=>change(n=>{n.sections[si].blocks.splice(bi,1);});
-        return <div className={`note-block note-${block.type}`} key={bi}>
-          {(block.type==='paragraph'||block.type==='callout')&&<>{block.type==='callout'&&(editing?field('提醒标题',block.title,value=>edit(b=>{if(b.type==='callout')b.title=value;})):<h4>{block.title}</h4>)}{editing?field(block.type==='callout'?'提醒正文':'段落正文',block.text,value=>edit(b=>{if(b.type==='paragraph'||b.type==='callout')b.text=value;})):<p className="note-prose">{block.text}</p>}{attribution(block,fn=>edit(b=>{if(b.type==='paragraph'||b.type==='callout')fn(b);}),removeBlock)}</>}
-          {block.type==='list'&&<ul>{block.items.map((item,i)=><li key={i}>{editing?field('列表项',item.text,value=>edit(b=>{if(b.type==='list')b.items[i].text=value;})):<span className="note-prose">{item.text}</span>}{attribution(item,fn=>edit(b=>{if(b.type==='list')fn(b.items[i]);}),()=>{if(block.items.length===1)removeBlock();else edit(b=>{if(b.type==='list')b.items.splice(i,1);});})}</li>)}</ul>}
-          {block.type==='table'&&<><h4>{block.title}</h4><div className="note-table-scroll"><table><thead><tr>{block.headings.map((h,i)=><th key={i}>{h}</th>)}<th>内容角色与证据</th></tr></thead><tbody>{block.rows.map((row,ri)=><tr key={ri}>{row.cells.map((cell,ci)=><td key={ci}>{editing?field(`单元格 ${ri+1}-${ci+1} ${block.headings[ci]}`,cell,value=>edit(b=>{if(b.type==='table')b.rows[ri].cells[ci]=value;})):<span className="note-prose">{cell}</span>}</td>)}<td>{attribution(row,fn=>edit(b=>{if(b.type==='table')fn(b.rows[ri]);}),()=>{if(block.rows.length===1)removeBlock();else edit(b=>{if(b.type==='table')b.rows.splice(ri,1);});})}</td></tr>)}</tbody></table></div></>}
-          {block.type==='path_diagram'&&<><h4>{block.title}</h4><ul>{block.nodes.map((node,ni)=><li key={node.id}><code>{node.id}</code>{editing?field('节点文字',node.text,value=>edit(b=>{if(b.type==='path_diagram')b.nodes[ni].text=value;})):<span className="note-prose">：{node.text}</span>}{attribution(node,fn=>edit(b=>{if(b.type==='path_diagram')fn(b.nodes[ni]);}),()=>edit(b=>{if(b.type==='path_diagram'){b.nodes.splice(ni,1);b.edges=b.edges.filter(e=>e.from!==node.id&&e.to!==node.id);}}))}</li>)}</ul>{block.edges.map((edge,ei)=><div key={ei}><p>{edge.from} → {edge.to}</p>{editing?<><label>起点<select value={edge.from} onChange={e=>edit(b=>{if(b.type==='path_diagram')b.edges[ei].from=e.target.value;})}>{block.nodes.map(n=><option key={n.id}>{n.id}</option>)}</select></label><label>终点<select value={edge.to} onChange={e=>edit(b=>{if(b.type==='path_diagram')b.edges[ei].to=e.target.value;})}>{block.nodes.map(n=><option key={n.id}>{n.id}</option>)}</select></label>{field('关系文字',edge.text,value=>edit(b=>{if(b.type==='path_diagram')b.edges[ei].text=value;}))}</>:<p className="note-prose">{edge.text}</p>}{attribution(edge,fn=>edit(b=>{if(b.type==='path_diagram')fn(b.edges[ei]);}),()=>edit(b=>{if(b.type==='path_diagram')b.edges.splice(ei,1);} ))}</div>)}</>}
-        </div>;
-      })}
-    </section>)}
-    {editing&&<button type="button" className="secondary-button" onClick={()=>change(n=>{n.sections.push({id:globalThis.crypto.randomUUID(),title:'新章节',question:'待明确阅读问题',blocks:[{type:'paragraph',text:'',role:'needs_verification',factIds:[],reason:''}]});})}>新增章节</button>}
-    <h3>来源覆盖与证据</h3><p role="status">已引用 {coverage.filter(c=>c.status==='referenced').length} · 明确排除 {coverage.filter(c=>c.status==='excluded').length} · 未覆盖 {coverage.filter(c=>c.status==='uncovered').length}</p>
-    {coverage.some(c=>c.status==='uncovered')&&<p className="notice-warn">有未覆盖来源，仍可保存待处理草稿；不能视为全部覆盖。</p>}
-    {coverage.map(c=>{const record=directory.find(r=>r.id===c.id&&r.kind===c.kind)!,excluded=exclusions.find(e=>e.id===c.id&&e.kind===c.kind);return <div className="note-coverage-row" key={c.kind+c.id}><strong>{c.kind==='fact'?'原文事实':'原文明示问题'} · {c.id} · {{referenced:'已引用',excluded:'明确排除',uncovered:'未覆盖'}[c.status]}</strong><p>{record.text}</p>{record.evidence.map(e=><button type="button" className="text-button" key={e.id} onClick={()=>setEvidence(e)}>定位 {e.id} [{e.start}, {e.end})</button>)}{editing&&<>{c.kind==='question'&&<label><input type="checkbox" checked={questionIds.includes(c.id)} onChange={e=>{setQuestionIds(e.target.checked?[...questionIds,c.id]:questionIds.filter(id=>id!==c.id));setExclusions(exclusions.filter(x=>x.id!==c.id));}}/>选入原文待确认问题（原文只读）</label>}{c.status!=='referenced'&&<><label><input type="checkbox" checked={!!excluded} onChange={e=>setExclusions(e.target.checked?[...exclusions,{kind:c.kind,id:c.id,reason:''}]:exclusions.filter(x=>x.id!==c.id))}/>明确排除</label>{excluded&&field(`排除理由 ${c.id}`,excluded.reason,value=>setExclusions(exclusions.map(e=>e.id===c.id?{...e,reason:value}:e)))}</>}</>}</div>;})}
-    <h3>人工补充待确认问题</h3>{humanQuestions.map((q,i)=>editing?<div key={i}>{field('人工问题（无原文证据）',q,value=>setHumanQuestions(humanQuestions.map((v,j)=>i===j?value:v)))}<button type="button" className="text-button" onClick={()=>setHumanQuestions(humanQuestions.filter((_,j)=>i!==j))}>删除人工问题</button></div>:<p key={i}>人工补充，待核对：{q}</p>)}{editing&&<button type="button" className="secondary-button" onClick={()=>setHumanQuestions([...humanQuestions,''])}>添加人工问题</button>}
-    </fieldset>
-    {!outcomeReview&&<section className="note-approval"><h3>深度笔记人工核对</h3><p>{view.noteApproval?.digest===view.reviewContentDigest?'笔记已核对，绑定当前内容摘要。':view.maintenance?'请先保存编辑，确认已接受的变更及全部来源归属。接受或暂缓改变本次选集后，需重新核对深度笔记。':'请先保存编辑，完成所有知识卡片的主题与归属审核；Source-only也必须逐页审核。'}</p><label className="draft-line"><input type="checkbox" checked={warningsAcknowledged} onChange={e=>setWarningsAcknowledged(e.target.checked)}/>我已查看当前确定性警告，接受仍需确认的数值、单位及语义风险</label><label className="draft-line"><input type="checkbox" checked={historyAcknowledged} onChange={e=>setHistoryAcknowledged(e.target.checked)}/>我已查看模型报告及其历史/未复核状态，核对引用、覆盖和待确认问题</label><button type="button" className="secondary-button" disabled={disabled||saving||dirty||!rawValid||coverage.some(c=>c.status==='uncovered')||!warningsAcknowledged||!historyAcknowledged||!(view.maintenance?view.maintenance.changes.filter(c=>c.decision==='accept'&&!c.committedOperationId).every(c=>c.approval?.digest===view.changeDigests?.[c.changeId])&&Object.values(view.humanReview!.assignments).every(id=>id!==null):view.pages.every(p=>view.humanReview!.approvals.some(a=>a.pageId===p.pageId&&a.digest===view.reviewContentDigest)))} onClick={async()=>{const current=generation.current;setSaving(true);setError('');try{const saved=await reviewStructuredNote(view.id,view.revision,view.reviewContentDigest!,warningsAcknowledged,historyAcknowledged);if(current===generation.current){onSaved(saved);setWarningsAcknowledged(false);setHistoryAcknowledged(false);}}catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'笔记审核失败。');}finally{if(current===generation.current)setSaving(false);}}}>确认已核对深度笔记、引用、覆盖与待确认问题</button></section>}
-    <details open={!!evidence}><summary>同页只读 Raw 正文与定位</summary>{evidence&&<p>Raw {view.rawId} · {evidence.id} · [{evidence.start}, {evidence.end})</p>}<pre className="note-raw-body">{evidence?<>{body.slice(0,evidence.start)}<mark ref={mark} data-start={evidence.start} data-end={evidence.end}>{body.slice(evidence.start,evidence.end)}</mark>{body.slice(evidence.end)}</>:body}</pre></details>
-  </section>;
+  );
+  const save = async () => {
+    const current = generation.current;
+    setSaving(true);
+    setError('');
+    setNotice('');
+    try {
+      const result = await editStructuredNote(view.id, view.revision, note, exclusions, questionIds, humanQuestions);
+      if (current !== generation.current) return;
+      onSaved(result);
+      if (outcomeReview) setEditing(false);
+      setNotice(
+        result.revision === view.revision
+          ? '内容未变化，保留原审批。'
+          : outcomeReview
+            ? '笔记已保存。如需入库，请重新选择本次成果。'
+            : '笔记已保存，人工修改待核对；全部旧审批已失效。',
+      );
+    } catch (e) {
+      if (current === generation.current) setError(e instanceof Error ? e.message : '保存失败。');
+    } finally {
+      if (current === generation.current) setSaving(false);
+    }
+  };
+  const rawValid = !!view.preview?.rawExists && view.preview.rawSha256Matches && !!body;
+  return (
+    <section className="panel structured-note" aria-label="深度结构化笔记">
+      <div className="panel-heading">
+        <div>
+          <h2>深度阅读笔记</h2>
+          <p>{view.noteReview || dirty ? '人工修改，待核对' : 'AI生成草稿，待人工核对'}</p>
+        </div>
+        <div className="action-group">
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={disabled || saving}
+            onClick={() => setEditing(!editing)}
+          >
+            {editing ? '阅读笔记' : '编辑笔记'}
+          </button>
+          {(editing || dirty) && (
+            <button
+              type="button"
+              className="text-button"
+              disabled={disabled || saving}
+              onClick={() => {
+                restoreSavedNote();
+                setEditing(false);
+                setNotice('');
+              }}
+            >
+              取消笔记编辑
+            </button>
+          )}
+          <button
+            type="button"
+            className="primary-button"
+            disabled={disabled || saving || !rawValid}
+            onClick={() => void save()}
+          >
+            {saving ? '正在保存笔记…' : '保存笔记'}
+          </button>
+        </div>
+      </div>
+      {!rawValid && (
+        <p className="form-error" role="alert">
+          原文缺失、变更或尚未读完，已禁止保存。
+        </p>
+      )}
+      {error && (
+        <p className="form-error" role="alert">
+          {error} 输入已保留，可修正后重试。
+        </p>
+      )}
+      {notice && <p role="status">{notice}</p>}
+      <div className="notice-warn">
+        {outcomeReview
+          ? '保存后请重新查看成果与本次选择，再确认入库。'
+          : '保存后请逐页审核知识卡片，并明确核对深度笔记，再显式确认创建Source及所选知识页。'}
+        {view.noteReview || dirty ? '历史模型报告，编辑后未复核。' : '模型报告仅反映生成时检查，不替代人工审查。'}
+      </div>
+      <details>
+        <summary>{view.noteReview || dirty ? '历史模型报告，编辑后未复核' : '生成时模型报告'}</summary>
+        <pre>{JSON.stringify(view.qualityReport, null, 2)}</pre>
+      </details>
+      {view.noteWarnings?.map((w) => (
+        <p className="notice-warn" key={w}>
+          {w}
+        </p>
+      ))}
+      <fieldset disabled={disabled || saving} className="note-form">
+        <legend className="sr-only">笔记内容</legend>
+        {editing ? (
+          field('知识定位', note.orientation, (value) =>
+            change((n) => {
+              n.orientation = value;
+            }),
+          )
+        ) : (
+          <p className="note-prose">知识定位：{note.orientation}</p>
+        )}
+        {note.sections.map((section, si) => (
+          <section key={section.id} className="note-section" aria-label={`笔记章节 ${si + 1}`}>
+            {editing ? (
+              <>
+                <div className="action-group">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    disabled={si === 0}
+                    onClick={() =>
+                      change((n) => {
+                        [n.sections[si - 1], n.sections[si]] = [n.sections[si], n.sections[si - 1]];
+                      })
+                    }
+                  >
+                    章节上移
+                  </button>
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    disabled={si === note.sections.length - 1}
+                    onClick={() =>
+                      change((n) => {
+                        [n.sections[si + 1], n.sections[si]] = [n.sections[si], n.sections[si + 1]];
+                      })
+                    }
+                  >
+                    章节下移
+                  </button>
+                  <button
+                    type="button"
+                    className="text-button danger"
+                    onClick={() =>
+                      change((n) => {
+                        n.sections.splice(si, 1);
+                      })
+                    }
+                  >
+                    删除章节
+                  </button>
+                </div>
+                {field('章节标题', section.title, (value) =>
+                  change((n) => {
+                    n.sections[si].title = value;
+                  }),
+                )}
+                {field('阅读问题', section.question, (value) =>
+                  change((n) => {
+                    n.sections[si].question = value;
+                  }),
+                )}
+              </>
+            ) : (
+              <>
+                <h3>{section.title}</h3>
+                <p>阅读问题：{section.question}</p>
+              </>
+            )}
+            {section.blocks.map((block, bi) => {
+              const edit = (fn: (b: typeof block) => void) =>
+                change((n) => fn(n.sections[si].blocks[bi] as typeof block));
+              const removeBlock = () =>
+                change((n) => {
+                  n.sections[si].blocks.splice(bi, 1);
+                });
+              return (
+                <div className={`note-block note-${block.type}`} key={bi}>
+                  {(block.type === 'paragraph' || block.type === 'callout') && (
+                    <>
+                      {block.type === 'callout' &&
+                        (editing ? (
+                          field('提醒标题', block.title, (value) =>
+                            edit((b) => {
+                              if (b.type === 'callout') b.title = value;
+                            }),
+                          )
+                        ) : (
+                          <h4>{block.title}</h4>
+                        ))}
+                      {editing ? (
+                        field(block.type === 'callout' ? '提醒正文' : '段落正文', block.text, (value) =>
+                          edit((b) => {
+                            if (b.type === 'paragraph' || b.type === 'callout') b.text = value;
+                          }),
+                        )
+                      ) : (
+                        <p className="note-prose">{block.text}</p>
+                      )}
+                      {attribution(
+                        block,
+                        (fn) =>
+                          edit((b) => {
+                            if (b.type === 'paragraph' || b.type === 'callout') fn(b);
+                          }),
+                        removeBlock,
+                      )}
+                    </>
+                  )}
+                  {block.type === 'list' && (
+                    <ul>
+                      {block.items.map((item, i) => (
+                        <li key={i}>
+                          {editing ? (
+                            field('列表项', item.text, (value) =>
+                              edit((b) => {
+                                if (b.type === 'list') b.items[i].text = value;
+                              }),
+                            )
+                          ) : (
+                            <span className="note-prose">{item.text}</span>
+                          )}
+                          {attribution(
+                            item,
+                            (fn) =>
+                              edit((b) => {
+                                if (b.type === 'list') fn(b.items[i]);
+                              }),
+                            () => {
+                              if (block.items.length === 1) removeBlock();
+                              else
+                                edit((b) => {
+                                  if (b.type === 'list') b.items.splice(i, 1);
+                                });
+                            },
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {block.type === 'table' && (
+                    <>
+                      <h4>{block.title}</h4>
+                      <div className="note-table-scroll">
+                        <table>
+                          <thead>
+                            <tr>
+                              {block.headings.map((h, i) => (
+                                <th key={i}>{h}</th>
+                              ))}
+                              <th>内容角色与证据</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {block.rows.map((row, ri) => (
+                              <tr key={ri}>
+                                {row.cells.map((cell, ci) => (
+                                  <td key={ci}>
+                                    {editing ? (
+                                      field(`单元格 ${ri + 1}-${ci + 1} ${block.headings[ci]}`, cell, (value) =>
+                                        edit((b) => {
+                                          if (b.type === 'table') b.rows[ri].cells[ci] = value;
+                                        }),
+                                      )
+                                    ) : (
+                                      <span className="note-prose">{cell}</span>
+                                    )}
+                                  </td>
+                                ))}
+                                <td>
+                                  {attribution(
+                                    row,
+                                    (fn) =>
+                                      edit((b) => {
+                                        if (b.type === 'table') fn(b.rows[ri]);
+                                      }),
+                                    () => {
+                                      if (block.rows.length === 1) removeBlock();
+                                      else
+                                        edit((b) => {
+                                          if (b.type === 'table') b.rows.splice(ri, 1);
+                                        });
+                                    },
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
+                  {block.type === 'path_diagram' && (
+                    <>
+                      <h4>{block.title}</h4>
+                      <ul>
+                        {block.nodes.map((node, ni) => (
+                          <li key={node.id}>
+                            <code>{node.id}</code>
+                            {editing ? (
+                              field('节点文字', node.text, (value) =>
+                                edit((b) => {
+                                  if (b.type === 'path_diagram') b.nodes[ni].text = value;
+                                }),
+                              )
+                            ) : (
+                              <span className="note-prose">：{node.text}</span>
+                            )}
+                            {attribution(
+                              node,
+                              (fn) =>
+                                edit((b) => {
+                                  if (b.type === 'path_diagram') fn(b.nodes[ni]);
+                                }),
+                              () =>
+                                edit((b) => {
+                                  if (b.type === 'path_diagram') {
+                                    b.nodes.splice(ni, 1);
+                                    b.edges = b.edges.filter((e) => e.from !== node.id && e.to !== node.id);
+                                  }
+                                }),
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                      {block.edges.map((edge, ei) => (
+                        <div key={ei}>
+                          <p>
+                            {edge.from} → {edge.to}
+                          </p>
+                          {editing ? (
+                            <>
+                              <label>
+                                起点
+                                <select
+                                  value={edge.from}
+                                  onChange={(e) =>
+                                    edit((b) => {
+                                      if (b.type === 'path_diagram') b.edges[ei].from = e.target.value;
+                                    })
+                                  }
+                                >
+                                  {block.nodes.map((n) => (
+                                    <option key={n.id}>{n.id}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              <label>
+                                终点
+                                <select
+                                  value={edge.to}
+                                  onChange={(e) =>
+                                    edit((b) => {
+                                      if (b.type === 'path_diagram') b.edges[ei].to = e.target.value;
+                                    })
+                                  }
+                                >
+                                  {block.nodes.map((n) => (
+                                    <option key={n.id}>{n.id}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              {field('关系文字', edge.text, (value) =>
+                                edit((b) => {
+                                  if (b.type === 'path_diagram') b.edges[ei].text = value;
+                                }),
+                              )}
+                            </>
+                          ) : (
+                            <p className="note-prose">{edge.text}</p>
+                          )}
+                          {attribution(
+                            edge,
+                            (fn) =>
+                              edit((b) => {
+                                if (b.type === 'path_diagram') fn(b.edges[ei]);
+                              }),
+                            () =>
+                              edit((b) => {
+                                if (b.type === 'path_diagram') b.edges.splice(ei, 1);
+                              }),
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </section>
+        ))}
+        {editing && (
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() =>
+              change((n) => {
+                n.sections.push({
+                  id: globalThis.crypto.randomUUID(),
+                  title: '新章节',
+                  question: '待明确阅读问题',
+                  blocks: [{ type: 'paragraph', text: '', role: 'needs_verification', factIds: [], reason: '' }],
+                });
+              })
+            }
+          >
+            新增章节
+          </button>
+        )}
+        <h3>来源覆盖与证据</h3>
+        <p role="status">
+          已引用 {coverage.filter((c) => c.status === 'referenced').length} · 明确排除{' '}
+          {coverage.filter((c) => c.status === 'excluded').length} · 未覆盖{' '}
+          {coverage.filter((c) => c.status === 'uncovered').length}
+        </p>
+        {coverage.some((c) => c.status === 'uncovered') && (
+          <p className="notice-warn">有未覆盖来源，仍可保存待处理草稿；不能视为全部覆盖。</p>
+        )}
+        {coverage.map((c) => {
+          const record = directory.find((r) => r.id === c.id && r.kind === c.kind)!,
+            excluded = exclusions.find((e) => e.id === c.id && e.kind === c.kind);
+          return (
+            <div className="note-coverage-row" key={c.kind + c.id}>
+              <strong>
+                {c.kind === 'fact' ? '原文事实' : '原文明示问题'} · {c.id} ·{' '}
+                {{ referenced: '已引用', excluded: '明确排除', uncovered: '未覆盖' }[c.status]}
+              </strong>
+              <p>{record.text}</p>
+              {record.evidence.map((e) => (
+                <button type="button" className="text-button" key={e.id} onClick={() => setEvidence(e)}>
+                  定位 {e.id} [{e.start}, {e.end})
+                </button>
+              ))}
+              {editing && (
+                <>
+                  {c.kind === 'question' && (
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={questionIds.includes(c.id)}
+                        onChange={(e) => {
+                          setQuestionIds(
+                            e.target.checked ? [...questionIds, c.id] : questionIds.filter((id) => id !== c.id),
+                          );
+                          setExclusions(exclusions.filter((x) => x.id !== c.id));
+                        }}
+                      />
+                      选入原文待确认问题（原文只读）
+                    </label>
+                  )}
+                  {c.status !== 'referenced' && (
+                    <>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={!!excluded}
+                          onChange={(e) =>
+                            setExclusions(
+                              e.target.checked
+                                ? [...exclusions, { kind: c.kind, id: c.id, reason: '' }]
+                                : exclusions.filter((x) => x.id !== c.id),
+                            )
+                          }
+                        />
+                        明确排除
+                      </label>
+                      {excluded &&
+                        field(`排除理由 ${c.id}`, excluded.reason, (value) =>
+                          setExclusions(exclusions.map((e) => (e.id === c.id ? { ...e, reason: value } : e))),
+                        )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+        <h3>人工补充待确认问题</h3>
+        {humanQuestions.map((q, i) =>
+          editing ? (
+            <div key={i}>
+              {field('人工问题（无原文证据）', q, (value) =>
+                setHumanQuestions(humanQuestions.map((v, j) => (i === j ? value : v))),
+              )}
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => setHumanQuestions(humanQuestions.filter((_, j) => i !== j))}
+              >
+                删除人工问题
+              </button>
+            </div>
+          ) : (
+            <p key={i}>人工补充，待核对：{q}</p>
+          ),
+        )}
+        {editing && (
+          <button type="button" className="secondary-button" onClick={() => setHumanQuestions([...humanQuestions, ''])}>
+            添加人工问题
+          </button>
+        )}
+      </fieldset>
+      {!outcomeReview && (
+        <section className="note-approval">
+          <h3>深度笔记人工核对</h3>
+          <p>
+            {view.noteApproval?.digest === view.reviewContentDigest
+              ? '笔记已核对，绑定当前内容摘要。'
+              : view.maintenance
+                ? '请先保存编辑，确认已接受的变更及全部来源归属。接受或暂缓改变本次选集后，需重新核对深度笔记。'
+                : '请先保存编辑，完成所有知识卡片的主题与归属审核；Source-only也必须逐页审核。'}
+          </p>
+          <label className="draft-line">
+            <input
+              type="checkbox"
+              checked={warningsAcknowledged}
+              onChange={(e) => setWarningsAcknowledged(e.target.checked)}
+            />
+            我已查看当前确定性警告，接受仍需确认的数值、单位及语义风险
+          </label>
+          <label className="draft-line">
+            <input
+              type="checkbox"
+              checked={historyAcknowledged}
+              onChange={(e) => setHistoryAcknowledged(e.target.checked)}
+            />
+            我已查看模型报告及其历史/未复核状态，核对引用、覆盖和待确认问题
+          </label>
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={
+              disabled ||
+              saving ||
+              dirty ||
+              !rawValid ||
+              coverage.some((c) => c.status === 'uncovered') ||
+              !warningsAcknowledged ||
+              !historyAcknowledged ||
+              !(view.maintenance
+                ? view.maintenance.changes
+                    .filter((c) => c.decision === 'accept' && !c.committedOperationId)
+                    .every((c) => c.approval?.digest === view.changeDigests?.[c.changeId]) &&
+                  Object.values(view.humanReview!.assignments).every((id) => id !== null)
+                : view.pages.every((p) =>
+                    view.humanReview!.approvals.some(
+                      (a) => a.pageId === p.pageId && a.digest === view.reviewContentDigest,
+                    ),
+                  ))
+            }
+            onClick={async () => {
+              const current = generation.current;
+              setSaving(true);
+              setError('');
+              try {
+                const saved = await reviewStructuredNote(
+                  view.id,
+                  view.revision,
+                  view.reviewContentDigest!,
+                  warningsAcknowledged,
+                  historyAcknowledged,
+                );
+                if (current === generation.current) {
+                  onSaved(saved);
+                  setWarningsAcknowledged(false);
+                  setHistoryAcknowledged(false);
+                }
+              } catch (e) {
+                if (current === generation.current) setError(e instanceof Error ? e.message : '笔记审核失败。');
+              } finally {
+                if (current === generation.current) setSaving(false);
+              }
+            }}
+          >
+            确认已核对深度笔记、引用、覆盖与待确认问题
+          </button>
+        </section>
+      )}
+      <details open={!!evidence}>
+        <summary>同页只读 Raw 正文与定位</summary>
+        {evidence && (
+          <p>
+            Raw {view.rawId} · {evidence.id} · [{evidence.start}, {evidence.end})
+          </p>
+        )}
+        <pre className="note-raw-body">
+          {evidence ? (
+            <>
+              {body.slice(0, evidence.start)}
+              <mark ref={mark} data-start={evidence.start} data-end={evidence.end}>
+                {body.slice(evidence.start, evidence.end)}
+              </mark>
+              {body.slice(evidence.end)}
+            </>
+          ) : (
+            body
+          )}
+        </pre>
+      </details>
+    </section>
+  );
 }

@@ -1,331 +1,1863 @@
-.heading-actions { display: flex; gap: 8px; }
-.loading-note { position: fixed; right: 22px; bottom: 14px; color: #8b97a6; font-size: 10px; }
-.wiki-page { padding-top: 29px; }
-.page-heading.wiki-heading { --wiki-active: #4f46e5; margin-bottom: 16px; flex-wrap: wrap; gap: 12px 24px; }
-.wiki-heading h1 { flex: none; }
-.wiki-navigation { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; max-width: 100%; }
-.wiki-view-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
-.wiki-view-tabs button { min-height: 36px; padding: 7px 11px; border: 1px solid #e2e8f0; border-radius: 999px; background: #fff; color: #334155; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
-.wiki-view-tabs button:hover { background: #f8fafc; }
-.wiki-view-tabs button[aria-selected="true"] { background: var(--wiki-active); border-color: transparent; color: #fff; box-shadow: 0 2px 4px #4f46e526; }
-.wiki-view-tabs button:focus-visible, .wiki-create-action button:focus-visible { outline: 2px solid var(--wiki-active); outline-offset: 2px; }
-.wiki-create-action { padding-inline-start: 16px; border-inline-start: 1px solid var(--line); }
+.heading-actions {
+  display: flex;
+  gap: 8px;
+}
+.loading-note {
+  position: fixed;
+  right: 22px;
+  bottom: 14px;
+  color: #8b97a6;
+  font-size: 10px;
+}
+.wiki-page {
+  padding-top: 29px;
+}
+.page-heading.wiki-heading {
+  --wiki-active: #4f46e5;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.wiki-heading h1 {
+  flex: none;
+}
+.wiki-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  max-width: 100%;
+}
+.wiki-view-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.wiki-view-tabs button {
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #fff;
+  color: #334155;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wiki-view-tabs button:hover {
+  background: #f8fafc;
+}
+.wiki-view-tabs button[aria-selected='true'] {
+  background: var(--wiki-active);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 2px 4px #4f46e526;
+}
+.wiki-view-tabs button:focus-visible,
+.wiki-create-action button:focus-visible {
+  outline: 2px solid var(--wiki-active);
+  outline-offset: 2px;
+}
+.wiki-create-action {
+  padding-inline-start: 16px;
+  border-inline-start: 1px solid var(--line);
+}
 @media (max-width: 760px) {
-  .wiki-create-action { width: 100%; display: flex; justify-content: flex-end; border-inline-start: 0; border-block-start: 1px solid var(--line); padding: 8px 0 0; }
+  .wiki-create-action {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--line);
+    padding: 8px 0 0;
+  }
 }
-.wiki-message { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 10px 13px; border: 1px solid; border-radius: 6px; font-size: 11px; }
-.wiki-message button { border: 0; background: transparent; color: inherit; text-decoration: underline; cursor: pointer; }
-.wiki-lint-body, .wiki-raw-generator-body { padding: 16px 20px; overflow-wrap: anywhere; }
-.wiki-lint .panel-heading { gap: 12px; }
-.wiki-lint .panel-heading button { flex: none; }
-.wiki-lint-body { display: grid; gap: 14px; }
-.wiki-lint-body p { margin: 0; }
-.lint-notice { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 14px; border-radius: 8px; background: var(--canvas); font-size: 14px; line-height: 1.55; }
-.lint-notice span { color: var(--muted); }
-.lint-notice-clean { background: #edf7ef; color: #22543a; }
-.lint-notice-clean span { color: inherit; }
-.lint-notice-error { background: #fff1ef; color: #9a3329; }
-.lint-filters { display: flex; flex-wrap: wrap; gap: 6px; }
-.lint-filters button { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; max-width: 100%; padding: 5px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 13px; text-align: start; cursor: pointer; }
-.lint-filters button:hover, .lint-page-toggle:hover { background: var(--canvas); }
-.lint-filters button[aria-pressed="true"] { border-color: #c8bfff; background: var(--accent-soft); color: #4630c8; font-weight: 650; }
-.lint-filters button span, .lint-page-count, .lint-type-count { flex: none; font-variant-numeric: tabular-nums; }
-.lint-filters button span { color: var(--muted); }
-.lint-filters button[aria-pressed="true"] span { color: inherit; }
-.lint-rule-guide, .lint-match-count, .lint-filter-empty { font-size: 13px; line-height: 1.55; color: var(--muted); }
-.lint-rule-guide { padding: 10px 12px; border-radius: 8px; background: var(--canvas); }
-.lint-rule-guide strong { margin-inline-end: 6px; color: var(--ink); }
-.lint-page-groups, .lint-findings { margin: 0; padding: 0; list-style: none; }
-.lint-page-groups { border: 1px solid var(--line); border-radius: 10px; }
-.lint-page-group + .lint-page-group { border-block-start: 1px solid var(--line); }
-.lint-page-header { display: flex; align-items: center; justify-content: space-between; gap: 6px 10px; padding: 6px 10px; }
-.lint-page-toggle { display: flex; flex: 1 1 auto; align-items: center; gap: 9px; min-width: 0; min-height: 40px; padding: 6px; border: 0; border-radius: 6px; background: transparent; text-align: start; cursor: pointer; }
-.lint-page-toggle svg { flex: none; width: 16px; height: 16px; color: var(--muted); }
-.lint-page-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
-.lint-page-name { min-width: 0; display: grid; gap: 4px; line-height: 1.45; }
-.lint-page-name strong { font-size: 14px; font-weight: 650; }
-.lint-page-name small, .lint-edit-unavailable { color: var(--muted); font-size: 12px; }
-.lint-page-types { display: flex; flex-wrap: wrap; gap: 4px; }
-.lint-type-count { max-width: 100%; padding: 2px 6px; border-radius: 4px; background: var(--canvas); color: var(--muted); font-size: 12px; }
-.lint-page-count { margin-inline-start: auto; padding: 3px 7px; border-radius: 999px; background: var(--accent-soft); color: #4630c8; font-size: 12px; white-space: nowrap; }
-.lint-page-header .lint-edit-button, .lint-edit-unavailable { flex: none; white-space: nowrap; }
-.lint-page-header .lint-edit-button { min-height: 34px; }
-.lint-edit-unavailable { padding-inline: 4px; }
-.lint-findings { padding: 0 16px 4px; }
-.lint-group-notes { display: grid; gap: 6px; margin: 0 16px 8px; padding: 8px 10px; border-radius: 6px; background: var(--canvas); color: var(--muted); font-size: 13px; line-height: 1.55; }
-.lint-group-notes strong { margin-inline-end: 4px; color: var(--ink); }
-.lint-findings li { display: grid; gap: 7px; padding: 12px 0; border-block-start: 1px solid var(--line); }
-.lint-findings p { font-size: 13px; line-height: 1.55; }
-.lint-finding-heading, .lint-finding-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 9px; }
-.lint-finding-heading strong { font-size: 13px; }
-.lint-finding-heading span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-.lint-source-line { margin: 0; padding: 7px 10px; border-radius: 6px; background: var(--canvas); font: inherit; font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
-.lint-finding-meta { color: var(--muted); font-size: 12px; }
+.wiki-message {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 10px 13px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.wiki-message button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.wiki-lint-body,
+.wiki-raw-generator-body {
+  padding: 16px 20px;
+  overflow-wrap: anywhere;
+}
+.wiki-lint .panel-heading {
+  gap: 12px;
+}
+.wiki-lint .panel-heading button {
+  flex: none;
+}
+.wiki-lint-body {
+  display: grid;
+  gap: 14px;
+}
+.wiki-lint-body p {
+  margin: 0;
+}
+.lint-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--canvas);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.lint-notice span {
+  color: var(--muted);
+}
+.lint-notice-clean {
+  background: #edf7ef;
+  color: #22543a;
+}
+.lint-notice-clean span {
+  color: inherit;
+}
+.lint-notice-error {
+  background: #fff1ef;
+  color: #9a3329;
+}
+.lint-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lint-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  max-width: 100%;
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  text-align: start;
+  cursor: pointer;
+}
+.lint-filters button:hover,
+.lint-page-toggle:hover {
+  background: var(--canvas);
+}
+.lint-filters button[aria-pressed='true'] {
+  border-color: #c8bfff;
+  background: var(--accent-soft);
+  color: #4630c8;
+  font-weight: 650;
+}
+.lint-filters button span,
+.lint-page-count,
+.lint-type-count {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.lint-filters button span {
+  color: var(--muted);
+}
+.lint-filters button[aria-pressed='true'] span {
+  color: inherit;
+}
+.lint-rule-guide,
+.lint-match-count,
+.lint-filter-empty {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.lint-rule-guide {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--canvas);
+}
+.lint-rule-guide strong {
+  margin-inline-end: 6px;
+  color: var(--ink);
+}
+.lint-page-groups,
+.lint-findings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lint-page-groups {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.lint-page-group + .lint-page-group {
+  border-block-start: 1px solid var(--line);
+}
+.lint-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  padding: 6px 10px;
+}
+.lint-page-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+.lint-page-toggle svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+.lint-page-toggle[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+.lint-page-name {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  line-height: 1.45;
+}
+.lint-page-name strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+.lint-page-name small,
+.lint-edit-unavailable {
+  color: var(--muted);
+  font-size: 12px;
+}
+.lint-page-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.lint-type-count {
+  max-width: 100%;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--canvas);
+  color: var(--muted);
+  font-size: 12px;
+}
+.lint-page-count {
+  margin-inline-start: auto;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: #4630c8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.lint-page-header .lint-edit-button,
+.lint-edit-unavailable {
+  flex: none;
+  white-space: nowrap;
+}
+.lint-page-header .lint-edit-button {
+  min-height: 34px;
+}
+.lint-edit-unavailable {
+  padding-inline: 4px;
+}
+.lint-findings {
+  padding: 0 16px 4px;
+}
+.lint-group-notes {
+  display: grid;
+  gap: 6px;
+  margin: 0 16px 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--canvas);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.lint-group-notes strong {
+  margin-inline-end: 4px;
+  color: var(--ink);
+}
+.lint-findings li {
+  display: grid;
+  gap: 7px;
+  padding: 12px 0;
+  border-block-start: 1px solid var(--line);
+}
+.lint-findings p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+.lint-finding-heading,
+.lint-finding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 9px;
+}
+.lint-finding-heading strong {
+  font-size: 13px;
+}
+.lint-finding-heading span {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.lint-source-line {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--canvas);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.lint-finding-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
 @media (max-width: 560px) {
-  .wiki-lint-body { padding-inline: 12px; }
-  .lint-page-header { padding-inline: 6px; }
-  .lint-page-toggle { gap: 5px; min-height: 44px; }
-  .lint-page-header .lint-edit-button { min-height: 44px; padding-inline: 8px; }
-  .lint-filters button { min-height: 44px; }
-  .lint-findings { padding-inline: 10px; }
-  .lint-group-notes { margin-inline: 10px; }
+  .wiki-lint-body {
+    padding-inline: 12px;
+  }
+  .lint-page-header {
+    padding-inline: 6px;
+  }
+  .lint-page-toggle {
+    gap: 5px;
+    min-height: 44px;
+  }
+  .lint-page-header .lint-edit-button {
+    min-height: 44px;
+    padding-inline: 8px;
+  }
+  .lint-filters button {
+    min-height: 44px;
+  }
+  .lint-findings {
+    padding-inline: 10px;
+  }
+  .lint-group-notes {
+    margin-inline: 10px;
+  }
 }
-.audit-panel { padding-top: 5px; border-top: 1px solid #edf0f4; }
-.audit-create, .audit-draft { display: grid; gap: 9px; border: 1px solid #e7ebf0; border-radius: 6px; background: #fafbfd; padding: 16px; }
-.audit-create .field, .audit-draft .field { display: grid; gap: 5px; color: #66768b; font-size: 10px; }
-.audit-create textarea, .audit-draft textarea, .audit-create input { min-height: 66px; padding: 8px; border: 1px solid #e1e6ed; border-radius: 5px; resize: vertical; font: inherit; }
-.audit-draft textarea { min-height: 110px; }
-.audit-selection, .audit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 8px; }
-.audit-selection > span { color: #64758a; font-size: 10px; }
-.audit-list { display: grid; gap: 5px; margin-top: 10px; }
-.audit-row { display: grid; grid-template-columns: 78px minmax(0,1fr) auto; gap: 9px; align-items: center; border: 1px solid #e8ecf1; border-radius: 5px; background: #fff; text-align: left; cursor: pointer; padding: 12px; }
-.audit-row.active { border-color: #9db1c7; background: #f5f8fb; }
-.audit-row b { color: #687b91; font-size: 12px; }
-.audit-row span { overflow: hidden; color: #526176; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-.audit-row small, .audit-detail small, .audit-draft small { color: #929dab; font-size: 12px; }
-.audit-detail { display: grid; gap: 9px; margin-top: 11px; padding: 12px; border-left: 2px solid #829bb7; background: #f8fafc; }
-.audit-detail > div:first-child { display: grid; gap: 5px; }
-.audit-detail > .field { display: grid; gap: 5px; color: #66768b; font-size: 10px; }
-.audit-detail input { min-height: 32px; padding: 6px 8px; border: 1px solid #e1e6ed; border-radius: 5px; font: inherit; }
-.audit-error { color: #a34e44;font-size:12px; }
-.error-message { color: #91483e; border-color: #efcfca; background: #fff8f7; }
-.success-message { color: #426d52; border-color: #d1e4d6; background: #f6fbf6; }
-.wiki-map { margin-bottom: 14px;padding:14px;margin:0;border-bottom:1px solid var(--line); }
-.map-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
-.map-title h2 { margin: 0; color: #35455a; font-weight: 650;font-size:14px; }
-.map-title span { margin-left: 8px; color: #9aa4b1; font-size: 10px; }
-.map-title .map-total { color: #617791; font-size: 11px; }
-.category-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-.category-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 9px; border: 1px solid #e7ebf0; color: #69778a; background: #fff; font-size: 10px; cursor: pointer;border-radius:20px; }
-.category-chip:hover { border-color: #c4d1df; }
-.category-chip.chosen {background:var(--accent-soft);border-color:#c8bfff;color:#4931db; }
-.category-chip span { color: #a0aab6; font-variant-numeric: tabular-nums; }
-.wiki-workspace { display: grid; min-height: 600px;grid-template-columns:minmax(290px, .72fr) minmax(0,1.7fr);gap:12px; }
-.wiki-list-panel, .wiki-detail-panel { min-height: 600px; overflow: hidden; }
-.wiki-search { display: flex; align-items: center; gap: 9px; padding: 0 12px; border-bottom: 1px solid #edf0f4;height:64px; }
-.search-box { min-width: 0; flex: 1; display: flex; align-items: center; gap: 7px; padding: 0 8px; border: 1px solid #e1e6ed; border-radius: 5px; color: #8a97a8;height:40px; }
-.search-box:focus-within { border-color: #92a9c4; }
-.search-box > span { font-size: 18px; line-height: 1; }
-.search-box input { min-width: 0; flex: 1; border: 0; outline: 0; color: #3c4a5e; background: transparent;font-size:13px; }
-.search-box input::placeholder { color: #a4adb9; }
-.search-box button { border: 0; background: transparent; color: #8290a0; cursor: pointer; font-size: 16px; }
-.wiki-count { color: #97a2b0; white-space: nowrap;font-size:12px; }
-.wiki-list-content { max-height: 680px; overflow-y: auto;padding:4px 0; }
-.wiki-list-item { width: 100%; display: flex; gap: 9px; align-items: flex-start; border: 0; background: transparent; text-align: left; cursor: pointer;padding:16px;border-radius:0;border-bottom:1px solid var(--line); }
-.wiki-list-item:hover { background: #f7f9fb; }
-.wiki-list-item.selected {background:var(--accent-soft); }
-.wiki-type-mark { flex: 0 0 26px; width: 26px; height: 27px; display: grid; place-items: center; border: 1px solid #e1e7ed; border-radius: 5px; color: #607c9b; background: #f8fafb; font-size: 11px; }
-.wiki-list-copy { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
-.wiki-list-copy b { overflow: hidden; color: #354458; font-weight: 600; text-overflow: ellipsis;font-size:14px;white-space:normal;overflow-wrap:anywhere; }
-.wiki-list-copy small { overflow: hidden; text-overflow: ellipsis;font-size:12px;color:var(--muted);white-space:normal; }
-.wiki-list-panel .list-empty { min-height: 420px; padding: 14px; text-align: center; }
-.wiki-detail-panel { min-width: 0; }
-.wiki-detail {padding:30px 34px; }
-.wiki-detail-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px;flex-wrap:wrap; }
-.wiki-badges, .action-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.action-group { gap: 5px; }
-.action-group .secondary-button { min-height: 30px; padding: 0 9px; font-size: 10px; }
-.danger-quiet { min-height: 30px; padding: 0 8px; border: 0; border-radius: 4px; color: #a25b51; background: transparent; font-size: 10px; cursor: pointer; }
-.danger-quiet:hover { background: #fff4f2; }
-.danger-quiet:disabled { opacity: .55; cursor: wait; }
-.wiki-detail h2 { margin: 19px 0 6px; line-height: 1.45; font-weight: 650;font-size:26px;color:var(--ink);overflow-wrap:anywhere; }
-.wiki-submeta { display: flex; flex-wrap: wrap; gap: 13px;font-size:13px;color:var(--muted); }
-.wiki-status { padding: 4px 0;color:#694f14; }
-.wiki-meta-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; border-top: 1px solid #edf0f4; border-bottom: 1px solid #edf0f4;margin:16px 0;padding:12px 0; }
-.wiki-meta-grid .meta b { font-size: 10px; }
-.wiki-section {margin-top:26px; }
-.wiki-section h3 { margin: 0 0 11px; font-weight: 650;font-size:16px;color:var(--ink); }
-.source-cards { display: grid; gap: 7px; }
-.source-card { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #e6ebf0; border-radius: 5px; background: #fbfcfd; text-align: left; cursor: pointer; }
-.source-card:hover { border-color: #b9c9da; background: #f8fafc; }
-.source-card-icon { flex: 0 0 27px; height: 29px; display: grid; place-items: center; border-radius: 4px; color: #567497; background: #eff4f8; font-size: 10px; }
-.source-card > span:nth-child(2) { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.source-card b { overflow: hidden; color: #43536a; font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.source-card small { overflow: hidden; color: #919dab; font-size: 9px; text-overflow: ellipsis;white-space:normal;overflow-wrap:anywhere; }
-.source-card strong { color: #50759b; font-size: 9px; font-weight: 500; white-space: nowrap; }
-.muted-copy { color: #9ca6b2; font-size: 10px; }
-.section-header { display: flex; align-items: baseline; justify-content: space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px; }
-.section-header span {font-size:12px;color:var(--muted); }
-.wiki-body-view { margin: 0; padding: 16px; min-height: 130px; border: 1px solid #edf0f4; border-radius: 5px; color: #49586b; background: #fcfcfd; font-family: inherit; white-space: pre-wrap; overflow-wrap: anywhere;font-size:14px;line-height:1.75; }
-.link-status-list { display: grid; gap: 7px; }
-.wiki-link-row { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; padding: 8px 10px; border: 1px solid #edf0f4; border-radius: 4px; color: #68788e; font-size: 10px; }
-.wiki-link-row code { color: #49698d; font-size: 10px; }
-.link-ambiguous { display: flex; flex-wrap: wrap; gap: 7px; color: #986c43; }
-.link-missing { color: #a27668; }
-.link-ambiguous .text-button { padding: 0; }
-.wiki-editor { max-height: 720px; overflow-y: auto; padding: 26px 30px 0; }
-.editor-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 17px; }
-.editor-top .eyebrow { margin-bottom: 5px; }
-.editor-top h2 { margin: 0; color: #2c3e54; font-weight: 650; font-size: 22px; }
-.wiki-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.raw-source-select { min-height: 80px; padding: 5px 7px; }
-.raw-source-select option { padding: 3px; }
-.selected-raws { display: flex; flex-wrap: wrap; gap: 6px; }
-.selected-raw { display: flex; align-items: center; gap: 5px; padding: 6px 8px; border: 1px solid #e4e9ef; border-radius: 4px; color: #527092; background: #f8fafc; font-size: 9px; cursor: pointer; }
-.selected-raw span { color: #526276; }
-.selected-raw small { color: #99a3af; }
-.source-guidance { padding: 9px 11px; border-left: 2px solid #8ea5bf; color: #7a8796; background: #f6f8fa; font-size: 9px; line-height: 1.6; }
-.wiki-body-field { position: relative; }
-.template-hint { color: #77889d; font-size: 9px; font-weight: 400; line-height: 1.6; }
-.wiki-body-field textarea { min-height: 220px; font-family: Consolas, "Microsoft YaHei UI", monospace; font-size: 11px; line-height: 1.7; }
-.editor-footer { position: sticky; bottom: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 17px -24px 0; padding: 12px 24px; border-top: 1px solid #edf0f4; background: #fff; }
-.editor-footer > span { color: #99a3af; font-size: 9px; }
-.editor-footer > div { display: flex; gap: 7px; }
-.danger-button { min-height: 36px; padding: 0 13px; border: 1px solid #b35f54; border-radius: 6px; color: #fff; background: #ad594e; font-size: 11px; font-weight: 600; cursor: pointer; }
-.danger-button:hover:not(:disabled) { background: #97483f; }
-.danger-button:disabled { opacity: .6; cursor: wait; }
-.delete-dialog { width: min(520px, 100%); border: 1px solid #dde3eb; border-radius: 9px; background: #fff; box-shadow: 0 18px 60px rgba(27,42,62,.18); }
-.delete-reference-list { max-height: 270px; overflow-y: auto; padding: 18px 25px; color: #58677a; font-size: 11px; }
-.delete-reference-list > b { display: block; margin-bottom: 11px; font-weight: 600; }
-.delete-reference-list > p { color: #9aa4b1; font-size: 10px; }
-.delete-reference { display: flex; gap: 9px; align-items: center; padding: 9px 0; border-top: 1px solid #f0f2f5; }
-.delete-reference > span { color: #687890; font-family: Consolas, monospace; font-size: 9px; }
-.delete-reference .text-button { padding: 0; }
-@media (max-width: 1050px) { .heading-actions { display: flex; gap: 8px; }.wiki-workspace { grid-template-columns: minmax(225px,.7fr) minmax(350px,1.3fr); }.wiki-detail-actions { align-items: flex-start; flex-direction: column; } }
-@media (max-width: 760px) { .heading-actions { width: 100%; }.wiki-workspace { grid-template-columns: minmax(0,1fr); }.wiki-list-panel { min-height: auto; max-height: 330px; }.wiki-list-content { max-height: 260px; }.wiki-detail-panel { min-height: 430px; }.wiki-detail { padding: 18px 16px; }.wiki-meta-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }.wiki-editor { max-height: 74vh; padding: 17px 16px 0; }.wiki-form-grid { gap: 13px; }.editor-footer { margin-left: -16px; margin-right: -16px; padding: 11px 16px; }.editor-footer > span { max-width: 110px; line-height: 1.4; }.category-grid { gap: 5px; }.category-chip { padding: 0 7px; } }
+.audit-panel {
+  padding-top: 5px;
+  border-top: 1px solid #edf0f4;
+}
+.audit-create,
+.audit-draft {
+  display: grid;
+  gap: 9px;
+  border: 1px solid #e7ebf0;
+  border-radius: 6px;
+  background: #fafbfd;
+  padding: 16px;
+}
+.audit-create .field,
+.audit-draft .field {
+  display: grid;
+  gap: 5px;
+  color: #66768b;
+  font-size: 10px;
+}
+.audit-create textarea,
+.audit-draft textarea,
+.audit-create input {
+  min-height: 66px;
+  padding: 8px;
+  border: 1px solid #e1e6ed;
+  border-radius: 5px;
+  resize: vertical;
+  font: inherit;
+}
+.audit-draft textarea {
+  min-height: 110px;
+}
+.audit-selection,
+.audit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+.audit-selection > span {
+  color: #64758a;
+  font-size: 10px;
+}
+.audit-list {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+}
+.audit-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  border: 1px solid #e8ecf1;
+  border-radius: 5px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  padding: 12px;
+}
+.audit-row.active {
+  border-color: #9db1c7;
+  background: #f5f8fb;
+}
+.audit-row b {
+  color: #687b91;
+  font-size: 12px;
+}
+.audit-row span {
+  overflow: hidden;
+  color: #526176;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.audit-row small,
+.audit-detail small,
+.audit-draft small {
+  color: #929dab;
+  font-size: 12px;
+}
+.audit-detail {
+  display: grid;
+  gap: 9px;
+  margin-top: 11px;
+  padding: 12px;
+  border-left: 2px solid #829bb7;
+  background: #f8fafc;
+}
+.audit-detail > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+.audit-detail > .field {
+  display: grid;
+  gap: 5px;
+  color: #66768b;
+  font-size: 10px;
+}
+.audit-detail input {
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid #e1e6ed;
+  border-radius: 5px;
+  font: inherit;
+}
+.audit-error {
+  color: #a34e44;
+  font-size: 12px;
+}
+.error-message {
+  color: #91483e;
+  border-color: #efcfca;
+  background: #fff8f7;
+}
+.success-message {
+  color: #426d52;
+  border-color: #d1e4d6;
+  background: #f6fbf6;
+}
+.wiki-map {
+  margin-bottom: 14px;
+  padding: 14px;
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+.map-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.map-title h2 {
+  margin: 0;
+  color: #35455a;
+  font-weight: 650;
+  font-size: 14px;
+}
+.map-title span {
+  margin-left: 8px;
+  color: #9aa4b1;
+  font-size: 10px;
+}
+.map-title .map-total {
+  color: #617791;
+  font-size: 11px;
+}
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid #e7ebf0;
+  color: #69778a;
+  background: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+.category-chip:hover {
+  border-color: #c4d1df;
+}
+.category-chip.chosen {
+  background: var(--accent-soft);
+  border-color: #c8bfff;
+  color: #4931db;
+}
+.category-chip span {
+  color: #a0aab6;
+  font-variant-numeric: tabular-nums;
+}
+.wiki-workspace {
+  display: grid;
+  min-height: 600px;
+  grid-template-columns: minmax(290px, 0.72fr) minmax(0, 1.7fr);
+  gap: 12px;
+}
+.wiki-list-panel,
+.wiki-detail-panel {
+  min-height: 600px;
+  overflow: hidden;
+}
+.wiki-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border-bottom: 1px solid #edf0f4;
+  height: 64px;
+}
+.search-box {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 8px;
+  border: 1px solid #e1e6ed;
+  border-radius: 5px;
+  color: #8a97a8;
+  height: 40px;
+}
+.search-box:focus-within {
+  border-color: #92a9c4;
+}
+.search-box > span {
+  font-size: 18px;
+  line-height: 1;
+}
+.search-box input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  color: #3c4a5e;
+  background: transparent;
+  font-size: 13px;
+}
+.search-box input::placeholder {
+  color: #a4adb9;
+}
+.search-box button {
+  border: 0;
+  background: transparent;
+  color: #8290a0;
+  cursor: pointer;
+  font-size: 16px;
+}
+.wiki-count {
+  color: #97a2b0;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.wiki-list-content {
+  max-height: 680px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.wiki-list-item {
+  width: 100%;
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  padding: 16px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+}
+.wiki-list-item:hover {
+  background: #f7f9fb;
+}
+.wiki-list-item.selected {
+  background: var(--accent-soft);
+}
+.wiki-type-mark {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e1e7ed;
+  border-radius: 5px;
+  color: #607c9b;
+  background: #f8fafb;
+  font-size: 11px;
+}
+.wiki-list-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wiki-list-copy b {
+  overflow: hidden;
+  color: #354458;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.wiki-list-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: normal;
+}
+.wiki-list-panel .list-empty {
+  min-height: 420px;
+  padding: 14px;
+  text-align: center;
+}
+.wiki-detail-panel {
+  min-width: 0;
+}
+.wiki-detail {
+  padding: 30px 34px;
+}
+.wiki-detail-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wiki-badges,
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.action-group {
+  gap: 5px;
+}
+.action-group .secondary-button {
+  min-height: 30px;
+  padding: 0 9px;
+  font-size: 10px;
+}
+.danger-quiet {
+  min-height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 4px;
+  color: #a25b51;
+  background: transparent;
+  font-size: 10px;
+  cursor: pointer;
+}
+.danger-quiet:hover {
+  background: #fff4f2;
+}
+.danger-quiet:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.wiki-detail h2 {
+  margin: 19px 0 6px;
+  line-height: 1.45;
+  font-weight: 650;
+  font-size: 26px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.wiki-submeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.wiki-status {
+  padding: 4px 0;
+  color: #694f14;
+}
+.wiki-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  border-top: 1px solid #edf0f4;
+  border-bottom: 1px solid #edf0f4;
+  margin: 16px 0;
+  padding: 12px 0;
+}
+.wiki-meta-grid .meta b {
+  font-size: 10px;
+}
+.wiki-section {
+  margin-top: 26px;
+}
+.wiki-section h3 {
+  margin: 0 0 11px;
+  font-weight: 650;
+  font-size: 16px;
+  color: var(--ink);
+}
+.source-cards {
+  display: grid;
+  gap: 7px;
+}
+.source-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #e6ebf0;
+  border-radius: 5px;
+  background: #fbfcfd;
+  text-align: left;
+  cursor: pointer;
+}
+.source-card:hover {
+  border-color: #b9c9da;
+  background: #f8fafc;
+}
+.source-card-icon {
+  flex: 0 0 27px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: #567497;
+  background: #eff4f8;
+  font-size: 10px;
+}
+.source-card > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.source-card b {
+  overflow: hidden;
+  color: #43536a;
+  font-size: 10px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.source-card small {
+  overflow: hidden;
+  color: #919dab;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.source-card strong {
+  color: #50759b;
+  font-size: 9px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.muted-copy {
+  color: #9ca6b2;
+  font-size: 10px;
+}
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.section-header span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.wiki-body-view {
+  margin: 0;
+  padding: 16px;
+  min-height: 130px;
+  border: 1px solid #edf0f4;
+  border-radius: 5px;
+  color: #49586b;
+  background: #fcfcfd;
+  font-family: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.link-status-list {
+  display: grid;
+  gap: 7px;
+}
+.wiki-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid #edf0f4;
+  border-radius: 4px;
+  color: #68788e;
+  font-size: 10px;
+}
+.wiki-link-row code {
+  color: #49698d;
+  font-size: 10px;
+}
+.link-ambiguous {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #986c43;
+}
+.link-missing {
+  color: #a27668;
+}
+.link-ambiguous .text-button {
+  padding: 0;
+}
+.wiki-editor {
+  max-height: 720px;
+  overflow-y: auto;
+  padding: 26px 30px 0;
+}
+.editor-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 17px;
+}
+.editor-top .eyebrow {
+  margin-bottom: 5px;
+}
+.editor-top h2 {
+  margin: 0;
+  color: #2c3e54;
+  font-weight: 650;
+  font-size: 22px;
+}
+.wiki-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.raw-source-select {
+  min-height: 80px;
+  padding: 5px 7px;
+}
+.raw-source-select option {
+  padding: 3px;
+}
+.selected-raws {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.selected-raw {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid #e4e9ef;
+  border-radius: 4px;
+  color: #527092;
+  background: #f8fafc;
+  font-size: 9px;
+  cursor: pointer;
+}
+.selected-raw span {
+  color: #526276;
+}
+.selected-raw small {
+  color: #99a3af;
+}
+.source-guidance {
+  padding: 9px 11px;
+  border-left: 2px solid #8ea5bf;
+  color: #7a8796;
+  background: #f6f8fa;
+  font-size: 9px;
+  line-height: 1.6;
+}
+.wiki-body-field {
+  position: relative;
+}
+.template-hint {
+  color: #77889d;
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.wiki-body-field textarea {
+  min-height: 220px;
+  font-family: Consolas, 'Microsoft YaHei UI', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.editor-footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 17px -24px 0;
+  padding: 12px 24px;
+  border-top: 1px solid #edf0f4;
+  background: #fff;
+}
+.editor-footer > span {
+  color: #99a3af;
+  font-size: 9px;
+}
+.editor-footer > div {
+  display: flex;
+  gap: 7px;
+}
+.danger-button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid #b35f54;
+  border-radius: 6px;
+  color: #fff;
+  background: #ad594e;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.danger-button:hover:not(:disabled) {
+  background: #97483f;
+}
+.danger-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.delete-dialog {
+  width: min(520px, 100%);
+  border: 1px solid #dde3eb;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 18px 60px rgba(27, 42, 62, 0.18);
+}
+.delete-reference-list {
+  max-height: 270px;
+  overflow-y: auto;
+  padding: 18px 25px;
+  color: #58677a;
+  font-size: 11px;
+}
+.delete-reference-list > b {
+  display: block;
+  margin-bottom: 11px;
+  font-weight: 600;
+}
+.delete-reference-list > p {
+  color: #9aa4b1;
+  font-size: 10px;
+}
+.delete-reference {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px solid #f0f2f5;
+}
+.delete-reference > span {
+  color: #687890;
+  font-family: Consolas, monospace;
+  font-size: 9px;
+}
+.delete-reference .text-button {
+  padding: 0;
+}
+@media (max-width: 1050px) {
+  .heading-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .wiki-workspace {
+    grid-template-columns: minmax(225px, 0.7fr) minmax(350px, 1.3fr);
+  }
+  .wiki-detail-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 760px) {
+  .heading-actions {
+    width: 100%;
+  }
+  .wiki-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wiki-list-panel {
+    min-height: auto;
+    max-height: 330px;
+  }
+  .wiki-list-content {
+    max-height: 260px;
+  }
+  .wiki-detail-panel {
+    min-height: 430px;
+  }
+  .wiki-detail {
+    padding: 18px 16px;
+  }
+  .wiki-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wiki-editor {
+    max-height: 74vh;
+    padding: 17px 16px 0;
+  }
+  .wiki-form-grid {
+    gap: 13px;
+  }
+  .editor-footer {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 11px 16px;
+  }
+  .editor-footer > span {
+    max-width: 110px;
+    line-height: 1.4;
+  }
+  .category-grid {
+    gap: 5px;
+  }
+  .category-chip {
+    padding: 0 7px;
+  }
+}
 
-.formal-note-reader table{border-collapse:collapse;width:100%;min-width:560px}.formal-note-reader td,.formal-note-reader th{border:1px solid #dfe7ef;padding:12px;vertical-align:top;text-align:left;overflow-wrap:anywhere;white-space:pre-wrap}.formal-note-reader th{background:#f2f6fb}.formal-note-reader p{white-space:pre-wrap;overflow-wrap:anywhere;margin:.7em 0}.formal-note-reader td p{margin:0}
+.formal-note-reader table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 560px;
+}
+.formal-note-reader td,
+.formal-note-reader th {
+  border: 1px solid #dfe7ef;
+  padding: 12px;
+  vertical-align: top;
+  text-align: left;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.formal-note-reader th {
+  background: #f2f6fb;
+}
+.formal-note-reader p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0.7em 0;
+}
+.formal-note-reader td p {
+  margin: 0;
+}
 
 /* UI01 reading and two-column knowledge workspace */
-.map-title span,.category-chip { font-size: 12px; }
-.wiki-meta-grid .meta span,.wiki-meta-grid .meta b { font-size: 12px; }
-.formal-note-reader { font-size: 16px; line-height: 1.75; color: #27344d; overflow-wrap: anywhere; max-width: 75ch; }
-.formal-note-reader h1,.formal-note-reader h2,.formal-note-reader h3 { margin: 1.4em 0 .5em; font-size: 1.3em; color: var(--ink); }
-.formal-note-reader blockquote { margin: 1em 0; padding: 8px 16px; background: var(--accent-soft); border-radius: 8px; }
-.formal-note-reader pre,.note-table-scroll { max-width: 100%; overflow: auto; }
-.formal-note-reader pre { padding: 14px; background: #f5f6fa; border-radius: 8px; }
-.source-card b,.source-card small,.source-card strong,.wiki-link-row,.audit-row span { font-size: 12px; }
-.wiki-detail .action-group .secondary-button { font-size: 12px; min-height: 36px; }
-@media(max-width:1100px){
-.wiki-workspace { grid-template-columns: minmax(250px,.8fr) minmax(0,1.4fr); }
-.wiki-detail { padding: 24px; }}
-@media(max-width:800px){
-.wiki-workspace { grid-template-columns: minmax(0,1fr); }
-.wiki-list-panel { min-height: auto; }
-.wiki-list-content { max-height: 300px; }
-.wiki-detail-panel { min-height: 400px; }
-.wiki-detail { padding: 22px 18px; }
-.wiki-meta-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }}
-.reading-tabs { display: flex; gap: 16px; border-bottom: 1px solid var(--line); }
-.reading-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 10px 4px; background: transparent; color: var(--muted); font-size: 14px; cursor: pointer; }
-.reading-tabs button.selected { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
-.audit-toggle { width: 100%; display: flex; justify-content: space-between; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
-.audit-toggle span { color: var(--accent); font-size: 12px; }
-/* UI02: Wiki 编辑与纠错控件，阅读视图保持不变 */
-.wiki-editor .field,.audit-panel .field{font-size:13px;color:#34435e}
-.wiki-editor .field input,.wiki-editor .field select,.wiki-editor .field textarea,.audit-panel .field input,.audit-panel .field select,.audit-panel .field textarea{font-size:14px;border-radius:8px}
-.wiki-editor .field-hint,.wiki-editor .template-hint,.wiki-editor .editor-footer>span{font-size:12px;color:var(--muted)}
-.wiki-editor .source-guidance{font-size:13px;color:var(--muted)}
-.wiki-list-panel .wiki-search input{font-size:13px}
-.audit-panel .audit-selection>span,.audit-panel .audit-error{font-size:13px}
-.audit-panel .audit-row span{white-space:normal;overflow-wrap:anywhere}
-@media(max-width:800px){.wiki-editor{padding:22px 18px 0}.wiki-form-grid{grid-template-columns:minmax(0,1fr)}.wiki-form-grid .span-two{grid-column:auto}}
-
-.wiki-question { --answer-accent: #4f46e5; margin-bottom: 24px; }
-.wiki-question .panel-heading { gap: 12px; padding-block: 14px; }
-.wiki-question-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 20px 24px 24px; overflow-wrap: anywhere; container-type: inline-size; }
-.wiki-question-body > .form-error, .wiki-question-body > .notice-success { margin: 0; }
-.wiki-question-prompt { border: 1px solid #dce2e9; border-radius: 12px; background: #fff; }
-.wiki-question-prompt:focus-within { border-color: var(--answer-accent); box-shadow: 0 0 0 3px #4f46e51a; }
-.wiki-question-prompt textarea { display: block; width: 100%; min-height: 78px; padding: 12px 14px 4px; border: 0; border-radius: 12px; outline: 0; resize: vertical; color: var(--ink); line-height: 1.6; background: transparent; }
-.wiki-question-prompt textarea:focus-visible { outline: none; }
-.wiki-question-prompt-action { display: flex; justify-content: flex-end; padding: 4px 10px 10px; }
-.wiki-question-prompt-action .primary-button { min-width: 88px; background: var(--answer-accent); border-color: var(--answer-accent); }
-.wiki-question-prompt-action .primary-button:hover:not(:disabled) { background: #4338ca; }
-.answer-status-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 10px 12px; background: #f6f5ff; border-radius: 8px; color: var(--ink); font-size: 13px; }
-.answer-status-summary { display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; }
-.answer-status-summary strong { font-weight: 650; }
-.answer-status-check { color: #166534; background: #dcfce7; width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; }
-.answer-status-badge { padding: 3px 8px; border-radius: 999px; background: #fff; color: #475569; font-size: 12px; }
-.answer-status-help { display: inline-grid; place-items: center; margin-inline-start: 6px; width: 16px; height: 16px; border-radius: 50%; background: #e2e8f0; color: #334155; font-weight: 650; cursor: help; }
-.answer-trace-toggle { text-align: left; color: var(--answer-accent); line-height: 1.5; }
-.answer-trace-toggle span { white-space: nowrap; }
-.answer-reading-trace { display: grid; gap: 10px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; color: #475569; font-size: 13px; line-height: 1.6; }
-.answer-reading-trace h4, .answer-reading-trace p { margin: 0; }
-.answer-reading-trace ul { margin: 4px 0 0; padding-inline-start: 20px; }
-.answer-spinner { flex: none; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: answer-rotate .8s linear infinite; }
-@keyframes answer-rotate { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .answer-spinner { animation: none; } }
-.answer-result { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 12px; }
-.answer-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
-.answer-toolbar h3, .answer-evidence h3 { margin: 0; font-size: 17px; color: var(--ink); }
-.answer-toolbar .heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.answer-toolbar .answer-save-all { background: #eef2ff; border-color: #dfe4ff; color: var(--answer-accent); }
-.answer-toolbar .answer-save-all:hover:not(:disabled) { background: #e0e7ff; border-color: #c7d2fe; }
-.knowledge-answer-prose { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 16px; line-height: 1.75; max-width: 75ch; margin: 16px 0 24px; }
-.answer-prose { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; max-width: none; margin: 16px 0 0; color: var(--ink); }
-.answer-group h4 { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
-.answer-paragraph { margin: 0; max-width: 75ch; }
-.answer-paragraph + span[hidden] + .answer-paragraph { margin-top: 8px; }
-.answer-group-fact { background: #f8fafc; border-inline-start: 4px solid var(--answer-accent); border-radius: 8px; padding: 12px 16px; }
-.answer-group-fact h4 { color: #3730a3; }
-.answer-group-advice-copy .answer-paragraph { font-size: 13px; color: #475569; }
-.answer-advice-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 8px; }
-.answer-advice-heading h4 { margin: 0; }
-.answer-public-citations { font-size: 12px; color: #475569; }
-.answer-advice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.answer-advice-card { padding: 12px; min-width: 0; border: 1px solid var(--line); border-radius: 8px; }
-.answer-advice-card header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
-.answer-advice-card h5 { flex: 1; margin: 0; font-size: 15px; }
-.answer-advice-index { border-radius: 999px; padding: 2px 8px; background: var(--answer-accent); color: white; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
-.answer-advice-card p { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 0; font-size: 14px; }
-.answer-advice-card p > :last-child { min-width: 0; }
-.answer-advice-label { flex: none; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; color: #475569; font-size: 12px; }
-.answer-inline-citations { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-inline-start: 6px; vertical-align: middle; user-select: none; }
-.answer-inline-citations a { padding: 2px 6px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 12px; font-weight: 650; line-height: 1.25; text-decoration: none; }
-.answer-inline-citations a:hover { background: var(--answer-accent); color: #fff; }
-.answer-inline-citations a:focus-visible, .answer-citations button:focus-visible, .answer-status-help:focus-visible { outline: 2px solid var(--answer-accent); outline-offset: 2px; }
-.answer-evidence { display: grid; gap: 10px; }
-.answer-citations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
-.answer-citations li { padding: 10px 12px; border: 1px solid var(--line); border-inline-start: 3px solid #dfe4ff; border-radius: 8px; scroll-margin-top: 24px; }
-.answer-citations li:target, .answer-citations li:focus-visible { outline: 2px solid #8b7bf1; outline-offset: 2px; }
-.answer-citation-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-.answer-citation-number { color: var(--answer-accent); font-size: 12px; font-weight: 650; }
-.answer-source-tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 650; }
-.answer-source-wiki { background: #eef2ff; color: #3730a3; }
-.answer-source-raw { background: #fef3c7; color: #92400e; }
-.answer-citations button { flex: 1 1 130px; min-width: 0; text-align: left; overflow-wrap: anywhere; }
-.answer-citations blockquote { margin: 8px 0 0; color: #475569; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
-.answer-verification { display: flex; gap: 8px; margin: 0; padding: 8px 10px; border-radius: 8px; background: #f8fafc; color: #475569; font-size: 12px; line-height: 1.6; }
-.answer-save-preview { padding-top: 16px; border-top: 1px solid var(--line); }
-@container (max-width: 620px) {
-  .answer-advice-grid, .answer-citations { grid-template-columns: minmax(0, 1fr); }
-  .answer-result { padding: 12px; }
+.map-title span,
+.category-chip {
+  font-size: 12px;
 }
-@media (max-width: 780px) { .wiki-question-body { padding: 16px; } }
+.wiki-meta-grid .meta span,
+.wiki-meta-grid .meta b {
+  font-size: 12px;
+}
+.formal-note-reader {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #27344d;
+  overflow-wrap: anywhere;
+  max-width: 75ch;
+}
+.formal-note-reader h1,
+.formal-note-reader h2,
+.formal-note-reader h3 {
+  margin: 1.4em 0 0.5em;
+  font-size: 1.3em;
+  color: var(--ink);
+}
+.formal-note-reader blockquote {
+  margin: 1em 0;
+  padding: 8px 16px;
+  background: var(--accent-soft);
+  border-radius: 8px;
+}
+.formal-note-reader pre,
+.note-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+.formal-note-reader pre {
+  padding: 14px;
+  background: #f5f6fa;
+  border-radius: 8px;
+}
+.source-card b,
+.source-card small,
+.source-card strong,
+.wiki-link-row,
+.audit-row span {
+  font-size: 12px;
+}
+.wiki-detail .action-group .secondary-button {
+  font-size: 12px;
+  min-height: 36px;
+}
+@media (max-width: 1100px) {
+  .wiki-workspace {
+    grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.4fr);
+  }
+  .wiki-detail {
+    padding: 24px;
+  }
+}
+@media (max-width: 800px) {
+  .wiki-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wiki-list-panel {
+    min-height: auto;
+  }
+  .wiki-list-content {
+    max-height: 300px;
+  }
+  .wiki-detail-panel {
+    min-height: 400px;
+  }
+  .wiki-detail {
+    padding: 22px 18px;
+  }
+  .wiki-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.reading-tabs {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.reading-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 10px 4px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+.reading-tabs button.selected {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.audit-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.audit-toggle span {
+  color: var(--accent);
+  font-size: 12px;
+}
+/* UI02: Wiki 编辑与纠错控件，阅读视图保持不变 */
+.wiki-editor .field,
+.audit-panel .field {
+  font-size: 13px;
+  color: #34435e;
+}
+.wiki-editor .field input,
+.wiki-editor .field select,
+.wiki-editor .field textarea,
+.audit-panel .field input,
+.audit-panel .field select,
+.audit-panel .field textarea {
+  font-size: 14px;
+  border-radius: 8px;
+}
+.wiki-editor .field-hint,
+.wiki-editor .template-hint,
+.wiki-editor .editor-footer > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.wiki-editor .source-guidance {
+  font-size: 13px;
+  color: var(--muted);
+}
+.wiki-list-panel .wiki-search input {
+  font-size: 13px;
+}
+.audit-panel .audit-selection > span,
+.audit-panel .audit-error {
+  font-size: 13px;
+}
+.audit-panel .audit-row span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  .wiki-editor {
+    padding: 22px 18px 0;
+  }
+  .wiki-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wiki-form-grid .span-two {
+    grid-column: auto;
+  }
+}
+
+.wiki-question {
+  --answer-accent: #4f46e5;
+  margin-bottom: 24px;
+}
+.wiki-question .panel-heading {
+  gap: 12px;
+  padding-block: 14px;
+}
+.wiki-question-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 20px 24px 24px;
+  overflow-wrap: anywhere;
+  container-type: inline-size;
+}
+.wiki-question-body > .form-error,
+.wiki-question-body > .notice-success {
+  margin: 0;
+}
+.wiki-question-prompt {
+  border: 1px solid #dce2e9;
+  border-radius: 12px;
+  background: #fff;
+}
+.wiki-question-prompt:focus-within {
+  border-color: var(--answer-accent);
+  box-shadow: 0 0 0 3px #4f46e51a;
+}
+.wiki-question-prompt textarea {
+  display: block;
+  width: 100%;
+  min-height: 78px;
+  padding: 12px 14px 4px;
+  border: 0;
+  border-radius: 12px;
+  outline: 0;
+  resize: vertical;
+  color: var(--ink);
+  line-height: 1.6;
+  background: transparent;
+}
+.wiki-question-prompt textarea:focus-visible {
+  outline: none;
+}
+.wiki-question-prompt-action {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 10px 10px;
+}
+.wiki-question-prompt-action .primary-button {
+  min-width: 88px;
+  background: var(--answer-accent);
+  border-color: var(--answer-accent);
+}
+.wiki-question-prompt-action .primary-button:hover:not(:disabled) {
+  background: #4338ca;
+}
+.answer-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 10px 12px;
+  background: #f6f5ff;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 13px;
+}
+.answer-status-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px 8px;
+  flex-wrap: wrap;
+}
+.answer-status-summary strong {
+  font-weight: 650;
+}
+.answer-status-check {
+  color: #166534;
+  background: #dcfce7;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+}
+.answer-status-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  font-size: 12px;
+}
+.answer-status-help {
+  display: inline-grid;
+  place-items: center;
+  margin-inline-start: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 650;
+  cursor: help;
+}
+.answer-trace-toggle {
+  text-align: left;
+  color: var(--answer-accent);
+  line-height: 1.5;
+}
+.answer-trace-toggle span {
+  white-space: nowrap;
+}
+.answer-reading-trace {
+  display: grid;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.answer-reading-trace h4,
+.answer-reading-trace p {
+  margin: 0;
+}
+.answer-reading-trace ul {
+  margin: 4px 0 0;
+  padding-inline-start: 20px;
+}
+.answer-spinner {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: answer-rotate 0.8s linear infinite;
+}
+@keyframes answer-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .answer-spinner {
+    animation: none;
+  }
+}
+.answer-result {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.answer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.answer-toolbar h3,
+.answer-evidence h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--ink);
+}
+.answer-toolbar .heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.answer-toolbar .answer-save-all {
+  background: #eef2ff;
+  border-color: #dfe4ff;
+  color: var(--answer-accent);
+}
+.answer-toolbar .answer-save-all:hover:not(:disabled) {
+  background: #e0e7ff;
+  border-color: #c7d2fe;
+}
+.knowledge-answer-prose {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.75;
+  max-width: 75ch;
+  margin: 16px 0 24px;
+}
+.answer-prose {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  max-width: none;
+  margin: 16px 0 0;
+  color: var(--ink);
+}
+.answer-group h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.answer-paragraph {
+  margin: 0;
+  max-width: 75ch;
+}
+.answer-paragraph + span[hidden] + .answer-paragraph {
+  margin-top: 8px;
+}
+.answer-group-fact {
+  background: #f8fafc;
+  border-inline-start: 4px solid var(--answer-accent);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.answer-group-fact h4 {
+  color: #3730a3;
+}
+.answer-group-advice-copy .answer-paragraph {
+  font-size: 13px;
+  color: #475569;
+}
+.answer-advice-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 8px;
+}
+.answer-advice-heading h4 {
+  margin: 0;
+}
+.answer-public-citations {
+  font-size: 12px;
+  color: #475569;
+}
+.answer-advice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.answer-advice-card {
+  padding: 12px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.answer-advice-card header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.answer-advice-card h5 {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+}
+.answer-advice-index {
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: var(--answer-accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.answer-advice-card p {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+.answer-advice-card p > :last-child {
+  min-width: 0;
+}
+.answer-advice-label {
+  flex: none;
+  background: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #475569;
+  font-size: 12px;
+}
+.answer-inline-citations {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-inline-start: 6px;
+  vertical-align: middle;
+  user-select: none;
+}
+.answer-inline-citations a {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-decoration: none;
+}
+.answer-inline-citations a:hover {
+  background: var(--answer-accent);
+  color: #fff;
+}
+.answer-inline-citations a:focus-visible,
+.answer-citations button:focus-visible,
+.answer-status-help:focus-visible {
+  outline: 2px solid var(--answer-accent);
+  outline-offset: 2px;
+}
+.answer-evidence {
+  display: grid;
+  gap: 10px;
+}
+.answer-citations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.answer-citations li {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid #dfe4ff;
+  border-radius: 8px;
+  scroll-margin-top: 24px;
+}
+.answer-citations li:target,
+.answer-citations li:focus-visible {
+  outline: 2px solid #8b7bf1;
+  outline-offset: 2px;
+}
+.answer-citation-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+.answer-citation-number {
+  color: var(--answer-accent);
+  font-size: 12px;
+  font-weight: 650;
+}
+.answer-source-tag {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.answer-source-wiki {
+  background: #eef2ff;
+  color: #3730a3;
+}
+.answer-source-raw {
+  background: #fef3c7;
+  color: #92400e;
+}
+.answer-citations button {
+  flex: 1 1 130px;
+  min-width: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.answer-citations blockquote {
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.answer-verification {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.answer-save-preview {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+@container (max-width: 620px) {
+  .answer-advice-grid,
+  .answer-citations {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .answer-result {
+    padding: 12px;
+  }
+}
+@media (max-width: 780px) {
+  .wiki-question-body {
+    padding: 16px;
+  }
+}
 
 /* LW03: bounded, explicitly initiated inspection alongside existing reading tools. */
-.wiki-inspection { margin-bottom: 20px; }
-.inspection-summary { padding: 14px 18px; border-inline-start: 4px solid; overflow-wrap: anywhere; }
-.inspection-summary.clean { background: #eef6ef; color: #28553a; }
-.inspection-summary.review { background: #fff3db; color: #714c13; }
-.inspection-summary.limited { background: #eef2f5; color: #364c5b; }
-.inspection-summary h3, .inspection-dimensions dd { margin: 0; }
-.inspection-summary p { margin: 5px 0 0; }
-.inspection-dimensions { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,17rem),1fr)); gap: 12px 24px; }
-.inspection-dimensions dt { font-weight: 600; }
-.inspection-dimensions small { display: block; color: #566168; }
-.wiki-inspection details summary { cursor: pointer; }
-.inspection-body { padding: 20px 24px; display: grid; gap: 16px; }
-.inspection-body fieldset { border: 1px solid var(--border, #e1e4e8); border-radius: 10px; padding: 16px; min-width: 0; }
-.inspection-scope-picker { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 8px; max-height: 240px; overflow: auto; }
-.inspection-scope-picker .draft-select { margin: 0; padding: 8px; }
-.inspection-range { border-left: 3px solid #b5b3a3; padding-left: 16px; }
-.inspection-range .text-button { margin-right: 16px; }
-.inspection-findings { display: grid; gap: 16px; }
-.inspection-finding { border: 1px solid var(--border, #e1e4e8); border-radius: 12px; padding: 20px; }
-.inspection-finding blockquote { margin: 12px 0; padding: 12px 16px; background: #f6f7f4; border-left: 3px solid #b8c6ad; overflow-wrap: anywhere; }
-.inspection-finding .field { max-width: 680px; }
-.inspection-evidence-position mark { background: #fff0ae; outline: 2px solid #dcc776; }
-@media(max-width:800px) { .inspection-body,.inspection-finding { padding: 14px; } .inspection-scope-picker { grid-template-columns: 1fr; } .inspection-finding .panel-heading { flex-wrap: wrap; } }
+.wiki-inspection {
+  margin-bottom: 20px;
+}
+.inspection-summary {
+  padding: 14px 18px;
+  border-inline-start: 4px solid;
+  overflow-wrap: anywhere;
+}
+.inspection-summary.clean {
+  background: #eef6ef;
+  color: #28553a;
+}
+.inspection-summary.review {
+  background: #fff3db;
+  color: #714c13;
+}
+.inspection-summary.limited {
+  background: #eef2f5;
+  color: #364c5b;
+}
+.inspection-summary h3,
+.inspection-dimensions dd {
+  margin: 0;
+}
+.inspection-summary p {
+  margin: 5px 0 0;
+}
+.inspection-dimensions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 12px 24px;
+}
+.inspection-dimensions dt {
+  font-weight: 600;
+}
+.inspection-dimensions small {
+  display: block;
+  color: #566168;
+}
+.wiki-inspection details summary {
+  cursor: pointer;
+}
+.inspection-body {
+  padding: 20px 24px;
+  display: grid;
+  gap: 16px;
+}
+.inspection-body fieldset {
+  border: 1px solid var(--border, #e1e4e8);
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 0;
+}
+.inspection-scope-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+}
+.inspection-scope-picker .draft-select {
+  margin: 0;
+  padding: 8px;
+}
+.inspection-range {
+  border-left: 3px solid #b5b3a3;
+  padding-left: 16px;
+}
+.inspection-range .text-button {
+  margin-right: 16px;
+}
+.inspection-findings {
+  display: grid;
+  gap: 16px;
+}
+.inspection-finding {
+  border: 1px solid var(--border, #e1e4e8);
+  border-radius: 12px;
+  padding: 20px;
+}
+.inspection-finding blockquote {
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: #f6f7f4;
+  border-left: 3px solid #b8c6ad;
+  overflow-wrap: anywhere;
+}
+.inspection-finding .field {
+  max-width: 680px;
+}
+.inspection-evidence-position mark {
+  background: #fff0ae;
+  outline: 2px solid #dcc776;
+}
+@media (max-width: 800px) {
+  .inspection-body,
+  .inspection-finding {
+    padding: 14px;
+  }
+  .inspection-scope-picker {
+    grid-template-columns: 1fr;
+  }
+  .inspection-finding .panel-heading {
+    flex-wrap: wrap;
+  }
+}
 
 /* UIFIX04: Audit 段落绑定提示、待审提示前置间距、主动检查范围搜索工具栏 */
 .wiki-page .pending-knowledge-workflows,
-.wiki-page .pending-wiki-drafts { margin-bottom: 14px; }
-.audit-bound-anchor { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 10px 12px; border: 1px solid #d5ddf0; border-radius: 8px; background: #f4f6ff; color: #34435e; font-size: 13px; overflow-wrap: anywhere; }
-.audit-bound-anchor span { min-width: 0; flex: 1 1 200px; line-height: 1.5; }
-.audit-bound-anchor .text-button { flex: none; padding: 0; font-size: 13px; }
-.audit-create-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.inspection-scope-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 10px; }
-.inspection-scope-toolbar input[type="search"] { flex: 1 1 220px; min-width: 0; max-width: 100%; height: 36px; padding: 0 10px; border: 1px solid #dce2e9; border-radius: 8px; background: #fff; color: var(--ink); font-size: 13px; }
-.inspection-scope-toolbar .text-button { flex: none; padding: 0; white-space: nowrap; }
+.wiki-page .pending-wiki-drafts {
+  margin-bottom: 14px;
+}
+.audit-bound-anchor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border: 1px solid #d5ddf0;
+  border-radius: 8px;
+  background: #f4f6ff;
+  color: #34435e;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.audit-bound-anchor span {
+  min-width: 0;
+  flex: 1 1 200px;
+  line-height: 1.5;
+}
+.audit-bound-anchor .text-button {
+  flex: none;
+  padding: 0;
+  font-size: 13px;
+}
+.audit-create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.inspection-scope-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+.inspection-scope-toolbar input[type='search'] {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #dce2e9;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+}
+.inspection-scope-toolbar .text-button {
+  flex: none;
+  padding: 0;
+  white-space: nowrap;
+}

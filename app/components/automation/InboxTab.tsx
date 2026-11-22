@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type {
-  CandidateList,
-  CandidateView,
-  ConfirmCandidates,
-  PipelineSettings,
-  ReminderView,
-} from '../../api';
+import type { CandidateList, CandidateView, ConfirmCandidates, PipelineSettings, ReminderView } from '../../api';
 import {
   acknowledgeReminder,
   changeCandidateDisposition,
@@ -77,10 +71,7 @@ function WorkRemindersPanel({
     heading.current?.focus();
   }, [focusTick]);
 
-  const write = async (
-    area: string,
-    operation: (writeToken: string) => Promise<{ text: string; error?: boolean }>,
-  ) => {
+  const write = async (area: string, operation: (writeToken: string) => Promise<{ text: string; error?: boolean }>) => {
     if (!token || pending) return;
     setPending(true);
     setFeedback(null);
@@ -103,10 +94,10 @@ function WorkRemindersPanel({
 
   const canWrite = Boolean(token && !pending);
   const items = view?.items ?? [];
-  const filteredItems = kindFilter === 'all' ? items : items.filter(item => item.kind === kindFilter);
-  const dueCount = items.filter(item => item.kind === 'due_follow_up').length;
-  const staleCount = items.filter(item => item.kind === 'stale_item').length;
-  const rawReadyCount = items.filter(item => item.kind === 'new_raw_ready').length;
+  const filteredItems = kindFilter === 'all' ? items : items.filter((item) => item.kind === kindFilter);
+  const dueCount = items.filter((item) => item.kind === 'due_follow_up').length;
+  const staleCount = items.filter((item) => item.kind === 'stale_item').length;
+  const rawReadyCount = items.filter((item) => item.kind === 'new_raw_ready').length;
 
   return (
     <section className="panel automation-panel" aria-labelledby="automation-reminders">
@@ -121,12 +112,7 @@ function WorkRemindersPanel({
             </p>
           )}
         </div>
-        <button
-          type="button"
-          className="secondary-button"
-          disabled={pending || !view}
-          onClick={onOpenSettings}
-        >
+        <button type="button" className="secondary-button" disabled={pending || !view} onClick={onOpenSettings}>
           提醒与通知设置
         </button>
       </div>
@@ -136,7 +122,7 @@ function WorkRemindersPanel({
         </p>
       )}
       {!view && !readError && <p role="status">正在读取事项提醒…</p>}
-      {view?.issues.map(issue => (
+      {view?.issues.map((issue) => (
         <p key={issue.file} className="form-error" role="alert">
           {issueLabels[issue.reason]} · {issue.file}
         </p>
@@ -175,7 +161,7 @@ function WorkRemindersPanel({
       )}
       {filteredItems.length > 0 && (
         <ul className="automation-list automation-reminder-list">
-          {filteredItems.map(item => {
+          {filteredItems.map((item) => {
             const newMaterials = item.kind === 'new_raw_ready';
             const tone = item.status === 'unread' ? reminderKindTone(item.kind) : 'muted';
             return (
@@ -213,7 +199,7 @@ function WorkRemindersPanel({
                       className="secondary-button"
                       disabled={!canWrite}
                       onClick={() =>
-                        void write(item.id, async writeToken => {
+                        void write(item.id, async (writeToken) => {
                           onViewChange(await acknowledgeReminder(item.id, writeToken));
                           return { text: '提醒已标为已读。' };
                         })
@@ -228,7 +214,7 @@ function WorkRemindersPanel({
                       className="secondary-button"
                       disabled={!canWrite}
                       onClick={() =>
-                        void write(item.id, async writeToken => {
+                        void write(item.id, async (writeToken) => {
                           onViewChange(await snoozeReminder(item.id, writeToken));
                           return { text: '提醒已延后一天。' };
                         })
@@ -327,7 +313,7 @@ function NewsInbox({
       items,
       request: {
         requestId: crypto.randomUUID(),
-        candidateIds: items.map(row => row.id),
+        candidateIds: items.map((row) => row.id),
         organize: true,
         mode: 'standard',
       },
@@ -341,7 +327,7 @@ function NewsInbox({
   };
 
   const items = (candidates?.items ?? [])
-    .filter(row => {
+    .filter((row) => {
       if (filter === 'fetched') return true;
       if (filter === 'ignored') return row.disposition === 'ignored';
       if (filter === 'pending') return canConfirmCandidate(row);
@@ -351,13 +337,14 @@ function NewsInbox({
       return row.disposition !== 'ignored';
     })
     .sort((a, b) => (candidateScore(b)?.relevance ?? -1) - (candidateScore(a)?.relevance ?? -1));
-  const low = items.filter(row => candidateScore(row)?.relevance === 0);
-  const visible = items.filter(row => candidateScore(row)?.relevance !== 0);
+  const low = items.filter((row) => candidateScore(row)?.relevance === 0);
+  const visible = items.filter((row) => candidateScore(row)?.relevance !== 0);
   const confirmableVisible = [...visible, ...(expandedLow ? low : [])].filter(canConfirmCandidate);
   const allConfirmableSelected =
-    confirmableVisible.length > 0 && confirmableVisible.every(row => selected.includes(row.id));
+    confirmableVisible.length > 0 && confirmableVisible.every((row) => selected.includes(row.id));
   const batch = items.filter(
-    row => selected.includes(row.id) && canConfirmCandidate(row) && (expandedLow || candidateScore(row)?.relevance !== 0),
+    (row) =>
+      selected.includes(row.id) && canConfirmCandidate(row) && (expandedLow || candidateScore(row)?.relevance !== 0),
   );
 
   const renderCandidate = (row: CandidateView) => {
@@ -398,9 +385,9 @@ function NewsInbox({
                 type="checkbox"
                 aria-label={`选择 ${row.item.title}`}
                 checked={selected.includes(row.id)}
-                onChange={event =>
-                  setSelected(current =>
-                    event.target.checked ? [...current, row.id] : current.filter(id => id !== row.id),
+                onChange={(event) =>
+                  setSelected((current) =>
+                    event.target.checked ? [...current, row.id] : current.filter((id) => id !== row.id),
                   )
                 }
               />
@@ -410,7 +397,9 @@ function NewsInbox({
         </div>
         <div className="automation-candidate-pills">
           <span className="automation-pill" data-tone={scoreTone}>
-            {score ? `AI 预筛（仅供参考） · 相关性 ${score.relevance}/3` : `未预筛${screenError ? ` · ${screenError}` : ''}`}
+            {score
+              ? `AI 预筛（仅供参考） · 相关性 ${score.relevance}/3`
+              : `未预筛${screenError ? ` · ${screenError}` : ''}`}
           </span>
           {score && (
             <span className="automation-pill" data-tone={score.suggestedMode === 'deep' ? 'accent' : 'neutral'}>
@@ -460,7 +449,7 @@ function NewsInbox({
                   className="secondary-button"
                   disabled={pending || !token}
                   onClick={() =>
-                    void write(value => changeCandidateDisposition(row.id, 'later', value).then(() => undefined))
+                    void write((value) => changeCandidateDisposition(row.id, 'later', value).then(() => undefined))
                   }
                 >
                   稍后
@@ -471,7 +460,7 @@ function NewsInbox({
                 className="text-button"
                 disabled={pending || !token}
                 onClick={() =>
-                  void write(value => changeCandidateDisposition(row.id, 'ignore', value).then(() => undefined))
+                  void write((value) => changeCandidateDisposition(row.id, 'ignore', value).then(() => undefined))
                 }
               >
                 忽略
@@ -484,7 +473,7 @@ function NewsInbox({
               className="secondary-button"
               disabled={pending || !token}
               onClick={() =>
-                void write(value => changeCandidateDisposition(row.id, 'restore', value).then(() => undefined))
+                void write((value) => changeCandidateDisposition(row.id, 'restore', value).then(() => undefined))
               }
             >
               恢复到收件箱
@@ -506,7 +495,7 @@ function NewsInbox({
               className="secondary-button"
               disabled={pending || !token}
               onClick={() =>
-                void write(value =>
+                void write((value) =>
                   retryCandidate(row.id, phase === 'raw_failed' ? 'save' : 'organize', value).then(() => undefined),
                 )
               }
@@ -518,7 +507,7 @@ function NewsInbox({
             <button
               type="button"
               className="text-button"
-              onClick={event => onOpenRun(row.execution!.runId, event.currentTarget)}
+              onClick={(event) => onOpenRun(row.execution!.runId, event.currentTarget)}
             >
               查看运行
             </button>
@@ -553,7 +542,7 @@ function NewsInbox({
       )}
       <div className="automation-funnel" role="group" aria-label="资讯处理漏斗">
         <div className="automation-funnel-stages">
-          {funnelStages.map(stage => {
+          {funnelStages.map((stage) => {
             const count = candidates?.counts[stage.countKey];
             const tone = !count
               ? 'muted'
@@ -602,14 +591,14 @@ function NewsInbox({
           资讯日期
           <select
             value={date ?? ''}
-            onChange={event => {
+            onChange={(event) => {
               onDateChange(event.target.value || undefined);
               setSelected([]);
               setExpandedLow(false);
             }}
           >
             <option value="">今日</option>
-            {candidates?.dates.map(day => (
+            {candidates?.dates.map((day) => (
               <option key={day}>{day}</option>
             ))}
             {date && !candidates?.dates.includes(date) && <option>{date}</option>}
@@ -617,7 +606,7 @@ function NewsInbox({
         </label>
         <label>
           候选状态
-          <select value={filter} onChange={event => selectFilter(event.target.value as InboxCandidateFilter)}>
+          <select value={filter} onChange={(event) => selectFilter(event.target.value as InboxCandidateFilter)}>
             {candidateViews.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -631,10 +620,10 @@ function NewsInbox({
             className="secondary-button"
             disabled={pending || !token}
             onClick={() =>
-              setSelected(current =>
+              setSelected((current) =>
                 allConfirmableSelected
-                  ? current.filter(id => !confirmableVisible.some(row => row.id === id))
-                  : [...new Set([...current, ...confirmableVisible.map(row => row.id)])],
+                  ? current.filter((id) => !confirmableVisible.some((row) => row.id === id))
+                  : [...new Set([...current, ...confirmableVisible.map((row) => row.id)])],
               )
             }
           >
@@ -670,7 +659,7 @@ function NewsInbox({
         <details
           className="candidate-low"
           open={expandedLow}
-          onToggle={event => setExpandedLow(event.currentTarget.open)}
+          onToggle={(event) => setExpandedLow(event.currentTarget.open)}
         >
           <summary>低相关性（{low.length} 条）</summary>
           {low.map(renderCandidate)}
@@ -681,13 +670,13 @@ function NewsInbox({
           value={confirmation}
           pending={pending}
           error={writeError}
-          onChange={request => setConfirmation({ ...confirmation, request })}
+          onChange={(request) => setConfirmation({ ...confirmation, request })}
           onClose={() => {
             setConfirmation(undefined);
             setWriteError('');
           }}
           onConfirm={() =>
-            void write(async writeToken => {
+            void write(async (writeToken) => {
               await confirmCandidates(confirmation.request, writeToken);
               setConfirmation(undefined);
               setSelected([]);
@@ -818,7 +807,7 @@ export function InboxTab({
         className="automation-subtabs"
         role="tablist"
         aria-label="收件箱分类"
-        onKeyDown={event => {
+        onKeyDown={(event) => {
           if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
           event.preventDefault();
           const next: InboxSection =

@@ -96,12 +96,7 @@ export function AutomationPage({
   candidateFilter?: CandidateFilter;
 }) {
   const resolvedInitialTab: AutomationTab =
-    initialTab ??
-    (initialRunId
-      ? 'runs'
-      : candidateFilter || focusReminders
-        ? 'inbox'
-        : 'workflows');
+    initialTab ?? (initialRunId ? 'runs' : candidateFilter || focusReminders ? 'inbox' : 'workflows');
 
   const [tab, setTab] = useState<AutomationTab>(resolvedInitialTab);
   const handleOpenDraft = (id: string) => onOpenDraft(id, tab);
@@ -170,8 +165,8 @@ export function AutomationPage({
   const showHealth = Boolean(onOpenLint || onOpenInspection);
   const showReminders = Boolean(onOpenWorkItem);
   const tasks = schedules?.items ?? [];
-  const hasPipeline = tasks.some(task => task.type === 'news.daily');
-  const hasWeeklyReview = tasks.some(task => task.type === 'review.weekly');
+  const hasPipeline = tasks.some((task) => task.type === 'news.daily');
+  const hasWeeklyReview = tasks.some((task) => task.type === 'review.weekly');
 
   const prevDeepLink = useRef({ candidateFilter, focusReminders, initialRunId });
   useEffect(() => {
@@ -184,24 +179,24 @@ export function AutomationPage({
       setTab('inbox');
       setInboxSection('reminders');
       setInboxFocus('reminders');
-      setInboxFocusTick(value => value + 1);
+      setInboxFocusTick((value) => value + 1);
     } else if (candidateFilter && candidateFilter !== prev.candidateFilter) {
       setInboxFilter(candidateFilter);
       setTab('inbox');
       setInboxSection('candidates');
       setInboxFocus('candidates');
-      setInboxFocusTick(value => value + 1);
+      setInboxFocusTick((value) => value + 1);
     }
   }, [candidateFilter, focusReminders, initialRunId]);
 
   useEffect(
     () =>
-      poll(async signal => {
+      poll(async (signal) => {
         const [service, taskList] = await Promise.allSettled([automationStatus(signal), automationSchedules(signal)]);
         if (signal.aborted) return;
         if (service.status === 'fulfilled') setStatus(service.value);
         if (taskList.status === 'fulfilled') setSchedules(taskList.value);
-        setReadErrors(current => ({
+        setReadErrors((current) => ({
           ...current,
           status: service.status === 'rejected' ? describeError(service.reason) : '',
           schedules: taskList.status === 'rejected' ? describeError(taskList.reason) : '',
@@ -212,45 +207,45 @@ export function AutomationPage({
 
   useEffect(() => {
     if (!showHealth) return;
-    return poll(async signal => {
+    return poll(async (signal) => {
       try {
         const result = await automationKnowledgeHealth(signal);
         if (!signal.aborted) {
           setHealth(result);
-          setReadErrors(current => ({ ...current, health: '' }));
+          setReadErrors((current) => ({ ...current, health: '' }));
         }
       } catch (error) {
-        if (!signal.aborted) setReadErrors(current => ({ ...current, health: describeError(error) }));
+        if (!signal.aborted) setReadErrors((current) => ({ ...current, health: describeError(error) }));
       }
     });
   }, [showHealth, refresh]);
 
   useEffect(() => {
     if (!showReminders) return;
-    return poll(async signal => {
+    return poll(async (signal) => {
       try {
         const result = await automationReminders(signal);
         if (!signal.aborted) {
           setRemindersView(result);
-          setReadErrors(current => ({ ...current, reminders: '' }));
+          setReadErrors((current) => ({ ...current, reminders: '' }));
         }
       } catch (error) {
-        if (!signal.aborted) setReadErrors(current => ({ ...current, reminders: describeError(error) }));
+        if (!signal.aborted) setReadErrors((current) => ({ ...current, reminders: describeError(error) }));
       }
     });
   }, [showReminders, refresh, remindersRevision]);
 
   useEffect(() => {
     if (!hasPipeline) return;
-    return poll(async signal => {
+    return poll(async (signal) => {
       try {
         const result = await automationCandidates(candidateDate, signal);
         if (!signal.aborted) {
           setCandidates(result);
-          setReadErrors(current => ({ ...current, candidates: '' }));
+          setReadErrors((current) => ({ ...current, candidates: '' }));
         }
       } catch (error) {
-        if (!signal.aborted) setReadErrors(current => ({ ...current, candidates: describeError(error) }));
+        if (!signal.aborted) setReadErrors((current) => ({ ...current, candidates: describeError(error) }));
       }
     });
   }, [hasPipeline, candidateDate, refresh, pipelineRevision]);
@@ -259,15 +254,15 @@ export function AutomationPage({
     if (!hasPipeline) return;
     const controller = new AbortController();
     void readPipelineSettings(controller.signal)
-      .then(value => {
+      .then((value) => {
         if (!controller.signal.aborted) {
           setPipelineSettings(value);
-          setReadErrors(current => ({ ...current, pipelineSettings: '' }));
+          setReadErrors((current) => ({ ...current, pipelineSettings: '' }));
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (!controller.signal.aborted) {
-          setReadErrors(current => ({ ...current, pipelineSettings: describeError(error) }));
+          setReadErrors((current) => ({ ...current, pipelineSettings: describeError(error) }));
         }
       });
     return () => controller.abort();
@@ -275,30 +270,30 @@ export function AutomationPage({
 
   useEffect(() => {
     if (!hasWeeklyReview) return;
-    return poll(async signal => {
+    return poll(async (signal) => {
       try {
         const result = await weeklyReviews(signal);
         if (!signal.aborted) {
           setWeeklyList(result);
-          setReadErrors(current => ({ ...current, weekly: '' }));
+          setReadErrors((current) => ({ ...current, weekly: '' }));
         }
       } catch (error) {
-        if (!signal.aborted) setReadErrors(current => ({ ...current, weekly: describeError(error) }));
+        if (!signal.aborted) setReadErrors((current) => ({ ...current, weekly: describeError(error) }));
       }
     });
   }, [hasWeeklyReview, refresh, weeklyRevision]);
 
   useEffect(
     () =>
-      poll(async signal => {
+      poll(async (signal) => {
         try {
           const runs = await automationRuns({ type: typeFilter, status: statusFilter, limit }, signal);
           if (!signal.aborted) {
             setHistory(runs);
-            setReadErrors(current => ({ ...current, history: '' }));
+            setReadErrors((current) => ({ ...current, history: '' }));
           }
         } catch (error) {
-          if (!signal.aborted) setReadErrors(current => ({ ...current, history: describeError(error) }));
+          if (!signal.aborted) setReadErrors((current) => ({ ...current, history: describeError(error) }));
         }
       }),
     [typeFilter, statusFilter, limit, refresh],
@@ -306,15 +301,15 @@ export function AutomationPage({
 
   useEffect(() => {
     if (!selectedRunId) return;
-    return poll(async signal => {
+    return poll(async (signal) => {
       try {
         const run = await automationRun(selectedRunId, signal);
         if (!signal.aborted) {
           setDetail(run);
-          setReadErrors(current => ({ ...current, detail: '' }));
+          setReadErrors((current) => ({ ...current, detail: '' }));
         }
       } catch (error) {
-        if (!signal.aborted) setReadErrors(current => ({ ...current, detail: describeError(error) }));
+        if (!signal.aborted) setReadErrors((current) => ({ ...current, detail: describeError(error) }));
       }
     });
   }, [selectedRunId, refresh]);
@@ -338,7 +333,7 @@ export function AutomationPage({
         message: conflict ? '计划已被其他操作修改。你的输入已保留，可先核对最新计划。' : describeError(error),
       });
     } finally {
-      setRefresh(value => value + 1);
+      setRefresh((value) => value + 1);
       setPending(false);
     }
   };
@@ -348,7 +343,7 @@ export function AutomationPage({
     runTriggerRef.current = trigger ?? (active instanceof HTMLElement && active !== document.body ? active : null);
     if (id !== selectedRunId) setDetail(run);
     setSelectedRunId(id);
-    setReadErrors(current => ({ ...current, detail: '' }));
+    setReadErrors((current) => ({ ...current, detail: '' }));
   };
 
   const closeRunDetail = () => {
@@ -380,7 +375,7 @@ export function AutomationPage({
     setInboxSection(target);
     setTab('inbox');
     setInboxFocus(target);
-    setInboxFocusTick(value => value + 1);
+    setInboxFocusTick((value) => value + 1);
   };
 
   const openPipelineSettings = () => {
@@ -400,22 +395,24 @@ export function AutomationPage({
           ...pipelineSettingsEdit,
           topics: pipelineSettingsEdit.topics
             .split(/\r?\n/u)
-            .map(topic => topic.trim())
+            .map((topic) => topic.trim())
             .filter(Boolean),
         },
         status.writeToken,
       );
       setPipelineSettings(saved);
       setPipelineSettingsEdit(null);
-      setPipelineRevision(value => value + 1);
+      setPipelineRevision((value) => value + 1);
     } catch (error) {
       const conflict = error instanceof ApiError && error.status === 409;
       setPipelineSettingsWriteError(
-        conflict ? '流水线设置已被其他操作修改（409 版本冲突）。你的输入已保留，可加载最新设置。' : describeError(error),
+        conflict
+          ? '流水线设置已被其他操作修改（409 版本冲突）。你的输入已保留，可加载最新设置。'
+          : describeError(error),
       );
     } finally {
       setPipelineSettingsPending(false);
-      setPipelineSettingsRevision(value => value + 1);
+      setPipelineSettingsRevision((value) => value + 1);
     }
   };
 
@@ -454,7 +451,7 @@ export function AutomationPage({
         text: conflict ? '设置已更新。请核对最新设置后再保存。' : describeError(error),
       });
     } finally {
-      setRemindersRevision(value => value + 1);
+      setRemindersRevision((value) => value + 1);
       setReminderSettingsPending(false);
     }
   };
@@ -473,7 +470,7 @@ export function AutomationPage({
     } catch (error) {
       setReminderSettingsFeedback({ area: 'test', error: true, text: describeError(error) });
     } finally {
-      setRemindersRevision(value => value + 1);
+      setRemindersRevision((value) => value + 1);
       setReminderSettingsPending(false);
     }
   };
@@ -484,11 +481,8 @@ export function AutomationPage({
     setWeeklyError('');
     setWeeklyConflict(false);
     try {
-      const settings = await updateWeeklyReviewSettings(
-        { revision, aiSummaryEnabled: enabled },
-        status.writeToken,
-      );
-      setWeeklyList(current => (current ? { ...current, settings } : current));
+      const settings = await updateWeeklyReviewSettings({ revision, aiSummaryEnabled: enabled }, status.writeToken);
+      setWeeklyList((current) => (current ? { ...current, settings } : current));
     } catch (error) {
       const conflict =
         error instanceof ApiError && (error.status === 409 || error.code === 'WEEKLY_REVIEW_REVISION_CONFLICT');
@@ -504,7 +498,7 @@ export function AutomationPage({
   const reloadWeekly = () => {
     setWeeklyConflict(false);
     setWeeklyError('');
-    setWeeklyRevision(value => value + 1);
+    setWeeklyRevision((value) => value + 1);
   };
 
   const closeEditor = () => {
@@ -515,7 +509,7 @@ export function AutomationPage({
   const submitSchedule = (event: FormEvent, schedule: AutomationSchedule) => {
     event.preventDefault();
     if (!editor) return;
-    void write('editor', async token => {
+    void write('editor', async (token) => {
       await editAutomationSchedule(
         schedule.type,
         {
@@ -536,7 +530,7 @@ export function AutomationPage({
   };
 
   const taskName = (type: string) =>
-    type === 'pipeline.organize' ? '资讯入库与整理' : tasks.find(task => task.type === type)?.name ?? type;
+    type === 'pipeline.organize' ? '资讯入库与整理' : (tasks.find((task) => task.type === type)?.name ?? type);
   const showError = (area: string) =>
     actionError?.area === area && (
       <p className="form-error" role="alert">
@@ -544,7 +538,7 @@ export function AutomationPage({
       </p>
     );
   const currentDetail = detail?.id === selectedRunId ? detail : null;
-  const editorTask = editor ? tasks.find(task => task.type === editor.type) ?? null : null;
+  const editorTask = editor ? (tasks.find((task) => task.type === editor.type) ?? null) : null;
 
   const bannerTone = !status
     ? 'muted'
@@ -562,9 +556,11 @@ export function AutomationPage({
       <div className="page-heading">
         <div>
           <h1>自动化</h1>
-          <p className="subheading">仅在工作台进程运行时执行。关机或休眠期间错过的任务，启动后按计划设置最多补跑一次。</p>
+          <p className="subheading">
+            仅在工作台进程运行时执行。关机或休眠期间错过的任务，启动后按计划设置最多补跑一次。
+          </p>
         </div>
-        <button type="button" className="secondary-button" onClick={() => setRefresh(value => value + 1)}>
+        <button type="button" className="secondary-button" onClick={() => setRefresh((value) => value + 1)}>
           刷新
         </button>
       </div>
@@ -637,7 +633,7 @@ export function AutomationPage({
                 className="primary-button"
                 disabled={pending}
                 onClick={() =>
-                  void write('pause', async token => {
+                  void write('pause', async (token) => {
                     setStatus(await changeAutomationPause(pauseConfirmation, token));
                     setPauseConfirmation(null);
                   })
@@ -675,7 +671,7 @@ export function AutomationPage({
         className="automation-tabs"
         role="tablist"
         aria-label="自动化视图"
-        onKeyDown={event => {
+        onKeyDown={(event) => {
           if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
           event.preventDefault();
           const idx = tabOrder.indexOf(tab);
@@ -751,12 +747,12 @@ export function AutomationPage({
             weeklyReadError={readErrors.weekly}
             weeklyPending={weeklyPending}
             weeklyConflict={weeklyConflict}
-            onEditSchedule={schedule => {
+            onEditSchedule={(schedule) => {
               setEditor(createScheduleEditor(schedule));
               setActionError(null);
             }}
             onRunTask={(type, trigger) => {
-              void write('run', async token => {
+              void write('run', async (token) => {
                 const run = await runAutomationTask(type, token);
                 chooseRun(run.id, run, trigger);
               });
@@ -774,12 +770,7 @@ export function AutomationPage({
         )}
       </div>
 
-      <div
-        role="tabpanel"
-        id="automation-panel-inbox"
-        aria-labelledby="automation-tab-inbox"
-        hidden={tab !== 'inbox'}
-      >
+      <div role="tabpanel" id="automation-panel-inbox" aria-labelledby="automation-tab-inbox" hidden={tab !== 'inbox'}>
         {tab === 'inbox' && (
           <InboxTab
             showReminders={showReminders}
@@ -793,7 +784,7 @@ export function AutomationPage({
             candidates={candidates}
             candidatesReadError={readErrors.candidates}
             candidateDate={candidateDate}
-            onCandidateDateChange={nextDate => {
+            onCandidateDateChange={(nextDate) => {
               setCandidateDate(nextDate);
               setCandidates(undefined);
             }}
@@ -802,11 +793,11 @@ export function AutomationPage({
             pipelineSettings={pipelineSettings}
             pipelineSettingsError={readErrors.pipelineSettings}
             onOpenPipelineSettings={openPipelineSettings}
-            onPipelineChanged={() => setPipelineRevision(value => value + 1)}
+            onPipelineChanged={() => setPipelineRevision((value) => value + 1)}
             remindersView={remindersView}
             remindersReadError={readErrors.reminders}
             onRemindersViewChange={setRemindersView}
-            onRemindersChanged={() => setRemindersRevision(value => value + 1)}
+            onRemindersChanged={() => setRemindersRevision((value) => value + 1)}
             onOpenReminderSettings={openReminderSettings}
             onOpenWorkItem={onOpenWorkItem}
             onOpenRaw={onOpenRaw}
@@ -816,12 +807,7 @@ export function AutomationPage({
         )}
       </div>
 
-      <div
-        role="tabpanel"
-        id="automation-panel-runs"
-        aria-labelledby="automation-tab-runs"
-        hidden={tab !== 'runs'}
-      >
+      <div role="tabpanel" id="automation-panel-runs" aria-labelledby="automation-tab-runs" hidden={tab !== 'runs'}>
         {tab === 'runs' && (
           <RunsTab
             tasks={tasks}
@@ -839,21 +825,21 @@ export function AutomationPage({
             hasStatus={Boolean(status)}
             detailHeading={detailHeading}
             taskName={taskName}
-            onTypeFilterChange={next => {
+            onTypeFilterChange={(next) => {
               setHistory(null);
               setTypeFilter(next);
             }}
-            onStatusFilterChange={next => {
+            onStatusFilterChange={(next) => {
               setHistory(null);
               setStatusFilter(next);
             }}
-            onLimitChange={next => {
+            onLimitChange={(next) => {
               setHistory(null);
               setLimit(next);
             }}
             onSelectRun={(id, run, trigger) => chooseRun(id, run, trigger)}
-            onCancelRun={id =>
-              void write('cancel', async token => {
+            onCancelRun={(id) =>
+              void write('cancel', async (token) => {
                 setDetail(await cancelAutomationRun(id, token));
               })
             }
@@ -877,8 +863,8 @@ export function AutomationPage({
             hasStatus={Boolean(status)}
             detailHeading={detailHeading}
             taskName={taskName}
-            onCancel={id =>
-              void write('cancel', async token => {
+            onCancel={(id) =>
+              void write('cancel', async (token) => {
                 setDetail(await cancelAutomationRun(id, token));
               })
             }
@@ -905,7 +891,7 @@ export function AutomationPage({
             setEditor(createScheduleEditor(editorTask));
             setActionError(null);
           }}
-          onSubmit={event => submitSchedule(event, editorTask)}
+          onSubmit={(event) => submitSchedule(event, editorTask)}
           onClose={closeEditor}
         />
       )}
@@ -924,7 +910,7 @@ export function AutomationPage({
             setPipelineSettingsWriteError('');
             setPipelineSettingsEdit({ ...pipelineSettings, topics: pipelineSettings.topics.join('\n') });
           }}
-          onSubmit={event => void submitPipelineSettings(event)}
+          onSubmit={(event) => void submitPipelineSettings(event)}
           onClose={() => {
             setPipelineSettingsEdit(null);
             setPipelineSettingsWriteError('');
@@ -939,8 +925,8 @@ export function AutomationPage({
           pending={reminderSettingsPending}
           canWrite={Boolean(status?.writeToken)}
           feedback={reminderSettingsFeedback}
-          onChange={patch => {
-            setReminderEditor(current => (current ? { ...current, ...patch } : current));
+          onChange={(patch) => {
+            setReminderEditor((current) => (current ? { ...current, ...patch } : current));
             setReminderSettingsFeedback(null);
           }}
           onReload={() => {
@@ -953,7 +939,7 @@ export function AutomationPage({
               maxToastsPerRun: String(remindersView.settings.maxToastsPerRun),
             });
           }}
-          onSubmit={event => void submitReminderSettings(event)}
+          onSubmit={(event) => void submitReminderSettings(event)}
           onSendTest={() => void sendTestReminder()}
           onClose={() => {
             setReminderEditor(null);

@@ -8,14 +8,33 @@ const SHANGHAI_OFFSET = 8 * 60 * MINUTE;
 export function isAutomationPlan(value: unknown): value is AutomationPlan {
   if (!value || typeof value !== 'object') return false;
   if ('kind' in value && value.kind === 'interval') {
-    return Object.keys(value).length === 2 && 'minutes' in value && Number.isSafeInteger(value.minutes)
-      && (value.minutes as number) >= 1 && (value.minutes as number) <= 525_600;
+    return (
+      Object.keys(value).length === 2 &&
+      'minutes' in value &&
+      Number.isSafeInteger(value.minutes) &&
+      (value.minutes as number) >= 1 &&
+      (value.minutes as number) <= 525_600
+    );
   }
-  if (!('time' in value) || typeof value.time !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/u.test(value.time)
-    || !('timezone' in value) || value.timezone !== 'Asia/Shanghai' || !('kind' in value)) return false;
+  if (
+    !('time' in value) ||
+    typeof value.time !== 'string' ||
+    !/^(?:[01]\d|2[0-3]):[0-5]\d$/u.test(value.time) ||
+    !('timezone' in value) ||
+    value.timezone !== 'Asia/Shanghai' ||
+    !('kind' in value)
+  )
+    return false;
   if (value.kind === 'daily') return Object.keys(value).length === 3;
-  return value.kind === 'weekly' && Object.keys(value).length === 4 && 'weekday' in value
-    && typeof value.weekday === 'number' && Number.isInteger(value.weekday) && value.weekday >= 1 && value.weekday <= 7;
+  return (
+    value.kind === 'weekly' &&
+    Object.keys(value).length === 4 &&
+    'weekday' in value &&
+    typeof value.weekday === 'number' &&
+    Number.isInteger(value.weekday) &&
+    value.weekday >= 1 &&
+    value.weekday <= 7
+  );
 }
 
 /** Shanghai currently has no daylight saving changes. Absolute cursors are stored in UTC. */

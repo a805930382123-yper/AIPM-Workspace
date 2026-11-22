@@ -48,7 +48,7 @@ export function AutomationModal({
     <div
       className={['modal-scrim', 'automation-modal', modalClassName].filter(Boolean).join(' ')}
       role="presentation"
-      onMouseDown={event => {
+      onMouseDown={(event) => {
         if (event.target === event.currentTarget && !pending) onClose();
       }}
     >
@@ -59,7 +59,7 @@ export function AutomationModal({
         aria-modal="true"
         aria-labelledby={titleId}
         className={['panel', 'automation-dialog', dialogClassName].filter(Boolean).join(' ')}
-        onKeyDown={event => {
+        onKeyDown={(event) => {
           if (event.key === 'Escape' && !pending) onClose();
         }}
       >
@@ -68,13 +68,7 @@ export function AutomationModal({
             <h2 id={titleId}>{title}</h2>
             {subtitle && <p className="automation-modal-subtitle">{subtitle}</p>}
           </div>
-          <button
-            type="button"
-            className="icon-button"
-            aria-label="关闭"
-            disabled={pending}
-            onClick={onClose}
-          >
+          <button type="button" className="icon-button" aria-label="关闭" disabled={pending} onClick={onClose}>
             ×
           </button>
         </header>
@@ -122,7 +116,7 @@ export function ScheduleEditorDialog({
               type="checkbox"
               checked={editor.enabled}
               disabled={pending}
-              onChange={event => onChange({ ...editor, enabled: event.target.checked })}
+              onChange={(event) => onChange({ ...editor, enabled: event.target.checked })}
             />
             启用计划
           </label>
@@ -131,7 +125,7 @@ export function ScheduleEditorDialog({
               type="checkbox"
               checked={editor.catchUp}
               disabled={pending || !task.allowsCatchUp}
-              onChange={event => onChange({ ...editor, catchUp: event.target.checked })}
+              onChange={(event) => onChange({ ...editor, catchUp: event.target.checked })}
             />
             启动时补跑一次
           </label>
@@ -142,7 +136,7 @@ export function ScheduleEditorDialog({
             data-autofocus
             value={editor.kind}
             disabled={pending}
-            onChange={event => onChange({ ...editor, kind: event.target.value as AutomationPlan['kind'] })}
+            onChange={(event) => onChange({ ...editor, kind: event.target.value as AutomationPlan['kind'] })}
           >
             <option value="interval">固定间隔</option>
             <option value="daily">每天</option>
@@ -155,7 +149,7 @@ export function ScheduleEditorDialog({
             <select
               value={editor.weekday}
               disabled={pending}
-              onChange={event =>
+              onChange={(event) =>
                 onChange({ ...editor, weekday: Number(event.target.value) as ScheduleEditorState['weekday'] })
               }
             >
@@ -178,7 +172,7 @@ export function ScheduleEditorDialog({
               required
               value={editor.minutes}
               disabled={pending}
-              onChange={event => onChange({ ...editor, minutes: event.target.value })}
+              onChange={(event) => onChange({ ...editor, minutes: event.target.value })}
             />
           </label>
         ) : (
@@ -189,7 +183,7 @@ export function ScheduleEditorDialog({
               required
               value={editor.time}
               disabled={pending}
-              onChange={event => onChange({ ...editor, time: event.target.value })}
+              onChange={(event) => onChange({ ...editor, time: event.target.value })}
             />
           </label>
         )}
@@ -205,7 +199,7 @@ export function ScheduleEditorDialog({
               type="button"
               className="text-button"
               disabled={pending}
-              onClick={event => {
+              onClick={(event) => {
                 focusDialogControl(event.currentTarget);
                 onReloadLatest();
               }}
@@ -273,7 +267,7 @@ export function PipelineSettingsDialog({
             data-autofocus
             checked={edit.preScreenEnabled}
             disabled={pending}
-            onChange={event => onChange({ ...edit, preScreenEnabled: event.target.checked })}
+            onChange={(event) => onChange({ ...edit, preScreenEnabled: event.target.checked })}
           />
           启用 AI 预筛
         </label>
@@ -282,9 +276,9 @@ export function PipelineSettingsDialog({
           <select
             value={edit.concurrency}
             disabled={pending}
-            onChange={event => onChange({ ...edit, concurrency: Number(event.target.value) })}
+            onChange={(event) => onChange({ ...edit, concurrency: Number(event.target.value) })}
           >
-            {[1, 2, 3, 4].map(count => (
+            {[1, 2, 3, 4].map((count) => (
               <option key={count} value={count}>
                 {count}
               </option>
@@ -297,7 +291,7 @@ export function PipelineSettingsDialog({
             rows={4}
             value={edit.topics}
             disabled={pending}
-            onChange={event => onChange({ ...edit, topics: event.target.value })}
+            onChange={(event) => onChange({ ...edit, topics: event.target.value })}
           />
         </label>
         {readError && (
@@ -317,7 +311,7 @@ export function PipelineSettingsDialog({
               type="button"
               className="text-button"
               disabled={pending}
-              onClick={event => {
+              onClick={(event) => {
                 focusDialogControl(event.currentTarget);
                 onReload();
               }}
@@ -327,11 +321,7 @@ export function PipelineSettingsDialog({
           </div>
         )}
         <div className="automation-actions">
-          <button
-            type="submit"
-            className="primary-button"
-            disabled={pending || !canWrite || !latest || conflict}
-          >
+          <button type="submit" className="primary-button" disabled={pending || !canWrite || !latest || conflict}>
             {pending ? '正在保存…' : '保存流水线设置'}
           </button>
           <button type="button" className="secondary-button" disabled={pending} onClick={onClose}>
@@ -386,7 +376,7 @@ export function ReminderSettingsDialog({
               data-autofocus
               checked={editor.desktopNotificationsEnabled}
               disabled={pending}
-              onChange={event => onChange({ desktopNotificationsEnabled: event.target.checked })}
+              onChange={(event) => onChange({ desktopNotificationsEnabled: event.target.checked })}
             />
             启用桌面通知
           </label>
@@ -398,7 +388,7 @@ export function ReminderSettingsDialog({
             required
             value={editor.quietHoursStart}
             disabled={pending}
-            onChange={event => onChange({ quietHoursStart: event.target.value })}
+            onChange={(event) => onChange({ quietHoursStart: event.target.value })}
           />
         </label>
         <label>
@@ -408,7 +398,7 @@ export function ReminderSettingsDialog({
             required
             value={editor.quietHoursEnd}
             disabled={pending}
-            onChange={event => onChange({ quietHoursEnd: event.target.value })}
+            onChange={(event) => onChange({ quietHoursEnd: event.target.value })}
           />
         </label>
         <label>
@@ -421,7 +411,7 @@ export function ReminderSettingsDialog({
             required
             value={editor.staleDays}
             disabled={pending}
-            onChange={event => onChange({ staleDays: event.target.value })}
+            onChange={(event) => onChange({ staleDays: event.target.value })}
           />
         </label>
         <label>
@@ -434,7 +424,7 @@ export function ReminderSettingsDialog({
             required
             value={editor.maxToastsPerRun}
             disabled={pending}
-            onChange={event => onChange({ maxToastsPerRun: event.target.value })}
+            onChange={(event) => onChange({ maxToastsPerRun: event.target.value })}
           />
         </label>
         {conflict && (
@@ -444,7 +434,7 @@ export function ReminderSettingsDialog({
               type="button"
               className="text-button"
               disabled={pending}
-              onClick={event => {
+              onClick={(event) => {
                 focusDialogControl(event.currentTarget);
                 onReload();
               }}
@@ -502,7 +492,7 @@ export function CandidateConfirmationDialog({
       dialogClassName="candidate-dialog"
     >
       <ul>
-        {items.map(row => (
+        {items.map((row) => (
           <li key={row.id}>
             <strong>{row.item.title}</strong>
             <br />
@@ -515,7 +505,7 @@ export function CandidateConfirmationDialog({
           type="checkbox"
           disabled={pending}
           checked={request.organize}
-          onChange={event => onChange({ ...request, organize: event.target.checked })}
+          onChange={(event) => onChange({ ...request, organize: event.target.checked })}
         />
         确认后自动整理
       </label>
@@ -525,7 +515,7 @@ export function CandidateConfirmationDialog({
           <select
             value={request.mode}
             disabled={pending}
-            onChange={event => onChange({ ...request, mode: event.target.value as ConfirmCandidates['mode'] })}
+            onChange={(event) => onChange({ ...request, mode: event.target.value as ConfirmCandidates['mode'] })}
           >
             <option value="standard">标准整理</option>
             <option value="deep">深度整理</option>

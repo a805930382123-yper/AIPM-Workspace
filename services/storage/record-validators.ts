@@ -1,115 +1,718 @@
-import {validEvidenceInput} from '../wiki/inspection-input.ts';
+import { validEvidenceInput } from '../wiki/inspection-input.ts';
 import { validPdfDerivation, validPdfEvidence, validPdfInput } from '../wiki/pdf-input.ts';
-import {changePageIndexes,validMaintenance} from '../wiki/maintenance.ts';
-import {validHumanReview} from '../wiki/human-review.ts';
-import {createHash} from 'node:crypto';
-import {validStructuredNote, validNoteReview, validNoteApproval, noteReviewContent, type StructuredNote} from '../wiki/structured-note.ts';
-import {validDeepQuality,validDeepQualityLocations} from '../llm/knowledge-deep.ts';
-import {validTemplateFields, validInputTemplateFields,validMergedTemplateFields,mergedFieldsMatchReview} from '../wiki/template-fields.ts';
-const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
-const str=(v:unknown):v is string=>typeof v==='string';
-const strings=(v:unknown):v is string[]=>Array.isArray(v)&&v.every(str);
-const nonnegative=(v:unknown)=>Number.isInteger(v)&&Number(v)>=0;
-const digest=(v:unknown)=>str(v)&&/^[0-9a-f]{64}$/i.test(v);
+import { changePageIndexes, validMaintenance } from '../wiki/maintenance.ts';
+import { validHumanReview } from '../wiki/human-review.ts';
+import { createHash } from 'node:crypto';
+import {
+  validStructuredNote,
+  validNoteReview,
+  validNoteApproval,
+  noteReviewContent,
+  type StructuredNote,
+} from '../wiki/structured-note.ts';
+import { validDeepQuality, validDeepQualityLocations } from '../llm/knowledge-deep.ts';
+import {
+  validTemplateFields,
+  validInputTemplateFields,
+  validMergedTemplateFields,
+  mergedFieldsMatchReview,
+} from '../wiki/template-fields.ts';
+const obj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+const str = (v: unknown): v is string => typeof v === 'string';
+const strings = (v: unknown): v is string[] => Array.isArray(v) && v.every(str);
+const nonnegative = (v: unknown) => Number.isInteger(v) && Number(v) >= 0;
+const digest = (v: unknown) => str(v) && /^[0-9a-f]{64}$/i.test(v);
 /** Shared by the extraction draft reader and recovery scan, before any recovery action. */
-export function isExtractionDraft(v:unknown,id?:string):boolean {
- if(obj(v)&&Object.hasOwn(v,'input')){
-   if(!validEvidenceInput(v.input)||['rawId','rawSha256','rawTitle','rawMeta','jobId','source','deferredAt','pdfInput'].some(k=>Object.hasOwn(v,k))||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!Number.isInteger(v.revision)||Number(v.revision)<1||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!obj(v.document)||!str(v.document.title)||!validMaintenance(v.maintenance)||!validHumanReview(v.humanReview)||!Array.isArray(v.pages)||!v.pages.length)return false;
-   return v.pages.every(p=>obj(p)&&isUuid(p.pageId)&&str(p.title)&&Array.isArray(p.source_facts)&&p.source_facts.every(f=>obj(f)&&str(f.text)&&strings(f.evidenceIds))&&Array.isArray(p.source_evidence)&&p.source_evidence.every(e=>obj(e)&&isUuid(e.rawId)&&str(e.quote)&&nonnegative(e.start)&&nonnegative(e.end))&&strings(p.ai_organized)&&strings(p.ai_inferences)&&strings(p.open_questions));
- }
+export function isExtractionDraft(v: unknown, id?: string): boolean {
+  if (obj(v) && Object.hasOwn(v, 'input')) {
+    if (
+      !validEvidenceInput(v.input) ||
+      ['rawId', 'rawSha256', 'rawTitle', 'rawMeta', 'jobId', 'source', 'deferredAt', 'pdfInput'].some((k) =>
+        Object.hasOwn(v, k),
+      ) ||
+      !isUuid(v.id) ||
+      (id !== undefined && v.id !== id) ||
+      !Number.isInteger(v.revision) ||
+      Number(v.revision) < 1 ||
+      !['pending_confirmation', 'committing', 'confirmed', 'discarded'].includes(String(v.status)) ||
+      !str(v.createdAt) ||
+      !str(v.updatedAt) ||
+      !obj(v.provider) ||
+      !str(v.provider.name) ||
+      !str(v.provider.model) ||
+      !obj(v.document) ||
+      !str(v.document.title) ||
+      !validMaintenance(v.maintenance) ||
+      !validHumanReview(v.humanReview) ||
+      !Array.isArray(v.pages) ||
+      !v.pages.length
+    )
+      return false;
+    return v.pages.every(
+      (p) =>
+        obj(p) &&
+        isUuid(p.pageId) &&
+        str(p.title) &&
+        Array.isArray(p.source_facts) &&
+        p.source_facts.every((f) => obj(f) && str(f.text) && strings(f.evidenceIds)) &&
+        Array.isArray(p.source_evidence) &&
+        p.source_evidence.every(
+          (e) => obj(e) && isUuid(e.rawId) && str(e.quote) && nonnegative(e.start) && nonnegative(e.end),
+        ) &&
+        strings(p.ai_organized) &&
+        strings(p.ai_inferences) &&
+        strings(p.open_questions),
+    );
+  }
 
- if(obj(v)&&v.maintenance!==undefined){
-  if(!validMaintenance(v.maintenance)||!Array.isArray(v.pages))return false;
-  const pageCount=v.pages.length;
-  const indexes=v.maintenance.changes.flatMap(changePageIndexes);
-  if(indexes.some(i=>i>=pageCount)||(v.maintenance.changes.some(c=>c.pageIndexes)&&indexes.length!==pageCount))return false;
- }
- if(obj(v)&&v.deferredAt!==undefined&&(!v.maintenance||!str(v.deferredAt)||!Number.isFinite(Date.parse(v.deferredAt))))return false;
- if(obj(v)&&obj(v.document)&&v.document.source_level!==undefined&&(!str(v.document.source_level)||!['A','B','C','D'].includes(v.document.source_level)))return false;
- if(obj(v)&&v.humanReview!==undefined&&!validHumanReview(v.humanReview))return false;
- if(obj(v)&&Object.hasOwn(v,'structuredNote')){
-  if(!validHumanReview(v.humanReview)||!validStructuredNote(v.structuredNote,new Set(v.humanReview.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id)))))return false;
- }
- if(obj(v)&&v.noteApproval!==undefined&&(!validNoteApproval(v.noteApproval)||v.structuredNote===undefined))return false;
- if(obj(v)&&v.noteReview!==undefined){if(!validNoteReview(v.noteReview)||v.structuredNote===undefined||!validHumanReview(v.humanReview))return false;const m=v.noteReview,review=v.humanReview;if(m.contentDigest!==createHash('sha256').update(JSON.stringify(noteReviewContent(v.structuredNote as StructuredNote,m.exclusions,m.questionIds,m.humanQuestions))).digest('hex')||m.questionIds.some(id=>!review.units.filter(u=>u.kind==='question').some(u=>u.records.some(r=>r.id===id)))||m.exclusions.some(e=>!review.units.filter(u=>u.kind===e.kind).some(u=>u.records.some(r=>r.id===e.id))))return false;}
- if(obj(v)&&(v.qualityReport!==undefined||v.extractionMode!==undefined)){if(v.extractionMode!=='deep'||v.structuredNote===undefined||!(validNoteReview(v.noteReview)?validDeepQualityLocations(v.qualityReport,v.noteReview.generatedSections):validDeepQuality(v.qualityReport,v.structuredNote as StructuredNote)))return false;}
- if(obj(v)&&v.humanQuestionUnitIds!==undefined){
-  if(!strings(v.humanQuestionUnitIds)||!validHumanReview(v.humanReview)||new Set(v.humanQuestionUnitIds).size!==v.humanQuestionUnitIds.length)return false;
-  const review=v.humanReview;if(v.humanQuestionUnitIds.some(id=>!review.units.some(u=>u.id===id&&u.kind==='fact')))return false;
- }
- if(!obj(v)||!isUuid(v.id)||(id!==undefined&&v.id!==id)||!isUuid(v.rawId)||!digest(v.rawSha256)||!str(v.rawTitle)||!obj(v.rawMeta)||v.rawMeta.rawId!==v.rawId||!str(v.rawMeta.title)||!str(v.rawMeta.sourceType)||!str(v.rawMeta.sourceName)||!['pending_confirmation','committing','confirmed','discarded'].includes(String(v.status))||!Number.isInteger(v.revision)||Number(v.revision)<1||!str(v.createdAt)||!str(v.updatedAt)||!str(v.rulesVersion)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!str(v.jobId)||!obj(v.document)||!str(v.document.title)||!str(v.document.main_topic)||!str(v.document.summary)||!Array.isArray(v.pages)||!obj(v.source)||!strings(v.warnings)||!obj(v.extraction)||!nonnegative(v.extraction.callCount)||!nonnegative(v.extraction.chunkCount)||!nonnegative(v.extraction.pagesFound))return false;
- const pdf = v.pdfInput;
- if (pdf !== undefined && (!validPdfInput(pdf) || !v.maintenance || v.humanReview !== undefined || !v.pages.length)) return false;
- const pdfUnits = new Map<string, string>();
- const s=v.source;if(!['title','category','summary','body','knowledge_status','confidence','source_level'].every(k=>str(s[k]))||!strings(s.key_takeaways)||(s.reuseWikiId!==undefined&&!isUuid(s.reuseWikiId))||(s.editedByUser!==undefined&&typeof s.editedByUser!=='boolean')||(s.bodyEditedByUser!==undefined&&typeof s.bodyEditedByUser!=='boolean'))return false;
- const ids=new Set<string>();for(const p of v.pages){
-  if(obj(p)&&p.templateFields!==undefined&&(!str(p.type)||!validTemplateFields(p.templateFields,p.type)))return false;
-  if(obj(p)&&p.mergedTemplateFields!==undefined&&(!validMergedTemplateFields(p.mergedTemplateFields)||!str(p.pageId)||!validHumanReview(v.humanReview)||!mergedFieldsMatchReview(p.mergedTemplateFields,p.pageId,v.rawId as string,v.humanReview)))return false;
-  if(!obj(p)||!isUuid(p.pageId)||ids.has(p.pageId)||!['title','type','category','one_line_definition','knowledge_status','confidence','source_level'].every(k=>str(p[k]))||!['ai_organized','ai_inferences','related_pages','open_questions'].every(k=>strings(p[k]))||typeof p.selected!=='boolean'||!Array.isArray(p.source_facts)||!p.source_facts.every(f=>obj(f)&&str(f.text)&&strings(f.evidenceIds))||!Array.isArray(p.source_evidence)||!p.source_evidence.every(e=>obj(e)&&str(e.id)&&e.rawId===v.rawId&&str(e.quote)&&nonnegative(e.start)&&nonnegative(e.end)&&Number(e.end)>=Number(e.start)&&(Number.isInteger(e.chunkIndex)&&Number(e.chunkIndex)>=-1))||!Array.isArray(p.provenance)||!p.provenance.every(e=>obj(e)&&nonnegative(e.chunkIndex)&&nonnegative(e.start)&&nonnegative(e.end)&&Number(e.end)>=Number(e.start))||(p.reviewDecision!==undefined&&!['update','create','defer'].includes(String(p.reviewDecision)))||(p.updateTargetWikiId!==undefined&&!isUuid(p.updateTargetWikiId)))return false;
-  if (pdf) {
-    if (!Array.isArray(p.pdfEvidence) || !p.pdfEvidence.length) return false;
-    const pageUnits = new Set<string>();
-    for (const item of p.pdfEvidence) {
-      if (!validPdfEvidence(item, pdf) || pageUnits.has(item.unitId)) return false;
-      const serialized = JSON.stringify(item);
-      if (pdfUnits.has(item.unitId) && pdfUnits.get(item.unitId) !== serialized) return false;
-      pageUnits.add(item.unitId);
-      pdfUnits.set(item.unitId, serialized);
+  if (obj(v) && v.maintenance !== undefined) {
+    if (!validMaintenance(v.maintenance) || !Array.isArray(v.pages)) return false;
+    const pageCount = v.pages.length;
+    const indexes = v.maintenance.changes.flatMap(changePageIndexes);
+    if (
+      indexes.some((i) => i >= pageCount) ||
+      (v.maintenance.changes.some((c) => c.pageIndexes) && indexes.length !== pageCount)
+    )
+      return false;
+  }
+  if (
+    obj(v) &&
+    v.deferredAt !== undefined &&
+    (!v.maintenance || !str(v.deferredAt) || !Number.isFinite(Date.parse(v.deferredAt)))
+  )
+    return false;
+  if (
+    obj(v) &&
+    obj(v.document) &&
+    v.document.source_level !== undefined &&
+    (!str(v.document.source_level) || !['A', 'B', 'C', 'D'].includes(v.document.source_level))
+  )
+    return false;
+  if (obj(v) && v.humanReview !== undefined && !validHumanReview(v.humanReview)) return false;
+  if (obj(v) && Object.hasOwn(v, 'structuredNote')) {
+    if (
+      !validHumanReview(v.humanReview) ||
+      !validStructuredNote(
+        v.structuredNote,
+        new Set(v.humanReview.units.filter((u) => u.kind === 'fact').flatMap((u) => u.records.map((r) => r.id))),
+      )
+    )
+      return false;
+  }
+  if (obj(v) && v.noteApproval !== undefined && (!validNoteApproval(v.noteApproval) || v.structuredNote === undefined))
+    return false;
+  if (obj(v) && v.noteReview !== undefined) {
+    if (!validNoteReview(v.noteReview) || v.structuredNote === undefined || !validHumanReview(v.humanReview))
+      return false;
+    const m = v.noteReview,
+      review = v.humanReview;
+    if (
+      m.contentDigest !==
+        createHash('sha256')
+          .update(
+            JSON.stringify(
+              noteReviewContent(v.structuredNote as StructuredNote, m.exclusions, m.questionIds, m.humanQuestions),
+            ),
+          )
+          .digest('hex') ||
+      m.questionIds.some(
+        (id) => !review.units.filter((u) => u.kind === 'question').some((u) => u.records.some((r) => r.id === id)),
+      ) ||
+      m.exclusions.some(
+        (e) => !review.units.filter((u) => u.kind === e.kind).some((u) => u.records.some((r) => r.id === e.id)),
+      )
+    )
+      return false;
+  }
+  if (obj(v) && (v.qualityReport !== undefined || v.extractionMode !== undefined)) {
+    if (
+      v.extractionMode !== 'deep' ||
+      v.structuredNote === undefined ||
+      !(validNoteReview(v.noteReview)
+        ? validDeepQualityLocations(v.qualityReport, v.noteReview.generatedSections)
+        : validDeepQuality(v.qualityReport, v.structuredNote as StructuredNote))
+    )
+      return false;
+  }
+  if (obj(v) && v.humanQuestionUnitIds !== undefined) {
+    if (
+      !strings(v.humanQuestionUnitIds) ||
+      !validHumanReview(v.humanReview) ||
+      new Set(v.humanQuestionUnitIds).size !== v.humanQuestionUnitIds.length
+    )
+      return false;
+    const review = v.humanReview;
+    if (v.humanQuestionUnitIds.some((id) => !review.units.some((u) => u.id === id && u.kind === 'fact'))) return false;
+  }
+  if (
+    !obj(v) ||
+    !isUuid(v.id) ||
+    (id !== undefined && v.id !== id) ||
+    !isUuid(v.rawId) ||
+    !digest(v.rawSha256) ||
+    !str(v.rawTitle) ||
+    !obj(v.rawMeta) ||
+    v.rawMeta.rawId !== v.rawId ||
+    !str(v.rawMeta.title) ||
+    !str(v.rawMeta.sourceType) ||
+    !str(v.rawMeta.sourceName) ||
+    !['pending_confirmation', 'committing', 'confirmed', 'discarded'].includes(String(v.status)) ||
+    !Number.isInteger(v.revision) ||
+    Number(v.revision) < 1 ||
+    !str(v.createdAt) ||
+    !str(v.updatedAt) ||
+    !str(v.rulesVersion) ||
+    !obj(v.provider) ||
+    !str(v.provider.name) ||
+    !str(v.provider.model) ||
+    !str(v.jobId) ||
+    !obj(v.document) ||
+    !str(v.document.title) ||
+    !str(v.document.main_topic) ||
+    !str(v.document.summary) ||
+    !Array.isArray(v.pages) ||
+    !obj(v.source) ||
+    !strings(v.warnings) ||
+    !obj(v.extraction) ||
+    !nonnegative(v.extraction.callCount) ||
+    !nonnegative(v.extraction.chunkCount) ||
+    !nonnegative(v.extraction.pagesFound)
+  )
+    return false;
+  const pdf = v.pdfInput;
+  if (pdf !== undefined && (!validPdfInput(pdf) || !v.maintenance || v.humanReview !== undefined || !v.pages.length))
+    return false;
+  const pdfUnits = new Map<string, string>();
+  const s = v.source;
+  if (
+    !['title', 'category', 'summary', 'body', 'knowledge_status', 'confidence', 'source_level'].every((k) =>
+      str(s[k]),
+    ) ||
+    !strings(s.key_takeaways) ||
+    (s.reuseWikiId !== undefined && !isUuid(s.reuseWikiId)) ||
+    (s.editedByUser !== undefined && typeof s.editedByUser !== 'boolean') ||
+    (s.bodyEditedByUser !== undefined && typeof s.bodyEditedByUser !== 'boolean')
+  )
+    return false;
+  const ids = new Set<string>();
+  for (const p of v.pages) {
+    if (obj(p) && p.templateFields !== undefined && (!str(p.type) || !validTemplateFields(p.templateFields, p.type)))
+      return false;
+    if (
+      obj(p) &&
+      p.mergedTemplateFields !== undefined &&
+      (!validMergedTemplateFields(p.mergedTemplateFields) ||
+        !str(p.pageId) ||
+        !validHumanReview(v.humanReview) ||
+        !mergedFieldsMatchReview(p.mergedTemplateFields, p.pageId, v.rawId as string, v.humanReview))
+    )
+      return false;
+    if (
+      !obj(p) ||
+      !isUuid(p.pageId) ||
+      ids.has(p.pageId) ||
+      !['title', 'type', 'category', 'one_line_definition', 'knowledge_status', 'confidence', 'source_level'].every(
+        (k) => str(p[k]),
+      ) ||
+      !['ai_organized', 'ai_inferences', 'related_pages', 'open_questions'].every((k) => strings(p[k])) ||
+      typeof p.selected !== 'boolean' ||
+      !Array.isArray(p.source_facts) ||
+      !p.source_facts.every((f) => obj(f) && str(f.text) && strings(f.evidenceIds)) ||
+      !Array.isArray(p.source_evidence) ||
+      !p.source_evidence.every(
+        (e) =>
+          obj(e) &&
+          str(e.id) &&
+          e.rawId === v.rawId &&
+          str(e.quote) &&
+          nonnegative(e.start) &&
+          nonnegative(e.end) &&
+          Number(e.end) >= Number(e.start) &&
+          Number.isInteger(e.chunkIndex) &&
+          Number(e.chunkIndex) >= -1,
+      ) ||
+      !Array.isArray(p.provenance) ||
+      !p.provenance.every(
+        (e) =>
+          obj(e) &&
+          nonnegative(e.chunkIndex) &&
+          nonnegative(e.start) &&
+          nonnegative(e.end) &&
+          Number(e.end) >= Number(e.start),
+      ) ||
+      (p.reviewDecision !== undefined && !['update', 'create', 'defer'].includes(String(p.reviewDecision))) ||
+      (p.updateTargetWikiId !== undefined && !isUuid(p.updateTargetWikiId))
+    )
+      return false;
+    if (pdf) {
+      if (!Array.isArray(p.pdfEvidence) || !p.pdfEvidence.length) return false;
+      const pageUnits = new Set<string>();
+      for (const item of p.pdfEvidence) {
+        if (!validPdfEvidence(item, pdf) || pageUnits.has(item.unitId)) return false;
+        const serialized = JSON.stringify(item);
+        if (pdfUnits.has(item.unitId) && pdfUnits.get(item.unitId) !== serialized) return false;
+        pageUnits.add(item.unitId);
+        pdfUnits.set(item.unitId, serialized);
+      }
+    } else if (p.pdfEvidence !== undefined) return false;
+    ids.add(p.pageId);
+  }
+  return v.commitOperationId === undefined || isUuid(v.commitOperationId);
+}
+export const isUuid = (v: unknown): v is string =>
+  typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+export function isRawState(v: unknown, id?: string): boolean {
+  return (
+    obj(v) &&
+    isUuid(v.rawId) &&
+    (!id || v.rawId === id) &&
+    ['unprocessed', 'processing', 'pending_confirmation', 'generated', 'failed'].includes(String(v.status)) &&
+    str(v.updatedAt) &&
+    Array.isArray(v.history) &&
+    v.history.length <= 50 &&
+    v.history.every((x) => obj(x) && str(x.at) && str(x.from) && str(x.to) && str(x.reason))
+  );
+}
+export function isJob(v: unknown, id?: string): boolean {
+  return (
+    obj(v) &&
+    isUuid(v.id) &&
+    (!id || v.id === id) &&
+    isUuid(v.rawId) &&
+    ['running', 'completed', 'failed', 'cancelled'].includes(String(v.status)) &&
+    str(v.stage) &&
+    Number.isInteger(v.chunksTotal) &&
+    Number(v.chunksTotal) >= 0 &&
+    Number.isInteger(v.chunksDone) &&
+    Number(v.chunksDone) >= 0 &&
+    Number.isInteger(v.pagesFound) &&
+    Number(v.pagesFound) >= 0 &&
+    obj(v.provider) &&
+    str(v.provider.name) &&
+    str(v.provider.model) &&
+    typeof v.cancelRequested === 'boolean' &&
+    Number.isInteger(v.callCount) &&
+    Number(v.callCount) >= 0 &&
+    str(v.startedAt) &&
+    str(v.updatedAt) &&
+    (v.finishedAt === undefined || str(v.finishedAt))
+  );
+}
+export function isWikiRecord(v: unknown): v is Record<string, unknown> {
+  return (
+    obj(v) &&
+    isUuid(v.id) &&
+    str(v.title) &&
+    ['source', 'concept', 'entity', 'business_process', 'metric', 'synthesis'].includes(String(v.type)) &&
+    v.domain === 'fmcg' &&
+    [
+      'industry_basics',
+      'category',
+      'channel',
+      'sales',
+      'store',
+      'distributor',
+      'supply_chain',
+      'product',
+      'metric',
+      'ai_application',
+      'company_business',
+      'customer',
+      'other',
+    ].includes(String(v.category)) &&
+    str(v.created) &&
+    str(v.updated) &&
+    Array.isArray(v.sources) &&
+    v.sources.every(isUuid) &&
+    strings(v.tags) &&
+    ['verified', 'source_supported', 'ai_organized', 'inferred', 'needs_verification'].includes(
+      String(v.knowledge_status),
+    ) &&
+    ['high', 'medium', 'low'].includes(String(v.confidence)) &&
+    str(v.source_level) &&
+    ['A', 'B', 'C', 'D'].includes(v.source_level) &&
+    ['unreviewed', 'reviewed'].includes(String(v.review_status)) &&
+    strings(v.aliases) &&
+    Number.isInteger(v.revision) &&
+    Number(v.revision) > 0 &&
+    str(v.body) &&
+    (v.isDemo === undefined || typeof v.isDemo === 'boolean') &&
+    (v.pdfDerivations === undefined ||
+      (Array.isArray(v.pdfDerivations) &&
+        v.pdfDerivations.every((item) => validPdfDerivation(item) && (v.sources as unknown[]).includes(item.rawId))))
+  );
+}
+export function isCommitManifest(v: unknown, id?: string): boolean {
+  if (
+    obj(v) &&
+    ((obj(v.questionInput) && v.questionInput.kind !== 'question_answer') ||
+      (obj(v.inspectionInput) && v.inspectionInput.kind !== 'inspection'))
+  )
+    return false;
+  if (
+    obj(v) &&
+    (v.questionInput !== undefined || v.inspectionInput !== undefined) &&
+    ((v.questionInput !== undefined && v.inspectionInput !== undefined) ||
+      !validEvidenceInput(v.inspectionInput ?? v.questionInput) ||
+      ['rawId', 'rawSha256', 'rawTitle'].some((k) => Object.hasOwn(v, k)))
+  )
+    return false;
+  if (
+    !obj(v) ||
+    !isUuid(v.operationId) ||
+    (id !== undefined && v.operationId !== id) ||
+    !isUuid(v.draftId) ||
+    (!v.questionInput &&
+      !v.inspectionInput &&
+      (!isUuid(v.rawId) || !/^[0-9a-f]{64}$/i.test(String(v.rawSha256)) || !str(v.rawTitle) || !v.rawTitle.trim())) ||
+    !['prepared', 'committing', 'completed', 'failed'].includes(String(v.status)) ||
+    !str(v.idempotencyKey) ||
+    !v.idempotencyKey ||
+    !str(v.createdAt) ||
+    !str(v.updatedAt) ||
+    !obj(v.provider) ||
+    !str(v.provider.name) ||
+    !str(v.provider.model) ||
+    !obj(v.snapshot) ||
+    !Array.isArray(v.phases) ||
+    !Array.isArray(v.writtenWikiIds) ||
+    !v.writtenWikiIds.every(isUuid)
+  )
+    return false;
+  const s = v.snapshot;
+  const noChanges = obj(s.maintenance) && s.maintenance.noChanges === true;
+  if (
+    (s.reuseSourceId === undefined) !== (s.reuseSourceTitle === undefined) ||
+    (s.reuseSourceId !== undefined &&
+      (!isUuid(s.reuseSourceId) || !str(s.reuseSourceTitle) || !s.reuseSourceTitle.trim())) ||
+    (s.reuseSourceId !== undefined && s.sourceRecord !== undefined && !s.maintenance) ||
+    (s.reuseSourceId === undefined &&
+      s.sourceRecord === undefined &&
+      !v.questionInput &&
+      !v.inspectionInput &&
+      !noChanges) ||
+    !Number.isInteger(s.capturedRevision) ||
+    Number(s.capturedRevision) < 0 ||
+    !obj(s.document) ||
+    !str(s.document.title) ||
+    !str(s.document.main_topic) ||
+    !str(s.document.summary) ||
+    !Array.isArray(s.selectedPageIds) ||
+    !s.selectedPageIds.every(isUuid) ||
+    !Array.isArray(s.pageRecords) ||
+    !s.pageRecords.every(isWikiRecord) ||
+    !(s.sourceRecord === undefined || isWikiRecord(s.sourceRecord)) ||
+    !obj(s.digests) ||
+    !Array.isArray(s.warnings) ||
+    !strings(s.warnings)
+  )
+    return false;
+  if (
+    noChanges &&
+    (!s.outcomeReview || s.sourceRecord || s.reuseSourceId || s.pageRecords.length || !s.selectedPageIds.length)
+  )
+    return false;
+  const outcome = s.outcomeReview;
+  if (outcome !== undefined) {
+    if (
+      !obj(outcome) ||
+      outcome.version !== 1 ||
+      !digest(outcome.digest) ||
+      !str(outcome.confirmedAt) ||
+      outcome.confirmedAt !== v.createdAt ||
+      v.questionInput !== undefined ||
+      v.inspectionInput !== undefined ||
+      v.humanReviewDigest !== undefined ||
+      v.humanReviewBasisDigest !== undefined ||
+      s.deepNote !== undefined
+    )
+      return false;
+    const selection = [...s.selectedPageIds].sort();
+    if (
+      new Set(selection).size !== selection.length ||
+      v.payloadDigest !==
+        createHash('sha256')
+          .update(JSON.stringify({ digest: outcome.digest, revision: s.capturedRevision, selectedPageIds: selection }))
+          .digest('hex')
+    )
+      return false;
+  }
+  if (s.maintenance !== undefined) {
+    const m = s.maintenance;
+    if (
+      !obj(m) ||
+      m.version !== 1 ||
+      !Array.isArray(m.targets) ||
+      !m.targets.every(isWikiRecord) ||
+      !obj(m.before) ||
+      !Object.values(m.before).every(isWikiRecord) ||
+      !obj(m.actions) ||
+      !strings(m.changeIds) ||
+      !Array.isArray(m.resultWikiIds) ||
+      !m.resultWikiIds.every(isUuid) ||
+      !digest(m.reviewDigest) ||
+      m.reviewDigest !== (outcome?.digest ?? v.humanReviewDigest)
+    )
+      return false;
+    for (const r of s.pageRecords as Array<Record<string, unknown>>) {
+      const old = m.before[String(r.id)];
+      if (
+        !['create', 'update', 'link'].includes(String(m.actions[String(r.id)])) ||
+        (old !== undefined && (!obj(old) || old.id !== r.id || Number(old.revision) + 1 !== r.revision))
+      )
+        return false;
     }
-  } else if (p.pdfEvidence !== undefined) return false;
-  ids.add(p.pageId);
- }
- return v.commitOperationId===undefined||isUuid(v.commitOperationId);
+  }
+  if (s.deepNote !== undefined) {
+    const d = s.deepNote;
+    if (
+      !obj(d) ||
+      !validHumanReview(d.humanReview) ||
+      !validNoteApproval(d.approval) ||
+      d.approval.digest !== v.humanReviewDigest ||
+      d.reviewDigest !== v.humanReviewDigest ||
+      !validStructuredNote(
+        d.note,
+        new Set(d.humanReview.units.filter((u) => u.kind === 'fact').flatMap((u) => u.records.map((r) => r.id))),
+      ) ||
+      Object.values(d.humanReview.assignments).some((id) => id === null) ||
+      !d.humanReview.approvals.length ||
+      d.humanReview.approvals.some((a) => a.digest !== d.reviewDigest) ||
+      (d.metadata !== undefined && !validNoteReview(d.metadata))
+    )
+      return false;
+  }
+  const pageRecords = s.pageRecords as Array<Record<string, unknown>>;
+  const sourceRecord = s.sourceRecord as Record<string, unknown> | undefined;
+  const digests = s.digests as Record<string, unknown>;
+  const records = [...pageRecords, ...(sourceRecord ? [sourceRecord] : [])];
+  const keys = Object.keys(digests);
+  if (
+    records.some(
+      (record) => !str(digests[String(record.id)]) || !/^[0-9a-f]{64}$/i.test(String(digests[String(record.id)])),
+    ) ||
+    keys.length !== records.length ||
+    keys.some((key) => !records.some((record) => record.id === key))
+  )
+    return false;
+  const names = ['source', 'pages', 'index', 'log', 'state'];
+  if (
+    v.phases.length !== 5 ||
+    !v.phases.every(
+      (phase, index) =>
+        obj(phase) &&
+        phase.name === names[index] &&
+        ['pending', 'done', 'failed'].includes(String(phase.status)) &&
+        (phase.at === undefined || str(phase.at)) &&
+        (phase.error === undefined || str(phase.error)),
+    )
+  )
+    return false;
+  if (v.status === 'completed' && v.phases.some((phase) => (phase as Record<string, unknown>).status !== 'done'))
+    return false;
+  if (
+    v.writtenWikiIds.some((writtenId) => !records.some((record) => record.id === writtenId)) ||
+    (!s.maintenance && pageRecords.length !== s.selectedPageIds.length)
+  )
+    return false;
+  if (v.status === 'completed' && v.writtenWikiIds.length !== records.length) return false;
+  return true;
+} /** Validate stored workflows before any edit, confirmation or recovery action. */
+export function isWorkflow(v: unknown, id?: string): boolean {
+  if (
+    obj(v) &&
+    v.inputTemplateFields !== undefined &&
+    (!validInputTemplateFields(v.inputTemplateFields) ||
+      v.kind !== 'update' ||
+      !obj(v.inputDraft) ||
+      v.inputTemplateFields.pageId !== v.inputDraft.pageId ||
+      !Array.isArray(v.rawSnapshots) ||
+      v.rawSnapshots.length !== 1 ||
+      !obj(v.rawSnapshots[0]) ||
+      v.inputTemplateFields.rawId !== v.rawSnapshots[0].id)
+  )
+    return false;
+  if (
+    obj(v) &&
+    v.source_level !== undefined &&
+    (!str(v.source_level) || !['A', 'B', 'C', 'D'].includes(v.source_level))
+  )
+    return false;
+  if (obj(v) && v.humanReview !== undefined && !validHumanReview(v.humanReview)) return false;
+  if (
+    obj(v) &&
+    ((v.reviewProtocolVersion !== undefined && v.reviewProtocolVersion !== 1) ||
+      (v.legacyStandaloneInput !== undefined &&
+        (!obj(v.legacyStandaloneInput) ||
+          v.reviewProtocolVersion !== 1 ||
+          v.legacyStandaloneInput.version !== 1 ||
+          v.legacyStandaloneInput.source !== 'stored_workflow' ||
+          !Array.isArray(v.legacyStandaloneInput.rawSnapshots) ||
+          !v.legacyStandaloneInput.rawSnapshots.every(
+            (r) => obj(r) && isUuid(r.id) && str(r.title) && digest(r.bodySha256),
+          ) ||
+          !isUuid(v.legacyStandaloneInput.targetWikiId) ||
+          !Number.isInteger(v.legacyStandaloneInput.targetBaseRevision) ||
+          Number(v.legacyStandaloneInput.targetBaseRevision) < 1 ||
+          !digest(v.legacyStandaloneInput.snapshotDigest))))
+  )
+    return false;
+  if (
+    !obj(v) ||
+    !isUuid(v.id) ||
+    (id !== undefined && v.id !== id) ||
+    !str(v.kind) ||
+    !['update', 'synthesis'].includes(v.kind) ||
+    !str(v.status) ||
+    !['pending_confirmation', 'confirmed', 'discarded', 'conflict'].includes(v.status) ||
+    !Number.isInteger(v.revision) ||
+    Number(v.revision) < 1 ||
+    !str(v.createdAt) ||
+    !str(v.updatedAt) ||
+    !obj(v.provider) ||
+    !str(v.provider.name) ||
+    !str(v.provider.model) ||
+    !str(v.title) ||
+    !str(v.category) ||
+    !Array.isArray(v.rawSnapshots) ||
+    !v.rawSnapshots.length ||
+    !v.rawSnapshots.every((x) => obj(x) && isUuid(x.id) && str(x.title) && digest(x.bodySha256)) ||
+    !Array.isArray(v.sources) ||
+    !v.sources.length ||
+    !v.sources.every(isUuid) ||
+    !obj(v.sections)
+  )
+    return false;
+  const snapshots = v.rawSnapshots as Array<Record<string, unknown>>,
+    rawIds = new Set(snapshots.map((x) => x.id)),
+    sources = v.sources as string[],
+    s = v.sections;
+  if (
+    rawIds.size !== snapshots.length ||
+    new Set(sources).size !== sources.length ||
+    snapshots.some((x) => !sources.includes(String(x.id))) ||
+    !['suggestedAdditions', 'conflicts', 'inferences', 'openQuestions', 'agreement'].every((k) => strings(s[k])) ||
+    !Array.isArray(s.sourceList) ||
+    !s.sourceList.every(
+      (x) =>
+        obj(x) &&
+        isUuid(x.id) &&
+        str(x.title) &&
+        rawIds.has(x.id) &&
+        (x.source_level === undefined || (str(x.source_level) && ['A', 'B', 'C', 'D'].includes(x.source_level))) &&
+        (x.existingSourceId === undefined || isUuid(x.existingSourceId)),
+    ) ||
+    new Set(s.sourceList.map((x) => x.id)).size !== rawIds.size ||
+    (s.existing !== undefined && !str(s.existing)) ||
+    (s.newSource !== undefined && !str(s.newSource))
+  )
+    return false;
+  if (
+    v.evidence !== undefined &&
+    (!Array.isArray(v.evidence) ||
+      !v.evidence.every(
+        (e) =>
+          obj(e) &&
+          str(e.section) &&
+          ['suggestedAdditions', 'conflicts', 'agreement'].includes(e.section) &&
+          str(e.text) &&
+          isUuid(e.rawId) &&
+          rawIds.has(e.rawId) &&
+          str(e.quote) &&
+          e.quote.length > 0 &&
+          Number.isSafeInteger(e.start) &&
+          Number(e.start) >= 0 &&
+          Number.isSafeInteger(e.end) &&
+          Number(e.end) > Number(e.start) &&
+          Number(e.end) - Number(e.start) === e.quote.length,
+      ))
+  )
+    return false;
+  if (
+    (v.commitOperationId !== undefined && !isUuid(v.commitOperationId)) ||
+    (v.committedWikiId !== undefined && !isUuid(v.committedWikiId)) ||
+    (v.lastCommitError !== undefined && !str(v.lastCommitError))
+  )
+    return false;
+  if (v.status === 'confirmed' && (!isUuid(v.commitOperationId) || !isUuid(v.committedWikiId))) return false;
+  if (
+    v.inputDraft !== undefined &&
+    (!obj(v.inputDraft) ||
+      !str(v.inputDraft.draftId) ||
+      !v.inputDraft.draftId.trim() ||
+      !str(v.inputDraft.pageId) ||
+      !v.inputDraft.pageId.trim() ||
+      !Number.isInteger(v.inputDraft.revision) ||
+      Number(v.inputDraft.revision) < 1)
+  )
+    return false;
+  if (
+    v.wikiInput !== undefined &&
+    (!obj(v.wikiInput) ||
+      !isWikiRecord({
+        ...v.wikiInput,
+        id: v.id,
+        domain: 'fmcg',
+        created: v.createdAt,
+        updated: v.updatedAt,
+        revision: 1,
+      }))
+  )
+    return false;
+  if (v.kind === 'update') {
+    if (
+      !isUuid(v.targetWikiId) ||
+      !Number.isInteger(v.baseRevision) ||
+      Number(v.baseRevision) < 1 ||
+      !str(s.existing) ||
+      !str(s.newSource) ||
+      snapshots.length !== 1
+    )
+      return false;
+    // Older workflows may omit unused snapshots; present snapshots must match their binding.
+    if (
+      v.baseWiki !== undefined &&
+      (!isWikiRecord(v.baseWiki) || v.baseWiki.id !== v.targetWikiId || v.baseWiki.revision !== v.baseRevision)
+    )
+      return false;
+  } else if (
+    snapshots.length < 2 ||
+    sources.length !== rawIds.size ||
+    v.targetWikiId !== undefined ||
+    v.baseRevision !== undefined ||
+    v.baseWiki !== undefined ||
+    v.inputDraft !== undefined
+  )
+    return false;
+  return true;
 }
-export const isUuid=(v:unknown):v is string=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
-export function isRawState(v:unknown,id?:string):boolean{return obj(v)&&isUuid(v.rawId)&&(!id||v.rawId===id)&&['unprocessed','processing','pending_confirmation','generated','failed'].includes(String(v.status))&&str(v.updatedAt)&&Array.isArray(v.history)&&v.history.length<=50&&v.history.every(x=>obj(x)&&str(x.at)&&str(x.from)&&str(x.to)&&str(x.reason));}
-export function isJob(v:unknown,id?:string):boolean{return obj(v)&&isUuid(v.id)&&(!id||v.id===id)&&isUuid(v.rawId)&&['running','completed','failed','cancelled'].includes(String(v.status))&&str(v.stage)&&Number.isInteger(v.chunksTotal)&&Number(v.chunksTotal)>=0&&Number.isInteger(v.chunksDone)&&Number(v.chunksDone)>=0&&Number.isInteger(v.pagesFound)&&Number(v.pagesFound)>=0&&obj(v.provider)&&str(v.provider.name)&&str(v.provider.model)&&typeof v.cancelRequested==='boolean'&&Number.isInteger(v.callCount)&&Number(v.callCount)>=0&&str(v.startedAt)&&str(v.updatedAt)&&(v.finishedAt===undefined||str(v.finishedAt));}
-export function isWikiRecord(v:unknown):v is Record<string,unknown>{return obj(v)&&isUuid(v.id)&&str(v.title)&&['source','concept','entity','business_process','metric','synthesis'].includes(String(v.type))&&v.domain==='fmcg'&&['industry_basics','category','channel','sales','store','distributor','supply_chain','product','metric','ai_application','company_business','customer','other'].includes(String(v.category))&&str(v.created)&&str(v.updated)&&Array.isArray(v.sources)&&v.sources.every(isUuid)&&strings(v.tags)&&['verified','source_supported','ai_organized','inferred','needs_verification'].includes(String(v.knowledge_status))&&['high','medium','low'].includes(String(v.confidence))&&str(v.source_level)&&['A','B','C','D'].includes(v.source_level)&&['unreviewed','reviewed'].includes(String(v.review_status))&&strings(v.aliases)&&Number.isInteger(v.revision)&&Number(v.revision)>0&&str(v.body)&&(v.isDemo===undefined||typeof v.isDemo==='boolean')
-  && (v.pdfDerivations === undefined || (Array.isArray(v.pdfDerivations) && v.pdfDerivations.every(item => validPdfDerivation(item) && (v.sources as unknown[]).includes(item.rawId))));}
-export function isCommitManifest(v:unknown,id?:string):boolean {
- if(obj(v)&&((obj(v.questionInput)&&v.questionInput.kind!=='question_answer')||(obj(v.inspectionInput)&&v.inspectionInput.kind!=='inspection')))return false;
- if(obj(v)&&(v.questionInput!==undefined||v.inspectionInput!==undefined)&&((v.questionInput!==undefined&&v.inspectionInput!==undefined)||!validEvidenceInput(v.inspectionInput??v.questionInput)||['rawId','rawSha256','rawTitle'].some(k=>Object.hasOwn(v,k))))return false;
- if(!obj(v)||!isUuid(v.operationId)||(id!==undefined&&v.operationId!==id)||!isUuid(v.draftId)||(!v.questionInput&&!v.inspectionInput&&(!isUuid(v.rawId)||! /^[0-9a-f]{64}$/i.test(String(v.rawSha256))||!str(v.rawTitle)||!v.rawTitle.trim()))||!['prepared','committing','completed','failed'].includes(String(v.status))||!str(v.idempotencyKey)||!v.idempotencyKey||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!obj(v.snapshot)||!Array.isArray(v.phases)||!Array.isArray(v.writtenWikiIds)||!v.writtenWikiIds.every(isUuid))return false;
- const s=v.snapshot;
- const noChanges=obj(s.maintenance)&&s.maintenance.noChanges===true;
- if((s.reuseSourceId===undefined)!==(s.reuseSourceTitle===undefined)||(s.reuseSourceId!==undefined&&(!isUuid(s.reuseSourceId)||!str(s.reuseSourceTitle)||!s.reuseSourceTitle.trim()))||(s.reuseSourceId!==undefined&&s.sourceRecord!==undefined&&!s.maintenance)||(s.reuseSourceId===undefined&&s.sourceRecord===undefined&&!v.questionInput&&!v.inspectionInput&&!noChanges)||!Number.isInteger(s.capturedRevision)||Number(s.capturedRevision)<0||!obj(s.document)||!str(s.document.title)||!str(s.document.main_topic)||!str(s.document.summary)||!Array.isArray(s.selectedPageIds)||!s.selectedPageIds.every(isUuid)||!Array.isArray(s.pageRecords)||!s.pageRecords.every(isWikiRecord)||!(s.sourceRecord===undefined||isWikiRecord(s.sourceRecord))||!obj(s.digests)||!Array.isArray(s.warnings)||!strings(s.warnings))return false;
- if(noChanges&&(!s.outcomeReview||s.sourceRecord||s.reuseSourceId||s.pageRecords.length||!s.selectedPageIds.length))return false;
- const outcome=s.outcomeReview;
- if(outcome!==undefined){
-  if(!obj(outcome)||outcome.version!==1||!digest(outcome.digest)||!str(outcome.confirmedAt)||outcome.confirmedAt!==v.createdAt||v.questionInput!==undefined||v.inspectionInput!==undefined||v.humanReviewDigest!==undefined||v.humanReviewBasisDigest!==undefined||s.deepNote!==undefined)return false;
-  const selection=[...s.selectedPageIds].sort();
-  if(new Set(selection).size!==selection.length||v.payloadDigest!==createHash('sha256').update(JSON.stringify({digest:outcome.digest,revision:s.capturedRevision,selectedPageIds:selection})).digest('hex'))return false;
- }
- if(s.maintenance!==undefined){const m=s.maintenance;if(!obj(m)||m.version!==1||!Array.isArray(m.targets)||!m.targets.every(isWikiRecord)||!obj(m.before)||!Object.values(m.before).every(isWikiRecord)||!obj(m.actions)||!strings(m.changeIds)||!Array.isArray(m.resultWikiIds)||!m.resultWikiIds.every(isUuid)||!digest(m.reviewDigest)||m.reviewDigest!==(outcome?.digest??v.humanReviewDigest))return false;for(const r of s.pageRecords as Array<Record<string,unknown>>){const old=m.before[String(r.id)];if(!['create','update','link'].includes(String(m.actions[String(r.id)]))||(old!==undefined&&(!obj(old)||old.id!==r.id||Number(old.revision)+1!==r.revision)))return false;}}
- if(s.deepNote!==undefined){const d=s.deepNote;if(!obj(d)||!validHumanReview(d.humanReview)||!validNoteApproval(d.approval)||d.approval.digest!==v.humanReviewDigest||d.reviewDigest!==v.humanReviewDigest||!validStructuredNote(d.note,new Set(d.humanReview.units.filter(u=>u.kind==='fact').flatMap(u=>u.records.map(r=>r.id))))||Object.values(d.humanReview.assignments).some(id=>id===null)||!d.humanReview.approvals.length||d.humanReview.approvals.some(a=>a.digest!==d.reviewDigest)||(d.metadata!==undefined&&!validNoteReview(d.metadata)))return false;}
- const pageRecords=s.pageRecords as Array<Record<string,unknown>>;const sourceRecord=s.sourceRecord as Record<string,unknown>|undefined;const digests=s.digests as Record<string,unknown>;const records=[...pageRecords,...(sourceRecord?[sourceRecord]:[])];const keys=Object.keys(digests);
- if(records.some(record=>!str(digests[String(record.id)])||!/^[0-9a-f]{64}$/i.test(String(digests[String(record.id)])))||keys.length!==records.length||keys.some(key=>!records.some(record=>record.id===key)))return false;
- const names=['source','pages','index','log','state'];if(v.phases.length!==5||!v.phases.every((phase,index)=>obj(phase)&&phase.name===names[index]&&['pending','done','failed'].includes(String(phase.status))&&(phase.at===undefined||str(phase.at))&&(phase.error===undefined||str(phase.error))))return false;
- if(v.status==='completed'&&v.phases.some(phase=>(phase as Record<string,unknown>).status!=='done'))return false;
- if(v.writtenWikiIds.some(writtenId=>!records.some(record=>record.id===writtenId))||(!s.maintenance&&pageRecords.length!==s.selectedPageIds.length))return false;if(v.status==='completed'&&v.writtenWikiIds.length!==records.length)return false;return true;
-}/** Validate stored workflows before any edit, confirmation or recovery action. */
-export function isWorkflow(v:unknown,id?:string):boolean {
- if(obj(v)&&v.inputTemplateFields!==undefined&&(!validInputTemplateFields(v.inputTemplateFields)||v.kind!=='update'||!obj(v.inputDraft)||v.inputTemplateFields.pageId!==v.inputDraft.pageId||!Array.isArray(v.rawSnapshots)||v.rawSnapshots.length!==1||!obj(v.rawSnapshots[0])||v.inputTemplateFields.rawId!==v.rawSnapshots[0].id))return false;
- if(obj(v)&&v.source_level!==undefined&&(!str(v.source_level)||!['A','B','C','D'].includes(v.source_level)))return false;
- if(obj(v)&&v.humanReview!==undefined&&!validHumanReview(v.humanReview))return false;
- if(obj(v)&&((v.reviewProtocolVersion!==undefined&&v.reviewProtocolVersion!==1)||(v.legacyStandaloneInput!==undefined&&(!obj(v.legacyStandaloneInput)||v.reviewProtocolVersion!==1||v.legacyStandaloneInput.version!==1||v.legacyStandaloneInput.source!=='stored_workflow'||!Array.isArray(v.legacyStandaloneInput.rawSnapshots)||!v.legacyStandaloneInput.rawSnapshots.every(r=>obj(r)&&isUuid(r.id)&&str(r.title)&&digest(r.bodySha256))||!isUuid(v.legacyStandaloneInput.targetWikiId)||!Number.isInteger(v.legacyStandaloneInput.targetBaseRevision)||Number(v.legacyStandaloneInput.targetBaseRevision)<1||!digest(v.legacyStandaloneInput.snapshotDigest)))))return false;
- if(!obj(v)||!isUuid(v.id)||(id!==undefined&&v.id!==id)||(!str(v.kind)||!['update','synthesis'].includes(v.kind))||(!str(v.status)||!['pending_confirmation','confirmed','discarded','conflict'].includes(v.status))||!Number.isInteger(v.revision)||Number(v.revision)<1||!str(v.createdAt)||!str(v.updatedAt)||!obj(v.provider)||!str(v.provider.name)||!str(v.provider.model)||!str(v.title)||!str(v.category)||!Array.isArray(v.rawSnapshots)||!v.rawSnapshots.length||!v.rawSnapshots.every(x=>obj(x)&&isUuid(x.id)&&str(x.title)&&digest(x.bodySha256))||!Array.isArray(v.sources)||!v.sources.length||!v.sources.every(isUuid)||!obj(v.sections))return false;
- const snapshots=v.rawSnapshots as Array<Record<string,unknown>>,rawIds=new Set(snapshots.map(x=>x.id)),sources=v.sources as string[],s=v.sections;
- if(rawIds.size!==snapshots.length||new Set(sources).size!==sources.length||snapshots.some(x=>!sources.includes(String(x.id)))||!['suggestedAdditions','conflicts','inferences','openQuestions','agreement'].every(k=>strings(s[k]))||!Array.isArray(s.sourceList)||!s.sourceList.every(x=>obj(x)&&isUuid(x.id)&&str(x.title)&&rawIds.has(x.id)&&(x.source_level===undefined||str(x.source_level)&&['A','B','C','D'].includes(x.source_level))&&(x.existingSourceId===undefined||isUuid(x.existingSourceId)))||new Set(s.sourceList.map(x=>x.id)).size!==rawIds.size||(s.existing!==undefined&&!str(s.existing))||(s.newSource!==undefined&&!str(s.newSource)))return false;
- if(v.evidence!==undefined&&(!Array.isArray(v.evidence)||!v.evidence.every(e=>obj(e)&&str(e.section)&&['suggestedAdditions','conflicts','agreement'].includes(e.section)&&str(e.text)&&isUuid(e.rawId)&&rawIds.has(e.rawId)&&str(e.quote)&&e.quote.length>0&&Number.isSafeInteger(e.start)&&Number(e.start)>=0&&Number.isSafeInteger(e.end)&&Number(e.end)>Number(e.start)&&Number(e.end)-Number(e.start)===e.quote.length)))return false;
- if((v.commitOperationId!==undefined&&!isUuid(v.commitOperationId))||(v.committedWikiId!==undefined&&!isUuid(v.committedWikiId))||(v.lastCommitError!==undefined&&!str(v.lastCommitError)))return false;
- if(v.status==='confirmed'&&(!isUuid(v.commitOperationId)||!isUuid(v.committedWikiId)))return false;
- if(v.inputDraft!==undefined&&(!obj(v.inputDraft)||(!str(v.inputDraft.draftId)||!v.inputDraft.draftId.trim())||(!str(v.inputDraft.pageId)||!v.inputDraft.pageId.trim())||!Number.isInteger(v.inputDraft.revision)||Number(v.inputDraft.revision)<1))return false;
- if(v.wikiInput!==undefined&&(!obj(v.wikiInput)||!isWikiRecord({...v.wikiInput,id:v.id,domain:'fmcg',created:v.createdAt,updated:v.updatedAt,revision:1})))return false;
- if(v.kind==='update'){
-  if(!isUuid(v.targetWikiId)||!Number.isInteger(v.baseRevision)||Number(v.baseRevision)<1||!str(s.existing)||!str(s.newSource)||snapshots.length!==1)return false;
-  // Older workflows may omit unused snapshots; present snapshots must match their binding.
-  if(v.baseWiki!==undefined&&(!isWikiRecord(v.baseWiki)||v.baseWiki.id!==v.targetWikiId||v.baseWiki.revision!==v.baseRevision))return false;
- }else if(snapshots.length<2||sources.length!==rawIds.size||v.targetWikiId!==undefined||v.baseRevision!==undefined||v.baseWiki!==undefined||v.inputDraft!==undefined)return false;
- return true;
+export function isWorkflowManifest(v: unknown, id?: string): boolean {
+  if (
+    !obj(v) ||
+    !isUuid(v.operationId) ||
+    (id !== undefined && v.operationId !== id) ||
+    !isUuid(v.workflowId) ||
+    !str(v.idempotencyKey) ||
+    !v.idempotencyKey ||
+    !/^[0-9a-f]{64}$/i.test(String(v.payloadDigest)) ||
+    !['prepared', 'committing', 'completed', 'conflict'].includes(String(v.status)) ||
+    !str(v.createdAt) ||
+    !str(v.updatedAt) ||
+    !Array.isArray(v.records) ||
+    v.records.length === 0 ||
+    !v.records.every(isWikiRecord) ||
+    !Array.isArray(v.writtenIds) ||
+    !v.writtenIds.every(isUuid) ||
+    !Array.isArray(v.rawSnapshots) ||
+    v.rawSnapshots.length === 0 ||
+    !v.rawSnapshots.every(
+      (x) => obj(x) && isUuid(x.id) && str(x.title) && /^[0-9a-f]{64}$/i.test(String(x.bodySha256)),
+    ) ||
+    (v.updateTargetId === undefined) !== (v.targetBaseRevision === undefined) ||
+    (v.updateTargetId !== undefined &&
+      (!isUuid(v.updateTargetId) || !Number.isInteger(v.targetBaseRevision) || Number(v.targetBaseRevision) < 1))
+  )
+    return false;
+  const records = v.records as Array<Record<string, unknown>>;
+  return v.writtenIds.every((writtenId) => records.some((record) => record.id === writtenId));
 }
-export function isWorkflowManifest(v:unknown,id?:string):boolean{
- if(!obj(v)||!isUuid(v.operationId)||(id!==undefined&&v.operationId!==id)||!isUuid(v.workflowId)||!str(v.idempotencyKey)||!v.idempotencyKey||!/^[0-9a-f]{64}$/i.test(String(v.payloadDigest))||!['prepared','committing','completed','conflict'].includes(String(v.status))||!str(v.createdAt)||!str(v.updatedAt)||!Array.isArray(v.records)||v.records.length===0||!v.records.every(isWikiRecord)||!Array.isArray(v.writtenIds)||!v.writtenIds.every(isUuid)||!Array.isArray(v.rawSnapshots)||v.rawSnapshots.length===0||!v.rawSnapshots.every(x=>obj(x)&&isUuid(x.id)&&str(x.title)&&/^[0-9a-f]{64}$/i.test(String(x.bodySha256)))||((v.updateTargetId===undefined)!==(v.targetBaseRevision===undefined))||(v.updateTargetId!==undefined&&(!isUuid(v.updateTargetId)||!Number.isInteger(v.targetBaseRevision)||Number(v.targetBaseRevision)<1)))return false;
- const records=v.records as Array<Record<string,unknown>>;return v.writtenIds.every(writtenId=>records.some(record=>record.id===writtenId));
-}
-

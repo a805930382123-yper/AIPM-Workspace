@@ -1,19 +1,259 @@
 import express from 'express';
-import {createServer} from 'vite';import react from '@vitejs/plugin-react';
-import {appendFile,mkdtemp,realpath,writeFile} from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {randomUUID,createHash} from 'node:crypto';import type {AddressInfo} from 'node:net';
-import {RawStore} from '../services/raw/store.ts';import {RawStateStore} from '../services/raw/state.ts';import {DraftStore} from '../services/wiki/drafts.ts';import {WikiStore} from '../services/wiki/store.ts';import {WikiCommitService} from '../services/wiki/commits.ts';import {ExtractionJobStore,ExtractionRunner} from '../services/llm/jobs.ts';import {LLMService} from '../services/llm/service.ts';import {PromptStore} from '../services/prompt/store.ts';import {PromptAiService} from '../services/prompt-ai/service.ts';import {getStats} from '../services/stats/index.ts';import {registerHomeRoutes} from '../server/home-api.ts';import {registerB04Routes} from '../server/llm-api.ts';import {registerKnowledgeRoutes} from '../server/knowledge-api.ts';import {registerPromptRoutes} from '../server/prompt-api.ts';import {registerPromptAiRoutes} from '../server/prompt-ai-api.ts';
-const reuse=process.argv.includes('--root'),arg=process.argv[process.argv.indexOf('--root')+1];const root=reuse?path.resolve(arg):await mkdtemp(path.join(os.tmpdir(),'lifeos-l4-'));const rel=path.relative(await realpath(os.tmpdir()),await realpath(root));if(rel.startsWith('..')||path.isAbsolute(rel))throw Error('TEMP root only');
-const raws=new RawStore(root),rawStates=new RawStateStore(root),drafts=new DraftStore(root),jobs=new ExtractionJobStore(root);await Promise.all([raws.initialize(),rawStates.initialize(),drafts.initialize(),jobs.initialize()]);const wiki=new WikiStore(root,raws);await wiki.initialize();const prompts=new PromptStore(root,wiki);await prompts.initialize();
-const requests=path.join(root,'fake-prompt-requests.jsonl');await appendFile(requests,'');let count=0;let held=false;let release:(()=>void)|undefined;
-const brief={taskName:'虚构访谈',taskType:'客户访谈',role:'待用户补充',goal:'核实订货流程',context:'待用户补充',input:'待用户提供',tasks:'逐项询问',constraints:'不得编造',output:'访谈提纲'};
-const content={version:1,name:'虚构访谈提示',category:'customer',scenario:'经销商访谈',sections:[{heading:'目标',content:'按用户要求整理访谈提纲。'}],inputRequirements:'访谈资料',outputRequirements:'问题清单',examples:'',tags:['访谈']};
-const provider={name:'fake',model:'fake-prompt',secrets:[],complete:async(request:any)=>{count++;await appendFile(requests,JSON.stringify({system:request.system,user:request.user})+'\n');if(held)await new Promise<void>(r=>{release=r;});const result=request.system.includes('结构化 Prompt Brief')?brief:content;const text=JSON.stringify(result);return{text,bytes:Buffer.byteLength(text),finishReason:'stop' as const};}};
-const ai=new PromptAiService(root,wiki,prompts,()=>provider);await ai.initialize();const runner=new ExtractionRunner({root,rawStore:raws,rawStates,drafts,jobs,llm:new LLMService('rules'),rulesDir:'rules',provider:()=>undefined,draftRules:async()=>({types:[],categories:[],knowledge_status:[],confidence:[],source_level:[],review_status:[]})});const commits=new WikiCommitService({root,wikiStore:wiki,drafts,rawStates,rawStore:raws});await commits.initialize();await commits.reconcile();
-if(!reuse){const base={type:'concept' as const,category:'industry_basics',tags:[],aliases:[],knowledge_status:'needs_verification' as const,confidence:'low' as const,source_level:'D' as const,review_status:'unreviewed' as const};const selected=await wiki.create({...base,title:'虚构可选 Wiki',sources:[],body:'可选择的虚构订货流程背景。'});const unselected=await wiki.create({...base,title:'虚构未选 Wiki',sources:[],body:'未选择背景不可发送。'});const raw=await raws.create({title:'会议替身',sourceType:'other',sourceName:'虚构',tags:[],body:'本机会议资料。'});const restricted=await wiki.create({...base,title:'受限会议来源 Wiki',sources:[raw.id],body:'会议限定本机使用。'});await raws.delete(raw.id);await raws.createMeetingRegistration({id:raw.id,title:raw.title,sourceName:raw.sourceName,tags:raw.tags,body:raw.body,importedAt:raw.importedAt,origin:{kind:'meeting',meeting_id:randomUUID(),import_id:randomUUID(),original_sha256:createHash('sha256').update(raw.body).digest('hex'),registered_confidentiality:'Internal',processing_policy:'meeting_local_only'}});const existing=await prompts.create(randomUUID(),{name:'旧虚构 Prompt',category:'customer',scenario:'历史',body:'原有模板正文',inputRequirements:'材料',outputRequirements:'问题',relatedWikiIds:[],examples:'',tags:[],favorite:false});await writeFile(path.join(root,'fixtures.json'),JSON.stringify({selectedWikiId:selected.id,unselectedWikiId:unselected.id,restrictedWikiId:restricted.id,existingPromptId:existing.prompt.id},null,2));}
-const app=express();app.use(express.json({limit:'3mb'}));app.get('/__control/counters',(_req,res)=>res.json({provider:count,config:'not-connected'}));app.post('/__control/hold',(_req,res)=>{held=true;res.json({ok:true});});app.post('/__control/release',(_req,res)=>{held=false;release?.();release=undefined;res.json({ok:true});});
-app.get('/api/raw',async(_req,res)=>res.json({items:await raws.list()}));app.get('/api/stats',async(_req,res)=>res.json(await getStats(root,raws)));app.get('/api/wiki/schema',async(_req,res)=>res.json(await wiki.schema()));app.get('/api/wiki',async(_req,res)=>res.json({items:await wiki.list({}),categoryCounts:await wiki.categoryCounts()}));app.get('/api/wiki/:id',async(req,res)=>{const item=await wiki.get(req.params.id);if(!item)return res.status(404).json({error:{message:'Wiki 不存在'}});res.json(item);});app.get('/api/recovery-issues',(_req,res)=>res.json({items:[],overflow:false}));
-registerHomeRoutes(app,{root,raws,wiki,runner});registerB04Routes(app,{root,rawStore:raws,rawStates,drafts,jobs,runner,rulesDir:'rules',provider:()=>undefined,llm:new LLMService('rules'),commits,wikiStore:wiki});registerKnowledgeRoutes(app,{root,raws,drafts,wiki,provider:()=>undefined});registerPromptRoutes(app,{store:prompts});registerPromptAiRoutes(app,ai);
-app.use(((e,_req,res,_next)=>res.status(e.status??500).json({error:{code:e.code??'ISOLATED_ERROR',message:e.message,details:e.details}})) as express.ErrorRequestHandler);
-const server=app.listen(0,'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const apiPort=(server.address() as AddressInfo).port;const envDir=await mkdtemp(path.join(os.tmpdir(),'lifeos-l4-env-'));const vite=await createServer({configFile:false,root:process.cwd(),envDir,plugins:[react()],server:{host:'127.0.0.1',port:0,proxy:{'/api':`http://127.0.0.1:${apiPort}`}}});await vite.listen();const uiPort=(vite.httpServer!.address() as AddressInfo).port;
-const {readFile}=await import('node:fs/promises');const fixtures=JSON.parse(await readFile(path.join(root,'fixtures.json'),'utf8'));const info={pid:process.pid,url:`http://127.0.0.1:${uiPort}`,api:`http://127.0.0.1:${apiPort}`,root,fixtures,requests,counters:'/__control/counters',controls:['POST /__control/hold','POST /__control/release'],restart:`npx tsx scripts/lifeos-l4-isolated.ts --root "${root}"`,reused:reuse};await writeFile(path.join(root,'isolated-session.json'),JSON.stringify(info,null,2));console.log(JSON.stringify(info,null,2));
-const close=async()=>{await vite.close();await new Promise<void>(r=>server.close(()=>r()));process.exit(0);};process.on('SIGINT',()=>void close());process.on('SIGTERM',()=>void close());
+import { createServer } from 'vite';
+import react from '@vitejs/plugin-react';
+import { appendFile, mkdtemp, realpath, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { randomUUID, createHash } from 'node:crypto';
+import type { AddressInfo } from 'node:net';
+import { RawStore } from '../services/raw/store.ts';
+import { RawStateStore } from '../services/raw/state.ts';
+import { DraftStore } from '../services/wiki/drafts.ts';
+import { WikiStore } from '../services/wiki/store.ts';
+import { WikiCommitService } from '../services/wiki/commits.ts';
+import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
+import { LLMService } from '../services/llm/service.ts';
+import { PromptStore } from '../services/prompt/store.ts';
+import { PromptAiService } from '../services/prompt-ai/service.ts';
+import { getStats } from '../services/stats/index.ts';
+import { registerHomeRoutes } from '../server/home-api.ts';
+import { registerB04Routes } from '../server/llm-api.ts';
+import { registerKnowledgeRoutes } from '../server/knowledge-api.ts';
+import { registerPromptRoutes } from '../server/prompt-api.ts';
+import { registerPromptAiRoutes } from '../server/prompt-ai-api.ts';
+const reuse = process.argv.includes('--root'),
+  arg = process.argv[process.argv.indexOf('--root') + 1];
+const root = reuse ? path.resolve(arg) : await mkdtemp(path.join(os.tmpdir(), 'lifeos-l4-'));
+const rel = path.relative(await realpath(os.tmpdir()), await realpath(root));
+if (rel.startsWith('..') || path.isAbsolute(rel)) throw Error('TEMP root only');
+const raws = new RawStore(root),
+  rawStates = new RawStateStore(root),
+  drafts = new DraftStore(root),
+  jobs = new ExtractionJobStore(root);
+await Promise.all([raws.initialize(), rawStates.initialize(), drafts.initialize(), jobs.initialize()]);
+const wiki = new WikiStore(root, raws);
+await wiki.initialize();
+const prompts = new PromptStore(root, wiki);
+await prompts.initialize();
+const requests = path.join(root, 'fake-prompt-requests.jsonl');
+await appendFile(requests, '');
+let count = 0;
+let held = false;
+let release: (() => void) | undefined;
+const brief = {
+  taskName: '虚构访谈',
+  taskType: '客户访谈',
+  role: '待用户补充',
+  goal: '核实订货流程',
+  context: '待用户补充',
+  input: '待用户提供',
+  tasks: '逐项询问',
+  constraints: '不得编造',
+  output: '访谈提纲',
+};
+const content = {
+  version: 1,
+  name: '虚构访谈提示',
+  category: 'customer',
+  scenario: '经销商访谈',
+  sections: [{ heading: '目标', content: '按用户要求整理访谈提纲。' }],
+  inputRequirements: '访谈资料',
+  outputRequirements: '问题清单',
+  examples: '',
+  tags: ['访谈'],
+};
+const provider = {
+  name: 'fake',
+  model: 'fake-prompt',
+  secrets: [],
+  complete: async (request: any) => {
+    count++;
+    await appendFile(requests, JSON.stringify({ system: request.system, user: request.user }) + '\n');
+    if (held)
+      await new Promise<void>((r) => {
+        release = r;
+      });
+    const result = request.system.includes('结构化 Prompt Brief') ? brief : content;
+    const text = JSON.stringify(result);
+    return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' as const };
+  },
+};
+const ai = new PromptAiService(root, wiki, prompts, () => provider);
+await ai.initialize();
+const runner = new ExtractionRunner({
+  root,
+  rawStore: raws,
+  rawStates,
+  drafts,
+  jobs,
+  llm: new LLMService('rules'),
+  rulesDir: 'rules',
+  provider: () => undefined,
+  draftRules: async () => ({
+    types: [],
+    categories: [],
+    knowledge_status: [],
+    confidence: [],
+    source_level: [],
+    review_status: [],
+  }),
+});
+const commits = new WikiCommitService({ root, wikiStore: wiki, drafts, rawStates, rawStore: raws });
+await commits.initialize();
+await commits.reconcile();
+if (!reuse) {
+  const base = {
+    type: 'concept' as const,
+    category: 'industry_basics',
+    tags: [],
+    aliases: [],
+    knowledge_status: 'needs_verification' as const,
+    confidence: 'low' as const,
+    source_level: 'D' as const,
+    review_status: 'unreviewed' as const,
+  };
+  const selected = await wiki.create({
+    ...base,
+    title: '虚构可选 Wiki',
+    sources: [],
+    body: '可选择的虚构订货流程背景。',
+  });
+  const unselected = await wiki.create({ ...base, title: '虚构未选 Wiki', sources: [], body: '未选择背景不可发送。' });
+  const raw = await raws.create({
+    title: '会议替身',
+    sourceType: 'other',
+    sourceName: '虚构',
+    tags: [],
+    body: '本机会议资料。',
+  });
+  const restricted = await wiki.create({
+    ...base,
+    title: '受限会议来源 Wiki',
+    sources: [raw.id],
+    body: '会议限定本机使用。',
+  });
+  await raws.delete(raw.id);
+  await raws.createMeetingRegistration({
+    id: raw.id,
+    title: raw.title,
+    sourceName: raw.sourceName,
+    tags: raw.tags,
+    body: raw.body,
+    importedAt: raw.importedAt,
+    origin: {
+      kind: 'meeting',
+      meeting_id: randomUUID(),
+      import_id: randomUUID(),
+      original_sha256: createHash('sha256').update(raw.body).digest('hex'),
+      registered_confidentiality: 'Internal',
+      processing_policy: 'meeting_local_only',
+    },
+  });
+  const existing = await prompts.create(randomUUID(), {
+    name: '旧虚构 Prompt',
+    category: 'customer',
+    scenario: '历史',
+    body: '原有模板正文',
+    inputRequirements: '材料',
+    outputRequirements: '问题',
+    relatedWikiIds: [],
+    examples: '',
+    tags: [],
+    favorite: false,
+  });
+  await writeFile(
+    path.join(root, 'fixtures.json'),
+    JSON.stringify(
+      {
+        selectedWikiId: selected.id,
+        unselectedWikiId: unselected.id,
+        restrictedWikiId: restricted.id,
+        existingPromptId: existing.prompt.id,
+      },
+      null,
+      2,
+    ),
+  );
+}
+const app = express();
+app.use(express.json({ limit: '3mb' }));
+app.get('/__control/counters', (_req, res) => res.json({ provider: count, config: 'not-connected' }));
+app.post('/__control/hold', (_req, res) => {
+  held = true;
+  res.json({ ok: true });
+});
+app.post('/__control/release', (_req, res) => {
+  held = false;
+  release?.();
+  release = undefined;
+  res.json({ ok: true });
+});
+app.get('/api/raw', async (_req, res) => res.json({ items: await raws.list() }));
+app.get('/api/stats', async (_req, res) => res.json(await getStats(root, raws)));
+app.get('/api/wiki/schema', async (_req, res) => res.json(await wiki.schema()));
+app.get('/api/wiki', async (_req, res) =>
+  res.json({ items: await wiki.list({}), categoryCounts: await wiki.categoryCounts() }),
+);
+app.get('/api/wiki/:id', async (req, res) => {
+  const item = await wiki.get(req.params.id);
+  if (!item) return res.status(404).json({ error: { message: 'Wiki 不存在' } });
+  res.json(item);
+});
+app.get('/api/recovery-issues', (_req, res) => res.json({ items: [], overflow: false }));
+registerHomeRoutes(app, { root, raws, wiki, runner });
+registerB04Routes(app, {
+  root,
+  rawStore: raws,
+  rawStates,
+  drafts,
+  jobs,
+  runner,
+  rulesDir: 'rules',
+  provider: () => undefined,
+  llm: new LLMService('rules'),
+  commits,
+  wikiStore: wiki,
+});
+registerKnowledgeRoutes(app, { root, raws, drafts, wiki, provider: () => undefined });
+registerPromptRoutes(app, { store: prompts });
+registerPromptAiRoutes(app, ai);
+app.use(((e, _req, res, _next) =>
+  res.status(e.status ?? 500).json({
+    error: { code: e.code ?? 'ISOLATED_ERROR', message: e.message, details: e.details },
+  })) as express.ErrorRequestHandler);
+const server = app.listen(0, '127.0.0.1');
+await new Promise<void>((r) => server.once('listening', r));
+const apiPort = (server.address() as AddressInfo).port;
+const envDir = await mkdtemp(path.join(os.tmpdir(), 'lifeos-l4-env-'));
+const vite = await createServer({
+  configFile: false,
+  root: process.cwd(),
+  envDir,
+  plugins: [react()],
+  server: { host: '127.0.0.1', port: 0, proxy: { '/api': `http://127.0.0.1:${apiPort}` } },
+});
+await vite.listen();
+const uiPort = (vite.httpServer!.address() as AddressInfo).port;
+const { readFile } = await import('node:fs/promises');
+const fixtures = JSON.parse(await readFile(path.join(root, 'fixtures.json'), 'utf8'));
+const info = {
+  pid: process.pid,
+  url: `http://127.0.0.1:${uiPort}`,
+  api: `http://127.0.0.1:${apiPort}`,
+  root,
+  fixtures,
+  requests,
+  counters: '/__control/counters',
+  controls: ['POST /__control/hold', 'POST /__control/release'],
+  restart: `npx tsx scripts/lifeos-l4-isolated.ts --root "${root}"`,
+  reused: reuse,
+};
+await writeFile(path.join(root, 'isolated-session.json'), JSON.stringify(info, null, 2));
+console.log(JSON.stringify(info, null, 2));
+const close = async () => {
+  await vite.close();
+  await new Promise<void>((r) => server.close(() => r()));
+  process.exit(0);
+};
+process.on('SIGINT', () => void close());
+process.on('SIGTERM', () => void close());

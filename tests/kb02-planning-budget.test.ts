@@ -18,50 +18,143 @@ import { DraftStore } from '../services/wiki/drafts.ts';
 async function fixture() {
   const root = await mkdtemp(path.join(os.tmpdir(), 'kb02-budget-'));
   const rulesDir = path.resolve('rules');
-  const rawStore = new RawStore(root), rawStates = new RawStateStore(root);
-  const jobs = new ExtractionJobStore(root), drafts = new DraftStore(root);
+  const rawStore = new RawStore(root),
+    rawStates = new RawStateStore(root);
+  const jobs = new ExtractionJobStore(root),
+    drafts = new DraftStore(root);
   await Promise.all([rawStore.initialize(), rawStates.initialize(), jobs.initialize(), drafts.initialize()]);
-  const raw = await rawStore.create({ title: '虚构预算资料', sourceType: 'report', sourceName: '隔离测试', tags: [], body: '目标100家，在售20家。铺货率20%，负责人未知。' });
+  const raw = await rawStore.create({
+    title: '虚构预算资料',
+    sourceType: 'report',
+    sourceName: '隔离测试',
+    tags: [],
+    body: '目标100家，在售20家。铺货率20%，负责人未知。',
+  });
   const requests: LlmCompletionRequest[] = [];
   let validPlan = false;
-  const provider: LlmProvider = { name: 'fake', model: 'budget-model', complete: async request => {
-    requests.push(request); { const review = semanticReviewReply(request); if (review) return review; }
-    if (request.system.startsWith('知识维护提议')) {
-      const text = JSON.stringify(maintenanceReply(request.user));
-      return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
-    }
-    const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
-    const result = request.user.includes('请对下列全部已验证事实规划知识页')
-      ? { version:3,document: { source_level: 'D', title: '虚构指标', main_topic: '指标' }, pages: [{ title: '虚构指标', type: 'metric', category: 'metric', factUnitIds:data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1), questionUnitIds:data.questionUnits.map((x: { id: string }) => x.id) }] }
-      : { version: 2, facts: data.map((x: { id: string }) => ({ atomId: x.id, kind: 'fact' })), questions: [], sourceNotes: [] };
-    return { text: JSON.stringify(result), bytes: 1, finishReason: 'stop' };
-  } };
-  const runner = new ExtractionRunner({ root, jobs, drafts, rawStates, rawStore, rulesDir, provider: () => provider, llm: new LLMService(rulesDir), draftRules: async () => {
-    const bundle = await loadExtractionRules(rulesDir);
-    return { types: ['metric'], categories: ['metric'], knowledge_status: bundle.fmcg.enums?.knowledge_status ?? [], confidence: bundle.fmcg.enums?.confidence ?? [], source_level: bundle.fmcg.enums?.source_level ?? [], review_status: bundle.fmcg.enums?.review_status ?? [] };
-  } });
+  const provider: LlmProvider = {
+    name: 'fake',
+    model: 'budget-model',
+    complete: async (request) => {
+      requests.push(request);
+      {
+        const review = semanticReviewReply(request);
+        if (review) return review;
+      }
+      if (request.system.startsWith('知识维护提议')) {
+        const text = JSON.stringify(maintenanceReply(request.user));
+        return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
+      }
+      const data = JSON.parse(request.user.slice(request.user.lastIndexOf('\n') + 1));
+      const result = request.user.includes('请对下列全部已验证事实规划知识页')
+        ? {
+            version: 3,
+            document: { source_level: 'D', title: '虚构指标', main_topic: '指标' },
+            pages: [
+              {
+                title: '虚构指标',
+                type: 'metric',
+                category: 'metric',
+                factUnitIds: data.factUnits.map((x: { id: string }) => x.id).slice(0, validPlan ? undefined : -1),
+                questionUnitIds: data.questionUnits.map((x: { id: string }) => x.id),
+              },
+            ],
+          }
+        : {
+            version: 2,
+            facts: data.map((x: { id: string }) => ({ atomId: x.id, kind: 'fact' })),
+            questions: [],
+            sourceNotes: [],
+          };
+      return { text: JSON.stringify(result), bytes: 1, finishReason: 'stop' };
+    },
+  };
+  const runner = new ExtractionRunner({
+    root,
+    jobs,
+    drafts,
+    rawStates,
+    rawStore,
+    rulesDir,
+    provider: () => provider,
+    llm: new LLMService(rulesDir),
+    draftRules: async () => {
+      const bundle = await loadExtractionRules(rulesDir);
+      return {
+        types: ['metric'],
+        categories: ['metric'],
+        knowledge_status: bundle.fmcg.enums?.knowledge_status ?? [],
+        confidence: bundle.fmcg.enums?.confidence ?? [],
+        source_level: bundle.fmcg.enums?.source_level ?? [],
+        review_status: bundle.fmcg.enums?.review_status ?? [],
+      };
+    },
+  });
   const ids = new Set<string>();
-  const start = async (options: { planningRetry?: boolean; restart?: boolean } = {}) => { const result = await runner.start(raw.id, { newJobId: randomUUID(), now: new Date().toISOString(), ...options }); ids.add(result.job.id); return result; };
+  const start = async (options: { planningRetry?: boolean; restart?: boolean } = {}) => {
+    const result = await runner.start(raw.id, { newJobId: randomUUID(), now: new Date().toISOString(), ...options });
+    ids.add(result.job.id);
+    return result;
+  };
   const safeSnapshot = async (id: string) => {
     const job = await jobs.get(id).catch(() => undefined);
     const cp = await new ExtractionCheckpointStore(root).get(id).catch(() => undefined);
     const state = await rawStates.get(raw.id).catch(() => undefined);
     const runtime = await runner.readJob(id).catch(() => undefined);
-    return { node: process.version, job: job ? { status: job.status, stage: job.stage, callCount: job.callCount, errorCode: job.error?.code } : null, checkpoint: cp ? { stage: cp.stage, attempts: cp.attempts, validatedChunks: cp.completedChunks.length, diagnosticPresent: !!cp.lastError?.diagnostic, errorCode: cp.lastError?.code } : null, rawStatus: state?.status, requests: requests.length, execution: runtime?.execution, recovery: runtime?.recovery ? { code: runtime.recovery.code, phase: runtime.recovery.phase, persisted: runtime.recovery.persisted } : null };
+    return {
+      node: process.version,
+      job: job ? { status: job.status, stage: job.stage, callCount: job.callCount, errorCode: job.error?.code } : null,
+      checkpoint: cp
+        ? {
+            stage: cp.stage,
+            attempts: cp.attempts,
+            validatedChunks: cp.completedChunks.length,
+            diagnosticPresent: !!cp.lastError?.diagnostic,
+            errorCode: cp.lastError?.code,
+          }
+        : null,
+      rawStatus: state?.status,
+      requests: requests.length,
+      execution: runtime?.execution,
+      recovery: runtime?.recovery
+        ? { code: runtime.recovery.code, phase: runtime.recovery.phase, persisted: runtime.recovery.persisted }
+        : null,
+    };
   };
   const wait = async (id: string) => {
     const deadline = performance.now() + 10_000;
     while (performance.now() < deadline) {
       const view = await runner.readJob(id);
       if (view.execution === 'settled') {
-        if (view.recovery || !view.job || view.job.status === 'running') throw new Error('Budget fixture settlement failed: ' + JSON.stringify(await safeSnapshot(id)));
+        if (view.recovery || !view.job || view.job.status === 'running')
+          throw new Error('Budget fixture settlement failed: ' + JSON.stringify(await safeSnapshot(id)));
         return view.job;
       }
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
     throw new Error('Budget fixture deadline: ' + JSON.stringify(await safeSnapshot(id)));
   };
-  return { root, raw, jobs, drafts, requests, safeSnapshots: () => Promise.all([...ids].map(safeSnapshot)), start, wait, checkpoint: (id: string) => new ExtractionCheckpointStore(root).get(id), succeed: () => { validPlan = true; }, clean: async () => { for (const id of ids) { if ((await runner.readJob(id)).execution === 'running') await runner.cancel(id); await runner.waitForSettlement(id); } await rm(root, { recursive: true, force: true }); } };
+  return {
+    root,
+    raw,
+    jobs,
+    drafts,
+    requests,
+    safeSnapshots: () => Promise.all([...ids].map(safeSnapshot)),
+    start,
+    wait,
+    checkpoint: (id: string) => new ExtractionCheckpointStore(root).get(id),
+    succeed: () => {
+      validPlan = true;
+    },
+    clean: async () => {
+      for (const id of ids) {
+        if ((await runner.readJob(id)).execution === 'running') await runner.cancel(id);
+        await runner.waitForSettlement(id);
+      }
+      await rm(root, { recursive: true, force: true });
+    },
+  };
 }
 
 test('KB02 repeated explicit replanning retains diagnostics beyond the former limit and allows explicit restart', async () => {
@@ -96,40 +189,70 @@ test('KB02 repeated explicit replanning retains diagnostics beyond the former li
     assert.equal(completed.callCount, 3);
     assert.deepEqual(f.requests.slice(7).map(stageOf), ['extracting', 'planning', 'maintenance']);
     assert.deepEqual(await f.checkpoint(job.id), saved);
-  } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
+  } catch (error) {
+    primaryFailure = true;
+    console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots()));
+    throw error;
+  } finally {
+    await f.clean().catch((error) => {
+      console.error('Budget cleanup failed:', (error as { code?: string }).code ?? 'UNKNOWN');
+      if (!primaryFailure) throw error;
+    });
+  }
 });
 
-const stageOf = (request: LlmCompletionRequest) => request.system.startsWith('知识维护提议') ? 'maintenance'
-  : request.user.includes('请对下列全部已验证事实规划知识页') ? 'planning' : 'extracting';
+const stageOf = (request: LlmCompletionRequest) =>
+  request.system.startsWith('知识维护提议')
+    ? 'maintenance'
+    : request.user.includes('请对下列全部已验证事实规划知识页')
+      ? 'planning'
+      : 'extracting';
 
-for (const attemptsBeforeSuccess of [5, 7]) test(`KB02 preserves chunks through planning and maintenance after ${attemptsBeforeSuccess} persisted attempts`, async () => {
-  const f = await fixture();
-  let primaryFailure = false;
-  try {
-    let job = await f.wait((await f.start()).job.id);
-    for (let calls = 3; calls <= attemptsBeforeSuccess; calls++) {
+for (const attemptsBeforeSuccess of [5, 7])
+  test(`KB02 preserves chunks through planning and maintenance after ${attemptsBeforeSuccess} persisted attempts`, async () => {
+    const f = await fixture();
+    let primaryFailure = false;
+    try {
+      let job = await f.wait((await f.start()).job.id);
+      for (let calls = 3; calls <= attemptsBeforeSuccess; calls++) {
+        assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
+        assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
+        await f.start({ planningRetry: true });
+        job = await f.wait(job.id);
+        assert.equal(job.callCount, calls);
+      }
+      const chunk = (await f.checkpoint(job.id))!.completedChunks;
       assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
       assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
-      await f.start({ planningRetry: true });
+      f.succeed();
+      assert.equal((await f.start({ planningRetry: true })).job.id, job.id);
       job = await f.wait(job.id);
-      assert.equal(job.callCount, calls);
+      assert.equal(job.callCount, attemptsBeforeSuccess + 2);
+      const settled = (await f.checkpoint(job.id))!;
+      assert.deepEqual(settled.completedChunks, chunk);
+      assert.equal(settled.attempts, attemptsBeforeSuccess + 2);
+      assert(settled.plan, 'the final replan completed');
+      assert.equal(f.requests.length, attemptsBeforeSuccess + 2);
+      assert.deepEqual(f.requests.map(stageOf), [
+        'extracting',
+        ...Array(attemptsBeforeSuccess).fill('planning'),
+        'maintenance',
+      ]);
+      assert.deepEqual(
+        JSON.parse(f.requests[attemptsBeforeSuccess].user.split('\n').at(-1)!).coverageFeedback.facts.missing,
+        ['fu-13-26-fact'],
+      );
+      assert.equal(job.status, 'completed');
+      assert(settled.maintenance?.proposal);
+      assert.equal((await f.drafts.list()).length, 1);
+    } catch (error) {
+      primaryFailure = true;
+      console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots()));
+      throw error;
+    } finally {
+      await f.clean().catch((error) => {
+        console.error('Budget cleanup failed:', (error as { code?: string }).code ?? 'UNKNOWN');
+        if (!primaryFailure) throw error;
+      });
     }
-    const chunk = (await f.checkpoint(job.id))!.completedChunks;
-    assert.equal(job.error?.code, 'LLM_PLAN_COVERAGE_INVALID');
-    assert.ok((await f.checkpoint(job.id))?.lastError?.diagnostic);
-    f.succeed();
-    assert.equal((await f.start({ planningRetry: true })).job.id, job.id);
-    job = await f.wait(job.id);
-    assert.equal(job.callCount, attemptsBeforeSuccess + 2);
-    const settled = (await f.checkpoint(job.id))!;
-    assert.deepEqual(settled.completedChunks, chunk);
-    assert.equal(settled.attempts, attemptsBeforeSuccess + 2);
-    assert(settled.plan, 'the final replan completed');
-    assert.equal(f.requests.length, attemptsBeforeSuccess + 2);
-    assert.deepEqual(f.requests.map(stageOf), ['extracting', ...Array(attemptsBeforeSuccess).fill('planning'), 'maintenance']);
-    assert.deepEqual(JSON.parse(f.requests[attemptsBeforeSuccess].user.split('\n').at(-1)!).coverageFeedback.facts.missing, ['fu-13-26-fact']);
-    assert.equal(job.status, 'completed');
-    assert(settled.maintenance?.proposal);
-    assert.equal((await f.drafts.list()).length, 1);
-  } catch (error) { primaryFailure = true; console.error('Budget assertion snapshot:', JSON.stringify(await f.safeSnapshots())); throw error; } finally { await f.clean().catch(error => { console.error('Budget cleanup failed:', (error as {code?: string}).code ?? 'UNKNOWN'); if (!primaryFailure) throw error; }); }
-});
+  });

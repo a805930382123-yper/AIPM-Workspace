@@ -2,56 +2,502 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { api, apiForm, ApiError, type Meeting } from './api';
 
-type MinuteVersion = { import_id:string; imported_at:string; imported_minutes:string; editable_minutes:string; original_filename:string|null; original_sha256:string; file_sha256?:string; file_format?:string };
-type Props = { meeting:Meeting; onRefresh:()=>void };
-const requestId=()=>crypto.randomUUID();
-const textError=(e:unknown)=>e instanceof Error?e.message:'操作失败，请重试。';
-function safeMarkdownHref(value?:string){if(!value||/[\u0000-\u001f\u007f]/.test(value))return undefined;try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?value:undefined;}catch{return undefined;}}
-function Markdown({text}:{text:string}){return <div className="meeting-markdown"><ReactMarkdown skipHtml components={{
-  a:({href,children})=>{const safe=safeMarkdownHref(href);return safe?<a href={safe} target="_blank" rel="noopener noreferrer">{children}</a>:<span>{children}</span>;},
-  img:({alt})=><span className="meeting-image-marker">[图片已隐藏{alt?`：${alt}`:''}]</span>,
-}}>{text}</ReactMarkdown></div>;}
+type MinuteVersion = {
+  import_id: string;
+  imported_at: string;
+  imported_minutes: string;
+  editable_minutes: string;
+  original_filename: string | null;
+  original_sha256: string;
+  file_sha256?: string;
+  file_format?: string;
+};
+type Props = { meeting: Meeting; onRefresh: () => void };
+const requestId = () => crypto.randomUUID();
+const textError = (e: unknown) => (e instanceof Error ? e.message : '操作失败，请重试。');
+function safeMarkdownHref(value?: string) {
+  if (!value || /[\u0000-\u001f\u007f]/.test(value)) return undefined;
+  try {
+    const u = new URL(value);
+    return u.protocol === 'https:' && !u.username && !u.password ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+function Markdown({ text }: { text: string }) {
+  return (
+    <div className="meeting-markdown">
+      <ReactMarkdown
+        skipHtml
+        components={{
+          a: ({ href, children }) => {
+            const safe = safeMarkdownHref(href);
+            return safe ? (
+              <a href={safe} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            ) : (
+              <span>{children}</span>
+            );
+          },
+          img: ({ alt }) => <span className="meeting-image-marker">[图片已隐藏{alt ? `：${alt}` : ''}]</span>,
+        }}
+      >
+        {text}
+      </ReactMarkdown>
+    </div>
+  );
+}
 
-export function MeetingMinutes({meeting,onRefresh}:Props){
- const versions=meeting.imports as unknown as MinuteVersion[];
- const active=versions.find(item=>item.import_id===meeting.active_import_id)??null;
- const [viewId,setViewId]=useState(meeting.active_import_id??'');
- const viewed=versions.find(item=>item.import_id===viewId)??active;
- const [editing,setEditing]=useState(false),[draft,setDraft]=useState(active?.editable_minutes??''),[dirty,setDirty]=useState(false);
- const [source,setSource]=useState<'paste'|'file'>('paste'),[paste,setPaste]=useState(''),[file,setFile]=useState<File|null>(null),[confirmReimport,setConfirmReimport]=useState(false);
- const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[conflict,setConflict]=useState(false),[serverRevision,setServerRevision]=useState(meeting.revision);
- const [clearConfirm,setClearConfirm]=useState(false);const [showOriginal,setShowOriginal]=useState(false);const [importRequest,setImportRequest]=useState(requestId);
- const lock=useRef(false),epoch=useRef(0),alive=useRef(true),draftRef=useRef(draft),fileInput=useRef<HTMLInputElement>(null);
- const pendingImport=!!paste.trim()||!!file;
- useEffect(()=>{alive.current=true;const token=++epoch.current;return()=>{alive.current=false;epoch.current=token+1;};},[meeting.meeting_id]);
- useEffect(()=>{setServerRevision(meeting.revision);if(!dirty){setDraft(active?.editable_minutes??'');draftRef.current=active?.editable_minutes??'';setEditing(false);}if(!viewId||!versions.some(item=>item.import_id===viewId))setViewId(meeting.active_import_id??'');},[meeting.revision,meeting.active_import_id]);
- const setDraftValue=(value:string)=>{draftRef.current=value;setDraft(value);setDirty(value!==(active?.editable_minutes??''));};
- const reload=async()=>{const token=++epoch.current;setError('');try{const latest=await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}`);if(!alive.current||token!==epoch.current)return;setServerRevision(latest.revision);setConflict(false);onRefresh();}catch(e){if(alive.current&&token===epoch.current)setError(`${textError(e)} 草稿仍保留。`);}};
- const importMinutes=async()=>{if(lock.current)return;lock.current=true;setBusy(true);setError('');setConflict(false);const token=epoch.current;try{
-   if(source==='file'){
-     if(!file)throw new Error('请选择一个 DOCX、PDF、MD 或 TXT 文件。');
-     const form=new FormData();form.append('file',file);form.append('baseRevision',String(serverRevision));form.append('requestId',importRequest);if(confirmReimport)form.append('confirmReimport','true');
-     const result=await apiForm<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/import`,form);
-     if(!alive.current||token!==epoch.current)return;setFile(null);if(fileInput.current)fileInput.current.value='';setPaste('');setConfirmReimport(false);setImportRequest(requestId());setServerRevision(result.revision);setViewId(result.active_import_id??'');setNotice('纪要已保存。');onRefresh();
-   }else{
-     const result=await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/import`,{method:'POST',body:JSON.stringify({baseRevision:serverRevision,requestId:importRequest,text:paste,...(confirmReimport?{confirmReimport:true}:{})})});
-     if(!alive.current||token!==epoch.current)return;setPaste('');setFile(null);if(fileInput.current)fileInput.current.value='';setConfirmReimport(false);setImportRequest(requestId());setServerRevision(result.revision);setViewId(result.active_import_id??'');setNotice('纪要已保存。');onRefresh();
-   }
- }catch(e){if(alive.current&&token===epoch.current){setError(`${textError(e)} 输入仍保留。`);setConflict(e instanceof ApiError&&e.status===409);}}finally{lock.current=false;if(alive.current&&token===epoch.current)setBusy(false);}};
- const save=async()=>{if(!active||lock.current)return;lock.current=true;setBusy(true);setError('');setConflict(false);const token=epoch.current;try{const result=await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/${encodeURIComponent(active.import_id)}`,{method:'PATCH',body:JSON.stringify({baseRevision:serverRevision,editable_minutes:draft})});if(!alive.current||token!==epoch.current)return;setServerRevision(result.revision);setDirty(false);setEditing(false);setNotice('纪要已保存。');onRefresh();}catch(e){if(alive.current&&token===epoch.current){setError(`${textError(e)} 工作副本仍保留。`);setConflict(e instanceof ApiError&&e.status===409);}}finally{lock.current=false;if(alive.current&&token===epoch.current)setBusy(false);}};
- const clear=async()=>{if(lock.current)return;lock.current=true;setBusy(true);setError('');setConflict(false);const token=epoch.current;try{const result=await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes`,{method:'DELETE',body:JSON.stringify({baseRevision:serverRevision,confirm:true})});if(!alive.current||token!==epoch.current)return;setClearConfirm(false);setNotice('');setDirty(false);setEditing(false);setDraft('');setViewId('');setServerRevision(result.revision);onRefresh();}catch(e){if(alive.current&&token===epoch.current){setError(`${textError(e)} 纪要仍保留。`);setConflict(e instanceof ApiError&&e.status===409);}}finally{lock.current=false;if(alive.current&&token===epoch.current)setBusy(false);}};
- return <section className="meeting-minutes"><header><div><h3>本地会议纪要</h3><p>仅存于本机；不创建 Raw，也不会发送到外部 AI。</p></div>{versions.length>0&&<label className="field meeting-version-picker">版本<select aria-label="查看纪要版本" disabled={busy||editing} value={viewed?.import_id??''} onChange={e=>{setViewId(e.target.value);setShowOriginal(false);}}>{versions.map((item,index)=><option key={item.import_id} value={item.import_id}>v{index+1} · {new Date(item.imported_at).toLocaleString('zh-CN')}{item.import_id===meeting.active_import_id?'（当前）':'（只读）'}</option>)}</select></label>}</header>
-   {error&&<div className="meeting-error" role="alert"><span>{error}{conflict&&<p>冲突后仍保留输入。载入最新 revision 后检查，再决定是否重试。</p>}</span>{conflict&&<button className="text-button" disabled={busy} onClick={()=>void reload()}>重载最新版</button>}</div>}
-   {!meeting.capabilities?.canImportMinutes&&versions.length===0?<p className="meeting-minutes-empty">{meeting.capabilities?.importReason||'当前策略不允许保存本地纪要。'}</p>:null}
-   {viewed&&<div className="meeting-minute-version"><div className="meeting-minute-meta"><span>{viewed.original_filename??'粘贴纪要'}</span><code>正文 SHA-256 {viewed.original_sha256}</code>{viewed.file_format&&<a href={`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/${encodeURIComponent(viewed.import_id)}/file`} download>下载原文件</a>}</div>
-     {viewed.import_id===meeting.active_import_id&&editing?<><label className="field">工作副本<textarea aria-label="编辑纪要工作副本" value={draft} disabled={busy} onChange={e=>{setDraftValue(e.target.value);setNotice('');}} /></label><div className="meeting-minute-actions"><button type="button" className="primary-button" disabled={busy||!dirty} onClick={()=>void save()}>{busy?'正在保存…':'保存工作副本'}</button><button type="button" className="secondary-button" disabled={busy} onClick={()=>{setDraftValue(active?.editable_minutes??'');setEditing(false);}}>取消编辑</button></div></>:<>{showOriginal?<pre className="meeting-minute-source-text" aria-label="纪要原始文本">{viewed.imported_minutes}</pre>:<div className="meeting-minute-reader"><Markdown text={viewed.editable_minutes}/></div>}<div className="meeting-minute-actions"><button className="text-button" disabled={busy} onClick={()=>setShowOriginal(v=>!v)}>{showOriginal?'阅读工作副本':'查看原文'}</button>{viewed.import_id===meeting.active_import_id&&<button className="secondary-button" disabled={busy} onClick={()=>{if(pendingImport){setError('请先保存或清空待导入的纪要，再编辑工作副本。');return;}setError('');setDraft(viewed.editable_minutes);draftRef.current=viewed.editable_minutes;setDirty(false);setEditing(true);}}>编辑工作副本</button>}</div></>}
-   </div>}
-   {meeting.capabilities?.canImportMinutes&&<div className="meeting-minute-import"><h4>{versions.length?'新增纪要版本':'导入纪要'}</h4><div className="meeting-import-tabs"><button type="button" disabled={busy||editing||(source!=='paste'&&pendingImport)} className={source==='paste'?'selected':''} onClick={()=>{setSource('paste');setImportRequest(requestId());}}>粘贴</button><button type="button" disabled={busy||editing||(source!=='file'&&pendingImport)} className={source==='file'?'selected':''} onClick={()=>{setSource('file');setImportRequest(requestId());}}>上传文件</button></div>
-    {source==='paste'?<label className="field">Markdown 或文本<textarea aria-label="粘贴会议纪要" value={paste} disabled={busy||editing} onChange={e=>{setPaste(e.target.value);setNotice('');setImportRequest(requestId());}} placeholder="粘贴获准保存在本机的会议纪要" /></label>:<label className="field">本地纪要文件<input ref={fileInput} type="file" accept=".md,.txt,.docx,.pdf" disabled={busy||editing} onChange={e=>{setFile(e.target.files?.[0]??null);setNotice('');setImportRequest(requestId());}} /><small>支持 DOCX、PDF（文字层）、UTF-8 MD/TXT，最大 2 MiB；旧 DOC 请另存为 DOCX。</small></label>}
-    {pendingImport&&<button type="button" className="text-button" disabled={busy||editing} onClick={()=>{setPaste('');setFile(null);if(fileInput.current)fileInput.current.value='';setConfirmReimport(false);setImportRequest(requestId());setError('');}}>清空待导入内容</button>}
-    {versions.length>0&&<label className="meeting-check"><input type="checkbox" checked={confirmReimport} disabled={busy||editing} onChange={e=>setConfirmReimport(e.target.checked)}/>确认新增版本，并将新原件设为当前工作副本；旧版本保留。</label>}
-   </div>}
-   {versions.length>0&&<div className="meeting-minute-clear"><label className="meeting-check"><input type="checkbox" checked={clearConfirm} disabled={busy} onChange={e=>setClearConfirm(e.target.checked)}/>我确认删除全部 {versions.length} 个本地纪要版本（原件与工作副本）；飞书资料不受影响。</label><button className="secondary-button danger-button" disabled={busy||!clearConfirm} onClick={()=>void clear()}>删除全部本地纪要</button></div>}
-   <div className="meeting-minute-save"><span role="status">{busy?'处理中…':error?'操作未完成，请检查提示。':editing&&dirty?'有未保存的纪要':editing?'工作副本没有修改':pendingImport&&versions.length>0&&!confirmReimport?'有未保存的纪要，请先确认新增版本':pendingImport?'有未保存的纪要':notice||'暂无待保存内容'}</span><button className="primary-button" disabled={busy||(editing?!dirty:!meeting.capabilities?.canImportMinutes||!(source==='paste'?paste.trim():file)||(versions.length>0&&!confirmReimport))} onClick={()=>void (editing?save():importMinutes())}>保存会议档案</button></div>
- </section>;
+export function MeetingMinutes({ meeting, onRefresh }: Props) {
+  const versions = meeting.imports as unknown as MinuteVersion[];
+  const active = versions.find((item) => item.import_id === meeting.active_import_id) ?? null;
+  const [viewId, setViewId] = useState(meeting.active_import_id ?? '');
+  const viewed = versions.find((item) => item.import_id === viewId) ?? active;
+  const [editing, setEditing] = useState(false),
+    [draft, setDraft] = useState(active?.editable_minutes ?? ''),
+    [dirty, setDirty] = useState(false);
+  const [source, setSource] = useState<'paste' | 'file'>('paste'),
+    [paste, setPaste] = useState(''),
+    [file, setFile] = useState<File | null>(null),
+    [confirmReimport, setConfirmReimport] = useState(false);
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState(''),
+    [notice, setNotice] = useState(''),
+    [conflict, setConflict] = useState(false),
+    [serverRevision, setServerRevision] = useState(meeting.revision);
+  const [clearConfirm, setClearConfirm] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(false);
+  const [importRequest, setImportRequest] = useState(requestId);
+  const lock = useRef(false),
+    epoch = useRef(0),
+    alive = useRef(true),
+    draftRef = useRef(draft),
+    fileInput = useRef<HTMLInputElement>(null);
+  const pendingImport = !!paste.trim() || !!file;
+  useEffect(() => {
+    alive.current = true;
+    const token = ++epoch.current;
+    return () => {
+      alive.current = false;
+      epoch.current = token + 1;
+    };
+  }, [meeting.meeting_id]);
+  useEffect(() => {
+    setServerRevision(meeting.revision);
+    if (!dirty) {
+      setDraft(active?.editable_minutes ?? '');
+      draftRef.current = active?.editable_minutes ?? '';
+      setEditing(false);
+    }
+    if (!viewId || !versions.some((item) => item.import_id === viewId)) setViewId(meeting.active_import_id ?? '');
+  }, [meeting.revision, meeting.active_import_id]);
+  const setDraftValue = (value: string) => {
+    draftRef.current = value;
+    setDraft(value);
+    setDirty(value !== (active?.editable_minutes ?? ''));
+  };
+  const reload = async () => {
+    const token = ++epoch.current;
+    setError('');
+    try {
+      const latest = await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}`);
+      if (!alive.current || token !== epoch.current) return;
+      setServerRevision(latest.revision);
+      setConflict(false);
+      onRefresh();
+    } catch (e) {
+      if (alive.current && token === epoch.current) setError(`${textError(e)} 草稿仍保留。`);
+    }
+  };
+  const importMinutes = async () => {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError('');
+    setConflict(false);
+    const token = epoch.current;
+    try {
+      if (source === 'file') {
+        if (!file) throw new Error('请选择一个 DOCX、PDF、MD 或 TXT 文件。');
+        const form = new FormData();
+        form.append('file', file);
+        form.append('baseRevision', String(serverRevision));
+        form.append('requestId', importRequest);
+        if (confirmReimport) form.append('confirmReimport', 'true');
+        const result = await apiForm<Meeting>(
+          `/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/import`,
+          form,
+        );
+        if (!alive.current || token !== epoch.current) return;
+        setFile(null);
+        if (fileInput.current) fileInput.current.value = '';
+        setPaste('');
+        setConfirmReimport(false);
+        setImportRequest(requestId());
+        setServerRevision(result.revision);
+        setViewId(result.active_import_id ?? '');
+        setNotice('纪要已保存。');
+        onRefresh();
+      } else {
+        const result = await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/import`, {
+          method: 'POST',
+          body: JSON.stringify({
+            baseRevision: serverRevision,
+            requestId: importRequest,
+            text: paste,
+            ...(confirmReimport ? { confirmReimport: true } : {}),
+          }),
+        });
+        if (!alive.current || token !== epoch.current) return;
+        setPaste('');
+        setFile(null);
+        if (fileInput.current) fileInput.current.value = '';
+        setConfirmReimport(false);
+        setImportRequest(requestId());
+        setServerRevision(result.revision);
+        setViewId(result.active_import_id ?? '');
+        setNotice('纪要已保存。');
+        onRefresh();
+      }
+    } catch (e) {
+      if (alive.current && token === epoch.current) {
+        setError(`${textError(e)} 输入仍保留。`);
+        setConflict(e instanceof ApiError && e.status === 409);
+      }
+    } finally {
+      lock.current = false;
+      if (alive.current && token === epoch.current) setBusy(false);
+    }
+  };
+  const save = async () => {
+    if (!active || lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError('');
+    setConflict(false);
+    const token = epoch.current;
+    try {
+      const result = await api<Meeting>(
+        `/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/${encodeURIComponent(active.import_id)}`,
+        { method: 'PATCH', body: JSON.stringify({ baseRevision: serverRevision, editable_minutes: draft }) },
+      );
+      if (!alive.current || token !== epoch.current) return;
+      setServerRevision(result.revision);
+      setDirty(false);
+      setEditing(false);
+      setNotice('纪要已保存。');
+      onRefresh();
+    } catch (e) {
+      if (alive.current && token === epoch.current) {
+        setError(`${textError(e)} 工作副本仍保留。`);
+        setConflict(e instanceof ApiError && e.status === 409);
+      }
+    } finally {
+      lock.current = false;
+      if (alive.current && token === epoch.current) setBusy(false);
+    }
+  };
+  const clear = async () => {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError('');
+    setConflict(false);
+    const token = epoch.current;
+    try {
+      const result = await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes`, {
+        method: 'DELETE',
+        body: JSON.stringify({ baseRevision: serverRevision, confirm: true }),
+      });
+      if (!alive.current || token !== epoch.current) return;
+      setClearConfirm(false);
+      setNotice('');
+      setDirty(false);
+      setEditing(false);
+      setDraft('');
+      setViewId('');
+      setServerRevision(result.revision);
+      onRefresh();
+    } catch (e) {
+      if (alive.current && token === epoch.current) {
+        setError(`${textError(e)} 纪要仍保留。`);
+        setConflict(e instanceof ApiError && e.status === 409);
+      }
+    } finally {
+      lock.current = false;
+      if (alive.current && token === epoch.current) setBusy(false);
+    }
+  };
+  return (
+    <section className="meeting-minutes">
+      <header>
+        <div>
+          <h3>本地会议纪要</h3>
+          <p>仅存于本机；不创建 Raw，也不会发送到外部 AI。</p>
+        </div>
+        {versions.length > 0 && (
+          <label className="field meeting-version-picker">
+            版本
+            <select
+              aria-label="查看纪要版本"
+              disabled={busy || editing}
+              value={viewed?.import_id ?? ''}
+              onChange={(e) => {
+                setViewId(e.target.value);
+                setShowOriginal(false);
+              }}
+            >
+              {versions.map((item, index) => (
+                <option key={item.import_id} value={item.import_id}>
+                  v{index + 1} · {new Date(item.imported_at).toLocaleString('zh-CN')}
+                  {item.import_id === meeting.active_import_id ? '（当前）' : '（只读）'}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </header>
+      {error && (
+        <div className="meeting-error" role="alert">
+          <span>
+            {error}
+            {conflict && <p>冲突后仍保留输入。载入最新 revision 后检查，再决定是否重试。</p>}
+          </span>
+          {conflict && (
+            <button className="text-button" disabled={busy} onClick={() => void reload()}>
+              重载最新版
+            </button>
+          )}
+        </div>
+      )}
+      {!meeting.capabilities?.canImportMinutes && versions.length === 0 ? (
+        <p className="meeting-minutes-empty">{meeting.capabilities?.importReason || '当前策略不允许保存本地纪要。'}</p>
+      ) : null}
+      {viewed && (
+        <div className="meeting-minute-version">
+          <div className="meeting-minute-meta">
+            <span>{viewed.original_filename ?? '粘贴纪要'}</span>
+            <code>正文 SHA-256 {viewed.original_sha256}</code>
+            {viewed.file_format && (
+              <a
+                href={`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/minutes/${encodeURIComponent(viewed.import_id)}/file`}
+                download
+              >
+                下载原文件
+              </a>
+            )}
+          </div>
+          {viewed.import_id === meeting.active_import_id && editing ? (
+            <>
+              <label className="field">
+                工作副本
+                <textarea
+                  aria-label="编辑纪要工作副本"
+                  value={draft}
+                  disabled={busy}
+                  onChange={(e) => {
+                    setDraftValue(e.target.value);
+                    setNotice('');
+                  }}
+                />
+              </label>
+              <div className="meeting-minute-actions">
+                <button type="button" className="primary-button" disabled={busy || !dirty} onClick={() => void save()}>
+                  {busy ? '正在保存…' : '保存工作副本'}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={busy}
+                  onClick={() => {
+                    setDraftValue(active?.editable_minutes ?? '');
+                    setEditing(false);
+                  }}
+                >
+                  取消编辑
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {showOriginal ? (
+                <pre className="meeting-minute-source-text" aria-label="纪要原始文本">
+                  {viewed.imported_minutes}
+                </pre>
+              ) : (
+                <div className="meeting-minute-reader">
+                  <Markdown text={viewed.editable_minutes} />
+                </div>
+              )}
+              <div className="meeting-minute-actions">
+                <button className="text-button" disabled={busy} onClick={() => setShowOriginal((v) => !v)}>
+                  {showOriginal ? '阅读工作副本' : '查看原文'}
+                </button>
+                {viewed.import_id === meeting.active_import_id && (
+                  <button
+                    className="secondary-button"
+                    disabled={busy}
+                    onClick={() => {
+                      if (pendingImport) {
+                        setError('请先保存或清空待导入的纪要，再编辑工作副本。');
+                        return;
+                      }
+                      setError('');
+                      setDraft(viewed.editable_minutes);
+                      draftRef.current = viewed.editable_minutes;
+                      setDirty(false);
+                      setEditing(true);
+                    }}
+                  >
+                    编辑工作副本
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      {meeting.capabilities?.canImportMinutes && (
+        <div className="meeting-minute-import">
+          <h4>{versions.length ? '新增纪要版本' : '导入纪要'}</h4>
+          <div className="meeting-import-tabs">
+            <button
+              type="button"
+              disabled={busy || editing || (source !== 'paste' && pendingImport)}
+              className={source === 'paste' ? 'selected' : ''}
+              onClick={() => {
+                setSource('paste');
+                setImportRequest(requestId());
+              }}
+            >
+              粘贴
+            </button>
+            <button
+              type="button"
+              disabled={busy || editing || (source !== 'file' && pendingImport)}
+              className={source === 'file' ? 'selected' : ''}
+              onClick={() => {
+                setSource('file');
+                setImportRequest(requestId());
+              }}
+            >
+              上传文件
+            </button>
+          </div>
+          {source === 'paste' ? (
+            <label className="field">
+              Markdown 或文本
+              <textarea
+                aria-label="粘贴会议纪要"
+                value={paste}
+                disabled={busy || editing}
+                onChange={(e) => {
+                  setPaste(e.target.value);
+                  setNotice('');
+                  setImportRequest(requestId());
+                }}
+                placeholder="粘贴获准保存在本机的会议纪要"
+              />
+            </label>
+          ) : (
+            <label className="field">
+              本地纪要文件
+              <input
+                ref={fileInput}
+                type="file"
+                accept=".md,.txt,.docx,.pdf"
+                disabled={busy || editing}
+                onChange={(e) => {
+                  setFile(e.target.files?.[0] ?? null);
+                  setNotice('');
+                  setImportRequest(requestId());
+                }}
+              />
+              <small>支持 DOCX、PDF（文字层）、UTF-8 MD/TXT，最大 2 MiB；旧 DOC 请另存为 DOCX。</small>
+            </label>
+          )}
+          {pendingImport && (
+            <button
+              type="button"
+              className="text-button"
+              disabled={busy || editing}
+              onClick={() => {
+                setPaste('');
+                setFile(null);
+                if (fileInput.current) fileInput.current.value = '';
+                setConfirmReimport(false);
+                setImportRequest(requestId());
+                setError('');
+              }}
+            >
+              清空待导入内容
+            </button>
+          )}
+          {versions.length > 0 && (
+            <label className="meeting-check">
+              <input
+                type="checkbox"
+                checked={confirmReimport}
+                disabled={busy || editing}
+                onChange={(e) => setConfirmReimport(e.target.checked)}
+              />
+              确认新增版本，并将新原件设为当前工作副本；旧版本保留。
+            </label>
+          )}
+        </div>
+      )}
+      {versions.length > 0 && (
+        <div className="meeting-minute-clear">
+          <label className="meeting-check">
+            <input
+              type="checkbox"
+              checked={clearConfirm}
+              disabled={busy}
+              onChange={(e) => setClearConfirm(e.target.checked)}
+            />
+            我确认删除全部 {versions.length} 个本地纪要版本（原件与工作副本）；飞书资料不受影响。
+          </label>
+          <button
+            className="secondary-button danger-button"
+            disabled={busy || !clearConfirm}
+            onClick={() => void clear()}
+          >
+            删除全部本地纪要
+          </button>
+        </div>
+      )}
+      <div className="meeting-minute-save">
+        <span role="status">
+          {busy
+            ? '处理中…'
+            : error
+              ? '操作未完成，请检查提示。'
+              : editing && dirty
+                ? '有未保存的纪要'
+                : editing
+                  ? '工作副本没有修改'
+                  : pendingImport && versions.length > 0 && !confirmReimport
+                    ? '有未保存的纪要，请先确认新增版本'
+                    : pendingImport
+                      ? '有未保存的纪要'
+                      : notice || '暂无待保存内容'}
+        </span>
+        <button
+          className="primary-button"
+          disabled={
+            busy ||
+            (editing
+              ? !dirty
+              : !meeting.capabilities?.canImportMinutes ||
+                !(source === 'paste' ? paste.trim() : file) ||
+                (versions.length > 0 && !confirmReimport))
+          }
+          onClick={() => void (editing ? save() : importMinutes())}
+        >
+          保存会议档案
+        </button>
+      </div>
+    </section>
+  );
 }

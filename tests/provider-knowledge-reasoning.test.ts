@@ -2,26 +2,44 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { OpenAiCompatibleProvider } from '../services/llm/provider.ts';
 
-const reply = () => new Response(JSON.stringify({ choices: [{ message: { content: '{}' }, finish_reason: 'stop' }] }), { status: 200, headers: { 'content-type': 'application/json' } });
+const reply = () =>
+  new Response(JSON.stringify({ choices: [{ message: { content: '{}' }, finish_reason: 'stop' }] }), {
+    status: 200,
+    headers: { 'content-type': 'application/json' },
+  });
 async function wire(baseUrl: string, model: string, purpose?: 'knowledge' | 'prompt') {
   const prior = globalThis.fetch;
   let sent: Record<string, unknown> | undefined;
   try {
-    globalThis.fetch = (async (_input: unknown, init?: RequestInit) => { sent = JSON.parse(String(init?.body)); return reply(); }) as typeof fetch;
-    await new OpenAiCompatibleProvider({ baseUrl, model, apiKey: 'fixture-key', source: 'env' }).complete({ system: 'fixture system', user: 'fixture user', timeoutMs: 1000, maxOutputBytes: 4096, ...(purpose ? { purpose } : {}) });
+    globalThis.fetch = (async (_input: unknown, init?: RequestInit) => {
+      sent = JSON.parse(String(init?.body));
+      return reply();
+    }) as typeof fetch;
+    await new OpenAiCompatibleProvider({ baseUrl, model, apiKey: 'fixture-key', source: 'env' }).complete({
+      system: 'fixture system',
+      user: 'fixture user',
+      timeoutMs: 1000,
+      maxOutputBytes: 4096,
+      ...(purpose ? { purpose } : {}),
+    });
     return sent!;
-  } finally { globalThis.fetch = prior; }
+  } finally {
+    globalThis.fetch = prior;
+  }
 }
 
 test('knowledge and prompt GLM-5.3-Flash on exact official hosts receive low reasoning and JSON mode', async () => {
   for (const host of ['open.bigmodel.cn', 'OPEN.BIGMODEL.CN', 'api.z.ai']) {
-    for (const purpose of ['knowledge','prompt'] as const) {
-    const body = await wire(`https://${host}/v1`, 'GLM-5.3-FLASH', purpose);
-    assert.equal(body.reasoning_effort, 'low');
-    assert.deepEqual(body.response_format, { type: 'json_object' });
-    assert.equal(body.temperature, 0);
-    assert.equal(body.stream, false);
-    assert.deepEqual(body.messages, [{ role: 'system', content: 'fixture system' }, { role: 'user', content: 'fixture user' }]);
+    for (const purpose of ['knowledge', 'prompt'] as const) {
+      const body = await wire(`https://${host}/v1`, 'GLM-5.3-FLASH', purpose);
+      assert.equal(body.reasoning_effort, 'low');
+      assert.deepEqual(body.response_format, { type: 'json_object' });
+      assert.equal(body.temperature, 0);
+      assert.equal(body.stream, false);
+      assert.deepEqual(body.messages, [
+        { role: 'system', content: 'fixture system' },
+        { role: 'user', content: 'fixture user' },
+      ]);
     }
   }
 });
@@ -77,34 +95,69 @@ test('OpenAI temperature exception does not extend to other hosts or model IDs',
 test('knowledge purpose does not extend the configured timeout budget', async () => {
   const prior = globalThis.fetch;
   let aborted = false;
-  globalThis.fetch = (async (_input: unknown, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
-    init?.signal?.addEventListener('abort', () => { aborted = true; reject(new DOMException('aborted', 'AbortError')); }, { once: true });
-  })) as typeof fetch;
+  globalThis.fetch = (async (_input: unknown, init?: RequestInit) =>
+    new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener(
+        'abort',
+        () => {
+          aborted = true;
+          reject(new DOMException('aborted', 'AbortError'));
+        },
+        { once: true },
+      );
+    })) as typeof fetch;
   const started = Date.now();
   try {
     await assert.rejects(
-      new OpenAiCompatibleProvider({ baseUrl: 'https://api.z.ai/v1', model: 'glm-5.3-flash', apiKey: 'fixture-key', source: 'env' })
-        .complete({ system: 'fixture', user: 'fixture', timeoutMs: 20, maxOutputBytes: 4096, purpose: 'knowledge' }),
-      error => (error as { code?: string }).code === 'LLM_TIMEOUT',
+      new OpenAiCompatibleProvider({
+        baseUrl: 'https://api.z.ai/v1',
+        model: 'glm-5.3-flash',
+        apiKey: 'fixture-key',
+        source: 'env',
+      }).complete({ system: 'fixture', user: 'fixture', timeoutMs: 20, maxOutputBytes: 4096, purpose: 'knowledge' }),
+      (error) => (error as { code?: string }).code === 'LLM_TIMEOUT',
     );
     assert.equal(aborted, true);
     assert.ok(Date.now() - started < 500);
-  } finally { globalThis.fetch = prior; }
+  } finally {
+    globalThis.fetch = prior;
+  }
 });
 test('knowledge purpose preserves caller cancellation within the existing request budget', async () => {
   const prior = globalThis.fetch;
   let aborted = false;
-  globalThis.fetch = (async (_input: unknown, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
-    init?.signal?.addEventListener('abort', () => { aborted = true; reject(new DOMException('aborted', 'AbortError')); }, { once: true });
-  })) as typeof fetch;
+  globalThis.fetch = (async (_input: unknown, init?: RequestInit) =>
+    new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener(
+        'abort',
+        () => {
+          aborted = true;
+          reject(new DOMException('aborted', 'AbortError'));
+        },
+        { once: true },
+      );
+    })) as typeof fetch;
   const controller = new AbortController();
   const started = Date.now();
   try {
-    const pending = new OpenAiCompatibleProvider({ baseUrl: 'https://open.bigmodel.cn/v1', model: 'glm-5.3-flash', apiKey: 'fixture-key', source: 'env' })
-      .complete({ system: 'fixture', user: 'fixture', timeoutMs: 1000, maxOutputBytes: 4096, purpose: 'knowledge', signal: controller.signal });
+    const pending = new OpenAiCompatibleProvider({
+      baseUrl: 'https://open.bigmodel.cn/v1',
+      model: 'glm-5.3-flash',
+      apiKey: 'fixture-key',
+      source: 'env',
+    }).complete({
+      system: 'fixture',
+      user: 'fixture',
+      timeoutMs: 1000,
+      maxOutputBytes: 4096,
+      purpose: 'knowledge',
+      signal: controller.signal,
+    });
     setTimeout(() => controller.abort(), 20);
-    await assert.rejects(pending, error => (error as { code?: string }).code === 'LLM_CANCELLED');
+    await assert.rejects(pending, (error) => (error as { code?: string }).code === 'LLM_CANCELLED');
     assert.equal(aborted, true);
     assert.ok(Date.now() - started < 500);
-  } finally { globalThis.fetch = prior; }
+  } finally {
+    globalThis.fetch = prior;
+  }
 });

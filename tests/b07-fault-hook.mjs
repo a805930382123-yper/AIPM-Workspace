@@ -23,8 +23,11 @@ function insideRoot(target) {
 }
 
 async function armed() {
-  try { return JSON.parse(await original.readFile(path.join(dataRoot, '.b07-fault.json'), 'utf8')); }
-  catch { return undefined; }
+  try {
+    return JSON.parse(await original.readFile(path.join(dataRoot, '.b07-fault.json'), 'utf8'));
+  } catch {
+    return undefined;
+  }
 }
 
 async function probe(method, target) {
@@ -39,13 +42,30 @@ async function probe(method, target) {
   if (count < (fault.nth ?? 1)) return;
   if (fault.once && count > (fault.nth ?? 1)) return;
   // The observation file is written with the *original* writeFile, so it can never recurse.
-  await original.writeFile(path.join(dataRoot, '.b07-fault-observed.json'), JSON.stringify({ method, target: normalized, count, action: fault.action ?? 'error', at: new Date().toISOString() })).catch(() => undefined);
+  await original
+    .writeFile(
+      path.join(dataRoot, '.b07-fault-observed.json'),
+      JSON.stringify({
+        method,
+        target: normalized,
+        count,
+        action: fault.action ?? 'error',
+        at: new Date().toISOString(),
+      }),
+    )
+    .catch(() => undefined);
   if (fault.action === 'crash') process.exit(87);
   const error = new Error(`B07 construction fault injection: ${method} ${normalized}`);
   error.code = 'EIO';
   throw error;
 }
 
-fs.writeFile = async (file, ...rest) => { await probe('writeFile', file); return original.writeFile(file, ...rest); };
-fs.rename = async (from, to) => { await probe('rename', to); return original.rename(from, to); };
+fs.writeFile = async (file, ...rest) => {
+  await probe('writeFile', file);
+  return original.writeFile(file, ...rest);
+};
+fs.rename = async (from, to) => {
+  await probe('rename', to);
+  return original.rename(from, to);
+};
 syncBuiltinESMExports();

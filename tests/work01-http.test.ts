@@ -10,10 +10,18 @@ import { WorkItemStore } from '../services/work-items/store.ts';
 import { exportWorkspace, restoreWorkspace } from '../scripts/backup_workspace.ts';
 
 const cache = path.resolve('node_modules/.cache/work01-builder');
-const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jkZsAAAAASUVORK5CYII=', 'base64');
-const jpeg = Buffer.from('/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwB//9k=', 'base64');
+const png = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jkZsAAAAASUVORK5CYII=',
+  'base64',
+);
+const jpeg = Buffer.from(
+  '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAAPwB//9k=',
+  'base64',
+);
 const pngAtLimit = Buffer.concat([png, Buffer.alloc(5 * 1024 * 1024 - png.length)]);
-const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)));
+const cleanEnv = Object.fromEntries(
+  Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)),
+);
 
 async function isolatedDirectory() {
   await mkdir(cache, { recursive: true });
@@ -24,7 +32,7 @@ async function startApi(t: TestContext, dataRoot: string, config: string, faultF
   const socket = createServer().listen(0, '127.0.0.1');
   await once(socket, 'listening');
   const port = (socket.address() as AddressInfo).port;
-  await new Promise<void>(resolve => socket.close(() => resolve()));
+  await new Promise<void>((resolve) => socket.close(() => resolve()));
   const faultHook = `import fs from 'node:fs/promises';
     import { existsSync, readFileSync } from 'node:fs';
     import { syncBuiltinESMExports } from 'node:module';
@@ -41,20 +49,38 @@ async function startApi(t: TestContext, dataRoot: string, config: string, faultF
     syncBuiltinESMExports();`;
   const args = ['--import', 'tsx'];
   if (faultFile) args.push('--import', `data:text/javascript,${encodeURIComponent(faultHook)}`);
-  const proc = spawn(process.execPath, [...args, 'server/index.ts'], { windowsHide: true, stdio: ['ignore', 'ignore', 'pipe'], env: {
-    ...cleanEnv, FMCG_DATA_DIR: dataRoot, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config,
-    WORK01_FAULT_FILE: faultFile ?? '',
-  } });
+  const proc = spawn(process.execPath, [...args, 'server/index.ts'], {
+    windowsHide: true,
+    stdio: ['ignore', 'ignore', 'pipe'],
+    env: {
+      ...cleanEnv,
+      FMCG_DATA_DIR: dataRoot,
+      FMCG_PORT: String(port),
+      FMCG_LLM_CONFIG_FILE: config,
+      WORK01_FAULT_FILE: faultFile ?? '',
+    },
+  });
   let stderr = '';
-  proc.stderr.on('data', chunk => { stderr += String(chunk); });
+  proc.stderr.on('data', (chunk) => {
+    stderr += String(chunk);
+  });
   const exited = once(proc, 'exit');
-  const stop = async () => { if (proc.exitCode === null && !proc.killed) proc.kill(); await exited; };
+  const stop = async () => {
+    if (proc.exitCode === null && !proc.killed) proc.kill();
+    await exited;
+  };
   t.after(stop);
   const base = `http://127.0.0.1:${port}`;
   for (let i = 0; i < 100; i++) {
     if (proc.exitCode !== null) assert.fail(stderr || 'Isolated API stopped before readiness');
-    if (await fetch(`${base}/api/health`).then(response => response.ok, () => false)) return { base, stop };
-    await new Promise(resolve => setTimeout(resolve, 80));
+    if (
+      await fetch(`${base}/api/health`).then(
+        (response) => response.ok,
+        () => false,
+      )
+    )
+      return { base, stop };
+    await new Promise((resolve) => setTimeout(resolve, 80));
   }
   return assert.fail(`Isolated API did not start: ${stderr}`);
 }
@@ -62,8 +88,11 @@ async function startApi(t: TestContext, dataRoot: string, config: string, faultF
 function client(base: string) {
   return async <T>(route: string, method = 'GET', body?: unknown, expected = 200) => {
     const multipart = body instanceof FormData;
-    const response = await fetch(`${base}${route}`, { method, body: multipart ? body : body === undefined ? undefined : JSON.stringify(body),
-      headers: body === undefined || multipart ? undefined : { 'Content-Type': 'application/json' } });
+    const response = await fetch(`${base}${route}`, {
+      method,
+      body: multipart ? body : body === undefined ? undefined : JSON.stringify(body),
+      headers: body === undefined || multipart ? undefined : { 'Content-Type': 'application/json' },
+    });
     const text = await response.text();
     assert.equal(response.status, expected, `${method} ${route}: ${text}`);
     return JSON.parse(text) as T;
@@ -78,7 +107,7 @@ function attachment(revision: number, bytes: Buffer, type: string, note = '') {
   return form;
 }
 
-test('WORK01 actual HTTP preserves manual history, revision, local screenshots and v1 restore', async t => {
+test('WORK01 actual HTTP preserves manual history, revision, local screenshots and v1 restore', async (t) => {
   const base = await isolatedDirectory();
   const data = path.join(base, 'source');
   const config = path.join(base, 'empty.env');
@@ -91,14 +120,24 @@ test('WORK01 actual HTTP preserves manual history, revision, local screenshots a
   for (const invalid of [{ title: '缺反馈' }, { feedback: '缺标题' }, { title: ' ', feedback: '空标题' }]) {
     await request(route, 'POST', invalid, 400);
   }
-  const raw = await request<{id: string}>('/api/raw', 'POST', { title: '合成反馈材料', sourceType: 'customer', sourceName: 'WORK01 测试', body: '原始材料只供阅读。', tags: [] }, 201);
+  const raw = await request<{ id: string }>(
+    '/api/raw',
+    'POST',
+    { title: '合成反馈材料', sourceType: 'customer', sourceName: 'WORK01 测试', body: '原始材料只供阅读。', tags: [] },
+    201,
+  );
   const rawRoute = `/api/raw/${raw.id}`;
   const rawBefore = await request(rawRoute);
   const stateBefore = await request('/api/raw-processing');
   const oldArchive = path.join(base, 'before-work-items.json');
   await exportWorkspace(data, oldArchive);
 
-  const created = await request<WorkItem>(route, 'POST', { title: '合成客户问题', feedback: '客户原话\n第二行。' }, 201);
+  const created = await request<WorkItem>(
+    route,
+    'POST',
+    { title: '合成客户问题', feedback: '客户原话\n第二行。' },
+    201,
+  );
   const itemRoute = `${route}/${created.id}`;
   let item = created;
   const update = async (patch: Record<string, unknown>) => {
@@ -109,12 +148,26 @@ test('WORK01 actual HTTP preserves manual history, revision, local screenshots a
   await request(itemRoute, 'PUT', { baseRevision: 1, occurredAt: '2026-02-29T14:00:00+08:00' }, 400);
   await request(itemRoute, 'PUT', { baseRevision: 1, status: 'closed' }, 400);
   assert.deepEqual(await request(itemRoute), created);
-  await update({ status: 'waiting', customer: '合成客户', project: '合成项目', occurredAt: '2026-11-06T10:15:23+08:00', waitingFor: '客户截图', nextStep: '收齐后复现' });
+  await update({
+    status: 'waiting',
+    customer: '合成客户',
+    project: '合成项目',
+    occurredAt: '2026-11-06T10:15:23+08:00',
+    waitingFor: '客户截图',
+    nextStep: '收齐后复现',
+  });
   assert.equal(item.occurredAt, '2026-11-06T02:15:23.000Z');
   assert.equal(item.followUpOn, undefined);
   assert.equal(item.customer, '合成客户');
   await request(itemRoute, 'PUT', { baseRevision: 1, nextStep: '旧改动' }, 409);
-  await update({ customer: '', project: null, occurredAt: '', status: 'in_progress', followUpOn: '2000-01-01', rawIds: [raw.id, raw.id] });
+  await update({
+    customer: '',
+    project: null,
+    occurredAt: '',
+    status: 'in_progress',
+    followUpOn: '2000-01-01',
+    rawIds: [raw.id, raw.id],
+  });
   assert.deepEqual(item.rawIds, [raw.id]);
   assert.equal(item.customer, undefined);
   assert.equal(item.project, undefined);
@@ -122,10 +175,16 @@ test('WORK01 actual HTTP preserves manual history, revision, local screenshots a
   await update({ reportDraft: '待发送正文' });
   assert.equal(item.history.length, 0);
   for (const history of [
-    { kind: 'feedback', body: '追加反馈' }, { kind: 'reproduction', body: '复现步骤' },
-    { kind: 'sent', body: '实际反馈', sentAt: '2026-11-06T10:20:00+08:00' }, { kind: 'technical_reply', body: '技术回复' },
-  ]) await update({ history });
-  assert.equal(item.history.some(entry => entry.kind === 'retest'), false);
+    { kind: 'feedback', body: '追加反馈' },
+    { kind: 'reproduction', body: '复现步骤' },
+    { kind: 'sent', body: '实际反馈', sentAt: '2026-11-06T10:20:00+08:00' },
+    { kind: 'technical_reply', body: '技术回复' },
+  ])
+    await update({ history });
+  assert.equal(
+    item.history.some((entry) => entry.kind === 'retest'),
+    false,
+  );
   await update({ history: { kind: 'retest', body: '第二轮仍能复现', outcome: 'failed' } });
   await update({ history: { kind: 'retest', body: '第三轮恢复', outcome: 'passed' } });
   await update({ status: 'closed', closureReason: '客户确认恢复。' });
@@ -133,7 +192,10 @@ test('WORK01 actual HTTP preserves manual history, revision, local screenshots a
   await request(itemRoute, 'PUT', { baseRevision: item.revision, status: 'retest' }, 400);
   await update({ reopen: true });
   assert.equal(item.status, 'triage');
-  assert.deepEqual(item.history.map(entry => entry.kind), ['feedback', 'reproduction', 'sent', 'technical_reply', 'retest', 'retest', 'closed', 'reopened']);
+  assert.deepEqual(
+    item.history.map((entry) => entry.kind),
+    ['feedback', 'reproduction', 'sent', 'technical_reply', 'retest', 'retest', 'closed', 'reopened'],
+  );
   assert.equal((await request<{ items: WorkItemSummary[] }>(`${route}?due=1`)).items[0].id, created.id);
 
   const images = `${itemRoute}/screenshots`;
@@ -196,7 +258,10 @@ test('WORK01 Shanghai midnight, clearing and corrupted records preserve the corr
   await store.update(a.id, { baseRevision: 1, followUpOn: '2026-11-07' });
   await store.update(b.id, { baseRevision: 1, followUpOn: '2026-11-08' });
   assert.deepEqual(await store.list(true, new Date('2026-11-06T15:59:59.999Z')), []);
-  assert.deepEqual((await store.list(true, new Date('2026-11-06T16:00:00.000Z'))).map(item => item.id), [a.id]);
+  assert.deepEqual(
+    (await store.list(true, new Date('2026-11-06T16:00:00.000Z'))).map((item) => item.id),
+    [a.id],
+  );
   await store.update(a.id, { baseRevision: 2, followUpOn: null });
   assert.deepEqual(await store.list(true, new Date('2026-11-06T16:00:00.000Z')), []);
   const bad = path.join(root, 'work-items', `${a.id}.json`);

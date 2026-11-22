@@ -11,49 +11,108 @@ import test from 'node:test';
 import type { WritingRequest, WritingResult } from '../services/raw/pdf-topic-writing.ts';
 import { pdfFixture } from './support/pdf01-fixture.ts';
 
-type Unit = { id: string; page: number; text: string; origin: string; kind: string; unitId?: string; start?: number; end?: number };
-type Call = { stage: 'pdf_page_understanding'; page: number }
+type Unit = {
+  id: string;
+  page: number;
+  text: string;
+  origin: string;
+  kind: string;
+  unitId?: string;
+  start?: number;
+  end?: number;
+};
+type Call =
+  | { stage: 'pdf_page_understanding'; page: number }
   | { stage: 'pdf_cleanup'; units: Unit[] }
   | { stage: 'pdf_presentation'; units: Array<Unit & { topic: string }> }
   | WritingRequest
-  | { stage: 'pdf_topic_index'; topics: string[]; existing: string[]; basis: Array<{ topic: string; samples: Unit[]; suggestedTopic?: string }> };
+  | {
+      stage: 'pdf_topic_index';
+      topics: string[];
+      existing: string[];
+      basis: Array<{ topic: string; samples: Unit[]; suggestedTopic?: string }>;
+    };
 type Tracked = Call & { bytes: number };
 const key = 'synthetic-pdf02-test-key';
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 const range = (startPage: number, endPage: number) => ({ startPage, endPage });
 const classify = (units: Unit[]) => ({
-  decisions: units.map(unit => /纯宣传|Logo/u.test(unit.text)
-    ? { id: unit.id, decision: 'skip', reason: '纯宣传，不含研究内容' }
-    : { id: unit.id, decision: 'keep', reason: '保留研究数据、方法和说明',
-      topic: /新主题/u.test(unit.text) ? '陌生渠道' : unit.page > 4 ? '区域数据' : '地区样本' }),
+  decisions: units.map((unit) =>
+    /纯宣传|Logo/u.test(unit.text)
+      ? { id: unit.id, decision: 'skip', reason: '纯宣传，不含研究内容' }
+      : {
+          id: unit.id,
+          decision: 'keep',
+          reason: '保留研究数据、方法和说明',
+          topic: /新主题/u.test(unit.text) ? '陌生渠道' : unit.page > 4 ? '区域数据' : '地区样本',
+        },
+  ),
 });
 function writerReply(call: WritingRequest, combine?: (text: string) => boolean): WritingResult {
-  return { topics: Object.fromEntries(call.topics.map(topic => {
-    const groups = new Map<string, typeof topic.items>();
-    const ids = new Set(topic.items.map(item => item.id));
-    for (const item of topic.items) {
-      const key = combine?.(item.text) ? 'same-fact' : item.mergedInto && ids.has(item.mergedInto) ? item.mergedInto : item.id;
-      const group = groups.get(key) ?? [];
-      group.push(item);
-      groups.set(key, group);
-    }
-    const arranged = [...groups.values()];
-    return [topic.id, { blocks: arranged.map(group => ({ kind: 'fact', text: (group.find(item => item.origin === 'image') ?? group[0]).text })),
-      coverage: Object.fromEntries(arranged.flatMap((group, blockIndex) => group.map((item, index) => [item.id, {
-        action: index ? 'duplicate' : 'included', blockIndex, reason: index ? 'Same fixture fact' : null,
-      }]))) }];
-  })) };
+  return {
+    topics: Object.fromEntries(
+      call.topics.map((topic) => {
+        const groups = new Map<string, typeof topic.items>();
+        const ids = new Set(topic.items.map((item) => item.id));
+        for (const item of topic.items) {
+          const key = combine?.(item.text)
+            ? 'same-fact'
+            : item.mergedInto && ids.has(item.mergedInto)
+              ? item.mergedInto
+              : item.id;
+          const group = groups.get(key) ?? [];
+          group.push(item);
+          groups.set(key, group);
+        }
+        const arranged = [...groups.values()];
+        return [
+          topic.id,
+          {
+            blocks: arranged.map((group) => ({
+              kind: 'fact',
+              text: (group.find((item) => item.origin === 'image') ?? group[0]).text,
+            })),
+            coverage: Object.fromEntries(
+              arranged.flatMap((group, blockIndex) =>
+                group.map((item, index) => [
+                  item.id,
+                  {
+                    action: index ? 'duplicate' : 'included',
+                    blockIndex,
+                    reason: index ? 'Same fixture fact' : null,
+                  },
+                ]),
+              ),
+            ),
+          },
+        ];
+      }),
+    ),
+  };
 }
 function defaultReply(call: Call): unknown {
   if (call.stage === 'pdf_page_understanding') {
-    return { blank: false, content: Array.from({ length: 5 }, (_, i) => '第 ' + call.page + ' 页指标 ' + (i + 1) + ' 为 ' + (call.page * 5 + i) + ' 家门店。').join('\n'),
-      visuals: '', inference: '', questions: [] };
+    return {
+      blank: false,
+      content: Array.from(
+        { length: 5 },
+        (_, i) => '第 ' + call.page + ' 页指标 ' + (i + 1) + ' 为 ' + (call.page * 5 + i) + ' 家门店。',
+      ).join('\n'),
+      visuals: '',
+      inference: '',
+      questions: [],
+    };
   }
   if (call.stage === 'pdf_cleanup') return classify(call.units);
-  if (call.stage === 'pdf_presentation') return { presentation: Object.fromEntries(call.units.map(unit => [unit.id, { representativeId: null, reason: '不同依据，分别保留' }])) };
+  if (call.stage === 'pdf_presentation')
+    return {
+      presentation: Object.fromEntries(
+        call.units.map((unit) => [unit.id, { representativeId: null, reason: '不同依据，分别保留' }]),
+      ),
+    };
   if (call.stage === 'pdf_topic_write') return writerReply(call);
-  return { assignments: call.topics.map(topic => ({ topic, title: topic === '区域数据' ? '地区样本' : topic })) };
+  return { assignments: call.topics.map((topic) => ({ topic, title: topic === '区域数据' ? '地区样本' : topic })) };
 }
 
 async function listen(server: http.Server) {
@@ -63,7 +122,7 @@ async function listen(server: http.Server) {
 }
 async function close(server: http.Server) {
   server.closeAllConnections();
-  await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
 }
 
 async function fixture() {
@@ -80,7 +139,11 @@ async function fixture() {
       const user = messages[1].content;
       const wire: string = Array.isArray(user) ? user[0].text : user;
       const call = JSON.parse(wire) as Call;
-      assert(['pdf_page_understanding', 'pdf_cleanup', 'pdf_topic_index', 'pdf_presentation', 'pdf_topic_write'].includes(call.stage));
+      assert(
+        ['pdf_page_understanding', 'pdf_cleanup', 'pdf_topic_index', 'pdf_presentation', 'pdf_topic_write'].includes(
+          call.stage,
+        ),
+      );
       if (call.stage === 'pdf_page_understanding') {
         assert.match(user[1].image_url.url, /^data:image\/png;base64,/u);
         calls.push({ stage: call.stage, page: call.page, bytes: Buffer.byteLength(wire) });
@@ -89,28 +152,51 @@ async function fixture() {
         calls.push({ ...call, bytes: Buffer.byteLength(wire) });
       }
       const result = await reply(call);
-      res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({
-        choices: [{ message: { content: typeof result === 'string' ? result : JSON.stringify(result) }, finish_reason: 'stop' }],
-      }));
+      res.writeHead(200, { 'content-type': 'application/json' }).end(
+        JSON.stringify({
+          choices: [
+            {
+              message: { content: typeof result === 'string' ? result : JSON.stringify(result) },
+              finish_reason: 'stop',
+            },
+          ],
+        }),
+      );
     } catch (error) {
       fakeErrors.push(String(error));
-      res.writeHead(400, { 'content-type': 'application/json' }).end('{"error":{"message":"fixture rejected request"}}');
+      res
+        .writeHead(400, { 'content-type': 'application/json' })
+        .end('{"error":{"message":"fixture rejected request"}}');
     }
   });
   const fakePort = await listen(fake);
   const config = path.join(root, 'provider.fixture');
-  const configure = (model: string) => writeFile(config, 'FMCG_LLM_BASE_URL=http://127.0.0.1:' + fakePort +
-    '/v1\nFMCG_LLM_MODEL=' + model + '\nFMCG_LLM_API_KEY=' + key + '\n');
+  const configure = (model: string) =>
+    writeFile(
+      config,
+      'FMCG_LLM_BASE_URL=http://127.0.0.1:' +
+        fakePort +
+        '/v1\nFMCG_LLM_MODEL=' +
+        model +
+        '\nFMCG_LLM_API_KEY=' +
+        key +
+        '\n',
+    );
   await configure('fixture-pdf02');
   let child: ChildProcess | undefined;
   let base = '';
   let log = '';
   const request = async (url: string, input?: unknown, method = input === undefined ? 'GET' : 'POST') => {
-    const response = await fetch(base + url, input === undefined ? { method }
-      : input instanceof FormData ? { method, body: input }
-        : { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) });
+    const response = await fetch(
+      base + url,
+      input === undefined
+        ? { method }
+        : input instanceof FormData
+          ? { method, body: input }
+          : { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) },
+    );
     return (response.headers.get('content-type') ?? '').includes('application/json')
-      ? { status: response.status, json: await response.json() as any }
+      ? { status: response.status, json: (await response.json()) as any }
       : { status: response.status, bytes: Buffer.from(await response.arrayBuffer()) };
   };
   const stop = async () => {
@@ -124,17 +210,35 @@ async function fixture() {
     const port = await listen(reservation);
     await close(reservation);
     base = 'http://127.0.0.1:' + port;
-    const env = Object.fromEntries(Object.entries(process.env).filter(([name]) =>
-      !/^(FMCG_|OPENAI_|ANTHROPIC_|GEMINI_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(name)));
+    const env = Object.fromEntries(
+      Object.entries(process.env).filter(
+        ([name]) =>
+          !/^(FMCG_|OPENAI_|ANTHROPIC_|GEMINI_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(
+            name,
+          ),
+      ),
+    );
     child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-      cwd: process.cwd(), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: process.cwd(),
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
       env: { ...env, FMCG_DATA_DIR: root, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config },
     });
-    child.stdout?.on('data', data => { log += data; });
-    child.stderr?.on('data', data => { log += data; });
+    child.stdout?.on('data', (data) => {
+      log += data;
+    });
+    child.stderr?.on('data', (data) => {
+      log += data;
+    });
     for (let i = 0; i < 600; i++) {
       if (child.exitCode !== null) break;
-      if (await fetch(base + '/api/health').then(res => res.ok, () => false)) return;
+      if (
+        await fetch(base + '/api/health').then(
+          (res) => res.ok,
+          () => false,
+        )
+      )
+        return;
       await delay(25);
     }
     assert.fail('真实隔离服务未启动：' + log);
@@ -158,21 +262,48 @@ async function fixture() {
     }
     assert.fail(route + ' did not reach ' + status);
   };
-  try { await start(); }
-  catch (error) { await stop(); await close(fake); throw error; }
-  return { root, calls, request, upload, wait, start, stop, configure, setReply: (fn: typeof reply) => { reply = fn; },
-    close: async () => { await stop(); await close(fake); assert.deepEqual(fakeErrors, []); } };
+  try {
+    await start();
+  } catch (error) {
+    await stop();
+    await close(fake);
+    throw error;
+  }
+  return {
+    root,
+    calls,
+    request,
+    upload,
+    wait,
+    start,
+    stop,
+    configure,
+    setReply: (fn: typeof reply) => {
+      reply = fn;
+    },
+    close: async () => {
+      await stop();
+      await close(fake);
+      assert.deepEqual(fakeErrors, []);
+    },
+  };
 }
 
 function confirm(draft: any, selectedPageIds: string[]) {
-  return { baseRevision: draft.revision, selectedPageIds, outcomeDigest: draft.outcomeDigest, idempotencyKey: randomUUID() };
+  return {
+    baseRevision: draft.revision,
+    selectedPageIds,
+    outcomeDigest: draft.outcomeDigest,
+    idempotencyKey: randomUUID(),
+  };
 }
 
 test('public PDF cleanup preserves text/image provenance, keeps substantive preface and table continuation, edits and selectively commits', async () => {
   const api = await fixture();
   try {
-    api.setReply(call => {
-      if (call.stage === 'pdf_topic_write') return writerReply(call, text => /Research method.*300 stores/u.test(text));
+    api.setReply((call) => {
+      if (call.stage === 'pdf_topic_write')
+        return writerReply(call, (text) => /Research method.*300 stores/u.test(text));
       if (call.stage !== 'pdf_page_understanding') return defaultReply(call);
       const items = [
         '主办方 Logo 与纯宣传\n序言研究结论：2025 年华南 120 家门店。\n方法为三阶段抽样。\n共同结论：渠道偏好存在差异。',
@@ -214,23 +345,35 @@ test('public PDF cleanup preserves text/image provenance, keeps substantive pref
     const page = initial.pages.find((item: any) => item.title === '地区样本');
     const text = page.pdfEvidence.find((item: any) => item.kind === 'text');
     assert.equal(raw.body.slice(text.start, text.end), text.text);
-    assert(page.pdfEvidence.some((item: any) => item.kind === 'image' && item.page === 2 && !Object.hasOwn(item, 'start')));
+    assert(
+      page.pdfEvidence.some((item: any) => item.kind === 'image' && item.page === 2 && !Object.hasOwn(item, 'start')),
+    );
     const change = initial.maintenance.changes.find((item: any) => item.candidate.title === page.title);
     assert.match(change.candidate.body, /序言研究结论[\s\S]*120 家[\s\S]*155 家[\s\S]*基数是有效样本[\s\S]*128 家/u);
     assert.match(change.candidate.body, /PDF 页图 AI 解读/u);
-    assert.match(change.candidate.body, /### AI 整理[\s\S]*Research method included 300 stores.*PDF 页图 AI 解读.*#page=1.*#page=2/u);
+    assert.match(
+      change.candidate.body,
+      /### AI 整理[\s\S]*Research method included 300 stores.*PDF 页图 AI 解读.*#page=1.*#page=2/u,
+    );
     assert.doesNotMatch(change.candidate.body, /Research method: 300 stores/u);
     assert(page.pdfEvidence.some((item: any) => item.kind === 'text' && item.text === 'Research method: 300 stores'));
-    assert(page.pdfEvidence.some((item: any) => item.kind === 'image' && item.text === 'Research method included 300 stores.'));
+    assert(
+      page.pdfEvidence.some(
+        (item: any) => item.kind === 'image' && item.text === 'Research method included 300 stores.',
+      ),
+    );
     assert.equal((change.candidate.body.match(/共同结论/gu) ?? []).length, 1);
     assert.match(change.candidate.body, /共同结论.*#page=1.*#page=3/u);
     assert.doesNotMatch(change.candidate.body, /Logo|新主题/u);
     const unreviewed = confirm(initial, [page.pageId]);
     const { outcomeDigest: _digest, ...strictOld } = unreviewed;
     assert.equal((await api.request(draftRoute + '/confirm', strictOld)).json.error.code, 'PDF_OUTCOME_REQUIRED');
-    const editedBody = change.candidate.body.replace(/\[第 \d+ 页\]\(\/api\/raw\/[^)]+\)/gu, '原页依据') + '\n人工补充：仅限本样本。\n';
+    const editedBody =
+      change.candidate.body.replace(/\[第 \d+ 页\]\(\/api\/raw\/[^)]+\)/gu, '原页依据') + '\n人工补充：仅限本样本。\n';
     const edit = await api.request('/api/knowledge/drafts/' + draftId + '/changes/review', {
-      baseRevision: initial.revision, changeId: change.changeId, body: editedBody,
+      baseRevision: initial.revision,
+      changeId: change.changeId,
+      body: editedBody,
     });
     assert.equal(edit.status, 200, JSON.stringify(edit));
     assert.notEqual(edit.json.outcomeDigest, initial.outcomeDigest);
@@ -258,22 +401,36 @@ test('public PDF cleanup preserves text/image provenance, keeps substantive pref
     assert.equal((await api.request(draftRoute)).json.status, 'pending_confirmation');
     assert(!(await api.request('/api/wiki')).json.items.some((item: any) => item.title === '陌生渠道'));
     assert.deepEqual((await api.request(pdf + '/original')).bytes, bytes);
-    assert.deepEqual(api.calls.map(call => call.stage), [...Array(3).fill('pdf_page_understanding'), 'pdf_cleanup', 'pdf_topic_index', 'pdf_topic_write']);
-  } finally { await api.close(); }
+    assert.deepEqual(
+      api.calls.map((call) => call.stage),
+      [...Array(3).fill('pdf_page_understanding'), 'pdf_cleanup', 'pdf_topic_index', 'pdf_topic_write'],
+    );
+  } finally {
+    await api.close();
+  }
 });
 
 test('cross-batch PDF continuation retains new columns, units, conflicting rows, unresolved shape and page citations', async () => {
   const api = await fixture();
   try {
-    api.setReply(call => {
-      if (call.stage === 'pdf_topic_index' || call.stage === 'pdf_presentation' || call.stage === 'pdf_topic_write') return defaultReply(call);
+    api.setReply((call) => {
+      if (call.stage === 'pdf_topic_index' || call.stage === 'pdf_presentation' || call.stage === 'pdf_topic_write')
+        return defaultReply(call);
       if (call.stage === 'pdf_cleanup') {
         const proposed = classify(call.units);
-        return { decisions: proposed.decisions.map((item, i) => {
-          const text = call.units[i].text;
-          const role = text.startsWith('| 区域') ? 'header' : text.startsWith('|') ? 'row' : text.startsWith('表注') ? 'note' : undefined;
-          return role ? { ...item, table: { title: '样本续表', role } } : item;
-        }) };
+        return {
+          decisions: proposed.decisions.map((item, i) => {
+            const text = call.units[i].text;
+            const role = text.startsWith('| 区域')
+              ? 'header'
+              : text.startsWith('|')
+                ? 'row'
+                : text.startsWith('表注')
+                  ? 'note'
+                  : undefined;
+            return role ? { ...item, table: { title: '样本续表', role } } : item;
+          }),
+        };
       }
       const cells = [
         '| 区域 | 样本（家） |\n| 华南 | 120 |\n表注：2025 年，仅统计有效样本。',
@@ -283,8 +440,13 @@ test('cross-batch PDF continuation retains new columns, units, conflicting rows,
         '| 华东 | 155 |\n| 区域 | 样本（家） | 回收率 |\n| 华北 | 160 | 80% |\n表注：新增回收率口径是 2026 年。',
         '| 区域 | 样本（万人） |\n| 西南 | 3 |\n| 西北 | 44 | 75% | 17 |',
       ];
-      return { blank: false, content: cells[call.page - 1], visuals: '', inference: call.page === 1 ? '可能存在地域差异。' : '',
-        questions: call.page === 1 ? ['核对样本是否互斥。'] : [] };
+      return {
+        blank: false,
+        content: cells[call.page - 1],
+        visuals: '',
+        inference: call.page === 1 ? '可能存在地域差异。' : '',
+        questions: call.page === 1 ? ['核对样本是否互斥。'] : [],
+      };
     });
     const raw = await api.upload(pdfFixture(Array.from({ length: 6 }, () => 'scan')), '合成续表');
     const pdf = '/api/raw/' + raw.id + '/pdf';
@@ -312,20 +474,41 @@ test('cross-batch PDF continuation retains new columns, units, conflicting rows,
     assert.doesNotMatch(body, /表注：表注/u);
     assert.match(body, /列关系待核：.*西北.*44.*75%.*17.*#page=6/u);
     assert.match(body, /### AI 推断[\s\S]*可能存在地域差异[\s\S]*### 待核问题[\s\S]*核对样本是否互斥/u);
-    assert(api.calls.filter(call => call.stage === 'pdf_topic_write').every(call => call.topics.flatMap(topic => topic.items).every(unit =>
-      !['inference', 'question'].includes(unit.kind) && !/^\||^表注/u.test(unit.text))));
+    assert(
+      api.calls
+        .filter((call) => call.stage === 'pdf_topic_write')
+        .every((call) =>
+          call.topics
+            .flatMap((topic) => topic.items)
+            .every((unit) => !['inference', 'question'].includes(unit.kind) && !/^\||^表注/u.test(unit.text)),
+        ),
+    );
     assert(draft.pages[0].pdfEvidence.some((item: any) => item.page === 6 && item.kind === 'image'));
-  } finally { await api.close(); }
+  } finally {
+    await api.close();
+  }
 });
 
 test('one PDF unit contributes exact fragments to different topics while cross-page coverage consolidates', async () => {
   const api = await fixture();
   const original = 'Pilot reached 173 stores in North in 2027; merchants reached 61.';
-  const image = '🧭 Pilot covered 173 stores in North in 2027; new users totalled 875. Method used qualitative interviews.';
+  const image =
+    '🧭 Pilot covered 173 stores in North in 2027; new users totalled 875. Method used qualitative interviews.';
   try {
-    api.setReply(call => {
-      if (call.stage === 'pdf_page_understanding') return { blank: false, content: call.page === 1 ? 'Additional explanatory source.\n页面标注“研究说明”，页码59。\nWe are uniquely wonderful.' : image,
-        visuals: '', inference: '', questions: ['Should the very long research note or an independent verification be reviewed before presentation?'] };
+    api.setReply((call) => {
+      if (call.stage === 'pdf_page_understanding')
+        return {
+          blank: false,
+          content:
+            call.page === 1
+              ? 'Additional explanatory source.\n页面标注“研究说明”，页码59。\nWe are uniquely wonderful.'
+              : image,
+          visuals: '',
+          inference: '',
+          questions: [
+            'Should the very long research note or an independent verification be reviewed before presentation?',
+          ],
+        };
       if (call.stage === 'pdf_cleanup') {
         const result = classify(call.units);
         result.decisions.forEach((item, i) => {
@@ -334,24 +517,54 @@ test('one PDF unit contributes exact fragments to different topics while cross-p
         return result;
       }
       if (call.stage === 'pdf_topic_index') {
-        const ordinary = call.basis.find(item => item.topic === '地区样本');
+        const ordinary = call.basis.find((item) => item.topic === '地区样本');
         assert.equal(ordinary?.samples[0].kind, 'content');
-        return { assignments: Object.fromEntries(call.basis.map(({ topic, samples: [item] }) => [topic, topic === 'Page furniture' ? topic :
-          /173/u.test(item.text) ? 'Pilot coverage' : /merchants/u.test(item.text) ? 'Merchant count'
-            : /users/u.test(item.text) ? 'New users' : /qualitative/u.test(item.text) ? 'Sample method' : 'Other sources'])) };
+        return {
+          assignments: Object.fromEntries(
+            call.basis.map(({ topic, samples: [item] }) => [
+              topic,
+              topic === 'Page furniture'
+                ? topic
+                : /173/u.test(item.text)
+                  ? 'Pilot coverage'
+                  : /merchants/u.test(item.text)
+                    ? 'Merchant count'
+                    : /users/u.test(item.text)
+                      ? 'New users'
+                      : /qualitative/u.test(item.text)
+                        ? 'Sample method'
+                        : 'Other sources',
+            ]),
+          ),
+        };
       }
       if (call.stage === 'pdf_topic_write') {
-        const result = writerReply(call, text => /173 stores/u.test(text));
-        const noise = call.topics.find(topic => topic.title === 'Page furniture');
-        if (noise) result.topics[noise.id] = { blocks: [], coverage: Object.fromEntries(noise.items.map(item => [item.id, {
-          action: /页码/u.test(item.text) ? 'metadata' : 'promotion', blockIndex: null, reason: 'No business fact',
-        }])) };
+        const result = writerReply(call, (text) => /173 stores/u.test(text));
+        const noise = call.topics.find((topic) => topic.title === 'Page furniture');
+        if (noise)
+          result.topics[noise.id] = {
+            blocks: [],
+            coverage: Object.fromEntries(
+              noise.items.map((item) => [
+                item.id,
+                {
+                  action: /页码/u.test(item.text) ? 'metadata' : 'promotion',
+                  blockIndex: null,
+                  reason: 'No business fact',
+                },
+              ]),
+            ),
+          };
         return result;
       }
       return defaultReply(call);
     });
-    const bytes = Buffer.from(pdfFixture(['text', 'scan'], () => original).toString('latin1')
-      .replaceAll('/MediaBox [0 0 200 200]', '/MediaBox [0 0 900 200]'), 'latin1');
+    const bytes = Buffer.from(
+      pdfFixture(['text', 'scan'], () => original)
+        .toString('latin1')
+        .replaceAll('/MediaBox [0 0 200 200]', '/MediaBox [0 0 900 200]'),
+      'latin1',
+    );
     const raw = await api.upload(bytes, 'Exact fragment scope');
     const pdf = '/api/raw/' + raw.id + '/pdf';
     await api.request(pdf + '/understand', {});
@@ -361,14 +574,18 @@ test('one PDF unit contributes exact fragments to different topics while cross-p
     const done = (await api.wait(cleanup, 'completed')).job;
     assert.equal(done.promptRevision, 5);
     assert.equal(done.writing.length, 2);
-    const dispositions = done.writing.flatMap((result: WritingResult) => Object.values(result.topics).flatMap(topic => Object.values(topic.coverage)));
-    assert(dispositions.some((item: {action: string}) => item.action === 'metadata'));
-    assert(dispositions.some((item: {action: string}) => item.action === 'promotion'));
+    const dispositions = done.writing.flatMap((result: WritingResult) =>
+      Object.values(result.topics).flatMap((topic) => Object.values(topic.coverage)),
+    );
+    assert(dispositions.some((item: { action: string }) => item.action === 'metadata'));
+    assert(dispositions.some((item: { action: string }) => item.action === 'promotion'));
     const parents = new Map<string, string>(done.decisions.map((item: any) => [item.id, item.text]));
     for (const id of new Set<string>(done.fragments.map((item: any) => item.unitId))) {
       const source = parents.get(id)!;
-      const parts: Array<{ start: number; end: number; text: string }> = done.fragments.filter((item: any) => item.unitId === id);
-      assert.equal(parts.map(part => part.text).join(''), source);
+      const parts: Array<{ start: number; end: number; text: string }> = done.fragments.filter(
+        (item: any) => item.unitId === id,
+      );
+      assert.equal(parts.map((part) => part.text).join(''), source);
       for (const part of parts) assert.equal(part.text, source.slice(part.start, part.end));
     }
     for (const part of done.fragments) {
@@ -380,10 +597,18 @@ test('one PDF unit contributes exact fragments to different topics while cross-p
     const draftId = generated.json.job.draftId;
     const draftRoute = '/api/drafts/' + draftId;
     const draft = (await api.request(draftRoute)).json;
-    const candidates = new Map<string, string>(draft.maintenance.changes.map((item: any) => [item.candidate.title, item.candidate.body]));
+    const candidates = new Map<string, string>(
+      draft.maintenance.changes.map((item: any) => [item.candidate.title, item.candidate.body]),
+    );
     assert(!candidates.has('Page furniture'));
-    assert.match(candidates.get('Pilot coverage')!, /### AI 整理[\s\S]*173 stores.*PDF 页图 AI 解读.*#page=1.*#page=2/u);
-    assert.doesNotMatch(candidates.get('Pilot coverage')!, /reached 173|merchants reached 61|new users totalled 875|qualitative/u);
+    assert.match(
+      candidates.get('Pilot coverage')!,
+      /### AI 整理[\s\S]*173 stores.*PDF 页图 AI 解读.*#page=1.*#page=2/u,
+    );
+    assert.doesNotMatch(
+      candidates.get('Pilot coverage')!,
+      /reached 173|merchants reached 61|new users totalled 875|qualitative/u,
+    );
     assert.match(candidates.get('Merchant count')!, /merchants reached 61/u);
     assert.match(candidates.get('New users')!, /new users totalled 875/u);
     assert.match(candidates.get('Sample method')!, /Method used qualitative interviews/u);
@@ -392,7 +617,11 @@ test('one PDF unit contributes exact fragments to different topics while cross-p
     const rawEvidence = pilot.pdfEvidence.find((item: any) => item.kind === 'text');
     assert.equal(raw.body.slice(rawEvidence.start, rawEvidence.end), original);
     assert.equal(merchant.pdfEvidence[0].unitId, rawEvidence.unitId);
-    assert(pilot.pdfEvidence.some((item: any) => item.kind === 'image' && item.text === image && !Object.hasOwn(item, 'start')));
+    assert(
+      pilot.pdfEvidence.some(
+        (item: any) => item.kind === 'image' && item.text === image && !Object.hasOwn(item, 'start'),
+      ),
+    );
     const draftFile = path.join(api.root, 'drafts', draftId + '.json');
     const saved = await readFile(draftFile);
     const changed = JSON.parse(saved.toString());
@@ -403,44 +632,64 @@ test('one PDF unit contributes exact fragments to different topics while cross-p
     await writeFile(draftFile, saved);
     const confirmed = await api.request(draftRoute + '/confirm', confirm(draft, [pilot.pageId, merchant.pageId]));
     assert.equal(confirmed.status, 201, JSON.stringify(confirmed));
-    const pages = await Promise.all((confirmed.json.wikiIds as string[]).map(id => api.request('/api/wiki/' + id)));
+    const pages = await Promise.all((confirmed.json.wikiIds as string[]).map((id) => api.request('/api/wiki/' + id)));
     assert.equal(pages.length, 2);
-    assert(pages.every(page => page.json.pdfDerivations[0].evidence.some((item: any) => item.unitId === rawEvidence.unitId)));
+    assert(
+      pages.every((page) =>
+        page.json.pdfDerivations[0].evidence.some((item: any) => item.unitId === rawEvidence.unitId),
+      ),
+    );
     assert.deepEqual((await api.request(pdf + '/original')).bytes, bytes);
-  } finally { await api.close(); }
+  } finally {
+    await api.close();
+  }
 });
 
 test('range readiness, dropped or distinct merged units, durable restart, explicit retry and late cancellation', async () => {
   const api = await fixture();
   let release: (() => void) | undefined;
   try {
-    api.setReply(call => call.stage === 'pdf_page_understanding' && call.page === 6 ? 'invalid' : defaultReply(call));
+    api.setReply((call) =>
+      call.stage === 'pdf_page_understanding' && call.page === 6 ? 'invalid' : defaultReply(call),
+    );
     const raw = await api.upload(pdfFixture(Array.from({ length: 6 }, () => 'scan')), '合成恢复案例');
     const pdf = '/api/raw/' + raw.id + '/pdf';
     await api.request(pdf + '/understand', {});
     await api.wait(pdf, 'failed');
     const cleanup = pdf + '/cleanup';
     assert.deepEqual((await api.request(cleanup, range(1, 6))).json.error.details.missingPages, [6]);
-    api.setReply(call => {
+    api.setReply((call) => {
       if (call.stage !== 'pdf_cleanup') return defaultReply(call);
       return { decisions: classify(call.units).decisions.slice(1) };
     });
     await api.request(cleanup, range(1, 5));
     assert.equal((await api.wait(cleanup, 'failed')).job.error.code, 'PDF_CLEANUP_COVERAGE');
-    api.setReply(call => {
+    api.setReply((call) => {
       if (call.stage !== 'pdf_cleanup') return defaultReply(call);
       const result = classify(call.units);
-      return { decisions: [...result.decisions.slice(0, 1),
-        { ...result.decisions[1], decision: 'merge', mergedInto: result.decisions[0].id }, ...result.decisions.slice(2)] };
+      return {
+        decisions: [
+          ...result.decisions.slice(0, 1),
+          { ...result.decisions[1], decision: 'merge', mergedInto: result.decisions[0].id },
+          ...result.decisions.slice(2),
+        ],
+      };
     });
     await api.request(cleanup, range(1, 5));
     assert.equal((await api.wait(cleanup, 'failed')).job.error.code, 'PDF_CLEANUP_DUPLICATE');
-    const calls = () => api.calls.filter(call => call.stage === 'pdf_cleanup');
+    const calls = () => api.calls.filter((call) => call.stage === 'pdf_cleanup');
     let dispatched!: () => void;
-    const sent = new Promise<void>(resolve => { dispatched = resolve; });
-    const held = new Promise<void>(resolve => { release = resolve; });
-    api.setReply(async call => {
-      if (call.stage === 'pdf_cleanup' && call.units[0].page === 5) { dispatched(); await held; }
+    const sent = new Promise<void>((resolve) => {
+      dispatched = resolve;
+    });
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    api.setReply(async (call) => {
+      if (call.stage === 'pdf_cleanup' && call.units[0].page === 5) {
+        dispatched();
+        await held;
+      }
       return defaultReply(call);
     });
     await api.request(cleanup, range(1, 5));
@@ -452,7 +701,10 @@ test('range readiness, dropped or distinct merged units, durable restart, explic
     await api.start();
     const prior = calls().length;
     const restored = (await api.request(cleanup)).json.job;
-    assert.deepEqual([restored.status, restored.completedBatches, restored.attempts, restored.error.code], ['failed', 1, 4, 'PDF_CLEANUP_INTERRUPTED']);
+    assert.deepEqual(
+      [restored.status, restored.completedBatches, restored.attempts, restored.error.code],
+      ['failed', 1, 4, 'PDF_CLEANUP_INTERRUPTED'],
+    );
     await delay(50);
     assert.equal(calls().length, prior);
     await api.configure('different-model');
@@ -460,10 +712,17 @@ test('range readiness, dropped or distinct merged units, durable restart, explic
     assert.equal(calls().length, prior);
     await api.configure('fixture-pdf02');
     let cancelling!: () => void;
-    const cancellingSent = new Promise<void>(resolve => { cancelling = resolve; });
-    const cancellingHold = new Promise<void>(resolve => { release = resolve; });
-    api.setReply(async call => {
-      if (call.stage === 'pdf_cleanup') { cancelling(); await cancellingHold; }
+    const cancellingSent = new Promise<void>((resolve) => {
+      cancelling = resolve;
+    });
+    const cancellingHold = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    api.setReply(async (call) => {
+      if (call.stage === 'pdf_cleanup') {
+        cancelling();
+        await cancellingHold;
+      }
       return defaultReply(call);
     });
     assert.equal((await api.request(cleanup, range(1, 5))).status, 202);
@@ -479,13 +738,19 @@ test('range readiness, dropped or distinct merged units, durable restart, explic
     await api.request(cleanup, range(1, 5));
     const done = (await api.wait(cleanup, 'completed')).job;
     assert.deepEqual([done.startPage, done.endPage, done.completedBatches, done.attempts], [1, 5, 2, 8]);
-    assert.deepEqual(calls().map(call => call.units[0].page), [1, 1, 1, 5, 5, 5]);
+    assert.deepEqual(
+      calls().map((call) => call.units[0].page),
+      [1, 1, 1, 5, 5, 5],
+    );
     const generated = await api.request(cleanup + '/draft', range(1, 5));
     assert.equal(generated.status, 200, JSON.stringify(generated));
     const draft = (await api.request('/api/drafts/' + generated.json.job.draftId)).json;
     assert.deepEqual([draft.pdfInput.startPage, draft.pdfInput.endPage, draft.pdfInput.pageCount], [1, 5, 6]);
     assert(draft.pages.every((page: any) => page.pdfEvidence.every((unit: any) => unit.page <= 5)));
-  } finally { release?.(); await api.close(); }
+  } finally {
+    release?.();
+    await api.close();
+  }
 });
 
 test('PDF R1 result and asset changes block draft/confirm, with no formal Wiki writes', async () => {
@@ -523,7 +788,9 @@ test('PDF R1 result and asset changes block draft/confirm, with no formal Wiki w
     assert.deepEqual((await api.request('/api/wiki')).json, wiki);
     assert.equal(api.calls.length, count);
     assert.deepEqual((await api.request(pdf + '/original')).bytes, bytes);
-  } finally { await api.close(); }
+  } finally {
+    await api.close();
+  }
 });
 
 test('PDF cleanup rejects restricted sources, known secret wire data and provider-supplied locator overrides', async () => {
@@ -549,7 +816,9 @@ test('PDF cleanup rejects restricted sources, known secret wire data and provide
     await api.request(cleanup, range(1, 1));
     assert.equal((await api.wait(cleanup, 'failed')).job.error.code, 'LLM_OUTPUT_CONTAINS_SECRET');
     assert.equal(api.calls.length, count);
-    assert(!(await readFile(path.join(api.root, 'state', 'raw-pdf', raw.id, 'cleanup-1-1.json'), 'utf8')).includes(key));
+    assert(
+      !(await readFile(path.join(api.root, 'state', 'raw-pdf', raw.id, 'cleanup-1-1.json'), 'utf8')).includes(key),
+    );
     await writeFile(r1File, original);
     await api.request(cleanup, range(1, 1));
     assert.equal(api.calls.length, count);
@@ -558,24 +827,30 @@ test('PDF cleanup rejects restricted sources, known secret wire data and provide
     const next = '/api/raw/' + second.id + '/pdf';
     await api.request(next + '/understand', {});
     await api.wait(next, 'completed');
-    api.setReply(call => {
+    api.setReply((call) => {
       if (call.stage !== 'pdf_cleanup') return defaultReply(call);
       const value = classify(call.units);
       return { decisions: [{ ...value.decisions[0], reason: key }, ...value.decisions.slice(1)] };
     });
     await api.request(next + '/cleanup', range(1, 1));
     assert.equal((await api.wait(next + '/cleanup', 'failed')).job.error.code, 'LLM_OUTPUT_CONTAINS_SECRET');
-    api.setReply(call => {
+    api.setReply((call) => {
       if (call.stage !== 'pdf_cleanup') return defaultReply(call);
       const value = classify(call.units);
-      return { decisions: [{ ...value.decisions[0], page: 99, text: '伪造原文', origin: 'text' }, ...value.decisions.slice(1)] };
+      return {
+        decisions: [{ ...value.decisions[0], page: 99, text: '伪造原文', origin: 'text' }, ...value.decisions.slice(1)],
+      };
     });
     await api.request(next + '/cleanup', range(1, 1));
     const failed = (await api.wait(next + '/cleanup', 'failed')).job;
     assert.equal(failed.error.code, 'PDF_CLEANUP_SCHEMA');
     assert.deepEqual(failed.decisions, []);
-    assert(!(await readFile(path.join(api.root, 'state', 'raw-pdf', second.id, 'cleanup-1-1.json'), 'utf8')).includes(key));
-  } finally { await api.close(); }
+    assert(
+      !(await readFile(path.join(api.root, 'state', 'raw-pdf', second.id, 'cleanup-1-1.json'), 'utf8')).includes(key),
+    );
+  } finally {
+    await api.close();
+  }
 });
 
 test('PDF formal transaction resumes its frozen evidence after a disk-phase failure; manual updates retain the lineage', async () => {
@@ -611,20 +886,30 @@ test('PDF formal transaction resumes its frozen evidence after a disk-phase fail
     const topic = (await api.request('/api/wiki')).json.items.find((item: any) => item.type !== 'source');
     const current = (await api.request('/api/wiki/' + topic.id)).json;
     assert.equal(current.pdfDerivations[0].evidence.length, 5);
-    const updated = await api.request('/api/wiki/' + topic.id, {
-      ...current, baseRevision: current.revision, body: current.body + '\n补充人工背景。', sources: [], pdfDerivations: [],
-    }, 'PUT');
+    const updated = await api.request(
+      '/api/wiki/' + topic.id,
+      {
+        ...current,
+        baseRevision: current.revision,
+        body: current.body + '\n补充人工背景。',
+        sources: [],
+        pdfDerivations: [],
+      },
+      'PUT',
+    );
     assert.equal(updated.status, 200, JSON.stringify(updated));
     assert.deepEqual(updated.json.sources, [raw.id]);
     assert.deepEqual(updated.json.pdfDerivations, current.pdfDerivations);
     assert.equal(api.calls.length, requests);
-  } finally { await api.close(); }
+  } finally {
+    await api.close();
+  }
 });
 
 test('62-page real HTTP model chain classifies 310 distinct units in bounded page batches, keeps tail, then writes one reviewed theme', async () => {
   const api = await fixture();
   try {
-    const bytes = pdfFixture(Array.from({ length: 62 }, (_, i) => i % 2 ? 'scan' : 'vector'));
+    const bytes = pdfFixture(Array.from({ length: 62 }, (_, i) => (i % 2 ? 'scan' : 'vector')));
     const raw = await api.upload(bytes, '合成 62 页资料');
     const pdf = '/api/raw/' + raw.id + '/pdf';
     const cleanup = pdf + '/cleanup';
@@ -634,20 +919,37 @@ test('62-page real HTTP model chain classifies 310 distinct units in bounded pag
     const view = (await api.wait(cleanup, 'completed')).job;
     assert.equal(view.decisions.length, 310);
     assert.deepEqual(view.counts, { kept: 310, merged: 0, skipped: 0 });
-    const batches = api.calls.filter(item => item.stage === 'pdf_cleanup');
-    const indexes = api.calls.filter(item => item.stage === 'pdf_topic_index');
+    const batches = api.calls.filter((item) => item.stage === 'pdf_cleanup');
+    const indexes = api.calls.filter((item) => item.stage === 'pdf_topic_index');
     assert.equal(batches.length, 16);
     assert.equal(indexes.length, 1);
-    assert(batches.every(call => call.units.length <= 48 && call.bytes <= 33 * 1024
-      && call.units.at(-1)!.page - call.units[0].page <= 3));
-    assert.deepEqual(indexes.map(item => item.topics), [['地区样本', '区域数据']]);
-    assert(indexes.every(call => call.bytes < 1024));
-    const presentations = api.calls.filter(item => item.stage === 'pdf_topic_write');
+    assert(
+      batches.every(
+        (call) =>
+          call.units.length <= 48 && call.bytes <= 33 * 1024 && call.units.at(-1)!.page - call.units[0].page <= 3,
+      ),
+    );
+    assert.deepEqual(
+      indexes.map((item) => item.topics),
+      [['地区样本', '区域数据']],
+    );
+    assert(indexes.every((call) => call.bytes < 1024));
+    const presentations = api.calls.filter((item) => item.stage === 'pdf_topic_write');
     assert.equal(view.attempts, 24);
     assert.equal(presentations.length, 7);
     assert.equal(view.writing.length, 7);
-    assert.equal(new Set(presentations.flatMap(item => item.topics.flatMap(topic => topic.items.map(unit => unit.id)))).size, 310);
-    assert(presentations.every(item => item.topics.length <= 4 && item.topics.flatMap(topic => topic.items).length <= 48 && item.bytes <= 24 * 1024));
+    assert.equal(
+      new Set(presentations.flatMap((item) => item.topics.flatMap((topic) => topic.items.map((unit) => unit.id)))).size,
+      310,
+    );
+    assert(
+      presentations.every(
+        (item) =>
+          item.topics.length <= 4 &&
+          item.topics.flatMap((topic) => topic.items).length <= 48 &&
+          item.bytes <= 24 * 1024,
+      ),
+    );
     const count = api.calls.length;
     const generated = await api.request(cleanup + '/draft', range(1, 62));
     assert.equal(generated.status, 200, JSON.stringify(generated));
@@ -664,8 +966,20 @@ test('62-page real HTTP model chain classifies 310 distinct units in bounded pag
     assert.match(wiki.body, /第 62 页指标 5 为 314 家门店/u);
     assert.equal(api.calls.length, count);
     assert.deepEqual((await api.request(pdf + '/original')).bytes, bytes);
-    console.log('PDF02 62-page receipt', JSON.stringify({ understanding: 62, units: 310, batches: batches.length,
-      batchMaxBytes: Math.max(...batches.map(call => call.bytes)), indexCalls: indexes.length, indexMaxBytes: indexes[0].bytes,
-      tail: draft.pages[0].pdfEvidence.at(-1).unitId, totalCalls: count }));
-  } finally { await api.close(); }
+    console.log(
+      'PDF02 62-page receipt',
+      JSON.stringify({
+        understanding: 62,
+        units: 310,
+        batches: batches.length,
+        batchMaxBytes: Math.max(...batches.map((call) => call.bytes)),
+        indexCalls: indexes.length,
+        indexMaxBytes: indexes[0].bytes,
+        tail: draft.pages[0].pdfEvidence.at(-1).unitId,
+        totalCalls: count,
+      }),
+    );
+  } finally {
+    await api.close();
+  }
 });

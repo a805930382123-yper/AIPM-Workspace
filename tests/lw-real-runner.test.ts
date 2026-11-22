@@ -3,14 +3,116 @@ import test from 'node:test';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import {spawnSync} from 'node:child_process';
-import {pathToFileURL} from 'node:url';
+import { spawnSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 // prettier-ignore
 // @ts-expect-error Offline acceptance ESM has no declaration file.
 import {prepare,fake,entries,reserve,metered,json,sha,validate,phase,open,LEDGER} from './support/lw-real-runner.mjs';
-const temp=()=>fs.mkdtemp(path.join(os.tmpdir(),'lw-real-test-'));
-test('LW real-wire fake completes standard3, Raw-answer2, save1, requery2 and insufficient1 with explicit fake HUMAN',async()=>{const r=await fake();assert.equal(r.calls,9);assert.equal(r.realRequests,0);assert.equal(r.configReads,0);const rows=await entries(path.join(r.root,'fake-ledger'));assert.deepEqual(rows.map((x:any)=>x.phase),['extract','extract','extract','qa','qa','save','requery','requery','no_evidence']);const f=await open(r.root);const saved=await f.q.answers.get((await json(path.join(r.root,'manifest.json'))).ids.qa);assert(saved.readRaw.length>0);assert.equal((await f.q.answers.get((await json(path.join(r.root,'manifest.json'))).ids.no_evidence)).status,'insufficient');assert.equal((await f.f.rawStore.list()).length,3);assert((await f.f.wiki.allRecords()).some((w:any)=>w.answerDerivations?.length));});
-test('LW pending survives actual process exit, append-only 1..12 and reserve future core requests',async()=>{const root=await temp(),url=pathToFileURL(path.resolve('tests/support/lw-real-runner.mjs')).href;const child=spawnSync(process.execPath,['--import','tsx','--input-type=module','-e',`import{reserve}from ${JSON.stringify(url)};await reserve(${JSON.stringify(root)},{session:'s',freeze:'f',phase:'qa'});process.exit(17);`],{windowsHide:true,encoding:'utf8'});assert.equal(child.status,17,child.stderr);assert.equal((await entries(root)).length,1);await assert.rejects(reserve(root,{session:'replacement',freeze:'f'}),/another preparation/);for(let i=1;i<12;i++)await reserve(root,{session:'s',freeze:'f'});assert.equal((await entries(root)).length,12);await assert.rejects(reserve(root,{session:'s',freeze:'f'}),/budget/);const other=await temp();await assert.rejects(reserve(other,{session:'s',freeze:'f'},12),/budget/);assert.equal((await entries(other)).length,0);});
-test('LW ledger persistence fails before provider; secret echo is removed from durable trace',async()=>{let calls=0;const root=await temp(),bad=path.join(root,'bad');await fs.writeFile(bad,'blocked');const provider={name:'fake',model:'fake',secrets:['known-secret'],complete:async()=>{calls++;return {text:'{"secret":"known-secret"}',bytes:25,finishReason:'stop'};}};await assert.rejects(metered(provider,bad,{session:'s',freeze:'f',phase:'qa'}).complete({system:'test',user:'test'}));assert.equal(calls,0);const good=path.join(root,'ledger');await metered(provider,good,{session:'s',freeze:'f',phase:'qa'}).complete({system:'test',user:'test'});assert.equal(calls,1);const receipt=await json(path.join(good,'attempt-01.result.json'));assert.equal(receipt.text,'[redacted credential candidate]');assert(!(await fs.readFile(path.join(good,'attempt-01.result.json'),'utf8')).includes('known-secret'));});
-test('LW unapproved release, bad checksum/freeze/sample reject offline and prepare never reseeds',async()=>{const m=await prepare(),file=path.join(m.root,'release-template.json'),r=await json(file);await assert.rejects(validate(m.root,file,'bad'),/binding/);await assert.rejects(validate(m.root,file,sha(await fs.readFile(file))),/binding/);const release={...r,approved:true,authorization:'offline fixture only',freeze:'changed'};const bad=path.join(m.root,'bad-release.json');await fs.writeFile(bad,JSON.stringify(release));await assert.rejects(validate(m.root,bad,sha(await fs.readFile(bad))),/binding/);const changed={...r,approved:true,authorization:'offline fixture only',inputShas:{...r.inputShas,B:'changed'}};await fs.writeFile(bad,JSON.stringify(changed));await assert.rejects(validate(m.root,bad,sha(await fs.readFile(bad))),/sample SHA/);await assert.rejects(prepare(m.root),/already exists/);await assert.rejects(prepare(LEDGER),/real LW ledger/);});
-test('LW QA stops before any model request until independent HUMAN confirmation',async()=>{const m=await prepare();let calls=0;const p={name:'fake',model:'fake',complete:async()=>{calls++;throw Error('must not run');}};await assert.rejects(phase(m.root,'qa',p,{ledger:path.join(m.root,'fake-ledger')}),/explicitly HUMAN confirm/);assert.equal(calls,0);});
+const temp = () => fs.mkdtemp(path.join(os.tmpdir(), 'lw-real-test-'));
+test('LW real-wire fake completes standard3, Raw-answer2, save1, requery2 and insufficient1 with explicit fake HUMAN', async () => {
+  const r = await fake();
+  assert.equal(r.calls, 9);
+  assert.equal(r.realRequests, 0);
+  assert.equal(r.configReads, 0);
+  const rows = await entries(path.join(r.root, 'fake-ledger'));
+  assert.deepEqual(
+    rows.map((x: any) => x.phase),
+    ['extract', 'extract', 'extract', 'qa', 'qa', 'save', 'requery', 'requery', 'no_evidence'],
+  );
+  const f = await open(r.root);
+  const saved = await f.q.answers.get((await json(path.join(r.root, 'manifest.json'))).ids.qa);
+  assert(saved.readRaw.length > 0);
+  assert.equal(
+    (await f.q.answers.get((await json(path.join(r.root, 'manifest.json'))).ids.no_evidence)).status,
+    'insufficient',
+  );
+  assert.equal((await f.f.rawStore.list()).length, 3);
+  assert((await f.f.wiki.allRecords()).some((w: any) => w.answerDerivations?.length));
+});
+test('LW pending survives actual process exit, append-only 1..12 and reserve future core requests', async () => {
+  const root = await temp(),
+    url = pathToFileURL(path.resolve('tests/support/lw-real-runner.mjs')).href;
+  const child = spawnSync(
+    process.execPath,
+    [
+      '--import',
+      'tsx',
+      '--input-type=module',
+      '-e',
+      `import{reserve}from ${JSON.stringify(url)};await reserve(${JSON.stringify(root)},{session:'s',freeze:'f',phase:'qa'});process.exit(17);`,
+    ],
+    { windowsHide: true, encoding: 'utf8' },
+  );
+  assert.equal(child.status, 17, child.stderr);
+  assert.equal((await entries(root)).length, 1);
+  await assert.rejects(reserve(root, { session: 'replacement', freeze: 'f' }), /another preparation/);
+  for (let i = 1; i < 12; i++) await reserve(root, { session: 's', freeze: 'f' });
+  assert.equal((await entries(root)).length, 12);
+  await assert.rejects(reserve(root, { session: 's', freeze: 'f' }), /budget/);
+  const other = await temp();
+  await assert.rejects(reserve(other, { session: 's', freeze: 'f' }, 12), /budget/);
+  assert.equal((await entries(other)).length, 0);
+});
+test('LW ledger persistence fails before provider; secret echo is removed from durable trace', async () => {
+  let calls = 0;
+  const root = await temp(),
+    bad = path.join(root, 'bad');
+  await fs.writeFile(bad, 'blocked');
+  const provider = {
+    name: 'fake',
+    model: 'fake',
+    secrets: ['known-secret'],
+    complete: async () => {
+      calls++;
+      return { text: '{"secret":"known-secret"}', bytes: 25, finishReason: 'stop' };
+    },
+  };
+  await assert.rejects(
+    metered(provider, bad, { session: 's', freeze: 'f', phase: 'qa' }).complete({ system: 'test', user: 'test' }),
+  );
+  assert.equal(calls, 0);
+  const good = path.join(root, 'ledger');
+  await metered(provider, good, { session: 's', freeze: 'f', phase: 'qa' }).complete({ system: 'test', user: 'test' });
+  assert.equal(calls, 1);
+  const receipt = await json(path.join(good, 'attempt-01.result.json'));
+  assert.equal(receipt.text, '[redacted credential candidate]');
+  assert(!(await fs.readFile(path.join(good, 'attempt-01.result.json'), 'utf8')).includes('known-secret'));
+});
+test('LW unapproved release, bad checksum/freeze/sample reject offline and prepare never reseeds', async () => {
+  const m = await prepare(),
+    file = path.join(m.root, 'release-template.json'),
+    r = await json(file);
+  await assert.rejects(validate(m.root, file, 'bad'), /binding/);
+  await assert.rejects(validate(m.root, file, sha(await fs.readFile(file))), /binding/);
+  const release = { ...r, approved: true, authorization: 'offline fixture only', freeze: 'changed' };
+  const bad = path.join(m.root, 'bad-release.json');
+  await fs.writeFile(bad, JSON.stringify(release));
+  await assert.rejects(validate(m.root, bad, sha(await fs.readFile(bad))), /binding/);
+  const changed = {
+    ...r,
+    approved: true,
+    authorization: 'offline fixture only',
+    inputShas: { ...r.inputShas, B: 'changed' },
+  };
+  await fs.writeFile(bad, JSON.stringify(changed));
+  await assert.rejects(validate(m.root, bad, sha(await fs.readFile(bad))), /sample SHA/);
+  await assert.rejects(prepare(m.root), /already exists/);
+  await assert.rejects(prepare(LEDGER), /real LW ledger/);
+});
+test('LW QA stops before any model request until independent HUMAN confirmation', async () => {
+  const m = await prepare();
+  let calls = 0;
+  const p = {
+    name: 'fake',
+    model: 'fake',
+    complete: async () => {
+      calls++;
+      throw Error('must not run');
+    },
+  };
+  await assert.rejects(
+    phase(m.root, 'qa', p, { ledger: path.join(m.root, 'fake-ledger') }),
+    /explicitly HUMAN confirm/,
+  );
+  assert.equal(calls, 0);
+});

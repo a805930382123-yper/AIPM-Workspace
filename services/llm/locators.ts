@@ -46,24 +46,45 @@ export function buildEvidenceLocatorCatalog(
 ): EvidenceLocator[] {
   const maxChars = limits.maxLocatorChars ?? MAX_EVIDENCE_LOCATOR_CHARS;
   const maxLocators = limits.maxLocators ?? MAX_EVIDENCE_LOCATORS_PER_CHUNK;
-  if (!Number.isInteger(chunk.start) || !Number.isInteger(chunk.end) || chunk.start < 0 || chunk.end > body.length || chunk.end <= chunk.start || body.slice(chunk.start, chunk.end) !== chunk.text) {
-    throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段的定位目录无法对应完整 Raw 区间。`, 500, { chunkIndex: chunk.index });
+  if (
+    !Number.isInteger(chunk.start) ||
+    !Number.isInteger(chunk.end) ||
+    chunk.start < 0 ||
+    chunk.end > body.length ||
+    chunk.end <= chunk.start ||
+    body.slice(chunk.start, chunk.end) !== chunk.text
+  ) {
+    throw new LlmError(
+      'LLM_EVIDENCE_CATALOG_INVALID',
+      `第 ${chunk.index + 1} 段的定位目录无法对应完整 Raw 区间。`,
+      500,
+      { chunkIndex: chunk.index },
+    );
   }
   if (!Number.isInteger(maxChars) || maxChars < 1 || !Number.isInteger(maxLocators) || maxLocators < 1) {
-    throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', '证据定位目录的边界配置无效。', 500, { chunkIndex: chunk.index });
+    throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', '证据定位目录的边界配置无效。', 500, {
+      chunkIndex: chunk.index,
+    });
   }
 
   const locators: EvidenceLocator[] = [];
   let start = chunk.start;
   while (start < chunk.end) {
     if (locators.length >= maxLocators) {
-      throw new LlmError('LLM_EVIDENCE_CATALOG_LIMIT', `第 ${chunk.index + 1} 段需要超过 ${maxLocators} 个定位锚点，已停止提取。`, 422, { chunkIndex: chunk.index, maxLocators });
+      throw new LlmError(
+        'LLM_EVIDENCE_CATALOG_LIMIT',
+        `第 ${chunk.index + 1} 段需要超过 ${maxLocators} 个定位锚点，已停止提取。`,
+        422,
+        { chunkIndex: chunk.index, maxLocators },
+      );
     }
     let limit = Math.min(start + maxChars, chunk.end);
     if (!isSurrogateSafeBoundary(body, limit)) limit -= 1;
     const end = preferredBoundary(body, start, limit) ?? limit;
     if (end <= start || !isSurrogateSafeBoundary(body, end)) {
-      throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段无法生成安全定位锚点。`, 500, { chunkIndex: chunk.index });
+      throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段无法生成安全定位锚点。`, 500, {
+        chunkIndex: chunk.index,
+      });
     }
     const ordinal = String(locators.length + 1).padStart(3, '0');
     locators.push({ id: `c${chunk.index + 1}-l${ordinal}`, start, end, text: body.slice(start, end) });
@@ -72,13 +93,27 @@ export function buildEvidenceLocatorCatalog(
 
   let cursor = chunk.start;
   for (const locator of locators) {
-    if (locator.start !== cursor || locator.end <= locator.start || locator.end - locator.start > maxChars || body.slice(locator.start, locator.end) !== locator.text) {
-      throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段的定位目录覆盖检查失败。`, 500, { chunkIndex: chunk.index });
+    if (
+      locator.start !== cursor ||
+      locator.end <= locator.start ||
+      locator.end - locator.start > maxChars ||
+      body.slice(locator.start, locator.end) !== locator.text
+    ) {
+      throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段的定位目录覆盖检查失败。`, 500, {
+        chunkIndex: chunk.index,
+      });
     }
     cursor = locator.end;
   }
-  if (!locators.length || cursor !== chunk.end || locators.length > maxLocators || new Set(locators.map(item => item.id)).size !== locators.length) {
-    throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段的定位目录未完整覆盖chunk。`, 500, { chunkIndex: chunk.index });
+  if (
+    !locators.length ||
+    cursor !== chunk.end ||
+    locators.length > maxLocators ||
+    new Set(locators.map((item) => item.id)).size !== locators.length
+  ) {
+    throw new LlmError('LLM_EVIDENCE_CATALOG_INVALID', `第 ${chunk.index + 1} 段的定位目录未完整覆盖chunk。`, 500, {
+      chunkIndex: chunk.index,
+    });
   }
   return locators;
 }
@@ -96,7 +131,9 @@ export function locatorProviderSchema(base: JsonSchemaNode): JsonSchemaNode {
   schema.required = [...schema.required, 'evidence_format_version'];
   properties.evidence_format_version = { type: 'integer', enum: [EVIDENCE_LOCATOR_FORMAT_VERSION] };
   evidenceSchema.items = {
-    type: 'object', additionalProperties: false, required: ['id', 'locatorId'],
+    type: 'object',
+    additionalProperties: false,
+    required: ['id', 'locatorId'],
     properties: {
       id: { type: 'string', minLength: 1, maxLength: 64 },
       locatorId: { type: 'string', minLength: 1, maxLength: 64 },
@@ -114,7 +151,7 @@ export function resolveLocatorEvidence(
 ): Record<string, unknown> {
   const suggestedPages = value.suggested_pages;
   if (!Array.isArray(suggestedPages)) return value;
-  const byId = new Map(catalog.map(locator => [locator.id, locator]));
+  const byId = new Map(catalog.map((locator) => [locator.id, locator]));
   const pages = suggestedPages.map((page, pageIndex) => {
     if (!page || typeof page !== 'object' || Array.isArray(page)) return page;
     const record = page as Record<string, unknown>;
@@ -127,7 +164,12 @@ export function resolveLocatorEvidence(
         const locatorId = evidence.locatorId;
         const locator = typeof locatorId === 'string' ? byId.get(locatorId) : undefined;
         if (!locator) {
-          throw new LlmError('LLM_EVIDENCE_UNKNOWN_LOCATOR', `第 ${chunkIndex + 1} 段第 ${pageIndex + 1} 条建议的第 ${evidenceIndex + 1} 个证据引用了未知或其它分块的定位锚点。`, 422, { chunkIndex, locatorId: typeof locatorId === 'string' ? locatorId : undefined });
+          throw new LlmError(
+            'LLM_EVIDENCE_UNKNOWN_LOCATOR',
+            `第 ${chunkIndex + 1} 段第 ${pageIndex + 1} 条建议的第 ${evidenceIndex + 1} 个证据引用了未知或其它分块的定位锚点。`,
+            422,
+            { chunkIndex, locatorId: typeof locatorId === 'string' ? locatorId : undefined },
+          );
         }
         return { id: evidence.id, rawId, quote: locator.text, start: locator.start, end: locator.end };
       }),

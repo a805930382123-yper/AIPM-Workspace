@@ -20,12 +20,19 @@ import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { OpenAiCompatibleProvider } from '../services/llm/provider.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
 import { validateRaw } from '../server/validation.ts';
-import { buildPayloadForChunk, chunkFromPrompt, contentOf, rawIdFromPrompt, startFakeProvider, type FakeProvider } from './support/fake-llm.ts';
+import {
+  buildPayloadForChunk,
+  chunkFromPrompt,
+  contentOf,
+  rawIdFromPrompt,
+  startFakeProvider,
+  type FakeProvider,
+} from './support/fake-llm.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rulesDir = path.join(root, 'rules');
 const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // 独立验收使用的随机无效测试 Key 形状：它出现在 Provider 回显里，但绝不能出现在任何产品表面上。
 const LEAK_KEY = 'test-key-9f2b7c41d8a37e65b4c9021f';
 
@@ -40,9 +47,14 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
   const jobs = new ExtractionJobStore(dataRoot);
   const commits = new WikiCommitService({ root: dataRoot, wikiStore, drafts, rawStates, rawStore });
   await Promise.all([rawStates.initialize(), drafts.initialize(), jobs.initialize(), commits.initialize()]);
-  const fake = await startFakeProvider(request => {
+  const fake = await startFakeProvider((request) => {
     const chunk = chunkFromPrompt(request.user);
-    return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }])) };
+    return {
+      kind: 'content',
+      content: contentOf(
+        buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `主题${chunk.index + 1}` }]),
+      ),
+    };
   });
   configure(fake);
   const provider = new OpenAiCompatibleProvider({ baseUrl: fake.url, model: 'fake-model', apiKey, source: 'env' });
@@ -59,9 +71,18 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
     };
   };
   const runner = new ExtractionRunner({
-    root: dataRoot, llm, jobs, drafts, rawStates, rawStore, provider: () => provider, rulesDir, draftRules,
+    root: dataRoot,
+    llm,
+    jobs,
+    drafts,
+    rawStates,
+    rawStore,
+    provider: () => provider,
+    rulesDir,
+    draftRules,
   });
-  const createRaw = async (body: string, title = '渠道动销资料') => rawStore.create(validateRaw({ title, sourceType: 'report', sourceName: '自检来源名', tags: ['渠道'], body }));
+  const createRaw = async (body: string, title = '渠道动销资料') =>
+    rawStore.create(validateRaw({ title, sourceType: 'report', sourceName: '自检来源名', tags: ['渠道'], body }));
   const waitForJob = async (jobId: string, timeoutMs = 30000) => {
     const deadline = Date.now() + timeoutMs;
     for (;;) {
@@ -72,7 +93,11 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
     }
   };
   const extract = async (rawId: string, restart = false) => {
-    const started = await runner.start(rawId, { newJobId: crypto.randomUUID(), now: new Date().toISOString(), ...(restart ? { restart: true } : {}) });
+    const started = await runner.start(rawId, {
+      newJobId: crypto.randomUUID(),
+      now: new Date().toISOString(),
+      ...(restart ? { restart: true } : {}),
+    });
     return { ...started, finished: await waitForJob(started.job.id) };
   };
   const draftFor = async (rawId: string, restart = false) => {
@@ -82,28 +107,62 @@ async function setup(configure: (fake: FakeProvider) => void = () => undefined, 
     assert.ok(draft, '草稿必须存在');
     return draft;
   };
-  const wikiFiles = async () => (await readdir(path.join(dataRoot, 'knowledge', 'wiki'))).filter(name => name !== 'index.md' && name.endsWith('.md')).sort();
+  const wikiFiles = async () =>
+    (await readdir(path.join(dataRoot, 'knowledge', 'wiki')))
+      .filter((name) => name !== 'index.md' && name.endsWith('.md'))
+      .sort();
   const confirm = async (draftId: string, selectedPageIds: string[], key: string) => {
     const current = await drafts.get(draftId);
-    return wikiStore.withLock(() => commits.confirm({ draftId, baseRevision: current?.revision ?? 0, selectedPageIds, idempotencyKey: key, operationId: crypto.randomUUID(), now: new Date().toISOString() }));
+    return wikiStore.withLock(() =>
+      commits.confirm({
+        draftId,
+        baseRevision: current?.revision ?? 0,
+        selectedPageIds,
+        idempotencyKey: key,
+        operationId: crypto.randomUUID(),
+        now: new Date().toISOString(),
+      }),
+    );
   };
   return {
-    dataRoot, rawStore, wikiStore, rawStates, drafts, jobs, commits, runner, fake, createRaw, draftFor, wikiFiles, waitForJob, extract, confirm, draftRules,
+    dataRoot,
+    rawStore,
+    wikiStore,
+    rawStates,
+    drafts,
+    jobs,
+    commits,
+    runner,
+    fake,
+    createRaw,
+    draftFor,
+    wikiFiles,
+    waitForJob,
+    extract,
+    confirm,
+    draftRules,
     clean: async () => {
       await fake.close();
       // Windows may still be flushing the last state files; retry briefly instead of failing.
       for (let attempt = 0; attempt < 5; attempt++) {
-        try { await rm(dataRoot, { recursive: true, force: true }); return; }
-        catch { await delay(150); }
+        try {
+          await rm(dataRoot, { recursive: true, force: true });
+          return;
+        } catch {
+          await delay(150);
+        }
       }
     },
   };
 }
 
 test('F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都不含密钥', async () => {
-  const context = await setup(fake => {
+  const context = await setup((fake) => {
     // 复刻独立场景：Provider 在 200 响应体里回显请求头中的 Key，并且内容不是合法 JSON。
-    fake.setHandler(request => ({ kind: 'content', content: `not json at all; your key is ${request.authorization?.replace(/^Bearer\s+/u, '') ?? ''}` }));
+    fake.setHandler((request) => ({
+      kind: 'content',
+      content: `not json at all; your key is ${request.authorization?.replace(/^Bearer\s+/u, '') ?? ''}`,
+    }));
   }, LEAK_KEY);
   try {
     const raw = await context.createRaw('渠道动销资料正文。', '密钥泄漏探针');
@@ -116,7 +175,10 @@ test('F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都�
     assert.match(serialized, /LLM_INVALID_JSON/);
     assert.match(serialized, /preview/, '仍要给出可用于诊断的（已脱敏）形状信息');
     // 任务文件与 Raw 状态文件都必须零精确命中。
-    const jobFile = await readFile(path.join(context.dataRoot, 'state', 'extraction-jobs', `${job.finished.id}.json`), 'utf8');
+    const jobFile = await readFile(
+      path.join(context.dataRoot, 'state', 'extraction-jobs', `${job.finished.id}.json`),
+      'utf8',
+    );
     assert.equal(jobFile.includes(LEAK_KEY), false, '任务文件不得包含密钥');
     const stateFile = await readFile(path.join(context.dataRoot, 'state', 'raw-processing', `${raw.id}.json`), 'utf8');
     assert.equal(stateFile.includes(LEAK_KEY), false, 'Raw 状态文件不得包含密钥');
@@ -124,19 +186,30 @@ test('F04-10 非法 JSON 回显测试 Key 时，job API/任务文件/状态都�
     assert.equal(stateFile.includes('LLM_INVALID_JSON'), true, 'Raw 状态必须保留可诊断的错误码');
     assert.equal((await context.wikiFiles()).length, 0, '失败路径不得写正式知识');
     // 其它错误码路径同样脱敏：鉴权失败回显 Key。
-    context.fake.setHandler(request => ({ kind: 'status', status: 401, body: { error: { message: `invalid api key ${request.authorization?.replace(/^Bearer\s+/u, '') ?? ''}` } } }));
+    context.fake.setHandler((request) => ({
+      kind: 'status',
+      status: 401,
+      body: { error: { message: `invalid api key ${request.authorization?.replace(/^Bearer\s+/u, '') ?? ''}` } },
+    }));
     const auth = await context.extract(raw.id);
     assert.equal(auth.finished.error?.code, 'LLM_AUTH_FAILED');
     assert.equal(JSON.stringify(auth.finished).includes(LEAK_KEY), false, '鉴权错误不得回显密钥');
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
 
 test('F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会写入它', async () => {
-  const context = await setup(fake => {
+  const context = await setup((fake) => {
     // schema 合法但把 Key 塞进了事实载荷。
-    fake.setHandler(request => {
+    fake.setHandler((request) => {
       const chunk = chunkFromPrompt(request.user);
-      const payload = buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '正常标题', factText: '业务事实里泄漏密钥 ' + (request.authorization?.replace(/^Bearer\s+/u, '') ?? '') }]);
+      const payload = buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [
+        {
+          title: '正常标题',
+          factText: '业务事实里泄漏密钥 ' + (request.authorization?.replace(/^Bearer\s+/u, '') ?? ''),
+        },
+      ]);
       return { kind: 'content', content: contentOf(payload) };
     });
   }, LEAK_KEY);
@@ -153,29 +226,60 @@ test('F04-10 Provider 输出里带上密钥时，草稿与正式 Wiki 都不会�
       assert.equal((await readFile(path.join(context.dataRoot, 'drafts', file), 'utf8')).includes(LEAK_KEY), false);
     }
     assert.equal((await context.wikiFiles()).length, 0);
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
 
 test('F04-07 旧草稿合并保留所有不同事实与证据，重复事实合并证据，事实不移入推断', async () => {
-  const context = await setup(fake => {
-    fake.setHandler(request => {
+  const context = await setup((fake) => {
+    fake.setHandler((request) => {
       const chunk = chunkFromPrompt(request.user);
       const rawId = rawIdFromPrompt(request.user);
-      const page = chunk.index === 0
-        ? { title: '合并候选A', facts: [{ text: '事实A：动销率需要与库存一起看。', evidenceIds: ['e1'] }] }
-        : { title: '合并候选B', facts: [{ text: '事实B：库存周转天数反映资金占用。', evidenceIds: ['e1'] }, { text: '事实A：动销率需要与库存一起看。', evidenceIds: ['e1'] }] };
+      const page =
+        chunk.index === 0
+          ? { title: '合并候选A', facts: [{ text: '事实A：动销率需要与库存一起看。', evidenceIds: ['e1'] }] }
+          : {
+              title: '合并候选B',
+              facts: [
+                { text: '事实B：库存周转天数反映资金占用。', evidenceIds: ['e1'] },
+                { text: '事实A：动销率需要与库存一起看。', evidenceIds: ['e1'] },
+              ],
+            };
       const quote = chunk.text.trim().slice(0, 16);
       const at = chunk.text.indexOf(quote);
-      return { kind: 'content', content: contentOf({
-        document: { title: `资料-第${chunk.index + 1}段`, main_topic: `主题${chunk.index + 1}`, summary: `第 ${chunk.index + 1} 段摘要` },
-        suggested_pages: [{
-          title: page.title, type: 'concept', category: 'industry_basics', one_line_definition: `${page.title}的说明`,
-          source_facts: page.facts,
-          ai_organized: [`${page.title}的整理`], ai_inferences: [`${page.title}的推断`],
-          related_pages: [], open_questions: [chunk.index === 0 ? '各渠道是否使用相同的动销统计口径？' : '安全库存是否按地区区分？'],
-          source_evidence: [{ id: 'e1', rawId, quote, start: chunk.start + Math.max(0, at), end: chunk.start + Math.max(0, at) + quote.length }],
-        }],
-      }) };
+      return {
+        kind: 'content',
+        content: contentOf({
+          document: {
+            title: `资料-第${chunk.index + 1}段`,
+            main_topic: `主题${chunk.index + 1}`,
+            summary: `第 ${chunk.index + 1} 段摘要`,
+          },
+          suggested_pages: [
+            {
+              title: page.title,
+              type: 'concept',
+              category: 'industry_basics',
+              one_line_definition: `${page.title}的说明`,
+              source_facts: page.facts,
+              ai_organized: [`${page.title}的整理`],
+              ai_inferences: [`${page.title}的推断`],
+              related_pages: [],
+              open_questions: [chunk.index === 0 ? '各渠道是否使用相同的动销统计口径？' : '安全库存是否按地区区分？'],
+              source_evidence: [
+                {
+                  id: 'e1',
+                  rawId,
+                  quote,
+                  start: chunk.start + Math.max(0, at),
+                  end: chunk.start + Math.max(0, at) + quote.length,
+                },
+              ],
+            },
+          ],
+        }),
+      };
     });
   });
   try {
@@ -183,28 +287,50 @@ test('F04-07 旧草稿合并保留所有不同事实与证据，重复事实合�
     const filler = '渠道库存周转与动销分析：门店补货节奏、经销商库存水位。\r\n';
     let body = '事实A：动销率需要与库存一起看。尚未确认：各渠道是否使用相同的动销统计口径？\r\n';
     while (body.length < 8200) body += filler;
-    body += '\n事实B：库存周转天数反映资金占用。事实A：动销率需要与库存一起看。门店补货：安全库存与补货周期决定缺货风险。尚未确认：安全库存是否按地区区分？\r\n';
+    body +=
+      '\n事实B：库存周转天数反映资金占用。事实A：动销率需要与库存一起看。门店补货：安全库存与补货周期决定缺货风险。尚未确认：安全库存是否按地区区分？\r\n';
     const raw = await context.createRaw(body, '合并事实资料');
     const draft = await historicalB04Draft(context.dataRoot, await context.draftFor(raw.id));
     assert.equal(draft.pages.length, 2);
-    assert.ok(draft.pages.every(page => page.ai_organized.length === 0 && page.ai_inferences.length === 0), 'KB02 新草稿不自动生成整理/推断');
+    assert.ok(
+      draft.pages.every((page) => page.ai_organized.length === 0 && page.ai_inferences.length === 0),
+      'KB02 新草稿不自动生成整理/推断',
+    );
     const [a, b] = draft.pages;
-    const reviewed = await context.drafts.patch(draft.id, { baseRevision: draft.revision, pages: [
-      { pageId: a.pageId, ai_organized: ['人工整理A'], ai_inferences: ['人工推断A'] },
-      { pageId: b.pageId, ai_organized: ['人工整理B'], ai_inferences: ['人工推断B'] },
-    ] }, { body: raw.body, rules: await context.draftRules() });
-    const merged = await context.drafts.patch(reviewed.id, { baseRevision: reviewed.revision, merge: { pageIds: [a.pageId, b.pageId] } }, { body: raw.body, rules: await context.draftRules() });
+    const reviewed = await context.drafts.patch(
+      draft.id,
+      {
+        baseRevision: draft.revision,
+        pages: [
+          { pageId: a.pageId, ai_organized: ['人工整理A'], ai_inferences: ['人工推断A'] },
+          { pageId: b.pageId, ai_organized: ['人工整理B'], ai_inferences: ['人工推断B'] },
+        ],
+      },
+      { body: raw.body, rules: await context.draftRules() },
+    );
+    const merged = await context.drafts.patch(
+      reviewed.id,
+      { baseRevision: reviewed.revision, merge: { pageIds: [a.pageId, b.pageId] } },
+      { body: raw.body, rules: await context.draftRules() },
+    );
     const page = merged.pages[0];
     assert.equal(merged.pages.length, 1, '两个建议合并为一条');
-    const texts = page.source_facts.map(fact => fact.text);
+    const texts = page.source_facts.map((fact) => fact.text);
     assert.ok(texts.includes('事实A：动销率需要与库存一起看。'), `合并后必须保留事实A，实际 ${JSON.stringify(texts)}`);
-    assert.ok(texts.includes('事实B：库存周转天数反映资金占用。'), `合并后必须保留事实B，实际 ${JSON.stringify(texts)}`);
-    assert.equal(texts.filter(text => text.startsWith('事实A')).length, 2, '不同原记录/位置的同字句必须保留，不能按文字去重');
+    assert.ok(
+      texts.includes('事实B：库存周转天数反映资金占用。'),
+      `合并后必须保留事实B，实际 ${JSON.stringify(texts)}`,
+    );
+    assert.equal(
+      texts.filter((text) => text.startsWith('事实A')).length,
+      2,
+      '不同原记录/位置的同字句必须保留，不能按文字去重',
+    );
     // 每条事实的证据都必须仍然有效，且重复事实的证据被合并。
     for (const fact of page.source_facts) {
       assert.ok(fact.evidenceIds.length >= 1, '事实必须保留证据引用');
       for (const id of fact.evidenceIds) {
-        const evidence = page.source_evidence.find(item => item.id === id);
+        const evidence = page.source_evidence.find((item) => item.id === id);
         assert.ok(evidence, `证据 ${id} 必须存在`);
         assert.equal(raw.body.slice(evidence.start, evidence.end), evidence.quote, '证据必须仍能按全局索引核验');
       }
@@ -213,25 +339,38 @@ test('F04-07 旧草稿合并保留所有不同事实与证据，重复事实合�
     assert.deepEqual(page.ai_organized, ['人工整理A', '人工整理B'], '合并须保留两侧经用户编辑的整理内容');
     assert.deepEqual(page.ai_inferences, ['人工推断A', '人工推断B'], '合并须保留两侧经用户编辑的推断内容');
     assert.ok(page.open_questions.length >= 2, '待确认问题必须保留两侧内容');
-    assert.equal(page.source_facts.some(fact => fact.text.includes('推断')), false, '事实不能被替换成推断');
+    assert.equal(
+      page.source_facts.some((fact) => fact.text.includes('推断')),
+      false,
+      '事实不能被替换成推断',
+    );
     // 合并后的草稿仍可编辑并确认，证据在提交前再次校验通过。
     await approveDraft(context.drafts, merged.id, raw.body);
     const outcome = await context.confirm(merged.id, [page.pageId], 'merge-key');
     assert.equal(outcome.manifest.status, 'completed');
     const written = await context.wikiStore.get(outcome.manifest.snapshot.pageRecords[0].id);
     assert.ok(written);
-    assert.ok(written?.body.includes('人工推断A') && written.body.includes('人工推断B'), '正式Wiki必须持久化合并前两侧人工推断');
+    assert.ok(
+      written?.body.includes('人工推断A') && written.body.includes('人工推断B'),
+      '正式Wiki必须持久化合并前两侧人工推断',
+    );
     for (const text of texts) assert.ok(written?.body.includes(text), `正式页必须包含事实「${text}」`);
     assert.match(written?.body ?? '', /## 来源事实[\s\S]*事实A[\s\S]*事实B/);
     assert.deepEqual(page.ai_inferences, ['人工推断A', '人工推断B'], '正式页必须保留经用户审核的两侧推断');
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
 
 test('F04-08 并发提取只产生一个活动任务；删除与提取不会留下孤儿草稿', async () => {
-  const context = await setup(fake => {
-    fake.setHandler(request => {
+  const context = await setup((fake) => {
+    fake.setHandler((request) => {
       const chunk = chunkFromPrompt(request.user);
-      return { kind: 'delay', ms: 150, content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '并发主题' }])) };
+      return {
+        kind: 'delay',
+        ms: 150,
+        content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '并发主题' }])),
+      };
     });
   });
   try {
@@ -245,16 +384,23 @@ test('F04-08 并发提取只产生一个活动任务；删除与提取不会留�
     assert.equal(new Set([a.job.id, b.job.id]).size, 1, '同 Raw 只能有一个活动任务');
     const finished = await context.waitForJob(a.job.id);
     assert.equal(finished.status, 'completed');
-    const draftFiles = (await readdir(path.join(context.dataRoot, 'drafts'))).filter(name => name.endsWith('.json'));
+    const draftFiles = (await readdir(path.join(context.dataRoot, 'drafts'))).filter((name) => name.endsWith('.json'));
     assert.equal(draftFiles.length, 1, '并发提取只能产生一份草稿');
     await context.clean();
-  } catch (error) { await context.clean(); throw error; }
+  } catch (error) {
+    await context.clean();
+    throw error;
+  }
 
   // 提取进行中删除 Raw：删除必须被拒绝（活动工作），且不会出现孤儿草稿。
-  const second = await setup(fake => {
-    fake.setHandler(request => {
+  const second = await setup((fake) => {
+    fake.setHandler((request) => {
       const chunk = chunkFromPrompt(request.user);
-      return { kind: 'delay', ms: 400, content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '晚到主题' }])) };
+      return {
+        kind: 'delay',
+        ms: 400,
+        content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: '晚到主题' }])),
+      };
     });
   });
   try {
@@ -272,7 +418,10 @@ test('F04-08 并发提取只产生一个活动任务；删除与提取不会留�
     assert.ok(draft, '正常完成必须有草稿');
     // 取消亦不复活：取消后的晚到结果不创建草稿。
     const third = await second.createRaw('渠道动销资料正文。', '取消竞态');
-    const running = await second.runner.start(third.id, { newJobId: crypto.randomUUID(), now: new Date().toISOString() });
+    const running = await second.runner.start(third.id, {
+      newJobId: crypto.randomUUID(),
+      now: new Date().toISOString(),
+    });
     await second.runner.cancel(running.job.id);
     await delay(900);
     const afterCancel = await second.jobs.get(running.job.id);
@@ -280,7 +429,9 @@ test('F04-08 并发提取只产生一个活动任务；删除与提取不会留�
     assert.equal((await second.drafts.findActiveForRaw(third.id))?.status, undefined, '取消后不得留下待审核草稿');
     const state3 = await second.rawStates.get(third.id);
     assert.equal(state3.status, 'unprocessed', '取消后状态回到稳定值');
-  } finally { await second.clean(); }
+  } finally {
+    await second.clean();
+  }
 });
 
 test('F04-09 清单写入失败时如实报告：先写清单失败 → committed=false；文件已写后失败 → committed/已写IDs/阶段齐全', async () => {
@@ -296,14 +447,24 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
       await writeFile(commitDir, 'not a directory', 'utf8');
       await reviewSelectedChanges(blocking.drafts, draft, [draft.pages[0].pageId]);
       const error = await (async () => {
-        try { await blocking.confirm(draft.id, [draft.pages[0].pageId], 'manifest-preflight'); }
-        catch (problem) { return problem as { code: string; status: number; message: string; details?: Record<string, unknown> }; }
+        try {
+          await blocking.confirm(draft.id, [draft.pages[0].pageId], 'manifest-preflight');
+        } catch (problem) {
+          return problem as { code: string; status: number; message: string; details?: Record<string, unknown> };
+        }
         return undefined;
       })();
       assert.ok(error, '清单写不动时必须失败，不能伪装成功');
       assert.equal(error?.status, 500);
       assert.equal(error?.code, 'COMMIT_MANIFEST_WRITE_FAILED', `必须给出可诊断的错误码，实际 ${error?.code}`);
-      const details = error?.details as { committed?: boolean; recoverable?: boolean; operationId?: string; writtenWikiIds?: string[]; phases?: unknown[]; cause?: string };
+      const details = error?.details as {
+        committed?: boolean;
+        recoverable?: boolean;
+        operationId?: string;
+        writtenWikiIds?: string[];
+        phases?: unknown[];
+        cause?: string;
+      };
       assert.equal(details?.committed, false, '此时不应声称已提交');
       assert.equal(details?.recoverable, false);
       assert.match(String(details?.operationId), /^[0-9a-f-]{36}$/i, '仍要给出 operationId 便于排查');
@@ -312,7 +473,9 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
       assert.equal(typeof details?.cause, 'string');
       assert.equal((await blocking.wikiFiles()).length, 0, '零正式写入');
       assert.equal((await blocking.drafts.get(draft.id))?.status, 'pending_confirmation', '草稿仍可重试');
-    } finally { await blocking.clean(); }
+    } finally {
+      await blocking.clean();
+    }
 
     // 通道二：Source 已写入、清单无法更新（真实故障），恢复时报错也必须带全部分提交事实。
     const raw = await context.createRaw('渠道动销资料正文。', '清单故障');
@@ -322,19 +485,30 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
     await mkdir(indexFile);
     await reviewSelectedChanges(context.drafts, draft, [draft.pages[0].pageId]);
     const firstError = await (async () => {
-      try { await context.confirm(draft.id, [draft.pages[0].pageId], 'manifest-failure'); }
-      catch (problem) { return problem as { code: string; status: number; details?: Record<string, unknown> }; }
+      try {
+        await context.confirm(draft.id, [draft.pages[0].pageId], 'manifest-failure');
+      } catch (problem) {
+        return problem as { code: string; status: number; details?: Record<string, unknown> };
+      }
       return undefined;
     })();
     assert.equal(firstError?.status, 500);
-    const firstDetails = firstError?.details as { committed?: boolean; operationId?: string; writtenWikiIds?: string[]; failedPhase?: string };
+    const firstDetails = firstError?.details as {
+      committed?: boolean;
+      operationId?: string;
+      writtenWikiIds?: string[];
+      failedPhase?: string;
+    };
     assert.equal(firstDetails?.committed, true, 'Source/页面已写，必须报告已部分提交');
     assert.equal(firstDetails?.failedPhase, 'index');
     const writtenIds = firstDetails?.writtenWikiIds ?? [];
     assert.equal(writtenIds.length, 2, '已写入 Source + 1 页');
     const operationId = String(firstDetails?.operationId);
     for (const id of writtenIds) {
-      assert.ok((await readFile(path.join(context.dataRoot, 'knowledge', 'wiki', `${id}.md`), 'utf8')).length > 0, `${id} 必须真实存在`);
+      assert.ok(
+        (await readFile(path.join(context.dataRoot, 'knowledge', 'wiki', `${id}.md`), 'utf8')).length > 0,
+        `${id} 必须真实存在`,
+      );
     }
     // 先修复 index.md（解除上一阶段的磁盘故障），再让清单本身写不动：把已存在的清单文件设为
     // 只读（仍可读，但每次 rename 覆盖都 EPERM），然后重启恢复。恢复必须报出同样的已提交事实。
@@ -344,14 +518,24 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
     const restartWithBlockedManifest = await (async () => {
       const wiki = new WikiStore(context.dataRoot, context.rawStore, rulesDir);
       await wiki.initialize();
-      const commits = new WikiCommitService({ root: context.dataRoot, wikiStore: wiki, drafts: context.drafts, rawStates: context.rawStates, rawStore: context.rawStore });
+      const commits = new WikiCommitService({
+        root: context.dataRoot,
+        wikiStore: wiki,
+        drafts: context.drafts,
+        rawStates: context.rawStates,
+        rawStore: context.rawStore,
+      });
       await commits.initialize();
       const visible = await commits.status(operationId);
       assert.ok(visible, '故障下清单仍必须可读（这正是"清单更新失败"而不是"清单消失"）');
       return { commits, visible, result: await commits.reconcile() };
     })();
     const conflicts = restartWithBlockedManifest.result.conflicts ?? [];
-    assert.equal(conflicts.length, 1, `清单写不动时必须报出冲突而不是崩掉，实际 ${JSON.stringify(restartWithBlockedManifest.result)}`);
+    assert.equal(
+      conflicts.length,
+      1,
+      `清单写不动时必须报出冲突而不是崩掉，实际 ${JSON.stringify(restartWithBlockedManifest.result)}`,
+    );
     assert.equal(conflicts[0].operationId, operationId);
     assert.equal(conflicts[0].committed, true, '恢复失败也必须如实报告已提交');
     assert.equal(conflicts[0].writtenWikiIds.length, 2, '必须列出已写入的正式文件');
@@ -360,36 +544,62 @@ test('F04-09 清单写入失败时如实报告：先写清单失败 → committe
     const afterFailedRecovery = await restartWithBlockedManifest.commits.status(operationId);
     assert.ok(afterFailedRecovery, '故障下清单必须仍可读');
     assert.equal(afterFailedRecovery.status, 'failed');
-    assert.equal(afterFailedRecovery.phases.find(phase => phase.name === 'source')?.status, 'done', '磁盘上的清单确实没有被更新（这正是持续写失败）');
-    assert.ok(['COMMIT_STATE_WRITE_FAILED', 'COMMIT_FAILED'].includes(conflicts[0].code), `错误码必须可诊断，实际 ${conflicts[0].code}`);
+    assert.equal(
+      afterFailedRecovery.phases.find((phase) => phase.name === 'source')?.status,
+      'done',
+      '磁盘上的清单确实没有被更新（这正是持续写失败）',
+    );
+    assert.ok(
+      ['COMMIT_STATE_WRITE_FAILED', 'COMMIT_FAILED'].includes(conflicts[0].code),
+      `错误码必须可诊断，实际 ${conflicts[0].code}`,
+    );
     // 解除故障再恢复：按原快照补齐同一 operationId，不复制页面、不重复日志。
     await chmod(manifestFile, 0o666);
     const wiki = new WikiStore(context.dataRoot, context.rawStore, rulesDir);
     await wiki.initialize();
-    const commits = new WikiCommitService({ root: context.dataRoot, wikiStore: wiki, drafts: context.drafts, rawStates: context.rawStates, rawStore: context.rawStore });
+    const commits = new WikiCommitService({
+      root: context.dataRoot,
+      wikiStore: wiki,
+      drafts: context.drafts,
+      rawStates: context.rawStates,
+      rawStore: context.rawStore,
+    });
     await commits.initialize();
     const recovered = await commits.reconcile();
     assert.equal(recovered.conflicts.length, 0, JSON.stringify(recovered.conflicts));
     const manifest = await commits.status(operationId);
     assert.equal(manifest?.status, 'completed', '重启必须补齐同一 operationId');
-    assert.deepEqual([...new Set(manifest?.writtenWikiIds ?? [])].sort(), [...writtenIds].sort(), '写入集合必须是同一批 ID');
+    assert.deepEqual(
+      [...new Set(manifest?.writtenWikiIds ?? [])].sort(),
+      [...writtenIds].sort(),
+      '写入集合必须是同一批 ID',
+    );
     const files = await context.wikiFiles();
     assert.equal(files.length, 2, 'Source + 1 页，恢复不得复制页面');
-    const log = (await readFile(path.join(context.dataRoot, 'knowledge', 'logs', 'wiki.jsonl'), 'utf8')).split(/\r?\n/).filter(Boolean);
+    const log = (await readFile(path.join(context.dataRoot, 'knowledge', 'logs', 'wiki.jsonl'), 'utf8'))
+      .split(/\r?\n/)
+      .filter(Boolean);
     assert.equal(log.length, 2, '恢复不得重复写日志');
     const draftAfter = await context.drafts.get(draft.id);
     assert.equal(draftAfter?.status, 'confirmed');
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
 
 test('F04-05 旧草稿复用 Source 时新页链接既有标题；新 Source 只链接本次创建页，未选保持文本', async () => {
   let round = 0;
-  const context = await setup(fake => {
+  const context = await setup((fake) => {
     // 每次提取给出不同标题，避免第二次提取与第一次的正式页面重名（那是另一条正确规则）。
-    fake.setHandler(request => {
+    fake.setHandler((request) => {
       round += 1;
       const chunk = chunkFromPrompt(request.user);
-      return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `复用主题-${round}` }])) };
+      return {
+        kind: 'content',
+        content: contentOf(
+          buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `复用主题-${round}` }]),
+        ),
+      };
     });
   });
   try {
@@ -422,37 +632,65 @@ test('F04-05 旧草稿复用 Source 时新页链接既有标题；新 Source 只
     const newPageId = outcome.manifest.snapshot.pageRecords[0].id;
     const pageRecord = await context.wikiStore.get(newPageId);
     assert.ok(pageRecord);
-    assert.ok(pageRecord?.body.includes('[[既有 Source 标题]]'), `新页必须链接既有 Source 的真实标题，实际正文：${pageRecord?.body}`);
-    assert.equal(pageRecord?.body.includes(`[[${second.source.title}]]`), false, '不得链接草稿里那个不存在的 Source 标题');
+    assert.ok(
+      pageRecord?.body.includes('[[既有 Source 标题]]'),
+      `新页必须链接既有 Source 的真实标题，实际正文：${pageRecord?.body}`,
+    );
+    assert.equal(
+      pageRecord?.body.includes(`[[${second.source.title}]]`),
+      false,
+      '不得链接草稿里那个不存在的 Source 标题',
+    );
     // 复用来源可解析：Wikilink 解析必须找到该页。
     const links = await context.wikiStore.links(newPageId);
-    const resolved = links.find(link => link.text === '既有 Source 标题');
-    assert.equal(resolved?.candidates[0]?.id, sourceId, `Wikilink 必须唯一解析到既有 Source，实际 ${JSON.stringify(links)}`);
+    const resolved = links.find((link) => link.text === '既有 Source 标题');
+    assert.equal(
+      resolved?.candidates[0]?.id,
+      sourceId,
+      `Wikilink 必须唯一解析到既有 Source，实际 ${JSON.stringify(links)}`,
+    );
     assert.equal(resolved?.status, 'found');
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
 
 test('F04-05 新 Source 只链接本次创建的选中页，未选建议按文本呈现', async () => {
-  const context = await setup(fake => {
-    fake.setHandler(request => {
+  const context = await setup((fake) => {
+    fake.setHandler((request) => {
       const chunk = chunkFromPrompt(request.user);
-      return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [
-        { title: '本次创建的指标', type: 'metric', category: 'metric' },
-        { title: '本次不创建的概念' },
-      ])) };
+      return {
+        kind: 'content',
+        content: contentOf(
+          buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [
+            { title: '本次创建的指标', type: 'metric', category: 'metric' },
+            { title: '本次不创建的概念' },
+          ]),
+        ),
+      };
     });
   });
   try {
     const raw = await context.createRaw('渠道动销资料正文。库存周转资料正文。', '选中链接集合');
     const draft = await context.draftFor(raw.id);
     assert.equal(draft.pages.length, 2);
-    const chosen = draft.pages.find(page => page.title === '本次创建的指标') as typeof draft.pages[number];
-    const skipped = draft.pages.find(page => page.title === '本次不创建的概念') as typeof draft.pages[number];
-    const change = draft.maintenance!.changes.find(item => draft.pages[item.pageIndex].pageId === chosen.pageId)!;
-    const updated = await context.drafts.reviewChange(draft.id, { baseRevision: draft.revision, changeId: change.changeId, title: '人工改名后的指标' });
+    const chosen = draft.pages.find((page) => page.title === '本次创建的指标') as (typeof draft.pages)[number];
+    const skipped = draft.pages.find((page) => page.title === '本次不创建的概念') as (typeof draft.pages)[number];
+    const change = draft.maintenance!.changes.find((item) => draft.pages[item.pageIndex].pageId === chosen.pageId)!;
+    const updated = await context.drafts.reviewChange(draft.id, {
+      baseRevision: draft.revision,
+      changeId: change.changeId,
+      title: '人工改名后的指标',
+    });
     const reviewed = await reviewSelectedChanges(context.drafts, updated, [chosen.pageId]);
-    assert.deepEqual(reviewed.maintenance!.changes.filter(item => item.decision === 'accept').map(item => item.candidate.title), ['人工改名后的指标']);
-    assert.equal(reviewed.maintenance!.changes.find(item => draft.pages[item.pageIndex].pageId === skipped.pageId)?.decision, 'defer');
+    assert.deepEqual(
+      reviewed.maintenance!.changes.filter((item) => item.decision === 'accept').map((item) => item.candidate.title),
+      ['人工改名后的指标'],
+    );
+    assert.equal(
+      reviewed.maintenance!.changes.find((item) => draft.pages[item.pageIndex].pageId === skipped.pageId)?.decision,
+      'defer',
+    );
     const outcome = await context.confirm(reviewed.id, [chosen.pageId], 'selected-key');
     const sourceId = outcome.manifest.snapshot.sourceRecord?.id as string;
     const source = await context.wikiStore.get(sourceId);
@@ -462,29 +700,48 @@ test('F04-05 新 Source 只链接本次创建的选中页，未选建议按文�
     assert.match(source?.body ?? '', /## 本次未创建的建议（未选中，待处理）/, '未选建议必须以纯文本呈现');
     assert.match(source?.body ?? '', /- 本次不创建的概念（concept，未创建；/, '未选建议按待处理文本列出');
     const pageLinks = await context.wikiStore.links(sourceId);
-    assert.deepEqual(pageLinks.map(link => link.text), ['人工改名后的指标'], `Source 正文只能有一个解析成功的链接，实际 ${JSON.stringify(pageLinks)}`);
-    const resolved = pageLinks.find(link => link.text === '人工改名后的指标');
+    assert.deepEqual(
+      pageLinks.map((link) => link.text),
+      ['人工改名后的指标'],
+      `Source 正文只能有一个解析成功的链接，实际 ${JSON.stringify(pageLinks)}`,
+    );
+    const resolved = pageLinks.find((link) => link.text === '人工改名后的指标');
     assert.equal(resolved?.candidates[0]?.id, outcome.manifest.snapshot.pageRecords[0].id, '链接必须唯一解析');
     assert.equal(resolved?.status, 'found');
     assert.equal((await context.wikiFiles()).length, 2, '只写 Source + 1 页');
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
 
 test('F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，缺失字段明确未提供', async () => {
   let round = 0;
-  const context = await setup(fake => {
-    fake.setHandler(request => {
+  const context = await setup((fake) => {
+    fake.setHandler((request) => {
       round += 1;
       const chunk = chunkFromPrompt(request.user);
-      return { kind: 'content', content: contentOf(buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `来源主题-${round}` }])) };
+      return {
+        kind: 'content',
+        content: contentOf(
+          buildPayloadForChunk(chunk, rawIdFromPrompt(request.user), [{ title: `来源主题-${round}` }]),
+        ),
+      };
     });
   });
   try {
     const body = '渠道动销资料正文。';
-    const raw = await context.rawStore.create(validateRaw({
-      title: '带完整元数据的报告', sourceType: 'report', sourceName: '某咨询公司 2026 报告', tags: ['渠道'], body,
-      author: '张三', publishedAt: '2026-09-01', url: 'https://example.com/report-2026',
-    }));
+    const raw = await context.rawStore.create(
+      validateRaw({
+        title: '带完整元数据的报告',
+        sourceType: 'report',
+        sourceName: '某咨询公司 2026 报告',
+        tags: ['渠道'],
+        body,
+        author: '张三',
+        publishedAt: '2026-09-01',
+        url: 'https://example.com/report-2026',
+      }),
+    );
     const draft = await context.draftFor(raw.id);
     assert.equal(draft.rawMeta.sourceType, 'report');
     assert.equal(draft.rawMeta.sourceName, '某咨询公司 2026 报告');
@@ -502,7 +759,13 @@ test('F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，
     const source = await context.wikiStore.get(outcome.manifest.snapshot.sourceRecord?.id as string);
     assert.ok(source);
     // 正式 Source 快照必须保留同样的真实元数据（而不是只有标题和 ID）。
-    for (const fragment of ['来源类型：行业报告（report）', '来源名称：某咨询公司 2026 报告', '作者：张三', '登记日期：2026-09-01', '登记链接：https://example.com/report-2026']) {
+    for (const fragment of [
+      '来源类型：行业报告（report）',
+      '来源名称：某咨询公司 2026 报告',
+      '作者：张三',
+      '登记日期：2026-09-01',
+      '登记链接：https://example.com/report-2026',
+    ]) {
       assert.ok(source?.body.includes(fragment), `正式 Source 必须包含「${fragment}」`);
     }
     // 缺失字段明确写"未提供"，不能伪造。
@@ -512,21 +775,21 @@ test('F04-06 Source 保留 Raw 真实来源类型/名称/作者/日期/链接，
     assert.match(bareDraft.source.body, /登记日期：未提供（登记日期）/);
     assert.match(bareDraft.source.body, /登记链接：未提供（登记链接）/);
     // 用户编辑 Source 后仍保留真实元数据（正文由用户接管）。
-    const edited = await context.drafts.patch(bareDraft.id, {
-      baseRevision: bareDraft.revision, source: { body: '## 人工正文\n\n只写我自己的内容。\n' },
-    }, { body: bare.body, rules: await context.draftRules() });
+    const edited = await context.drafts.patch(
+      bareDraft.id,
+      {
+        baseRevision: bareDraft.revision,
+        source: { body: '## 人工正文\n\n只写我自己的内容。\n' },
+      },
+      { body: bare.body, rules: await context.draftRules() },
+    );
     assert.equal(edited.source.bodyEditedByUser, true);
     await reviewSelectedChanges(context.drafts, edited, [edited.pages[0].pageId]);
     const editedOutcome = await context.confirm(edited.id, [edited.pages[0].pageId], 'edited-key');
     const editedSource = await context.wikiStore.get(editedOutcome.manifest.snapshot.sourceRecord?.id as string);
     assert.match(editedSource?.body ?? '', /只写我自己的内容/);
     assert.equal(editedSource?.sources[0], bare.id, '用户编辑正文不影响 Raw 归属');
-  } finally { await context.clean(); }
+  } finally {
+    await context.clean();
+  }
 });
-
-
-
-
-
-
-

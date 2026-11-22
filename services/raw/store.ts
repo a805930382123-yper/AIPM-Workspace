@@ -6,45 +6,78 @@ import type { PdfTextMap } from './parse.ts';
 import { writeFileAtomic } from '../storage/files.ts';
 
 export const SOURCE_TYPES = ['wechat', 'article', 'report', 'company', 'customer', 'meeting', 'note', 'other'] as const;
-export type SourceType = typeof SOURCE_TYPES[number];
+export type SourceType = (typeof SOURCE_TYPES)[number];
 const folderFor: Record<SourceType, string> = {
-  wechat: 'articles', article: 'articles', report: 'reports', company: 'company',
-  customer: 'customer', meeting: 'meetings', note: 'notes', other: 'other',
+  wechat: 'articles',
+  article: 'articles',
+  report: 'reports',
+  company: 'company',
+  customer: 'customer',
+  meeting: 'meetings',
+  note: 'notes',
+  other: 'other',
 };
 const frontmatterStart = /^---\r?\n/;
 
 export type RawAssetMetadata = {
   /** B03: retained original file, recorded as metadata only. Absent for pasted text. */
-  assetId?: string; assetFileName?: string; assetFormat?: string; assetByteSize?: number;
-  assetSha256?: string; extractionParser?: string; extractionNote?: string;
+  assetId?: string;
+  assetFileName?: string;
+  assetFormat?: string;
+  assetByteSize?: number;
+  assetSha256?: string;
+  extractionParser?: string;
+  extractionNote?: string;
 };
 export type RawInput = RawAssetMetadata & {
-  title: string; sourceType: SourceType; sourceName: string; author?: string;
-  publishedAt?: string; url?: string; tags: string[]; body: string;
+  title: string;
+  sourceType: SourceType;
+  sourceName: string;
+  author?: string;
+  publishedAt?: string;
+  url?: string;
+  tags: string[];
+  body: string;
   /** Server-generated trace for a successful URL import. */
   urlImport?: { finalUrl: string; fetchedAt: string };
   pdf?: PdfTextMap;
 };
 export type RawMeetingOrigin = {
-  kind: 'meeting'; meeting_id: string; import_id: string; original_sha256: string;
-  registered_confidentiality: 'Public' | 'Internal' | 'Sensitive' | 'Restricted'; processing_policy: 'meeting_local_only';
+  kind: 'meeting';
+  meeting_id: string;
+  import_id: string;
+  original_sha256: string;
+  registered_confidentiality: 'Public' | 'Internal' | 'Sensitive' | 'Restricted';
+  processing_policy: 'meeting_local_only';
 };
 export type RawRecord = RawInput & {
-  id: string; importedAt: string; status: 'unprocessed'; bodySha256: string;
-  isDemo?: boolean; origin?: RawMeetingOrigin;
-  bodyRevision?: number; bodyEditedAt?: string;
+  id: string;
+  importedAt: string;
+  status: 'unprocessed';
+  bodySha256: string;
+  isDemo?: boolean;
+  origin?: RawMeetingOrigin;
+  bodyRevision?: number;
+  bodyEditedAt?: string;
 };
 export type RawBodyUpdate = { body: string; expectedBodySha256: string; expectedBodyRevision: number };
 export type MeetingRawRegistration = {
-  id: string; title: string; sourceName: string; tags: string[]; body: string;
-  importedAt: string; origin: RawMeetingOrigin;
+  id: string;
+  title: string;
+  sourceName: string;
+  tags: string[];
+  body: string;
+  importedAt: string;
+  origin: RawMeetingOrigin;
 };
 /** Everything the user supplies except the body; file import takes the body from a parser. */
 export type RawMetadata = Omit<RawInput, 'body'>;
 
 const rawIdPattern = /^[0-9a-f-]{36}$/i;
 const bodyShaPattern = /^[0-9a-f]{64}$/i;
-function rawDirectory(root: string, type: SourceType) { return path.join(root, 'knowledge', 'raw', folderFor[type]); }
+function rawDirectory(root: string, type: SourceType) {
+  return path.join(root, 'knowledge', 'raw', folderFor[type]);
+}
 function serialize(record: RawRecord): string {
   const { body, ...metadata } = record;
   return `---\n${yaml.dump(metadata, { lineWidth: -1, noRefs: true }).trimEnd()}\n---\n${body}`;
@@ -62,12 +95,18 @@ function parse(file: string): RawRecord {
 export class RawIntegrityError extends Error {
   readonly code = 'RAW_INTEGRITY_ERROR';
   readonly status = 409;
-  constructor() { super('Raw 正文完整性校验失败，已拒绝读取。恢复原文件后可以重试。'); }
+  constructor() {
+    super('Raw 正文完整性校验失败，已拒绝读取。恢复原文件后可以重试。');
+  }
 }
 
 function verifyIntegrity(record: RawRecord): RawRecord {
-  if (typeof record.body !== 'string' || typeof record.bodySha256 !== 'string' || !bodyShaPattern.test(record.bodySha256) ||
-      createHash('sha256').update(record.body, 'utf8').digest('hex') !== record.bodySha256.toLowerCase()) {
+  if (
+    typeof record.body !== 'string' ||
+    typeof record.bodySha256 !== 'string' ||
+    !bodyShaPattern.test(record.bodySha256) ||
+    createHash('sha256').update(record.body, 'utf8').digest('hex') !== record.bodySha256.toLowerCase()
+  ) {
     throw new RawIntegrityError();
   }
   return record;
@@ -77,8 +116,13 @@ export class RawStore {
   constructor(public readonly root: string) {}
 
   async initialize() {
-    for (const dir of new Set([...Object.values(folderFor), 'assets'])) await mkdir(path.join(this.root, 'knowledge', 'raw', dir), { recursive: true });
-    await Promise.all(['knowledge/wiki', 'knowledge/audit', 'knowledge/logs', 'prompts', 'drafts'].map(p => mkdir(path.join(this.root, p), { recursive: true })));
+    for (const dir of new Set([...Object.values(folderFor), 'assets']))
+      await mkdir(path.join(this.root, 'knowledge', 'raw', dir), { recursive: true });
+    await Promise.all(
+      ['knowledge/wiki', 'knowledge/audit', 'knowledge/logs', 'prompts', 'drafts'].map((p) =>
+        mkdir(path.join(this.root, p), { recursive: true }),
+      ),
+    );
   }
 
   async create(input: RawInput): Promise<RawRecord> {
@@ -92,17 +136,27 @@ export class RawStore {
   /** M04 server-only bridge. Never exposed through the ordinary Raw HTTP create/import path. */
   async createMeetingRegistration(input: MeetingRawRegistration): Promise<{ record: RawRecord; created: boolean }> {
     const expected: RawRecord = {
-      title: input.title, sourceType: 'meeting', sourceName: input.sourceName, tags: [...input.tags], body: input.body,
-      id: input.id, importedAt: input.importedAt, status: 'unprocessed',
-      bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'), origin: { ...input.origin },
+      title: input.title,
+      sourceType: 'meeting',
+      sourceName: input.sourceName,
+      tags: [...input.tags],
+      body: input.body,
+      id: input.id,
+      importedAt: input.importedAt,
+      status: 'unprocessed',
+      bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
+      origin: { ...input.origin },
     };
     const existing = await this.get(input.id);
     if (existing) {
-      const same = existing.title === expected.title && existing.sourceType === expected.sourceType
-        && existing.sourceName === expected.sourceName && existing.body === expected.body
-        && existing.bodySha256 === expected.bodySha256
-        && JSON.stringify(existing.tags ?? []) === JSON.stringify(expected.tags)
-        && JSON.stringify(existing.origin ?? null) === JSON.stringify(expected.origin);
+      const same =
+        existing.title === expected.title &&
+        existing.sourceType === expected.sourceType &&
+        existing.sourceName === expected.sourceName &&
+        existing.body === expected.body &&
+        existing.bodySha256 === expected.bodySha256 &&
+        JSON.stringify(existing.tags ?? []) === JSON.stringify(expected.tags) &&
+        JSON.stringify(existing.origin ?? null) === JSON.stringify(expected.origin);
       if (!same) throw new RawIntegrityError();
       return { record: existing, created: false };
     }
@@ -118,16 +172,29 @@ export class RawStore {
       throw error;
     }
     const written = await this.get(input.id);
-    if (!written || written.body !== input.body || JSON.stringify(written.origin ?? null) !== JSON.stringify(expected.origin)) throw new RawIntegrityError();
+    if (
+      !written ||
+      written.body !== input.body ||
+      JSON.stringify(written.origin ?? null) !== JSON.stringify(expected.origin)
+    )
+      throw new RawIntegrityError();
     return { record: written, created: true };
   }
 
   /** Server-only news bridge; fixed identity is never accepted from a Raw client. */
   async createNewsRegistration(id: string, input: RawInput): Promise<RawRecord> {
     const record = await this.createWithId(id, input, false);
-    if (record.title !== input.title || record.sourceType !== input.sourceType || record.sourceName !== input.sourceName ||
-        record.url !== input.url || record.publishedAt !== input.publishedAt || record.extractionNote !== input.extractionNote ||
-        record.body !== input.body || JSON.stringify(record.tags) !== JSON.stringify(input.tags)) throw new RawIntegrityError();
+    if (
+      record.title !== input.title ||
+      record.sourceType !== input.sourceType ||
+      record.sourceName !== input.sourceName ||
+      record.url !== input.url ||
+      record.publishedAt !== input.publishedAt ||
+      record.extractionNote !== input.extractionNote ||
+      record.body !== input.body ||
+      JSON.stringify(record.tags) !== JSON.stringify(input.tags)
+    )
+      throw new RawIntegrityError();
     return record;
   }
 
@@ -135,7 +202,10 @@ export class RawStore {
     const existing = await this.get(id);
     if (existing) return existing;
     const record: RawRecord = {
-      ...input, id, importedAt: new Date().toISOString(), status: 'unprocessed',
+      ...input,
+      id,
+      importedAt: new Date().toISOString(),
+      status: 'unprocessed',
       bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
       ...(isDemo ? { isDemo: true } : {}),
     };
@@ -176,8 +246,9 @@ export class RawStore {
       try {
         const bytes = await readFile(file);
         return { file, bytes, record: verifyIntegrity(parse(bytes.toString('utf8'))) };
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e;
       }
-      catch (e) { if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; }
     }
     return undefined;
   }
@@ -188,19 +259,28 @@ export class RawStore {
 
   async bodyHistory(id: string, revision: number): Promise<RawRecord | undefined> {
     const current = await this.get(id);
-    if (!current || !Number.isSafeInteger(revision) || revision < 0 || revision >= (current.bodyRevision ?? 0)) return undefined;
+    if (!current || !Number.isSafeInteger(revision) || revision < 0 || revision >= (current.bodyRevision ?? 0))
+      return undefined;
     const snapshot = verifyIntegrity(parse(await readFile(this.historyFile(id, revision), 'utf8')));
     if (snapshot.id !== id || (snapshot.bodyRevision ?? 0) !== revision) throw new RawIntegrityError();
     return snapshot;
   }
 
   /** Public edit operations hold the Wiki write lock throughout the version check and replacement. */
-  async updateBody(id: string, input: RawBodyUpdate, ensureIdle: (record: RawRecord) => Promise<void>): Promise<RawRecord | undefined> {
+  async updateBody(
+    id: string,
+    input: RawBodyUpdate,
+    ensureIdle: (record: RawRecord) => Promise<void>,
+  ): Promise<RawRecord | undefined> {
     const current = await this.readCurrent(id);
     if (!current) return undefined;
     const { file, bytes, record } = current;
     if (record.origin !== undefined) {
-      throw new RawBodyEditError('MEETING_RAW_EDIT_FORBIDDEN', '请到会议档案编辑纪要工作副本。已登记的 Raw 保留当时的会议原文。', 403);
+      throw new RawBodyEditError(
+        'MEETING_RAW_EDIT_FORBIDDEN',
+        '请到会议档案编辑纪要工作副本。已登记的 Raw 保留当时的会议原文。',
+        403,
+      );
     }
     const revision = record.bodyRevision ?? 0;
     if (record.bodySha256.toLowerCase() !== input.expectedBodySha256 || revision !== input.expectedBodyRevision) {
@@ -209,14 +289,17 @@ export class RawStore {
     if (record.body === input.body) return record;
     await ensureIdle(record);
     const snapshot = this.historyFile(id, revision);
-    const archived = await readFile(snapshot).catch(error => {
+    const archived = await readFile(snapshot).catch((error) => {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     });
     if (archived && !archived.equals(bytes)) throw new RawIntegrityError();
     if (!archived) await writeFileAtomic(snapshot, bytes);
     const updated: RawRecord = {
-      ...record, body: input.body, bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
-      bodyRevision: revision + 1, bodyEditedAt: new Date().toISOString(),
+      ...record,
+      body: input.body,
+      bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
+      bodyRevision: revision + 1,
+      bodyEditedAt: new Date().toISOString(),
     };
     await writeFileAtomic(file, serialize(updated));
     return updated;
@@ -232,8 +315,12 @@ export class RawStore {
     for (const folder of new Set(Object.values(folderFor))) {
       const file = path.join(this.root, 'knowledge', 'raw', folder, `${id}.md`);
       let record: RawRecord;
-      try { record = verifyIntegrity(parse(await readFile(file, 'utf8'))); }
-      catch (e) { if ((e as NodeJS.ErrnoException).code === 'ENOENT') continue; throw e; }
+      try {
+        record = verifyIntegrity(parse(await readFile(file, 'utf8')));
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code === 'ENOENT') continue;
+        throw e;
+      }
       await rm(file);
       return record;
     }
@@ -242,5 +329,11 @@ export class RawStore {
 }
 
 class RawBodyEditError extends Error {
-  constructor(readonly code: string, message: string, readonly status: number) { super(message); }
+  constructor(
+    readonly code: string,
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
 }

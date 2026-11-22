@@ -13,22 +13,53 @@ import { MAX_BODY_CHARS, MAX_UPLOAD_BYTES } from '../services/raw/limits.ts';
 const noop = () => undefined;
 const settled = async () => undefined;
 const base: Raw = {
-  id: '11111111-1111-4111-8111-111111111111', title: '渠道动销分析', sourceType: 'article', sourceName: '公众号来源',
-  author: '作者', publishedAt: '2026-10-01', url: 'https://example.com/a', tags: ['渠道'], body: '原始正文内容',
-  importedAt: '2026-10-05T02:00:00.000Z', status: 'unprocessed', bodySha256: 'b'.repeat(64),
+  id: '11111111-1111-4111-8111-111111111111',
+  title: '渠道动销分析',
+  sourceType: 'article',
+  sourceName: '公众号来源',
+  author: '作者',
+  publishedAt: '2026-10-01',
+  url: 'https://example.com/a',
+  tags: ['渠道'],
+  body: '原始正文内容',
+  importedAt: '2026-10-05T02:00:00.000Z',
+  status: 'unprocessed',
+  bodySha256: 'b'.repeat(64),
 };
 const fileRaw: Raw = {
-  ...base, title: '文件导入资料', assetId: '22222222-2222-4222-8222-222222222222', assetFileName: 'zh-report.md',
-  assetFormat: 'markdown', assetByteSize: 337, assetSha256: 'c'.repeat(64),
+  ...base,
+  title: '文件导入资料',
+  assetId: '22222222-2222-4222-8222-222222222222',
+  assetFileName: 'zh-report.md',
+  assetFormat: 'markdown',
+  assetByteSize: 337,
+  assetSha256: 'c'.repeat(64),
   extractionNote: '按严格 UTF-8 解码；已去除编码 BOM，正文空白与换行原样保留（不做 trim、不解析 frontmatter）。',
 };
 function page(items: Raw[], props: { openImport?: boolean } = {}) {
-  return renderToStaticMarkup(<RawPage items={items} selectedId={items[0]?.id ?? null} onSelected={noop} onOpenImport={noop}
-    onCommitted={settled} openImport={props.openImport ?? false} onCloseImport={noop} onDeleted={settled} processing={{}} job={null} onJobStarted={noop} onOpenDraft={noop} onRefresh={settled} />);
+  return renderToStaticMarkup(
+    <RawPage
+      items={items}
+      selectedId={items[0]?.id ?? null}
+      onSelected={noop}
+      onOpenImport={noop}
+      onCommitted={settled}
+      openImport={props.openImport ?? false}
+      onCloseImport={noop}
+      onDeleted={settled}
+      processing={{}}
+      job={null}
+      onJobStarted={noop}
+      onOpenDraft={noop}
+      onRefresh={settled}
+    />,
+  );
 }
 
 test('粘贴导入对话框保留原有文本流程与字符上限', () => {
-  const html = renderToStaticMarkup(<ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} onGenerate={settled} />);
+  const html = renderToStaticMarkup(
+    <ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} onGenerate={settled} />,
+  );
   assert.match(html, /导入原始资料/);
   assert.match(html, /粘贴文本/);
   assert.match(html, /上传文件/);
@@ -41,7 +72,9 @@ test('粘贴导入对话框保留原有文本流程与字符上限', () => {
 });
 
 test('文件上传对话框提供四种格式、20 MiB 与 500,000 字符边界', () => {
-  const html = renderToStaticMarkup(<ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} onGenerate={settled} prefill={fileRaw} />);
+  const html = renderToStaticMarkup(
+    <ImportDialog onClose={noop} onCommitted={settled} onOpen={noop} onGenerate={settled} prefill={fileRaw} />,
+  );
   assert.match(html, /重新导入/);
   assert.match(html, /重新导入会创建新的 Raw ID/);
   assert.match(html, /不会自动复制上一条的原文件或转移 Wiki 来源/);
@@ -94,4 +127,3 @@ test('删除确认先检查引用，未确认前不能删除', () => {
   assert.match(html, /disabled/);
   assert.match(html, /删除只由你的显式确认触发/);
 });
-

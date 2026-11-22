@@ -5,9 +5,15 @@ import type { AutomationSchedule, AutomationStatus, CandidateList, CandidateView
 
 const { window } = new JSDOM('<div id="root"></div>', { url: 'http://127.0.0.1/', pretendToBeVisual: true });
 for (const [name, value] of Object.entries({
-  window, document: window.document, navigator: window.navigator, Event: window.Event,
-  HTMLElement: window.HTMLElement, HTMLInputElement: window.HTMLInputElement, IS_REACT_ACT_ENVIRONMENT: true,
-})) Object.defineProperty(globalThis, name, { value, writable: true, configurable: true });
+  window,
+  document: window.document,
+  navigator: window.navigator,
+  Event: window.Event,
+  HTMLElement: window.HTMLElement,
+  HTMLInputElement: window.HTMLInputElement,
+  IS_REACT_ACT_ENVIRONMENT: true,
+}))
+  Object.defineProperty(globalThis, name, { value, writable: true, configurable: true });
 const { act, createElement } = await import('react');
 const { createRoot } = await import('react-dom/client');
 const { AutomationPage } = await import('../app/pages/AutomationPage');
@@ -15,35 +21,69 @@ const { AutomationPage } = await import('../app/pages/AutomationPage');
 const date = '2026-11-16';
 const due = '2026-11-16T02:00:00.000Z';
 const status: AutomationStatus = {
-  paused: false, scheduler: { healthy: true, lastTickAt: due },
+  paused: false,
+  scheduler: { healthy: true, lastTickAt: due },
   instance: { pid: 42, port: 14643, mode: 'production', startedAt: due, hostname: 'fixture' },
-  nextRunAt: due, failuresLast24Hours: 0, writeToken: 'fixture-token',
+  nextRunAt: due,
+  failuresLast24Hours: 0,
+  writeToken: 'fixture-token',
 };
 const schedule: AutomationSchedule = {
-  type: 'news.daily', name: '每日资讯准备与预筛', enabled: true, plan: { kind: 'daily', time: '07:30', timezone: 'Asia/Shanghai' },
-  catchUp: true, revision: 1, budget: null, nextRunAt: due, lastRun: null, mayCallModel: true, allowsCatchUp: true,
+  type: 'news.daily',
+  name: '每日资讯准备与预筛',
+  enabled: true,
+  plan: { kind: 'daily', time: '07:30', timezone: 'Asia/Shanghai' },
+  catchUp: true,
+  revision: 1,
+  budget: null,
+  nextRunAt: due,
+  lastRun: null,
+  mayCallModel: true,
+  allowsCatchUp: true,
 };
 
 const rows: CandidateView[] = ['低分资讯', '标准资讯', '未预筛资讯'].map((title, idx) => {
   const id = `${date}/fmcg/news-${idx}`;
   return {
-    id, section: 'fmcg', disposition: 'inbox',
-    item: { id: 'news-' + idx, title, sourceId: 'sample', sourceName: '合成来源', url: 'https://example.test/' + idx,
-      publishedAt: date, fetchedAt: due, excerpt: '原样来源材料。', evidenceKind: idx === 1 ? 'source_summary' : 'article_excerpt' },
-    screening: idx === 2 ? { error: '本批读取失败。' } : {
-      score: { candidateId: id, relevance: idx === 0 ? 0 : 3, reason: '相关性理由。', categories: ['品类'], suggestedMode: 'deep' },
+    id,
+    section: 'fmcg',
+    disposition: 'inbox',
+    item: {
+      id: 'news-' + idx,
+      title,
+      sourceId: 'sample',
+      sourceName: '合成来源',
+      url: 'https://example.test/' + idx,
+      publishedAt: date,
+      fetchedAt: due,
+      excerpt: '原样来源材料。',
+      evidenceKind: idx === 1 ? 'source_summary' : 'article_excerpt',
     },
+    screening:
+      idx === 2
+        ? { error: '本批读取失败。' }
+        : {
+            score: {
+              candidateId: id,
+              relevance: idx === 0 ? 0 : 3,
+              reason: '相关性理由。',
+              categories: ['品类'],
+              suggestedMode: 'deep',
+            },
+          },
   };
 });
 const when = async (check: () => unknown) => {
   for (let n = 0; n < 50; n++) {
     if (check()) return;
-    await act(async () => { await new Promise(resolve => setTimeout(resolve, 10)); });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
   }
   assert.fail('未找到预期的收件箱状态');
 };
 const click = async (text: string, scope: ParentNode = document) => {
-  const button = [...scope.querySelectorAll('button')].find(node => node.textContent === text);
+  const button = [...scope.querySelectorAll('button')].find((node) => node.textContent === text);
   assert.ok(button, text);
   await act(async () => button.click());
 };
@@ -52,14 +92,20 @@ test('PIPE01 inbox folds only low scores, confirms a reviewed batch with default
   const nativeFetch = globalThis.fetch;
   const root = createRoot(document.querySelector('#root')!);
   const grants: ConfirmCandidates[] = [];
-  const inbox: CandidateList = { date, items: rows, dates: [date], counts: { fetched: 3, pending: 3, organizing: 0, drafts: 0, failed: 0 } };
+  const inbox: CandidateList = {
+    date,
+    items: rows,
+    dates: [date],
+    counts: { fetched: 3, pending: 3, organizing: 0, drafts: 0, failed: 0 },
+  };
   globalThis.fetch = async (input, options) => {
     const route = String(input);
     let data: unknown;
     if (route.endsWith('/status')) data = status;
     else if (route.endsWith('/schedules')) data = { items: [schedule] };
     else if (route.includes('/runs?')) data = { items: [] };
-    else if (route.endsWith('/pipeline/settings')) data = { revision: 1, concurrency: 2, topics: ['渠道'], preScreenEnabled: true };
+    else if (route.endsWith('/pipeline/settings'))
+      data = { revision: 1, concurrency: 2, topics: ['渠道'], preScreenEnabled: true };
     else if (route.endsWith('/candidates')) data = inbox;
     else if (route.endsWith('/candidates/confirm')) {
       const headers = new Headers(options?.headers);
@@ -89,7 +135,10 @@ test('PIPE01 inbox folds only low scores, confirms a reviewed batch with default
     assert.equal(grants.length, 0);
     const first = standard.querySelector('input')!;
     const second = document.querySelector<HTMLInputElement>('[aria-label="选择 未预筛资讯"]')!;
-    await act(async () => { first.click(); second.click(); });
+    await act(async () => {
+      first.click();
+      second.click();
+    });
     await click('批量确认入库（2 条）');
     const batch = document.querySelector('[role="dialog"]')!;
     assert.equal(batch.querySelectorAll('li').length, 2);

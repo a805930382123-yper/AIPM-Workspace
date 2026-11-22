@@ -1,67 +1,544 @@
-import type {RawCitationTarget} from '../components/WikiQuestionPanel';
-import {answerCitation,inspectionEvidence} from '../api';
-import {StructuredNoteEditor} from '../components/StructuredNoteEditor';
-import {moveDraftUnits} from '../api';
-import {useState} from 'react';
-import {api,confirmDraft,draftView,type DraftView} from '../api';
-import {renderStructuredNote} from '../../services/wiki/structured-note';
-import type {KnowledgeChange} from '../../services/wiki/maintenance';
+import type { RawCitationTarget } from '../components/WikiQuestionPanel';
+import { answerCitation, inspectionEvidence } from '../api';
+import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
+import { moveDraftUnits } from '../api';
+import { useState } from 'react';
+import { api, confirmDraft, draftView, type DraftView } from '../api';
+import { renderStructuredNote } from '../../services/wiki/structured-note';
+import type { KnowledgeChange } from '../../services/wiki/maintenance';
 
-export function lineDifference(from:string,to:string):string {
-  const counts=new Map<string,number>();for(const line of to.split('\n'))counts.set(line,(counts.get(line)??0)+1);
-  return from.split('\n').filter(line=>{const count=counts.get(line)??0;if(count){counts.set(line,count-1);return false;}return true;}).join('\n');
+export function lineDifference(from: string, to: string): string {
+  const counts = new Map<string, number>();
+  for (const line of to.split('\n')) counts.set(line, (counts.get(line) ?? 0) + 1);
+  return from
+    .split('\n')
+    .filter((line) => {
+      const count = counts.get(line) ?? 0;
+      if (count) {
+        counts.set(line, count - 1);
+        return false;
+      }
+      return true;
+    })
+    .join('\n');
 }
 
-export function KnowledgeMaintenanceReview({view,body,onView,onBack,backLabel,onOpenRaw,onCommitted,onOpenWiki}:{view:DraftView;body:string;onView:(view:DraftView)=>void;onBack:()=>void;backLabel?:string;onOpenRaw:(id:string,target?:RawCitationTarget)=>void;onOpenWiki?:(id:string)=>void;onCommitted:()=>Promise<void>}){
-  const [noteDirty,setNoteDirty]=useState(false);
-  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[editing,setEditing]=useState<Record<string,{title:string;body:string}>>({}),[saved,setSaved]=useState('');
-  const changes=view.maintenance!.changes,accepted=changes.filter(c=>c.decision==='accept'&&!c.committedOperationId),readOnly=view.status!=='pending_confirmation';
-  const run=async(work:()=>Promise<void>)=>{setBusy(true);setError('');try{await work();}catch(e){setError(e instanceof Error?e.message:'操作失败，请重试。');}finally{setBusy(false);}};
-  const review=(c:KnowledgeChange,patch:Record<string,unknown>)=>run(async()=>{
-    await api(`/api/knowledge/drafts/${view.id}/changes/review`,{method:'POST',body:JSON.stringify({baseRevision:view.revision,changeId:c.changeId,...patch})});
-    onView(await draftView(view.id));
-    if(patch.body!==undefined)setEditing(current=>{const next={...current};delete next[c.changeId];return next;});
-  });
-  const unresolved=Object.values(view.humanReview?.assignments??{}).filter(id=>id===null).length;
-  const complete=unresolved===0&&accepted.length>0&&accepted.every(c=>c.approval?.digest===view.changeDigests?.[c.changeId]&&c.dependsOn.every(id=>changes.some(other=>other.changeId===id&&(other.committedOperationId||other.decision==='accept'))));
-  const editingCount=Object.keys(editing).length;
-  const noteUnapproved=!view.input&&!!view.structuredNote&&view.noteApproval?.digest!==view.reviewContentDigest;
-  const missingDeps=accepted.some(c=>c.dependsOn.some(id=>!changes.some(other=>other.changeId===id&&(other.committedOperationId||other.decision==='accept'))));
-  const unapprovedCount=accepted.filter(c=>c.approval?.digest!==view.changeDigests?.[c.changeId]).length;
-  const gateHint=readOnly||(!!view.input&&view.questionBasisChanged)?''
-    :editingCount>0?`有 ${editingCount} 项候选正文正在编辑中，请先保存编辑并重新审核。`
-    :noteDirty?'深度整理笔记有未保存修改，请先保存。'
-    :unresolved>0?''
-    :noteUnapproved?'请先在下方深度整理笔记区域勾选核对确认。'
-    :accepted.length===0?'请至少接受 1 项知识变更后再确认写入。'
-    :missingDeps?'已接受变更存在未一并接受的依赖项，请先接受对应依赖项。'
-    :unapprovedCount>0?`尚有 ${unapprovedCount} 项已接受变更未勾选底部「我已核对」复选框。`
-    :'';
-  const confirm=()=>run(async()=>{
-    const result=await confirmDraft(view.id,{baseRevision:view.revision,selectedPageIds:accepted.map(c=>view.pages[c.pageIndex].pageId),idempotencyKey:crypto.randomUUID()});
-    setSaved(view.input?.kind==='inspection'?`已保存本次 ${accepted.length} 项审核变更。`:`已保存本次 ${accepted.length} 项变更；Source ${result.sourceId??'已复用'}。`);onView(await draftView(view.id));await onCommitted();
-  });
-  return <div className="page draft-page" aria-busy={busy}>
-    <div className="page-heading"><div><h1>审核知识变更</h1><p className="subheading">{view.input?.kind==='inspection'?'知识检查：'+view.input.findings.map(f=>f.summary).join('；'):view.input?'问答成果：'+view.input.question:view.rawTitle} · {view.input?.kind==='inspection'?'检查维护':view.input?'问答维护':view.structuredNote?'深度整理':'标准整理'} · 草稿 v{view.revision}</p></div><div className="heading-actions"><button className="secondary-button" onClick={onBack}>{backLabel ?? (view.input ? '返回知识库' : '返回 Raw')}</button><button className="primary-button" disabled={busy||readOnly||(!!view.input&&view.questionBasisChanged)||!complete||noteDirty||editingCount>0||noteUnapproved} onClick={()=>void confirm()}>确认写入 Wiki（{accepted.length}）</button></div></div>
-    {view.input&&view.questionBasisChanged&&<p className="notice-warn" role="alert">{view.input?.kind==='inspection'?'检查依据已变化，请重新检查核验。正式写入已阻断。':'问答依据已变化，请保留此草稿并重新提问核验。正式写入已阻断。'}</p>}
-    {gateHint&&<p className="notice-warn maintenance-gate-hint" role="status">{gateHint}</p>}
-    <p className="notice-warn">逐项接受、核对并确认后，才会写入正式知识。暂缓项保留在草稿；编辑会取消该项确认，需重新审核。{view.input?.kind==='inspection'?'检查结论是待核建议，不构成新来源；请核对所选问题、全部依据与候选差异。':view.input?'问答成果基于既有资料，回答不构成新来源；请核对全部真实依据。':'来源笔记只记录本份资料，主题页积累跨来源知识。'}</p>
-    {error&&<div className="form-error" role="alert">{error}</div>}{saved&&<div className="notice-success" role="status">{saved}</div>}
-    <section className="panel draft-card-body"><h2>本次变更清单</h2><table className="maintenance-change-table"><thead><tr><th>操作</th><th>主题</th><th>待核</th><th>处理</th></tr></thead><tbody>{changes.map(c=><tr key={c.changeId}><td>{({create:'新建',update:'更新',link:'关联',noop:'无变化'})[c.action]}</td><td><a href={'#'+c.changeId}>{c.candidate.title}</a></td><td>{c.questions.length?c.questions.join('；'):'无新增问题'}</td><td>{c.committedOperationId?'已提交':c.decision==='accept'?'已接受':'暂缓'}</td></tr>)}</tbody></table></section>
-    {view.input?.kind==='inspection'?<details className="panel draft-card-body"><summary>检查问题与全部真实依据</summary><p>原检查 {view.input.inspectionId} · v{view.input.inspectionRevision} · 所选问题 {view.input.selectedFindingIds.length} 项</p>{view.input.findings.map(f=><section key={f.id}><h3>{f.summary}</h3><p>待核理由：{f.reason}</p><p>年份 / 区域 / 口径：{f.differences}</p>{f.evidence.map(c=><blockquote key={c.id}><p>{c.quote}</p><p>{c.title} · v{c.revision} · [{c.start}, {c.end}) · 底层Raw {c.rawIds.length} 份 · 人工Wiki {c.manualWikiIds.length} 页</p><button className="text-button" onClick={()=>void run(async()=>{if(view.input?.kind!=='inspection')return;const current=await inspectionEvidence(view.input.inspectionId,f.id,c.id);if(current.kind==='wiki')onOpenWiki?.(current.recordId);else onOpenRaw(current.recordId,{rawId:current.recordId,start:current.start,end:current.end,quote:current.quote,bodySha256:current.bodySha256});})}>打开检查真实依据</button></blockquote>)}</section>)}</details>:view.input?<details className="panel draft-card-body"><summary>问答成果与全部真实依据</summary><p>原问题：{view.input.question}</p><h3>用户选择与人工编辑</h3><pre className="draft-rendered">{view.input.preview.conclusion}</pre>{view.input.preview.inferences&&<><h3>推断 / 建议（待核）</h3><pre className="draft-rendered">{view.input.preview.inferences}</pre></>}<p>底层Raw {view.input.rawSnapshots.length} 份；无Raw的Wiki依据按人工知识页标明，回答不构成新来源。</p>{view.input.citations.map(c=><div key={c.id}><b>{c.kind==='wiki'?c.manualWikiIds.length?'人工知识页依据':'Wiki依据':'Raw原文'}：{c.title}{c.revision?' / v'+c.revision:''}</b><p>原句：{c.quote}</p><button className="text-button" onClick={()=>void run(async()=>{if(view.input?.kind!=='question_answer')return;const current=await answerCitation(view.input.resultId,c.id);if(current.kind==='wiki')onOpenWiki?.(current.recordId);else onOpenRaw(current.recordId,{rawId:current.recordId,start:current.start,end:current.end,quote:current.quote,bodySha256:current.bodySha256});})}>打开真实依据</button></div>)}</details>:<details className="panel draft-card-body"><summary>原文、来源笔记与事实目录</summary><button className="text-button" onClick={()=>onOpenRaw(view.rawId)}>打开 Raw</button><pre className="draft-raw-preview">{body}</pre><h2>本份资料来源笔记</h2><pre className="draft-rendered">{view.source.body}</pre>{view.structuredNote&&<><h2>深度整理笔记（待核对）</h2><pre className="draft-rendered">{renderStructuredNote(view.structuredNote)}</pre></>}{view.pages.map(p=><section key={p.pageId}><h3>{p.title}</h3><h4>来源事实</h4>{p.source_facts.map((f,i)=><p key={i}>{f.text}</p>)}<h4>整理 / 推断 / 待确认</h4>{[...p.ai_organized,...p.ai_inferences,...p.open_questions].map((text,i)=><p key={i}>{text}</p>)}{p.source_evidence.map(e=><p key={e.id}>原句 [{e.start}, {e.end})：{e.quote}</p>)}</section>)}</details>}
-    {unresolved>0&&<p className="notice-warn" role="alert">有 {unresolved} 项来源事实或问题未归属，正式写入已阻断。请在下方完成完整归属，再重新审核知识变更。</p>}
-    <details className="panel draft-card-body" open={unresolved>0}><summary>来源事实与问题归属</summary>{view.humanReview?.units.map(unit=><label className="field" key={unit.id}>{unit.kind==='proposal'?(view.input?.kind==='inspection'?'检查维护提议，非原文事实':'问答整理提议，非原文事实'):unit.origin==='wiki'?'知识页内容':unit.kind==='question'?'原文明示问题':'来源事实'}：{unit.text}<select aria-label={'归属 '+unit.id} disabled={busy||readOnly||noteDirty} value={view.humanReview!.assignments[unit.id]??''} onChange={e=>void run(async()=>{onView(await moveDraftUnits(view.id,view.revision,[unit.id],e.target.value||null));})}><option value="">未归属</option>{view.pages.map(p=><option key={p.pageId} value={p.pageId}>{p.title}</option>)}</select></label>)}</details>
-    {!view.input&&view.structuredNote&&<StructuredNoteEditor view={view} body={body} disabled={readOnly||busy||Object.keys(editing).length>0||unresolved>0} onSaved={onView} onDirty={setNoteDirty}/>}
-    {changes.map(c=>{const old=view.maintenance!.context.find(p=>p.id===c.targetWikiId),edit=editing[c.changeId],done=!!c.committedOperationId,disabled=busy||readOnly||done||noteDirty;return <section id={c.changeId} className="panel draft-card-body" key={c.changeId} aria-label={`知识变更 ${c.candidate.title}`}>
-      <div className="panel-heading"><div><h2>{({create:'新建',update:'更新',link:'仅关联来源',noop:'无变化'})[c.action]} · {c.candidate.title}</h2><p>{done?'已正式提交':c.decision==='accept'?'已接受':'暂缓'} · {c.targetWikiId?`目标 ${c.targetWikiId} / 基准 v${c.baseRevision}`:'新主题'}</p></div></div>
-      <p><strong>变更理由：</strong>{c.reason}</p><h3>变更摘要</h3><ul>{c.summary.map((s,i)=><li key={i}>{s}</li>)}</ul>{c.questions.length>0&&<><h3>矛盾与待核</h3><ul>{c.questions.map((q,i)=><li key={i}>{q}</li>)}</ul></>}
-      {c.dependsOn.length>0&&<p className="notice-warn">依赖项需一并接受：{c.dependsOn.map(id=>changes.find(x=>x.changeId===id)?.candidate.title??id).join('、')}</p>}
-      {old&&<details><summary>更新前正文 · v{old.revision} · {old.sources.length} 个来源</summary><pre className="draft-rendered">{old.body}</pre></details>}
-      {old&&c.action==='update'&&<details open><summary>新旧正文差异</summary><p className="extract-note">按完整行比对增删；行移动会显示为增删，请同时核对完整正文。</p><h4>候选中移除的旧行</h4><pre className="draft-rendered">{lineDifference(old.body,c.candidate.body)||'无'}</pre><h4>候选中新增的行</h4><pre className="draft-rendered">{lineDifference(c.candidate.body,old.body)||'无'}</pre></details>}
-      <h3>完整候选正文</h3>{edit?<><label className="field">主题标题<input value={edit.title} disabled={disabled} onChange={e=>setEditing({...editing,[c.changeId]:{...edit,title:e.target.value}})}/></label><label className="field">完整正文<textarea rows={16} value={edit.body} disabled={disabled} onChange={e=>setEditing({...editing,[c.changeId]:{...edit,body:e.target.value}})}/></label><button className="secondary-button" disabled={disabled} onClick={()=>void review(c,edit)}>保存编辑并重新审核</button></>:<pre className="draft-rendered">{c.candidate.body}</pre>}
-      <p>来源：{c.candidate.sources.join('、')||(view.input?'无Raw底源，保留上方人工知识页依据':'未关联')}</p><p>知识状态 {c.candidate.knowledge_status} · 来源等级 {c.candidate.source_level} · 可信度 {c.candidate.confidence}</p>
-      <div className="heading-actions"><button className="secondary-button" disabled={disabled||!!edit||c.decision==='accept'} onClick={()=>void review(c,{decision:'accept'})}>接受此项</button><button className="secondary-button" disabled={disabled||!!edit||c.decision==='defer'} onClick={()=>void review(c,{decision:'defer'})}>暂缓此项</button>{(c.action==='create'||c.action==='update')&&<button className="text-button" disabled={disabled||!!edit} onClick={()=>setEditing({...editing,[c.changeId]:{title:c.candidate.title,body:c.candidate.body}})}>编辑候选正文</button>}</div>
-      <label className="draft-select"><input type="checkbox" disabled={disabled||!!edit||c.decision!=='accept'} checked={!!c.approval&&c.approval.digest===view.changeDigests?.[c.changeId]} onChange={e=>void review(c,{confirmed:e.target.checked,digest:view.changeDigests?.[c.changeId]})}/>我已核对本项完整正文、差异、{view.input?'全部真实依据':'来源笔记'}及待核问题</label>
-    </section>;})}
-  </div>;
+export function KnowledgeMaintenanceReview({
+  view,
+  body,
+  onView,
+  onBack,
+  backLabel,
+  onOpenRaw,
+  onCommitted,
+  onOpenWiki,
+}: {
+  view: DraftView;
+  body: string;
+  onView: (view: DraftView) => void;
+  onBack: () => void;
+  backLabel?: string;
+  onOpenRaw: (id: string, target?: RawCitationTarget) => void;
+  onOpenWiki?: (id: string) => void;
+  onCommitted: () => Promise<void>;
+}) {
+  const [noteDirty, setNoteDirty] = useState(false);
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState(''),
+    [editing, setEditing] = useState<Record<string, { title: string; body: string }>>({}),
+    [saved, setSaved] = useState('');
+  const changes = view.maintenance!.changes,
+    accepted = changes.filter((c) => c.decision === 'accept' && !c.committedOperationId),
+    readOnly = view.status !== 'pending_confirmation';
+  const run = async (work: () => Promise<void>) => {
+    setBusy(true);
+    setError('');
+    try {
+      await work();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '操作失败，请重试。');
+    } finally {
+      setBusy(false);
+    }
+  };
+  const review = (c: KnowledgeChange, patch: Record<string, unknown>) =>
+    run(async () => {
+      await api(`/api/knowledge/drafts/${view.id}/changes/review`, {
+        method: 'POST',
+        body: JSON.stringify({ baseRevision: view.revision, changeId: c.changeId, ...patch }),
+      });
+      onView(await draftView(view.id));
+      if (patch.body !== undefined)
+        setEditing((current) => {
+          const next = { ...current };
+          delete next[c.changeId];
+          return next;
+        });
+    });
+  const unresolved = Object.values(view.humanReview?.assignments ?? {}).filter((id) => id === null).length;
+  const complete =
+    unresolved === 0 &&
+    accepted.length > 0 &&
+    accepted.every(
+      (c) =>
+        c.approval?.digest === view.changeDigests?.[c.changeId] &&
+        c.dependsOn.every((id) =>
+          changes.some((other) => other.changeId === id && (other.committedOperationId || other.decision === 'accept')),
+        ),
+    );
+  const editingCount = Object.keys(editing).length;
+  const noteUnapproved = !view.input && !!view.structuredNote && view.noteApproval?.digest !== view.reviewContentDigest;
+  const missingDeps = accepted.some((c) =>
+    c.dependsOn.some(
+      (id) =>
+        !changes.some((other) => other.changeId === id && (other.committedOperationId || other.decision === 'accept')),
+    ),
+  );
+  const unapprovedCount = accepted.filter((c) => c.approval?.digest !== view.changeDigests?.[c.changeId]).length;
+  const gateHint =
+    readOnly || (!!view.input && view.questionBasisChanged)
+      ? ''
+      : editingCount > 0
+        ? `有 ${editingCount} 项候选正文正在编辑中，请先保存编辑并重新审核。`
+        : noteDirty
+          ? '深度整理笔记有未保存修改，请先保存。'
+          : unresolved > 0
+            ? ''
+            : noteUnapproved
+              ? '请先在下方深度整理笔记区域勾选核对确认。'
+              : accepted.length === 0
+                ? '请至少接受 1 项知识变更后再确认写入。'
+                : missingDeps
+                  ? '已接受变更存在未一并接受的依赖项，请先接受对应依赖项。'
+                  : unapprovedCount > 0
+                    ? `尚有 ${unapprovedCount} 项已接受变更未勾选底部「我已核对」复选框。`
+                    : '';
+  const confirm = () =>
+    run(async () => {
+      const result = await confirmDraft(view.id, {
+        baseRevision: view.revision,
+        selectedPageIds: accepted.map((c) => view.pages[c.pageIndex].pageId),
+        idempotencyKey: crypto.randomUUID(),
+      });
+      setSaved(
+        view.input?.kind === 'inspection'
+          ? `已保存本次 ${accepted.length} 项审核变更。`
+          : `已保存本次 ${accepted.length} 项变更；Source ${result.sourceId ?? '已复用'}。`,
+      );
+      onView(await draftView(view.id));
+      await onCommitted();
+    });
+  return (
+    <div className="page draft-page" aria-busy={busy}>
+      <div className="page-heading">
+        <div>
+          <h1>审核知识变更</h1>
+          <p className="subheading">
+            {view.input?.kind === 'inspection'
+              ? '知识检查：' + view.input.findings.map((f) => f.summary).join('；')
+              : view.input
+                ? '问答成果：' + view.input.question
+                : view.rawTitle}{' '}
+            ·{' '}
+            {view.input?.kind === 'inspection'
+              ? '检查维护'
+              : view.input
+                ? '问答维护'
+                : view.structuredNote
+                  ? '深度整理'
+                  : '标准整理'}{' '}
+            · 草稿 v{view.revision}
+          </p>
+        </div>
+        <div className="heading-actions">
+          <button className="secondary-button" onClick={onBack}>
+            {backLabel ?? (view.input ? '返回知识库' : '返回 Raw')}
+          </button>
+          <button
+            className="primary-button"
+            disabled={
+              busy ||
+              readOnly ||
+              (!!view.input && view.questionBasisChanged) ||
+              !complete ||
+              noteDirty ||
+              editingCount > 0 ||
+              noteUnapproved
+            }
+            onClick={() => void confirm()}
+          >
+            确认写入 Wiki（{accepted.length}）
+          </button>
+        </div>
+      </div>
+      {view.input && view.questionBasisChanged && (
+        <p className="notice-warn" role="alert">
+          {view.input?.kind === 'inspection'
+            ? '检查依据已变化，请重新检查核验。正式写入已阻断。'
+            : '问答依据已变化，请保留此草稿并重新提问核验。正式写入已阻断。'}
+        </p>
+      )}
+      {gateHint && (
+        <p className="notice-warn maintenance-gate-hint" role="status">
+          {gateHint}
+        </p>
+      )}
+      <p className="notice-warn">
+        逐项接受、核对并确认后，才会写入正式知识。暂缓项保留在草稿；编辑会取消该项确认，需重新审核。
+        {view.input?.kind === 'inspection'
+          ? '检查结论是待核建议，不构成新来源；请核对所选问题、全部依据与候选差异。'
+          : view.input
+            ? '问答成果基于既有资料，回答不构成新来源；请核对全部真实依据。'
+            : '来源笔记只记录本份资料，主题页积累跨来源知识。'}
+      </p>
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
+      {saved && (
+        <div className="notice-success" role="status">
+          {saved}
+        </div>
+      )}
+      <section className="panel draft-card-body">
+        <h2>本次变更清单</h2>
+        <table className="maintenance-change-table">
+          <thead>
+            <tr>
+              <th>操作</th>
+              <th>主题</th>
+              <th>待核</th>
+              <th>处理</th>
+            </tr>
+          </thead>
+          <tbody>
+            {changes.map((c) => (
+              <tr key={c.changeId}>
+                <td>{{ create: '新建', update: '更新', link: '关联', noop: '无变化' }[c.action]}</td>
+                <td>
+                  <a href={'#' + c.changeId}>{c.candidate.title}</a>
+                </td>
+                <td>{c.questions.length ? c.questions.join('；') : '无新增问题'}</td>
+                <td>{c.committedOperationId ? '已提交' : c.decision === 'accept' ? '已接受' : '暂缓'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+      {view.input?.kind === 'inspection' ? (
+        <details className="panel draft-card-body">
+          <summary>检查问题与全部真实依据</summary>
+          <p>
+            原检查 {view.input.inspectionId} · v{view.input.inspectionRevision} · 所选问题{' '}
+            {view.input.selectedFindingIds.length} 项
+          </p>
+          {view.input.findings.map((f) => (
+            <section key={f.id}>
+              <h3>{f.summary}</h3>
+              <p>待核理由：{f.reason}</p>
+              <p>年份 / 区域 / 口径：{f.differences}</p>
+              {f.evidence.map((c) => (
+                <blockquote key={c.id}>
+                  <p>{c.quote}</p>
+                  <p>
+                    {c.title} · v{c.revision} · [{c.start}, {c.end}) · 底层Raw {c.rawIds.length} 份 · 人工Wiki{' '}
+                    {c.manualWikiIds.length} 页
+                  </p>
+                  <button
+                    className="text-button"
+                    onClick={() =>
+                      void run(async () => {
+                        if (view.input?.kind !== 'inspection') return;
+                        const current = await inspectionEvidence(view.input.inspectionId, f.id, c.id);
+                        if (current.kind === 'wiki') onOpenWiki?.(current.recordId);
+                        else
+                          onOpenRaw(current.recordId, {
+                            rawId: current.recordId,
+                            start: current.start,
+                            end: current.end,
+                            quote: current.quote,
+                            bodySha256: current.bodySha256,
+                          });
+                      })
+                    }
+                  >
+                    打开检查真实依据
+                  </button>
+                </blockquote>
+              ))}
+            </section>
+          ))}
+        </details>
+      ) : view.input ? (
+        <details className="panel draft-card-body">
+          <summary>问答成果与全部真实依据</summary>
+          <p>原问题：{view.input.question}</p>
+          <h3>用户选择与人工编辑</h3>
+          <pre className="draft-rendered">{view.input.preview.conclusion}</pre>
+          {view.input.preview.inferences && (
+            <>
+              <h3>推断 / 建议（待核）</h3>
+              <pre className="draft-rendered">{view.input.preview.inferences}</pre>
+            </>
+          )}
+          <p>底层Raw {view.input.rawSnapshots.length} 份；无Raw的Wiki依据按人工知识页标明，回答不构成新来源。</p>
+          {view.input.citations.map((c) => (
+            <div key={c.id}>
+              <b>
+                {c.kind === 'wiki' ? (c.manualWikiIds.length ? '人工知识页依据' : 'Wiki依据') : 'Raw原文'}：{c.title}
+                {c.revision ? ' / v' + c.revision : ''}
+              </b>
+              <p>原句：{c.quote}</p>
+              <button
+                className="text-button"
+                onClick={() =>
+                  void run(async () => {
+                    if (view.input?.kind !== 'question_answer') return;
+                    const current = await answerCitation(view.input.resultId, c.id);
+                    if (current.kind === 'wiki') onOpenWiki?.(current.recordId);
+                    else
+                      onOpenRaw(current.recordId, {
+                        rawId: current.recordId,
+                        start: current.start,
+                        end: current.end,
+                        quote: current.quote,
+                        bodySha256: current.bodySha256,
+                      });
+                  })
+                }
+              >
+                打开真实依据
+              </button>
+            </div>
+          ))}
+        </details>
+      ) : (
+        <details className="panel draft-card-body">
+          <summary>原文、来源笔记与事实目录</summary>
+          <button className="text-button" onClick={() => onOpenRaw(view.rawId)}>
+            打开 Raw
+          </button>
+          <pre className="draft-raw-preview">{body}</pre>
+          <h2>本份资料来源笔记</h2>
+          <pre className="draft-rendered">{view.source.body}</pre>
+          {view.structuredNote && (
+            <>
+              <h2>深度整理笔记（待核对）</h2>
+              <pre className="draft-rendered">{renderStructuredNote(view.structuredNote)}</pre>
+            </>
+          )}
+          {view.pages.map((p) => (
+            <section key={p.pageId}>
+              <h3>{p.title}</h3>
+              <h4>来源事实</h4>
+              {p.source_facts.map((f, i) => (
+                <p key={i}>{f.text}</p>
+              ))}
+              <h4>整理 / 推断 / 待确认</h4>
+              {[...p.ai_organized, ...p.ai_inferences, ...p.open_questions].map((text, i) => (
+                <p key={i}>{text}</p>
+              ))}
+              {p.source_evidence.map((e) => (
+                <p key={e.id}>
+                  原句 [{e.start}, {e.end})：{e.quote}
+                </p>
+              ))}
+            </section>
+          ))}
+        </details>
+      )}
+      {unresolved > 0 && (
+        <p className="notice-warn" role="alert">
+          有 {unresolved} 项来源事实或问题未归属，正式写入已阻断。请在下方完成完整归属，再重新审核知识变更。
+        </p>
+      )}
+      <details className="panel draft-card-body" open={unresolved > 0}>
+        <summary>来源事实与问题归属</summary>
+        {view.humanReview?.units.map((unit) => (
+          <label className="field" key={unit.id}>
+            {unit.kind === 'proposal'
+              ? view.input?.kind === 'inspection'
+                ? '检查维护提议，非原文事实'
+                : '问答整理提议，非原文事实'
+              : unit.origin === 'wiki'
+                ? '知识页内容'
+                : unit.kind === 'question'
+                  ? '原文明示问题'
+                  : '来源事实'}
+            ：{unit.text}
+            <select
+              aria-label={'归属 ' + unit.id}
+              disabled={busy || readOnly || noteDirty}
+              value={view.humanReview!.assignments[unit.id] ?? ''}
+              onChange={(e) =>
+                void run(async () => {
+                  onView(await moveDraftUnits(view.id, view.revision, [unit.id], e.target.value || null));
+                })
+              }
+            >
+              <option value="">未归属</option>
+              {view.pages.map((p) => (
+                <option key={p.pageId} value={p.pageId}>
+                  {p.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </details>
+      {!view.input && view.structuredNote && (
+        <StructuredNoteEditor
+          view={view}
+          body={body}
+          disabled={readOnly || busy || Object.keys(editing).length > 0 || unresolved > 0}
+          onSaved={onView}
+          onDirty={setNoteDirty}
+        />
+      )}
+      {changes.map((c) => {
+        const old = view.maintenance!.context.find((p) => p.id === c.targetWikiId),
+          edit = editing[c.changeId],
+          done = !!c.committedOperationId,
+          disabled = busy || readOnly || done || noteDirty;
+        return (
+          <section
+            id={c.changeId}
+            className="panel draft-card-body"
+            key={c.changeId}
+            aria-label={`知识变更 ${c.candidate.title}`}
+          >
+            <div className="panel-heading">
+              <div>
+                <h2>
+                  {{ create: '新建', update: '更新', link: '仅关联来源', noop: '无变化' }[c.action]} ·{' '}
+                  {c.candidate.title}
+                </h2>
+                <p>
+                  {done ? '已正式提交' : c.decision === 'accept' ? '已接受' : '暂缓'} ·{' '}
+                  {c.targetWikiId ? `目标 ${c.targetWikiId} / 基准 v${c.baseRevision}` : '新主题'}
+                </p>
+              </div>
+            </div>
+            <p>
+              <strong>变更理由：</strong>
+              {c.reason}
+            </p>
+            <h3>变更摘要</h3>
+            <ul>
+              {c.summary.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ul>
+            {c.questions.length > 0 && (
+              <>
+                <h3>矛盾与待核</h3>
+                <ul>
+                  {c.questions.map((q, i) => (
+                    <li key={i}>{q}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {c.dependsOn.length > 0 && (
+              <p className="notice-warn">
+                依赖项需一并接受：
+                {c.dependsOn.map((id) => changes.find((x) => x.changeId === id)?.candidate.title ?? id).join('、')}
+              </p>
+            )}
+            {old && (
+              <details>
+                <summary>
+                  更新前正文 · v{old.revision} · {old.sources.length} 个来源
+                </summary>
+                <pre className="draft-rendered">{old.body}</pre>
+              </details>
+            )}
+            {old && c.action === 'update' && (
+              <details open>
+                <summary>新旧正文差异</summary>
+                <p className="extract-note">按完整行比对增删；行移动会显示为增删，请同时核对完整正文。</p>
+                <h4>候选中移除的旧行</h4>
+                <pre className="draft-rendered">{lineDifference(old.body, c.candidate.body) || '无'}</pre>
+                <h4>候选中新增的行</h4>
+                <pre className="draft-rendered">{lineDifference(c.candidate.body, old.body) || '无'}</pre>
+              </details>
+            )}
+            <h3>完整候选正文</h3>
+            {edit ? (
+              <>
+                <label className="field">
+                  主题标题
+                  <input
+                    value={edit.title}
+                    disabled={disabled}
+                    onChange={(e) => setEditing({ ...editing, [c.changeId]: { ...edit, title: e.target.value } })}
+                  />
+                </label>
+                <label className="field">
+                  完整正文
+                  <textarea
+                    rows={16}
+                    value={edit.body}
+                    disabled={disabled}
+                    onChange={(e) => setEditing({ ...editing, [c.changeId]: { ...edit, body: e.target.value } })}
+                  />
+                </label>
+                <button className="secondary-button" disabled={disabled} onClick={() => void review(c, edit)}>
+                  保存编辑并重新审核
+                </button>
+              </>
+            ) : (
+              <pre className="draft-rendered">{c.candidate.body}</pre>
+            )}
+            <p>
+              来源：{c.candidate.sources.join('、') || (view.input ? '无Raw底源，保留上方人工知识页依据' : '未关联')}
+            </p>
+            <p>
+              知识状态 {c.candidate.knowledge_status} · 来源等级 {c.candidate.source_level} · 可信度{' '}
+              {c.candidate.confidence}
+            </p>
+            <div className="heading-actions">
+              <button
+                className="secondary-button"
+                disabled={disabled || !!edit || c.decision === 'accept'}
+                onClick={() => void review(c, { decision: 'accept' })}
+              >
+                接受此项
+              </button>
+              <button
+                className="secondary-button"
+                disabled={disabled || !!edit || c.decision === 'defer'}
+                onClick={() => void review(c, { decision: 'defer' })}
+              >
+                暂缓此项
+              </button>
+              {(c.action === 'create' || c.action === 'update') && (
+                <button
+                  className="text-button"
+                  disabled={disabled || !!edit}
+                  onClick={() =>
+                    setEditing({ ...editing, [c.changeId]: { title: c.candidate.title, body: c.candidate.body } })
+                  }
+                >
+                  编辑候选正文
+                </button>
+              )}
+            </div>
+            <label className="draft-select">
+              <input
+                type="checkbox"
+                disabled={disabled || !!edit || c.decision !== 'accept'}
+                checked={!!c.approval && c.approval.digest === view.changeDigests?.[c.changeId]}
+                onChange={(e) =>
+                  void review(c, { confirmed: e.target.checked, digest: view.changeDigests?.[c.changeId] })
+                }
+              />
+              我已核对本项完整正文、差异、{view.input ? '全部真实依据' : '来源笔记'}及待核问题
+            </label>
+          </section>
+        );
+      })}
+    </div>
+  );
 }

@@ -44,7 +44,10 @@ test('来源 Logo 优先使用本地图片，并在远程或本地图片加载�
     assert.equal(container.querySelector('img'), null);
 
     await render({ sourceName: 'Example Source', officialUrl: 'invalid' });
-    assert.equal(container.querySelector<HTMLElement>('.source-logo-fallback')?.style.backgroundColor, fallback.style.backgroundColor);
+    assert.equal(
+      container.querySelector<HTMLElement>('.source-logo-fallback')?.style.backgroundColor,
+      fallback.style.backgroundColor,
+    );
     assert.equal(container.querySelector('img'), null);
 
     await render({ sourceName: 'PwC' });

@@ -1,17 +1,7 @@
 import type { RefObject } from 'react';
-import type {
-  AutomationList,
-  AutomationRun,
-  AutomationRunStatus,
-  AutomationSchedule,
-} from '../../api';
+import type { AutomationList, AutomationRun, AutomationRunStatus, AutomationSchedule } from '../../api';
 import { automationTime } from '../../api';
-import {
-  issueLabels,
-  runStatusTone,
-  statusLabels,
-  triggerLabels,
-} from './automationMeta';
+import { issueLabels, runStatusTone, statusLabels, triggerLabels } from './automationMeta';
 import { RunDetailContent } from './RunDetailView';
 
 export type RunsTabProps = {
@@ -81,9 +71,9 @@ export function RunsTab({
         <div className="automation-filters">
           <label>
             任务
-            <select value={typeFilter} onChange={event => onTypeFilterChange(event.target.value)}>
+            <select value={typeFilter} onChange={(event) => onTypeFilterChange(event.target.value)}>
               <option value="">全部任务</option>
-              {tasks.map(task => (
+              {tasks.map((task) => (
                 <option key={task.type} value={task.type}>
                   {task.name}
                 </option>
@@ -95,7 +85,7 @@ export function RunsTab({
             运行状态
             <select
               value={statusFilter}
-              onChange={event => onStatusFilterChange(event.target.value as AutomationRunStatus | '')}
+              onChange={(event) => onStatusFilterChange(event.target.value as AutomationRunStatus | '')}
             >
               <option value="">全部状态</option>
               {Object.entries(statusLabels).map(([value, label]) => (
@@ -107,8 +97,8 @@ export function RunsTab({
           </label>
           <label>
             显示条数
-            <select value={limit} onChange={event => onLimitChange(Number(event.target.value))}>
-              {[20, 50, 100].map(count => (
+            <select value={limit} onChange={(event) => onLimitChange(Number(event.target.value))}>
+              {[20, 50, 100].map((count) => (
                 <option key={count} value={count}>
                   {count}
                 </option>
@@ -122,7 +112,7 @@ export function RunsTab({
           </p>
         )}
         {!history && !historyError && <p role="status">正在读取运行历史…</p>}
-        {history?.issues?.map(issue => (
+        {history?.issues?.map((issue) => (
           <p key={issue.file} className="form-error" role="alert">
             {issueLabels[issue.reason]}：{issue.file}
           </p>
@@ -130,7 +120,7 @@ export function RunsTab({
         {history && !history.items.length && !history.issues?.length && <p>暂无符合筛选条件的运行记录。</p>}
         <div className="automation-runs-scroll">
           <ul className="automation-list automation-runs-list">
-            {history?.items.map(run => {
+            {history?.items.map((run) => {
               const selected = selectedRunId === run.id;
               const tone = runStatusTone(run.status);
               return (
@@ -152,7 +142,7 @@ export function RunsTab({
                     className="secondary-button"
                     disabled={pending}
                     aria-pressed={selected}
-                    onClick={event => onSelectRun(run.id, run, event.currentTarget)}
+                    onClick={(event) => onSelectRun(run.id, run, event.currentTarget)}
                   >
                     查看详情
                   </button>

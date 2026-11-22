@@ -48,7 +48,7 @@ const token = 'autoux02-test-token';
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 
-const tick = (ms = 10) => new Promise(resolve => setTimeout(resolve, ms));
+const tick = (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
 async function waitFor(check: () => unknown, label = 'condition') {
   for (let i = 0; i < 80; i += 1) {
     if (check()) return;
@@ -60,7 +60,7 @@ async function waitFor(check: () => unknown, label = 'condition') {
 }
 
 const findButton = (text: string, scope: ParentNode = document) => {
-  const btn = [...scope.querySelectorAll('button')].find(el => (el.textContent ?? '').includes(text));
+  const btn = [...scope.querySelectorAll('button')].find((el) => (el.textContent ?? '').includes(text));
   assert.ok(btn, `找不到按钮：${text}`);
   return btn;
 };
@@ -79,10 +79,7 @@ const pressKey = async (target: EventTarget, key: string, shiftKey = false) => {
   });
 };
 
-const setControlValue = async (
-  el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
-  value: string,
-) => {
+const setControlValue = async (el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement, value: string) => {
   await act(async () => {
     const proto =
       el instanceof browser.HTMLTextAreaElement
@@ -301,7 +298,7 @@ test('A2-01/A2-02: 收件箱子区切换、5 阶段可点击漏斗双向同步�
         ...remindersState,
         revision: 2,
         unreadCount: 0,
-        items: remindersState.items.map(item =>
+        items: remindersState.items.map((item) =>
           item.id === 'rem-due-1' ? { ...item, status: 'acknowledged' } : item,
         ),
       };
@@ -385,8 +382,12 @@ test('A2-01/A2-02: 收件箱子区切换、5 阶段可点击漏斗双向同步�
     assert.equal(chips.length, 4);
     assert.equal(chips[0]!.getAttribute('aria-pressed'), 'true');
 
-    const dueItem = document.querySelector<HTMLElement>('.automation-reminder-list li[aria-label="华东重点客户拜访到期"]')!;
-    const staleItem = document.querySelector<HTMLElement>('.automation-reminder-list li[aria-label="渠道调研久未推进"]')!;
+    const dueItem = document.querySelector<HTMLElement>(
+      '.automation-reminder-list li[aria-label="华东重点客户拜访到期"]',
+    )!;
+    const staleItem = document.querySelector<HTMLElement>(
+      '.automation-reminder-list li[aria-label="渠道调研久未推进"]',
+    )!;
     assert.equal(dueItem.dataset.status, 'unread');
     assert.equal(dueItem.dataset.tone, 'danger');
     assert.equal(staleItem.dataset.status, 'acknowledged');
@@ -402,7 +403,9 @@ test('A2-01/A2-02: 收件箱子区切换、5 阶段可点击漏斗双向同步�
     assert.equal(document.querySelectorAll('.automation-reminder-list li').length, 2);
 
     // 标为已读后，色条与状态同步变为 muted / acknowledged
-    const dueItemFresh = document.querySelector<HTMLElement>('.automation-reminder-list li[aria-label="华东重点客户拜访到期"]')!;
+    const dueItemFresh = document.querySelector<HTMLElement>(
+      '.automation-reminder-list li[aria-label="华东重点客户拜访到期"]',
+    )!;
     await click(findButton('已读', dueItemFresh));
     await waitFor(
       () =>
@@ -598,7 +601,10 @@ test('A2-03: 流水线设置与提醒设置双入口模态弹窗、409 冲突处
 
     // Tab 1 再次打开验证已保存值并用 Escape 关闭
     await click(pipelineBtnTab1);
-    assert.equal(document.querySelector<HTMLTextAreaElement>('form[aria-label="流水线设置"] textarea')?.value, '新保存主题');
+    assert.equal(
+      document.querySelector<HTMLTextAreaElement>('form[aria-label="流水线设置"] textarea')?.value,
+      '新保存主题',
+    );
     await pressKey(document.activeElement!, 'Escape');
     assert.equal(document.querySelector('[role="dialog"]'), null);
     assert.equal(document.activeElement, pipelineBtnTab1);
@@ -657,8 +663,23 @@ test('A2-04/A2-05: 运行记录主从双栏、垂直时间线 Stepper、用量�
     endedAt: ts,
     status: 'succeeded',
     steps: [
-      { name: '目录与配置检查', status: 'succeeded', startedAt: ts, endedAt: ts, durationMs: 14, summary: '工作区目录正常' },
-      { name: '健康快照写入', status: 'failed', startedAt: ts, endedAt: ts, durationMs: 8, summary: '示例告警', error: '模拟步骤错误' },
+      {
+        name: '目录与配置检查',
+        status: 'succeeded',
+        startedAt: ts,
+        endedAt: ts,
+        durationMs: 14,
+        summary: '工作区目录正常',
+      },
+      {
+        name: '健康快照写入',
+        status: 'failed',
+        startedAt: ts,
+        endedAt: ts,
+        durationMs: 8,
+        summary: '示例告警',
+        error: '模拟步骤错误',
+      },
     ],
     sourceRequests: 4,
     usage: { requests: 1, inputTokens: 120, outputTokens: 45, unknownUsageCount: 0 },
@@ -674,7 +695,9 @@ test('A2-04/A2-05: 运行记录主从双栏、垂直时间线 Stepper、用量�
     endedAt: ts,
     status: 'succeeded',
     candidateId: `${day}/fmcg/c1`,
-    steps: [{ name: '整理入库', status: 'succeeded', startedAt: ts, endedAt: ts, durationMs: 25, summary: '已生成草稿' }],
+    steps: [
+      { name: '整理入库', status: 'succeeded', startedAt: ts, endedAt: ts, durationMs: 25, summary: '已生成草稿' },
+    ],
     usage: { requests: 1, inputTokens: 80, outputTokens: 30, unknownUsageCount: 0 },
     artifacts: { rawIds: ['raw-2'], jobIds: [], draftIds: ['draft-2'] },
     budget: null,
@@ -696,7 +719,14 @@ test('A2-04/A2-05: 运行记录主从双栏、垂直时间线 Stepper、用量�
       return json({
         date: day,
         dates: [day],
-        items: [makeCandidate('c1', '关联运行候选', { relevance: 3, phase: 'draft_ready', draftPending: true, runId: 'run-cand-1' })],
+        items: [
+          makeCandidate('c1', '关联运行候选', {
+            relevance: 3,
+            phase: 'draft_ready',
+            draftPending: true,
+            runId: 'run-cand-1',
+          }),
+        ],
         counts: { fetched: 1, pending: 0, organizing: 0, drafts: 1, failed: 0 },
       } satisfies CandidateList);
     }

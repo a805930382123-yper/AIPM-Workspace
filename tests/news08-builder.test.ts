@@ -1,2 +1,70 @@
-import {test} from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import path from 'node:path';import {NewsService} from '../services/news/service.ts';
-test('只读近期补位，按原期刊排序并排除重复和过期',async()=>{const root=await mkdtemp(path.join(tmpdir(),'news08-')),now=new Date('2026-11-10T12:00:00Z'),dir=path.join(root,'state/news');await mkdir(dir,{recursive:true});const item=(id:string,publishedAt:string|null='2026-11-01')=>({id,title:id,sourceId:id,sourceName:'s',url:`https://example.com/${id}`,publishedAt,fetchedAt:now.toISOString(),excerpt:'食品门店销售额同比增长 6%。'+id,evidenceKind:'article_excerpt'});const section=(items:ReturnType<typeof item>[],status='source_only',contentVersion='research-v1')=>({status,contentVersion,attempt:1,startedAt:now.toISOString(),sources:[],items});const write=async(date:string,s:unknown)=>writeFile(path.join(dir,date+'.json'),JSON.stringify({schemaVersion:1,date,updatedAt:now.toISOString(),sections:{fmcg:s,ai:section([])}}));try{await write('2026-11-10',section([item('today1'),item('today2')]));await write('2026-11-09',section([item('today1'),item('a'),item('bad','2020-01-01')]));await write('2026-11-08',section([item('a'),item('b'),item('c')]));await write('2026-10-10',section([item('excluded')]));let calls=0;const svc=new NewsService({root,clock:()=>now,readSources:async()=>{calls++;throw Error('network forbidden')},aiEnabled:false,providerFactory:async()=>{throw Error('model forbidden')}});const before=await readFile(path.join(dir,'2026-11-10.json'),'utf8');const v=await svc.today();assert.deepEqual(v.recentFmcg.map(x=>[x.date,x.item.id]),[['2026-11-09','a'],['2026-11-08','b'],['2026-11-08','c']]);await svc.ensure();assert.equal(calls,0);assert.equal(await readFile(path.join(dir,'2026-11-10.json'),'utf8'),before);}finally{await rm(root,{recursive:true,force:true});}});
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { NewsService } from '../services/news/service.ts';
+test('只读近期补位，按原期刊排序并排除重复和过期', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'news08-')),
+    now = new Date('2026-11-10T12:00:00Z'),
+    dir = path.join(root, 'state/news');
+  await mkdir(dir, { recursive: true });
+  const item = (id: string, publishedAt: string | null = '2026-11-01') => ({
+    id,
+    title: id,
+    sourceId: id,
+    sourceName: 's',
+    url: `https://example.com/${id}`,
+    publishedAt,
+    fetchedAt: now.toISOString(),
+    excerpt: '食品门店销售额同比增长 6%。' + id,
+    evidenceKind: 'article_excerpt',
+  });
+  const section = (items: ReturnType<typeof item>[], status = 'source_only', contentVersion = 'research-v1') => ({
+    status,
+    contentVersion,
+    attempt: 1,
+    startedAt: now.toISOString(),
+    sources: [],
+    items,
+  });
+  const write = async (date: string, s: unknown) =>
+    writeFile(
+      path.join(dir, date + '.json'),
+      JSON.stringify({ schemaVersion: 1, date, updatedAt: now.toISOString(), sections: { fmcg: s, ai: section([]) } }),
+    );
+  try {
+    await write('2026-11-10', section([item('today1'), item('today2')]));
+    await write('2026-11-09', section([item('today1'), item('a'), item('bad', '2020-01-01')]));
+    await write('2026-11-08', section([item('a'), item('b'), item('c')]));
+    await write('2026-10-10', section([item('excluded')]));
+    let calls = 0;
+    const svc = new NewsService({
+      root,
+      clock: () => now,
+      readSources: async () => {
+        calls++;
+        throw Error('network forbidden');
+      },
+      aiEnabled: false,
+      providerFactory: async () => {
+        throw Error('model forbidden');
+      },
+    });
+    const before = await readFile(path.join(dir, '2026-11-10.json'), 'utf8');
+    const v = await svc.today();
+    assert.deepEqual(
+      v.recentFmcg.map((x) => [x.date, x.item.id]),
+      [
+        ['2026-11-09', 'a'],
+        ['2026-11-08', 'b'],
+        ['2026-11-08', 'c'],
+      ],
+    );
+    await svc.ensure();
+    assert.equal(calls, 0);
+    assert.equal(await readFile(path.join(dir, '2026-11-10.json'), 'utf8'), before);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

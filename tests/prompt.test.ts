@@ -33,13 +33,23 @@ async function setup() {
 const uuid = () => crypto.randomUUID();
 function input(overrides: Partial<Record<string, unknown>> = {}) {
   return {
-    name: '访谈提纲', category: 'customer', scenario: '拜访前准备', body: '围绕 {{客户名称}} 输出提纲。',
-    inputRequirements: '客户名称', outputRequirements: '三段式', relatedWikiIds: [], examples: '', tags: ['访谈'], favorite: false,
+    name: '访谈提纲',
+    category: 'customer',
+    scenario: '拜访前准备',
+    body: '围绕 {{客户名称}} 输出提纲。',
+    inputRequirements: '客户名称',
+    outputRequirements: '三段式',
+    relatedWikiIds: [],
+    examples: '',
+    tags: ['访谈'],
+    favorite: false,
     ...overrides,
   };
 }
 async function rejection(work: () => Promise<unknown>): Promise<PromptError> {
-  try { await work(); } catch (error) {
+  try {
+    await work();
+  } catch (error) {
     assert.ok(error instanceof PromptError, `expected a PromptError, got ${String(error)}`);
     return error;
   }
@@ -61,7 +71,10 @@ test('变量扫描：中文、重复、边界空格，以及必须原样保留�
   assert.deepEqual(extractVariables('没有任何变量的正文'), []);
   // a malformed candidate consumes its own span, so it can never be re-read as a smaller variable
   const scan = scanPlaceholders('{{ {{x}} }} 与 {{甲}}');
-  assert.deepEqual(scan.variables.map(span => span.name), ['甲']);
+  assert.deepEqual(
+    scan.variables.map((span) => span.name),
+    ['甲'],
+  );
   assert.equal(scan.malformed[0].reason, 'braces');
   assert.equal(scan.malformed[0].text, '{{ {{x}}', '畸形候选只消费到第一个 }}，不会被重新读成更小的变量');
   // the span end offset is exact, so rendering leaves the malformed text byte-for-byte intact
@@ -90,8 +103,14 @@ test('变量值只接受由自己键读取的字符串，原型键不会污染�
   assert.equal(Object.prototype.constructor, Object, '原型没有被写入');
   assert.equal(({} as Record<string, unknown>)['甲'], undefined);
   assert.equal(renderTemplate('{{__proto__}}', values).body, '甲');
-  assert.throws(() => normalizeVariableValues({ 甲: 1 }), (error: PromptError) => error.code === 'INVALID_VALUES');
-  assert.throws(() => normalizeVariableValues(['甲']), (error: PromptError) => error.code === 'INVALID_VALUES');
+  assert.throws(
+    () => normalizeVariableValues({ 甲: 1 }),
+    (error: PromptError) => error.code === 'INVALID_VALUES',
+  );
+  assert.throws(
+    () => normalizeVariableValues(['甲']),
+    (error: PromptError) => error.code === 'INVALID_VALUES',
+  );
   assert.deepEqual(normalizeVariableValues(undefined), {});
 });
 
@@ -101,8 +120,27 @@ test('变量值只接受由自己键读取的字符串，原型键不会污染�
 
 test('输入校验：白名单字段、系统字段与长度上限', () => {
   const clean = normalizePromptInput(input(), CATEGORIES);
-  assert.deepEqual(Object.keys(clean).sort(), ['body', 'category', 'examples', 'favorite', 'inputRequirements', 'name', 'outputRequirements', 'relatedWikiIds', 'scenario', 'tags'].sort());
-  const rejects = (payload: unknown, code: string) => assert.throws(() => normalizePromptInput(payload, CATEGORIES), (error: PromptError) => error.code === code, `${code}`);
+  assert.deepEqual(
+    Object.keys(clean).sort(),
+    [
+      'body',
+      'category',
+      'examples',
+      'favorite',
+      'inputRequirements',
+      'name',
+      'outputRequirements',
+      'relatedWikiIds',
+      'scenario',
+      'tags',
+    ].sort(),
+  );
+  const rejects = (payload: unknown, code: string) =>
+    assert.throws(
+      () => normalizePromptInput(payload, CATEGORIES),
+      (error: PromptError) => error.code === code,
+      `${code}`,
+    );
   rejects(input({ category: '未知分类' }), 'INVALID_CATEGORY');
   rejects(input({ tags: '访谈' }), 'INVALID_FIELD');
   rejects(input({ favorite: 1 }), 'INVALID_FIELD');
@@ -148,8 +186,13 @@ test('创建：requestId 成为 id，版本 1，变量由服务端提取，文�
     assert.equal(file.versions[0].changeSource, 'manual');
     assert.equal(file.creation.requestId, requestId);
     // no temp file is left behind
-    assert.deepEqual((await readdir(path.join(root, 'prompts'))).filter(name => name.endsWith('.tmp')), []);
-  } finally { await clean(); }
+    assert.deepEqual(
+      (await readdir(path.join(root, 'prompts'))).filter((name) => name.endsWith('.tmp')),
+      [],
+    );
+  } finally {
+    await clean();
+  }
 });
 
 test('保存：每次有效保存追加完整快照并递增版本；同内容保存不产生版本也不改时间', async () => {
@@ -161,7 +204,10 @@ test('保存：每次有效保存追加完整快照并递增版本；同内容�
     const v3 = await store.update(prompt.id, 2, input({ name: '访谈提纲 v2', favorite: true }));
     assert.equal(v3.version, 3);
     const versions = await store.getVersions(prompt.id);
-    assert.deepEqual(versions.map(item => item.version), [1, 2, 3]);
+    assert.deepEqual(
+      versions.map((item) => item.version),
+      [1, 2, 3],
+    );
     assert.equal(versions[0].snapshot.name, '访谈提纲');
     assert.equal(versions[0].snapshot.favorite, false);
     assert.equal(versions[2].snapshot.favorite, true);
@@ -172,9 +218,14 @@ test('保存：每次有效保存追加完整快照并递增版本；同内容�
     assert.equal(same.updatedAt, v3.updatedAt);
     assert.equal((await store.getVersions(prompt.id)).length, 3);
     // a restart reads everything back
-    const reopened = new PromptStore(root, new (await import('../services/wiki/store.ts')).WikiStore(root, new RawStore(root)));
+    const reopened = new PromptStore(
+      root,
+      new (await import('../services/wiki/store.ts')).WikiStore(root, new RawStore(root)),
+    );
     assert.equal((await reopened.get(prompt.id))?.version, 3);
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('冲突：同 baseVersion 只有一个成功，过期写入与删除返回 409 且不改动资产', async () => {
@@ -185,16 +236,21 @@ test('冲突：同 baseVersion 只有一个成功，过期写入与删除返回 
       store.update(prompt.id, 1, input({ name: 'A' })),
       store.update(prompt.id, 1, input({ name: 'B' })),
     ]);
-    assert.equal(results.filter(item => item.status === 'fulfilled').length, 1);
-    const rejected = results.find(item => item.status === 'rejected') as PromiseRejectedResult;
+    assert.equal(results.filter((item) => item.status === 'fulfilled').length, 1);
+    const rejected = results.find((item) => item.status === 'rejected') as PromiseRejectedResult;
     assert.equal((rejected.reason as PromptError).code, 'VERSION_CONFLICT');
     assert.deepEqual((rejected.reason as PromptError).details, { currentVersion: 2 });
     const file = path.join(root, 'prompts', `${prompt.id}.json`);
     const before = await readFile(file);
-    await assert.rejects(store.update(prompt.id, 1, input({ name: '过期' })), (error: PromptError) => error.code === 'VERSION_CONFLICT');
+    await assert.rejects(
+      store.update(prompt.id, 1, input({ name: '过期' })),
+      (error: PromptError) => error.code === 'VERSION_CONFLICT',
+    );
     await assert.rejects(store.delete(prompt.id, 1), (error: PromptError) => error.code === 'VERSION_CONFLICT');
     assert.ok((await readFile(file)).equals(before));
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('创建重试：同 requestId 同内容返回当前对象，不同内容 409，已回收 id 不复活', async () => {
@@ -210,7 +266,10 @@ test('创建重试：同 requestId 同内容返回当前对象，不同内容 40
     assert.equal(afterEdit.reused, true);
     assert.equal(afterEdit.prompt.name, '人工改过的名字', '重试不得覆盖后续的人工编辑');
     assert.equal(afterEdit.prompt.version, 2);
-    await assert.rejects(store.create(requestId, input({ name: '另一组初始内容' })), (error: PromptError) => error.code === 'REQUEST_ID_CONFLICT');
+    await assert.rejects(
+      store.create(requestId, input({ name: '另一组初始内容' })),
+      (error: PromptError) => error.code === 'REQUEST_ID_CONFLICT',
+    );
     assert.equal((await store.get(requestId))?.name, '人工改过的名字');
     // deleted -> recycled -> never revived
     await store.delete(requestId, 2);
@@ -219,7 +278,9 @@ test('创建重试：同 requestId 同内容返回当前对象，不同内容 40
     assert.equal(await store.get(requestId), undefined);
     assert.deepEqual(await readdir(path.join(root, 'prompts', 'recycle')), [`${requestId}.json`]);
     assert.equal(first.prompt.id, requestId);
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('删除：原子转移到回收区，从读取/版本接口消失，其他 Prompt 不受影响', async () => {
@@ -232,35 +293,81 @@ test('删除：原子转移到回收区，从读取/版本接口消失，其他 
     await store.delete(a.id, a.version);
     assert.equal(await store.get(a.id), undefined);
     await assert.rejects(store.getVersions(a.id), (error: PromptError) => error.code === 'NOT_FOUND');
-    assert.equal((await store.list()).map(item => item.id).join(), b.id);
+    assert.equal((await store.list()).map((item) => item.id).join(), b.id);
     assert.ok((await readFile(bFile)).equals(bBefore));
     assert.equal((await readFile(path.join(root, 'prompts', 'recycle', `${a.id}.json`), 'utf8')).length > 0, true);
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('列表：中文名称/标签/正文搜索、分类标签收藏筛选与分类计数', async () => {
   const { store, clean } = await setup();
   try {
-    const a = (await store.create(uuid(), input({ name: '门店动销复盘', category: 'business_analysis', tags: ['复盘'] }))).prompt;
-    const b = (await store.create(uuid(), input({ name: '新品计划', category: 'product', tags: ['新品'], favorite: true, body: '为 {{新品名称}} 生成计划。' }))).prompt;
-    assert.deepEqual((await store.list({ q: '门店动销' })).map(item => item.id), [a.id]);
-    assert.deepEqual((await store.list({ q: '复盘' })).map(item => item.id), [a.id]);
-    assert.deepEqual((await store.list({ q: '生成计划' })).map(item => item.id), [b.id]);
+    const a = (
+      await store.create(uuid(), input({ name: '门店动销复盘', category: 'business_analysis', tags: ['复盘'] }))
+    ).prompt;
+    const b = (
+      await store.create(
+        uuid(),
+        input({
+          name: '新品计划',
+          category: 'product',
+          tags: ['新品'],
+          favorite: true,
+          body: '为 {{新品名称}} 生成计划。',
+        }),
+      )
+    ).prompt;
+    assert.deepEqual(
+      (await store.list({ q: '门店动销' })).map((item) => item.id),
+      [a.id],
+    );
+    assert.deepEqual(
+      (await store.list({ q: '复盘' })).map((item) => item.id),
+      [a.id],
+    );
+    assert.deepEqual(
+      (await store.list({ q: '生成计划' })).map((item) => item.id),
+      [b.id],
+    );
     assert.deepEqual(await store.list({ q: '不存在的词' }), []);
-    assert.deepEqual((await store.list({ category: 'product' })).map(item => item.id), [b.id]);
-    assert.deepEqual((await store.list({ tag: '新品' })).map(item => item.id), [b.id]);
-    assert.deepEqual((await store.list({ favorite: true })).map(item => item.id), [b.id]);
-    assert.deepEqual((await store.list({ favorite: false })).map(item => item.id), [a.id], 'favorite=false 只看未收藏');
-    assert.deepEqual((await store.list({ category: 'product', tag: '新品', favorite: true, q: '新品' })).map(item => item.id), [b.id]);
+    assert.deepEqual(
+      (await store.list({ category: 'product' })).map((item) => item.id),
+      [b.id],
+    );
+    assert.deepEqual(
+      (await store.list({ tag: '新品' })).map((item) => item.id),
+      [b.id],
+    );
+    assert.deepEqual(
+      (await store.list({ favorite: true })).map((item) => item.id),
+      [b.id],
+    );
+    assert.deepEqual(
+      (await store.list({ favorite: false })).map((item) => item.id),
+      [a.id],
+      'favorite=false 只看未收藏',
+    );
+    assert.deepEqual(
+      (await store.list({ category: 'product', tag: '新品', favorite: true, q: '新品' })).map((item) => item.id),
+      [b.id],
+    );
     assert.deepEqual(await store.list({ category: 'product', q: '门店' }), []);
     // Unicode 归一化：全角与半角、大小写视为同一输入，原始记录不被改写
-    assert.deepEqual((await store.list({ q: 'ＮＥＷ' })).map(item => item.id), [], '归一化不会凭空匹配');
+    assert.deepEqual(
+      (await store.list({ q: 'ＮＥＷ' })).map((item) => item.id),
+      [],
+      '归一化不会凭空匹配',
+    );
     const counts = await store.categoryCounts();
     assert.equal(counts.product, 1);
     assert.equal(counts.business_analysis, 1);
     assert.equal(counts.customer, 0);
     assert.deepEqual(Object.keys(counts), CATEGORIES);
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('变量渲染：纯计算、缺值 422、未知键 400、版本不符 409，都不改文件', async () => {
@@ -280,7 +387,9 @@ test('变量渲染：纯计算、缺值 422、未知键 400、版本不符 409�
     const stale = await rejection(() => store.renderVariables(prompt.id, 2, {}));
     assert.equal(stale.code, 'VERSION_CONFLICT');
     assert.ok((await readFile(file)).equals(before), '渲染不得改写记录');
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('导出：YAML 元数据 + 正文原文，围栏与反引号不会被破坏', async () => {
@@ -302,19 +411,33 @@ test('导出：YAML 元数据 + 正文原文，围栏与反引号不会被破坏
     assert.ok(result.markdown.includes('## 示例\n\n示例正文'));
     assert.ok(result.markdown.endsWith(`## Prompt 正文\n\n${body}\n`), '正文逐字节保留');
     assert.equal(await store.exportMarkdown(uuid()), undefined);
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('关联 Wiki：已失效的旧关联仍可读，新增不存在的关联被拒绝', async () => {
   const { root, wikiStore, store, clean } = await setup();
   try {
     const page = await wikiStore.create({
-      title: '指标页', type: 'metric', category: 'metric', sources: [], tags: [], aliases: [],
-      knowledge_status: 'needs_verification', confidence: 'low', source_level: 'D', review_status: 'reviewed', body: '正文。',
+      title: '指标页',
+      type: 'metric',
+      category: 'metric',
+      sources: [],
+      tags: [],
+      aliases: [],
+      knowledge_status: 'needs_verification',
+      confidence: 'low',
+      source_level: 'D',
+      review_status: 'reviewed',
+      body: '正文。',
     });
     const { prompt } = await store.create(uuid(), input({ relatedWikiIds: [page.id] }));
     assert.deepEqual(await store.wikiLinks(prompt), [{ id: page.id, title: '指标页', status: 'resolved' }]);
-    await assert.rejects(store.create(uuid(), input({ relatedWikiIds: [uuid()] })), (error: PromptError) => error.code === 'INVALID_WIKI_LINK');
+    await assert.rejects(
+      store.create(uuid(), input({ relatedWikiIds: [uuid()] })),
+      (error: PromptError) => error.code === 'INVALID_WIKI_LINK',
+    );
     await wikiStore.delete(page.id, page.revision);
     const orphan = await store.get(prompt.id);
     assert.ok(orphan);
@@ -325,8 +448,13 @@ test('关联 Wiki：已失效的旧关联仍可读，新增不存在的关联被
     assert.equal((await store.renderVariables(prompt.id, 2, { 客户名称: '某客户' })).body.includes('某客户'), true);
     const exported = await store.exportMarkdown(prompt.id);
     assert.ok(exported?.markdown.includes('关联已失效'));
-    assert.ok((await readFile(path.join(root, 'prompts', `${prompt.id}.json`), 'utf8')).includes(page.id), '损坏的知识链接不影响 Prompt 记录');
-  } finally { await clean(); }
+    assert.ok(
+      (await readFile(path.join(root, 'prompts', `${prompt.id}.json`), 'utf8')).includes(page.id),
+      '损坏的知识链接不影响 Prompt 记录',
+    );
+  } finally {
+    await clean();
+  }
 });
 
 test('统计：只统计顶层有效的 current 记录，回收/临时/其他 JSON 一律不算', async () => {
@@ -339,15 +467,24 @@ test('统计：只统计顶层有效的 current 记录，回收/临时/其他 JS
     await writeFile(path.join(prompts, 'notes.json'), '{"note":true}');
     await writeFile(path.join(prompts, `.${uuid()}.json.abc.tmp`), '{"partial":true}');
     await mkdir(path.join(prompts, 'sub'), { recursive: true });
-    await writeFile(path.join(prompts, 'sub', `${uuid()}.json`), JSON.stringify({ id: uuid(), current: {}, versions: [] }));
+    await writeFile(
+      path.join(prompts, 'sub', `${uuid()}.json`),
+      JSON.stringify({ id: uuid(), current: {}, versions: [] }),
+    );
     assert.equal((await getStats(root, rawStore, new Date(), store)).promptCount, 1);
     assert.equal(await countActivePrompts(root), 1);
     await store.delete(prompt.id, 1);
     assert.equal((await getStats(root, rawStore, new Date(), store)).promptCount, 0);
     await writeFile(path.join(prompts, 'recycle', `${uuid()}.json`), '{"recycled":true}');
     assert.equal((await getStats(root, rawStore, new Date(), store)).promptCount, 0);
-    assert.equal((await getStats(root, rawStore, new Date())).promptCount, 0, '没有注入 store 时使用同一套有效记录规则');
-  } finally { await clean(); }
+    assert.equal(
+      (await getStats(root, rawStore, new Date())).promptCount,
+      0,
+      '没有注入 store 时使用同一套有效记录规则',
+    );
+  } finally {
+    await clean();
+  }
 });
 
 // B07 返修 F07-01: a damaged file used to inflate the homepage count (10→11 in acceptance) and then
@@ -360,29 +497,44 @@ test('返修 F07-01：结构损坏或身份不一致的记录不计为有效，�
     const other = (await store.create(uuid(), input({ name: '有效模板乙', tags: ['乙'] }))).prompt;
     assert.equal(await countActivePrompts(root), 2);
     const prompts = path.join(root, 'prompts');
-    const sha = async (file: string) => createHash('sha256').update(await readFile(file)).digest('hex');
+    const sha = async (file: string) =>
+      createHash('sha256')
+        .update(await readFile(file))
+        .digest('hex');
 
     // 1) 缺字段的损坏记录：验收复现用的最小形状，文件名是合法 UUID
     const damagedId = uuid();
     const damagedFile = path.join(prompts, `${damagedId}.json`);
-    await writeFile(damagedFile, JSON.stringify({ id: damagedId, current: { id: damagedId }, versions: [], creation: {} }));
+    await writeFile(
+      damagedFile,
+      JSON.stringify({ id: damagedId, current: { id: damagedId }, versions: [], creation: {} }),
+    );
     const damagedBefore = await sha(damagedFile);
 
     // 2) 合法 UUID 文件名与内部 id/current.id 不一致的记录（内容本身完整）
     const mismatchedId = uuid();
     const mismatchedFile = path.join(prompts, `${mismatchedId}.json`);
-    const complete = JSON.parse(await readFile(path.join(prompts, `${other.id}.json`), 'utf8')) as Record<string, unknown>;
+    const complete = JSON.parse(await readFile(path.join(prompts, `${other.id}.json`), 'utf8')) as Record<
+      string,
+      unknown
+    >;
     await writeFile(mismatchedFile, JSON.stringify(complete));
     const mismatchedBefore = await sha(mismatchedFile);
 
     // 列表/统计/分类计数仍只看两条真实记录，损坏文件不充数
     assert.equal(await countActivePrompts(root), 2, '损坏记录不得计入有效数量');
     assert.equal((await getStats(root, rawStore, new Date(), store)).promptCount, 2);
-    assert.deepEqual((await store.list()).map(item => item.id).sort(), [good.id, other.id].sort());
-    assert.deepEqual(Object.values(await store.categoryCounts()).reduce((sum, count) => sum + count, 0), 2);
+    assert.deepEqual((await store.list()).map((item) => item.id).sort(), [good.id, other.id].sort());
+    assert.deepEqual(
+      Object.values(await store.categoryCounts()).reduce((sum, count) => sum + count, 0),
+      2,
+    );
 
     // 直接读取损坏记录：明确受控错误，而不是缺字段导致的 INTERNAL_ERROR
-    for (const [id, label] of [[damagedId, '缺字段'], [mismatchedId, '文件名与内部 id 不一致']] as const) {
+    for (const [id, label] of [
+      [damagedId, '缺字段'],
+      [mismatchedId, '文件名与内部 id 不一致'],
+    ] as const) {
       const error = await rejection(() => store.get(id));
       assert.equal(error.code, 'CORRUPT_PROMPT', `${label}的记录必须报 CORRUPT_PROMPT，实际 ${error.code}`);
       assert.equal(error.status, 500);
@@ -395,8 +547,10 @@ test('返修 F07-01：结构损坏或身份不一致的记录不计为有效，�
     // 不修改也不丢弃损坏实物：两次读取后内容逐字节不变，文件仍然存在
     assert.equal(await sha(damagedFile), damagedBefore, '损坏文件不得被改写');
     assert.equal(await sha(mismatchedFile), mismatchedBefore, '身份不一致的文件不得被改写');
-    assert.deepEqual((await readdir(prompts)).filter(name => name.endsWith('.json')).sort(),
-      [good.id, other.id, damagedId, mismatchedId].map(id => `${id}.json`).sort());
+    assert.deepEqual(
+      (await readdir(prompts)).filter((name) => name.endsWith('.json')).sort(),
+      [good.id, other.id, damagedId, mismatchedId].map((id) => `${id}.json`).sort(),
+    );
     // 也不能借同名 requestId 的新建覆盖它
     const createError = await rejection(() => store.create(damagedId, input()));
     assert.equal(createError.code, 'CORRUPT_PROMPT');
@@ -405,22 +559,35 @@ test('返修 F07-01：结构损坏或身份不一致的记录不计为有效，�
     // 有效模板仍然正常可读，版本与渲染不受影响
     assert.equal((await store.get(good.id))?.name, '有效模板甲');
     assert.equal((await store.get(other.id))?.name, '有效模板乙');
-    assert.deepEqual((await store.getVersions(good.id)).map(item => item.version), [1]);
+    assert.deepEqual(
+      (await store.getVersions(good.id)).map((item) => item.version),
+      [1],
+    );
     assert.equal((await store.renderVariables(good.id, 1, { 客户名称: '华东' })).body, '围绕 华东 输出提纲。');
     assert.equal(await store.get(uuid()), undefined, '不存在的 id 仍然是 undefined，不是损坏');
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('分类规则文件提供六个固定分类且不带任何预置 Prompt', async () => {
   const { store, clean } = await setup();
   try {
     const schema = await store.schema();
-    assert.deepEqual(schema.categories.map(item => item.id), CATEGORIES);
-    assert.deepEqual(schema.categories.map(item => item.label), ['行业学习', '业务分析', '客户', '产品', 'AI', '日常办公']);
-    assert.deepEqual((await store.list()), [], '不带任何预置 Prompt');
+    assert.deepEqual(
+      schema.categories.map((item) => item.id),
+      CATEGORIES,
+    );
+    assert.deepEqual(
+      schema.categories.map((item) => item.label),
+      ['行业学习', '业务分析', '客户', '产品', 'AI', '日常办公'],
+    );
+    assert.deepEqual(await store.list(), [], '不带任何预置 Prompt');
     const raw = JSON.parse(JSON.stringify(schema.categories));
     assert.ok(raw.every((item: Record<string, unknown>) => !('prompts' in item) && !('count' in item)));
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });
 
 test('保存失败时报告可读错误，且不产生新版本或半成品文件', async () => {
@@ -441,24 +608,42 @@ test('保存失败时报告可读错误，且不产生新版本或半成品文�
       });
       assert.ok((await readFile(file)).equals(before), '失败后旧记录保持不变');
       assert.equal((await store.getVersions(prompt.id)).length, 1, '失败不得虚增版本');
-    } finally { await chmod(file, 0o666); }
+    } finally {
+      await chmod(file, 0o666);
+    }
     // 解除故障后可以重试
     const recovered = await store.update(prompt.id, 1, input({ name: '解除后保存成功' }));
     assert.equal(recovered.version, 2);
-    assert.equal((await readdir(path.join(root, 'prompts'))).filter(name => name.endsWith('.tmp')).length, 0, '不残留临时文件');
-  } finally { await chmod(file, 0o666).catch(() => undefined); await clean(); }
+    assert.equal(
+      (await readdir(path.join(root, 'prompts'))).filter((name) => name.endsWith('.tmp')).length,
+      0,
+      '不残留临时文件',
+    );
+  } finally {
+    await chmod(file, 0o666).catch(() => undefined);
+    await clean();
+  }
 });
 
 test('系统字段由服务端维护：客户端提交的一律被拒绝', async () => {
   const { store, clean } = await setup();
   try {
     const { prompt } = await store.create(uuid(), input());
-    for (const forged of [{ id: uuid() }, { version: 9 }, { source: 'ai_generated' }, { variables: ['x'] }, { createdAt: 'x' }, { updatedAt: 'x' }]) {
+    for (const forged of [
+      { id: uuid() },
+      { version: 9 },
+      { source: 'ai_generated' },
+      { variables: ['x'] },
+      { createdAt: 'x' },
+      { updatedAt: 'x' },
+    ]) {
       const error = await rejection(() => store.update(prompt.id, 1, { ...input(), ...forged }));
       assert.equal(error.code, 'SYSTEM_FIELD_NOT_ALLOWED', JSON.stringify(forged));
     }
     const stored: Prompt | undefined = await store.get(prompt.id);
     assert.equal(stored?.version, 1);
     assert.equal(stored?.source, 'manual');
-  } finally { await clean(); }
+  } finally {
+    await clean();
+  }
 });

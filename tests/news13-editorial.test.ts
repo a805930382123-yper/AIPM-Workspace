@@ -23,9 +23,10 @@ function responses(t: TestContext, routes: Record<string, () => Response>): stri
 }
 const body = (value: string, type: string) => () => new Response(value, { headers: { 'content-type': type } });
 
-test('Cookbook reads the publication registry and the byline lookup in two requests', async t => {
+test('Cookbook reads the publication registry and the byline lookup in two requests', async (t) => {
   const urls = responses(t, {
-    [cookbookFiles + 'registry.yaml']: body(`
+    [cookbookFiles + 'registry.yaml']: body(
+      `
 - path: articles/older.md
   title: Earlier recipe
   description: ${method}
@@ -39,12 +40,17 @@ test('Cookbook reads the publication registry and the byline lookup in two reque
   title: Scheduled recipe
   description: ${method}
   date: 2026-11-21
-`, raw),
+`,
+      raw,
+    ),
     [cookbookFiles + 'authors.yaml']: body('cookbook-writer: { name: Cookbook Writer }', raw),
   });
-  const result = await editorialSources.find(source => source.id === 'openai-cookbook')!.read(now);
+  const result = await editorialSources.find((source) => source.id === 'openai-cookbook')!.read(now);
   assert.deepEqual(urls, [cookbookFiles + 'registry.yaml', cookbookFiles + 'authors.yaml']);
-  assert.deepEqual(result.items.map(item => item.title), ['Current recipe', 'Earlier recipe']);
+  assert.deepEqual(
+    result.items.map((item) => item.title),
+    ['Current recipe', 'Earlier recipe'],
+  );
   assert.equal(result.items[0].publishedAt, '2026-11-18');
   assert.equal(result.items[0].author, 'Cookbook Writer');
   assert.equal(result.items[0].url, 'https://developers.openai.com/cookbook/examples/current/readme');
@@ -53,17 +59,24 @@ test('Cookbook reads the publication registry and the byline lookup in two reque
   assert.equal(result.sources[0].diagnosis?.outcome, 'ok');
 });
 
-test('Anthropic limits article fetches, rejects a redirect outside its exact source path, and diagnoses a partial result', async t => {
+test('Anthropic limits article fetches, rejects a redirect outside its exact source path, and diagnoses a partial result', async (t) => {
   const details = ['agent-memory', 'redirect', 'busy', 'over-budget'];
   const urls = responses(t, {
-    [engineering + '/engineering']: body(`<main>${details.map(slug => `<article><h3><a href="/research/${slug}">${slug}</a></h3></article>`).join('')}</main>`, 'text/html'),
-    [engineering + '/research/agent-memory']: body(`<main><article><h1>Agent memory</h1><time datetime="2026-11-18">Nov 18</time>
+    [engineering + '/engineering']: body(
+      `<main>${details.map((slug) => `<article><h3><a href="/research/${slug}">${slug}</a></h3></article>`).join('')}</main>`,
+      'text/html',
+    ),
+    [engineering + '/research/agent-memory']: body(
+      `<main><article><h1>Agent memory</h1><time datetime="2026-11-18">Nov 18</time>
       <script type="application/ld+json">{"@type":"Article","author":{"name":"Engineering Team"}}</script>
-      <p>Related articles</p><p class="post-text">${method}</p></article></main>`, 'text/html'),
-    [engineering + '/research/redirect']: () => new Response(null, { status: 302, headers: { location: 'https://www.anthropic.com.unrelated.invalid/article' } }),
+      <p>Related articles</p><p class="post-text">${method}</p></article></main>`,
+      'text/html',
+    ),
+    [engineering + '/research/redirect']: () =>
+      new Response(null, { status: 302, headers: { location: 'https://www.anthropic.com.unrelated.invalid/article' } }),
     [engineering + '/research/busy']: () => new Response(null, { status: 503 }),
   });
-  const result = await editorialSources.find(source => source.id === 'anthropic-engineering')!.read(now);
+  const result = await editorialSources.find((source) => source.id === 'anthropic-engineering')!.read(now);
   assert.equal(urls.length, 4);
   assert.equal(result.items.length, 1);
   assert.equal(result.items[0].author, 'Engineering Team');
@@ -74,17 +87,21 @@ test('Anthropic limits article fetches, rejects a redirect outside its exact sou
   assert.equal(result.sources[0].diagnosis?.counts.failed, 2);
 });
 
-test('Hugging Face uses published article authors and calendar dates from its official publication files', async t => {
+test('Hugging Face uses published article authors and calendar dates from its official publication files', async (t) => {
   const urls = responses(t, {
-    [hfFiles + '_blog.yml']: body(`
+    [hfFiles + '_blog.yml']: body(
+      `
 - local: model-guide
   date: November 18, 2026
 - local: missing-day
   date: November, 2026
 - local: ../not-a-blog-post
   date: November 19, 2026
-`, raw),
-    [hfFiles + 'model-guide.md']: body(`---
+`,
+      raw,
+    ),
+    [hfFiles + 'model-guide.md']: body(
+      `---
 title: Model evaluation guide
 authors: [{ user: hf-writer }]
 ---
@@ -96,9 +113,11 @@ ${method}
 \`\`\`python
 print('example code')
 \`\`\`
-`, raw),
+`,
+      raw,
+    ),
   });
-  const result = await editorialSources.find(source => source.id === 'huggingface-blog')!.read(now);
+  const result = await editorialSources.find((source) => source.id === 'huggingface-blog')!.read(now);
   assert.deepEqual(urls, [hfFiles + '_blog.yml', hfFiles + 'model-guide.md']);
   assert.equal(result.items.length, 1);
   assert.equal(result.items[0].publishedAt, '2026-11-18');
@@ -108,18 +127,21 @@ print('example code')
   assert.equal(result.items[0].evidenceKind, 'article_excerpt');
 });
 
-test('Simon Willison retains Atom publication time and quotation attribution without following external article links', async t => {
+test('Simon Willison retains Atom publication time and quotation attribution without following external article links', async (t) => {
   const urls = responses(t, {
-    [atom]: body(`<feed xmlns="http://www.w3.org/2005/Atom"><author><name>Simon Willison</name></author>
+    [atom]: body(
+      `<feed xmlns="http://www.w3.org/2005/Atom"><author><name>Simon Willison</name></author>
       <entry><title>Quoting a prompting guide</title><link rel="alternate" href="https://simonwillison.net/2026/Nov/18/prompting/"/>
         <published>2026-11-18T12:10:00+00:00</published><updated>2026-11-19T14:00:00+00:00</updated>
         <summary type="html">&lt;blockquote&gt;&lt;p&gt;${method}&lt;/p&gt;&lt;/blockquote&gt;
         &lt;p class="cite"&gt;— Prompting guide, example contributor&lt;/p&gt;&lt;p&gt;Tags: prompt-engineering&lt;/p&gt;</summary></entry>
       <entry><title>External link</title><link rel="alternate" href="https://elsewhere.invalid/2026/Nov/18/prompting/"/>
         <published>2026-11-18T12:10:00+00:00</published><summary>${method}</summary></entry>
-    </feed>`, 'application/xml'),
+    </feed>`,
+      'application/xml',
+    ),
   });
-  const result = await editorialSources.find(source => source.id === 'simon-prompt-engineering')!.read(now);
+  const result = await editorialSources.find((source) => source.id === 'simon-prompt-engineering')!.read(now);
   assert.deepEqual(urls, [atom]);
   assert.equal(result.items.length, 1);
   assert.equal(result.items[0].author, 'Simon Willison');
