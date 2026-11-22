@@ -40,7 +40,7 @@
 
 **执行偏差如实记录：** 第一次 full 默认在共享源目录运行，未提前识别 `llm-http.test.ts` 会写 `docs/reports/B04-http-evidence.json`。已先保留生成内容和失败日志，再证明 HEAD 原字节 SHA 与施工前 baseline 同为 `147b45a9051ea0478eee6ffaff1bf7d5ed1d3c43d068ba131f71929208f23720`，仅精确写回这一文件；未用 reset/restore 或覆盖其它修改。[sideeffect-restoration.json](KB02-SEMANTIC-20261023-sideeffect-restoration.json) 含前/后 SHA，生成内容另存 sideeffect-generated.json。该次无配置 HTTP 断言也受源目录现有配置影响（keyConfigured true）；保留原断言，在不含 `.env.local` 的隔离副本完整通过。
 
-施工前 baseline 5479 条，其中第一次新增的窄模块和审核 schema 已创建，之后才成功保存 baseline；二者为 Git 未跟踪新文件，没有冒称拥有其创建前原始 SHA。最终按明确所有权比较，**5448 个保护文件无变化**，授权施工与 Astra 并行变化单列，正式 workspace/配置/Raw/历史资产保持字节相同，详见 [closure.json](KB02-SEMANTIC-20261023-closure.json)。副本仅为本轮本地证据，没有真实 Provider 服务/浏览器；测试自有 localhost 服务均由 fixture 关闭。保留隔离副本供审查，未做递归清理。
+施工前 baseline 5479 条，其中第一次新增的窄模块和审核 schema 已创建，之后才成功保存 baseline；二者为 Git 未跟踪新文件，没有冒称拥有其创建前原始 SHA。最终按明确所有权比较，**5448 个保护文件无变化**，授权施工与 Astra 并行变化单列，正式 workspace/配置/Raw/历史资产保持字节相同，详见 [closure.json（见 ENG03 证据清单）](ENG03-20261122-evidence-manifest.json)。副本仅为本轮本地证据，没有真实 Provider 服务/浏览器；测试自有 localhost 服务均由 fixture 关闭。保留隔离副本供审查，未做递归清理。
 
 ## 冻结与剩余风险
 

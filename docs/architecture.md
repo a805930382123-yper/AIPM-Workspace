@@ -48,16 +48,11 @@ RUN01 增加到点严格向未来推进的上海时区周计划，周一为 1，
 
 用户明确授权从 Raw 详情人工编辑正文，取代下文历史“Raw 不可变”对人工操作的限制；AI 仍不得改写 Raw。见 [RAWEDIT02 任务卡](handoffs/RAWEDIT02-20261114-task.md)及[独立验收](reports/RAWEDIT02-20261114-review.md)。稳定 Raw ID 和来源身份保持，PATCH正文校验预期SHA及bodyRevision（旧记录0），先将修改前完整Markdown原字节写入 knowledge/raw/history/<id>/<revision>.md，再原子替换正文；原件字节不修改。编辑与启动/确认复用Wiki锁，进行中处理及未完成确认阻止编辑。旧普通派生依据按正文SHA失效，已有正式Wiki不自动改写。PDF人工改的是提取文字，bodyRevision非零时旧页链与按页草稿不再用于当前正文，原PDF仍可打开；不能把改后文字冒充原PDF页内容。带Meeting来源身份的Raw仍保持桥接原件一致性，不开放直接正文修订；普通meeting分类不受此限制。
 
-## 2026-10-23 HUMAN增量设计（已实现，人工门禁验收通过）
+<!-- ENG03 inserted:start -->
+## 2026-10-23 HUMAN 增量设计（现行结论）
 
-当前实现与验证边界见[独立收尾报告](reports/KB02-HUMAN-CLOSE-20261023-acceptance.md)：HUMAN工程门禁通过，KB02整体仍因K2-04真实质量证据未齐而未结批；不将下列设计的实现等同于模型质量修复。
-
-以[HUMAN任务卡](handoffs/KB02-HUMAN-20261023-task.md)为本轮冻结接口边界：revision13新提取链在机械合法规划后直接组装未审候选，不再外发B1审核；新计划调用下界chunks+1，旧revision12历史下界chunks+2保留。新规则指纹拒绝旧未完成恢复；已完成草稿不重提取。
-
-Draft/KnowledgeWorkflow新增版本化审查元数据：服务端不可变来源unit目录、唯一页归属或未解决、绑定完整可写内容摘要的逐页明确确认。现有原子文件/锁/revision继续使用，不增通用审批框架。开始审查显式持久化旧记录目录，GET不隐式改盘；legacy目录保留实际旧条目及证据，不虚构模型ID/来源。新KB02目录从实际planningInput携带，update继承输入页来源及预览提议，synthesis从已有sections/evidence建立带真实类别的审查条目。原文事实与人工修改区分。
-
-CommitStore及KnowledgeWorkflowStore正式确认服务层统一拒绝未全审/有未解决/内容摘要失效，update再次检查输入draft及目标版本。Source写入也受门禁；新事务快照包含审查绑定。旧已完成幂等兼容；旧零写prepared不是豁免，不能恢复时偷偷写入；旧真实部分写且磁盘匹配冻结清单才可恢复原事务，冲突保持停止。全部具体迁移/并发/入口测试见卡。以下架构段落保留既有实现与历史；本增量实现及验收范围以上方收尾报告为准。
-
+新提取链在机械合法规划后直接组装未审候选，Draft / KnowledgeWorkflow 通过服务端不可变来源目录、唯一页归属或未解决及内容摘要绑定进行逐页明确确认，CommitStore / KnowledgeWorkflowStore 在服务层统一拦截未全审、有未解决或摘要失效的确认请求；历史方案与验收范围详情见[架构历史归档](archive/architecture-history.md)。
+<!-- ENG03 inserted:end -->
 ## 范围与部署
 
 桌面优先、单用户、本机运行的 Web 工作台。先通过 localhost 使用；本轮不创建云资源。长期知识资产由用户本机文件承载。产品包含首页、知识库、Raw、会议档案、Prompt 工作台、设置六项导航。
@@ -118,13 +113,10 @@ M05由Meeting Raw登记成功回调刷新App共享Raw/统计/状态，进入Raw/
 
 规则层约束生成与检查；工具层确定性操作文件；LLM 层输出通过 schema 校验的结构化建议；UI 层负责预览和确认。所有持久化操作经服务端完成。
 
-KB02 R2（2026-10-16，施工中）将新执行链升级为 kb02-2：服务端生成原文 atom 目录，模型只选 ID/分类，事实与摘要确定性派生；来源声明保留检查点元数据。覆盖失败返回有界 ID 诊断，planningRetry:true 明确触发仅重新规划且沿用同 job/累计账本。更新仅选择已验证 evidenceId，服务端派生原工作流证据结构；旧合法 Draft/Workflow 保持兼容，旧规则未完成检查点明确不兼容并保留。具体以 [本轮接口](handoffs/KB02-R2-interface.md) 与最新 status 为准；受控自测不能替代新规则真实质量，KB02 40/40 已用尽。下段为 R1 历史实现及验收记录。
-
-KB02当前新Raw执行链已改为locator目录→精简事实/原文明示问题→整篇主题规划→确定性DraftRecord组装，半成品只进state/extraction-checkpoints。正式确认仍走原审核事务，Raw不改写。kb02-1按Raw实际SHA、规则、chunk参数与非敏感端点/model绑定，显式继续或restart:true，不自动外发。KB02 R1已修复有效恢复ID、严格有界checkpoint/409预检、旧fixture迁移，将提示修订纳入缓存身份。工程验收PASS，实际IAB同job复用14段通过；真实Spec仍FAIL：补充口径被擅补、更新旧quote/offset契约失败、长文规划漏事实，严格拒绝且不组装部分草稿。见[KB02 R1验收](reports/KB02-R1-20261015-acceptance.md)。
-
-历史KB01 R4提取使用provider-only locator-v2输入：每个chunk由服务端建立完整、连续、UTF-16安全的Raw切片目录，单条≤512字符、最多256项；模型选择当前chunk定位ID，服务端派生原始引文/位置，严格验证后仍按原草稿格式存储。未知、跨块、格式混用和页内引用错误失败关闭；解析前和Raw映射后都扫已知凭证。聚合保留全部来源/事实，相同重叠证据去重、后缀占用确定性避让；文档汇总只返回document。旧quote输出兼容，不按首匹配猜位置、不丢失败chunk、不加重试或提高预算。
-
-既有单Provider仅在knowledge purpose、精确官方host及glm-5.3-flash范围内请求low reasoning与JSON object模式，客户端领域schema/证据/语义验收继续独立；JSON模式不保证模型满足业务字段。KB01 R4当时真实长文未通过，详见[历史验收](reports/KB01-R4-20261014-acceptance.md)；KB02首轮长文技术全量完成为历史证据；R1提取14段完整，但两次规划漏事实、无草稿，真实质量仍未过，以最新status为准。审核中可变字段与选择在操作期间锁定，显式侧栏导航清草稿/工作流覆盖，继续保留Raw选择及后台任务世代。
+<!-- ENG03 inserted:start -->
+现行 Raw 提取与主题更新流水线采用服务端 atom/locator 确定性证据派生与逐页人工确认门禁，半成品只存 `state/extraction-checkpoints`；KB02 R2、KB02 R1 与 KB01 R4 的演进详情及历史限制见[架构历史归档](archive/architecture-history.md)。
+<!-- ENG03 inserted:end -->
+既有单Provider仅在knowledge purpose、精确官方host及glm-5.3-flash范围内请求low reasoning与JSON object模式，客户端领域schema/证据/语义验收继续独立；JSON模式不保证模型满足业务字段。<!-- ENG03 inserted:start -->（KB01 R4 与 KB02 R1 历史未通过详情见[架构历史归档](archive/architecture-history.md)。）<!-- ENG03 inserted:end -->审核中可变字段与选择在操作期间锁定，显式侧栏导航清草稿/工作流覆盖，继续保留Raw选择及后台任务世代。
 
 | 模块 | 对外接口 | 不变量 |
 |---|---|---|
@@ -171,3 +163,19 @@ PDF01 R2通过`/api/raw/:id/pdf/cleanup`及cancel/draft子路由处理已完成�
 
 默认绑定 127.0.0.1；请求大小有清晰上限，错误提示与 UI 一致；不信任用户标题作为路径，Raw/Markdown 阅读时防止执行脚本。端口冲突报错，避免连到未知服务。演示数据显式导入并标记 `isDemo`；不在本轮塞入假数据充统计。备份/导出和恢复在 B09 实测。
 
+<!-- ENG03 inserted:start -->
+
+## 现行不变量核对表
+
+| 编号 | 现行不变量 | 在本文件中的位置 | 代码落点参考 |
+| --- | --- | --- | --- |
+| 1 | **Raw 不由 AI 改写** | `## RAWEDIT02 人工正文修订边界`（L47）；`## 四层和核心接口` `RawStore` 行（L123）；`## 文件、状态和一致性`（L131） | `services/raw/store.ts` |
+| 2 | **AI 输出只进草稿** | `## 四层和核心接口` `WikiStore` / `LLMService` / `DraftStore` / `PromptStore` 行（L124–L128）；`## 目录与职责` `drafts/` | `services/wiki/drafts.ts`、`services/llm/service.ts` |
+| 3 | **正式写入需人工确认** | `## PIPE01 资讯流水线`（L13）；`## KBMAINT01`（L21）；`## REVIEW01`（L39）；`## 文件、状态和一致性`（L131） | `services/wiki/commits.ts`、`services/wiki/store.ts` |
+| 4 | **来源门禁** | `## KBMAINT01`（L21）；`## REVIEW01`（L39）；`## RAWEDIT02`（L47）；`## 目录与职责` Meeting/source-policy（L102） | `services/meeting/source-policy.ts`、`services/wiki/store.ts` |
+| 5 | **原子写与串行** | `## RUN01 本机运行与自动化底座`（L3）；`## WORKAUTO01`（L31）；`## 文件、状态和一致性`（L131） | `services/storage/files.ts`（`writeFileAtomic` / `writeJsonAtomic`） |
+| 6 | **实例锁** | `## RUN01 本机运行与自动化底座` 第 2 段（L7，`state/runtime/instance.lock` 与 Windows 命名管道） | `services/automation/instance-lock.ts`（`acquireInstanceLock`） |
+| 7 | **自动化上下文禁写正式存储** | `## RUN01 本机运行与自动化底座` 第 4 段（L11，`AsyncLocalStorage` 任务上下文） | `services/automation/context.ts`（`assertFormalWriteAllowed`） |
+| 8 | **本机 Host / Origin / 令牌门禁** | `## RUN01 本机运行与自动化底座`（L5）；`## WORKAUTO01`（L37）；`## LLM、导入与搜索`（L152） | `server/llm-config-api.ts`、`server/automation-api.ts` |
+| 9 | **密钥不进业务数据或备份** | `## LLM、导入与搜索`（L152–L154，CFG01 与解析后秘密门禁） | `services/llm/provider.ts`、`scripts/backup_workspace.ts` |
+<!-- ENG03 inserted:end -->

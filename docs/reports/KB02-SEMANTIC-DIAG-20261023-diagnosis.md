@@ -22,7 +22,7 @@
 
 ## 实际命令及边界
 
-命令：`node --import tsx tests/acceptance/KB02-SEMANTIC-DIAG-20261023-replay.mjs`；Node v24.20.0，exit0，脚本实测 **6116ms**。完整结构化证据：[replay.json](KB02-SEMANTIC-DIAG-20261023-replay.json)。四次内存重放共12个请求均逐字匹配原trace；其中两次为原响应，两次为明确标记的人工测试控制。未跑完整回归/build，未启动服务/浏览器，未读Provider凭证配置，网络被脚本禁止且实际尝试0，新增真实调用0。
+命令：`node --import tsx tests/acceptance/KB02-SEMANTIC-DIAG-20261023-replay.mjs`；Node v24.20.0，exit0，脚本实测 **6116ms**。完整结构化证据：[replay.json（见 ENG03 证据清单）](ENG03-20261122-evidence-manifest.json)。四次内存重放共12个请求均逐字匹配原trace；其中两次为原响应，两次为明确标记的人工测试控制。未跑完整回归/build，未启动服务/浏览器，未读Provider凭证配置，网络被脚本禁止且实际尝试0，新增真实调用0。
 
 冻结899源文件哈希全部匹配；5485保护路径（含先前保护清单、冻结代码与本轮原始取证）前后相同。只新增本诊断脚本/JSON/报告；未改已冻结施工资产、Astra资产、产品/tests、状态或Git。累计 **209/500**，Prompt **15/24** 不变；阶段二/三不应继续依赖失败结果。
 

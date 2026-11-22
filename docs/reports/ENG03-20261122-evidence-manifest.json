@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "batch": "ENG03-20261122",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>/evidence/ENG03-20261122/",
+  "archivedAt": "2026-11-22T14:42:16.481Z",
+  "note": "存量 8 个 > 1 MiB（1,048,576 B）文件已于 ENG03 V3 原样复制校验一致后迁出 Git 工作树与索引，仅保留本脱敏索引。",
+  "totalFiles": 8,
+  "totalBytes": 58183286,
+  "entries": [
+    {
+      "originalRepoPath": "docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-26-32-797Z.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-26-32-797Z.json",
+      "bytes": 6652042,
+      "sha256": "7d83107e99b91bb5eefd61c6d897f5fc9ca1d9ef01a735c820c23de72a1b5d34",
+      "purpose": "KB02 K204 阶段 C 施工自检隔离工作区完整导出快照（2026-10-24）。",
+      "historicalReferences": [
+        "docs/reports/KB02-K204-C-20261024-selftest-2026-10-24T06-26-24-284Z.json",
+        "docs/handoffs/COMPAT01-20261105-baseline.json"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-35-31-716Z.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-35-31-716Z.json",
+      "bytes": 6945166,
+      "sha256": "7e4fa19794103dd9134b992c05f5ac273463b24463f20ff0590a4d0b4ba43fbb",
+      "purpose": "KB02 K204 阶段 C 人工审核后/正式确认前导出快照（2026-10-24，历史验收脚本 KB02-K204-C-AUDIT-20261024-final-check.mjs 曾读取）。",
+      "historicalReferences": [
+        "tests/acceptance/KB02-K204-C-AUDIT-20261024-final-check.mjs",
+        "docs/handoffs/COMPAT01-20261105-baseline.json"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-39-08-643Z.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-39-08-643Z.json",
+      "bytes": 6988296,
+      "sha256": "6f4c84c6e42689039c351e7f4d1469d544bee339050a765b8cf3a051d00e82a4",
+      "purpose": "KB02 K204 阶段 C 正式确认后导出快照 1（2026-10-24）。",
+      "historicalReferences": [
+        "docs/handoffs/COMPAT01-20261105-baseline.json"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-42-34-061Z.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-K204-C-20261024-export-2026-10-24T06-42-34-061Z.json",
+      "bytes": 6988296,
+      "sha256": "6f4c84c6e42689039c351e7f4d1469d544bee339050a765b8cf3a051d00e82a4",
+      "purpose": "KB02 K204 阶段 C 正式确认后幂等复核导出快照 2（2026-10-24）。",
+      "historicalReferences": [
+        "docs/handoffs/COMPAT01-20261105-baseline.json"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/KB02-K204-C-AUDIT-20261024-independent-export-2026-10-24T06-30-41-616Z.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-K204-C-AUDIT-20261024-independent-export-2026-10-24T06-30-41-616Z.json",
+      "bytes": 6652042,
+      "sha256": "38657dfa474c4bc5fda41833aed5fb9d6e0c6404339b492c8842dcf70ccb3262",
+      "purpose": "KB02 K204 阶段 C 独立验收工作区导出快照（2026-10-24）。",
+      "historicalReferences": [
+        "docs/reports/KB02-K204-C-AUDIT-20261024-execution-2026-10-24T06-30-32-209Z.json",
+        "docs/handoffs/COMPAT01-20261105-baseline.json"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/KB02-SEMANTIC-20261023-closure.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-SEMANTIC-20261023-closure.json",
+      "bytes": 1460346,
+      "sha256": "e1c0c18a196bc0897d8888dc7a09273382e0d58290116487a0886f7127c6b984",
+      "purpose": "KB02 SEMANTIC B1 施工停写保护文件清单与 SHA-256 核对包（2026-10-23）。",
+      "historicalReferences": [
+        "docs/reports/KB02-SEMANTIC-20261023-builder-handoff.md:43",
+        "tests/acceptance/KB02-SEMANTIC-DIAG-20261023-replay.mjs"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/KB02-SEMANTIC-DIAG-20261023-replay.json",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/KB02-SEMANTIC-DIAG-20261023-replay.json",
+      "bytes": 1525577,
+      "sha256": "9bdaa82c1d8311d6be2aa96d0d81e22c301a31ddce498039946700f15b44dde5",
+      "purpose": "KB02 SEMANTIC 阶段一失败有限离线重放结构化 trace（2026-10-23）。",
+      "historicalReferences": [
+        "docs/reports/KB02-SEMANTIC-DIAG-20261023-diagnosis.md:25"
+      ],
+      "verifiedMatch": true
+    },
+    {
+      "originalRepoPath": "docs/reports/fixtures/B03-recheck-browser-20261005/oversize-20MiB-plus1.txt",
+      "archiveRelativePath": "evidence/ENG03-20261122/docs/reports/fixtures/B03-recheck-browser-20261005/oversize-20MiB-plus1.txt",
+      "bytes": 20971521,
+      "sha256": "c443bedc371a412937057335440b956ef28441394e67a3743cf66cc7072d8573",
+      "purpose": "B03 浏览器上传超限（20 MiB + 1 B）历史静态测试夹具（不被任何默认或现行测试引用）。",
+      "historicalReferences": [
+        "docs/reports/runtime/B03-recheck-browser-processes.json",
+        "docs/handoffs/COMPAT01-20261105-baseline.json"
+      ],
+      "verifiedMatch": true
+    }
+  ]
+}
