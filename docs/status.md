@@ -1,5 +1,17 @@
 # 工程状态
 
+## 工程整固 ENG02–ENG04 任务卡规划（2026-11-22）
+
+根据只读项目评审的建议 1–4，规划三批不改变产品行为的整固工作：
+
+- [ENG02 工作区清理与同步核实](handoffs/ENG02-20261122-task.md)
+- [ENG03 证据存放规范与文档瘦身](handoffs/ENG03-20261122-task.md)
+- [ENG04 代码格式化与静态检查基线](handoffs/ENG04-20261122-task.md)
+
+三批暂定都是 3 分 A 标准，按 ENG02 → ENG03 → ENG04 的顺序执行。基线数据、共同约束和启动前待用户决定的 D1–D5 见[路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)。
+
+这次只写了规划文档：没有派发施工，没有改产品代码，真实模型调用为 0。工作区里原有的未提交和未跟踪改动保持原样。各批需用户逐批明确授权后才启动。
+
 ## AUTOUX02 自动化页收件箱漏斗、运行主从双栏、滑出抽屉与弹窗统一完成（自动化 UI 两批重构全部收官，2026-11-21）
 
 工程提交紧邻 [AUTOUX01](#autoux01-自动化页顶部状态横幅3-tab-架构与流程与计划可视化完成2026-11-21)（`17e244e`）之后完成全部自动化 UI 收官改造：新增 [InboxTab.tsx](../app/components/automation/InboxTab.tsx) 拆分「待处理收件箱」，双源共存时展示 `.automation-subtabs`（`资讯候选` / `事项提醒`）且单源直接呈现、在 `#news-candidates` 顶部植入 5 阶段可点击漏斗条（`已抓取 › 待确认 › 整理中 › 待审草稿 › 失败` + `收件箱`/`已忽略`）并与状态筛选同步、紧凑化候选相关性与阶段色标徽章；在 `#automation-reminders` 新增类型过滤芯片（含空分类「当前分类暂无提醒。」与复位按钮）及未读左侧 3px 语义色条；新建 [AutomationDialogs.tsx](../app/components/automation/AutomationDialogs.tsx) 以统一外壳收敛计划编辑、流水线设置、提醒与通知设置、入库确认 4 类模态弹窗，并在 [WorkflowsTab.tsx](../app/components/automation/WorkflowsTab.tsx) 与收件箱双入口开放设置；新建 [RunsTab.tsx](../app/components/automation/RunsTab.tsx) 与 [RunDetailView.tsx](../app/components/automation/RunDetailView.tsx) 实现桌面端左列表（`max-height: 680px` 独立滚动）+ 右常驻详情主从双栏、垂直时间线 Stepper、紧凑用量网格、产物芯片，以及跨 Tab 右侧滑出详情抽屉（`Tab`/`Shift+Tab` 陷阱、`Escape`/关闭恢复焦点、「在运行记录中查看」无缝切入主从）；精简 [AutomationPage.tsx](../app/pages/AutomationPage.tsx) 与扩展 [automationMeta.ts](../app/components/automation/automationMeta.ts)、[automation.css](../app/automation.css)。未修改后端代码、壳层文件及既有 4 份自动化 UI 测试。
