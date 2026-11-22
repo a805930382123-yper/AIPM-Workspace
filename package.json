@@ -16,7 +16,8 @@
     "check": "npm run typecheck && npm test && npm run build",
     "build": "tsc -b && vite build",
     "test": "node --import tsx --import ./tests/support/css-stub.mjs --test tests/*.test.ts tests/*.test.tsx",
-    "eval": "node --import tsx scripts/eval/run.mjs"
+    "eval": "node --import tsx scripts/eval/run.mjs",
+    "hygiene": "node --import tsx scripts/workspace-hygiene.ts"
   },
   "dependencies": {
     "@napi-rs/canvas": "1.0.10",

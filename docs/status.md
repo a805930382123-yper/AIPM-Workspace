@@ -1,5 +1,15 @@
 # 工程状态
 
+## ENG02 工作区清理与同步核实：施工交付通过，批次整体阻塞待闭环（2026-11-22）
+
+按[任务卡](handoffs/ENG02-20261122-task.md)及用户 G3 决策（D1–D10 默认、G1 走代理）执行。Agent Router 评分 `1/0/1/1 = 3`（A 标准，验收先审计划）：主会话规划协调，施工子 Agent（`c49fa5ca-2510-4577-8823-7c662930a67e`，`Model: inherit`）完成 G2 清点与 G4/G5 施工，独立验收子 Agent（`c1451d75-cd00-4b8a-a5a9-8626802c8dd2`，`Model: inherit`）先审计划并独立复验。
+
+双层独立结论（见[施工报告](reports/ENG02-20261122-builder.md)、[独立验收报告](reports/ENG02-20261122-review.md)）：
+- **本轮施工范围内交付（G2 / G4 / G5）**：**`PASS_WITH_EXTERNAL_BLOCKERS`**。账本 A 541 项守恒（恢复 6 项、归档 526 项独立复算 SHA-256 526/526 匹配、提交 D4/D5 共 2 项、D1 7 项因底层 NTFS 物理损坏阻塞）、账本 B 214 个根目录临时目录（4.10 GiB）清零（归档 169 个、删除可再生 45 个）；已删除合入分支 `codex/quickux01-delivery`；新增 `.scratch/` 忽略、`docs/testing.md` 临时数据约定及 `npm run hygiene`（`scripts/workspace-hygiene.ts`）；全部拟提交文件 ENG02-05 扫描 0 凭据 / 0 本机路径 / ≤1MB。
+- **ENG02 批次整体**：**`NOT_PASS（BLOCKED / FAIL）`**，不可推进 ENG03。逐项：ENG02-02/04/05/07 `PASS`，ENG02-01 `BLOCKED`（`.git/config` 绑定失效代理 `127.0.0.1:58319` 致推送与远端 CI 受阻），ENG02-03 `BLOCKED`（D1 7 项受 E 盘 NTFS 目录物理损坏阻塞），ENG02-06 `FAIL`（隔离 `typecheck`/`build`/`news01-sources` 通过，但前置提交 `17e244e`/`7b01402` 重构自动化页默认 Tab 为 `workflows` 遗漏更新 `tests/uifix01-ui.test.tsx` L253/L416 致 2 项超时，且本机为 Node v25.2.1 非 Node 22）。
+
+解除条件：① 管理员运行 `chkdsk` 修复磁盘并 `git restore` D1 7 文件；② 恢复代理或修正 `.git/config` 代理后推送并查 Windows Node 22/24 CI；③ 获授权修复 `tests/uifix01-ui.test.tsx` L253/L416 并在 Node 22/CI 复跑 `npm run check` 全绿。
+
 ## 工程整固 ENG02–ENG04 任务卡规划（2026-11-22）
 
 根据只读项目评审的建议 1–4，规划三批不改变产品行为的整固工作：
