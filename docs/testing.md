@@ -4,7 +4,7 @@
 
 - `npm run typecheck`：对 tsconfig 范围执行严格类型检查。
 - `npm test`：运行 `tests/*.test.ts` 和 `tests/*.test.tsx`，不包括 `tests/acceptance/` 和 `.mts`。工作树中同名 glob 的未跟踪文件也会运行；提交树仅包含已跟踪文件。
-- `npm run check`：依次执行类型检查、默认测试及构建，任一失败即终止。
+- `npm run check`：依次执行类型检查（`typecheck`）、格式检查（`format:check`）、静态检查（`lint`）、体积守护（`guard`）、默认测试（`test`）及生产构建（`build`），任一失败即终止。
 - `tests/acceptance/` 是按对应任务卡单独运行的验收脚本，不属于默认 glob。`.mts` live/replay 脚本也不属于默认测试；live 会访问外部来源，必须另获明确授权；replay 通常依赖隔离快照，但 tests/news09-pdf-replay.mts 会真实补拉 PDF，同样须另获联网授权。
 
 测试前将 `FMCG_DATA_DIR` 指向新建的系统临时目录，并将 `FMCG_LLM_CONFIG_FILE` 指向该目录下不存在的配置文件；清除继承的 `FMCG_LLM_*` 凭据。不要使用正式 workspace、真实配置或用户已有服务端口。
@@ -42,3 +42,18 @@ node --import tsx --import ./tests/support/css-stub.mjs --test tests/acceptance/
 Windows 新检出评估环境请使用 `git clone -c core.autocrlf=false <仓库地址>`，使规则文件保留仓库换行；规则指纹直接使用产品加载器，不改产品规则或本机全局配置。
 
 R1 使用评分 schema 2；旧 schema 1 结果不可直接用作 `--baseline`，须对同一录制重评。已授权的唯一续跑使用 `--mode live --record --recording live-20261115-baseline --resume-from <原结果 JSON> --resume-sha256 ca9a118ee1f7bba97facaf49c186675537e8ad5612a6d2398b8d33ecd3387b61`；先核对冻结来源和四份录制、离线重评前四例，全部达标后才读取配置。剩余四例最多发八次请求，首次外发前以本地凭据防止重复运行，失败即停止；不得删除凭据自动续跑。
+
+## 代码格式化、静态检查与 Git Blame
+
+- `npm run format` / `npm run format:check`：使用 Prettier（`.prettierrc.json`：单引号、分号、`printWidth: 120`、`endOfLine: "lf"`；`.editorconfig` 同步约束 UTF-8 无 BOM 与 LF）检查并格式化 `app/`、`server/`、`services/`、`scripts/`、`tests/` 根层与 `tests/support/` 及根配置文件；`.prettierignore` 排除 `docs/`、`workspace/`、`dist/`、`node_modules/`、`evals/`、`rules/`、`tests/acceptance/`、`tests/fixtures/`、`public/`、`THIRD_PARTY_LICENSES/`、`package-lock.json`、`AGENTS.md`、`README.md`、`DESIGN.md`、`.github/`、`.githooks/`、`.agents/`、`*.tsbuildinfo`、`.scratch/`、`.scratch-*/`、`.test-*/`、`.rn-*/`、`*.ps1`、`*.py`、`index.html`、`.env*`、`.git*`、`*.pdf`、`*.docx`、`*.png`、`*.txt`。说明：Prettier `3.10.1` 对部分超长单行链式调用需连续执行两遍 `npm run format` 才能达到幂等不动点，再运行 `npm run format:check` 可通过。
+- `npm run lint`：使用 `eslint.config.js`（ESM 扁平配置，采用非类型感知的 `@eslint/js` `recommended`、`typescript-eslint` `recommended`、`eslint-plugin-react-hooks` `recommended`、`eslint-config-prettier` 与 `globals`，`ignores` 与 `.prettierignore` 对齐）。当前 0 违规推荐规则维持 `error`，存量违规推荐规则逐条设为 `warn` 并登记基线（ENG04 基线共 825 条告警，不设 `--max-warnings=0`），已接入 `npm run check` 与 CI。
+- `node --import tsx scripts/format-equivalence.ts --commit 02ab4ca63721485ae8413bdca6071bda6f9a93c3`：使用 `esbuild` 独立复验 ENG04 纯格式化提交（Commit 2）的语义等价性，严格校验增/删/重命名数为 `0`，分别汇总 `.ts/.tsx` 与全量扩展名（`.ts`/`.tsx`/`.mts`/`.mjs`/`.css`/`.json`），并对 `.tsx` 的 JSX `{' '}` 相邻文本拆行及 `.css` 自定义属性空白提供诊断归因。
+- Git Blame 忽略纯格式化提交：仓库根目录的 `.git-blame-ignore-revs` 已登记 Commit 2 的完整 40 位 SHA（`02ab4ca63721485ae8413bdca6071bda6f9a93c3`）。本地一次性配置：
+  ```powershell
+  git config blame.ignoreRevsFile .git-blame-ignore-revs
+  ```
+  或单次查询时显式传入：
+  ```powershell
+  git -c blame.ignoreRevsFile=.git-blame-ignore-revs blame <file>
+  ```
+

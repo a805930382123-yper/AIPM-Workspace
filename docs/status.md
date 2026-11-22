@@ -3,15 +3,15 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：工程整固阶段（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02` 与 `ENG03` 均已 **`PASS`**，本批停止交付，等待用户明确授权后方可开启 `ENG04`。
+- **当前阶段**：工程整固阶段（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02`、`ENG03` 已 `PASS`（D5 `AGENTS.md` 入口已落盘 `382381c`，D2 维持不改历史）；`ENG04` 本机施工与独立验收均 `PASS`，已提交 3 推送，待远端 Windows Node 22/24 CI（含 `format:check` 与 `lint`）通过后正式结项。
 - **最近 5 个批次结论**：
-  - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；本地隔离 `1012/1012 PASS`，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[施工报告](reports/ENG03-20261122-builder.md) · [验收报告](reports/ENG03-20261122-review.md)）。
+  - `ENG04`（2026-11-23，**PENDING_CI**）：本机全套交付与独立验收 `PASS`（Prettier/ESLint 锁定接入、`02ab4ca` 411 文件纯格式化树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、`1012/1012 PASS`、真机 Edge 5 页 0 错），待提交 3 远端 CI 闭环（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
+  - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[验收报告](reports/ENG03-20261122-review.md)）。
   - `ENG02`（2026-11-22，**PASS**）：工作树归档守恒闭环、根目录 214 个临时目录清零，远端代理与 Windows Node 22/24 CI 通过（[验收报告](reports/ENG02-20261122-review.md)）。
   - `AUTOUX02`（2026-11-21，**PASS**）：自动化收件箱漏斗、主从运行记录、滑出详情抽屉与统一弹窗上线并通过双尺寸 Edge 验收（[验收报告](reports/AUTOUX02-20261121-review.md)）。
   - `AUTOUX01`（2026-11-21，**PASS**）：自动化页重构为状态横幅 + 3-Tab 架构并可视化 5 组工作流与周报直达入口（[验收报告](reports/AUTOUX01-20261121-review.md)）。
-  - `REVIEW01`（2026-11-21，**PASS**）：每周工作回顾草稿与归档交付，1 次合成真实调用与 3 链回放全部通过（[验收报告](reports/REVIEW01-20261121-review.md)）。
-- **开放阻塞与待用户确认**：`AGENTS.md` 入口改动建议（D5）与是否另行讨论改写 Git 历史瘦身 73.98 MiB 打包（D2）待用户确认；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
-- **下一步**：等待用户确认 D5/D2 并明确授权开启 `ENG04`（[任务卡](handoffs/ENG04-20261122-task.md)）。
+- **开放阻塞与待用户确认**：`ENG04` 待提交 3 远端 CI 闭环；9 项 ESLint 疑似缺陷与拆分方案下一批候选（首选 FE01 / 备选 BE01）待用户确认；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
+- **下一步**：核验 `ENG04` 远端 Windows Node 22/24 CI 并完成 Round 2 复验结项；大文件拆分与前端状态治理待用户另行授权。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
 
 ## ENG03 证据存放规范与文档瘦身完成（PASS，2026-11-22）
