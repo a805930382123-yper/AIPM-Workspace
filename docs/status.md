@@ -3,16 +3,20 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：工程整固阶段（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02`、`ENG03` 已 `PASS`（D5 `AGENTS.md` 入口已落盘 `382381c`，D2 维持不改历史）；`ENG04` 本机施工与独立验收均 `PASS`，已提交 3 推送，待远端 Windows Node 22/24 CI（含 `format:check` 与 `lint`）通过后正式结项。
+- **当前阶段**：工程整固阶段收官（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02`、`ENG03`、`ENG04` 全部 **`PASS`**（D5 `AGENTS.md` 入口已落盘 `382381c`，D2 维持不改历史），当前停步等待用户指示下一方向。
 - **最近 5 个批次结论**：
-  - `ENG04`（2026-11-23，**PENDING_CI**）：本机全套交付与独立验收 `PASS`（Prettier/ESLint 锁定接入、`02ab4ca` 411 文件纯格式化树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、`1012/1012 PASS`、真机 Edge 5 页 0 错），待提交 3 远端 CI 闭环（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
+  - `ENG04`（2026-11-23，**PASS**）：锁定接入 Prettier/ESLint 并串联至 `check`/CI，纯格式化 `02ab4ca`（411 文件）树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、产出 26 份大文件拆分与状态治理方案；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)（`6a5eff6`）双作业全绿（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
   - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[验收报告](reports/ENG03-20261122-review.md)）。
   - `ENG02`（2026-11-22，**PASS**）：工作树归档守恒闭环、根目录 214 个临时目录清零，远端代理与 Windows Node 22/24 CI 通过（[验收报告](reports/ENG02-20261122-review.md)）。
   - `AUTOUX02`（2026-11-21，**PASS**）：自动化收件箱漏斗、主从运行记录、滑出详情抽屉与统一弹窗上线并通过双尺寸 Edge 验收（[验收报告](reports/AUTOUX02-20261121-review.md)）。
   - `AUTOUX01`（2026-11-21，**PASS**）：自动化页重构为状态横幅 + 3-Tab 架构并可视化 5 组工作流与周报直达入口（[验收报告](reports/AUTOUX01-20261121-review.md)）。
-- **开放阻塞与待用户确认**：`ENG04` 待提交 3 远端 CI 闭环；9 项 ESLint 疑似缺陷与拆分方案下一批候选（首选 FE01 / 备选 BE01）待用户确认；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
-- **下一步**：核验 `ENG04` 远端 Windows Node 22/24 CI 并完成 Round 2 复验结项；大文件拆分与前端状态治理待用户另行授权。
+- **开放阻塞与待用户确认**：ENG04 发现的 9 项 ESLint 疑似缺陷与[拆分方案](reports/ENG04-20261122-split-plan.md)推荐的下一批候选（首选 `FE01` / 备选 `BE01`）待用户决策；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
+- **下一步**：等待用户明确授权开启后续批次（大文件拆分、前端状态治理或回归业务功能/KB02 质量收敛）。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
+
+## ENG04 代码格式化与静态检查基线完成（PASS，2026-11-23）
+
+引入精确版本 Prettier（`3.10.1`）与 ESLint 扁平配置（`10.15.0`、`typescript-eslint@8.73.0`、`react-hooks@7.1.1`、`eslint-config-prettier@10.1.8`）并新增 `.editorconfig`、`.git-blame-ignore-revs` 与 `scripts/format-equivalence.ts`；三段提交落地（`2c1a4d7` 工具配置、`453db99` 3 处测试 `// prettier-ignore`、`02ab4ca` 411 文件纯格式化、`6a5eff6` blame/CI/文档与拆分方案），`app/server/services` 超 200 字符行由 `1,434` 降至 `47`；父提交两遍重跑树哈希 100% 复现，6 份核心文件 `esbuild` 复算一致、21 份 `.tsx/.css` 归一化等价，ESLint `0 errors / 825 warnings` 并单列 9 项疑似缺陷，产出 26 份大文件[拆分与状态治理方案](reports/ENG04-20261122-split-plan.md)。本地隔离 `npm run check` `1012/1012 PASS`、3 条 `eval` 100% 一致、真机 Edge 5 页 0 错，提交 `6a5eff6` 的[远端 Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788) 双作业全绿。见[施工报告](reports/ENG04-20261122-builder.md)与[独立验收报告](reports/ENG04-20261122-review.md)。
 
 ## ENG03 证据存放规范与文档瘦身完成（PASS，2026-11-22）
 
