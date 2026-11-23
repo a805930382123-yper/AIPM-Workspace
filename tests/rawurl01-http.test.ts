@@ -482,6 +482,16 @@ test('Raw URL rejects reserved literals, mixed DNS, and a DNS change at redirect
   assert.equal(requests, 1, 'a late DNS answer cannot start a request');
 });
 
+test('Raw URL accepts a 10 MiB HTML response with a short article', async () => {
+  const article = '<article><p>这是需要保留的文章正文。</p></article>';
+  const html = '<!--' + 'x'.repeat(10 * 1024 * 1024 - Buffer.byteLength(article) - 7) + '-->' + article;
+  const result = await readPublicRawUrl('https://article.example/large', {
+    resolve: async () => [publicIp],
+    request: async () => textResponse(html, 'text/html'),
+  });
+  assert.match(result.body, /这是需要保留的文章正文/);
+});
+
 test('Raw URL rejects loop/over-hop, timeouts and bad content without creating a Raw', async () => {
   let requests = 0;
   const f = await importApi((value) =>

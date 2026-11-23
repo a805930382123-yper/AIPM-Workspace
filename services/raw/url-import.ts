@@ -6,7 +6,8 @@ import type { Readable } from 'node:stream';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { MAX_BODY_CHARS } from './limits.ts';
 
-export const MAX_WEB_BYTES = 2 * 1024 * 1024;
+export const MAX_WEB_BYTES = 10 * 1024 * 1024;
+const RAW_URL_TIMEOUT_MS = 30_000;
 const MAX_REDIRECTS = 4;
 const WEB_TIMEOUT_MS = 12_000;
 const FALLBACK = '请改用上传文件或粘贴正文。';
@@ -399,7 +400,7 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
       bytes: options.images ? 6 * 1024 * 1024 : MAX_WEB_BYTES,
       label: '网页或纯文本',
     },
-    options,
+    options.images ? options : { ...options, timeoutMs: options.timeoutMs ?? RAW_URL_TIMEOUT_MS },
   );
   const html = !/^text\/plain\b/iu.test(result.type);
   const charset =
