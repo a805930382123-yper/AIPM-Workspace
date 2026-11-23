@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：个人知识库配图优化第 1 轮 RAWOCR01 已通过返修后的独立验收。图片产物按出现位置存储，本地 OCR 可分为跳过、可用文本和待精读三类。[任务卡](handoffs/RAWOCR01-task.md) · [施工自查](reports/RAWOCR01-builder.md) · [独立验收](reports/RAWOCR01-review.md)。
+- **当前阶段**：个人知识库配图优化第 2 轮 RAWOCR02 首次独立验收 **FAIL**。图片位置有效时，精读、草稿续跑、问答补读与确认通过。人工改写图片标记后仍可能外发旧 OCR，移除标记后旧图片仍可能被新草稿引用。[任务卡](handoffs/RAWOCR02-task.md) · [施工自查](reports/RAWOCR02-builder.md) · [独立验收](reports/RAWOCR02-review.md)。
 - **最近 5 个批次结论**：
   - `RAWOCR01`（2026-11-23，**PASS**）：有无空格的榜单反例均命中高乱码，正常技术术语保留。独立定向回归 22/22，本机中英文 OCR 与 HTTP 隔离复验通过。[验收报告](reports/RAWOCR01-review.md)。
   - `ENG04`（2026-11-23，**PASS**）：锁定接入 Prettier/ESLint 并串联至 `check`/CI，纯格式化 `02ab4ca`（411 文件）树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、产出 26 份大文件拆分与状态治理方案；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)（`6a5eff6`）双作业全绿（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
@@ -11,7 +11,7 @@
   - `ENG02`（2026-11-22，**PASS**）：工作树归档守恒闭环、根目录 214 个临时目录清零，远端代理与 Windows Node 22/24 CI 通过（[验收报告](reports/ENG02-20261122-review.md)）。
   - `AUTOUX02`（2026-11-21，**PASS**）：自动化收件箱漏斗、主从运行记录、滑出详情抽屉与统一弹窗上线并通过双尺寸 Edge 验收（[验收报告](reports/AUTOUX02-20261121-review.md)）。
 - **开放阻塞与待用户确认**：ENG04 发现的 9 项 ESLint 疑似缺陷与[拆分方案](reports/ENG04-20261122-split-plan.md)推荐的下一批候选（首选 `FE01` / 备选 `BE01`）待用户决策；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
-- **下一步**：等待用户授权开启第 2 轮图片按需精读与草稿引用。
+- **下一步**：本轮汇报后停止。建议先修复正文编辑后的历史转录隔离与失效图片定位，复验单图请求、草稿及问答补读。第 3 轮待第 2 轮通过且用户授权。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
 
 ## ENG04 代码格式化与静态检查基线完成（PASS，2026-11-23）
