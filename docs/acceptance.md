@@ -5,6 +5,11 @@
 
 历史批次裁决见[2026 年 10 月归档](archive/acceptance-2026-10.md)与[2026 年 11 月历史批次裁决归档](archive/acceptance-2026-11.md)；现行验收与监控规约保留在下方。
 <!-- ENG03 inserted:end -->
+
+## RAWOCR03 新导入与详情页交互
+
+2026-11-23，R3-01 至 R3-05 的 RUN 结论均为 **PASS**。两处网页导入、本地 OCR、五态阅读、按需精读与原文保真均完成独立实测，证据见[任务卡](handoffs/RAWOCR03-task.md)和[复验报告](reports/RAWOCR03-review.md)。
+
 <!-- ENG01 acceptance:30 -->
 ## 1. 状态、边界与证据
 

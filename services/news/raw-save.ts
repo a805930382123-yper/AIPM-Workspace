@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { scanJsonRecords, SerialQueue, writeJsonAtomic } from '../storage/files.ts';
-import { RawIntegrityError, type RawInput, type RawRecord, type RawStore } from '../raw/store.ts';
+import { RawIntegrityError, RawMediaImportError, type RawInput, type RawRecord, type RawStore } from '../raw/store.ts';
 import { AssetStore } from '../raw/assets.ts';
 import { NewsError, normalizedUrl } from './service.ts';
 import { acquireNewsMaterial } from './raw-material.ts';
@@ -200,7 +200,8 @@ export class NewsRawSave {
         await writeJsonAtomic(this.file(url), receipt);
         try {
           raw = await this.raws.createNewsRegistration(receipt.rawId, input);
-        } catch {
+        } catch (error) {
+          if (error instanceof RawMediaImportError) throw error;
           throw new NewsError('保存状态待核对，请重试。', 409);
         }
         created = true;
@@ -244,6 +245,7 @@ export class NewsRawSave {
         if (!updated) throw new NewsError('原 Raw 已删除。', 409);
         raw = updated;
       }
+      if (receipt.status === 'pending') await this.raws.saveImportedMedia(raw, receipt.input.webImageArtifacts);
       await this.linkPdf(raw);
       if (receipt.status === 'pending') {
         receipt.status = 'linked';

@@ -1,5 +1,5 @@
 import type express from 'express';
-import { RawBodyEditError, RawIntegrityError } from '../services/raw/store.ts';
+import { RawBodyEditError, RawIntegrityError, RawMediaImportError } from '../services/raw/store.ts';
 import { PartialNewsMaterialError, UnavailableNewsMaterialError } from '../services/news/raw-material.ts';
 import { InputError } from './validation.ts';
 import { NewsError, NewsService } from '../services/news/service.ts';
@@ -36,6 +36,10 @@ export function registerNewsRoutes(app: express.Express, service: NewsService) {
       try {
         res.json(await work(req));
       } catch (e) {
+        if (e instanceof RawMediaImportError) {
+          res.status(e.status).json({ error: { code: e.code, message: e.message, details: e.details } });
+          return;
+        }
         if (e instanceof PartialNewsMaterialError || e instanceof UnavailableNewsMaterialError) {
           res.status(422).json({ error: { code: e.code, message: e.message } });
           return;

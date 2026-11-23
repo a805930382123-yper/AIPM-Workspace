@@ -1,6 +1,7 @@
 import type { RawCitationTarget } from '../components/WikiQuestionPanel';
 import { useEffect, useRef, useState } from 'react';
 import { PdfPages } from '../PdfPages';
+import { RawWebContent } from '../components/RawWebContent';
 import { useDialogFocus } from '../components/useDialogFocus';
 import type {
   ExtractionJob,
@@ -1306,31 +1307,7 @@ function RawDetail({
       {scannedPdf ? (
         <p className="extract-note">未提取到文字层。请在上方查看原 PDF 页图。</p>
       ) : !showTranslation && !citation && item.webImages?.length && (item.bodyRevision ?? 0) === acquiredRevision ? (
-        <div className="raw-body raw-web-content">
-          {item.webImages.map((image, index) => {
-            const start = index ? item.webImages![index - 1].start : 0;
-            const original = image.sha256 && `/api/raw/${encodeURIComponent(item.id)}/web-images/${image.sha256}`;
-            return (
-              <div key={image.start}>
-                {item.body.slice(start, image.start)}
-                {original && (
-                  <figure>
-                    <a href={original} target="_blank" rel="noreferrer">
-                      <img src={original} alt={image.label || `来源图片 ${index + 1}`} />
-                    </a>
-                    <figcaption>
-                      来源图片 {index + 1} ·{' '}
-                      <a href={image.sourceUrl} target="_blank" rel="noreferrer">
-                        网页原地址
-                      </a>
-                    </figcaption>
-                  </figure>
-                )}
-              </div>
-            );
-          })}
-          {item.body.slice(item.webImages.at(-1)!.start)}
-        </div>
+        <RawWebContent key={`${item.id}:${item.bodySha256}`} raw={item} />
       ) : (
         <pre className="raw-body" lang={showTranslation ? 'zh-CN' : undefined}>
           {showTranslation ? (
@@ -1353,22 +1330,8 @@ function RawDetail({
         item.webImages?.some((image) => image.sha256) &&
         (item.bodyRevision ?? 0) !== acquiredRevision && (
           <details>
-            <summary>网页原图</summary>
-            {item.webImages.flatMap((image, index) =>
-              image.sha256
-                ? [
-                    <p key={image.start}>
-                      <a
-                        href={`/api/raw/${encodeURIComponent(item.id)}/web-images/${image.sha256}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {image.label || `来源图片 ${index + 1}`}
-                      </a>
-                    </p>,
-                  ]
-                : [],
-            )}
+            <summary>网页原图与解析</summary>
+            <RawWebContent key={`${item.id}:${item.bodySha256}`} raw={item} inlineBody={false} />
           </details>
         )}
       {!!item.bodyRevision && (
@@ -2282,6 +2245,41 @@ function PartialPanel({
   onOpen: () => void;
   onAgain: () => void;
 }) {
+  if (failure.code === 'RAW_MEDIA_IMPORT_INCOMPLETE')
+    return (
+      <section className="result-panel partial">
+        <div className="result-head warn">
+          <span className="result-dot warn" />
+          正文已保存，图片解析记录未完成
+        </div>
+        <p className="notice-warn">{failure.message}</p>
+        <ul className="result-list">
+          <li>
+            <span>Raw ID</span>
+            <code>{raw.id}</code>
+          </li>
+          <li>
+            <span>资料标题</span>
+            <span>{raw.title}</span>
+          </li>
+        </ul>
+        <p className="extract-note">这条资料已保存在列表中，请打开查看已保存内容，不要重复导入同一篇网页。</p>
+        <div className="dialog-footer">
+          <span className="footer-note">图片解析记录未完成</span>
+          <div>
+            <button type="button" className="secondary-button" onClick={onAgain}>
+              继续导入下一条
+            </button>
+            <button type="button" className="secondary-button" onClick={onClose}>
+              关闭
+            </button>
+            <button type="button" className="primary-button" onClick={onOpen}>
+              打开已保存资料
+            </button>
+          </div>
+        </div>
+      </section>
+    );
   return (
     <section className="result-panel partial">
       <div className="result-head warn">

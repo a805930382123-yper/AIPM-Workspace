@@ -18,6 +18,8 @@ export type WebOptions = {
   request?: (url: URL, address: Address, signal: AbortSignal, accept: string) => Promise<WebResponse>;
   timeoutMs?: number;
   images?: boolean;
+  /** Preserve the importing entry's existing page budget when collecting images. */
+  pageBytes?: number;
 };
 
 export type WebImageCandidate = {
@@ -239,12 +241,7 @@ function extractHtml(
           !['http:', 'https:'].includes(original.protocol) ||
           original.username ||
           original.password ||
-          original.port ||
-          /(?:^|[/_.-])(?:logo|avatar|tracking|pixel|spacer|badge|emoji|qrcode|qr-code|favicon)(?:[/_.-]|$)/iu.test(
-            original.pathname,
-          ) ||
-          /^(?:logo|头像|二维码|扫码关注|装饰|图标|emoji|icon)$/iu.test(label) ||
-          (!explicit && ((width > 0 && width < 80) || (height > 0 && height < 40)))
+          original.port
         )
           continue;
         let marker = `⟦网页图片 ${index + 1}⟧`;
@@ -397,7 +394,7 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
     {
       accept: 'text/html,application/xhtml+xml,text/plain',
       mime: /^(?:text\/(?:html|plain)|application\/xhtml\+xml)$/u,
-      bytes: options.images ? 6 * 1024 * 1024 : MAX_WEB_BYTES,
+      bytes: options.pageBytes ?? (options.images ? 6 * 1024 * 1024 : MAX_WEB_BYTES),
       label: '网页或纯文本',
     },
     options.images ? options : { ...options, timeoutMs: options.timeoutMs ?? RAW_URL_TIMEOUT_MS },

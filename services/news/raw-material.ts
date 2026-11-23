@@ -2,7 +2,7 @@ import { AssetStore } from '../raw/assets.ts';
 import { MAX_BODY_CHARS, MAX_UPLOAD_BYTES } from '../raw/limits.ts';
 import { detectFileFormat, extractBody } from '../raw/parse.ts';
 import type { RawInput } from '../raw/store.ts';
-import { readPublicResource, type WebOptions } from '../raw/url-import.ts';
+import { readPublicResource } from '../raw/url-import.ts';
 import { readWebMaterial } from '../raw/web-material.ts';
 import type { NewsItem } from './types.ts';
 
@@ -20,7 +20,7 @@ export async function acquireNewsMaterial(
   root: string,
   item: NewsItem,
   keepPartial: boolean,
-  options?: WebOptions & { ocr?: (bytes: Buffer) => Promise<string> },
+  options?: Parameters<typeof readWebMaterial>[2],
 ): Promise<NewsMaterial> {
   let pdfIssue = '';
   const directPdf = /\.pdf$/iu.test(URL.parse(item.url)?.pathname ?? '');
@@ -91,6 +91,7 @@ export async function acquireNewsMaterial(
         extractionNote: [isReport ? '报告发布页正文' : '来源网页正文', page.note, issue].filter(Boolean).join('；'),
         urlImport: { finalUrl: page.finalUrl, fetchedAt: page.fetchedAt },
         webImages: page.images.length ? page.images : undefined,
+        webImageArtifacts: page.artifacts.length ? page.artifacts : undefined,
         newsMaterial: { kind: isReport ? 'report_page' : 'article', revision: 0, ...(issue ? { issue } : {}) },
       };
     } catch (error) {

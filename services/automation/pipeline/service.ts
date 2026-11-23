@@ -3,6 +3,7 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import type { ExtractionJob, ExtractionRunner } from '../../llm/jobs.ts';
 import type { RawStateStore } from '../../raw/state.ts';
+import { RawMediaImportError } from '../../raw/store.ts';
 import type { WikiStore } from '../../wiki/store.ts';
 import { shanghaiDate, validNewsDate, type NewsService } from '../../news/service.ts';
 import type { NewsEdition, NewsItem, NewsMaterialView, NewsSectionName } from '../../news/types.ts';
@@ -590,7 +591,7 @@ export class NewsPipeline {
             const error =
               canKeepPartial || cause instanceof UnavailableNewsMaterialError
                 ? cause.message
-                : cause instanceof NewsError
+                : cause instanceof NewsError || cause instanceof RawMediaImportError
                   ? cause.message
                   : 'Raw 保存失败，请重试保存。';
             await patch({ phase: 'raw_failed', error, canKeepPartial });

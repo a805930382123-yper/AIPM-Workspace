@@ -55,7 +55,7 @@ async function fixture(
   return { root, raws, saves };
 }
 
-test('图文按正文顺序保存，装饰图跳过，转录可对照本地原图', async (t) => {
+test('图文按正文顺序保存，装饰图由统一阈值跳过，OCR 只进派生记录', async (t) => {
   const requests: string[] = [];
   const { root, raws, saves } = await fixture(t, async (url) => {
     requests.push(url.pathname);
@@ -71,13 +71,16 @@ test('图文按正文顺序保存，装饰图跳过，转录可对照本地原�
   assert.equal(second.rawId, first.rawId);
   assert.equal(second.owned, false);
   assert.equal(first.material.kind, 'article');
-  assert.deepEqual(requests, ['/story', '/steps.png']);
+  assert.deepEqual(requests, ['/story', '/logo.png', '/steps.png']);
   const raw = (await raws.get(first.rawId))!;
-  assert.match(raw.body, /正文第一段[\s\S]*来源图片[\s\S]*OCR 转录[\s\S]*节点 A → 节点 B[\s\S]*正文第二段/u);
+  assert.match(raw.body, /正文第一段[\s\S]*来源图片[\s\S]*正文第二段/u);
+  assert.doesNotMatch(raw.body, /OCR 转录|节点 A → 节点 B/u);
+  assert.equal((await raws.getMediaArtifacts(raw.id)).length, 2);
+  assert.equal((await raws.getMediaArtifacts(raw.id))[0].routeStatus, 'skipped');
   assert.doesNotMatch(raw.body, /简讯摘录/u);
   const [image] = raw.webImages!;
   assert.equal(raw.body.slice(image!.start, image!.start + 7), '【来源图片 1');
-  assert.equal(image!.sourceUrl, 'https://publisher.test/steps.png');
+  assert.equal(image!.sourceUrl, 'https://publisher.test/logo.png');
   assert.deepEqual(await readWebImage(root, image!), png);
 });
 
@@ -164,7 +167,7 @@ test('旧摘录补采保留原始身份，并将有明确链接的 PDF 作为来
   assert.equal((await readFile(receiptFile, 'utf8')).includes(old.body), true);
 });
 
-test('关键流程图 OCR 为空时，即使正文存在也须确认部分材料', async (t) => {
+test('OCR 为空按统一阈值跳过，原图仍保留且不误报 OCR 失败', async (t) => {
   const { root, raws, saves } = await fixture(
     t,
     async (url) =>
@@ -173,17 +176,16 @@ test('关键流程图 OCR 为空时，即使正文存在也须确认部分材料
         : response('image/png', png),
     async () => '',
   );
-  await assert.rejects(saves.save(date, 'ai', item), /未识别到可转录文字/u);
-  assert.deepEqual(await raws.list(), []);
-  const kept = await saves.save(date, 'ai', item, undefined, { keepPartial: true });
-  assert.equal(kept.material.canSupplement, true);
+  const kept = await saves.save(date, 'ai', item);
+  assert.equal(kept.material.canSupplement, false);
   const raw = (await raws.get(kept.rawId))!;
   const [image] = raw.webImages!;
   assert.equal(image!.status, 'no_text');
+  assert.equal((await raws.getMediaArtifacts(raw.id))[0].routeStatus, 'skipped');
   assert.deepEqual(await readWebImage(root, image!), png);
 });
 
-test('只有原图的页面保留图文转录，发布页和验证码均不冒充报告正文', async (t) => {
+test('只有原图的页面保留来源图锚点，发布页和验证码均不冒充报告正文', async (t) => {
   let gate = false;
   const { root, raws, saves } = await fixture(t, async (url) => {
     if (url.pathname === '/steps.png') return response('image/png', png);
@@ -191,7 +193,8 @@ test('只有原图的页面保留图文转录，发布页和验证码均不冒�
     return response('text/html', '<article><img src="/steps.png"></article>');
   });
   const pure = await saves.save(date, 'ai', item);
-  assert.match((await raws.get(pure.rawId))!.body, /OCR 转录/u);
+  assert.match((await raws.get(pure.rawId))!.body, /来源图片/u);
+  assert.doesNotMatch((await raws.get(pure.rawId))!.body, /OCR 转录|节点 A/u);
   const report = {
     ...item,
     id: 'report',

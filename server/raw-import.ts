@@ -8,7 +8,8 @@ import type { RawTranslationService, RawTranslationView } from '../services/raw/
 import type { Express } from 'express';
 import multer from 'multer';
 import { MAX_BODY_CHARS, MAX_UPLOAD_BYTES } from '../services/raw/limits.ts';
-import { readPublicRawUrl, type ImportedWebText } from '../services/raw/url-import.ts';
+import { MAX_WEB_BYTES, type ImportedWebText } from '../services/raw/url-import.ts';
+import { readWebMaterial } from '../services/raw/web-material.ts';
 import {
   ParseError,
   declaredFormat,
@@ -39,7 +40,7 @@ export function registerRawImportRoute(
   deps: {
     store: RawStore;
     assets: AssetStore;
-    readUrl?: (value: string) => Promise<ImportedWebText>;
+    readUrl?: (value: string) => Promise<ImportedWebText | Awaited<ReturnType<typeof readWebMaterial>>>;
     translations?: RawTranslationService;
   },
 ): void {
@@ -110,7 +111,14 @@ export function registerRawImportRoute(
           sourceName: hasSource ? fields.sourceName : '公开网页',
           sourceType: omitted(fields.sourceType) ? 'article' : fields.sourceType,
         });
-        const result = await (deps.readUrl ?? readPublicRawUrl)(originalUrl);
+        const result = await (
+          deps.readUrl ??
+          ((url) =>
+            readWebMaterial(deps.store.root, url, {
+              pageBytes: MAX_WEB_BYTES,
+              timeoutMs: 30_000,
+            }))
+        )(originalUrl);
         const host = new URL(result.finalUrl).hostname;
         const raw = await deps.store.create({
           ...verified,
@@ -120,6 +128,13 @@ export function registerRawImportRoute(
           urlImport: { finalUrl: result.finalUrl, fetchedAt: result.fetchedAt },
           extractionParser: result.parser,
           extractionNote: result.note,
+          ...('artifacts' in result
+            ? {
+                webImages: result.images,
+                webImageArtifacts: result.artifacts,
+                extractionNote: [result.note, ...result.issues].filter(Boolean).join('；'),
+              }
+            : {}),
         });
         let translation: RawTranslationView | undefined;
         if (translate) {
@@ -146,7 +161,7 @@ export function registerRawImportRoute(
         res.status(201).json({
           kind: 'url',
           raw,
-          extraction: { parser: result.parser, note: result.note, bodyChars: raw.body.length },
+          extraction: { parser: result.parser, note: raw.extractionNote ?? result.note, bodyChars: raw.body.length },
           ...(translation ? { translation } : {}),
         });
       } catch (error) {

@@ -45,6 +45,8 @@ export type RawInput = RawAssetMetadata & {
   urlImport?: { finalUrl: string; fetchedAt: string };
   pdf?: PdfTextMap;
   webImages?: RawWebImage[];
+  /** Server-only import input. Never serialized into a Raw or returned publicly. */
+  webImageArtifacts?: MediaArtifactResult[];
   newsMaterial?: { kind: 'article' | 'report_pdf' | 'report_page'; issue?: string; revision: number };
 };
 export type RawMeetingOrigin = {
@@ -55,7 +57,7 @@ export type RawMeetingOrigin = {
   registered_confidentiality: 'Public' | 'Internal' | 'Sensitive' | 'Restricted';
   processing_policy: 'meeting_local_only';
 };
-export type RawRecord = RawInput & {
+export type RawRecord = Omit<RawInput, 'webImageArtifacts'> & {
   id: string;
   importedAt: string;
   status: 'unprocessed';
@@ -78,7 +80,17 @@ export type MeetingRawRegistration = {
   origin: RawMeetingOrigin;
 };
 /** Everything the user supplies except the body; file import takes the body from a parser. */
-export type RawMetadata = Omit<RawInput, 'body'>;
+export type RawMetadata = Omit<RawInput, 'body' | 'webImageArtifacts'>;
+
+export class RawMediaImportError extends Error {
+  readonly code = 'RAW_MEDIA_IMPORT_INCOMPLETE';
+  readonly status = 500;
+  readonly details: { committed: true; rawId: string; raw: RawRecord };
+  constructor(raw: RawRecord) {
+    super('原文已保存，但图片解析记录未全部保存。请打开已保存的资料核对，不要重复导入。');
+    this.details = { committed: true, rawId: raw.id, raw };
+  }
+}
 
 const rawIdPattern = /^[0-9a-f-]{36}$/i;
 const bodyShaPattern = /^[0-9a-f]{64}$/i;
@@ -210,9 +222,13 @@ export class RawStore {
 
   private async createWithId(id: string, input: RawInput, isDemo: boolean): Promise<RawRecord> {
     const existing = await this.get(id);
-    if (existing) return existing;
+    if (existing) {
+      await this.saveImportedMedia(existing, input.webImageArtifacts);
+      return existing;
+    }
+    const { webImageArtifacts, ...rawInput } = input;
     const record: RawRecord = {
-      ...input,
+      ...rawInput,
       id,
       importedAt: new Date().toISOString(),
       status: 'unprocessed',
@@ -230,7 +246,23 @@ export class RawStore {
       await rm(temp, { force: true }).catch(() => undefined);
       throw error;
     }
+    await this.saveImportedMedia(record, webImageArtifacts);
     return record;
+  }
+
+  /** News receipts can retry missing derivatives without replacing a completed parse. */
+  async saveImportedMedia(raw: RawRecord, artifacts?: MediaArtifactResult[]) {
+    if (!artifacts?.length) return;
+    try {
+      const saved = new Set((await this.getMediaArtifacts(raw.id)).map(({ mediaId }) => mediaId));
+      for (const image of identifyWebImages(raw.id, raw.webImages)) {
+        if (saved.has(image.mediaId)) continue;
+        const result = artifacts[image.imageIndex - 1];
+        if (!result || !(await this.saveMediaArtifact(raw.id, image.mediaId, result))) throw new Error('Missing media');
+      }
+    } catch {
+      throw new RawMediaImportError(raw);
+    }
   }
 
   async list(): Promise<RawRecord[]> {
@@ -370,9 +402,10 @@ export class RawStore {
     });
     if (archived && !archived.equals(bytes)) throw new RawIntegrityError();
     if (!archived) await writeFileAtomic(snapshot, bytes);
+    const { webImageArtifacts, ...newsFields } = newsInput ?? {};
     const updated: RawRecord = {
       ...record,
-      ...newsInput,
+      ...newsFields,
       sourceType: record.sourceType,
       body: input.body,
       bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
@@ -391,6 +424,7 @@ export class RawStore {
     } else {
       await writeFileAtomic(file, serialize(updated));
     }
+    await this.saveImportedMedia(updated, webImageArtifacts);
     return updated;
   }
 

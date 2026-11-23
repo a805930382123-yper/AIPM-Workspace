@@ -7,7 +7,7 @@ import type { DeepQualityReport } from '../services/llm/knowledge-deep';
 import type { HumanReview } from '../services/wiki/human-review.ts';
 import type { TemplateFields, InputTemplateFields, MergedTemplateFields } from '../services/wiki/template-fields';
 import type { RawInput } from '../services/raw/store';
-import type { MediaEvidenceSource } from '../services/raw/media-artifact';
+import type { MediaArtifact, MediaEvidenceSource } from '../services/raw/media-artifact';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string;
@@ -48,6 +48,19 @@ export type MeetingRawOrigin = {
   processing_policy: 'meeting_local_only';
 };
 export type RawSummary = Omit<Raw, 'body' | 'bodySha256'>;
+export type RawMediaArtifact = Omit<MediaArtifact, 'ocrRawText'>;
+const rawMediaUrl = (rawId: string) => `/api/raw/${encodeURIComponent(rawId)}/media`;
+export const rawMedia = (rawId: string) => api<{ items: RawMediaArtifact[] }>(rawMediaUrl(rawId));
+export const parseRawMedia = (rawId: string, mediaId: string, force = false) =>
+  api<RawMediaArtifact>(`${rawMediaUrl(rawId)}/${encodeURIComponent(mediaId)}/parse-vlm`, {
+    method: 'POST',
+    body: JSON.stringify(force ? { force: true } : {}),
+  });
+export const parseRawMediaBatch = (rawId: string, mediaIds: string[]) =>
+  api<{ items: Array<{ mediaId: string; artifact?: RawMediaArtifact; error?: string }> }>(
+    `${rawMediaUrl(rawId)}/parse-vlm-batch`,
+    { method: 'POST', body: JSON.stringify({ mediaIds }) },
+  );
 export type RawAssetStatus = 'stored' | 'parsed' | 'parse_failed' | 'detached';
 export type RawAssetRecord = {
   id: string;

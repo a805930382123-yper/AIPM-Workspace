@@ -2,9 +2,11 @@ import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { loadImage } from '@napi-rs/canvas';
 import { writeFileAtomic } from '../storage/files.ts';
 import { MAX_BODY_CHARS } from './limits.ts';
-import type { OcrLineInput } from './media-ocr-triage.ts';
+import { evaluateImageOcr, type OcrLineInput } from './media-ocr-triage.ts';
+import type { MediaArtifactResult } from './media-artifact.ts';
 import { readPublicRawUrl, readPublicResource, type WebOptions } from './url-import.ts';
 
 export type RawWebImage = {
@@ -125,18 +127,31 @@ export async function recognizeWebImageLines(bytes: Buffer): Promise<OcrLineInpu
 export async function readWebMaterial(
   root: string,
   url: string,
-  options: WebOptions & { ocr?: (bytes: Buffer) => Promise<string> } = {},
+  options: WebOptions & { ocr?: (bytes: Buffer) => Promise<string | OcrLineInput[]> } = {},
 ) {
   const page = await readPublicRawUrl(url, { ...options, images: true });
   const candidates = page.images ?? [];
   const hasProse = candidates.reduce((text, img) => text.replace(img.marker, ''), page.body).trim().length > 0;
   const images: RawWebImage[] = [];
   const issues: string[] = [];
-  const fetched = new Map<string, Pick<RawWebImage, 'sha256' | 'mime' | 'finalUrl' | 'status'> & { text?: string }>();
+  const artifacts: MediaArtifactResult[] = [];
+  type ImageResult = Pick<RawWebImage, 'sha256' | 'mime' | 'finalUrl' | 'status'> & { artifact: MediaArtifactResult };
+  const failedArtifact = (reason: string): MediaArtifactResult => ({
+    ...evaluateImageOcr({ lines: [] }),
+    routeStatus: 'failed',
+    routeReasons: [reason],
+    vlmError:
+      reason === 'local_ocr_unavailable'
+        ? '本机 OCR 未完成，可查看原图或手动精读。'
+        : reason === 'image_count_limit'
+          ? '超过本次 16 张图片读取限额，尚未读取原图。'
+          : '原图下载失败、格式无法识别或超过 8 MiB 限额。',
+  });
+  const fetched = new Map<string, ImageResult>();
   const readImage = async (sourceUrl: string) => {
     const reused = fetched.get(sourceUrl);
     if (reused) return reused;
-    let image: Pick<RawWebImage, 'sha256' | 'mime' | 'finalUrl' | 'status'> & { text?: string } = { status: 'failed' };
+    let image: ImageResult = { status: 'failed', artifact: failedArtifact('original_image_unavailable') };
     try {
       const result = await readPublicResource(
         sourceUrl,
@@ -152,10 +167,13 @@ export async function readWebMaterial(
       if (!mime) return image;
       const sha256 = hash(result.bytes);
       await writeFileAtomic(path.join(root, webImageRelativePath(sha256)!), result.bytes);
-      image = { sha256, mime, finalUrl: result.finalUrl, status: 'failed' };
-      const text = (await (options.ocr ?? tesseract)(result.bytes)).replace(/\r\n/gu, '\n').trim();
-      const readable = (text.match(/[\p{L}\p{N}]/gu)?.length ?? 0) >= 2;
-      image = { ...image, status: readable ? 'transcribed' : 'no_text', ...(readable ? { text } : {}) };
+      image = { ...image, sha256, mime, finalUrl: result.finalUrl, artifact: failedArtifact('local_ocr_unavailable') };
+      const { width, height } = await loadImage(result.bytes);
+      image.artifact = { ...image.artifact, width, height };
+      const recognized = await (options.ocr ?? recognizeWebImageLines)(result.bytes);
+      const lines = typeof recognized === 'string' ? recognized.split(/\r?\n/u).map((text) => ({ text })) : recognized;
+      const artifact = evaluateImageOcr({ width, height, lines });
+      image = { ...image, status: artifact.metrics.effectiveCharCount >= 2 ? 'transcribed' : 'no_text', artifact };
     } catch {
       // A retained image remains available to verify when local OCR is unavailable.
     }
@@ -171,41 +189,36 @@ export async function readWebMaterial(
     if (start < 0) continue;
     body += page.body.slice(offset, start);
     offset = start + candidate.marker.length;
-    const { explicit, label, context, width, height, url: sourceUrl } = candidate;
-    const key = explicit || !hasProse;
-    const assess = key || (width >= 240 && (height >= 100 || !height)) || (!width && !height);
-    if (!assess) continue;
-    const { text, ...image } = inspected++ < 16 ? await readImage(sourceUrl) : { status: 'failed' as const };
-    if (!key && image.status === 'no_text') continue;
+    const { label, url: sourceUrl } = candidate;
+    const { artifact, ...image } =
+      inspected++ < 16
+        ? await readImage(sourceUrl)
+        : {
+            status: 'failed' as const,
+            artifact: failedArtifact('image_count_limit'),
+          };
     const number = images.length + 1;
-    const diagram = /流[程向]|架构|拓扑|线路|关系图|diagram|flowchart|architecture/iu.test(`${label} ${context}`);
     const marker = `【来源图片 ${number}${label ? ` · ${label}` : ''}】`;
     images.push({ start: body.length, sourceUrl, label, ...image });
+    artifacts.push(artifact);
     body += marker;
-    if (text) {
-      body += `\n【图片 OCR 转录（需核对）】\n${text}\n【转录结束】`;
-    }
-    if (diagram && image.sha256) body += '\n【图中连线、方向及步骤顺序请以原图核对】';
     if (image.status === 'failed') {
       const issue = image.sha256
         ? `图片 ${number} 的本机 OCR 未完成（需 Tesseract 和简中、英文语言数据）。`
         : `图片 ${number} 原图读取失败或超出读取限额。`;
       issues.push(issue);
-      body += `\n【${issue}】`;
-    } else if (image.status === 'no_text') {
-      issues.push(`图片 ${number} 未识别到可转录文字，需核对原图。`);
-      body += '\n【未识别到可转录文字，可查看原图】';
     }
   }
   body += page.body.slice(offset);
   const leading = body.length - body.trimStart().length;
   for (const image of images) image.start -= leading;
-  if (body.length > MAX_BODY_CHARS) throw new Error('正文与图片转录合计超过 500,000 字符。');
+  if (body.length > MAX_BODY_CHARS) throw new Error('正文与来源图锚点合计超过 500,000 字符。');
   return {
     ...page,
     body: body.trim(),
-    parser: images.length ? 'url_html_images_ocr' : page.parser,
+    parser: images.length ? 'url_html_images' : page.parser,
     images,
+    artifacts,
     hasProse,
     issues,
   };
