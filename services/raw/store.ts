@@ -3,8 +3,9 @@ import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promise
 import path from 'node:path';
 import yaml from 'js-yaml';
 import type { PdfTextMap } from './parse.ts';
-import type { RawWebImage } from './web-material.ts';
-import { writeFileAtomic } from '../storage/files.ts';
+import { identifyWebImages, webImageRelativePath, type RawWebImage } from './web-material.ts';
+import type { MediaArtifact, MediaArtifactResult } from './media-artifact.ts';
+import { readJsonFile, SerialQueue, writeFileAtomic, writeJsonAtomic } from '../storage/files.ts';
 
 export const SOURCE_TYPES = ['wechat', 'article', 'report', 'company', 'customer', 'meeting', 'note', 'other'] as const;
 export type SourceType = (typeof SOURCE_TYPES)[number];
@@ -118,6 +119,8 @@ function verifyIntegrity(record: RawRecord): RawRecord {
 }
 
 export class RawStore {
+  private readonly mediaWrites = new SerialQueue();
+
   constructor(public readonly root: string) {}
 
   async initialize() {
@@ -245,6 +248,48 @@ export class RawStore {
     return (await this.readCurrent(id))?.record;
   }
 
+  private mediaDirectory(id: string) {
+    return path.join(this.root, 'knowledge', 'raw', 'media-artifacts', id);
+  }
+
+  /** Internal read. Only current image occurrences are eligible for lookup. */
+  async getMediaArtifacts(id: string): Promise<MediaArtifact[]> {
+    const raw = await this.get(id);
+    if (!raw) return [];
+    const artifacts = await Promise.all(
+      identifyWebImages(id, raw.webImages).map(({ mediaId }) =>
+        readJsonFile<MediaArtifact>(path.join(this.mediaDirectory(id), `${mediaId}.json`)),
+      ),
+    );
+    return artifacts.filter((artifact) => artifact !== undefined);
+  }
+
+  /** Replace the derivative for one occurrence, leaving the Raw Markdown and original image untouched. */
+  async saveMediaArtifact(
+    id: string,
+    mediaId: string,
+    result: MediaArtifactResult,
+  ): Promise<MediaArtifact | undefined> {
+    return this.mediaWrites.run(async () => {
+      const raw = await this.get(id);
+      const image = raw && identifyWebImages(id, raw.webImages).find((entry) => entry.mediaId === mediaId);
+      if (!image) return;
+      const { imageIndex, sourceUrl, sha256 } = image;
+      const localPath = webImageRelativePath(sha256);
+      const artifact: MediaArtifact = {
+        ...result,
+        mediaId,
+        imageIndex,
+        sourceUrl,
+        ...(localPath ? { localPath } : {}),
+        updatedAt: new Date().toISOString(),
+      };
+      if (artifact.routeStatus !== 'ocr_ready') delete artifact.ocrCleanText;
+      await writeJsonAtomic(path.join(this.mediaDirectory(id), `${mediaId}.json`), artifact);
+      return artifact;
+    });
+  }
+
   private async readCurrent(id: string) {
     if (!rawIdPattern.test(id)) return undefined;
     for (const folder of new Set(Object.values(folderFor))) {
@@ -310,7 +355,18 @@ export class RawStore {
       bodyRevision: revision + 1,
       bodyEditedAt: new Date().toISOString(),
     };
-    await writeFileAtomic(file, serialize(updated));
+    if (newsInput && record.webImages?.length) {
+      await this.mediaWrites.run(async () => {
+        await writeFileAtomic(file, serialize(updated));
+        const currentMediaIds = new Set(identifyWebImages(id, updated.webImages).map(({ mediaId }) => mediaId));
+        for (const { mediaId } of identifyWebImages(id, record.webImages)) {
+          if (!currentMediaIds.has(mediaId))
+            await rm(path.join(this.mediaDirectory(id), `${mediaId}.json`), { force: true });
+        }
+      });
+    } else {
+      await writeFileAtomic(file, serialize(updated));
+    }
     return updated;
   }
 
@@ -320,20 +376,14 @@ export class RawStore {
    * retained original in knowledge/raw/assets/ is intentionally kept.
    */
   async delete(id: string): Promise<RawRecord | undefined> {
-    if (!rawIdPattern.test(id)) return undefined;
-    for (const folder of new Set(Object.values(folderFor))) {
-      const file = path.join(this.root, 'knowledge', 'raw', folder, `${id}.md`);
-      let record: RawRecord;
-      try {
-        record = verifyIntegrity(parse(await readFile(file, 'utf8')));
-      } catch (e) {
-        if ((e as NodeJS.ErrnoException).code === 'ENOENT') continue;
-        throw e;
-      }
+    return this.mediaWrites.run(async () => {
+      const current = await this.readCurrent(id);
+      if (!current) return undefined;
+      const { file, record } = current;
+      await rm(this.mediaDirectory(id), { recursive: true, force: true });
       await rm(file);
       return record;
-    }
-    return undefined;
+    });
   }
 }
 

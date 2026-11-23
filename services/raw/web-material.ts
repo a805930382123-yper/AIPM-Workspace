@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { writeFileAtomic } from '../storage/files.ts';
 import { MAX_BODY_CHARS } from './limits.ts';
+import type { OcrLineInput } from './media-ocr-triage.ts';
 import { readPublicRawUrl, readPublicResource, type WebOptions } from './url-import.ts';
 
 export type RawWebImage = {
@@ -16,6 +17,16 @@ export type RawWebImage = {
   status: 'transcribed' | 'no_text' | 'failed';
 };
 
+export function identifyWebImages(rawId: string, images: readonly RawWebImage[] = []) {
+  return images.map((image, index) => {
+    const imageIndex = index + 1;
+    const mediaId = createHash('sha256')
+      .update(JSON.stringify([rawId, imageIndex, image.sourceUrl, image.sha256 ?? null]))
+      .digest('hex');
+    return { ...image, mediaId, imageIndex };
+  });
+}
+
 function imageType(bytes: Buffer) {
   if (bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return 'image/png';
   if (bytes.subarray(0, 3).equals(Buffer.from([255, 216, 255]))) return 'image/jpeg';
@@ -24,24 +35,26 @@ function imageType(bytes: Buffer) {
 }
 
 const hash = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex');
-const imageFile = (root: string, sha: string) => path.join(root, 'knowledge', 'raw', 'web-images', sha);
+export const webImageRelativePath = (sha?: string) =>
+  sha && /^[a-f\d]{64}$/u.test(sha) ? `knowledge/raw/web-images/${sha}` : undefined;
 
 export async function readWebImage(root: string, image: RawWebImage) {
-  if (!image.sha256 || !/^[a-f\d]{64}$/u.test(image.sha256)) return;
-  const bytes = await readFile(imageFile(root, image.sha256)).catch((error) => {
+  const file = webImageRelativePath(image.sha256);
+  if (!file) return;
+  const bytes = await readFile(path.join(root, file)).catch((error) => {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   });
   if (bytes && imageType(bytes) === image.mime && hash(bytes) === image.sha256) return bytes;
 }
 
-async function tesseract(bytes: Buffer): Promise<string> {
+async function tesseract(bytes: Buffer, format?: 'tsv'): Promise<string> {
   const configured = process.env.FMCG_TESSERACT_PATH;
   const installed = path.join(process.env.ProgramFiles || 'C:/Program Files', 'Tesseract-OCR', 'tesseract.exe');
   const run = (executable: string) =>
     new Promise<string>((resolve, reject) => {
       const child = execFile(
         executable,
-        ['stdin', 'stdout', '-l', 'chi_sim+eng', '--psm', '11'],
+        ['stdin', 'stdout', '-l', 'chi_sim+eng', '--psm', '11', ...(format ? [format] : [])],
         {
           timeout: 25_000,
           windowsHide: true,
@@ -59,6 +72,54 @@ async function tesseract(bytes: Buffer): Promise<string> {
     if (configured || process.platform !== 'win32' || (error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     return run(installed);
   }
+}
+
+/** Tesseract TSV groups word records into lines with pixel coordinates and 0–1 confidence. */
+export function parseTesseractTsv(tsv: string): OcrLineInput[] {
+  const lines = new Map<
+    string,
+    {
+      text: string[];
+      bbox: NonNullable<OcrLineInput['bbox']>;
+      confidence: number[];
+      previous?: { text: string; right: number; height: number };
+    }
+  >();
+  for (const row of tsv.split(/\r?\n/u)) {
+    const fields = row.split('\t');
+    if (fields[0] !== '5' || fields.length < 12) continue;
+    const text = fields.slice(11).join('\t').trim();
+    const [x, y, width, height, confidence] = fields.slice(6, 11).map(Number);
+    if (!text || ![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) continue;
+    const id = fields.slice(1, 5).join(':');
+    const line = lines.get(id) ?? { text: [], bbox: [x, y, x + width, y + height], confidence: [] };
+    const prior = line.previous;
+    if (prior) {
+      const gap = (x - prior.right) / Math.max(height, prior.height);
+      const continuousChinese =
+        /[\p{Script=Han}，。！？：；、…（）【】《》「」『』]$/u.test(prior.text) &&
+        /^[\p{Script=Han}，。！？：；、…（）【】《》「」『』]/u.test(text);
+      // Sparse text detection splits continuous Han words. A large measured gap still indicates columns.
+      line.text.push(gap >= 1.5 ? '   ' : continuousChinese && gap < 0.6 ? '' : ' ');
+    }
+    line.text.push(text);
+    line.previous = { text, right: x + width, height };
+    const [left, top, right, bottom] = line.bbox;
+    line.bbox = [Math.min(left, x), Math.min(top, y), Math.max(right, x + width), Math.max(bottom, y + height)];
+    if (fields[10].trim() && confidence >= 0 && confidence <= 100) line.confidence.push(confidence);
+    lines.set(id, line);
+  }
+  return [...lines.values()].map(({ text, bbox, confidence }) => ({
+    text: text.join(''),
+    bbox,
+    ...(confidence.length
+      ? { confidence: confidence.reduce((sum, value) => sum + value, 0) / confidence.length / 100 }
+      : {}),
+  }));
+}
+
+export async function recognizeWebImageLines(bytes: Buffer): Promise<OcrLineInput[]> {
+  return parseTesseractTsv(await tesseract(bytes, 'tsv'));
 }
 
 export async function readWebMaterial(
@@ -90,7 +151,7 @@ export async function readWebMaterial(
       const mime = imageType(result.bytes);
       if (!mime) return image;
       const sha256 = hash(result.bytes);
-      await writeFileAtomic(imageFile(root, sha256), result.bytes);
+      await writeFileAtomic(path.join(root, webImageRelativePath(sha256)!), result.bytes);
       image = { sha256, mime, finalUrl: result.finalUrl, status: 'failed' };
       const text = (await (options.ocr ?? tesseract)(result.bytes)).replace(/\r\n/gu, '\n').trim();
       const readable = (text.match(/[\p{L}\p{N}]/gu)?.length ?? 0) >= 2;
