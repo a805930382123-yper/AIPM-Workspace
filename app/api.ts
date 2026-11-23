@@ -7,6 +7,7 @@ import type { DeepQualityReport } from '../services/llm/knowledge-deep';
 import type { HumanReview } from '../services/wiki/human-review.ts';
 import type { TemplateFields, InputTemplateFields, MergedTemplateFields } from '../services/wiki/template-fields';
 import type { RawInput } from '../services/raw/store';
+import type { MediaEvidenceSource } from '../services/raw/media-artifact';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string;
@@ -716,6 +717,7 @@ export type DraftEvidence = {
   start: number;
   end: number;
   chunkIndex: number;
+  media?: MediaEvidenceSource;
 };
 export type PdfDraftEvidence = {
   unitId: string;

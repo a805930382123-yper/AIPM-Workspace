@@ -17,6 +17,12 @@ import {
 } from './inspection-input.ts';
 import { WikiStore } from './store.ts';
 import { RawStore } from '../raw/store.ts';
+import {
+  buildRawContentForAI,
+  mediaForEvidence,
+  mediaQuoteMatches,
+  type MediaEvidenceSource,
+} from '../raw/media-context.ts';
 // B04: recoverable, versioned extraction drafts. A draft is the only place AI output lives
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
@@ -78,6 +84,7 @@ export type DraftEvidence = {
   start: number;
   end: number;
   chunkIndex: number;
+  media?: MediaEvidenceSource;
 };
 export type DraftFact = { text: string; evidenceIds: string[] };
 export type DraftPage = {
@@ -262,6 +269,20 @@ export class DraftStore {
     return path.join(this.directory(), `${id}.json`);
   }
 
+  private async imageText(rawId: string) {
+    return (await new RawStore(this.root).getMediaArtifacts(rawId)).flatMap((artifact) => {
+      const text = mediaForEvidence(artifact);
+      return text ? [text] : [];
+    });
+  }
+
+  private async assertCapturedReview(review: HumanReview, id: string, body: string, bodySha256: string) {
+    const media = review.units.some((unit) => unit.media || unit.evidence.some((evidence) => evidence.media))
+      ? await this.imageText(id)
+      : undefined;
+    assertReviewSources(review, [{ id, body, bodySha256, media }]);
+  }
+
   async initialize() {
     await mkdir(this.directory(), { recursive: true });
   }
@@ -330,7 +351,7 @@ export class DraftStore {
           selectedTopics.has(record.humanReview!.assignments[unit.id] ?? '') ||
           unit.records.some((item) => noteIds.has(item.id)),
       );
-      assertReviewSources({ ...record.humanReview, units }, [{ id: record.rawId, body, bodySha256: record.rawSha256 }]);
+      await this.assertCapturedReview({ ...record.humanReview, units }, record.rawId, body, record.rawSha256);
     }
   }
   async assertReviewed(
@@ -369,7 +390,7 @@ export class DraftStore {
         record.humanReview,
         record.pages.map((p) => p.pageId),
       );
-      assertReviewSources(record.humanReview, [{ id: record.rawId, body, bodySha256: record.rawSha256 }]);
+      await this.assertCapturedReview(record.humanReview, record.rawId, body, record.rawSha256);
       await this.assertEvidenceStillValid(record, body);
       const digest = assertMaintenanceReviewed(record);
       if (record.structuredNote) this.assertNoteReviewed(record, digest);
@@ -379,7 +400,7 @@ export class DraftStore {
       record.humanReview,
       record.pages.map((p) => p.pageId),
     );
-    assertReviewSources(record.humanReview, [{ id: record.rawId, body, bodySha256: record.rawSha256 }]);
+    await this.assertCapturedReview(record.humanReview, record.rawId, body, record.rawSha256);
     await this.assertEvidenceStillValid(record, body);
     const digest = this.contentDigest(record);
     if (record.structuredNote) this.assertNoteReviewed(record, digest);
@@ -432,7 +453,7 @@ export class DraftStore {
         record.humanReview,
         record.pages.map((p) => p.pageId),
       );
-      assertReviewSources(record.humanReview, [{ id: record.rawId, body, bodySha256: record.rawSha256 }]);
+      await this.assertCapturedReview(record.humanReview, record.rawId, body, record.rawSha256);
       await this.assertEvidenceStillValid(record, body);
       const digest = this.contentDigest(record);
       if (value.reviewContentDigest !== digest)
@@ -548,9 +569,13 @@ export class DraftStore {
           throw new DraftError('MIGRATION_OUTBOUND_FORBIDDEN', '旧草稿迁移不得调用模型。', 500);
         },
       };
+      const rawStore = new RawStore(this.root);
+      const raw = cp.mediaInputSha256 ? await rawStore.get(record.rawId) : undefined;
+      const content = raw ? buildRawContentForAI(raw, await rawStore.getMediaArtifacts(raw.id)) : undefined;
       const args = {
         raw: { ...record.rawMeta, id: record.rawId, tags: [] },
-        body,
+        body: content?.body ?? body,
+        content,
         bodySha256: record.rawSha256,
         provider,
         rulesDir,
@@ -575,13 +600,14 @@ export class DraftStore {
         category: p.category,
         source_facts: p.source_facts,
         open_questions: p.open_questions,
-        source_evidence: p.source_evidence.map(({ id, rawId, quote, start, end, chunkIndex }) => ({
+        source_evidence: p.source_evidence.map(({ id, rawId, quote, start, end, chunkIndex, media }) => ({
           id,
           rawId,
           quote,
           start,
           end,
           chunkIndex,
+          ...(media ? { media } : {}),
         })),
       });
       if (
@@ -777,7 +803,7 @@ export class DraftStore {
         next.humanReview,
         next.pages.map((p) => p.pageId),
       );
-      assertReviewSources(next.humanReview, [{ id: next.rawId, body: context.body, bodySha256: next.rawSha256 }]);
+      await this.assertCapturedReview(next.humanReview, next.rawId, context.body, next.rawSha256);
       if (input.action === 'questions') {
         const ids = input.unitIds;
         if (
@@ -847,10 +873,17 @@ export class DraftStore {
 
   /** Defensive load-time check: a draft whose evidence no longer matches its Raw is reported. */
   async assertEvidenceStillValid(draft: DraftRecord, body: string, pages = draft.pages): Promise<void> {
+    const imageText = pages.some((page) => page.source_evidence.some((evidence) => evidence.media))
+      ? await this.imageText(draft.rawId)
+      : [];
     for (const page of pages) {
       this.validateTemplateReferences(page, draft.rawId, undefined, draft.humanReview);
       for (const evidence of page.source_evidence) {
-        if (body.slice(evidence.start, evidence.end) !== evidence.quote) {
+        if (
+          evidence.media
+            ? !mediaQuoteMatches(evidence.media, evidence.start, evidence.end, evidence.quote, imageText)
+            : body.slice(evidence.start, evidence.end) !== evidence.quote
+        ) {
           throw new DraftError(
             'EVIDENCE_STALE',
             `草稿「${page.title}」的证据 ${evidence.id} 与当前原文不一致（原文可能已变化），请重新整理这条资料。`,
@@ -1000,6 +1033,7 @@ export class DraftStore {
               start: ref.start,
               end: ref.end,
               chunkIndex: -1,
+              ...(ref.media ? { media: ref.media } : {}),
             })),
           knowledge_status: c.candidate.knowledge_status,
           confidence: c.candidate.confidence,
@@ -1016,7 +1050,17 @@ export class DraftStore {
         records: [{ id: 'reference-' + i, text: ref.quote, evidenceIds: ref.kind === 'raw' ? [ref.id] : [] }],
         evidence:
           ref.kind === 'raw'
-            ? [{ id: ref.id, rawId: ref.recordId, quote: ref.quote, start: ref.start, end: ref.end, chunkIndex: -1 }]
+            ? [
+                {
+                  id: ref.id,
+                  rawId: ref.recordId,
+                  quote: ref.quote,
+                  start: ref.start,
+                  end: ref.end,
+                  chunkIndex: -1,
+                  ...(ref.media ? { media: ref.media } : {}),
+                },
+              ]
             : [],
         sourceLabel:
           ref.kind === 'wiki' ? '知识页内容：' + ref.title + ' / v' + ref.revision : '原始资料：' + ref.title,
@@ -1109,7 +1153,7 @@ export class DraftStore {
         throw new DraftError('NOTE_NOT_FOUND', '草稿没有结构化笔记。', 404);
       if (current.status !== 'pending_confirmation' || current.revision !== patch.baseRevision)
         throw new DraftError('DRAFT_REVISION_CONFLICT', '草稿已变化或不可编辑，请刷新后重试。', 409);
-      assertReviewSources(current.humanReview, [{ id: current.rawId, body, bodySha256: current.rawSha256 }]);
+      await this.assertCapturedReview(current.humanReview, current.rawId, body, current.rawSha256);
       await this.assertEvidenceStillValid(current, body);
       const facts = new Set(
           current.humanReview.units.filter((u) => u.kind === 'fact').flatMap((u) => u.records.map((r) => r.id)),
@@ -1428,9 +1472,7 @@ export class DraftStore {
       };
       if (input.outcome.reviewBasis) {
         record.humanReview = this.reviewFromBasis(record, input.outcome.reviewBasis);
-        assertReviewSources(record.humanReview, [
-          { id: input.raw.id, body: input.body, bodySha256: input.raw.bodySha256 },
-        ]);
+        await this.assertCapturedReview(record.humanReview, input.raw.id, input.body, input.raw.bodySha256);
         this.deriveReviewPages(record);
       }
       if (deep) {
@@ -1489,6 +1531,7 @@ export class DraftStore {
         start: item.start,
         end: item.end,
         chunkIndex: item.chunkIndex,
+        ...(item.media ? { media: item.media } : {}),
       })),
       knowledge_status: defaultKnowledgeStatus(page),
       confidence: 'medium',
@@ -1806,6 +1849,12 @@ export class DraftStore {
           throw new DraftError('EVIDENCE_INVALID_SOURCE', '证据的 rawId 不能改成本条 Raw 之外的值。', 422);
         }
         if (!evidence.id?.trim()) throw new DraftError('EVIDENCE_ID_REQUIRED', '证据必须有 id。', 400);
+        const existing = page.source_evidence.find((current) => current.id === evidence.id);
+        if (existing?.media) {
+          if (evidence.quote !== existing.quote || evidence.start !== existing.start || evidence.end !== existing.end)
+            throw new DraftError('EVIDENCE_INVALID_SOURCE', '图片解析证据不能改写或换用原文位置。', 422);
+          return existing;
+        }
         try {
           const result = locateEvidenceInBody(
             { id: evidence.id, rawId, quote: evidence.quote, start: evidence.start, end: evidence.end },

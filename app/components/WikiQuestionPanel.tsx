@@ -9,6 +9,7 @@ import {
 } from '../api';
 import type { KnowledgeAnswer } from '../../services/llm/knowledge-answers';
 import type { QuestionPreview } from '../../services/wiki/question-input';
+import { mediaEvidenceHref } from '../../services/raw/media-artifact';
 import { answerText, answerSelection } from '../../services/wiki/question-display';
 import { parseWikiAnswer } from './wiki-answer-display';
 export type RawCitationTarget = { rawId: string; start: number; end: number; quote: string; bodySha256: string };
@@ -501,12 +502,23 @@ export function WikiQuestionPanel({
                       <div className="answer-citation-heading">
                         <span className="answer-citation-number">[{index + 1}]</span>
                         <span className={'answer-source-tag answer-source-' + c.kind}>
-                          {c.kind === 'raw' ? 'Raw 原文' : 'Wiki 知识页'}
+                          {c.media ? `来源图片 ${c.media.imageIndex}` : c.kind === 'raw' ? 'Raw 原文' : 'Wiki 知识页'}
                         </span>
-                        <button className="text-button" onClick={() => void openCitation(c.id)}>
-                          {c.title}
-                          {c.revision ? ' · v' + c.revision : ` · 原文[${c.start}, ${c.end})`}
-                        </button>
+                        {c.media ? (
+                          <a
+                            className="text-button"
+                            href={mediaEvidenceHref(c.recordId, c.media)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {c.title} · 图片解析 [{c.start}, {c.end})
+                          </a>
+                        ) : (
+                          <button className="text-button" onClick={() => void openCitation(c.id)}>
+                            {c.title}
+                            {c.revision ? ' · v' + c.revision : ` · 原文[${c.start}, ${c.end})`}
+                          </button>
+                        )}
                       </div>
                       {c.quote && <blockquote>{c.quote}</blockquote>}
                     </li>

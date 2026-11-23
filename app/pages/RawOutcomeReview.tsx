@@ -19,6 +19,7 @@ import type { DraftView, RawDraftView, Wiki, WikiCommitStatus } from '../api';
 import { FormalNoteReader } from '../components/FormalNoteReader';
 import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
 import type { RawCitationTarget } from '../components/WikiQuestionPanel';
+import { mediaEvidenceHref } from '../../services/raw/media-artifact';
 import { parseNoteGrid, renderStructuredNote } from '../../services/wiki/structured-note';
 import type { KnowledgeChange } from '../../services/wiki/maintenance';
 import { lineDifference } from './KnowledgeMaintenanceReview';
@@ -1237,27 +1238,38 @@ function RawOutcomeReviewContent({
                 ))}
                 {!!evidence.length && (
                   <details>
-                    <summary>原文引用与位置</summary>
+                    <summary>{evidence.some((ref) => ref.media) ? '来源引用与位置' : '原文引用与位置'}</summary>
                     <ul>
                       {evidence.map((ref) => (
                         <li key={ref.id}>
                           <blockquote>{ref.quote}</blockquote>
-                          <button
-                            className="text-button"
-                            disabled={navigationDisabled || !view.rawSha256}
-                            onClick={() =>
-                              view.rawSha256 &&
-                              onOpenRaw(view.rawId, {
-                                rawId: view.rawId,
-                                start: ref.start,
-                                end: ref.end,
-                                quote: ref.quote,
-                                bodySha256: view.rawSha256,
-                              })
-                            }
-                          >
-                            打开原句 [{ref.start}, {ref.end})
-                          </button>
+                          {ref.media ? (
+                            <a
+                              className="text-button"
+                              href={mediaEvidenceHref(ref.rawId, ref.media)}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              打开来源图片 {ref.media.imageIndex} 的解析引用 [{ref.start}, {ref.end})
+                            </a>
+                          ) : (
+                            <button
+                              className="text-button"
+                              disabled={navigationDisabled || !view.rawSha256}
+                              onClick={() =>
+                                view.rawSha256 &&
+                                onOpenRaw(view.rawId, {
+                                  rawId: view.rawId,
+                                  start: ref.start,
+                                  end: ref.end,
+                                  quote: ref.quote,
+                                  bodySha256: view.rawSha256,
+                                })
+                              }
+                            >
+                              打开原句 [{ref.start}, {ref.end})
+                            </button>
+                          )}
                         </li>
                       ))}
                     </ul>

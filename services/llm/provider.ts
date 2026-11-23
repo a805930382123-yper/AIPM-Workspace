@@ -24,6 +24,7 @@ export type LlmCompletionRequest = {
   purpose?: 'knowledge' | 'prompt';
   structuredOutput?: StructuredOutput;
   image?: Buffer;
+  media?: { format: 'json_schema' | 'json_object'; omitTemperature?: boolean; completionTokenField?: boolean };
 };
 export type LlmCompletion = {
   text: string;
@@ -175,13 +176,15 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     return [...new Set([this.config.apiKey, ...(this.config.knownSecrets ?? [])].filter(Boolean))];
   }
 
-  private async httpError(response: Response, maxBytes: number): Promise<LlmError> {
+  private async httpError(response: Response, maxBytes: number, media: boolean): Promise<LlmError> {
     const body = await readCapped(response, maxBytes);
     let detail = sanitizeProviderText(body, this.secrets);
+    let parameter: string | undefined;
     try {
-      const parsed = JSON.parse(body) as { error?: { message?: unknown; code?: unknown } };
+      const parsed = JSON.parse(body) as { error?: { message?: unknown; param?: unknown } };
       const message = parsed?.error?.message;
       if (message !== undefined) detail = sanitizeProviderText(message, this.secrets);
+      if (typeof parsed?.error?.param === 'string') parameter = parsed.error.param;
     } catch {
       /* keep the sanitized raw snippet */
     }
@@ -197,9 +200,35 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       return new LlmError('LLM_RATE_LIMITED', `Provider 限流（HTTP 429），请稍后重试。${suffix}`, 429);
     }
     if (response.status >= 500) {
-      return new LlmError('LLM_PROVIDER_ERROR', `Provider 服务错误（HTTP ${response.status}）。${suffix}`, 502);
+      return new LlmError(
+        'LLM_PROVIDER_ERROR',
+        `Provider 服务错误（HTTP ${response.status}）。${suffix}`,
+        502,
+        media
+          ? {
+              upstreamStatus: response.status,
+            }
+          : undefined,
+      );
     }
-    return new LlmError('LLM_PROVIDER_ERROR', `Provider 请求失败（HTTP ${response.status}）。${suffix}`, 502);
+    const recognizedParameter = /response_format|json_schema/u.test(parameter ?? detail)
+      ? 'response_format'
+      : /temperature/u.test(parameter ?? detail)
+        ? 'temperature'
+        : /max_tokens|max_completion_tokens/u.test(parameter ?? detail)
+          ? 'max_tokens'
+          : undefined;
+    return new LlmError(
+      'LLM_PROVIDER_ERROR',
+      `Provider 请求失败（HTTP ${response.status}）。${suffix}`,
+      502,
+      media
+        ? {
+            upstreamStatus: response.status,
+            parameter: recognizedParameter,
+          }
+        : undefined,
+    );
   }
 
   async complete(request: LlmCompletionRequest): Promise<LlmCompletion> {
@@ -226,6 +255,9 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const host = new URL(baseUrl).hostname.toLowerCase();
     const defaultTemperature = host === 'api.openai.com' && model === 'gpt-6.1-terra';
     const structured = defaultTemperature && request.purpose === 'knowledge' && request.structuredOutput;
+    const media = request.media;
+    const mediaSchema = media?.format === 'json_schema' && request.structuredOutput;
+    const officialReasoning = host === 'api.openai.com' && /^(?:gpt-[56](?:[.-]|$)|o[134](?:-|$))/iu.test(model);
     const constrainedFlash =
       (request.purpose === 'knowledge' || request.purpose === 'prompt') &&
       ['open.bigmodel.cn', 'api.z.ai'].includes(host) &&
@@ -234,16 +266,19 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     let userContent:
       string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }> = request.user;
     if (request.image !== undefined) {
-      if (
-        !Buffer.isBuffer(request.image) ||
-        request.image.length > 5 * 1024 * 1024 ||
-        request.image.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a'
-      ) {
+      const signature = Buffer.isBuffer(request.image) ? request.image.subarray(0, 8).toString('hex') : '';
+      const mime =
+        signature === '89504e470d0a1a0a'
+          ? 'image/png'
+          : media && signature.startsWith('ffd8ff')
+            ? 'image/jpeg'
+            : undefined;
+      if (!Buffer.isBuffer(request.image) || request.image.length > 5 * 1024 * 1024 || !mime) {
         throw new LlmError('LLM_IMAGE_INVALID', '图像请求只接受大小有界的本地 PNG 页面。', 422);
       }
       userContent = [
         { type: 'text', text: request.user },
-        { type: 'image_url', image_url: { url: `data:image/png;base64,${request.image.toString('base64')}` } },
+        { type: 'image_url', image_url: { url: `data:${mime};base64,${request.image.toString('base64')}` } },
       ];
     }
     if (request.signal?.aborted) throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
@@ -262,7 +297,16 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         body: JSON.stringify({
           model,
           stream: false,
-          ...(defaultTemperature ? {} : { temperature: 0 }),
+          ...(media
+            ? {
+                ...(media.omitTemperature || officialReasoning ? {} : { temperature: 0.1 }),
+                ...(media.completionTokenField || officialReasoning
+                  ? { max_completion_tokens: 1536 }
+                  : { max_tokens: 1536 }),
+              }
+            : defaultTemperature
+              ? {}
+              : { temperature: 0 }),
           messages: [
             { role: 'system', content: request.system },
             { role: 'user', content: userContent },
@@ -271,10 +315,15 @@ export class OpenAiCompatibleProvider implements LlmProvider {
           ...(structured
             ? { response_format: { type: 'json_schema', json_schema: { ...structured, strict: true } } }
             : {}),
+          ...(mediaSchema
+            ? { response_format: { type: 'json_schema', json_schema: { ...mediaSchema, strict: true } } }
+            : media
+              ? { response_format: { type: 'json_object' } }
+              : {}),
         }),
         signal: controller.signal,
       });
-      if (!response.ok) throw await this.httpError(response, request.maxOutputBytes);
+      if (!response.ok) throw await this.httpError(response, request.maxOutputBytes, !!media);
       const text = await readCapped(response, request.maxOutputBytes);
       let payload: {
         choices?: Array<{ message?: { content?: unknown; refusal?: unknown }; finish_reason?: unknown }>;
@@ -323,9 +372,9 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         bytes: typeof content === 'string' ? Buffer.byteLength(content, 'utf8') : 0,
         usage,
       };
-      if (structured && choice?.message?.refusal != null)
+      if ((structured || mediaSchema) && choice?.message?.refusal != null)
         throw new LlmError('LLM_REFUSAL', 'Provider 拒绝本次结构化输出，未产生草稿。', 502, responseDetails);
-      if (structured && finishReason !== 'stop' && finishReason !== 'length')
+      if ((structured || mediaSchema) && finishReason !== 'stop' && finishReason !== 'length')
         throw new LlmError('LLM_PROVIDER_ERROR', 'Provider 未正常完成结构化输出，未产生草稿。', 502, responseDetails);
       if (finishReason === 'length') {
         throw new LlmError(
@@ -343,7 +392,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         finishReason,
         bytes: Buffer.byteLength(content, 'utf8'),
         usage,
-        ...(structured ? { structuredOutputApplied: true as const } : {}),
+        ...(structured || mediaSchema ? { structuredOutputApplied: true as const } : {}),
       };
     } catch (error) {
       if (error instanceof LlmError) throw error;

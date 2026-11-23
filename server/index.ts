@@ -41,6 +41,8 @@ import { registerHomeRoutes } from './home-api.ts';
 import { registerB04Routes } from './llm-api.ts';
 import { registerLlmConfigRoutes } from './llm-config-api.ts';
 import { registerKnowledgeRoutes } from './knowledge-api.ts';
+import { registerRawMediaRoutes } from './raw-media.ts';
+import { MediaVlmParserService } from '../services/raw/media-vlm.ts';
 import { AuditService } from '../services/audit/service.ts';
 import { registerAuditRoutes } from './audit-api.ts';
 import { PromptStore } from '../services/prompt/store.ts';
@@ -137,6 +139,7 @@ const providerFactory = async (): Promise<LlmProvider | undefined> => {
     return undefined;
   }
 };
+const media = new MediaVlmParserService(store, (work) => wikiStore.withLock(work));
 const runner = new ExtractionRunner({
   root,
   llm,
@@ -144,6 +147,7 @@ const runner = new ExtractionRunner({
   drafts,
   rawStates,
   rawStore: store,
+  media,
   rulesDir,
   provider: activeProvider,
   draftRules: async () => {
@@ -315,6 +319,7 @@ app.use((...args) => {
     prepare ||
     (req.method === 'POST' &&
       (/^\/api\/raw\/[^/]+\/extract$/u.test(req.path) ||
+        /^\/api\/raw\/[^/]+\/media\/(?:[^/]+\/parse-vlm|parse-vlm-batch)\/?$/u.test(req.path) ||
         /^\/api\/knowledge\/(?:updates|syntheses)$/u.test(req.path) ||
         /^\/api\/knowledge\/(?:answers(?:\/[^/]+\/save)?|inspections(?:\/[^/]+\/draft)?)\/?$/iu.test(req.path) ||
         /^\/api\/audits\/[^/]+\/propose$/u.test(req.path) ||
@@ -387,6 +392,7 @@ const pdfCleanup = new PdfCleanupService({
 });
 registerRawPdfRoutes(app, pdf, pdfCleanup, wikiStore);
 registerRawTranslationRoutes(app, rawTranslations);
+registerRawMediaRoutes(app, store, media, activeProvider);
 app.get('/api/raw/:id/references', async (req, res, next) => {
   try {
     const item = await store.get(req.params.id);

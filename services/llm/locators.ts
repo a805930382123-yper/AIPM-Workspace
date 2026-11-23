@@ -7,7 +7,7 @@ export const EVIDENCE_LOCATOR_FORMAT_VERSION = 2;
 export const MAX_EVIDENCE_LOCATOR_CHARS = 512;
 export const MAX_EVIDENCE_LOCATORS_PER_CHUNK = 256;
 
-export type EvidenceLocator = { id: string; start: number; end: number; text: string };
+export type EvidenceLocator = { id: string; start: number; end: number; text: string; sourceBoundary?: true };
 
 const high = (code: number) => code >= 0xd800 && code <= 0xdbff;
 const low = (code: number) => code >= 0xdc00 && code <= 0xdfff;
@@ -42,7 +42,7 @@ function preferredBoundary(body: string, start: number, limit: number): number |
 export function buildEvidenceLocatorCatalog(
   body: string,
   chunk: TextChunk,
-  limits: { maxLocatorChars?: number; maxLocators?: number } = {},
+  limits: { maxLocatorChars?: number; maxLocators?: number; sourceBoundaries?: readonly number[] } = {},
 ): EvidenceLocator[] {
   const maxChars = limits.maxLocatorChars ?? MAX_EVIDENCE_LOCATOR_CHARS;
   const maxLocators = limits.maxLocators ?? MAX_EVIDENCE_LOCATORS_PER_CHUNK;
@@ -68,6 +68,8 @@ export function buildEvidenceLocatorCatalog(
   }
 
   const locators: EvidenceLocator[] = [];
+  const boundaries =
+    limits.sourceBoundaries?.filter((position) => position > chunk.start && position < chunk.end) ?? [];
   let start = chunk.start;
   while (start < chunk.end) {
     if (locators.length >= maxLocators) {
@@ -78,7 +80,7 @@ export function buildEvidenceLocatorCatalog(
         { chunkIndex: chunk.index, maxLocators },
       );
     }
-    let limit = Math.min(start + maxChars, chunk.end);
+    let limit = Math.min(start + maxChars, chunk.end, boundaries.find((position) => position > start) ?? chunk.end);
     if (!isSurrogateSafeBoundary(body, limit)) limit -= 1;
     const end = preferredBoundary(body, start, limit) ?? limit;
     if (end <= start || !isSurrogateSafeBoundary(body, end)) {
@@ -87,7 +89,13 @@ export function buildEvidenceLocatorCatalog(
       });
     }
     const ordinal = String(locators.length + 1).padStart(3, '0');
-    locators.push({ id: `c${chunk.index + 1}-l${ordinal}`, start, end, text: body.slice(start, end) });
+    locators.push({
+      id: `c${chunk.index + 1}-l${ordinal}`,
+      start,
+      end,
+      text: body.slice(start, end),
+      ...(boundaries.includes(start) ? { sourceBoundary: true as const } : {}),
+    });
     start = end;
   }
 

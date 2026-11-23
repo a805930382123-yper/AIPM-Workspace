@@ -1,4 +1,5 @@
 import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
+import { mediaEvidenceHref } from '../raw/media-artifact.ts';
 import { WikiStore, type WikiRecord } from '../wiki/store.ts';
 import { findDuplicateCandidates } from '../search/duplicates.ts';
 import { assertNoKnownSecret, LlmError, type LlmProvider } from './provider.ts';
@@ -193,9 +194,10 @@ async function requestMaintenance(
   preparation?: Preparation,
 ): Promise<KnowledgeMaintenance> {
   const structuredOutput = kb02StructuredOutput('knowledge_maintenance', schema);
+  const { id, title, sourceType, sourceName, author, publishedAt, url, tags } = raw;
   const request = {
     stage: 'maintenance',
-    source: raw,
+    source: { id, title, sourceType, sourceName, author, publishedAt, url, tags },
     document,
     pages,
     context,
@@ -218,6 +220,9 @@ async function requestMaintenance(
     structuredOutput,
     system:
       '知识维护提议，严格输出schema JSON。pages为从0开始的本次输入主题，每个索引必须恰好被一个成果的pageIndexes覆盖。同一真实targetWikiId只可出现一次：将涉及该页的所有主题归并在一个pageIndexes集合及一份完整候选内，保留全部主题的依据与待核问题。独立新主题按语义分开，同分类或检索命中不能作为合并依据。已有同主题优先update同一真实ID。完整body保留旧有效内容、人工补充、旧来源，并整合本次内容；事实/整理/推断/待核分别分段。不同年份、主体、条件、单位及口径并列；矛盾并列待核，禁止自行裁定。相同内容及来源无变化选noop；仅增加来源选link且body和title原样；新主题create。targetWikiId/baseRevision只可来自context，create为null。dependsOn填写被引用的新页面所属输入主题索引，同一成果内部无需依赖。不要引用未提议的新页。summary列实际差异和保留内容，questions列矛盾待核。不增加本次更新审核章节。若输入含requested，严格按指定动作/目标输出一份覆盖全部给定主题的候选。create只依据给定主题和原文证据，禁止带入旧页内容；update基于唯一新目标快照，若有同一目标此前候选，保留其中已有的人工编辑。' +
+      (pages.some((page) => page.source_evidence.some((entry) => entry.media))
+        ? '有media标记的证据是来源图片解析，引用时注明图序，位置只对应图片解析文本。'
+        : '') +
       JSON.stringify(schema),
     user: JSON.stringify(request),
   });
@@ -301,6 +306,19 @@ async function requestMaintenance(
       const summary = metadataOnly
         ? [action === 'link' ? '补充本次 Raw 来源，正文与主题元数据保持原样。' : '正文与来源均无需变更。']
         : c.summary;
+      const mediaLinks = [
+        ...new Set(
+          c.pageIndexes.flatMap((index) =>
+            pages[index].source_evidence.flatMap((item) =>
+              item.media
+                ? [
+                    `[Raw ${item.rawId} · 来源图片 ${item.media.imageIndex}](${mediaEvidenceHref(item.rawId, item.media)})`,
+                  ]
+                : [],
+            ),
+          ),
+        ),
+      ].filter((link) => !c.body.includes(link));
       return {
         changeId,
         pageIndex,
@@ -311,7 +329,10 @@ async function requestMaintenance(
           title: c.title,
           type: old?.type ?? (page.type as WikiRecord['type']),
           category: old?.category ?? page.category,
-          body: metadataOnly ? old.body : c.body,
+          body: metadataOnly
+            ? old.body
+            : c.body +
+              (mediaLinks.length ? '\n\n### 来源图片解析\n\n' + mediaLinks.map((link) => `- ${link}`).join('\n') : ''),
           aliases: metadataOnly ? old.aliases : [...new Set([...(old?.aliases ?? []), ...c.aliases])],
           tags: metadataOnly ? old.tags : [...new Set([...(old?.tags ?? []), ...c.tags])],
           sources: [...new Set([...(old?.sources ?? []), raw.id])],

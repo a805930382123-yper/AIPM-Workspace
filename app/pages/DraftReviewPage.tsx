@@ -1,4 +1,5 @@
 import type { RawCitationTarget } from '../components/WikiQuestionPanel';
+import { mediaEvidenceHref } from '../../services/raw/media-artifact';
 import { KnowledgeMaintenanceReview } from './KnowledgeMaintenanceReview';
 import { RawOutcomeReview } from './RawOutcomeReview';
 import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
@@ -1110,17 +1111,49 @@ export function DraftReviewPage({
             </div>
           </div>
           <div className="draft-evidence">
-            <h4>来源证据（全局位置已按完整 Raw 校验）</h4>
+            <h4>
+              {page.source_evidence.some((evidence) => evidence.media)
+                ? '来源证据'
+                : '来源证据（全局位置已按完整 Raw 校验）'}
+            </h4>
             {page.source_evidence.map((evidence) => (
               <div className="draft-evidence-row" key={evidence.id}>
                 <code className="mono">{evidence.id}</code>
                 <span className="draft-evidence-quote">{evidence.quote}</span>
                 <span className="draft-evidence-pos">
-                  [{evidence.start}, {evidence.end}) · 第 {evidence.chunkIndex + 1} 段
+                  [{evidence.start}, {evidence.end}) ·{' '}
+                  {evidence.media ? `图片 ${evidence.media.imageIndex}` : `第 ${evidence.chunkIndex + 1} 段`}
                 </span>
-                <button className="text-button" onClick={() => onOpenRaw(view.rawId)}>
-                  查看原文
-                </button>
+                {evidence.media ? (
+                  <a
+                    className="text-button"
+                    href={mediaEvidenceHref(evidence.rawId, evidence.media)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    查看图片解析
+                  </a>
+                ) : (
+                  <button
+                    className="text-button"
+                    onClick={() =>
+                      onOpenRaw(
+                        view.rawId,
+                        view.rawSha256
+                          ? {
+                              rawId: view.rawId,
+                              start: evidence.start,
+                              end: evidence.end,
+                              quote: evidence.quote,
+                              bodySha256: view.rawSha256,
+                            }
+                          : undefined,
+                      )
+                    }
+                  >
+                    查看原文
+                  </button>
+                )}
               </div>
             ))}
           </div>

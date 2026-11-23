@@ -18,6 +18,7 @@ import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
 import type { CheckpointChunk, ExtractionCheckpoint } from './checkpoints.ts';
+import { evidenceSourceId, sourceRange, type RawAiContent } from '../raw/media-context.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -60,6 +61,7 @@ export type KnowledgeRunInput = {
   raw: ExtractRawInput;
   body: string;
   bodySha256: string;
+  content?: RawAiContent;
   provider: LlmProvider;
   rulesDir: string;
   checkpoint: ExtractionCheckpoint;
@@ -112,7 +114,7 @@ export function knowledgePlanCallMinimum(
 }
 
 export async function validateKnowledgeCheckpoint(
-  input: Pick<KnowledgeRunInput, 'raw' | 'body' | 'bodySha256' | 'provider' | 'rulesDir' | 'checkpoint'>,
+  input: Pick<KnowledgeRunInput, 'raw' | 'body' | 'bodySha256' | 'content' | 'provider' | 'rulesDir' | 'checkpoint'>,
   completedDraft?: { rulesVersion: string; callCount: number },
 ) {
   const bundle = await loadExtractionRules(input.rulesDir);
@@ -139,13 +141,16 @@ export async function validateKnowledgeCheckpoint(
   if (
     current.rawId !== input.raw.id ||
     current.rawSha256 !== input.bodySha256 ||
+    current.mediaInputSha256 !== input.content?.digest ||
     !['kb02-2', 'kb03-1'].includes(current.pipelineVersion) ||
     current.rulesVersion !== bundle.rulesVersion ||
     JSON.stringify(current.chunks) !== JSON.stringify(descriptors)
   )
     throw new LlmError('LLM_CHECKPOINT_INCOMPATIBLE', '原文、规则或分块版本已变化；检查点保留，请明确重新生成。', 409);
   const catalogByChunk = new Map<number, ReturnType<typeof buildEvidenceLocatorCatalog>>();
-  for (const chunk of chunks) catalogByChunk.set(chunk.index, buildEvidenceLocatorCatalog(input.body, chunk));
+  const sourceBoundaries = input.content?.spans.map(({ start }) => start);
+  for (const chunk of chunks)
+    catalogByChunk.set(chunk.index, buildEvidenceLocatorCatalog(input.body, chunk, { sourceBoundaries }));
   // Only storage reconciliation with an already-associated completed draft may use its
   // original revision's call floor. Pipeline/resume callers never pass this argument.
   const countRulesVersion =
@@ -207,6 +212,7 @@ export async function validateKnowledgeCheckpoint(
       const atom = item.atomId ? atoms.get(item.atomId) : undefined;
       if (
         !atom ||
+        (input.content && !sourceRange(input.content, atom.start, atom.end)) ||
         item.text !== atom.text ||
         JSON.stringify(item.locatorIds) !== JSON.stringify(atom.locatorIds) ||
         ('kind' in item && atom.fragment && item.kind !== 'ambiguous')
@@ -230,7 +236,8 @@ export async function validateKnowledgeCheckpoint(
           item.chunkIndex !== saved.index ||
           item.start !== locator.start ||
           item.end !== locator.end ||
-          item.quote !== locator.text
+          item.quote !== locator.text ||
+          (input.content && !sourceRange(input.content, locator.start, locator.end))
         );
       })
     )
@@ -349,6 +356,12 @@ export async function runKnowledgePipeline(
 ): Promise<{ outcome: ExtractOutcome; checkpoint: ExtractionCheckpoint }> {
   const { bundle, chunks, catalogByChunk } = await validateKnowledgeCheckpoint(input);
   const checkpoint = input.checkpoint;
+  const mediaRange = (start: number, end: number) => {
+    if (!input.content) return { start, end };
+    const range = sourceRange(input.content, start, end);
+    if (!range) throw new LlmError('LLM_EVIDENCE_INVALID_SOURCE', '图片说明分隔符不能作为来源证据。', 422);
+    return range;
+  };
   const deadline = Date.now() + FROZEN_BUDGETS.totalDeadlineMs;
   let current = checkpoint;
   const emit = (stage: ExtractProgress['stage'], pagesFound: number) =>
@@ -365,7 +378,9 @@ export async function runKnowledgePipeline(
       emit('extracting', current.completedChunks.length);
       const locators = catalogByChunk.get(chunk.index)!;
       current = await input.beforeCall('extracting');
-      const atoms = buildKnowledgeAtoms(input.body, locators);
+      const atoms = buildKnowledgeAtoms(input.body, locators).filter(
+        (atom) => !input.content || sourceRange(input.content, atom.start, atom.end),
+      );
       const fields = bundle.kb02FactsSchema.properties!;
       const prompt = [
         '只选择原文atom ID；每条为一个机械原文切片，不得拼写、补写主体/维度/数值。分类顺序：先判断业务陈述或非业务来源声明，再判断业务陈述的完整性/歧义。fragment只是原文切片完整性标记，不决定业务相关性；非业务标题、排版或来源说明即使fragment=true也不能进入facts/questions，可选入sourceNotes或不选。仅对选入facts的业务陈述：跨主体、维度省略、条件不确定或fragment=true时kind必须ambiguous。业务否定、未知、未上线、AI仅用于未来建议是合法业务边界，不能归为来源声明。questions仅选择原文明示的业务未知，禁止自行提出问题或因非业务片段截断而生成问题。按实际内容判断，不能只凭标题形式、编号或“虚构/说明/未来”等词排除业务陈述。',
@@ -429,7 +444,12 @@ export async function runKnowledgePipeline(
         `sourceNotes仅可选虚构/验收免责声明、排版或来源说明等非业务声明，可为空；按需选择代表性声明即可，不要求穷举、重复列举全部排版说明，最多${fields.sourceNotes.maxItems}条。未选择的声明不应转入facts/questions；选中的声明也不能同时归入facts/questions。来源声明独立存为检查点元数据，不进入业务事实或标准整篇业务规划；深度笔记独立承载已选来源和材料边界。每个分栏内atomId不得重复。`,
         '输入 locator 目录（每项是精确连续原文，不要复述目录）：',
         JSON.stringify(
-          atoms.filter((atom) => atom.text.trim().length > 0).map(({ id, text, fragment }) => ({ id, text, fragment })),
+          atoms
+            .filter((atom) => atom.text.trim().length > 0)
+            .map(({ id, text, fragment, start, end }) => {
+              const media = input.content ? sourceRange(input.content, start, end)?.media : undefined;
+              return { id, text, fragment, ...(media ? { source_image: media.imageIndex } : {}) };
+            }),
         ),
       ].join('\n');
       const factsOutput = kb02StructuredOutput('kb02_facts', bundle.kb02FactsSchema);
@@ -699,8 +719,7 @@ export async function runKnowledgePipeline(
         id: item.id,
         rawId: item.rawId,
         quote: item.quote,
-        start: item.start,
-        end: item.end,
+        ...mediaRange(item.start, item.end),
         chunkIndex: item.chunkIndex,
         occurrences: 1,
       }));
@@ -756,18 +775,21 @@ export async function runKnowledgePipeline(
     ].map(({ unit, kind }) => {
       const records = (kind === 'fact' ? facts : questions).filter((record) => unit.memberIds.includes(record.id));
       const context = basisInput.sourceContexts.find((c) => c.id === unit.sourceId)!;
+      const range = mediaRange(context.start, context.end);
       return {
         id: unit.id,
         kind,
         origin: 'kb02' as const,
         text: unit.text,
         memberIds: [...unit.memberIds],
-        sourceId: unit.sourceId,
-        start: context.start,
-        end: context.end,
+        sourceId: evidenceSourceId(range.start, range.end, range.media),
+        ...range,
         ...(unit.kind ? { factKind: unit.kind } : {}),
         records: records.map((r) => ({ id: r.id, text: r.text, evidenceIds: [...r.locatorIds] })),
-        evidence: [...new Set(records.flatMap((r) => r.locatorIds))].map((id) => ({ ...evidenceById.get(id)! })),
+        evidence: [...new Set(records.flatMap((r) => r.locatorIds))].map((id) => {
+          const evidence = evidenceById.get(id)!;
+          return { ...evidence, ...mediaRange(evidence.start, evidence.end) };
+        }),
       };
     }),
     pageUnitIds: unitPlan.pages.map((p) => [...p.factUnitIds, ...p.questionUnitIds]),

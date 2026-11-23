@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { LlmError, assertNoKnownSecret, describeUnparsable } from './provider.ts';
 import { runKnowledgePipeline, validateKnowledgeCheckpoint, type KnowledgeRunInput } from './knowledge-extraction.ts';
 import type { ExtractionCheckpoint } from './checkpoints.ts';
+import { sourceRange, type RawAiContent } from '../raw/media-context.ts';
 import {
   validStructuredNote,
   type StructuredNote,
@@ -10,6 +11,33 @@ import {
 } from '../wiki/structured-note.ts';
 
 export const DEEP_VERSION = 'kb03-1';
+
+function noteAttributions(note: StructuredNote): NoteAttribution[] {
+  return note.sections.flatMap(({ blocks }) =>
+    blocks.flatMap<NoteAttribution>((block) =>
+      block.type === 'list'
+        ? block.items
+        : block.type === 'table'
+          ? block.rows
+          : block.type === 'path_diagram'
+            ? [...block.nodes, ...block.edges]
+            : [block],
+    ),
+  );
+}
+
+export function noteWithSourceCoordinates(note: StructuredNote, content: RawAiContent): StructuredNote {
+  if (!content.digest) return note;
+  const draft = structuredClone(note);
+  for (const entry of noteAttributions(draft)) {
+    if (!entry.sourceBoundary) continue;
+    const { rawId, start, end, category } = entry.sourceBoundary;
+    const range = sourceRange(content, start, end);
+    if (!range) delete entry.sourceBoundary;
+    else entry.sourceBoundary = { rawId, category, ...range };
+  }
+  return draft;
+}
 type Scan = {
   version: 1;
   rawSha256: string;
@@ -52,7 +80,7 @@ function fail(code: string, message: string): never {
   throw new LlmError(code, message, 502);
 }
 
-export function scanDeepStructure(body: string): Scan {
+export function scanDeepStructure(body: string, rawSha256 = createHash('sha256').update(body).digest('hex')): Scan {
   let start = 0;
   const lines: Scan['lines'] = [];
   for (const line of body.match(/[^\n]*\n|[^\n]+$/g) ?? []) {
@@ -68,7 +96,7 @@ export function scanDeepStructure(body: string): Scan {
     lines.push({ start, end: start + line.length, kind });
     start += line.length;
   }
-  return { version: 1, rawSha256: createHash('sha256').update(body).digest('hex'), lines };
+  return { version: 1, rawSha256, lines };
 }
 export function validDeepOutline(v: unknown, cp: ExtractionCheckpoint): v is DeepOutline {
   if (
@@ -456,7 +484,9 @@ export function validDeepState(v: unknown, cp: ExtractionCheckpoint): v is DeepS
   if (v.outline !== undefined && (!cp.plan || !validDeepOutline(v.outline, cp))) return false;
   if (
     v.note !== undefined &&
-    (!v.outline || !validStructuredNote(v.note, new Set(cp.completedChunks.flatMap((c) => c.facts.map((f) => f.id)))))
+    (!v.outline ||
+      !validStructuredNote(v.note, new Set(cp.completedChunks.flatMap((c) => c.facts.map((f) => f.id)))) ||
+      noteAttributions(v.note).some((entry) => entry.sourceBoundary?.media))
   )
     return false;
   if (v.qualityReport !== undefined && (!v.note || !validDeepQuality(v.qualityReport, v.note))) return false;
@@ -476,14 +506,14 @@ export const deepRemaining = (cp: ExtractionCheckpoint) =>
   (cp.deep?.note ? 0 : 1) +
   (cp.deep?.qualityReport ? 0 : 1);
 export async function validateDeepCheckpoint(
-  input: Pick<KnowledgeRunInput, 'raw' | 'body' | 'bodySha256' | 'provider' | 'rulesDir' | 'checkpoint'>,
+  input: Pick<KnowledgeRunInput, 'raw' | 'body' | 'bodySha256' | 'content' | 'provider' | 'rulesDir' | 'checkpoint'>,
 ) {
   const cp = input.checkpoint;
   if (
     cp.pipelineVersion !== DEEP_VERSION ||
     cp.mode !== 'deep' ||
     !validDeepState(cp.deep, cp) ||
-    JSON.stringify(cp.deep.scan) !== JSON.stringify(scanDeepStructure(input.body)) ||
+    JSON.stringify(cp.deep.scan) !== JSON.stringify(scanDeepStructure(input.body, input.bodySha256)) ||
     cp.attempts < deepMinimum(cp)
   )
     fail('LLM_CHECKPOINT_CORRUPT', '深度检查点结构、扫描或计数不一致。');
@@ -562,7 +592,10 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
       '输出唯一R1笔记{version:1,orientation,sections:[{id,title,question,blocks}]}。block五类paragraph(text/role/factIds)、list(items各text/role/factIds)、table(title/headings/rows各cells/role/factIds)、path_diagram(title/nodes各id/text/role/factIds、edges各from/to/text/role/factIds)、callout(title/text/role/factIds)。角色source_supported/reorganized必须有所属章节factIds；supplementary为空factIds且仅独立补充概念，不含具体公司/数据/日期/排名/预测，最多20%叶项；needs_verification需非空reason。所有included事实至少引用一次，excluded不引用。章节ID/顺序一致，不改变主体、条件、数值、日期或单位，未上线/未知保持。' +
         boundaryInstruction,
     );
-    if (!validStructuredNote(output, new Set(facts.map((f) => f.id))))
+    if (
+      !validStructuredNote(output, new Set(facts.map((f) => f.id))) ||
+      noteAttributions(output).some((entry) => entry.sourceBoundary?.media)
+    )
       fail('LLM_DEEP_WRITING_INVALID', '笔记结构或事实引用非法。');
     const note = preserveDeepBoundaries(output, cp.deep!.outline!, cp);
     checkDeepNote(note, cp.deep!.outline!, cp);

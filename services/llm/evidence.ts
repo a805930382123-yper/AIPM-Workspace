@@ -3,6 +3,7 @@
 // body. Ambiguous or non-matching quotes fail explicitly — the first match is never taken.
 import { allOccurrences, sliceMatches, type TextChunk } from './chunk.ts';
 import { LlmError } from './provider.ts';
+import type { MediaEvidenceSource } from '../raw/media-context.ts';
 
 export type EvidenceInput = { id: string; rawId: string; quote: string; start?: number; end?: number };
 export type LocatedEvidence = {
@@ -13,6 +14,7 @@ export type LocatedEvidence = {
   end: number;
   chunkIndex: number;
   occurrences: number;
+  media?: MediaEvidenceSource;
 };
 
 function badInput(error: LlmError): never {

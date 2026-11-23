@@ -221,7 +221,13 @@ export class WikiCommitService {
         confidence: page.confidence,
         source_level: page.source_level,
         facts: page.source_facts,
-        evidence: page.source_evidence.map((item) => [item.id, item.quote, item.start, item.end]),
+        evidence: page.source_evidence.map((item) => [
+          item.id,
+          item.quote,
+          item.start,
+          item.end,
+          ...(item.media ? [item.media] : []),
+        ]),
         ...(page.templateFields ? { templateFields: page.templateFields } : {}),
       })),
       source: reuseSourceId

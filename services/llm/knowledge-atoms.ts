@@ -14,11 +14,12 @@ export function buildKnowledgeAtoms(body: string, locators: EvidenceLocator[]): 
   const start = locators[0].start,
     end = locators.at(-1)!.end;
   const result: KnowledgeAtom[] = [];
+  const sourceBoundaries = new Set(locators.filter((item) => item.sourceBoundary).map((item) => item.start));
   let cursor = start;
   for (let index = start; index < end; index++) {
     const natural = /[。！？!?；;\n]/u.test(body[index]);
     const bounded = index + 1 - cursor >= 512;
-    if (!natural && !bounded && index !== end - 1) continue;
+    if (!natural && !bounded && index !== end - 1 && !sourceBoundaries.has(index + 1)) continue;
     // Never split a UTF-16 surrogate pair at the bounded fallback.
     if (bounded && /[\uD800-\uDBFF]/u.test(body[index]) && index + 1 < end) continue;
     const finish = index + 1;

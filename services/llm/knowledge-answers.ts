@@ -16,6 +16,12 @@ import {
 } from '../wiki/question-input.ts';
 import type { WikiRecord, WikiStore } from '../wiki/store.ts';
 import type { RawStore } from '../raw/store.ts';
+import {
+  buildRawContentForAI,
+  mediaForEvidence,
+  mediaQuoteMatches,
+  type MediaEvidenceSource,
+} from '../raw/media-context.ts';
 import type { DraftStore } from '../wiki/drafts.ts';
 import { retrieveKnowledgeContext } from './knowledge-maintenance.ts';
 import { assertNoKnownSecret, LlmError, sanitizeProviderText, type LlmProvider } from './provider.ts';
@@ -31,7 +37,16 @@ export type AnswerReadRaw = {
   end: number;
   quote: string;
   reason: string;
+  images?: Array<MediaEvidenceSource & { start: number; end: number; quote: string }>;
 };
+
+function excerpt(text: string, query: string, limit: number) {
+  let start = Math.max(0, text.indexOf(query) - 512);
+  if (start > 0 && /[\uDC00-\uDFFF]/u.test(text[start])) start--;
+  let end = Math.min(text.length, start + limit);
+  if (end < text.length && /[\uDC00-\uDFFF]/u.test(text[end])) end--;
+  return { start, end, quote: text.slice(start, end) };
+}
 type SaveAttempt = {
   provider?: { name: string; model: string };
   key: string;
@@ -260,6 +275,12 @@ export async function verifyQuestionInput(
       throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '回答底层原文已变化，请重新提问核验。');
   }
   for (const c of input.citations) {
+    if (c.media) {
+      const texts = (await raws.getMediaArtifacts(c.recordId)).flatMap((artifact) => mediaForEvidence(artifact) ?? []);
+      if (!mediaQuoteMatches(c.media, c.start, c.end, c.quote, texts))
+        throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '图片解析引用已变化，已停止。');
+      continue;
+    }
     const body =
       c.kind === 'wiki'
         ? input.wikiSnapshots.find((p) => p.id === c.recordId)?.body
@@ -467,7 +488,7 @@ export class KnowledgeAnswerService {
               rawFragments: r.readRaw,
               availableRawIds: r.rawSnapshots.map((s) => s.id),
             },
-            '直接简洁回答问题，只据实际读取材料。区分来源事实、综合推断、建议、分歧、依据不足。年份/主体/门店统计口径不能混同，冲突保留双方不裁定。同Raw的多页不是独立多源，人工知识页无Raw时如实标识。关键事实及综合依据必须有本次实际读取的精确引用。citations.kind为wiki/raw，quote必须等于对应正文[start,end)；Raw位置为全原文UTF-16偏移。若Wiki不足且确需原始细节/冲突核对，可needsRaw列已有底源rawId、必要原因及定位query；最多3份，总片段24000字符，仅一次补读。已有rawFragments后不得继续请求。没有依据就明确不足，不编造事实或引用。',
+            '直接简洁回答问题，只据实际读取材料。区分来源事实、综合推断、建议、分歧、依据不足。年份/主体/门店统计口径不能混同，冲突保留双方不裁定。同Raw的多页不是独立多源，人工知识页无Raw时如实标识。关键事实及综合依据必须有本次实际读取的精确引用。citations.kind为wiki/raw，quote必须等于对应文本[start,end)；Raw正文位置为全原文UTF-16偏移。引用rawFragments.images时使用kind=raw、recordId=该图片的mediaId、位置为图片解析文本内UTF-16偏移，不可用Raw ID替代图片ID。若Wiki不足且确需原始细节/冲突核对，可needsRaw列已有底源rawId、必要原因及定位query；最多3份，总片段24000字符，仅一次补读。已有rawFragments后不得继续请求。没有依据就明确不足，不编造事实或引用。',
           );
           if (result.needsRaw.length) {
             r.stage = 'reading_raw';
@@ -480,36 +501,69 @@ export class KnowledgeAnswerService {
                 throw new KnowledgeAnswerError('ANSWER_RAW_NOT_ALLOWED', '模型请求了未读取Wiki以外的Raw。');
               const raw = await this.deps.raws.get(need.rawId);
               assertRawNotMeeting(raw);
-              let start = need.query ? raw!.body.indexOf(need.query) : 0;
-              if (start < 0) start = 0;
-              start = Math.max(0, start - 512);
-              if (start > 0 && /[\uDC00-\uDFFF]/u.test(raw!.body[start])) start--;
-              let end = Math.min(raw!.body.length, start + Math.min(8000, 24000 - total));
-              if (end < raw!.body.length && /[\uDC00-\uDFFF]/u.test(raw!.body[end])) end--;
+              if (raw!.bodySha256 !== r.rawSnapshots.find((snapshot) => snapshot.id === need.rawId)?.bodySha256)
+                throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '补读期间原文已变化，请重新提问。');
+              const content = buildRawContentForAI(
+                raw!,
+                raw!.webImages?.length ? await this.deps.raws.getMediaArtifacts(raw!.id) : [],
+              );
+              const query = need.query || '';
+              const limit = Math.min(8000, 24000 - total);
+              const rawSpans = content.spans.filter((span) => !span.media && span.sourceStart !== undefined);
+              const imageSpans = content.spans
+                .filter((span) => span.media)
+                .map((span) => ({ media: span.media!, text: content.body.slice(span.start, span.end) }));
+              const rawSpan =
+                rawSpans.find((span) => query && content.body.slice(span.start, span.end).includes(query)) ??
+                rawSpans[0];
+              const imageMatch = query ? imageSpans.find((span) => span.text.includes(query)) : undefined;
+              const rawSlice = excerpt(
+                rawSpan ? content.body.slice(rawSpan.start, rawSpan.end) : '',
+                query,
+                imageSpans.length ? Math.floor(limit / 2) : limit,
+              );
+              let remaining = limit - rawSlice.quote.length;
+              const images: NonNullable<AnswerReadRaw['images']> = [];
+              for (const span of imageMatch
+                ? [imageMatch, ...imageSpans.filter((item) => item !== imageMatch)]
+                : imageSpans) {
+                if (remaining <= 0) break;
+                const part = excerpt(span.text, query, remaining);
+                if (!part.quote) continue;
+                images.push({ ...span.media, ...part });
+                remaining -= part.quote.length;
+              }
+              const sourceStart = rawSpan?.sourceStart ?? 0;
               r.readRaw.push({
                 rawId: raw!.id,
                 title: raw!.title,
                 bodySha256: raw!.bodySha256,
-                start,
-                end,
-                quote: raw!.body.slice(start, end),
+                start: sourceStart + rawSlice.start,
+                end: sourceStart + rawSlice.end,
+                quote: rawSlice.quote,
                 reason: need.reason,
+                ...(images.length ? { images: images.sort((a, b) => a.imageIndex - b.imageIndex) } : {}),
               });
-              total += end - start;
+              total += limit - remaining;
             }
             await this.put(r);
             continue;
           }
           const seen = new Set<string>();
-          const citations: AnswerCitation[] = result.citations.map((c: any) => {
+          const citations: AnswerCitation[] = [];
+          for (const c of result.citations) {
             if (seen.has(c.id)) throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '引用标识重复。');
             seen.add(c.id);
-            const p = c.kind === 'wiki' ? r!.readWiki.find((p) => p.id === c.recordId) : undefined,
-              raw = c.kind === 'raw' ? r!.readRaw.find((p) => p.rawId === c.recordId) : undefined;
+            const p = c.kind === 'wiki' ? r.readWiki.find((p) => p.id === c.recordId) : undefined,
+              raw =
+                c.kind === 'raw'
+                  ? r.readRaw.find((p) => p.rawId === c.recordId || p.images?.some((i) => i.mediaId === c.recordId))
+                  : undefined;
+            const picture = raw?.images?.find((i) => i.mediaId === c.recordId);
             if (!p && !raw)
               throw new KnowledgeAnswerError('ANSWER_CITATION_UNREAD', '回答引用了本次未实际读取的资料。');
-            const body = p?.body ?? raw!.quote,
-              offset = p ? 0 : raw!.start;
+            const body = p?.body ?? picture?.quote ?? raw!.quote,
+              offset = p ? 0 : (picture?.start ?? raw!.start);
             if (
               c.start < offset ||
               c.end > offset + body.length ||
@@ -517,14 +571,27 @@ export class KnowledgeAnswerService {
             )
               throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '引用原句或位置不匹配，未生成假链接。');
             const roots = p ? knowledgeRoots(p) : { rawIds: [raw!.rawId], manualWikiIds: [] };
-            return {
+            let media: MediaEvidenceSource | undefined;
+            if (picture) {
+              media = { mediaId: picture.mediaId, imageIndex: picture.imageIndex, textSha256: picture.textSha256 };
+              const images = (await this.deps.raws.getMediaArtifacts(raw!.rawId)).flatMap(
+                (item) => mediaForEvidence(item) ?? [],
+              );
+              if (!mediaQuoteMatches(media, c.start, c.end, c.quote, images))
+                throw new KnowledgeAnswerError(
+                  'ANSWER_BASIS_CHANGED',
+                  '补读期间引用图片的解析内容已变化，请重新提问。',
+                );
+            }
+            citations.push({
               ...c,
+              ...(media ? { media, recordId: raw!.rawId } : {}),
               title: p?.title ?? raw!.title,
               ...(p ? { revision: p.revision } : {}),
               bodySha256: p ? questionHash(p.body) : raw!.bodySha256,
               ...roots,
-            };
-          });
+            });
+          }
           if (!result.sections.length) throw new KnowledgeAnswerError('ANSWER_EMPTY', '回答为空，请重试。');
           const sections: AnswerSection[] = result.sections.map((s: any, i: number) => {
             if (

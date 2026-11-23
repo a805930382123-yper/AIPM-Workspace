@@ -64,6 +64,8 @@ export type ExtractionCheckpoint = {
   jobId: string;
   rawId: string;
   rawSha256: string;
+  mediaInputSha256?: string;
+  mediaPending?: true;
   pipelineVersion: string;
   rulesVersion: string;
   providerIdentity: string;
@@ -111,7 +113,7 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
         'updatedAt',
         'integrity',
       ],
-      ['plan', 'draftId', 'lastError', 'mode', 'deep', 'maintenance'],
+      ['plan', 'draftId', 'lastError', 'mode', 'deep', 'maintenance', 'mediaInputSha256', 'mediaPending'],
     )
   )
     return false;
@@ -137,6 +139,13 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
     !isText(cp.rawId, 64) ||
     !uuid.test(cp.rawId) ||
     !/^[0-9a-f]{64}$/iu.test(String(cp.rawSha256)) ||
+    (cp.mediaInputSha256 !== undefined && !/^[0-9a-f]{64}$/u.test(String(cp.mediaInputSha256))) ||
+    (cp.mediaPending !== undefined &&
+      (cp.mediaPending !== true ||
+        cp.attempts !== 0 ||
+        cp.stage !== 'extracting' ||
+        cp.completedChunks?.length !== 0 ||
+        cp.plan !== undefined)) ||
     !['kb02-1', KB02_PIPELINE_VERSION, 'kb03-1'].includes(cp.pipelineVersion) ||
     !isText(cp.rulesVersion, 256) ||
     !isText(cp.providerIdentity, 512) ||

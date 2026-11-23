@@ -19,7 +19,9 @@ import { storageFailure } from './storage-recovery.ts';
 import { withJobMutation } from '../storage/job-file-access.ts';
 import type { DraftRecord, DraftStore } from '../wiki/drafts.ts';
 import type { RawStateStore } from '../raw/state.ts';
-import type { RawStore } from '../raw/store.ts';
+import type { RawRecord, RawStore } from '../raw/store.ts';
+import { buildRawContentForAI, type RawAiContent } from '../raw/media-context.ts';
+import type { MediaVlmParserService } from '../raw/media-vlm.ts';
 import { assertRawNotMeeting, SourcePolicyError } from '../meeting/source-policy.ts';
 import { createHash } from 'node:crypto';
 import { chunkText } from './chunk.ts';
@@ -28,6 +30,7 @@ import { knowledgePlanCallMinimum, runKnowledgePipeline, validateKnowledgeCheckp
 import {
   DEEP_VERSION,
   deepMinimum,
+  noteWithSourceCoordinates,
   scanDeepStructure,
   runDeepPipeline,
   validateDeepCheckpoint,
@@ -306,12 +309,14 @@ export class ExtractionRunner {
     )
       this.conflict();
     const draft = pending.draftId ? await this.deps.drafts.get(pending.draftId) : undefined;
-    if (cp?.pipelineVersion === DEEP_VERSION) {
+    const content = cp && !cp.mediaPending ? await this.extractionContent(raw, !!cp.mediaInputSha256) : undefined;
+    if (cp?.pipelineVersion === DEEP_VERSION && !cp.mediaPending) {
       const bundle = await loadExtractionRules(this.deps.rulesDir);
       if (cp.mode !== job.mode || cp.rulesVersion !== bundle.rulesVersion) this.conflict();
       await validateDeepCheckpoint({
         raw,
-        body: raw.body,
+        body: content!.body,
+        content,
         bodySha256: cp.rawSha256,
         rulesDir: this.deps.rulesDir,
         checkpoint: cp,
@@ -329,16 +334,17 @@ export class ExtractionRunner {
           JSON.stringify(draft.qualityReport) !== JSON.stringify(cp.deep!.qualityReport))
       )
         this.conflict();
+      const generatedNote = cp.deep!.note && noteWithSourceCoordinates(cp.deep!.note, content!);
       if (draft?.noteReview) {
         if (
-          draft.noteReview.generatedNoteDigest !== fingerprint(cp.deep!.note) ||
+          draft.noteReview.generatedNoteDigest !== fingerprint(generatedNote) ||
           JSON.stringify(draft.noteReview.generatedSections) !==
             JSON.stringify(cp.deep!.note!.sections.map((s) => ({ id: s.id, blockCount: s.blocks.length })))
         )
           this.conflict();
-      } else if (draft && JSON.stringify(draft.structuredNote) !== JSON.stringify(cp.deep!.note)) this.conflict();
+      } else if (draft && JSON.stringify(draft.structuredNote) !== JSON.stringify(generatedNote)) this.conflict();
     }
-    if (cp?.pipelineVersion === KB02_PIPELINE_VERSION) {
+    if (cp?.pipelineVersion === KB02_PIPELINE_VERSION && !cp.mediaPending) {
       const bundle = await loadExtractionRules(this.deps.rulesDir);
       const currentProvider = this.deps.provider();
       if (
@@ -354,7 +360,8 @@ export class ExtractionRunner {
       await validateKnowledgeCheckpoint(
         {
           raw,
-          body: raw.body,
+          body: content!.body,
+          content,
           bodySha256: cp.rawSha256,
           rulesDir: this.deps.rulesDir,
           checkpoint: draft ? { ...cp, rulesVersion: bundle.rulesVersion } : cp,
@@ -412,9 +419,11 @@ export class ExtractionRunner {
       pending.status !== 'cancelled'
     ) {
       const raw = (await this.deps.rawStore.get(job.rawId))!;
+      const content = await this.extractionContent(raw, !!pending.checkpoint.mediaInputSha256);
       const result = await runDeepPipeline({
         raw,
-        body: raw.body,
+        body: content.body,
+        content,
         bodySha256: raw.bodySha256,
         rulesDir: this.deps.rulesDir,
         checkpoint: pending.checkpoint,
@@ -438,7 +447,10 @@ export class ExtractionRunner {
           jobId: job.id,
           rules: await this.deps.draftRules(),
         },
-        { note: pending.checkpoint.deep.note!, qualityReport: pending.checkpoint.deep.qualityReport },
+        {
+          note: noteWithSourceCoordinates(pending.checkpoint.deep.note!, content),
+          qualityReport: pending.checkpoint.deep.qualityReport,
+        },
       );
       pending.draftId = draft.id;
       pending.status = 'completed';
@@ -581,6 +593,7 @@ export class ExtractionRunner {
       drafts: DraftStore;
       rawStates: RawStateStore;
       rawStore: RawStore;
+      media?: MediaVlmParserService;
       provider: () => LlmProvider | undefined;
       draftRules: () => Promise<{
         types: string[];
@@ -867,6 +880,13 @@ export class ExtractionRunner {
     const provider = this.deps.provider();
     if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法执行 AI 整理。', 400);
     const providerIdentity = `${provider.cacheIdentity ?? provider.name}|${provider.model}`;
+    const artifacts = raw.webImages?.length ? await this.deps.rawStore.getMediaArtifacts(raw.id) : [];
+    const content = buildRawContentForAI(
+      raw,
+      !savedCheckpoint || savedCheckpoint.mediaInputSha256 || savedCheckpoint.mediaPending ? artifacts : [],
+    );
+    if (mode === 'deep' && content.body.length > 30000)
+      throw new JobError('LLM_RAW_TOO_LARGE', '深度整理的正文与图片解析合计超过30000字符。', 413);
     let resume: ExtractionCheckpoint | undefined;
     let jobId = options.newJobId;
     if (!options.restart && state.jobId) {
@@ -886,7 +906,7 @@ export class ExtractionRunner {
           )
             throw new JobError('LLM_CHECKPOINT_CORRUPT', '检查点累计调用次数低于已持久化作业记录，已拒绝恢复。', 409);
           const bundle = await loadExtractionRules(this.deps.rulesDir);
-          const chunks = chunkText(raw.body, {
+          const chunks = chunkText(content.body, {
             maxChunkChars: bundle.rules.budgets.maxChunkChars,
             overlap: bundle.rules.budgets.chunkOverlap,
             maxRawChars: bundle.rules.budgets.maxRawChars,
@@ -898,30 +918,34 @@ export class ExtractionRunner {
             priorCheckpoint.rulesVersion !== bundle.rulesVersion ||
             priorCheckpoint.pipelineVersion !== (mode === 'deep' ? DEEP_VERSION : KB02_PIPELINE_VERSION) ||
             priorCheckpoint.providerIdentity !== providerIdentity ||
-            JSON.stringify(priorCheckpoint.chunks) !== JSON.stringify(chunks)
+            (!priorCheckpoint.mediaPending &&
+              (priorCheckpoint.mediaInputSha256 !== content.digest ||
+                JSON.stringify(priorCheckpoint.chunks) !== JSON.stringify(chunks)))
           )
             throw new JobError(
               'LLM_CHECKPOINT_INCOMPATIBLE',
               '原文、规则、Provider或pipeline已变化；检查点保留，请显式重新生成。',
               409,
             );
-          await (mode === 'deep' ? validateDeepCheckpoint : validateKnowledgeCheckpoint)({
-            raw: {
-              id: raw.id,
-              title: raw.title,
-              sourceType: raw.sourceType,
-              sourceName: raw.sourceName,
-              author: raw.author,
-              publishedAt: raw.publishedAt,
-              url: raw.url,
-              tags: raw.tags ?? [],
-            },
-            body: raw.body,
-            bodySha256: actualSha,
-            provider,
-            rulesDir: this.deps.rulesDir,
-            checkpoint: priorCheckpoint,
-          });
+          if (!priorCheckpoint.mediaPending)
+            await (mode === 'deep' ? validateDeepCheckpoint : validateKnowledgeCheckpoint)({
+              raw: {
+                id: raw.id,
+                title: raw.title,
+                sourceType: raw.sourceType,
+                sourceName: raw.sourceName,
+                author: raw.author,
+                publishedAt: raw.publishedAt,
+                url: raw.url,
+                tags: raw.tags ?? [],
+              },
+              body: content.body,
+              content,
+              bodySha256: actualSha,
+              provider,
+              rulesDir: this.deps.rulesDir,
+              checkpoint: priorCheckpoint,
+            });
           resume = priorCheckpoint;
           jobId = state.jobId;
         }
@@ -944,11 +968,13 @@ export class ExtractionRunner {
         ? state.status
         : (state.revertStatus ?? 'unprocessed');
     const bundle = await loadExtractionRules(this.deps.rulesDir);
-    const chunks = chunkText(raw.body, {
-      maxChunkChars: bundle.rules.budgets.maxChunkChars,
-      overlap: bundle.rules.budgets.chunkOverlap,
-      maxRawChars: bundle.rules.budgets.maxRawChars,
-    }).map(({ index, start, end }) => ({ index, start, end }));
+    const chunks = resume?.mediaPending
+      ? resume.chunks
+      : chunkText(content.body, {
+          maxChunkChars: bundle.rules.budgets.maxChunkChars,
+          overlap: bundle.rules.budgets.chunkOverlap,
+          maxRawChars: bundle.rules.budgets.maxRawChars,
+        }).map(({ index, start, end }) => ({ index, start, end }));
     const actualSha = createHash('sha256').update(raw.body).digest('hex');
     const checkpoint =
       resume ??
@@ -957,9 +983,13 @@ export class ExtractionRunner {
         jobId,
         rawId,
         rawSha256: actualSha,
+        ...(content.digest ? { mediaInputSha256: content.digest } : {}),
+        ...(this.deps.media && artifacts.some((item) => item.routeStatus === 'needs_vlm')
+          ? { mediaPending: true as const }
+          : {}),
         pipelineVersion: mode === 'deep' ? DEEP_VERSION : KB02_PIPELINE_VERSION,
         mode,
-        ...(mode === 'deep' ? { deep: { version: 1 as const, scan: scanDeepStructure(raw.body) } } : {}),
+        ...(mode === 'deep' ? { deep: { version: 1 as const, scan: scanDeepStructure(content.body, actualSha) } } : {}),
         rulesVersion: bundle.rulesVersion,
         providerIdentity,
         chunks,
@@ -1031,7 +1061,7 @@ export class ExtractionRunner {
       if (safe) throw new StorageError(safe.code, safe.message, safe.status, { ...(safe.details as object), jobId });
       throw error;
     }
-    const task = this.runKnowledge(job, raw, provider, checkpoint, options.planningRetry === true)
+    const task = this.runKnowledge(job, raw, provider, checkpoint, content, options.planningRetry === true)
       .catch(async (error) => {
         await this.retain(job.id, pending, error, 'settlement');
       })
@@ -1042,22 +1072,19 @@ export class ExtractionRunner {
     return { job, reused: false };
   }
 
+  private async extractionContent(raw: RawRecord, includeImages: boolean) {
+    return buildRawContentForAI(
+      raw,
+      includeImages && raw.webImages?.length ? await this.deps.rawStore.getMediaArtifacts(raw.id) : [],
+    );
+  }
+
   private async runKnowledge(
     job: ExtractionJob,
-    raw: {
-      id: string;
-      title: string;
-      bodySha256: string;
-      body: string;
-      sourceType: string;
-      sourceName: string;
-      author?: string;
-      publishedAt?: string;
-      url?: string;
-      tags: string[];
-    },
+    raw: RawRecord,
     provider: LlmProvider,
     initial: ExtractionCheckpoint,
+    content: RawAiContent,
     planningRetry = false,
   ): Promise<void> {
     const controller = new AbortController();
@@ -1091,6 +1118,28 @@ export class ExtractionRunner {
       }
     };
     try {
+      if (checkpoint.mediaPending) {
+        await this.deps.media?.batch(raw.id, { provider, signal: controller.signal });
+        if (controller.signal.aborted) throw new LlmError('LLM_CANCELLED', '提取已取消。', 409);
+        content = await this.extractionContent(raw, true);
+        if (job.mode === 'deep' && content.body.length > 30000)
+          throw new LlmError('LLM_RAW_TOO_LARGE', '深度整理的正文与图片解析合计超过30000字符。', 413);
+        const { rules } = await loadExtractionRules(this.deps.rulesDir);
+        const chunks = chunkText(content.body, {
+          maxChunkChars: rules.budgets.maxChunkChars,
+          overlap: rules.budgets.chunkOverlap,
+          maxRawChars: rules.budgets.maxRawChars,
+        }).map(({ index, start, end }) => ({ index, start, end }));
+        checkpoint = await saveCheckpoint({
+          ...checkpoint,
+          mediaPending: undefined,
+          mediaInputSha256: content.digest,
+          chunks,
+          ...(job.mode === 'deep'
+            ? { deep: { version: 1 as const, scan: scanDeepStructure(content.body, raw.bodySha256) } }
+            : {}),
+        });
+      }
       const beforeCall = async (stage: 'extracting' | 'planning') => {
         if (stage === 'planning')
           for (const page of checkpoint.maintenance?.context ?? [])
@@ -1139,7 +1188,8 @@ export class ExtractionRunner {
           url: raw.url,
           tags: raw.tags ?? [],
         },
-        body: raw.body,
+        body: content.body,
+        content,
         bodySha256: createHash('sha256').update(raw.body).digest('hex'),
         provider,
         rulesDir: this.deps.rulesDir,
@@ -1171,7 +1221,7 @@ export class ExtractionRunner {
       const maintenance = await generateMaintenance(
         {
           raw,
-          body: raw.body,
+          body: content.body,
           bodySha256: raw.bodySha256,
           provider,
           rulesDir: this.deps.rulesDir,
@@ -1216,7 +1266,10 @@ export class ExtractionRunner {
             maintenance,
           },
           job.mode === 'deep'
-            ? { note: checkpoint.deep!.note!, qualityReport: checkpoint.deep!.qualityReport! }
+            ? {
+                note: noteWithSourceCoordinates(checkpoint.deep!.note!, content),
+                qualityReport: checkpoint.deep!.qualityReport!,
+              }
             : undefined,
         );
         pending.draftId = draft.id;

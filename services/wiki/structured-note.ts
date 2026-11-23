@@ -1,4 +1,5 @@
 /** KB03 v1 is a draft-only contract. No model markup is executed. */
+import { validMediaEvidenceSource, type MediaEvidenceSource } from '../raw/media-artifact.ts';
 export const STRUCTURED_NOTE_LIMITS = {
   sections: 32,
   blocks: 128,
@@ -20,7 +21,13 @@ export type NoteAttribution = {
   role: NoteRole;
   factIds: string[];
   reason?: string;
-  sourceBoundary?: { rawId: string; start: number; end: number; category: 'ambiguous' | 'source_note' | 'question' };
+  sourceBoundary?: {
+    rawId: string;
+    start: number;
+    end: number;
+    category: 'ambiguous' | 'source_note' | 'question';
+    media?: MediaEvidenceSource;
+  };
 };
 export type NoteText = NoteAttribution & { text: string };
 export type NoteBlock =
@@ -202,7 +209,8 @@ export function validStructuredNote(value: unknown, factIds: ReadonlySet<string>
     keys(v, [...fields, 'role', 'factIds'], ['reason', 'sourceBoundary']) &&
     (v.sourceBoundary === undefined ||
       (object(v.sourceBoundary) &&
-        keys(v.sourceBoundary, ['rawId', 'start', 'end', 'category']) &&
+        keys(v.sourceBoundary, ['rawId', 'start', 'end', 'category'], ['media']) &&
+        (v.sourceBoundary.media === undefined || validMediaEvidenceSource(v.sourceBoundary.media)) &&
         typeof v.sourceBoundary.rawId === 'string' &&
         Number.isInteger(v.sourceBoundary.start) &&
         Number.isInteger(v.sourceBoundary.end) &&

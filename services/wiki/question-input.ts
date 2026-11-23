@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import type { WikiRecord } from './store.ts';
+import { validMediaEvidenceSource, type MediaEvidenceSource } from '../raw/media-context.ts';
 export type AnswerSection = {
   id: string;
   kind: 'fact' | 'inference' | 'advice' | 'insufficient' | 'conflict';
@@ -18,6 +19,7 @@ export type AnswerCitation = {
   quote: string;
   rawIds: string[];
   manualWikiIds: string[];
+  media?: MediaEvidenceSource;
 };
 export type QuestionPreview = {
   title: string;
@@ -94,6 +96,7 @@ export function validQuestionInput(v: unknown): v is QuestionDraftInput {
         c.start >= 0 &&
         c.end > c.start &&
         c.quote.length === c.end - c.start &&
+        (c.media === undefined || (c.kind === 'raw' && validMediaEvidenceSource(c.media))) &&
         strings(c.rawIds) &&
         strings(c.manualWikiIds),
     ) &&

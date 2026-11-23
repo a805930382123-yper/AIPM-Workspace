@@ -1,4 +1,11 @@
 import { createHash } from 'node:crypto';
+import {
+  evidenceSourceId,
+  mediaQuoteMatches,
+  validMediaEvidenceSource,
+  type MediaEvidenceSource,
+  type MediaEvidenceText,
+} from '../raw/media-context.ts';
 
 /** Original records are immutable; assignments and user prose are separate. */
 export type ReviewEvidence = {
@@ -8,6 +15,7 @@ export type ReviewEvidence = {
   start: number;
   end: number;
   chunkIndex: number;
+  media?: MediaEvidenceSource;
 };
 export type ReviewUnit = {
   id: string;
@@ -18,6 +26,7 @@ export type ReviewUnit = {
   sourceId?: string;
   start?: number;
   end?: number;
+  media?: MediaEvidenceSource;
   factKind?: 'fact' | 'ambiguous';
   records: Array<{ id: string; text: string; evidenceIds: string[] }>;
   evidence: ReviewEvidence[];
@@ -85,6 +94,7 @@ export function validHumanReview(value: unknown): value is HumanReview {
             e.start < 0 ||
             e.end <= e.start ||
             e.quote.length !== e.end - e.start ||
+            (e.media !== undefined && !validMediaEvidenceSource(e.media)) ||
             !Number.isInteger(e.chunkIndex),
         ),
     )
@@ -109,7 +119,8 @@ export function validHumanReview(value: unknown): value is HumanReview {
         new Set(u.records.map((r) => r.id)).size !== u.memberIds.length ||
         !Number.isSafeInteger(u.start) ||
         !Number.isSafeInteger(u.end) ||
-        u.sourceId !== `s-${u.start}-${u.end}` ||
+        (u.media !== undefined && !validMediaEvidenceSource(u.media)) ||
+        u.sourceId !== evidenceSourceId(u.start!, u.end!, u.media) ||
         Number(u.end) - Number(u.start) !== u.text.length)
     )
       return false;
@@ -229,7 +240,7 @@ export function candidateContent(record: object): unknown {
 }
 export function assertReviewSources(
   review: HumanReview,
-  raws: Array<{ id: string; body: string; bodySha256: string }>,
+  raws: Array<{ id: string; body: string; bodySha256: string; media?: MediaEvidenceText[] }>,
 ) {
   for (const raw of raws)
     if (createHash('sha256').update(raw.body).digest('hex') !== raw.bodySha256)
@@ -237,10 +248,23 @@ export function assertReviewSources(
   for (const unit of review.units) {
     for (const e of unit.evidence) {
       const raw = raws.find((r) => r.id === e.rawId);
-      if (!raw || raw.body.slice(e.start, e.end) !== e.quote)
+      if (
+        !raw ||
+        (e.media
+          ? !mediaQuoteMatches(e.media, e.start, e.end, e.quote, raw.media ?? [])
+          : raw.body.slice(e.start, e.end) !== e.quote)
+      )
         throw new HumanReviewError('REVIEW_SOURCE_CHANGED', '审查来源定位与当前原文不一致。');
     }
-    if (unit.origin === 'kb02' && !raws.some((raw) => raw.body.slice(unit.start, unit.end) === unit.text))
+    if (
+      unit.origin === 'kb02' &&
+      !raws.some((raw) =>
+        unit.media
+          ? unit.evidence.some((e) => e.rawId === raw.id && e.media?.mediaId === unit.media!.mediaId) &&
+            mediaQuoteMatches(unit.media, unit.start!, unit.end!, unit.text, raw.media ?? [])
+          : raw.body.slice(unit.start, unit.end) === unit.text,
+      )
+    )
       throw new HumanReviewError('REVIEW_SOURCE_CHANGED', '原unit文本与原文位置不一致。');
   }
 }

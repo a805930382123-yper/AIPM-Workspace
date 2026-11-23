@@ -2,6 +2,7 @@
 // Facts, organized notes, inferences, questions and evidence keep their own sections so the
 // boundary between "原文支持" and "模型推断" survives into the正式文件.
 import type { DraftPage, DraftRawMeta, DraftSource, DraftRecord } from './drafts.ts';
+import { mediaEvidenceHref } from '../raw/media-artifact.ts';
 import { renderStructuredNote, escapeNoteText } from './structured-note.ts';
 import { inspectEditedNote } from '../llm/knowledge-deep.ts';
 import { hasTemplateFields, templateSections, renderMergedTemplateFields } from './template-fields.ts';
@@ -312,7 +313,10 @@ export function renderPageBody(
   else lines.push('- 暂无');
   lines.push('', '## 来源证据', '');
   for (const evidence of page.source_evidence) {
-    lines.push(`- ${evidence.id}｜原文 [${evidence.start}, ${evidence.end})：${quoted(evidence.quote)}`);
+    const source = evidence.media
+      ? `[Raw ${evidence.rawId} · 来源图片 ${evidence.media.imageIndex}](${mediaEvidenceHref(evidence.rawId, evidence.media)})`
+      : '原文';
+    lines.push(`- ${evidence.id}｜${source} [${evidence.start}, ${evidence.end})：${quoted(evidence.quote)}`);
   }
   lines.push('', '## 关联', '');
   if (page.related_pages.length) {

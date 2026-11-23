@@ -3,6 +3,7 @@ import { validPdfDerivation, validPdfEvidence, validPdfInput } from '../wiki/pdf
 import { changePageIndexes, validMaintenance } from '../wiki/maintenance.ts';
 import { validHumanReview } from '../wiki/human-review.ts';
 import { createHash } from 'node:crypto';
+import { validMediaEvidenceSource } from '../raw/media-context.ts';
 import {
   validStructuredNote,
   validNoteReview,
@@ -57,7 +58,13 @@ export function isExtractionDraft(v: unknown, id?: string): boolean {
         p.source_facts.every((f) => obj(f) && str(f.text) && strings(f.evidenceIds)) &&
         Array.isArray(p.source_evidence) &&
         p.source_evidence.every(
-          (e) => obj(e) && isUuid(e.rawId) && str(e.quote) && nonnegative(e.start) && nonnegative(e.end),
+          (e) =>
+            obj(e) &&
+            isUuid(e.rawId) &&
+            str(e.quote) &&
+            nonnegative(e.start) &&
+            nonnegative(e.end) &&
+            (e.media === undefined || validMediaEvidenceSource(e.media)),
         ) &&
         strings(p.ai_organized) &&
         strings(p.ai_inferences) &&
@@ -228,6 +235,7 @@ export function isExtractionDraft(v: unknown, id?: string): boolean {
           nonnegative(e.start) &&
           nonnegative(e.end) &&
           Number(e.end) >= Number(e.start) &&
+          (e.media === undefined || validMediaEvidenceSource(e.media)) &&
           Number.isInteger(e.chunkIndex) &&
           Number(e.chunkIndex) >= -1,
       ) ||
