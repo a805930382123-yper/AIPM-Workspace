@@ -6,6 +6,10 @@
 历史批次裁决见[2026 年 10 月归档](archive/acceptance-2026-10.md)与[2026 年 11 月历史批次裁决归档](archive/acceptance-2026-11.md)；现行验收与监控规约保留在下方。
 <!-- ENG03 inserted:end -->
 
+## CLOSE01 工作台结项
+
+2026-11-23，A01–A63、R01–R46 按第 7 节完成整体验收。109 项分项证据、四条主线、后续批次、实测范围与维护事项见[结项矩阵](delivery-matrix.md)及[独立报告](reports/CLOSE01-review.md)。真实模型质量沿用具名样例的受测边界。
+
 ## RAWOCR04 历史资料图片迁移
 
 2026-11-23，R4-01 至 R4-05 的 RUN 结论均为 **PASS**。独立验收覆盖隔离库的只读预览、显式执行、失败续跑、普通阅读与引文保真。全库目录损坏误报空库的缺陷已独立复验关闭。[验收报告](reports/RAWOCR04-review.md) · [操作说明](raw-media-migration.md)。

@@ -694,7 +694,7 @@ test('NEWSRAW02 daily → deleted → inbox with three failures → deleted → 
   const [third, duplicate] = await Promise.all([save(), save()]);
   assert.equal(new Set([first.rawId, second.savedRawId, third.rawId]).size, 3);
   assert.equal(duplicate.rawId, third.rawId);
-  assert.equal(duplicate.created, false);
+  assert.deepEqual([third.created, duplicate.created].sort(), [false, true]);
   assert.equal(h.materialCalls.length, 3);
   assert.equal((await view()).savedRawId, third.rawId);
   assert.equal((await view()).execution, undefined);
