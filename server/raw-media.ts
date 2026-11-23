@@ -19,7 +19,11 @@ export function registerRawMediaRoutes(
       const raw = await store.get(req.params.rawId);
       if (!raw) throw new InputError('RAW_NOT_FOUND', '没有找到这条原始资料。', 404);
       assertRawNotMeeting(raw);
-      res.json({ items: (await store.getAnchoredMediaArtifacts(raw)).map(publicMediaArtifact) });
+      const source = await store.mediaSource(raw);
+      res.json({
+        items: (await store.getAnchoredMediaArtifacts(raw, source)).map(publicMediaArtifact),
+        readingSource: { bodySha256: raw.bodySha256, ...source },
+      });
     } catch (error) {
       next(error);
     }

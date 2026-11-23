@@ -49,8 +49,14 @@ export type MeetingRawOrigin = {
 };
 export type RawSummary = Omit<Raw, 'body' | 'bodySha256'>;
 export type RawMediaArtifact = Omit<MediaArtifact, 'ocrRawText'>;
+export type RawMediaReadingSource = {
+  bodySha256: string;
+  markers: Array<{ imageIndex: number; start: number; end: number }>;
+  removed: Array<{ start: number; end: number }>;
+};
 const rawMediaUrl = (rawId: string) => `/api/raw/${encodeURIComponent(rawId)}/media`;
-export const rawMedia = (rawId: string) => api<{ items: RawMediaArtifact[] }>(rawMediaUrl(rawId));
+export const rawMedia = (rawId: string) =>
+  api<{ items: RawMediaArtifact[]; readingSource: RawMediaReadingSource }>(rawMediaUrl(rawId));
 export const parseRawMedia = (rawId: string, mediaId: string, force = false) =>
   api<RawMediaArtifact>(`${rawMediaUrl(rawId)}/${encodeURIComponent(mediaId)}/parse-vlm`, {
     method: 'POST',

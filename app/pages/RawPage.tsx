@@ -1306,7 +1306,7 @@ function RawDetail({
       )}
       {scannedPdf ? (
         <p className="extract-note">未提取到文字层。请在上方查看原 PDF 页图。</p>
-      ) : !showTranslation && !citation && item.webImages?.length && (item.bodyRevision ?? 0) === acquiredRevision ? (
+      ) : !showTranslation && !citation && item.webImages?.length ? (
         <RawWebContent key={`${item.id}:${item.bodySha256}`} raw={item} />
       ) : (
         <pre className="raw-body" lang={showTranslation ? 'zh-CN' : undefined}>
@@ -1325,15 +1325,6 @@ function RawDetail({
           )}
         </pre>
       )}
-      {!showTranslation &&
-        !citation &&
-        item.webImages?.some((image) => image.sha256) &&
-        (item.bodyRevision ?? 0) !== acquiredRevision && (
-          <details>
-            <summary>网页原图与解析</summary>
-            <RawWebContent key={`${item.id}:${item.bodySha256}`} raw={item} inlineBody={false} />
-          </details>
-        )}
       {!!item.bodyRevision && (
         <button className="text-button" onClick={() => setHistoryOpen(true)}>
           查看原文修改历史

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import type { Raw, RawMediaArtifact } from '../app/api';
+import { inspectRawMedia } from '../services/raw/media-context';
 
 const dom = new JSDOM('<html><body><div id="root"></div></body></html>', { url: 'http://localhost/' });
 const w = dom.window;
@@ -20,7 +21,13 @@ const { act, createElement } = await import('react');
 const { createRoot } = await import('react-dom/client');
 const { RawWebContent } = await import('../app/components/RawWebContent');
 const { ImportDialog } = await import('../app/pages/RawPage');
-const response = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status });
+const response = (data: unknown, status = 200) => {
+  if (data && typeof data === 'object' && 'items' in data && Array.isArray(data.items)) {
+    const value = raw(Math.max(1, ...data.items.map((item: RawMediaArtifact) => item.imageIndex ?? 0)));
+    data = { readingSource: { bodySha256: value.bodySha256, ...inspectRawMedia(value) }, ...data };
+  }
+  return new Response(JSON.stringify(data), { status });
+};
 const metrics = {
   effectiveCharCount: 0,
   nonEmptyLineCount: 0,
@@ -46,7 +53,7 @@ const raw = (count = 1, id = 'raw-images'): Raw => ({
   sourceType: 'article',
   sourceName: '合成来源',
   tags: [],
-  body: '原文正文保真',
+  body: `原文正文保真\n${Array.from({ length: count }, (_, index) => `【来源图片 ${index + 1}】\n`).join('')}图后正文`,
   importedAt: '2026-11-23T00:00:00Z',
   status: 'unprocessed',
   bodySha256: 'a'.repeat(64),
@@ -190,9 +197,13 @@ test('RAWOCR03 old image records remain readable without migration and failed re
       : response({ items: [] });
   });
   try {
-    assert.ok(w.document.querySelector('img'));
+    assert.equal(w.document.querySelector('img'), null);
     assert.ok(w.document.body.textContent?.includes('读取失败'));
+    await click('查看原始正文');
+    assert.match(w.document.querySelector('.raw-web-content pre')!.textContent!, /原文正文保真/u);
+    assert.ok([...w.document.querySelectorAll('a')].some((link) => link.textContent?.includes('查看采集原图 1')));
     await click('重读图片状态');
+    assert.ok(w.document.querySelector('img'));
     assert.ok(w.document.body.textContent?.includes('暂无解析记录'));
     assert.equal(calls, 2);
     assert.equal(w.document.querySelectorAll('button').length, 0);
@@ -224,6 +235,84 @@ test('RAWOCR03 switching Raw while parsing discards the previous result', async 
     assert.ok(w.document.body.textContent?.includes('第二条的文字'));
     assert.ok(!w.document.body.textContent?.includes('不应串入'));
     assert.ok([...w.document.querySelectorAll('img')].every((item) => item.src.includes('/second/')));
+  } finally {
+    await screen.close();
+  }
+});
+
+test('RAWOCR04 reading hides historical OCR before loading and uses edited current anchors', async () => {
+  const acquired = {
+    ...raw(2),
+    body: '图前原文\n【来源图片 1】\n【图片 OCR 转录（需核对）】\nDIRTY_LEGACY_SENTINEL\n【转录结束】\n图后原文\n【来源图片 2】\n结尾',
+  };
+  const revised = {
+    ...acquired,
+    bodyRevision: 1,
+    body: `人工新引言\n${acquired.body.replace('DIRTY_LEGACY_SENTINEL', 'DIRTY_REVISED_SENTINEL')}`,
+  };
+  let finish!: (value: Response) => void;
+  const pending = new Promise<Response>((resolve) => {
+    finish = resolve;
+  });
+  const screen = await mount(revised, async (_url, options) => {
+    assert.notEqual(options?.method, 'POST');
+    return pending;
+  });
+  try {
+    assert.doesNotMatch(w.document.body.textContent!, /DIRTY_/u);
+    await act(async () =>
+      finish(
+        response({
+          items: [{ ...artifact(1, 'ocr_ready'), ocrCleanText: '已清洗识别正文' }],
+          readingSource: { bodySha256: revised.bodySha256, ...inspectRawMedia(revised, acquired) },
+        }),
+      ),
+    );
+    const text = w.document.body.textContent!;
+    assert.doesNotMatch(text, /DIRTY_|图片 OCR 转录|转录结束/u);
+    assert.match(text, /人工新引言[\s\S]*图前原文[\s\S]*来源图片 1[\s\S]*图后原文[\s\S]*来源图片 2[\s\S]*结尾/u);
+    assert.match(text, /已清洗识别正文/u);
+    assert.equal(w.document.querySelectorAll('figure').length, 2);
+    assert.match(revised.body, /DIRTY_REVISED_SENTINEL/u);
+  } finally {
+    await screen.close();
+  }
+});
+
+test('RAWOCR04 deleted, repeated and code-only image markers do not restore an old picture', async () => {
+  const acquired = {
+    ...raw(),
+    body: '保留正文\n【来源图片 1】\n【图片 OCR 转录（需核对）】\nDIRTY_LEGACY_SENTINEL\n【转录结束】\n结尾',
+  };
+  for (const replacement of ['', '【来源图片 1】\n【来源图片 1】', '```text\n【来源图片 1】\n```']) {
+    const revised = { ...acquired, bodyRevision: 1, body: acquired.body.replace('【来源图片 1】', replacement) };
+    const screen = await mount(revised, async () =>
+      response({
+        items: [],
+        readingSource: { bodySha256: revised.bodySha256, ...inspectRawMedia(revised, acquired) },
+      }),
+    );
+    try {
+      assert.equal(w.document.querySelectorAll('figure').length, 0);
+      assert.doesNotMatch(w.document.body.textContent!, /DIRTY_LEGACY_SENTINEL/u);
+      assert.match(w.document.body.textContent!, /保留正文[\s\S]*结尾/u);
+    } finally {
+      await screen.close();
+    }
+  }
+});
+
+test('RAWOCR04 a reading source from another body revision requests refresh without exposing old OCR', async () => {
+  const value = { ...raw(), body: 'DIRTY_LEGACY_SENTINEL' };
+  const screen = await mount(value, async () =>
+    response({
+      items: [],
+      readingSource: { bodySha256: '0'.repeat(64), markers: [], removed: [] },
+    }),
+  );
+  try {
+    assert.match(w.document.body.textContent!, /原文版本已变化/u);
+    assert.doesNotMatch(w.document.body.textContent!, /DIRTY_LEGACY_SENTINEL/u);
   } finally {
     await screen.close();
   }

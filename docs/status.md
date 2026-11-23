@@ -3,15 +3,15 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：个人知识库配图优化第 3 轮 RAWOCR03 已通过独立验收。手工网页导入和资讯入库均保留原文与图锚点，图片识别结果独立保存；详情页支持按图查看、精读、重试和批量处理。[任务卡](handoffs/RAWOCR03-task.md) · [施工报告](reports/RAWOCR03-builder.md)。
+- **当前阶段**：个人知识库配图优化四轮开发完成。历史资料可按 Raw ID 或全库预览，显式执行后从本地缓存原图补齐缺少的图片派生记录。正式库尚未执行迁移。[迁移操作说明](raw-media-migration.md) · [第四轮任务卡](handoffs/RAWOCR04-task.md)。
 - **最近 5 个批次结论**：
+  - `RAWOCR04`（2026-11-23，**PASS**）：隔离库真实 CLI、Tesseract 和 Edge 验证通过。重复执行保留已有记录，历史正文、快照、原图与引文坐标保持不变。全库扫描能区分空库与目录损坏；全量复跑 1,055/1,055。[独立验收](reports/RAWOCR04-review.md)。
   - `RAWOCR03`（2026-11-23，**PASS**）：两入口真实 Tesseract 识别通过；Edge 实测五态、批量部分失败、重试、刷新和窄屏阅读，原文与原图字节一致。独立验收使用回环模拟模型，付费调用为零。本地全量 1,045/1,045。[验收报告](reports/RAWOCR03-review.md)。
   - `RAWOCR02`（2026-11-23，**PASS**）：删除图片标记后再改写的旧 OCR 已从精读、草稿和问答中隔离，失去位置的图片也已退出引用。独立定向回归 46/46，全量复跑 1,034/1,034。首次全量出现的 NEWSRAW02 并发断言在返修前版本亦可复现。[复验与全量检查记录](reports/RAWOCR02-review.md#主-agent-收尾核验)。
   - `RAWOCR01`（2026-11-23，**PASS**）：有无空格的榜单反例均命中高乱码，正常技术术语保留。独立定向回归 22/22，本机中英文 OCR 与 HTTP 隔离复验通过。[验收报告](reports/RAWOCR01-review.md)。
   - `ENG04`（2026-11-23，**PASS**）：锁定接入 Prettier/ESLint 并串联至 `check`/CI，纯格式化 `02ab4ca`（411 文件）树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、产出 26 份大文件拆分与状态治理方案；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)（`6a5eff6`）双作业全绿（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
-  - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[验收报告](reports/ENG03-20261122-review.md)）。
 - **开放阻塞与待用户确认**：ENG04 发现的 9 项 ESLint 疑似缺陷与[拆分方案](reports/ENG04-20261122-split-plan.md)推荐的下一批候选（首选 `FE01` / 备选 `BE01`）待用户决策；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
-- **下一步**：第 4 轮为历史资料图片迁移，待用户单独授权。
+- **下一步**：正式库迁移前可先对选定范围运行只读预览，核对可迁移数量和异常项，再决定执行范围。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
 
 ## ENG04 代码格式化与静态检查基线完成（PASS，2026-11-23）

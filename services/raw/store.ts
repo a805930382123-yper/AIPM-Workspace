@@ -265,11 +265,15 @@ export class RawStore {
     }
   }
 
-  async list(): Promise<RawRecord[]> {
+  async list(options: { strictScan?: boolean } = {}): Promise<RawRecord[]> {
     const items: RawRecord[] = [];
     for (const folder of new Set(Object.values(folderFor))) {
       const dir = path.join(this.root, 'knowledge', 'raw', folder);
-      for (const name of await readdir(dir).catch(() => [])) {
+      const names = await readdir(dir).catch((error) => {
+        if (options.strictScan && (error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+        return [];
+      });
+      for (const name of names) {
         if (!/^[0-9a-f-]{36}\.md$/i.test(name)) continue;
         items.push(verifyIntegrity(parse(await readFile(path.join(dir, name), 'utf8'))));
       }
@@ -325,11 +329,16 @@ export class RawStore {
     id: string,
     mediaId: string,
     result: MediaArtifactResult,
+    options: { onlyIfMissing?: boolean } = {},
   ): Promise<MediaArtifact | undefined> {
     return this.mediaWrites.run(async () => {
       const raw = await this.get(id);
       const image = raw && identifyWebImages(id, raw.webImages).find((entry) => entry.mediaId === mediaId);
       if (!image) return;
+      if (options.onlyIfMissing) {
+        const existing = await readJsonFile<MediaArtifact>(path.join(this.mediaDirectory(id), `${mediaId}.json`));
+        if (existing) return existing;
+      }
       const { imageIndex, sourceUrl, sha256 } = image;
       const localPath = webImageRelativePath(sha256);
       const artifact: MediaArtifact = {

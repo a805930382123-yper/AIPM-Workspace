@@ -6,6 +6,10 @@
 历史批次裁决见[2026 年 10 月归档](archive/acceptance-2026-10.md)与[2026 年 11 月历史批次裁决归档](archive/acceptance-2026-11.md)；现行验收与监控规约保留在下方。
 <!-- ENG03 inserted:end -->
 
+## RAWOCR04 历史资料图片迁移
+
+2026-11-23，R4-01 至 R4-05 的 RUN 结论均为 **PASS**。独立验收覆盖隔离库的只读预览、显式执行、失败续跑、普通阅读与引文保真。全库目录损坏误报空库的缺陷已独立复验关闭。[验收报告](reports/RAWOCR04-review.md) · [操作说明](raw-media-migration.md)。
+
 ## RAWOCR03 新导入与详情页交互
 
 2026-11-23，R3-01 至 R3-05 的 RUN 结论均为 **PASS**。两处网页导入、本地 OCR、五态阅读、按需精读与原文保真均完成独立实测，证据见[任务卡](handoffs/RAWOCR03-task.md)和[复验报告](reports/RAWOCR03-review.md)。

@@ -1,7 +1,14 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import Markdown from 'react-markdown';
 import { parseNoteGrid } from '../../services/wiki/structured-note';
-import { parseRawMedia, parseRawMediaBatch, rawMedia, type Raw, type RawMediaArtifact } from '../api';
+import {
+  parseRawMedia,
+  parseRawMediaBatch,
+  rawMedia,
+  type Raw,
+  type RawMediaArtifact,
+  type RawMediaReadingSource,
+} from '../api';
 
 const statusLabels = {
   skipped: '已跳过',
@@ -84,8 +91,10 @@ function ImageMarkdown({ body }: { body: string }) {
 /** Reading only fetches existing derivatives; model calls require an explicit button action. */
 export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody?: boolean }) {
   const [artifacts, setArtifacts] = useState<RawMediaArtifact[]>([]);
+  const [source, setSource] = useState<RawMediaReadingSource>();
   const [loading, setLoading] = useState(true);
   const [readError, setReadError] = useState('');
+  const [showOriginal, setShowOriginal] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState<string[]>([]);
   const [readVersion, setReadVersion] = useState(0);
@@ -100,10 +109,15 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
   useEffect(() => {
     let current = true;
     setLoading(true);
+    setSource(undefined);
+    setReadError('');
+    setShowOriginal(false);
     rawMedia(raw.id)
       .then((result) => {
         if (!current) return;
+        if (result.readingSource.bodySha256 !== raw.bodySha256) throw new Error('原文版本已变化，请刷新资料后重试。');
         setArtifacts(result.items);
+        setSource(result.readingSource);
         setReadError('');
       })
       .catch((error) => {
@@ -155,6 +169,16 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
   };
   const waiting = artifacts.filter((item) => item.routeStatus === 'needs_vlm');
   const disabled = loading || pending.length > 0;
+  const bodySlice = (start: number, end: number) => {
+    let cursor = start;
+    let text = '';
+    for (const span of source?.removed ?? []) {
+      if (span.start >= end || span.end <= cursor) continue;
+      text += raw.body.slice(cursor, Math.max(cursor, span.start));
+      cursor = Math.min(end, span.end);
+    }
+    return text + raw.body.slice(cursor, end);
+  };
   return (
     <div className={`raw-web-content${inlineBody ? ' raw-body' : ''}`}>
       <div className="raw-image-toolbar">
@@ -181,27 +205,50 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
           <button className="text-button" disabled={disabled} onClick={() => setReadVersion((value) => value + 1)}>
             重读图片状态
           </button>
+          <button className="text-button" onClick={() => setShowOriginal((value) => !value)}>
+            {showOriginal ? '收起原始正文' : '查看原始正文（含历史转录）'}
+          </button>
+          {showOriginal && (
+            <div>
+              <pre>{raw.body}</pre>
+              {raw.webImages?.map(
+                (image, index) =>
+                  image.sha256 && (
+                    <p key={index}>
+                      <a
+                        href={`/api/raw/${encodeURIComponent(raw.id)}/web-images/${image.sha256}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        查看采集原图 {index + 1}
+                      </a>
+                    </p>
+                  ),
+              )}
+            </div>
+          )}
         </div>
       )}
-      {raw.webImages?.map((image, index) => {
-        const artifact = artifacts.find((item) => item.imageIndex === index + 1);
+      {source?.markers.map((marker, index) => {
+        const image = raw.webImages![marker.imageIndex - 1];
+        const artifact = artifacts.find((item) => item.imageIndex === marker.imageIndex);
         const original = image.sha256 && `/api/raw/${encodeURIComponent(raw.id)}/web-images/${image.sha256}`;
         const running = !!artifact && pending.includes(artifact.mediaId);
         const error = artifact && errors[artifact.mediaId];
         return (
-          <Fragment key={`${index}:${image.start}`}>
-            {inlineBody && raw.body.slice(index ? raw.webImages![index - 1].start : 0, image.start)}
-            <figure className="raw-image-card" data-image-index={index + 1}>
+          <Fragment key={`${marker.imageIndex}:${marker.start}`}>
+            {inlineBody && bodySlice(index ? source.markers[index - 1].end : 0, marker.start)}
+            <figure className="raw-image-card" data-image-index={marker.imageIndex}>
               {original ? (
                 <a href={original} target="_blank" rel="noreferrer">
-                  <img src={original} alt={image.label || `来源图片 ${index + 1}`} loading="lazy" />
+                  <img src={original} alt={image.label || `来源图片 ${marker.imageIndex}`} loading="lazy" />
                 </a>
               ) : (
                 <p className="extract-note">原图未能保留，可通过网页原地址查看。</p>
               )}
               <figcaption>
                 <div className="raw-image-caption">
-                  <b>来源图片 {index + 1}</b>
+                  <b>来源图片 {marker.imageIndex}</b>
                   <span data-media-status={artifact?.routeStatus}>
                     {running
                       ? '正在精读…'
@@ -287,7 +334,7 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
           </Fragment>
         );
       })}
-      {inlineBody && raw.body.slice(raw.webImages?.at(-1)?.start ?? 0)}
+      {inlineBody && source && bodySlice(source.markers.at(-1)?.end ?? 0, raw.body.length)}
     </div>
   );
 }
