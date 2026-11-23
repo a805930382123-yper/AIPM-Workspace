@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：工程整固阶段收官（见[工程整固路线图](batches/ENG-HYGIENE-ROADMAP-20261122.md)）：`ENG02`、`ENG03`、`ENG04` 全部 **`PASS`**（D5 `AGENTS.md` 入口已落盘 `382381c`，D2 维持不改历史），当前停步等待用户指示下一方向。
+- **当前阶段**：资讯原文入库修复 NEWSRAW01 已独立验收通过。收件箱首次入库和每日资讯旧摘录补采均已用同一篇微信原文实测。[任务卡](handoffs/NEWSRAW01-task.md) · [验收报告](reports/NEWSRAW01-review.md)。此前工程整固 ENG02–ENG04 均已通过。
 - **最近 5 个批次结论**：
   - `ENG04`（2026-11-23，**PASS**）：锁定接入 Prettier/ESLint 并串联至 `check`/CI，纯格式化 `02ab4ca`（411 文件）树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、产出 26 份大文件拆分与状态治理方案；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)（`6a5eff6`）双作业全绿（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
   - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[验收报告](reports/ENG03-20261122-review.md)）。
