@@ -5,8 +5,10 @@ import {
   changeCandidateDisposition,
   confirmCandidates,
   retryCandidate,
+  supplementCandidate,
   snoozeReminder,
 } from '../../api';
+import { newsMaterialLabels } from '../../../services/news/types';
 import { CandidateConfirmationDialog } from './AutomationDialogs';
 import {
   canConfirmCandidate,
@@ -431,6 +433,7 @@ function NewsInbox({
           <p>原入库资料已缺失。</p>
         )}
         {row.saveIssue && <p className="form-error">入库收据读取失败。</p>}
+        {row.material?.issue && <p className="extract-note">{row.material.issue}</p>}
         {!row.draftPending && row.execution?.error && <p className="form-error">{row.execution.error}</p>}
         <div className="automation-actions">
           {available && (
@@ -481,12 +484,32 @@ function NewsInbox({
           )}
           {row.savedRawId && (
             <button type="button" className="text-button" onClick={() => onOpenRaw(row.savedRawId!)}>
-              已入库 · 打开 Raw
+              已入库{row.material ? ` · ${newsMaterialLabels[row.material.kind]}` : ''} · 打开 Raw
+            </button>
+          )}
+          {row.material?.canSupplement && (
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={pending || !token}
+              onClick={() => void write((token) => supplementCandidate(row.id, token).then(() => undefined))}
+            >
+              补采来源正文
             </button>
           )}
           {row.draftPending && row.execution?.draftId && (
             <button type="button" className="secondary-button" onClick={() => onOpenDraft(row.execution!.draftId!)}>
               审核草稿
+            </button>
+          )}
+          {phase === 'raw_failed' && row.execution?.canKeepPartial && (
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={pending || !token}
+              onClick={() => void write((token) => retryCandidate(row.id, 'save', token, true).then(() => undefined))}
+            >
+              仅保留可用材料
             </button>
           )}
           {!row.draftPending && (phase === 'raw_failed' || phase === 'organize_failed' || phase === 'interrupted') && (

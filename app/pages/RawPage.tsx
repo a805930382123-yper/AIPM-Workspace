@@ -792,7 +792,8 @@ function RawDetail({
     };
   }, [storedJobId]);
   const meetingOnly = item.origin !== undefined;
-  const editedPdf = isPdfRaw(item) && !!item.bodyRevision;
+  const acquiredRevision = item.newsMaterial?.revision ?? 0;
+  const editedPdf = isPdfRaw(item) && (item.bodyRevision ?? 0) !== acquiredRevision;
   const pdf = !meetingOnly && isPdfRaw(item) && !editedPdf;
   const scannedPdf = isScannedPdf(item);
   const activeJob =
@@ -889,7 +890,8 @@ function RawDetail({
       {savedBodyNotice && <p role="status">{savedBodyNotice}</p>}
       {!!item.bodyRevision && (
         <p className="extract-note">
-          原文已人工修改。旧版正文仍可在修改历史中查看，依赖旧版正文的整理成果需要重新核对。
+          {(item.bodyRevision ?? 0) === acquiredRevision && item.newsMaterial ? '已补采来源正文。' : '原文已人工修改。'}
+          旧版正文仍可在修改历史中查看，依赖旧版正文的整理成果需要重新核对。
         </p>
       )}
       <section className="raw-status-summary" aria-label="整理状态">
@@ -1303,6 +1305,32 @@ function RawDetail({
       )}
       {scannedPdf ? (
         <p className="extract-note">未提取到文字层。请在上方查看原 PDF 页图。</p>
+      ) : !showTranslation && !citation && item.webImages?.length && (item.bodyRevision ?? 0) === acquiredRevision ? (
+        <div className="raw-body raw-web-content">
+          {item.webImages.map((image, index) => {
+            const start = index ? item.webImages![index - 1].start : 0;
+            const original = image.sha256 && `/api/raw/${encodeURIComponent(item.id)}/web-images/${image.sha256}`;
+            return (
+              <div key={image.start}>
+                {item.body.slice(start, image.start)}
+                {original && (
+                  <figure>
+                    <a href={original} target="_blank" rel="noreferrer">
+                      <img src={original} alt={image.label || `来源图片 ${index + 1}`} />
+                    </a>
+                    <figcaption>
+                      来源图片 {index + 1} ·{' '}
+                      <a href={image.sourceUrl} target="_blank" rel="noreferrer">
+                        网页原地址
+                      </a>
+                    </figcaption>
+                  </figure>
+                )}
+              </div>
+            );
+          })}
+          {item.body.slice(item.webImages.at(-1)!.start)}
+        </div>
       ) : (
         <pre className="raw-body" lang={showTranslation ? 'zh-CN' : undefined}>
           {showTranslation ? (
@@ -1320,6 +1348,29 @@ function RawDetail({
           )}
         </pre>
       )}
+      {!showTranslation &&
+        !citation &&
+        item.webImages?.some((image) => image.sha256) &&
+        (item.bodyRevision ?? 0) !== acquiredRevision && (
+          <details>
+            <summary>网页原图</summary>
+            {item.webImages.flatMap((image, index) =>
+              image.sha256
+                ? [
+                    <p key={image.start}>
+                      <a
+                        href={`/api/raw/${encodeURIComponent(item.id)}/web-images/${image.sha256}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {image.label || `来源图片 ${index + 1}`}
+                      </a>
+                    </p>,
+                  ]
+                : [],
+            )}
+          </details>
+        )}
       {!!item.bodyRevision && (
         <button className="text-button" onClick={() => setHistoryOpen(true)}>
           查看原文修改历史

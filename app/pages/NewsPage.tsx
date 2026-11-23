@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { api } from '../api';
+import { api, ApiError } from '../api';
+import { newsMaterialLabels } from '../../services/news/types';
+import type { NewsSaveOptions } from '../../services/news/raw-save';
 import type {
   NewsCheckMode,
   NewsEdition,
   NewsItem,
   NewsSavedRaw,
+  NewsSaveResult,
   NewsSection,
   NewsSectionName,
   NewsTranslationResult,
@@ -321,29 +324,36 @@ export function NewsPage({
       active = false;
     };
   }, [dates, view?.edition?.updatedAt, edition?.updatedAt, projectionReload]);
-  const save = async (date: string, section: NewsSectionName, itemId: string) => {
+  const [partial, setPartial] = useState<Record<string, boolean>>({});
+  const save = async (date: string, section: NewsSectionName, itemId: string, options: NewsSaveOptions = {}) => {
     const key = `${date}:${section}:${itemId}`;
     setBusy((prev) => ({ ...prev, [key]: true }));
     setSaveErrors((prev) => ({ ...prev, [key]: '' }));
+    setPartial((prev) => ({ ...prev, [key]: false }));
     try {
-      const result = await api<{ rawId: string; status: 'saved'; created: boolean }>(
-        `/api/news/editions/${date}/items/save-raw`,
-        { method: 'POST', body: JSON.stringify({ section, itemId }) },
-      );
+      const result = await api<NewsSaveResult>(`/api/news/editions/${date}/items/save-raw`, {
+        method: 'POST',
+        body: JSON.stringify({ section, itemId, ...options }),
+      });
       if (alive.current) {
         projectionVersion.current[date] = (projectionVersion.current[date] || 0) + 1;
         setSaved((prev) => ({
           ...prev,
           [date]: [
             ...(prev[date] || []).filter((x) => x.section !== section || x.itemId !== itemId),
-            { section, itemId, rawId: result.rawId, status: 'saved' },
+            { section, itemId, rawId: result.rawId, status: 'saved', material: result.material },
           ],
         }));
       }
       void onRawChanged();
     } catch (e) {
-      if (alive.current)
+      if (alive.current) {
         setSaveErrors((prev) => ({ ...prev, [key]: e instanceof Error ? e.message : '保存失败，请重试。' }));
+        setPartial((prev) => ({
+          ...prev,
+          [key]: !options.supplement && e instanceof ApiError && e.code === 'NEWS_MATERIAL_INCOMPLETE',
+        }));
+      }
     } finally {
       if (alive.current) setBusy((prev) => ({ ...prev, [key]: false }));
     }
@@ -460,12 +470,23 @@ export function NewsPage({
         actions={
           <>
             {entry?.status === 'saved' ? (
-              <span>
-                已保存 ·{' '}
+              <>
+                <span>已保存{entry.material ? ` · ${newsMaterialLabels[entry.material.kind]}` : ''}</span>
                 <button type="button" className="text-button" onClick={() => onOpenRaw(entry.rawId)}>
                   查看 Raw
                 </button>
-              </span>
+                {entry.material?.canSupplement && (
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    disabled={busy[key]}
+                    onClick={() => void save(date, name, item.id, { supplement: true })}
+                  >
+                    {busy[key] ? '正在补采…' : '补采来源正文'}
+                  </button>
+                )}
+                {entry.material?.issue && <p className="extract-note">{entry.material.issue}</p>}
+              </>
             ) : entry?.status === 'missing' ? (
               <span>原 Raw 已删除</span>
             ) : entry?.status === 'error' ? (
@@ -479,7 +500,23 @@ export function NewsPage({
                 disabled={Boolean(busy[key])}
                 onClick={() => void save(date, name, item.id)}
               >
-                {busy[key] ? '正在保存…' : entry?.status === 'pending' ? '核对保存状态' : '保存到 Raw'}
+                {busy[key]
+                  ? '正在获取来源材料…'
+                  : entry?.status === 'pending'
+                    ? '核对保存状态'
+                    : saveErrors[key]
+                      ? '重试保存到 Raw'
+                      : '保存到 Raw'}
+              </button>
+            )}
+            {partial[key] && (
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={busy[key]}
+                onClick={() => void save(date, name, item.id, { keepPartial: true })}
+              >
+                仅保留可用材料
               </button>
             )}
             {saveErrors[key] && (

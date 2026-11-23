@@ -1,6 +1,19 @@
 export type NewsSectionName = 'fmcg' | 'ai';
+export type NewsMaterialView = {
+  kind: 'article' | 'report_pdf' | 'report_page' | 'excerpt';
+  issue?: string;
+  canSupplement: boolean;
+};
+export const newsMaterialLabels: Record<NewsMaterialView['kind'], string> = {
+  article: '来源网页正文',
+  report_pdf: '报告 PDF',
+  report_page: '报告发布页',
+  excerpt: '资讯摘录',
+};
+export type NewsSaveResult = { rawId: string; status: 'saved'; created: boolean; material: NewsMaterialView };
 export type NewsSavedRaw = { section: NewsSectionName; itemId: string } & (
-  { status: 'saved' | 'missing' | 'pending'; rawId: string } | { status: 'error'; message: string; rawId?: never }
+  | { status: 'saved' | 'missing' | 'pending'; rawId: string; material?: NewsMaterialView }
+  | { status: 'error'; message: string; rawId?: never }
 );
 export type NewsItem = {
   id: string;

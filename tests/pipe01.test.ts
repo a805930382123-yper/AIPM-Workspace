@@ -1,3 +1,5 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
+import { PartialNewsMaterialError, UnavailableNewsMaterialError } from '../services/news/raw-material.ts';
 import assert from 'node:assert/strict';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { randomUUID } from 'node:crypto';
@@ -97,6 +99,8 @@ async function harness(t: TestContext, { providerEnabled = true, itemCount = 2 }
     invalidFirstBatch: false,
     block: false,
     failRaw: '',
+    partialMaterial: '',
+    unavailableMaterial: '',
     failOrganize: '',
     maxActive: 0,
   };
@@ -125,6 +129,15 @@ async function harness(t: TestContext, { providerEnabled = true, itemCount = 2 }
     root,
     clock: () => new Date(now),
     rawStore: raws,
+    rawSave: {
+      acquire: async (item, keepPartial) => {
+        if (knobs.unavailableMaterial === item.title) throw new UnavailableNewsMaterialError('来源暂时无法打开。');
+        const input = await newsRawFixture.acquire!(item, keepPartial);
+        if (knobs.partialMaterial !== item.title) return input;
+        if (!keepPartial) throw new PartialNewsMaterialError('测试图片缺失。');
+        return { ...input, newsMaterial: { kind: 'article', issue: '测试图片缺失。', revision: 0 } };
+      },
+    },
     aiEnabled: true,
     providerFactory: async () => provider,
     async readSources(section) {
@@ -369,6 +382,46 @@ test('PIPE01-01/08 fake clock executes 07:30, deduplicates fetching, catches up 
   assert.equal(h.sourceCalls.length, 4);
 });
 
+test('NEWSRAW01 收件箱缺材料先暂停，明确保留部分材料后不自动整理', async (t) => {
+  const h = await harness(t, { itemCount: 1 });
+  await h.runNews();
+  const [item] = (await h.pipeline.list()).items;
+  h.knobs.unavailableMaterial = item!.item.title;
+  await h.pipeline.confirm({ requestId: randomUUID(), candidateIds: [item!.id], organize: true, mode: 'standard' });
+  await h.pipeline.tick();
+  const unavailable = await eventually(async () => {
+    const row = (await h.pipeline.list()).items.find((row) => row.id === item!.id);
+    return row?.execution?.phase === 'raw_failed' ? row : undefined;
+  });
+  assert.equal(unavailable.execution?.canKeepPartial, false);
+  assert.equal(unavailable.execution?.error, '来源暂时无法打开。');
+  assert.deepEqual(await h.raws.list(), []);
+  await h.terminal(unavailable.execution!.runId);
+  const retry = `candidates/${encodeURIComponent(item!.id)}/retry-save`;
+  assert.equal((await h.http(retry, 'POST', { keepPartial: true })).status, 409);
+  h.knobs.unavailableMaterial = '';
+  h.knobs.partialMaterial = item!.item.title;
+  assert.equal((await h.http(retry, 'POST', {})).status, 202);
+  await h.pipeline.tick();
+  const failed = await eventually(async () => {
+    const row = (await h.pipeline.list()).items.find((row) => row.id === item!.id);
+    return row?.execution?.phase === 'raw_failed' ? row : undefined;
+  });
+  assert.equal(failed.execution?.canKeepPartial, true);
+  assert.equal(failed.execution?.error, '测试图片缺失。');
+  assert.deepEqual(await h.raws.list(), []);
+  await h.terminal(failed.execution!.runId);
+  assert.equal((await h.http(retry, 'POST', { keepPartial: true })).status, 202);
+  await h.pipeline.tick();
+  const saved = await eventually(async () => {
+    const row = (await h.pipeline.list()).items.find((row) => row.id === item!.id);
+    return row?.execution?.phase === 'saved' ? row : undefined;
+  });
+  assert.equal(saved.material?.issue, '测试图片缺失。');
+  assert.ok(saved.savedRawId);
+  assert.deepEqual(h.started, []);
+});
+
 test('PIPE01-02 strict response schema, one-to-one IDs, Unicode reason bound and secrets', async () => {
   const a = {
     candidateId: day + '/fmcg/a',
@@ -499,7 +552,7 @@ test('PIPE01-02/03/04 HTTP requires valid explicit confirmation, preserves dispo
   assert.equal(raw.body, a.item.excerpt);
   assert.equal(raw.publishedAt, a.item.publishedAt);
   assert.equal(raw.url, a.item.url);
-  assert.match(raw.sourceName, /来源正文摘录/u);
+  assert.equal(raw.sourceName, a.item.sourceName);
   assert.equal((await h.news.saveRaw(day, a.section, a.item.id)).rawId, raw.id);
   const replay = await h.http('candidates/confirm', 'POST', { ...grant, requestId: randomUUID(), organize: true });
   assert.equal(replay.status, 202);
@@ -668,6 +721,7 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
     root,
     clock,
     rawStore: raws,
+    rawSave: newsRawFixture,
     aiEnabled: false,
     providerFactory: async () => provider,
     readSources: async (section) => ({

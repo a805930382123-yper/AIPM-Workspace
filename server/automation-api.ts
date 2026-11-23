@@ -282,13 +282,18 @@ export function registerAutomationRoutes(
     if (action !== 'ignore' && action !== 'later' && action !== 'restore') throw badInput('候选操作无效。');
     res.json(await pipeline.disposition(req.params.id, action));
   });
+  app.post('/api/automation/candidates/:id/supplement', async (req, res) => {
+    bodyFields(req.body, []);
+    res.json(await pipeline.supplement(req.params.id));
+  });
   for (const [action, stage] of [
     ['retry-save', 'raw'],
     ['retry-organize', 'organize'],
   ] as const) {
     app.post(`/api/automation/candidates/:id/${action}`, async (req, res) => {
-      bodyFields(req.body, []);
-      res.status(202).json(await pipeline.retry(req.params.id, stage));
+      const { keepPartial } = bodyFields(req.body, stage === 'raw' ? ['keepPartial'] : []);
+      if (keepPartial !== undefined && typeof keepPartial !== 'boolean') throw badInput('材料保留选项无效。');
+      res.status(202).json(await pipeline.retry(req.params.id, stage, keepPartial === true));
     });
   }
 }

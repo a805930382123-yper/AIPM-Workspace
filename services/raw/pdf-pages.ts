@@ -7,7 +7,7 @@ import { assertRawNotMeeting, SourcePolicyError } from '../meeting/source-policy
 import { readJsonRecord, SerialQueue, writeJsonAtomic } from '../storage/files.ts';
 import type { AssetStore } from './assets.ts';
 import { extractBody, openPdf, type PdfTextMap, type PdfTextRange } from './parse.ts';
-import type { RawRecord, RawStore } from './store.ts';
+import { hasEditedPdfBody, type RawRecord, type RawStore } from './store.ts';
 
 const RENDER_VERSION = 'pdfjs-6.4.299-canvas-1.0.10-edge-1600-fonts';
 const PROMPT_VERSION = 'pdf01-page-1';
@@ -180,7 +180,7 @@ export class PdfPageService {
     const raw = await this.deps.raws.get(id);
     if (!raw) throw new PdfPageError('RAW_NOT_FOUND', '没有找到这条原始资料。', 404);
     if (forProvider) assertRawNotMeeting(raw);
-    if (raw.assetFormat === 'pdf' && raw.bodyRevision) {
+    if (raw.assetFormat === 'pdf' && hasEditedPdfBody(raw)) {
       throw new PdfPageError(
         'PDF_TEXT_EDITED',
         'PDF 提取文字已由人工修改，旧页码和页理解不能用于当前正文。仍可打开 PDF 原件。',

@@ -1,3 +1,4 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -100,6 +101,7 @@ test('新期按业务分档、同档按发布日期、联合 PDF 只收一份，
   const service = new NewsService({
     root,
     rawStore,
+    rawSave: newsRawFixture,
     clock: () => now,
     aiEnabled: false,
     providerFactory: async () => assert.fail('意外的模型调用'),

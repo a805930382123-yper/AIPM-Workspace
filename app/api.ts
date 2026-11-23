@@ -6,6 +6,7 @@ import type { StructuredNote, NoteReviewMetadata, NoteExclusion, NoteApproval } 
 import type { DeepQualityReport } from '../services/llm/knowledge-deep';
 import type { HumanReview } from '../services/wiki/human-review.ts';
 import type { TemplateFields, InputTemplateFields, MergedTemplateFields } from '../services/wiki/template-fields';
+import type { RawInput } from '../services/raw/store';
 export type SourceType = 'wechat' | 'article' | 'report' | 'company' | 'customer' | 'meeting' | 'note' | 'other';
 export type Raw = {
   id: string;
@@ -30,6 +31,8 @@ export type Raw = {
   extractionNote?: string;
   pdf?: { pageCount: number; hasTextLayer: boolean; pages: PdfTextRange[] };
   urlImport?: { finalUrl: string; fetchedAt: string };
+  webImages?: RawInput['webImages'];
+  newsMaterial?: RawInput['newsMaterial'];
   isDemo?: boolean;
   origin?: MeetingRawOrigin;
   bodyRevision?: number;
@@ -533,8 +536,13 @@ export const confirmCandidates = (input: ConfirmCandidates, token: string) =>
   api(`${candidatesUrl}/confirm`, automationWrite('POST', token, input));
 export const changeCandidateDisposition = (id: string, action: 'ignore' | 'later' | 'restore', token: string) =>
   api(`${candidatesUrl}/${encodeURIComponent(id)}/disposition`, automationWrite('POST', token, { action }));
-export const retryCandidate = (id: string, stage: 'save' | 'organize', token: string) =>
-  api(`${candidatesUrl}/${encodeURIComponent(id)}/retry-${stage}`, automationWrite('POST', token, {}));
+export const retryCandidate = (id: string, stage: 'save' | 'organize', token: string, keepPartial = false) =>
+  api(
+    `${candidatesUrl}/${encodeURIComponent(id)}/retry-${stage}`,
+    automationWrite('POST', token, keepPartial ? { keepPartial } : {}),
+  );
+export const supplementCandidate = (id: string, token: string) =>
+  api(`${candidatesUrl}/${encodeURIComponent(id)}/supplement`, automationWrite('POST', token, {}));
 const shanghaiTime = new Intl.DateTimeFormat('zh-CN', {
   dateStyle: 'short',
   timeStyle: 'short',

@@ -1,3 +1,4 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
@@ -99,6 +100,7 @@ async function fixture(t: TestContext, seedRuns = false) {
     aiEnabled: false,
     providerFactory: async () => undefined,
     rawStore: raws,
+    rawSave: newsRawFixture,
   });
   const store = new WeeklyReviewStore(root, () => now);
   await raws.initialize();

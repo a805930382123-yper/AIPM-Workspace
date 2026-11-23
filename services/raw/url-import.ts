@@ -12,12 +12,22 @@ const WEB_TIMEOUT_MS = 12_000;
 const FALLBACK = '请改用上传文件或粘贴正文。';
 type Address = { address: string; family: number };
 type WebResponse = { status: number; headers: IncomingHttpHeaders; body: Readable };
-type WebOptions = {
+export type WebOptions = {
   resolve?: (hostname: string) => Promise<Address[]>;
-  request?: (url: URL, address: Address, signal: AbortSignal) => Promise<WebResponse>;
+  request?: (url: URL, address: Address, signal: AbortSignal, accept: string) => Promise<WebResponse>;
   timeoutMs?: number;
+  images?: boolean;
 };
 
+export type WebImageCandidate = {
+  marker: string;
+  url: string;
+  label: string;
+  context: string;
+  width: number;
+  height: number;
+  explicit: boolean;
+};
 export type ImportedWebText = {
   body: string;
   title: string;
@@ -25,6 +35,7 @@ export type ImportedWebText = {
   fetchedAt: string;
   parser: string;
   note: string;
+  images?: WebImageCandidate[];
 };
 
 class RawUrlError extends Error {
@@ -125,7 +136,7 @@ function httpProxyFor(address: Address): URL | undefined {
   return bypass ? undefined : proxy;
 }
 
-function requestPinned(url: URL, address: Address, signal: AbortSignal): Promise<WebResponse> {
+function requestPinned(url: URL, address: Address, signal: AbortSignal, accept: string): Promise<WebResponse> {
   const secure = url.protocol === 'https:';
   const proxy = secure ? undefined : httpProxyFor(address);
   const secureProxy = proxy?.protocol === 'https:';
@@ -152,7 +163,8 @@ function requestPinned(url: URL, address: Address, signal: AbortSignal): Promise
         headers: {
           Host: url.host,
           Connection: 'close',
-          Accept: 'text/html,application/xhtml+xml,text/plain',
+          'User-Agent': 'Mozilla/5.0 (compatible; AIPM Workspace/0.1)',
+          Accept: accept,
           'Accept-Encoding': 'identity',
           ...(proxy ? { 'Proxy-Connection': 'close' } : {}),
           ...(proxyAuth ? { 'Proxy-Authorization': `Basic ${proxyAuth}` } : {}),
@@ -165,12 +177,20 @@ function requestPinned(url: URL, address: Address, signal: AbortSignal): Promise
   });
 }
 
-function extractHtml(html: string): { title: string; body: string } {
+function extractHtml(
+  html: string,
+  url: URL,
+  collectImages: boolean,
+): Pick<ImportedWebText, 'title' | 'body' | 'images'> {
   // JSDOM does not execute scripts or load subresources with these options.
   const dom = new JSDOM(html, { virtualConsole: new VirtualConsole() });
   try {
     const document = dom.window.document;
-    const title = document.title.trim();
+    const title =
+      document.title.trim() ||
+      document.querySelector('meta[property="og:title"]')?.getAttribute('content')?.trim() ||
+      document.querySelector('#activity-name')?.textContent?.trim() ||
+      '';
     const hasPasswordForm = !!document.querySelector('input[type="password"]');
     const hasMetaRedirect = !!document.querySelector('meta[http-equiv="refresh" i]');
     document
@@ -184,10 +204,62 @@ function extractHtml(html: string): { title: string; body: string } {
     const gateTitle = /^(?:登录|安全验证|验证码|sign in\b|log in\b|access denied\b|captcha\b)/iu.test(title);
     if (
       hasMetaRedirect ||
+      (url.hostname === 'mp.weixin.qq.com' &&
+        (url.pathname.includes('wappoc_appmsgcaptcha') ||
+          (!article && !!document.querySelector('[id*="captcha"], [class*="captcha"]')))) ||
       (!article && (hasPasswordForm || gateTitle)) ||
       (!article && !main && !root.querySelector('p, pre, blockquote'))
     )
       return { title, body: '' };
+    const images: WebImageCandidate[] = [];
+    if (collectImages) {
+      for (const [index, image] of [...root.querySelectorAll('img')].entries()) {
+        const src = image.getAttribute('data-src') || image.getAttribute('data-original') || image.getAttribute('src');
+        if (!src) continue;
+        const original = URL.parse(src, url);
+        const caption = image.closest('figure')?.querySelector('figcaption, caption')?.textContent?.trim() ?? '';
+        const label = image.getAttribute('alt')?.trim() || image.getAttribute('title')?.trim() || '';
+        let block: Element = image;
+        while (block.parentElement && block.parentElement !== root && !block.parentElement.textContent?.trim())
+          block = block.parentElement;
+        const before = block.previousElementSibling?.textContent?.trim().slice(-180) ?? '';
+        const after = block.nextElementSibling?.textContent?.trim().slice(0, 180) ?? '';
+        const context = [before, after].filter(Boolean).join('\n');
+        const explicit =
+          /流程|架构|拓扑|线路|关系图|截图|示意图|图表|表格|如下图|见下图|对照|这张图|评论|示例|样例|例子|看图|diagram|flowchart|architecture|chart|screenshot|illustrat|example|figure|\btable\b/iu.test(
+            `${label} ${caption} ${context}`,
+          );
+        const width = Number.parseFloat(image.getAttribute('data-w') || image.getAttribute('width') || '') || 0;
+        const height =
+          Number.parseFloat(image.getAttribute('height') || '') ||
+          width * (Number.parseFloat(image.getAttribute('data-ratio') || '') || 0);
+        if (
+          !original ||
+          !['http:', 'https:'].includes(original.protocol) ||
+          original.username ||
+          original.password ||
+          original.port ||
+          /(?:^|[/_.-])(?:logo|avatar|tracking|pixel|spacer|badge|emoji|qrcode|qr-code|favicon)(?:[/_.-]|$)/iu.test(
+            original.pathname,
+          ) ||
+          /^(?:logo|头像|二维码|扫码关注|装饰|图标|emoji|icon)$/iu.test(label) ||
+          (!explicit && ((width > 0 && width < 80) || (height > 0 && height < 40)))
+        )
+          continue;
+        let marker = `⟦网页图片 ${index + 1}⟧`;
+        while (root.textContent?.includes(marker)) marker = `⟦${marker}⟧`;
+        image.replaceWith(`\n\n${marker}\n\n`);
+        images.push({
+          marker,
+          url: original.href,
+          label: (caption || label).slice(0, 240),
+          context,
+          width,
+          height,
+          explicit,
+        });
+      }
+    }
     for (const block of root.querySelectorAll(
       'address, blockquote, br, div, h1, h2, h3, h4, h5, h6, li, p, pre, section, tr',
     )) {
@@ -211,13 +283,21 @@ function extractHtml(html: string): { title: string; body: string } {
     ) {
       return { title, body: '' };
     }
-    return { title: title || root.querySelector('h1')?.textContent?.trim() || '', body };
+    return {
+      title: title || root.querySelector('h1')?.textContent?.trim() || '',
+      body,
+      ...(images.length ? { images } : {}),
+    };
   } finally {
     dom.window.close();
   }
 }
 
-export async function readPublicRawUrl(value: string, options: WebOptions = {}): Promise<ImportedWebText> {
+export async function readPublicResource(
+  value: string,
+  limits: { accept: string; mime: RegExp; bytes: number; label: string },
+  options: WebOptions = {},
+): Promise<{ bytes: Buffer; type: string; finalUrl: string }> {
   const resolve = options.resolve ?? ((hostname: string) => lookup(hostname, { all: true }));
   const request = options.request ?? requestPinned;
   const controller = new AbortController();
@@ -231,7 +311,7 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
     }, options.timeoutMs ?? WEB_TIMEOUT_MS);
   });
 
-  const read = async (): Promise<ImportedWebText> => {
+  const read = async () => {
     let url = webUrl(value);
     const visited = new Set<string>();
     for (let hop = 0; ; hop++) {
@@ -244,7 +324,7 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
       if (!addresses.length || addresses.some((address) => !publicAddress(address))) {
         throw new RawUrlError('URL_FETCH_BLOCKED', '网页地址解析到内网、回环或保留地址，已停止读取。', 400);
       }
-      const response = await request(url, addresses[0], signal);
+      const response = await request(url, addresses[0], signal, limits.accept);
       const abortBody = () => response.body.destroy();
       signal.addEventListener('abort', abortBody, { once: true });
       try {
@@ -266,13 +346,16 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
         }
         const contentType = response.headers['content-type'] ?? '';
         const mime = contentType.split(';', 1)[0].trim().toLowerCase();
-        const html = mime === 'text/html' || mime === 'application/xhtml+xml';
         const encoding = response.headers['content-encoding']?.trim().toLowerCase();
-        if ((!html && mime !== 'text/plain') || (encoding && encoding !== 'identity')) {
-          throw new RawUrlError('URL_CONTENT_UNSUPPORTED', '链接未返回可读取的网页或纯文本。', 422);
+        if (!limits.mime.test(mime) || (encoding && encoding !== 'identity')) {
+          throw new RawUrlError('URL_CONTENT_UNSUPPORTED', `链接未返回可读取的${limits.label}。`, 422);
         }
-        if (Number(response.headers['content-length']) > MAX_WEB_BYTES) {
-          throw new RawUrlError('URL_RESPONSE_TOO_LARGE', '网页响应超过 2 MiB 上限。', 413);
+        if (Number(response.headers['content-length']) > limits.bytes) {
+          throw new RawUrlError(
+            'URL_RESPONSE_TOO_LARGE',
+            `${limits.label}响应超过 ${limits.bytes / 1024 / 1024} MiB 上限。`,
+            413,
+          );
         }
         let bytes = 0;
         const chunks: Buffer[] = [];
@@ -280,38 +363,15 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
           signal.throwIfAborted();
           const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
           bytes += buffer.length;
-          if (bytes > MAX_WEB_BYTES) throw new RawUrlError('URL_RESPONSE_TOO_LARGE', '网页响应超过 2 MiB 上限。', 413);
+          if (bytes > limits.bytes)
+            throw new RawUrlError(
+              'URL_RESPONSE_TOO_LARGE',
+              `${limits.label}响应超过 ${limits.bytes / 1024 / 1024} MiB 上限。`,
+              413,
+            );
           chunks.push(buffer);
         }
-        const buffer = Buffer.concat(chunks, bytes);
-        const charset =
-          /charset\s*=\s*["']?([\w-]+)/iu.exec(contentType)?.[1] ??
-          (html
-            ? /<meta\b[^>]*\bcharset\s*=\s*["']?([\w-]+)/iu.exec(buffer.subarray(0, 4096).toString('ascii'))?.[1]
-            : undefined) ??
-          'utf-8';
-        let text: string;
-        try {
-          text = new TextDecoder(charset, { fatal: true }).decode(buffer);
-        } catch {
-          throw new RawUrlError('URL_CONTENT_UNSUPPORTED', '网页编码无法可靠解读。', 422);
-        }
-        const extracted = html ? extractHtml(text) : { title: '', body: text };
-        if (!extracted.body.trim())
-          throw new RawUrlError(
-            'URL_BODY_UNAVAILABLE',
-            '没有取得可保存的静态正文，网页可能需要登录、验证或运行脚本。',
-            422,
-          );
-        if (extracted.body.length > MAX_BODY_CHARS)
-          throw new RawUrlError('URL_BODY_TOO_LARGE', '网页正文超过 500,000 字符上限。', 413);
-        return {
-          ...extracted,
-          finalUrl: url.href,
-          fetchedAt: new Date().toISOString(),
-          parser: html ? 'url_html_text' : 'url_plain_text',
-          note: html ? '从静态网页提取正文文本。' : '保存链接响应中的纯文本正文。',
-        };
+        return { bytes: Buffer.concat(chunks, bytes), type: contentType, finalUrl: url.href };
       } finally {
         signal.removeEventListener('abort', abortBody);
         response.body.destroy();
@@ -328,4 +388,44 @@ export async function readPublicRawUrl(value: string, options: WebOptions = {}):
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export async function readPublicRawUrl(value: string, options: WebOptions = {}): Promise<ImportedWebText> {
+  const result = await readPublicResource(
+    value,
+    {
+      accept: 'text/html,application/xhtml+xml,text/plain',
+      mime: /^(?:text\/(?:html|plain)|application\/xhtml\+xml)$/u,
+      bytes: options.images ? 6 * 1024 * 1024 : MAX_WEB_BYTES,
+      label: '网页或纯文本',
+    },
+    options,
+  );
+  const html = !/^text\/plain\b/iu.test(result.type);
+  const charset =
+    /charset\s*=\s*["']?([\w-]+)/iu.exec(result.type)?.[1] ??
+    (html
+      ? /<meta\b[^>]*\bcharset\s*=\s*["']?([\w-]+)/iu.exec(result.bytes.subarray(0, 4096).toString('ascii'))?.[1]
+      : undefined) ??
+    'utf-8';
+  let text: string;
+  try {
+    text = new TextDecoder(charset, { fatal: true }).decode(result.bytes);
+  } catch {
+    throw new RawUrlError('URL_CONTENT_UNSUPPORTED', '网页编码无法可靠解读。', 422);
+  }
+  const extracted = html
+    ? extractHtml(text, new URL(result.finalUrl), options.images ?? false)
+    : { title: '', body: text };
+  if (!extracted.body.trim())
+    throw new RawUrlError('URL_BODY_UNAVAILABLE', '没有取得可保存的静态正文，网页可能需要登录、验证或运行脚本。', 422);
+  if (extracted.body.length > MAX_BODY_CHARS)
+    throw new RawUrlError('URL_BODY_TOO_LARGE', '网页正文超过 500,000 字符上限。', 413);
+  return {
+    ...extracted,
+    finalUrl: result.finalUrl,
+    fetchedAt: new Date().toISOString(),
+    parser: html ? 'url_html_text' : 'url_plain_text',
+    note: html ? '从静态网页提取正文文本。' : '保存链接响应中的纯文本正文。',
+  };
 }

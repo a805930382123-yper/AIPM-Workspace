@@ -2,10 +2,25 @@ import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { scanJsonRecords, SerialQueue, writeJsonAtomic } from '../storage/files.ts';
-import { RawIntegrityError, type RawInput, type RawStore } from '../raw/store.ts';
+import { RawIntegrityError, type RawInput, type RawRecord, type RawStore } from '../raw/store.ts';
+import { AssetStore } from '../raw/assets.ts';
 import { NewsError, normalizedUrl } from './service.ts';
-import { newsEvidenceLabel } from './evidence.ts';
-import type { NewsEdition, NewsItem, NewsSavedRaw, NewsSectionName } from './types.ts';
+import { acquireNewsMaterial } from './raw-material.ts';
+import type {
+  NewsEdition,
+  NewsItem,
+  NewsMaterialView,
+  NewsSaveResult,
+  NewsSavedRaw,
+  NewsSectionName,
+} from './types.ts';
+
+export type NewsSaveOptions = { supplement?: boolean; keepPartial?: boolean };
+export type NewsSaveDependencies = {
+  acquire?: (item: NewsItem, keepPartial: boolean) => ReturnType<typeof acquireNewsMaterial>;
+  withRawLock?: <T>(operation: () => Promise<T>) => Promise<T>;
+  ensureIdle?: (raw: RawRecord) => Promise<void>;
+};
 
 type Receipt = {
   schemaVersion: 1;
@@ -49,6 +64,7 @@ export class NewsRawSave {
     private root: string,
     private raws: RawStore,
     private clock: () => Date,
+    private deps: NewsSaveDependencies = {},
   ) {}
   private directory() {
     return path.join(this.root, 'state', 'news-saves');
@@ -75,9 +91,9 @@ export class NewsRawSave {
   }
   private async check(receipt: Receipt) {
     const raw = await this.raws.get(receipt.rawId);
-    if (!raw) return false;
+    if (!raw) return;
     // Linked receipts keep the original registration even after a user edits the Raw.
-    if (receipt.status === 'linked') return true;
+    if (receipt.status === 'linked') return raw;
     const input = receipt.input;
     if (
       raw.body !== input.body ||
@@ -86,41 +102,68 @@ export class NewsRawSave {
       raw.sourceName !== input.sourceName ||
       raw.url !== input.url ||
       raw.publishedAt !== input.publishedAt ||
+      raw.assetId !== input.assetId ||
       raw.extractionNote !== input.extractionNote ||
       JSON.stringify(raw.tags) !== JSON.stringify(input.tags)
     )
       throw new RawIntegrityError();
-    return true;
+    return raw;
   }
-  async save(date: string, section: NewsSectionName, item: NewsItem, registrationId?: string) {
+  private material(raw: RawRecord, receipt: Receipt): NewsMaterialView {
+    const source = raw.newsMaterial;
+    return {
+      kind: source?.kind ?? 'excerpt',
+      issue: source ? source.issue : '此条 Raw 保存的是旧资讯摘录。',
+      canSupplement:
+        (!source || !!source.issue) &&
+        (raw.bodyRevision ?? 0) === (source?.revision ?? 0) &&
+        (source !== undefined || raw.body === receipt.input.body),
+    };
+  }
+  private async input(item: NewsItem, section: NewsSectionName, keepPartial: boolean): Promise<RawInput> {
+    const material = await (this.deps.acquire?.(item, keepPartial) ??
+      acquireNewsMaterial(this.root, item, keepPartial));
+    return {
+      ...material,
+      title: item.title,
+      sourceType: material.assetFormat === 'pdf' || item.research ? 'report' : 'article',
+      sourceName: item.sourceName,
+      url: item.url,
+      ...(item.author ? { author: item.author } : {}),
+      ...(item.publishedAt ? { publishedAt: item.publishedAt } : {}),
+      tags: ['每日资讯', section === 'fmcg' ? '快消行业' : 'AI 前沿'],
+    };
+  }
+  private async linkPdf(raw: RawRecord) {
+    if (!raw.assetId || raw.assetFormat !== 'pdf') return;
+    const assets = new AssetStore(this.root);
+    const asset = await assets.get(raw.assetId);
+    if (!asset) throw new RawIntegrityError();
+    if (asset.status === 'parsed' && asset.rawId === raw.id) return;
+    if (asset.rawId && asset.rawId !== raw.id) throw new RawIntegrityError();
+    await assets.markParsed(raw.assetId, {
+      format: 'pdf',
+      rawId: raw.id,
+      parser: raw.extractionParser ?? '',
+      extractionNote: raw.extractionNote ?? '',
+    });
+  }
+  async save(
+    date: string,
+    section: NewsSectionName,
+    item: NewsItem,
+    registrationId?: string,
+    options: NewsSaveOptions = {},
+  ): Promise<NewsSaveResult & { owned?: boolean }> {
     return this.queue.run(async () => {
       const url = normalizedUrl(item.url);
       let receipt = await this.read(url);
       let created = false;
+      let raw = receipt ? await this.check(receipt) : undefined;
       if (!receipt) {
-        const label = newsEvidenceLabel(item);
-        const note = item.research
-          ? [
-              label,
-              `数据时期：${item.research.dataPeriod || '请以原文为准'}`,
-              item.research.pdfUrl ? `PDF：${item.research.pdfUrl}（${item.research.pageRange || '页码未提供'}）` : '',
-            ]
-              .filter(Boolean)
-              .join('；')
-          : item.author
-            ? `${label}；作者：${item.author}`
-            : label;
+        if (options.supplement) throw new NewsError('没有找到可以补采的 Raw。', 404);
+        const input = await this.input(item, section, options.keepPartial ?? false);
         const now = this.clock().toISOString();
-        const input: RawInput = {
-          title: item.title,
-          sourceType: 'article',
-          sourceName: item.sourceName + '（' + label + '）',
-          url: item.url,
-          ...(item.publishedAt ? { publishedAt: item.publishedAt } : {}),
-          tags: ['每日资讯', section === 'fmcg' ? '快消行业' : 'AI 前沿', label],
-          extractionNote: note,
-          body: item.excerpt,
-        };
         receipt = {
           schemaVersion: 1,
           date,
@@ -139,20 +182,56 @@ export class NewsRawSave {
         };
         await writeJsonAtomic(this.file(url), receipt);
         try {
-          await this.raws.createNewsRegistration(receipt.rawId, input);
+          raw = await this.raws.createNewsRegistration(receipt.rawId, input);
         } catch {
           throw new NewsError('保存状态待核对，请重试。', 409);
         }
         created = true;
-      } else if (!(await this.check(receipt))) {
-        if (receipt.status !== 'pending' || !registrationId || receipt.registrationId !== registrationId)
+      } else if (!raw) {
+        const recoverable =
+          receipt.status === 'pending' &&
+          receipt.registrationId === registrationId &&
+          (receipt.input.newsMaterial || registrationId);
+        if (!recoverable)
           throw new NewsError(
             receipt.status === 'linked' ? '原 Raw 已删除。' : '保存未完成且未找到 Raw，请核对保存收据。',
             409,
           );
-        await this.raws.createNewsRegistration(receipt.rawId, receipt.input);
+        raw = await this.raws.createNewsRegistration(receipt.rawId, receipt.input);
         created = true;
       }
+      if (options.supplement && !this.material(raw, receipt).canSupplement) {
+        if (!raw.newsMaterial || raw.newsMaterial.issue || (raw.bodyRevision ?? 0) !== raw.newsMaterial.revision)
+          throw new NewsError('此 Raw 已有人工作业或不符合补采条件，保留当前原文。', 409);
+      } else if (options.supplement) {
+        const input = { urlImport: undefined, webImages: undefined, ...(await this.input(item, section, false)) };
+        if (raw.assetId && !input.assetId) throw new NewsError('请补采原报告 PDF。当前原件及正文已保留。', 409);
+        input.title = raw.title;
+        input.url = raw.url;
+        input.publishedAt = raw.publishedAt ?? input.publishedAt;
+        input.author = raw.author ?? input.author;
+        input.tags = raw.newsMaterial
+          ? raw.tags
+          : raw.tags.filter((tag) => !receipt!.input.sourceName.endsWith(`（${tag}）`));
+        const revision = raw.bodyRevision ?? 0;
+        if (input.newsMaterial) input.newsMaterial.revision = revision + 1;
+        const expectedBodySha256 = raw.bodySha256;
+        const replace = () =>
+          this.raws.updateBody(
+            receipt.rawId,
+            {
+              body: input.body,
+              expectedBodySha256,
+              expectedBodyRevision: revision,
+            },
+            this.deps.ensureIdle ?? (async () => undefined),
+            input,
+          );
+        const updated = await (this.deps.withRawLock?.(replace) ?? replace());
+        if (!updated) throw new NewsError('原 Raw 已删除。', 409);
+        raw = updated;
+      }
+      await this.linkPdf(raw);
       if (receipt.status === 'pending') {
         receipt.status = 'linked';
         receipt.updatedAt = this.clock().toISOString();
@@ -166,14 +245,19 @@ export class NewsRawSave {
         rawId: receipt.rawId,
         status: 'saved' as const,
         created,
+        material: this.material(raw, receipt),
         ...(registrationId ? { owned: receipt.registrationId === registrationId } : {}),
       };
     });
   }
   async savedRawId(item: NewsItem) {
+    return (await this.savedRaw(item))?.rawId;
+  }
+  async savedRaw(item: NewsItem) {
     const receipt = await this.read(normalizedUrl(item.url));
-    // A receipt represents an existing source registration even after a user edits the Raw.
-    return receipt && (await this.raws.get(receipt.rawId)) ? receipt.rawId : undefined;
+    if (!receipt) return;
+    const raw = await this.check(receipt);
+    if (raw) return { rawId: receipt.rawId, material: this.material(raw, receipt) };
   }
   async confirmedBetween(from: string, until: string) {
     const scan = await scanJsonRecords(
@@ -213,6 +297,7 @@ export class NewsRawSave {
             itemId: item.id,
             rawId: receipt.rawId,
             status: receipt.status === 'pending' ? 'pending' : exists ? 'saved' : 'missing',
+            ...(exists && receipt.status === 'linked' ? { material: this.material(exists, receipt) } : {}),
           });
         } catch (error) {
           const message =

@@ -3,6 +3,7 @@ import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promise
 import path from 'node:path';
 import yaml from 'js-yaml';
 import type { PdfTextMap } from './parse.ts';
+import type { RawWebImage } from './web-material.ts';
 import { writeFileAtomic } from '../storage/files.ts';
 
 export const SOURCE_TYPES = ['wechat', 'article', 'report', 'company', 'customer', 'meeting', 'note', 'other'] as const;
@@ -41,6 +42,8 @@ export type RawInput = RawAssetMetadata & {
   /** Server-generated trace for a successful URL import. */
   urlImport?: { finalUrl: string; fetchedAt: string };
   pdf?: PdfTextMap;
+  webImages?: RawWebImage[];
+  newsMaterial?: { kind: 'article' | 'report_pdf' | 'report_page'; issue?: string; revision: number };
 };
 export type RawMeetingOrigin = {
   kind: 'meeting';
@@ -61,6 +64,8 @@ export type RawRecord = RawInput & {
   bodyEditedAt?: string;
 };
 export type RawBodyUpdate = { body: string; expectedBodySha256: string; expectedBodyRevision: number };
+export const hasEditedPdfBody = (raw: Pick<RawRecord, 'bodyRevision' | 'newsMaterial'>) =>
+  (raw.bodyRevision ?? 0) !== (raw.newsMaterial?.kind === 'report_pdf' ? raw.newsMaterial.revision : 0);
 export type MeetingRawRegistration = {
   id: string;
   title: string;
@@ -190,6 +195,7 @@ export class RawStore {
       record.sourceName !== input.sourceName ||
       record.url !== input.url ||
       record.publishedAt !== input.publishedAt ||
+      record.assetId !== input.assetId ||
       record.extractionNote !== input.extractionNote ||
       record.body !== input.body ||
       JSON.stringify(record.tags) !== JSON.stringify(input.tags)
@@ -271,6 +277,7 @@ export class RawStore {
     id: string,
     input: RawBodyUpdate,
     ensureIdle: (record: RawRecord) => Promise<void>,
+    newsInput?: RawInput,
   ): Promise<RawRecord | undefined> {
     const current = await this.readCurrent(id);
     if (!current) return undefined;
@@ -286,7 +293,7 @@ export class RawStore {
     if (record.bodySha256.toLowerCase() !== input.expectedBodySha256 || revision !== input.expectedBodyRevision) {
       throw new RawBodyEditError('RAW_BODY_CONFLICT', '原文已被修改。请先读取最新原文并核对，再保存你的编辑。', 409);
     }
-    if (record.body === input.body) return record;
+    if (record.body === input.body && !newsInput) return record;
     await ensureIdle(record);
     const snapshot = this.historyFile(id, revision);
     const archived = await readFile(snapshot).catch((error) => {
@@ -296,6 +303,8 @@ export class RawStore {
     if (!archived) await writeFileAtomic(snapshot, bytes);
     const updated: RawRecord = {
       ...record,
+      ...newsInput,
+      sourceType: record.sourceType,
       body: input.body,
       bodySha256: createHash('sha256').update(input.body, 'utf8').digest('hex'),
       bodyRevision: revision + 1,
@@ -328,7 +337,7 @@ export class RawStore {
   }
 }
 
-class RawBodyEditError extends Error {
+export class RawBodyEditError extends Error {
   constructor(
     readonly code: string,
     message: string,

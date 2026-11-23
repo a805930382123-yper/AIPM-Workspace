@@ -10,6 +10,7 @@ import { RawStateStore } from '../services/raw/state.ts';
 import { MAX_UPLOAD_BYTES } from '../services/raw/limits.ts';
 import { ParseError } from '../services/raw/parse.ts';
 import { registerRawImportRoute } from './raw-import.ts';
+import { readWebImage } from '../services/raw/web-material.ts';
 import { registerRawPdfRoutes } from './raw-pdf.ts';
 import { PdfCleanupService } from '../services/raw/pdf-cleanup.ts';
 import { PdfPageService } from '../services/raw/pdf-pages.ts';
@@ -221,6 +222,7 @@ const news = new NewsService({
   clock: () => new Date(),
   readSources: readNewsSources,
   rawStore: store,
+  rawSave: { withRawLock: (operation) => wikiStore.withLock(operation), ensureIdle: (raw) => ensureRawIdle(raw.id) },
   aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true',
   providerFactory,
   stageResearchOverflow: (edition) => pipeline.stageEdition(edition, 'research-overflow'),
@@ -416,34 +418,40 @@ app.get('/api/raw/:id/body-history/:revision', async (req, res, next) => {
     next(error);
   }
 });
+app.get('/api/raw/:id/web-images/:sha', async (req, res, next) => {
+  try {
+    const raw = await store.get(req.params.id);
+    const image = raw?.webImages?.find((entry) => entry.sha256 === req.params.sha);
+    const bytes = image ? await readWebImage(root, image) : undefined;
+    if (!image?.mime || !bytes) throw new InputError('NOT_FOUND', '原图未保留或完整性校验失败。', 404);
+    res.set('X-Content-Type-Options', 'nosniff').type(image.mime).send(bytes);
+  } catch (error) {
+    next(error);
+  }
+});
+async function ensureRawIdle(id: string) {
+  const state = await rawStates.get(id);
+  if (
+    state.status === 'processing' ||
+    runner.recoveryJobs().some((job) => job.rawId === id) ||
+    pdf.isRunning(id) ||
+    pdfCleanup.isRunning(id)
+  ) {
+    throw new InputError('RAW_ACTIVE_WORK', '请先完成或停止这条资料正在进行的整理，并保存任务状态，再更新原文。', 409);
+  }
+  if (
+    (await commits.list()).some(
+      (commit) => commit.rawId === id && commit.status !== 'completed' && !commit.supersededBy,
+    )
+  ) {
+    throw new InputError('COMMIT_RECOVERY_REQUIRED', '请先完成这条资料上次确认的入库操作，再更新原文。', 409);
+  }
+}
 app.patch('/api/raw/:id/body', async (req, res, next) => {
   try {
     const id = req.params.id;
     const input = validateRawBodyUpdate(req.body);
-    const item = await wikiStore.withLock(() =>
-      store.updateBody(id, input, async () => {
-        const state = await rawStates.get(id);
-        if (
-          state.status === 'processing' ||
-          runner.recoveryJobs().some((job) => job.rawId === id) ||
-          pdf.isRunning(id) ||
-          pdfCleanup.isRunning(id)
-        ) {
-          throw new InputError(
-            'RAW_ACTIVE_WORK',
-            '请先完成或停止这条资料正在进行的整理，并保存任务状态，再编辑原文。',
-            409,
-          );
-        }
-        if (
-          (await commits.list()).some(
-            (commit) => commit.rawId === id && commit.status !== 'completed' && !commit.supersededBy,
-          )
-        ) {
-          throw new InputError('COMMIT_RECOVERY_REQUIRED', '请先完成这条资料上次确认的入库操作，再编辑原文。', 409);
-        }
-      }),
-    );
+    const item = await wikiStore.withLock(() => store.updateBody(id, input, () => ensureRawIdle(id)));
     if (!item) throw new InputError('NOT_FOUND', '没有找到这条原始资料。', 404);
     res.json(item);
   } catch (error) {

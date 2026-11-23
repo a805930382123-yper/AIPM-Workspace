@@ -1,3 +1,4 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
@@ -45,6 +46,12 @@ async function setup(fmcgItems: NewsItem[] = []) {
     new NewsService({
       root,
       rawStore: raws,
+      rawSave: {
+        acquire: async (item, keepPartial) => {
+          const source = await newsRawFixture.acquire!(item, keepPartial);
+          return { ...source, body: source.body + '\n合成网页后续正文' };
+        },
+      },
       clock: () => now,
       aiEnabled: false,
       readSources: async () => {
@@ -103,10 +110,10 @@ test('HTTP 原样保存、并发重启幂等、删除状态及门禁', async () 
     assert.equal(new Set(results.map((x) => x.rawId)).size, 1);
     assert.equal(results.filter((x) => x.created).length, 1);
     const raw = (await raws.get(results[0].rawId))!;
-    assert.equal(raw.body, item.excerpt);
-    assert.equal(raw.sourceName, 'AIHOT（来源摘要，未核验原文）');
+    assert.equal(raw.body, item.excerpt + '\n合成网页后续正文');
+    assert.equal(raw.sourceName, 'AIHOT');
     assert.equal(raw.publishedAt, undefined);
-    assert.match(raw.extractionNote!, /未核验原文/);
+    assert.match(raw.extractionNote!, /来源网页正文/);
     assert.equal(raw.status, 'unprocessed');
     assert.equal((await make().saveRaw('2026-11-07', 'ai', 'one')).rawId, raw.id);
     assert.equal((await raws.list()).length, 1);
@@ -119,7 +126,7 @@ test('HTTP 原样保存、并发重启幂等、删除状态及门禁', async () 
     await rm(root, { recursive: true, force: true });
   }
 });
-test('pending 缺失不会重建，损坏收据保留', async () => {
+test('pending 新收据按原标识恢复，损坏收据保留', async () => {
   const { root, raws, make } = await setup();
   try {
     const saved = await make().saveRaw('2026-11-07', 'ai', 'one');
@@ -130,8 +137,8 @@ test('pending 缺失不会重建，损坏收据保留', async () => {
     receipt.status = 'pending';
     await writeFile(file, JSON.stringify(receipt));
     await raws.delete(saved.rawId);
-    await assert.rejects(make().saveRaw('2026-11-07', 'ai', 'one'), /保存未完成且未找到 Raw/);
-    assert.equal((await raws.list()).length, 0);
+    assert.equal((await make().saveRaw('2026-11-07', 'ai', 'one')).rawId, saved.rawId);
+    assert.equal((await raws.list()).length, 1);
     await writeFile(file, 'broken');
     await assert.rejects(make().saveRaw('2026-11-07', 'ai', 'one'), /收据损坏/);
     assert.equal(await readFile(file, 'utf8'), 'broken');
@@ -162,12 +169,23 @@ test('已编辑的 Raw 保留关联，单条损坏隔离，同期其他资讯仍
     );
     const linkedReceipt = await readFile(receiptFile, 'utf8');
     assert.deepEqual((await make().savedRaws(date)).items, [
-      { section: 'fmcg', itemId: report.id, rawId, status: 'saved' },
+      {
+        section: 'fmcg',
+        itemId: report.id,
+        rawId,
+        status: 'saved',
+        material: { kind: 'article', issue: undefined, canSupplement: false },
+      },
     ]);
-    assert.deepEqual(await make().saveRaw(date, 'fmcg', report.id), { rawId, status: 'saved', created: false });
+    assert.deepEqual(await make().saveRaw(date, 'fmcg', report.id), {
+      rawId,
+      status: 'saved',
+      created: false,
+      material: { kind: 'article', issue: undefined, canSupplement: false },
+    });
     assert.equal(await readFile(rawFile, 'utf8'), editedRaw);
     assert.equal(await readFile(receiptFile, 'utf8'), linkedReceipt);
-    assert.equal((await raws.bodyHistory(rawId, 0))?.body, report.excerpt);
+    assert.equal((await raws.bodyHistory(rawId, 0))?.body, original.body);
 
     await writeFile(rawFile, `${editedRaw}\n未经校验的内容`);
     await assert.rejects(make().saveRaw(date, 'fmcg', report.id), /完整性校验失败/);
@@ -175,7 +193,13 @@ test('已编辑的 Raw 保留关联，单条损坏隔离，同期其他资讯仍
     const [damaged, unaffected] = (await make().savedRaws(date)).items;
     assert.equal(damaged.status, 'error');
     assert.match(damaged.message, /完整性校验失败/);
-    assert.deepEqual(unaffected, { section: 'ai', itemId: item.id, rawId: ai.rawId, status: 'saved' });
+    assert.deepEqual(unaffected, {
+      section: 'ai',
+      itemId: item.id,
+      rawId: ai.rawId,
+      status: 'saved',
+      material: ai.material,
+    });
     await writeFile(rawFile, editedRaw);
 
     const badReceipt = 'broken';

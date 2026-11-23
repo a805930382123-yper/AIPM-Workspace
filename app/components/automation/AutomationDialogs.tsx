@@ -524,8 +524,8 @@ export function CandidateConfirmationDialog({
       )}
       <p>
         {request.organize
-          ? '确认即授权保存所列来源材料并发起一次 AI 整理，产生的草稿等待人工审核。'
-          : '确认后仅保存所列来源材料到 Raw。'}
+          ? '确认后获取来源材料。获取完整时自动整理，草稿等待人工审核。遇到缺失时等待你决定。'
+          : '确认后获取来源材料并保存到 Raw。遇到缺失时等待你决定。'}
       </p>
       {error && (
         <p className="form-error" role="alert">

@@ -1,3 +1,4 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
@@ -53,6 +54,7 @@ async function setup() {
       return new NewsService({
         root,
         rawStore,
+        rawSave: newsRawFixture,
         clock: () => now,
         aiEnabled: false,
         providerFactory,

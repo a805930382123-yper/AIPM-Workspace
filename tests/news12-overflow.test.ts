@@ -1,3 +1,4 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -46,6 +47,7 @@ async function setup(t: TestContext, reports: NewsItem[]) {
     root,
     clock,
     rawStore: raws,
+    rawSave: newsRawFixture,
     aiEnabled: true,
     providerFactory: async () => noModel(),
     stageResearchOverflow: (edition) => {

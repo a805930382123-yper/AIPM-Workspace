@@ -16,6 +16,7 @@ import { SerialQueue, StorageError, scanJsonRecords, readJsonRecord, writeJsonAt
 import { derivedTakeaways, type DraftRecord, type DraftStore } from './drafts.ts';
 import { renderPageBody, renderSourceBody, renderConfirmedNote, pdfOriginalPageLink } from './render.ts';
 import { WikiError, WikiStore, type WikiRecord } from './store.ts';
+import { hasEditedPdfBody, type RawRecord } from '../raw/store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import type { NoteApproval, StructuredNote, NoteReviewMetadata } from './structured-note.ts';
 import { escapeNoteText } from './structured-note.ts';
@@ -147,8 +148,7 @@ export class WikiCommitService {
         get(
           id: string,
         ): Promise<
-          | { id: string; title: string; body: string; bodySha256: string; tags: string[]; bodyRevision?: number }
-          | undefined
+          Pick<RawRecord, 'id' | 'title' | 'body' | 'bodySha256' | 'tags' | 'bodyRevision' | 'newsMaterial'> | undefined
         >;
       };
     },
@@ -352,7 +352,7 @@ export class WikiCommitService {
       )
     )
       existing = undefined;
-    if (draft.pdfInput && raw?.bodyRevision && existing?.status !== 'completed') {
+    if (draft.pdfInput && raw && hasEditedPdfBody(raw) && existing?.status !== 'completed') {
       throw new CommitError('RAW_CHANGED', 'PDF 提取文字已由人工修改，旧页整理草稿不能继续入库。', 409);
     }
     if (

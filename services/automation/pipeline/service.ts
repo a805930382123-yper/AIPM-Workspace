@@ -6,7 +6,9 @@ import type { RawStateStore } from '../../raw/state.ts';
 import type { DraftStore } from '../../wiki/drafts.ts';
 import type { WikiStore } from '../../wiki/store.ts';
 import { shanghaiDate, validNewsDate, type NewsService } from '../../news/service.ts';
-import type { NewsEdition, NewsItem, NewsSectionName } from '../../news/types.ts';
+import type { NewsEdition, NewsItem, NewsMaterialView, NewsSectionName } from '../../news/types.ts';
+import { PartialNewsMaterialError, UnavailableNewsMaterialError } from '../../news/raw-material.ts';
+import { NewsError } from '../../news/service.ts';
 import { readJsonRecord, SerialQueue, StorageError, writeJsonAtomic } from '../../storage/files.ts';
 import { isIsoDate, runIdPattern } from '../ledger.ts';
 import { AutomationCheckError, type AutomationScheduler, type TaskContext } from '../scheduler.ts';
@@ -38,7 +40,16 @@ const phases = [
 ] as const;
 type Phase = (typeof phases)[number];
 type Confirmation = { requestId: string; registrationId: string; grantedAt: string; organize: boolean; mode: NewsMode };
-type Execution = { phase: Phase; runId: string; rawId?: string; jobId?: string; draftId?: string; error?: string };
+type Execution = {
+  phase: Phase;
+  runId: string;
+  rawId?: string;
+  jobId?: string;
+  draftId?: string;
+  error?: string;
+  canKeepPartial?: boolean;
+  keepPartial?: boolean;
+};
 export type NewsCandidate = {
   id: string;
   section: NewsSectionName;
@@ -49,7 +60,12 @@ export type NewsCandidate = {
   confirmation?: Confirmation;
   execution?: Execution;
 };
-export type CandidateView = NewsCandidate & { savedRawId?: string; draftPending?: boolean; saveIssue?: boolean };
+export type CandidateView = NewsCandidate & {
+  savedRawId?: string;
+  material?: NewsMaterialView;
+  draftPending?: boolean;
+  saveIssue?: boolean;
+};
 export type CandidateList = {
   date: string;
   dates: string[];
@@ -136,6 +152,9 @@ function isDay(value: unknown, date: string): value is Day {
         !phases.some((phase) => phase === execution.phase) ||
         ['rawId', 'jobId', 'draftId'].some((key) => execution[key] !== undefined && !isUuid(execution[key])) ||
         (execution.error !== undefined && typeof execution.error !== 'string') ||
+        ['canKeepPartial', 'keepPartial'].some(
+          (key) => execution[key] !== undefined && typeof execution[key] !== 'boolean',
+        ) ||
         (['queued_organize', 'organizing', 'organize_failed', 'interrupted', 'saved', 'draft_ready'].includes(
           String(execution.phase),
         ) &&
@@ -282,12 +301,12 @@ export class NewsPipeline {
       day.items.map(async (row): Promise<CandidateView> => {
         const saved = await this.deps.news
           .rawSaves()
-          .savedRawId(row.item)
+          .savedRaw(row.item)
           .then(
-            (rawId) => ({ rawId, issue: false }),
-            () => ({ rawId: undefined, issue: true }),
+            (record) => ({ record, issue: false }),
+            () => ({ record: undefined, issue: true }),
           );
-        const rawId = saved.rawId;
+        const rawId = saved.record?.rawId;
         const execution = row.execution;
         let draftId = execution?.draftId;
         if (rawId && execution?.jobId && !this.active.has(row.id) && !draftId) {
@@ -299,6 +318,7 @@ export class NewsPipeline {
           ...row,
           ...(draftId && execution ? { execution: { ...execution, draftId } } : {}),
           savedRawId: rawId,
+          material: saved.record?.material,
           draftPending: Boolean(
             draft &&
             draft.rawId === rawId &&
@@ -409,7 +429,21 @@ export class NewsPipeline {
     return { items };
   }
 
-  async retry(id: string, stage: 'raw' | 'organize') {
+  async supplement(id: string) {
+    const date = candidateDate(id);
+    const row = (await this.read(date)).items.find((item) => item.id === id);
+    if (!row) throw notFound();
+    try {
+      return await this.deps.news.rawSaves().save(date, row.section, row.item, undefined, { supplement: true });
+    } catch (error) {
+      if (error instanceof PartialNewsMaterialError || error instanceof UnavailableNewsMaterialError)
+        throw new StorageError(error.code, error.message, 422);
+      if (error instanceof NewsError) throw new StorageError('NEWS_SUPPLEMENT_FAILED', error.message, error.status);
+      throw error;
+    }
+  }
+
+  async retry(id: string, stage: 'raw' | 'organize', keepPartial = false) {
     const date = candidateDate(id);
     return this.queue.run(async () => {
       const day = await this.read(date);
@@ -424,10 +458,12 @@ export class NewsPipeline {
       ) {
         throw conflict('该条目当前没有可重试的步骤。');
       }
+      if (keepPartial && (stage !== 'raw' || !execution.canKeepPartial)) throw conflict('该条目当前不能保留部分材料。');
       row.execution = {
         ...execution,
         phase: stage === 'raw' ? 'queued_raw' : 'queued_organize',
         error: undefined,
+        ...(stage === 'raw' ? { canKeepPartial: undefined, keepPartial } : {}),
         runId: randomUUID(),
       };
       await this.write(day);
@@ -534,15 +570,32 @@ export class NewsPipeline {
         await patch({ phase: 'saving_raw' });
         const saved = await this.deps.news
           .rawSaves()
-          .save(date, row.section, row.item, confirmation.registrationId)
-          .catch(async () => {
-            const error = 'Raw 保存失败，请重试保存。';
-            await patch({ phase: 'raw_failed', error });
+          .save(date, row.section, row.item, confirmation.registrationId, { keepPartial: execution.keepPartial })
+          .catch(async (cause) => {
+            const canKeepPartial = cause instanceof PartialNewsMaterialError;
+            const error =
+              canKeepPartial || cause instanceof UnavailableNewsMaterialError
+                ? cause.message
+                : cause instanceof NewsError
+                  ? cause.message
+                  : 'Raw 保存失败，请重试保存。';
+            await patch({ phase: 'raw_failed', error, canKeepPartial });
             throw new AutomationCheckError(error);
           });
-        await patch({ rawId: saved.rawId, phase: confirmation.organize && saved.owned ? 'queued_organize' : 'saved' });
+        await patch({
+          rawId: saved.rawId,
+          phase:
+            confirmation.organize && saved.owned && !execution.keepPartial && !saved.material.issue
+              ? 'queued_organize'
+              : 'saved',
+          keepPartial: undefined,
+        });
         await link();
-        return saved.created ? '已保存来源材料。' : '已关联同一来源的 Raw。';
+        return saved.material.issue
+          ? '已保留部分材料，未开始自动整理。'
+          : saved.created
+            ? '已保存来源材料。'
+            : '已关联同一来源的 Raw。';
       });
     } else await link();
     if (execution.phase !== 'queued_organize') return;

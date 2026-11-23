@@ -1,3 +1,4 @@
+import { newsRawFixture } from './support/news-raw-fixture.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
@@ -54,6 +55,7 @@ test('保留 AIHOT 首批及新来源存储，更新提示按实际新增计数�
       new NewsService({
         root,
         rawStore,
+        rawSave: newsRawFixture,
         clock: () => now,
         aiEnabled: false,
         readSources: (section, at, exclusions, sourceIds) =>
@@ -107,9 +109,9 @@ test('保留 AIHOT 首批及新来源存储，更新提示按实际新增计数�
     assert.equal(raw?.body, item.excerpt);
     assert.equal(raw?.url, item.url);
     assert.equal(raw?.publishedAt, item.publishedAt);
-    assert.equal(raw?.extractionNote, '视频简介；作者：Andrej Karpathy');
+    assert.equal(raw?.author, 'Andrej Karpathy');
     assert.deepEqual((await restored.savedRaws(date)).items, [
-      { section: 'ai', itemId: item.id, rawId: saved.rawId, status: 'saved' },
+      { section: 'ai', itemId: item.id, rawId: saved.rawId, status: 'saved', material: saved.material },
     ]);
     assert.equal((await restored.saveRaw(date, 'ai', item.id)).created, false);
     assert.equal(models, 0);

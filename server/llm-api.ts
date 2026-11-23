@@ -13,7 +13,7 @@ import type { ExtractionRunner, ExtractionJobStore } from '../services/llm/jobs.
 import type { DraftStore } from '../services/wiki/drafts.ts';
 import { pendingRawCommit, scanWikiCommits, type WikiCommitService } from '../services/wiki/commits.ts';
 import type { RawStateStore } from '../services/raw/state.ts';
-import type { RawStore } from '../services/raw/store.ts';
+import { hasEditedPdfBody, type RawStore } from '../services/raw/store.ts';
 import type { WikiStore } from '../services/wiki/store.ts';
 import { InputError } from './validation.ts';
 import {
@@ -244,7 +244,9 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
     }
     return {
       rawExists: Boolean(raw),
-      rawSha256Matches: Boolean(raw && raw.bodySha256 === draft.rawSha256 && !(draft.pdfInput && raw.bodyRevision)),
+      rawSha256Matches: Boolean(
+        raw && raw.bodySha256 === draft.rawSha256 && !(draft.pdfInput && hasEditedPdfBody(raw)),
+      ),
       sourceReuse: reuseSource ?? null,
       sourceAmbiguous: binding.length > 1 ? binding.map((page) => ({ id: page.id, title: page.title })) : null,
       titleConflicts: conflicts,
@@ -441,7 +443,7 @@ export function registerB04Routes(app: express.Express, deps: B04Deps): void {
         if (
           !raw ||
           raw.bodySha256 !== draft.rawSha256 ||
-          (draft.pdfInput && raw.bodyRevision) ||
+          (draft.pdfInput && hasEditedPdfBody(raw)) ||
           state.status !== 'pending_confirmation' ||
           state.jobId !== draft.jobId ||
           state.draftId !== draft.id ||

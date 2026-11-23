@@ -42,6 +42,8 @@ export function validateRawMetadata(value: unknown): RawMetadata {
     'extractionNote',
     'urlImport',
     'pdf',
+    'webImages',
+    'newsMaterial',
   ]) {
     if (field in x) throw new InputError('SYSTEM_FIELD_FORBIDDEN', 'Raw 系统字段只能由服务端生成。', 403, { field });
   }

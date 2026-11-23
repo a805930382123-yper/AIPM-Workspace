@@ -1,5 +1,7 @@
 import type express from 'express';
-import { RawIntegrityError } from '../services/raw/store.ts';
+import { RawBodyEditError, RawIntegrityError } from '../services/raw/store.ts';
+import { PartialNewsMaterialError, UnavailableNewsMaterialError } from '../services/news/raw-material.ts';
+import { InputError } from './validation.ts';
 import { NewsError, NewsService } from '../services/news/service.ts';
 import type { NewsSectionName } from '../services/news/types.ts';
 export function registerNewsRoutes(app: express.Express, service: NewsService) {
@@ -34,8 +36,17 @@ export function registerNewsRoutes(app: express.Express, service: NewsService) {
       try {
         res.json(await work(req));
       } catch (e) {
-        res.status(e instanceof NewsError ? e.status : e instanceof RawIntegrityError ? 409 : 500).json({
-          error: { message: e instanceof NewsError || e instanceof RawIntegrityError ? e.message : '资讯读取失败。' },
+        if (e instanceof PartialNewsMaterialError || e instanceof UnavailableNewsMaterialError) {
+          res.status(422).json({ error: { code: e.code, message: e.message } });
+          return;
+        }
+        const known =
+          e instanceof NewsError ||
+          e instanceof RawIntegrityError ||
+          e instanceof RawBodyEditError ||
+          e instanceof InputError;
+        res.status(known ? e.status : 500).json({
+          error: { message: known ? e.message : '资讯读取失败。' },
         });
       }
     };
@@ -88,10 +99,15 @@ export function registerNewsRoutes(app: express.Express, service: NewsService) {
         !['fmcg', 'ai'].includes(req.body.section) ||
         typeof req.body.itemId !== 'string' ||
         !req.body.itemId ||
-        Object.keys(req.body).some((k) => !['section', 'itemId'].includes(k))
+        Object.keys(req.body).some((k) => !['section', 'itemId', 'keepPartial', 'supplement'].includes(k)) ||
+        ['keepPartial', 'supplement'].some((k) => req.body[k] !== undefined && typeof req.body[k] !== 'boolean') ||
+        (req.body.keepPartial && req.body.supplement)
       )
         throw new NewsError('请求格式无效。', 400);
-      return service.saveRaw(String(req.params.date), req.body.section, req.body.itemId);
+      return service.saveRaw(String(req.params.date), req.body.section, req.body.itemId, {
+        supplement: req.body.supplement,
+        keepPartial: req.body.keepPartial,
+      });
     }),
   );
   app.post(

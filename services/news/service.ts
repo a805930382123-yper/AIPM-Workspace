@@ -7,7 +7,7 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { SerialQueue, writeJsonAtomic } from '../storage/files.ts';
 import { assertNoKnownSecret, type LlmProvider } from '../llm/provider.ts';
-import { NewsRawSave } from './raw-save.ts';
+import { NewsRawSave, type NewsSaveDependencies, type NewsSaveOptions } from './raw-save.ts';
 import { NewsTranslations } from './translations.ts';
 import type { RawStore } from '../raw/store.ts';
 import { isNewsTranslationSource } from './types.ts';
@@ -105,6 +105,7 @@ export class NewsService {
       aiEnabled: boolean;
       providerFactory: () => Promise<LlmProvider | undefined>;
       rawStore?: RawStore;
+      rawSave?: NewsSaveDependencies;
       stageResearchOverflow?: (edition: NewsEdition) => Promise<unknown>;
     },
   ) {
@@ -190,9 +191,14 @@ export class NewsService {
   private saves?: NewsRawSave;
   rawSaves() {
     if (!this.deps.rawStore) throw new NewsError('资讯保存不可用。', 500);
-    return (this.saves ??= new NewsRawSave(this.deps.root, this.deps.rawStore, () => this.deps.clock()));
+    return (this.saves ??= new NewsRawSave(
+      this.deps.root,
+      this.deps.rawStore,
+      () => this.deps.clock(),
+      this.deps.rawSave,
+    ));
   }
-  async saveRaw(date: string, section: NewsSectionName, itemId: string) {
+  async saveRaw(date: string, section: NewsSectionName, itemId: string, options?: NewsSaveOptions) {
     const edition = await this.edition(date),
       part = edition?.sections[section];
     const current =
@@ -203,7 +209,7 @@ export class NewsService {
     if (!item) throw new NewsError('没有找到资讯。', 404);
     if (!current && legacy && !['ready', 'source_only'].includes(legacy.status))
       throw new NewsError('该期资讯当前不能保存。', 409);
-    return this.rawSaves().save(date, section, item);
+    return this.rawSaves().save(date, section, item, undefined, options);
   }
   async savedRaws(date: string) {
     const edition = await this.edition(date);
