@@ -32,3 +32,24 @@ Windows Node `v24.18.0`。数据根目录为测试临时 `aipm-*`，配置指向
 | `services/raw/web-material.ts` | `6a76af0427835b8774d9d9e33fd6e5d5f7162bee144a207bb75cf891f5af41e7` |
 | `tests/rawocr01.test.ts` | `f8ab97d93a749fd88cb60a0bd3adffb10f9204a6e26cfd13551dc7b72dd2622a` |
 | `tests/acceptance/rawocr01-http.mjs` | `be7ff5a046afdabb76b9d28378ec1653ee0d0db6ff23537f907f88f6d5416602` |
+
+## 独立验收阻塞返修
+
+返修基线 `7115321`。按[独立验收反例](RAWOCR01-review.md#首次验收)原样复现，紧邻汉字的榜单样本返回 `ocr_ready`，乱码率为 0；插入空格的同一内容已经返回 `needs_vlm`，乱码率为 0.72。
+
+乱码检测现在在汉字边界识别紧邻的独立拉丁字母串，并按原阈值检查元音比例和连续辅音。孤立单字符仍按实际空白或符号边界计数。两条榜单样本复跑均为 `needs_vlm`，乱码率 `0.72`，命中 `high_gibberish:0.72`，无 `ocrCleanText`。`Gemini`、`Claude`、`GPT-6.2`、`API`、`SHA-256`、`HTML`、`CI/CD` 紧邻中文及 `甲A乙B版2号` 这类单字符和数字紧邻汉字的输入，乱码率均为 0，清洗结果与输入一致。
+
+| 实际命令 | 结果 |
+| --- | --- |
+| `node --import tsx --import ./tests/support/css-stub.mjs --test tests/rawocr01.test.ts tests/raw-integrity.test.ts tests/raw.test.ts tests/newsraw01.test.ts` | 22 项全部通过，含上述返修回归。 |
+| `node --import tsx tests/acceptance/rawocr01-http.mjs --tesseract` | 本机 Tesseract 中英文识别和实际 HTTP 回归通过。 |
+| `npm.cmd run typecheck` | 退出码 0。 |
+| `node_modules/.bin/prettier.cmd --check services/raw/media-ocr-triage.ts tests/rawocr01.test.ts` | 格式检查通过。 |
+| `node_modules/.bin/eslint.cmd services/raw/media-ocr-triage.ts tests/rawocr01.test.ts` | 零错误、零告警。 |
+
+验证用系统临时 `aipm-*` 数据目录和不存在的 Provider 配置文件，清除继承的 `FMCG_LLM_*`。真实 Provider 请求数为 0。以下是返修自查对应的文件指纹。
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `services/raw/media-ocr-triage.ts` | `bb308724635df49854a496fffa52bd5d5e62adf465dd6c81c32a53031ca3d0b8` |
+| `tests/rawocr01.test.ts` | `44b1bd8faa264e6b65822a1bd7ade190c5fc578aee7a1459e51ebb8d5f0aa016` |

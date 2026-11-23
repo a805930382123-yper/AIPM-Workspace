@@ -152,10 +152,11 @@ export function evaluateImageOcr(input: ImageMetaInput): OcrEvaluation {
     for (const [token] of text.matchAll(wordOrDigit)) {
       const parts = token.split(/[-./_]/u);
       const technicalCompound = parts.length > 1 && parts.some((part) => /[A-Za-z][A-Za-z\d]/u.test(part));
-      for (const word of parts) {
-        if (!technicalCompound && word.length <= 2 && [...word].length === 1) {
-          gibberishChars++;
-        } else if (word.length >= config.pseudoWordMinLength && /^[A-Z]+$/u.test(word)) {
+      for (const part of parts) {
+        if (!technicalCompound && part.length <= 2 && [...part].length === 1) gibberishChars++;
+        // An English word can touch Han text without a space. Only actually separated glyphs are isolated.
+        for (const [word] of part.matchAll(/[A-Za-z\p{Nd}]+/gu)) {
+          if (word.length < config.pseudoWordMinLength || !/^[A-Z]+$/u.test(word)) continue;
           const vowelRatio = (word.match(/[AEIOUY]/gu)?.length ?? 0) / word.length;
           const consonantRun = word.split(/[AEIOUY]/u).some((run) => run.length >= config.pseudoWordConsonantRun);
           if (

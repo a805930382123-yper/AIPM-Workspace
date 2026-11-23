@@ -131,6 +131,26 @@ test('fragmented ranking and flow/table fixtures route to VLM by measured signal
   assert.equal(table.metrics.layoutDispersion, 1);
 });
 
+test('OCR detects pseudo-English touching Han without counting adjacent normal glyphs as isolated', () => {
+  for (const sample of ['排行榜BCDFGH品牌BCDFGH排名BCDFGH', '排行榜 BCDFGH 品牌 BCDFGH 排名 BCDFGH']) {
+    const result = evaluateImageOcr({ lines: lines(sample) });
+    assert.equal(result.metrics.gibberishRatio, 0.72);
+    assert.equal(result.routeStatus, 'needs_vlm');
+    assert.ok(result.routeReasons.includes('high_gibberish:0.72'));
+    assert.equal(result.ocrCleanText, undefined);
+  }
+
+  for (const sample of [
+    '使用Gemini和Claude检查GPT-6.2及API，复核SHA-256、HTML和CI/CD配置。',
+    '质量甲A乙B版2号甲A乙B版2号。',
+  ]) {
+    const result = evaluateImageOcr({ lines: lines(sample) });
+    assert.equal(result.metrics.gibberishRatio, 0);
+    assert.equal(result.routeStatus, 'ocr_ready');
+    assert.equal(result.ocrCleanText, sample);
+  }
+});
+
 test('OCR numeric thresholds apply at their boundaries and confidence ignores absent readings', () => {
   const justAt = evaluateImageOcr({ ...dimensions, lines: [{ text: longText, confidence: 0.72 }] });
   assert.equal(justAt.metrics.qualityScore, 90);
