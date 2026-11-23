@@ -10,16 +10,27 @@ import type {
   NewsEdition,
   NewsItem,
   NewsMaterialView,
+  NewsSaveProgress,
   NewsSaveResult,
   NewsSavedRaw,
   NewsSectionName,
 } from './types.ts';
+import type { RawState, RawStateStore } from '../raw/state.ts';
+import type { WikiCommitService } from '../wiki/commits.ts';
+import type { DraftStore } from '../wiki/drafts.ts';
+import type { WikiStore } from '../wiki/store.ts';
 
 export type NewsSaveOptions = { supplement?: boolean; keepPartial?: boolean };
 export type NewsSaveDependencies = {
   acquire?: (item: NewsItem, keepPartial: boolean) => ReturnType<typeof acquireNewsMaterial>;
   withRawLock?: <T>(operation: () => Promise<T>) => Promise<T>;
   ensureIdle?: (raw: RawRecord) => Promise<void>;
+  knowledge?: {
+    states: Pick<RawStateStore, 'get'>;
+    drafts: Pick<DraftStore, 'get'>;
+    commits: Pick<WikiCommitService, 'get'>;
+    wiki: Pick<WikiStore, 'get'>;
+  };
 };
 
 type Receipt = {
@@ -37,14 +48,17 @@ type Receipt = {
   createdAt: string;
   updatedAt: string;
   registrationId?: string;
+  publishedRawIds?: string[];
 };
+const isRawId = (id: unknown): id is string => typeof id === 'string' && /^[-a-f0-9]{36}$/i.test(id);
 function validReceipt(value: unknown, url: string): value is Receipt {
   const x = value as Receipt | null;
   return (
     !!x &&
     x.schemaVersion === 1 &&
     x.normalizedUrl === url &&
-    /^[-a-f0-9]{36}$/i.test(x.rawId) &&
+    isRawId(x.rawId) &&
+    (x.publishedRawIds === undefined || (Array.isArray(x.publishedRawIds) && x.publishedRawIds.every(isRawId))) &&
     ['pending', 'linked'].includes(x.status) &&
     !!x.input &&
     typeof x.input.body === 'string' &&
@@ -160,8 +174,10 @@ export class NewsRawSave {
       let receipt = await this.read(url);
       let created = false;
       let raw = receipt ? await this.check(receipt) : undefined;
-      if (!receipt) {
+      if (!receipt || (receipt.status === 'linked' && !raw)) {
         if (options.supplement) throw new NewsError('没有找到可以补采的 Raw。', 404);
+        const publishedRawIds = [...(receipt?.publishedRawIds ?? [])];
+        if (receipt && (await this.publishedWikiId(receipt.rawId))) publishedRawIds.unshift(receipt.rawId);
         const input = await this.input(item, section, options.keepPartial ?? false);
         const now = this.clock().toISOString();
         receipt = {
@@ -179,6 +195,7 @@ export class NewsRawSave {
           createdAt: now,
           updatedAt: now,
           ...(registrationId ? { registrationId } : {}),
+          ...(publishedRawIds.length ? { publishedRawIds } : {}),
         };
         await writeJsonAtomic(this.file(url), receipt);
         try {
@@ -192,11 +209,7 @@ export class NewsRawSave {
           receipt.status === 'pending' &&
           receipt.registrationId === registrationId &&
           (receipt.input.newsMaterial || registrationId);
-        if (!recoverable)
-          throw new NewsError(
-            receipt.status === 'linked' ? '原 Raw 已删除。' : '保存未完成且未找到 Raw，请核对保存收据。',
-            409,
-          );
+        if (!recoverable) throw new NewsError('保存未完成且未找到 Raw，请核对保存收据。', 409);
         raw = await this.raws.createNewsRegistration(receipt.rawId, receipt.input);
         created = true;
       }
@@ -259,6 +272,46 @@ export class NewsRawSave {
     const raw = await this.check(receipt);
     if (raw) return { rawId: receipt.rawId, material: this.material(raw, receipt) };
   }
+  private async publishedWikiId(rawId: string, state?: RawState) {
+    const knowledge = this.deps.knowledge;
+    if (!knowledge) return;
+    const id = (state ?? (await knowledge.states.get(rawId))).confirmedOperationId;
+    const commit = id ? await knowledge.commits.get(id) : undefined;
+    if (commit?.status !== 'completed' || commit.rawId !== rawId) return;
+    let sourceId: string | undefined;
+    for (const wikiId of commit.writtenWikiIds) {
+      const page = await knowledge.wiki.get(wikiId);
+      if (!page) continue;
+      if (page.type !== 'source') return wikiId;
+      sourceId ??= wikiId;
+    }
+    return sourceId;
+  }
+  async progress(item: NewsItem): Promise<NewsSaveProgress | undefined> {
+    const receipt = await this.read(normalizedUrl(item.url));
+    if (!receipt) return;
+    const raw = await this.check(receipt);
+    const knowledge = this.deps.knowledge;
+    const state = raw && knowledge ? await knowledge.states.get(raw.id) : undefined;
+    const draft =
+      knowledge && state?.draftId && state.status === 'pending_confirmation'
+        ? await knowledge.drafts.get(state.draftId)
+        : undefined;
+    let wikiId = await this.publishedWikiId(receipt.rawId, state);
+    for (const rawId of receipt.publishedRawIds ?? []) {
+      if (wikiId) break;
+      wikiId = await this.publishedWikiId(rawId);
+    }
+    const saved = { rawId: receipt.rawId, ...(wikiId ? { wikiId } : {}) };
+    if (receipt.status === 'pending') return { ...saved, status: 'pending' };
+    if (!raw) return { ...saved, status: 'missing' };
+    return {
+      ...saved,
+      status: 'saved',
+      material: this.material(raw, receipt),
+      ...(draft?.status === 'pending_confirmation' && draft.rawId === raw.id ? { draftId: draft.id } : {}),
+    };
+  }
   async confirmedBetween(from: string, until: string) {
     const scan = await scanJsonRecords(
       this.directory(),
@@ -289,16 +342,8 @@ export class NewsRawSave {
       const additional = section === 'fmcg' ? edition.legacyFmcg?.items : part?.sourceItems;
       for (const item of [...(part?.items ?? []), ...(additional ?? [])]) {
         try {
-          const receipt = await this.read(normalizedUrl(item.url));
-          if (!receipt) continue;
-          const exists = await this.check(receipt);
-          items.push({
-            section,
-            itemId: item.id,
-            rawId: receipt.rawId,
-            status: receipt.status === 'pending' ? 'pending' : exists ? 'saved' : 'missing',
-            ...(exists && receipt.status === 'linked' ? { material: this.material(exists, receipt) } : {}),
-          });
+          const progress = await this.progress(item);
+          if (progress) items.push({ section, itemId: item.id, ...progress });
         } catch (error) {
           const message =
             error instanceof NewsError || error instanceof RawIntegrityError

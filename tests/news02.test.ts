@@ -119,7 +119,10 @@ test('HTTP 原样保存、并发重启幂等、删除状态及门禁', async () 
     assert.equal((await raws.list()).length, 1);
     await raws.delete(raw.id);
     assert.equal((await make().savedRaws('2026-11-07')).items[0].status, 'missing');
-    await assert.rejects(make().saveRaw('2026-11-07', 'ai', 'one'), /原 Raw 已删除/);
+    const imported = await make().saveRaw('2026-11-07', 'ai', 'one');
+    assert.equal(imported.created, true);
+    assert.notEqual(imported.rawId, raw.id);
+    assert.equal((await make().saveRaw('2026-11-07', 'ai', 'one')).rawId, imported.rawId);
     assert.equal(external(), 0);
   } finally {
     await new Promise<void>((r) => server.close(() => r()));

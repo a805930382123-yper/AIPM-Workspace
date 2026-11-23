@@ -178,7 +178,7 @@ export const candidateStages = {
   organizing: '整理中',
   organize_failed: '整理失败',
   interrupted: '整理已中断',
-  saved: '已入库',
+  saved: '已保存 Raw',
   draft_ready: '草稿已生成',
 } as const;
 
@@ -199,7 +199,7 @@ export const candidateScore = (row: CandidateView) =>
   row.screening && 'score' in row.screening ? row.screening.score : undefined;
 
 export const canConfirmCandidate = (row: CandidateView) =>
-  !row.confirmation && !row.savedRawId && row.disposition !== 'ignored';
+  (!row.confirmation || row.canReimport) && !row.savedRawId && !row.saveIssue && row.disposition !== 'ignored';
 
 export const isOrganizingCandidate = (row: CandidateView) =>
   ['queued_raw', 'saving_raw', 'queued_organize', 'organizing'].some((phase) => phase === row.execution?.phase);

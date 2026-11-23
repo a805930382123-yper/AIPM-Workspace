@@ -81,7 +81,6 @@ async function setup(t: TestContext, reports: NewsItem[]) {
       runAuthorized: (_type, _id, _candidateId, work) => (operation = work(context)),
     },
     runner: { start: async () => noModel(), readJob: async () => noModel(), waitForSettlement: async () => noModel() },
-    drafts: { get: async () => undefined },
     wiki: { withLock: async (work) => work() },
     states: { get: async () => assert.fail('本用例只保存 Raw') },
     withProvider: async (work) => work(),

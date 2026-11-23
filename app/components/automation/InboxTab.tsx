@@ -258,6 +258,7 @@ type NewsInboxProps = {
   onChanged: () => void;
   onOpenRaw: (id: string) => void;
   onOpenDraft: (id: string) => void;
+  onOpenWiki?: (id: string) => void;
   onOpenRun: (id: string, trigger?: HTMLElement | null) => void;
 };
 
@@ -277,6 +278,7 @@ function NewsInbox({
   onChanged,
   onOpenRaw,
   onOpenDraft,
+  onOpenWiki,
   onOpenRun,
 }: NewsInboxProps) {
   const [selected, setSelected] = useState<string[]>([]);
@@ -352,6 +354,7 @@ function NewsInbox({
   const renderCandidate = (row: CandidateView) => {
     const score = candidateScore(row);
     const phase = row.execution?.phase;
+    const draftId = row.draftId ?? row.execution?.draftId;
     const available = canConfirmCandidate(row);
     const screenError = row.screening && 'error' in row.screening ? row.screening.error : undefined;
     const scoreTone = score
@@ -418,9 +421,9 @@ function NewsInbox({
               {row.disposition === 'later' ? '稍后处理' : '已忽略'}
             </span>
           )}
-          {((phase && phase !== 'saved') || row.draftPending) && (
+          {((phase && !['saved', 'draft_ready'].includes(phase)) || row.draftPending) && (
             <span className="automation-pill" data-tone={phaseTone}>
-              {row.draftPending ? '草稿待审核' : candidateStages[phase!]}
+              {row.draftPending ? '草稿待确认' : candidateStages[phase!]}
             </span>
           )}
         </div>
@@ -429,9 +432,7 @@ function NewsInbox({
           <summary>展开摘录</summary>
           <p className="candidate-excerpt">{row.item.excerpt}</p>
         </details>
-        {row.confirmation && !row.savedRawId && (phase === 'saved' || phase === 'draft_ready') && (
-          <p>原入库资料已缺失。</p>
-        )}
+        {row.missingRaw && <p>原 Raw 已删除</p>}
         {row.saveIssue && <p className="form-error">入库收据读取失败。</p>}
         {row.material?.issue && <p className="extract-note">{row.material.issue}</p>}
         {!row.draftPending && row.execution?.error && <p className="form-error">{row.execution.error}</p>}
@@ -444,9 +445,9 @@ function NewsInbox({
                 disabled={pending || !token}
                 onClick={() => begin([row])}
               >
-                确认入库
+                {row.missingRaw ? '重新导入 Raw' : '确认入库'}
               </button>
-              {row.disposition !== 'later' && (
+              {!row.confirmation && row.disposition !== 'later' && (
                 <button
                   type="button"
                   className="secondary-button"
@@ -458,16 +459,18 @@ function NewsInbox({
                   稍后
                 </button>
               )}
-              <button
-                type="button"
-                className="text-button"
-                disabled={pending || !token}
-                onClick={() =>
-                  void write((value) => changeCandidateDisposition(row.id, 'ignore', value).then(() => undefined))
-                }
-              >
-                忽略
-              </button>
+              {!row.confirmation && (
+                <button
+                  type="button"
+                  className="text-button"
+                  disabled={pending || !token}
+                  onClick={() =>
+                    void write((value) => changeCandidateDisposition(row.id, 'ignore', value).then(() => undefined))
+                  }
+                >
+                  忽略
+                </button>
+              )}
             </>
           )}
           {!row.confirmation && !row.savedRawId && row.disposition !== 'inbox' && (
@@ -484,7 +487,7 @@ function NewsInbox({
           )}
           {row.savedRawId && (
             <button type="button" className="text-button" onClick={() => onOpenRaw(row.savedRawId!)}>
-              已入库{row.material ? ` · ${newsMaterialLabels[row.material.kind]}` : ''} · 打开 Raw
+              已保存 Raw{row.material ? ` · ${newsMaterialLabels[row.material.kind]}` : ''} · 打开 Raw
             </button>
           )}
           {row.material?.canSupplement && (
@@ -497,9 +500,14 @@ function NewsInbox({
               补采来源正文
             </button>
           )}
-          {row.draftPending && row.execution?.draftId && (
-            <button type="button" className="secondary-button" onClick={() => onOpenDraft(row.execution!.draftId!)}>
+          {row.draftPending && draftId && (
+            <button type="button" className="secondary-button" onClick={() => onOpenDraft(draftId)}>
               审核草稿
+            </button>
+          )}
+          {row.wikiId && (
+            <button type="button" className="text-button" onClick={() => onOpenWiki?.(row.wikiId!)}>
+              已导入知识库 · 查看条目
             </button>
           )}
           {phase === 'raw_failed' && row.execution?.canKeepPartial && (
@@ -523,7 +531,13 @@ function NewsInbox({
                 )
               }
             >
-              {phase === 'raw_failed' ? '重试保存 Raw' : phase === 'interrupted' ? '继续整理' : '重试整理'}
+              {phase === 'raw_failed'
+                ? row.missingRaw
+                  ? '重新导入 Raw'
+                  : '重试保存 Raw'
+                : phase === 'interrupted'
+                  ? '继续整理'
+                  : '重试整理'}
             </button>
           )}
           {row.execution && phase !== 'queued_raw' && phase !== 'queued_organize' && (
@@ -739,6 +753,7 @@ export type InboxTabProps = {
   onOpenWorkItem?: (id: string, focusMaterials?: boolean) => void;
   onOpenRaw: (id: string) => void;
   onOpenDraft: (id: string) => void;
+  onOpenWiki?: (id: string) => void;
   onOpenRun: (id: string, trigger?: HTMLElement | null) => void;
 };
 
@@ -770,6 +785,7 @@ export function InboxTab({
   onOpenWorkItem,
   onOpenRaw,
   onOpenDraft,
+  onOpenWiki,
   onOpenRun,
 }: InboxTabProps) {
   if (!showReminders && !hasPipeline) {
@@ -802,6 +818,7 @@ export function InboxTab({
       onChanged={onPipelineChanged}
       onOpenRaw={onOpenRaw}
       onOpenDraft={onOpenDraft}
+      onOpenWiki={onOpenWiki}
       onOpenRun={onOpenRun}
     />
   );

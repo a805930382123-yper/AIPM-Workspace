@@ -210,10 +210,14 @@ export function NewsHome({ onOpen }: { onOpen: () => void }) {
 export function NewsPage({
   onRawChanged = () => {},
   onOpenRaw = () => {},
+  onOpenDraft = () => {},
+  onOpenWiki = () => {},
   onBack,
 }: {
   onRawChanged?: () => void | Promise<void>;
   onOpenRaw?: (id: string) => void;
+  onOpenDraft?: (id: string) => void;
+  onOpenWiki?: (id: string) => void;
   onBack?: () => void;
 }) {
   const { view, error, setView, setError, refresh } = useToday(false);
@@ -337,13 +341,25 @@ export function NewsPage({
       });
       if (alive.current) {
         projectionVersion.current[date] = (projectionVersion.current[date] || 0) + 1;
-        setSaved((prev) => ({
-          ...prev,
-          [date]: [
-            ...(prev[date] || []).filter((x) => x.section !== section || x.itemId !== itemId),
-            { section, itemId, rawId: result.rawId, status: 'saved', material: result.material },
-          ],
-        }));
+        setSaved((prev) => {
+          const rows = prev[date] ?? [];
+          const current = rows.find((x) => x.section === section && x.itemId === itemId);
+          return {
+            ...prev,
+            [date]: [
+              ...rows.filter((x) => x !== current),
+              {
+                section,
+                itemId,
+                rawId: result.rawId,
+                status: 'saved',
+                material: result.material,
+                wikiId: current?.status !== 'error' ? current?.wikiId : undefined,
+                draftId: current?.status === 'saved' && current.rawId === result.rawId ? current.draftId : undefined,
+              },
+            ],
+          };
+        });
       }
       void onRawChanged();
     } catch (e) {
@@ -471,7 +487,7 @@ export function NewsPage({
           <>
             {entry?.status === 'saved' ? (
               <>
-                <span>已保存{entry.material ? ` · ${newsMaterialLabels[entry.material.kind]}` : ''}</span>
+                <span>已保存 Raw{entry.material ? ` · ${newsMaterialLabels[entry.material.kind]}` : ''}</span>
                 <button type="button" className="text-button" onClick={() => onOpenRaw(entry.rawId)}>
                   查看 Raw
                 </button>
@@ -487,26 +503,39 @@ export function NewsPage({
                 )}
                 {entry.material?.issue && <p className="extract-note">{entry.material.issue}</p>}
               </>
-            ) : entry?.status === 'missing' ? (
-              <span>原 Raw 已删除</span>
             ) : entry?.status === 'error' ? (
               <p className="form-error" role="alert">
                 {entry.message}
               </p>
             ) : (
-              <button
-                type="button"
-                className="secondary-button"
-                disabled={Boolean(busy[key])}
-                onClick={() => void save(date, name, item.id)}
-              >
-                {busy[key]
-                  ? '正在获取来源材料…'
-                  : entry?.status === 'pending'
-                    ? '核对保存状态'
-                    : saveErrors[key]
-                      ? '重试保存到 Raw'
-                      : '保存到 Raw'}
+              <>
+                {entry?.status === 'missing' && <span>原 Raw 已删除</span>}
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={Boolean(busy[key])}
+                  onClick={() => void save(date, name, item.id)}
+                >
+                  {busy[key]
+                    ? '正在获取来源材料…'
+                    : entry?.status === 'pending'
+                      ? '核对保存状态'
+                      : entry?.status === 'missing'
+                        ? '重新导入 Raw'
+                        : saveErrors[key]
+                          ? '重试保存到 Raw'
+                          : '保存到 Raw'}
+                </button>
+              </>
+            )}
+            {entry?.status === 'saved' && entry.draftId && (
+              <button type="button" className="secondary-button" onClick={() => onOpenDraft(entry.draftId!)}>
+                草稿待确认 · 审核草稿
+              </button>
+            )}
+            {entry && entry.status !== 'error' && entry.wikiId && (
+              <button type="button" className="text-button" onClick={() => onOpenWiki(entry.wikiId!)}>
+                已导入知识库 · 查看条目
               </button>
             )}
             {partial[key] && (

@@ -75,6 +75,7 @@ const tabOrder: AutomationTab[] = ['workflows', 'inbox', 'runs'];
 export function AutomationPage({
   onOpenRaw,
   onOpenDraft,
+  onOpenWiki,
   onOpenLint,
   onOpenInspection,
   onOpenWorkItem,
@@ -86,6 +87,7 @@ export function AutomationPage({
 }: {
   onOpenRaw: (id: string) => void;
   onOpenDraft: (id: string, returnTab?: AutomationTab) => void;
+  onOpenWiki?: (id: string) => void;
   onOpenLint?: () => void;
   onOpenInspection?: (id?: string) => void;
   onOpenWorkItem?: (id: string, focusMaterials?: boolean) => void;
@@ -802,6 +804,7 @@ export function AutomationPage({
             onOpenWorkItem={onOpenWorkItem}
             onOpenRaw={onOpenRaw}
             onOpenDraft={handleOpenDraft}
+            onOpenWiki={onOpenWiki}
             onOpenRun={(id, trigger) => chooseRun(id, null, trigger)}
           />
         )}

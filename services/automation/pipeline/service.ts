@@ -3,7 +3,6 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import type { ExtractionJob, ExtractionRunner } from '../../llm/jobs.ts';
 import type { RawStateStore } from '../../raw/state.ts';
-import type { DraftStore } from '../../wiki/drafts.ts';
 import type { WikiStore } from '../../wiki/store.ts';
 import { shanghaiDate, validNewsDate, type NewsService } from '../../news/service.ts';
 import type { NewsEdition, NewsItem, NewsMaterialView, NewsSectionName } from '../../news/types.ts';
@@ -64,6 +63,10 @@ export type CandidateView = NewsCandidate & {
   savedRawId?: string;
   material?: NewsMaterialView;
   draftPending?: boolean;
+  draftId?: string;
+  wikiId?: string;
+  missingRaw?: boolean;
+  canReimport?: boolean;
   saveIssue?: boolean;
 };
 export type CandidateList = {
@@ -175,7 +178,6 @@ type Dependencies = {
   runner: Pick<ExtractionRunner, 'start' | 'readJob' | 'waitForSettlement'>;
   wiki: Pick<WikiStore, 'withLock'>;
   states: Pick<RawStateStore, 'get'>;
-  drafts: Pick<DraftStore, 'get'>;
   withProvider: <T>(work: () => Promise<T>) => Promise<T>;
   scheduler: Pick<AutomationScheduler, 'canStartAuthorized' | 'runAuthorized'>;
   clock?: () => Date;
@@ -301,30 +303,26 @@ export class NewsPipeline {
       day.items.map(async (row): Promise<CandidateView> => {
         const saved = await this.deps.news
           .rawSaves()
-          .savedRaw(row.item)
+          .progress(row.item)
           .then(
             (record) => ({ record, issue: false }),
             () => ({ record: undefined, issue: true }),
           );
-        const rawId = saved.record?.rawId;
+        const current = saved.record?.status === 'saved' ? saved.record : undefined;
         const execution = row.execution;
-        let draftId = execution?.draftId;
-        if (rawId && execution?.jobId && !this.active.has(row.id) && !draftId) {
-          const { job, recovery } = await this.deps.runner.readJob(execution.jobId);
-          if (!recovery && job?.status === 'completed' && job.rawId === rawId) draftId = job.draftId;
-        }
-        const draft = rawId && draftId ? await this.deps.drafts.get(draftId) : undefined;
+        const staleExecution = execution?.rawId
+          ? execution.rawId !== current?.rawId
+          : current && execution?.phase === 'raw_failed';
         return {
           ...row,
-          ...(draftId && execution ? { execution: { ...execution, draftId } } : {}),
-          savedRawId: rawId,
-          material: saved.record?.material,
-          draftPending: Boolean(
-            draft &&
-            draft.rawId === rawId &&
-            draft.jobId === execution?.jobId &&
-            draft.status === 'pending_confirmation',
-          ),
+          execution: staleExecution ? undefined : execution,
+          savedRawId: current?.rawId,
+          material: current?.material,
+          draftPending: Boolean(current?.draftId),
+          draftId: current?.draftId,
+          wikiId: saved.record?.wikiId,
+          missingRaw: saved.record?.status === 'missing',
+          canReimport: !saved.issue && this.canReimport(row, current?.rawId),
           saveIssue: saved.issue,
         };
       }),
@@ -335,9 +333,15 @@ export class NewsPipeline {
       items,
       counts: {
         fetched: items.length,
-        pending: items.filter((row) => row.disposition !== 'ignored' && !row.confirmation && !row.savedRawId).length,
+        pending: items.filter(
+          (row) =>
+            row.disposition !== 'ignored' &&
+            !row.savedRawId &&
+            !row.saveIssue &&
+            (!row.confirmation || row.canReimport),
+        ).length,
         organizing: items.filter((row) => activePhase(row.execution?.phase)).length,
-        drafts: new Set(items.filter((row) => row.draftPending).map((row) => row.execution?.draftId)).size,
+        drafts: new Set(items.flatMap((row) => (row.draftId ? [row.draftId] : []))).size,
         failed: items.filter(
           (row) =>
             row.saveIssue ||
@@ -346,6 +350,10 @@ export class NewsPipeline {
         ).length,
       },
     };
+  }
+
+  private canReimport(row: NewsCandidate, currentRawId?: string) {
+    return !currentRawId && Boolean(row.execution?.rawId) && !this.active.has(row.id);
   }
 
   async disposition(id: string, action: 'ignore' | 'later' | 'restore') {
@@ -409,7 +417,10 @@ export class NewsPipeline {
       // only the first registration's authorization to launch organization for an identical URL.
       if (rows.some((row) => row.disposition === 'ignored' && !row.confirmation))
         throw conflict('请先恢复已忽略条目。');
-      const unsaved = rows.filter((row) => !row.confirmation && !rawIds.get(row.id));
+      const unsaved = rows.filter((row) => {
+        const rawId = rawIds.get(row.id);
+        return !rawId && (!row.confirmation || this.canReimport(row, rawId));
+      });
       for (const row of unsaved) {
         row.confirmation = {
           requestId: input.requestId,
@@ -459,6 +470,9 @@ export class NewsPipeline {
         throw conflict('该条目当前没有可重试的步骤。');
       }
       if (keepPartial && (stage !== 'raw' || !execution.canKeepPartial)) throw conflict('该条目当前不能保留部分材料。');
+      if (stage === 'organize' && execution.rawId !== (await this.deps.news.rawSaves().savedRawId(row.item))) {
+        throw conflict('原 Raw 已删除，请重新导入。');
+      }
       row.execution = {
         ...execution,
         phase: stage === 'raw' ? 'queued_raw' : 'queued_organize',
@@ -604,6 +618,9 @@ export class NewsPipeline {
       try {
         job = await this.deps.wiki.withLock(async () => {
           const rawId = execution.rawId!;
+          if (rawId !== (await this.deps.news.rawSaves().savedRawId(row.item))) {
+            throw new AutomationCheckError('原 Raw 已删除，请重新导入。');
+          }
           const state = await this.deps.states.get(rawId);
           const prior = state.jobId ? (await this.deps.runner.readJob(state.jobId)).job : undefined;
           const recoverable =

@@ -508,6 +508,7 @@ export function App() {
                   setAutomationTabEntry(returnTab);
                   setReviewDraftId(id);
                 }}
+                onOpenWiki={(id) => openReviewReference({ kind: 'wiki', id })}
                 onOpenLint={openWikiLint}
                 onOpenInspection={openWikiInspection}
                 onOpenWorkItem={openWorkItem}
@@ -518,6 +519,8 @@ export function App() {
               <NewsPage
                 onBack={() => nav('home')}
                 onRawChanged={refresh}
+                onOpenDraft={setReviewDraftId}
+                onOpenWiki={(id) => openReviewReference({ kind: 'wiki', id })}
                 onOpenRaw={(id) => {
                   nav('raw', id);
                   setRawOriginal(true);

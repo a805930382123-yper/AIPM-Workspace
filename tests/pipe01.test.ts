@@ -27,9 +27,11 @@ import { RawStore } from '../services/raw/store.ts';
 import { SerialQueue, StorageError } from '../services/storage/files.ts';
 import { DraftStore, type DraftRecord } from '../services/wiki/drafts.ts';
 import { WikiStore } from '../services/wiki/store.ts';
+import { WikiCommitService } from '../services/wiki/commits.ts';
 import { PromptStore } from '../services/prompt/store.ts';
 import { registerAutomationRoutes } from '../server/automation-api.ts';
 import { answerExtraction, startFakeProvider } from './support/fake-llm.ts';
+import { reviewSelectedChanges } from './support/compat01-draft-review.ts';
 import { homeActions } from '../services/home/actions.ts';
 
 const start = '2026-11-16T07:29:00+08:00';
@@ -87,6 +89,7 @@ async function harness(t: TestContext, { providerEnabled = true, itemCount = 2 }
   const indexFile = path.join(root, 'knowledge/wiki/index.md');
   const indexBefore = await readFile(indexFile);
   const sourceCalls: NewsSectionName[] = [];
+  const materialCalls: string[] = [];
   const requests: string[] = [];
   const jobs = new Map<string, ExtractionJob>();
   const drafts = new Map<string, DraftRecord>();
@@ -130,7 +133,14 @@ async function harness(t: TestContext, { providerEnabled = true, itemCount = 2 }
     clock: () => new Date(now),
     rawStore: raws,
     rawSave: {
+      knowledge: {
+        states,
+        drafts: { get: async (id) => drafts.get(id) },
+        commits: { get: async () => undefined },
+        wiki,
+      },
       acquire: async (item, keepPartial) => {
+        materialCalls.push(item.url);
         if (knobs.unavailableMaterial === item.title) throw new UnavailableNewsMaterialError('来源暂时无法打开。');
         const input = await newsRawFixture.acquire!(item, keepPartial);
         if (knobs.partialMaterial !== item.title) return input;
@@ -265,7 +275,6 @@ async function harness(t: TestContext, { providerEnabled = true, itemCount = 2 }
       runner,
       states,
       wiki,
-      drafts: { get: async (id) => drafts.get(id) },
       clock: () => new Date(now),
       scheduler: {
         canStartAuthorized: () => scheduler.canStartAuthorized(),
@@ -338,6 +347,7 @@ async function harness(t: TestContext, { providerEnabled = true, itemCount = 2 }
     drafts,
     knobs,
     sourceCalls,
+    materialCalls,
     requests,
     started,
     news,
@@ -621,7 +631,7 @@ test('PIPE01-03/05/06/08 bounded queue, isolated failures and per-item retry pre
     assert.deepEqual(run.artifacts, {
       rawIds: [candidate.savedRawId],
       jobIds: [candidate.execution!.jobId],
-      draftIds: [candidate.execution!.draftId],
+      draftIds: [candidate.draftId],
     });
   }
   const allRuns = (await h.scheduler.listRuns({ type: organizeType, limit: 10 })).items;
@@ -634,6 +644,77 @@ test('PIPE01-03/05/06/08 bounded queue, isolated failures and per-item retry pre
   assert.deepEqual(await readFile(h.indexFile), h.indexBefore);
   assert.equal((await readdir(path.join(h.root, 'knowledge/wiki'))).filter((name) => name !== 'index.md').length, 0);
   assert.equal((await readdir(path.join(h.root, 'prompts'))).filter((name) => name.endsWith('.json')).length, 0);
+});
+
+test('NEWSRAW02 daily → deleted → inbox with three failures → deleted → daily re-acquires each Raw', async (t) => {
+  const h = await harness(t, { itemCount: 1 });
+  await h.runNews();
+  const candidate = (await h.pipeline.list()).items.find((row) => row.section === 'ai')!;
+  const view = async () => (await h.pipeline.list()).items.find((row) => row.id === candidate.id)!;
+  const save = () => h.news.saveRaw(day, candidate.section, candidate.item.id);
+  const first = await save();
+  assert.equal((await view()).savedRawId, first.rawId);
+  await h.raws.delete(first.rawId);
+  assert.equal((await view()).missingRaw, true);
+
+  h.knobs.failOrganize = candidate.item.title;
+  const confirm = () =>
+    h.pipeline.confirm({
+      requestId: randomUUID(),
+      candidateIds: [candidate.id],
+      organize: true,
+      mode: 'standard',
+    });
+  const accepted = (await confirm()).items[0]!;
+  assert.equal((await confirm()).items[0]?.execution?.runId, accepted.execution?.runId);
+  const failed = async (runId: string) => {
+    await h.pipeline.tick();
+    assert.equal((await h.terminal(runId)).status, 'failed');
+    const row = await view();
+    assert.equal(row.execution?.phase, 'organize_failed');
+    return row;
+  };
+  const second = await failed(accepted.execution!.runId);
+  assert.notEqual(second.savedRawId, first.rawId);
+  for (let n = 0; n < 2; n++) {
+    const retry = await h.pipeline.retry(candidate.id, 'organize');
+    const row = await failed(retry.execution!.runId);
+    assert.equal(row.savedRawId, second.savedRawId);
+    assert.equal(row.execution?.jobId, second.execution?.jobId);
+  }
+  assert.equal(h.started.length, 3);
+  await h.raws.delete(second.savedRawId!);
+  const deleted = await view();
+  assert.equal(deleted.missingRaw, true);
+  assert.equal(deleted.canReimport, true);
+  assert.equal(deleted.execution, undefined);
+  assert.equal(deleted.draftId, undefined);
+  await assert.rejects(h.pipeline.retry(candidate.id, 'organize'), /请重新导入/);
+
+  const [third, duplicate] = await Promise.all([save(), save()]);
+  assert.equal(new Set([first.rawId, second.savedRawId, third.rawId]).size, 3);
+  assert.equal(duplicate.rawId, third.rawId);
+  assert.equal(duplicate.created, false);
+  assert.equal(h.materialCalls.length, 3);
+  assert.equal((await view()).savedRawId, third.rawId);
+  assert.equal((await view()).execution, undefined);
+  assert.equal((await h.states.get(third.rawId)).status, 'unprocessed');
+  assert.equal((await confirm()).items[0]?.savedRawId, third.rawId);
+  await h.pipeline.tick();
+  assert.equal(h.started.length, 3);
+  assert.equal((await h.raws.list()).length, 1);
+
+  await h.raws.delete(third.rawId);
+  h.knobs.failOrganize = '';
+  const fresh = (await confirm()).items[0]!;
+  await h.pipeline.tick();
+  assert.equal((await h.terminal(fresh.execution!.runId)).status, 'succeeded');
+  const pending = await view();
+  assert.notEqual(pending.execution?.jobId, second.execution?.jobId);
+  assert.equal(pending.draftPending, true);
+  const daily = (await h.news.savedRaws(day)).items.find((item) => item.itemId === candidate.item.id);
+  assert.equal(daily?.status, 'saved');
+  if (daily?.status === 'saved') assert.equal(daily.draftId, pending.draftId);
 });
 
 test('PIPE01-05 restart resumes waiting authorization and never resends started organization until explicit continue', async (t) => {
@@ -692,11 +773,13 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
     states = new RawStateStore(root),
     drafts = new DraftStore(root),
     jobs = new ExtractionJobStore(root);
+  const commits = new WikiCommitService({ root, wikiStore: wiki, drafts, rawStates: states, rawStore: raws });
   await raws.initialize();
   await wiki.initialize();
   await states.initialize();
   await drafts.initialize();
   await jobs.initialize();
+  await commits.initialize();
   const runner = new ExtractionRunner({
     root,
     rulesDir,
@@ -721,7 +804,7 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
     root,
     clock,
     rawStore: raws,
-    rawSave: newsRawFixture,
+    rawSave: { ...newsRawFixture, knowledge: { states, drafts, commits, wiki } },
     aiEnabled: false,
     providerFactory: async () => provider,
     readSources: async (section) => ({
@@ -735,7 +818,6 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
     runner,
     wiki,
     states,
-    drafts,
     clock,
     scheduler: {
       canStartAuthorized: () => scheduler.canStartAuthorized(),
@@ -778,7 +860,7 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
   assert.equal((await raws.get(settled.savedRawId!))?.body, excerpt);
   assert.ok(
     (await homeActions({ root, raws, wiki, runner })).items.some(
-      (action) => action.kind === 'draft' && action.target.draftId === settled.execution?.draftId,
+      (action) => action.kind === 'draft' && action.target.draftId === settled.draftId,
     ),
   );
   assert.deepEqual(
@@ -786,4 +868,54 @@ test('PIPE01-05/06/08 real ExtractionRunner with fake Provider generates the exi
     ['index.md'],
   );
   assert.deepEqual(await readdir(path.join(root, 'state/wiki-commits')).catch(() => []), []);
+  assert.ok(settled.draftId);
+  const dailyProgress = async () => {
+    const entry = (await news.savedRaws(day)).items[0];
+    assert.ok(entry && entry.status !== 'error');
+    return entry;
+  };
+  const pending = await dailyProgress();
+  assert.equal(pending?.status, 'saved');
+  if (pending?.status === 'saved') assert.equal(pending.draftId, settled.draftId);
+  assert.equal(pending?.wikiId, undefined);
+  const draft = (await drafts.get(settled.draftId))!;
+  const selectedPageIds = draft.pages.map((page) => page.pageId);
+  const reviewed = await reviewSelectedChanges(drafts, draft, selectedPageIds);
+  const result = await wiki.withLock(() =>
+    commits.confirm({
+      draftId: reviewed.id,
+      baseRevision: reviewed.revision,
+      selectedPageIds,
+      idempotencyKey: randomUUID(),
+      operationId: randomUUID(),
+      now: clock().toISOString(),
+    }),
+  );
+  assert.equal(result.manifest.status, 'completed');
+  const wikiId = result.manifest.snapshot.pageRecords[0]?.id;
+  assert.ok(wikiId);
+  assert.equal((await pipeline.list()).items[0]?.draftPending, false);
+  assert.equal((await pipeline.list()).items[0]?.wikiId, wikiId);
+  assert.equal((await dailyProgress()).wikiId, wikiId);
+  for (const id of result.manifest.writtenWikiIds) {
+    const record = (await wiki.get(id))!;
+    if (record.type === 'source') await wiki.delete(id, record.revision);
+    else await wiki.update(id, record.revision, { ...record, sources: [], knowledge_status: 'ai_organized' });
+  }
+  assert.deepEqual(await wiki.referencesToRaw(settled.savedRawId!), []);
+  await raws.delete(settled.savedRawId!);
+  assert.equal((await news.savedRaws(day)).items[0]?.status, 'missing');
+  assert.equal((await pipeline.list()).items[0]?.savedRawId, undefined);
+  assert.equal((await pipeline.list()).items[0]?.wikiId, wikiId);
+  assert.equal((await dailyProgress()).wikiId, wikiId);
+  const readded = await news.saveRaw(day, item!.section, item!.item.id);
+  assert.notEqual(readded.rawId, settled.savedRawId);
+  assert.equal((await pipeline.list()).items[0]?.wikiId, wikiId);
+  assert.equal((await dailyProgress()).wikiId, wikiId);
+  for (const id of result.manifest.writtenWikiIds) {
+    const record = await wiki.get(id);
+    if (record) await wiki.delete(id, record.revision);
+  }
+  assert.equal((await pipeline.list()).items[0]?.wikiId, undefined);
+  assert.equal((await dailyProgress()).wikiId, undefined);
 });

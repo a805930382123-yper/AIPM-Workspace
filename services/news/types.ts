@@ -11,9 +11,11 @@ export const newsMaterialLabels: Record<NewsMaterialView['kind'], string> = {
   excerpt: '资讯摘录',
 };
 export type NewsSaveResult = { rawId: string; status: 'saved'; created: boolean; material: NewsMaterialView };
+export type NewsSaveProgress =
+  | { status: 'saved'; rawId: string; material: NewsMaterialView; draftId?: string; wikiId?: string }
+  | { status: 'missing' | 'pending'; rawId: string; wikiId?: string };
 export type NewsSavedRaw = { section: NewsSectionName; itemId: string } & (
-  | { status: 'saved' | 'missing' | 'pending'; rawId: string; material?: NewsMaterialView }
-  | { status: 'error'; message: string; rawId?: never }
+  NewsSaveProgress | { status: 'error'; message: string; rawId?: never }
 );
 export type NewsItem = {
   id: string;

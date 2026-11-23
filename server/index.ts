@@ -222,7 +222,11 @@ const news = new NewsService({
   clock: () => new Date(),
   readSources: readNewsSources,
   rawStore: store,
-  rawSave: { withRawLock: (operation) => wikiStore.withLock(operation), ensureIdle: (raw) => ensureRawIdle(raw.id) },
+  rawSave: {
+    withRawLock: (operation) => wikiStore.withLock(operation),
+    ensureIdle: (raw) => ensureRawIdle(raw.id),
+    knowledge: { states: rawStates, drafts, commits, wiki: wikiStore },
+  },
   aiEnabled: process.env.FMCG_NEWS_AI_ENABLED === 'true',
   providerFactory,
   stageResearchOverflow: (edition) => pipeline.stageEdition(edition, 'research-overflow'),
@@ -233,7 +237,6 @@ const pipeline: NewsPipeline = new NewsPipeline({
   runner,
   wiki: wikiStore,
   states: rawStates,
-  drafts,
   scheduler: {
     canStartAuthorized: () => automation.canStartAuthorized(),
     runAuthorized: (...args) => automation.runAuthorized(...args),
