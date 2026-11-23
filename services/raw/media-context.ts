@@ -20,46 +20,101 @@ const mediaLabels = {
   decorative: '装饰图',
 } as const;
 type RawImageBody = Pick<RawRecord, 'body' | 'webImages'>;
+type Span = { start: number; end: number };
+type ImageMarker = Span & { imageIndex: number };
+const markerPattern = /【来源图片 ([1-9]\d*)(?: · [^】\r\n]*)?】/gu;
+const isBefore = (body: string, marker: ImageMarker, block: Span) =>
+  marker.end <= block.start && /^[ \t]*$/u.test(body.slice(marker.end, block.start));
 
-function imageMarkers(raw: RawImageBody) {
-  if (!raw.webImages?.length) return [];
-  const visible = new Map<string, number[]>();
+function* visibleLines(body: string, excluded: Span[]) {
   let fence: string | undefined;
-  for (const match of raw.body.matchAll(/^[^\r\n]+/gmu)) {
+  for (const match of body.matchAll(/^[^\r\n]+/gmu)) {
     const [line] = match;
+    if (excluded.some(({ start, end }) => start < match.index && match.index < end)) continue;
     const delimiter = /^ {0,3}(`{3,}|~{3,})(.*)$/u.exec(line);
     if (delimiter) {
       const marks = delimiter[1];
       if (!fence) fence = marks;
       else if (marks[0] === fence[0] && marks.length >= fence.length && !delimiter[2].trim()) fence = undefined;
+      continue;
     }
-    if (!fence && /^【来源图片 \d/u.test(line)) {
-      const marker = line.trimEnd();
-      const offsets = visible.get(marker) ?? [];
-      offsets.push(match.index);
-      visible.set(marker, offsets);
+    if (!fence && !/^(?: {4}|\t)/u.test(line)) yield match;
+  }
+}
+
+function imageMarkers(raw: RawImageBody, excluded: Span[] = []): ImageMarker[] {
+  if (!raw.webImages?.length) return [];
+  const visible = new Map<number, ImageMarker[]>();
+  for (const match of visibleLines(raw.body, excluded)) {
+    const [line] = match;
+    const inlineCode = [...line.matchAll(/(?<!`)(`+)(?!`)[\s\S]*?\1(?!`)/gu)];
+    for (const found of line.matchAll(markerPattern)) {
+      const imageIndex = Number(found[1]);
+      if (
+        imageIndex > raw.webImages.length ||
+        inlineCode.some((code) => code.index <= found.index && found.index < code.index + code[0].length)
+      )
+        continue;
+      const start = match.index + found.index;
+      const markers = visible.get(imageIndex) ?? [];
+      markers.push({ imageIndex, start, end: start + found[0].length });
+      visible.set(imageIndex, markers);
     }
   }
-  return raw.webImages
-    .flatMap(({ start, label }, index) => {
-      const imageIndex = index + 1;
-      const marker = `【来源图片 ${imageIndex}${label ? ` · ${label}` : ''}】`;
-      const offsets = visible.get(marker) ?? [];
-      const position = raw.body.startsWith(marker, start) ? start : offsets.length === 1 ? offsets[0] : undefined;
-      return position === undefined ? [] : [{ imageIndex, start: position, end: position + marker.length }];
-    })
+  return [...visible.values()]
+    .flatMap((markers) => (markers.length === 1 ? markers : []))
     .sort((a, b) => a.start - b.start);
 }
 
-function legacyOcrRanges(body: string, markers: ReturnType<typeof imageMarkers>) {
-  return markers.flatMap(({ end }, index) => {
-    const next = markers[index + 1]?.start ?? body.length;
-    const block = /^[ \t]*\r?\n【图片 OCR 转录（需核对）】[ \t]*\r?\n[\s\S]*?^【转录结束】[ \t]*(?=\r?$)/mu.exec(
-      body.slice(end, next),
-    );
-    return block?.index === 0 ? [{ start: end, end: end + block[0].length }] : [];
-  });
+function legacyOcrBlocks(body: string) {
+  const blocks = [...body.matchAll(/^【图片 OCR 转录（需核对）】[ \t]*\r?\n([\s\S]*?)^【转录结束】[ \t]*(?=\r?$)/gmu)];
+  if (!blocks.length) return [];
+  // Ignore fence-shaped lines inside possible OCR text when checking its opening delimiter.
+  const interiors = blocks.map((block) => ({ start: block.index, end: block.index + block[0].length }));
+  const visible = new Set([...visibleLines(body, interiors)].map((line) => line.index));
+  return blocks
+    .filter((block) => visible.has(block.index))
+    .map((block) => ({
+      start:
+        block.index -
+        (body.slice(block.index - 2, block.index) === '\r\n' ? 2 : body[block.index - 1] === '\n' ? 1 : 0),
+      end: block.index + block[0].length,
+      text: block[1].replace(/\r\n/gu, '\n'),
+    }));
 }
+
+/** History identifies legacy transcriptions. The current body alone authorizes a picture occurrence. */
+export function inspectRawMedia(raw: RawImageBody, acquisition: RawImageBody = raw) {
+  if (!raw.webImages?.length) return { markers: [], removed: [] };
+  const originalBlocks = legacyOcrBlocks(acquisition.body);
+  const acquired =
+    acquisition.webImages?.flatMap(({ start }, index) => {
+      const [, number] = /^【来源图片 ([1-9]\d*)(?: · [^】\r\n]*)?】/u.exec(acquisition.body.slice(start)) ?? [];
+      if (Number(number) !== index + 1) return [];
+      const match = acquisition.body.indexOf('】', start);
+      return [{ imageIndex: index + 1, start, end: match + 1 }];
+    }) ?? [];
+  // Direct callers can supply a collected body with offsets already shifted by a harmless preface.
+  const originalMarkers = acquired.length ? acquired : imageMarkers(acquisition, originalBlocks);
+  const originalText = new Map(
+    originalMarkers.flatMap((marker) => {
+      const block = originalBlocks.find((item) => isBefore(acquisition.body, marker, item));
+      return block ? [[marker.imageIndex, block.text] as const] : [];
+    }),
+  );
+  const knownText = new Set(originalText.values());
+  const currentBlocks = acquisition === raw ? originalBlocks : legacyOcrBlocks(raw.body);
+  const knownBlocks = currentBlocks.filter(({ text }) => knownText.has(text));
+  const markers = imageMarkers(raw, knownBlocks);
+  const removed: Span[] = currentBlocks.flatMap((block) => {
+    const prior = markers.find((marker) => isBefore(raw.body, marker, block));
+    if (!knownText.has(block.text) && !(prior && originalText.has(prior.imageIndex))) return [];
+    return [{ start: prior?.end ?? block.start, end: block.end }];
+  });
+  return { markers: removed.length === knownBlocks.length ? markers : imageMarkers(raw, removed), removed };
+}
+
+export type RawMediaSource = ReturnType<typeof inspectRawMedia>;
 
 export function parsedMediaText(artifact: MediaArtifact): string | undefined {
   if (artifact.routeStatus === 'ocr_ready') return artifact.ocrCleanText?.trim() || undefined;
@@ -76,14 +131,18 @@ export function mediaForEvidence(artifact: MediaArtifact) {
 }
 
 /** Keep source coordinate systems separate while presenting the text in reading order. */
-export function buildRawContentForAI(raw: RawImageBody, artifacts: readonly MediaArtifact[]) {
-  const markers = imageMarkers(raw);
-  const removed = legacyOcrRanges(raw.body, markers);
+export function buildRawContentForAI(
+  raw: RawImageBody,
+  artifacts: readonly MediaArtifact[],
+  source = inspectRawMedia(raw),
+) {
+  const { markers, removed } = source;
   const inserts = artifacts
     .flatMap((artifact) => {
       const media = mediaForEvidence(artifact);
       if (!media) return [];
-      const at = markers.find((marker) => marker.imageIndex === artifact.imageIndex)?.end ?? raw.body.length;
+      const at = markers.find((marker) => marker.imageIndex === artifact.imageIndex)?.end;
+      if (at === undefined) return [];
       const label =
         artifact.routeStatus === 'vlm_done' && artifact.vlmImageType ? mediaLabels[artifact.vlmImageType] : '提取文本';
       return [{ at, media, label }];
@@ -146,11 +205,9 @@ export function mediaQuoteMatches(
   return !!source && sliceMatches(source.text, start, end, quote);
 }
 
-export function rawMediaContext(raw: RawImageBody, imageIndex: number) {
-  const markers = imageMarkers(raw);
+export function rawMediaContext(raw: RawImageBody, imageIndex: number, { markers, removed } = inspectRawMedia(raw)) {
   const match = markers.find((marker) => marker.imageIndex === imageIndex);
   if (!match) return { context_before: '', context_after: '' };
-  const removed = legacyOcrRanges(raw.body, markers);
   const codePoints = (start: number, end: number) => {
     let cursor = start;
     let result = '';

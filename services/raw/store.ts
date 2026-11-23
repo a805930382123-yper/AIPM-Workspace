@@ -5,6 +5,7 @@ import yaml from 'js-yaml';
 import type { PdfTextMap } from './parse.ts';
 import { identifyWebImages, webImageRelativePath, type RawWebImage } from './web-material.ts';
 import type { MediaArtifact, MediaArtifactResult } from './media-artifact.ts';
+import { buildRawContentForAI, inspectRawMedia, type RawMediaSource } from './media-context.ts';
 import { readJsonFile, SerialQueue, writeFileAtomic, writeJsonAtomic } from '../storage/files.ts';
 
 export const SOURCE_TYPES = ['wechat', 'article', 'report', 'company', 'customer', 'meeting', 'note', 'other'] as const;
@@ -262,6 +263,29 @@ export class RawStore {
       ),
     );
     return artifacts.filter((artifact) => artifact !== undefined);
+  }
+
+  async mediaSource(raw: RawRecord): Promise<RawMediaSource> {
+    const acquiredRevision = raw.newsMaterial?.revision ?? 0;
+    const acquisition =
+      raw.webImages?.length && (raw.bodyRevision ?? 0) > acquiredRevision
+        ? await this.bodyHistory(raw.id, acquiredRevision)
+        : undefined;
+    return inspectRawMedia(raw, acquisition);
+  }
+
+  async getAnchoredMediaArtifacts(raw: RawRecord, source?: RawMediaSource): Promise<MediaArtifact[]> {
+    if (!raw.webImages?.length) return [];
+    const { markers } = source ?? (await this.mediaSource(raw));
+    if (!markers.length) return [];
+    const imageIndexes = new Set(markers.map(({ imageIndex }) => imageIndex));
+    return (await this.getMediaArtifacts(raw.id)).filter((item) => imageIndexes.has(item.imageIndex));
+  }
+
+  async buildMediaInput(raw: RawRecord, includeImages = true) {
+    if (!raw.webImages?.length) return buildRawContentForAI(raw, []);
+    const source = await this.mediaSource(raw);
+    return buildRawContentForAI(raw, includeImages ? await this.getAnchoredMediaArtifacts(raw, source) : [], source);
   }
 
   /** Replace the derivative for one occurrence, leaving the Raw Markdown and original image untouched. */

@@ -17,12 +17,7 @@ import {
 } from './inspection-input.ts';
 import { WikiStore } from './store.ts';
 import { RawStore } from '../raw/store.ts';
-import {
-  buildRawContentForAI,
-  mediaForEvidence,
-  mediaQuoteMatches,
-  type MediaEvidenceSource,
-} from '../raw/media-context.ts';
+import { mediaForEvidence, mediaQuoteMatches, type MediaEvidenceSource } from '../raw/media-context.ts';
 // B04: recoverable, versioned extraction drafts. A draft is the only place AI output lives
 // until the user explicitly confirms; it is stored under drafts/<UUID>.json and never inside
 // the formal Wiki directory.
@@ -270,7 +265,10 @@ export class DraftStore {
   }
 
   private async imageText(rawId: string) {
-    return (await new RawStore(this.root).getMediaArtifacts(rawId)).flatMap((artifact) => {
+    const raws = new RawStore(this.root);
+    const raw = await raws.get(rawId);
+    if (!raw) return [];
+    return (await raws.getAnchoredMediaArtifacts(raw)).flatMap((artifact) => {
       const text = mediaForEvidence(artifact);
       return text ? [text] : [];
     });
@@ -571,7 +569,7 @@ export class DraftStore {
       };
       const rawStore = new RawStore(this.root);
       const raw = cp.mediaInputSha256 ? await rawStore.get(record.rawId) : undefined;
-      const content = raw ? buildRawContentForAI(raw, await rawStore.getMediaArtifacts(raw.id)) : undefined;
+      const content = raw ? await rawStore.buildMediaInput(raw) : undefined;
       const args = {
         raw: { ...record.rawMeta, id: record.rawId, tags: [] },
         body: content?.body ?? body,

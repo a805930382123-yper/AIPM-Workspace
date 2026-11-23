@@ -19,7 +19,7 @@ export function registerRawMediaRoutes(
       const raw = await store.get(req.params.rawId);
       if (!raw) throw new InputError('RAW_NOT_FOUND', '没有找到这条原始资料。', 404);
       assertRawNotMeeting(raw);
-      res.json({ items: (await store.getMediaArtifacts(raw.id)).map(publicMediaArtifact) });
+      res.json({ items: (await store.getAnchoredMediaArtifacts(raw)).map(publicMediaArtifact) });
     } catch (error) {
       next(error);
     }
@@ -31,9 +31,13 @@ export function registerRawMediaRoutes(
       assertRawNotMeeting(raw);
       const artifact = (await store.getMediaArtifacts(raw.id)).find((entry) => entry.mediaId === req.params.mediaId);
       if (!artifact) throw new InputError('RAW_MEDIA_NOT_FOUND', '没有找到该图片位置的解析记录。', 404);
+      const anchored = (await store.mediaSource(raw)).markers.some(
+        ({ imageIndex }) => imageIndex === artifact.imageIndex,
+      );
       const current = mediaForEvidence(artifact);
-      if (req.query.textSha256 !== undefined && (!current || req.query.textSha256 !== current.textSha256))
+      if (req.query.textSha256 !== undefined && (!anchored || !current || req.query.textSha256 !== current.textSha256))
         throw new InputError('RAW_MEDIA_EVIDENCE_STALE', '图片解析结果已变化，请重新核对引用。', 409);
+      if (!anchored) throw new InputError('RAW_MEDIA_NOT_FOUND', '没有找到该图片位置的解析记录。', 404);
       res.json(publicMediaArtifact(artifact));
     } catch (error) {
       next(error);

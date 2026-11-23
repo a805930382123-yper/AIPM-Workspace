@@ -276,7 +276,10 @@ export async function verifyQuestionInput(
   }
   for (const c of input.citations) {
     if (c.media) {
-      const texts = (await raws.getMediaArtifacts(c.recordId)).flatMap((artifact) => mediaForEvidence(artifact) ?? []);
+      const raw = await raws.get(c.recordId);
+      const texts = raw
+        ? (await raws.getAnchoredMediaArtifacts(raw)).flatMap((artifact) => mediaForEvidence(artifact) ?? [])
+        : [];
       if (!mediaQuoteMatches(c.media, c.start, c.end, c.quote, texts))
         throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '图片解析引用已变化，已停止。');
       continue;
@@ -503,10 +506,9 @@ export class KnowledgeAnswerService {
               assertRawNotMeeting(raw);
               if (raw!.bodySha256 !== r.rawSnapshots.find((snapshot) => snapshot.id === need.rawId)?.bodySha256)
                 throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '补读期间原文已变化，请重新提问。');
-              const content = buildRawContentForAI(
-                raw!,
-                raw!.webImages?.length ? await this.deps.raws.getMediaArtifacts(raw!.id) : [],
-              );
+              const content = raw!.webImages?.length
+                ? await this.deps.raws.buildMediaInput(raw!)
+                : buildRawContentForAI(raw!, []);
               const query = need.query || '';
               const limit = Math.min(8000, 24000 - total);
               const rawSpans = content.spans.filter((span) => !span.media && span.sourceStart !== undefined);
@@ -574,9 +576,12 @@ export class KnowledgeAnswerService {
             let media: MediaEvidenceSource | undefined;
             if (picture) {
               media = { mediaId: picture.mediaId, imageIndex: picture.imageIndex, textSha256: picture.textSha256 };
-              const images = (await this.deps.raws.getMediaArtifacts(raw!.rawId)).flatMap(
-                (item) => mediaForEvidence(item) ?? [],
-              );
+              const current = await this.deps.raws.get(raw!.rawId);
+              const images = current
+                ? (await this.deps.raws.getAnchoredMediaArtifacts(current)).flatMap(
+                    (item) => mediaForEvidence(item) ?? [],
+                  )
+                : [];
               if (!mediaQuoteMatches(media, c.start, c.end, c.quote, images))
                 throw new KnowledgeAnswerError(
                   'ANSWER_BASIS_CHANGED',

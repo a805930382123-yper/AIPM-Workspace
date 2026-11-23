@@ -83,6 +83,10 @@ const fake = createServer(async (request, response) => {
     if (Array.isArray(payload.rawFragments)) {
       if (!payload.rawFragments.length) return reply({ version: 1, sections: [], citations: [], needsRaw: [{ rawId: payload.availableRawIds[0], reason: '核对图片词', query: imageOnly }] });
       const [fragment] = payload.rawFragments;
+      if (payload.question.startsWith('已移除')) {
+        assert.ok(!fragment.images?.some((entry) => entry.quote.includes(imageOnly) || entry.quote.includes(cleanOnly)));
+        return reply({ version: 1, sections: [{ kind: 'insufficient', text: '当前 Raw 正文未提供该图片。', citationIds: [] }], citations: [], needsRaw: [] });
+      }
       const picture = fragment.images.find((entry) => entry.quote.includes(imageOnly));
       assert.ok(picture, 'query found the image-only term');
       assert.ok(fragment.images.some((entry) => entry.quote.includes(cleanOnly)));
@@ -139,8 +143,8 @@ try {
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_LLM_/iu.test(key)));
   child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, stdio: ['ignore', 'ignore', 'inherit'], env: { ...env, FMCG_PORT: String(port), FMCG_DATA_DIR: root, FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env'), FMCG_LLM_BASE_URL: `http://127.0.0.1:${fake.address().port}/v1`, FMCG_LLM_MODEL: 'fake-vision', FMCG_LLM_API_KEY: secret } });
   const base = `http://127.0.0.1:${port}`;
-  const api = async (route, input, expected = 200) => {
-    const response = await fetch(base + route, { ...(input === undefined ? {} : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) }), signal: AbortSignal.timeout(25000) });
+  const api = async (route, input, expected = 200, method = 'POST') => {
+    const response = await fetch(base + route, { ...(input === undefined ? {} : { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) }), signal: AbortSignal.timeout(25000) });
     const text = await response.text();
     assert.equal(response.status, expected, `${route}: ${text}`);
     return JSON.parse(text);
@@ -277,6 +281,66 @@ try {
   assert.ok(deepDraft.structuredNote.sections.length);
   assert.ok(deepDraft.pages[0].source_evidence.some((entry) => entry.media?.mediaId === deep.images[0].mediaId));
   assert.equal(requests.filter(({ payload }) => payload.stage === 'media_vlm_extraction').length, mediaCount);
+
+  const patch = (raw, body) => api(`/api/raw/${raw.id}/body`, { body, expectedBodySha256: raw.bodySha256, expectedBodyRevision: raw.bodyRevision ?? 0 }, 200, 'PATCH');
+  const blockers = await Promise.allSettled([
+    (async () => {
+      const fixture = await seed('返修保留图片', ['failed', 'needs_vlm']);
+      const body = fixture.raw.body.replace('【来源图片 1】', '【来源图片 1（原图已撤下）】');
+      const edited = await patch(fixture.raw, body);
+      assert.equal(edited.body, body);
+      const saved = await api(`/api/raw/${edited.id}/media/${fixture.images[1].mediaId}/parse-vlm`, {});
+      const calls = requests.filter(({ payload }) => payload.article_title === fixture.raw.title);
+      assert.ok(calls.length > 0);
+      assert.ok(calls.every(({ payload }) => !payload.context_before.includes('DIRTY_LEGACY')), 'old OCR leaked to an adjacent image');
+      assert.equal(saved.routeStatus, 'vlm_done');
+      const mediaRoute = `/api/raw/${edited.id}/media/${fixture.images[1].mediaId}/parse-vlm`;
+      const noMarker = await patch(edited, body.replace('【来源图片 1（原图已撤下）】\n', ''));
+      assert.equal((await api(mediaRoute, { force: true })).routeStatus, 'vlm_done');
+      assert.doesNotMatch(requests.at(-1).incoming, /DIRTY_LEGACY/u);
+      const code = '```text\n【来源图片 2】\n【图片 OCR 转录（需核对）】\n普通代码示例\n【转录结束】\n```\n';
+      const moved = await patch(noMarker, code + noMarker.body.replace('【来源图片 2】\n', '').replace('本日门店图后记录', '左侧正文【来源图片 2 · 移动并改名】右侧正文。本日门店图后记录'));
+      const movedBytes = await readFile(fixture.file);
+      assert.equal((await api(mediaRoute, { force: true })).routeStatus, 'vlm_done');
+      assert.ok(requests.at(-1).payload.context_before.endsWith('左侧正文'));
+      assert.ok(requests.at(-1).payload.context_after.startsWith('右侧正文'));
+      assert.deepEqual(await readFile(fixture.file), movedBytes);
+      await patch(moved, moved.body + '\n【来源图片 2 · 重复】');
+      const callsBefore = requests.filter(({ payload }) => payload.article_title === fixture.raw.title).length;
+      assert.equal((await api(mediaRoute, { force: true }, 409)).error.code, 'RAW_MEDIA_NOT_ANCHORED');
+      assert.equal((await api(`/api/raw/${edited.id}/media`)).items.length, 0);
+      assert.equal(requests.filter(({ payload }) => payload.article_title === fixture.raw.title).length, callsBefore);
+    })(),
+    (async () => {
+      const fixture = await seed('返修孤立图片', ['ocr_ready', 'needs_vlm']);
+      const body = '本日门店图前记录，仅保留新的文字。';
+      const edited = await patch(fixture.raw, body);
+      assert.equal(edited.body, body);
+      const bytes = await readFile(fixture.file);
+      const job = await api(`/api/raw/${edited.id}/extract`, {}, 202);
+      const done = await wait(job.jobId);
+      assert.equal(done.status, 'completed', JSON.stringify(done));
+      const generated = await api(`/api/drafts/${done.draftId}`);
+      assert.ok(generated.pages[0].source_evidence.every((item) => !item.media), 'detached image appears as draft evidence');
+      assert.ok(!requests.some(({ payload }) => payload.article_title === fixture.raw.title), 'detached image sent for automatic completion');
+      assert.deepEqual(await readFile(fixture.file), bytes);
+      assert.deepEqual(await api(`/api/raw/${edited.id}/media`), { items: [] });
+      assert.deepEqual(await api(`/api/raw/${edited.id}/media/parse-vlm-batch`, {}), { items: [] });
+      const blocked = await api(`/api/raw/${edited.id}/media/${fixture.images[1].mediaId}/parse-vlm`, { force: true }, 409);
+      assert.equal(blocked.error.code, 'RAW_MEDIA_NOT_ANCHORED');
+      const selected = await api(`/api/raw/${edited.id}/media/parse-vlm-batch`, { mediaIds: [fixture.images[1].mediaId] });
+      assert.deepEqual(selected.items, [{ mediaId: fixture.images[1].mediaId, error: 'RAW_MEDIA_NOT_ANCHORED' }]);
+      const retainedImage = await fetch(`${base}/api/raw/${edited.id}/web-images/${sha256}`);
+      assert.equal(retainedImage.status, 200);
+      assert.deepEqual(Buffer.from(await retainedImage.arrayBuffer()), jpeg);
+    })(),
+  ]);
+  assert.deepEqual(blockers.map((outcome) => outcome.status === 'fulfilled' ? 'passed' : String(outcome.reason)), ['passed', 'passed']);
+
+  await patch(flow.raw, '本日门店图前记录：图已移除。图后正文保留。');
+  const citationLink = `/api/raw/${flow.raw.id}/media/${cited.media.mediaId}?textSha256=${cited.media.textSha256}`;
+  assert.equal((await api(citationLink, undefined, 409)).error.code, 'RAW_MEDIA_EVIDENCE_STALE');
+  assert.equal((await ask('已移除')).status, 'insufficient');
   assert.deepEqual(backendFailures, []);
   console.log(`Production HTTP passed with ${requests.length} fake requests; images in flight max ${maxActiveImages}; checkpoint reuse, stale evidence, confirmation and retrieval verified.`);
 } finally {

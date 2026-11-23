@@ -880,10 +880,12 @@ export class ExtractionRunner {
     const provider = this.deps.provider();
     if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法执行 AI 整理。', 400);
     const providerIdentity = `${provider.cacheIdentity ?? provider.name}|${provider.model}`;
-    const artifacts = raw.webImages?.length ? await this.deps.rawStore.getMediaArtifacts(raw.id) : [];
+    const mediaSource = raw.webImages?.length ? await this.deps.rawStore.mediaSource(raw) : undefined;
+    const artifacts = mediaSource ? await this.deps.rawStore.getAnchoredMediaArtifacts(raw, mediaSource) : [];
     const content = buildRawContentForAI(
       raw,
       !savedCheckpoint || savedCheckpoint.mediaInputSha256 || savedCheckpoint.mediaPending ? artifacts : [],
+      mediaSource,
     );
     if (mode === 'deep' && content.body.length > 30000)
       throw new JobError('LLM_RAW_TOO_LARGE', '深度整理的正文与图片解析合计超过30000字符。', 413);
@@ -1073,10 +1075,9 @@ export class ExtractionRunner {
   }
 
   private async extractionContent(raw: RawRecord, includeImages: boolean) {
-    return buildRawContentForAI(
-      raw,
-      includeImages && raw.webImages?.length ? await this.deps.rawStore.getMediaArtifacts(raw.id) : [],
-    );
+    return raw.webImages?.length
+      ? this.deps.rawStore.buildMediaInput(raw, includeImages)
+      : buildRawContentForAI(raw, []);
   }
 
   private async runKnowledge(

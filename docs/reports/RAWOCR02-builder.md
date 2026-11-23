@@ -39,3 +39,20 @@
 | `services/llm/knowledge-answers.ts` | `79f64f6ab68ddf239124c0c33c9edf6a51402658b5d9ca1205b0017bca09224d` |
 | `tests/rawocr02.test.ts` | `093af7835963c410b6012e9d08d2db31a839ca1a15a218989bf97d42d0cead2c` |
 | `tests/acceptance/rawocr02-http.mjs` | `4ae3496583870d9abff1201c33e9b66a56f3248163d2ce591b68dc21491b02b8` |
+
+## 人工正文编辑返修
+
+返修基线 `1682a2be3fc7c3747562597686d42055be91e967`。先将两条独立验收反例加入实际 HTTP 夹具。基线上，一条经 PATCH 改写标记后仍将旧转录发给相邻图片的精读，另一条在 PATCH 删除全部图片标记后仍把旧图作为草稿证据。两项在同次运行明确失败。
+
+返修将两项判断分开。旧转录归属以 Raw 当前采集版本或已保存的采集版快照为依据，用户改写或单删图片标记后，遗留的实际转录继续隔离。当前正文中只有唯一、有效的图片标记可绑定解析产物，支持行内位置和 ` · 标签` 改名。围栏及行内代码中的示例保留，重复标记不绑定。孤立产物仍保留在本机，原图仍可读取。该图片不再进入单图、批量和草稿自动精读，也不会成为新草稿或问答补读证据，现有图片解析引文链接返回 409。
+
+| 实际命令 | 结果 |
+| --- | --- |
+| `node --import tsx tests/acceptance/rawocr02-http.mjs` | 基线两条反例均复现；返修版通过，36 次回环模拟请求、图片最高并发 3。另经 PATCH 验证仅删标记仍隔离 OCR、改名和内联移动仍可精读、歧义标记拒绝、孤立图的真实草稿与问答引用无效。对照原图及明确编辑后的 Raw 文件字节一致。 |
+| `node --import tsx --import ./tests/support/css-stub.mjs --test tests/rawocr02.test.ts tests/rawocr01.test.ts tests/raw-integrity.test.ts tests/newsraw01.test.ts tests/kb02-planning-context.test.ts tests/rawux01-http.test.ts tests/lw02-main.test.ts` | 43/43 通过。包含内容完全相同的围栏转录示例保留、行内代码标记不绑定、无图片正文保持原样、旧检查点及正常关联回归。 |
+| `npm.cmd run typecheck` | 退出码 0。 |
+| `node_modules/.bin/prettier.cmd --check <返修改动的 TypeScript 文件>` | 通过。 |
+| `node_modules/.bin/eslint.cmd <返修改动的 TypeScript 文件>` | 0 错误，10 项既有告警。 |
+| `git diff --check` | 退出码 0。 |
+
+本次仍使用系统临时目录与回环模拟 Provider，真实请求数为 0。返修的 9 个产品和测试文件按上节同一规则计算，聚合 SHA-256 为 `315448bdcbd3e6244628c93565bda99e7f30c0d30b80748fdbf0ddd5ac7e2d16`。`services/raw/media-context.ts` 的 SHA-256 为 `036b78c900043e71362101e47897789e8c5041f5c2db27894a6f044446961355`，`tests/acceptance/rawocr02-http.mjs` 为 `8c353c5db27f81e27f78c41ea4390db48b6f401b3478b55b866dd53993f865fd`。

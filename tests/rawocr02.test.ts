@@ -4,6 +4,7 @@ import { noteWithSourceCoordinates } from '../services/llm/knowledge-deep.ts';
 import type { MediaArtifact } from '../services/raw/media-artifact.ts';
 import {
   buildRawContentForAI,
+  inspectRawMedia,
   mediaForEvidence,
   mediaQuoteMatches,
   rawMediaContext,
@@ -102,4 +103,46 @@ test('the AI projection removes owned legacy OCR and keeps raw and image evidenc
   const shifted = { ...raw, body: '人工填写了引言。\n' + raw.body };
   assert.match(rawMediaContext(shifted, 1).context_before, /人工填写了引言/u);
   assert.doesNotMatch(buildRawContentForAI(shifted, [image]).body, /旧的调试文字/u);
+});
+
+test('Raw edits keep legacy transcriptions isolated independently from current image anchors', () => {
+  const after = (body: string) => {
+    const edited = { ...raw, body };
+    return inspectRawMedia(edited, raw);
+  };
+  for (const replacement of ['【来源图片 1（原图已撤下）】', '', '`【来源图片 1】`']) {
+    const body = raw.body.replace('【来源图片 1】', replacement);
+    const source = after(body);
+    assert.deepEqual(
+      source.markers.map(({ imageIndex }) => imageIndex),
+      [2],
+    );
+    const projection = buildRawContentForAI({ ...raw, body }, [image], source);
+    assert.doesNotMatch(projection.body, /旧的调试文字|文字解析独有信息/u);
+    assert.match(projection.body, /说明中的示例，仍是正文/u);
+  }
+  const moved = raw.body
+    .replace('【来源图片 1】', '图前内联【来源图片 1 · 新标签】')
+    .replace('旧的调试文字', '编辑过的旧转录');
+  assert.deepEqual(
+    after(moved).markers.map(({ imageIndex }) => imageIndex),
+    [1, 2],
+  );
+  assert.doesNotMatch(buildRawContentForAI({ ...raw, body: moved }, [image], after(moved)).body, /编辑过的旧转录/u);
+  const duplicate = `${moved}\n【来源图片 1 · 重复】`;
+  assert.deepEqual(
+    after(duplicate).markers.map(({ imageIndex }) => imageIndex),
+    [2],
+  );
+  const fenced = raw.body.replace('【来源图片 1】', '```text\n【来源图片 1】\n```');
+  assert.deepEqual(
+    after(fenced).markers.map(({ imageIndex }) => imageIndex),
+    [2],
+  );
+  const identicalExample =
+    '保留原样的演示:\n```text\n【来源图片 1】\n【图片 OCR 转录（需核对）】\n旧的调试文字\n【转录结束】\n```';
+  const withExample = raw.body.replace('【来源图片 1】', '') + '\n' + identicalExample;
+  const exampleProjection = buildRawContentForAI({ ...raw, body: withExample }, [image], after(withExample));
+  assert.ok(exampleProjection.body.endsWith(identicalExample));
+  assert.equal(exampleProjection.body.match(/旧的调试文字/gu)?.length, 1);
 });

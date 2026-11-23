@@ -81,10 +81,10 @@ export class MediaVlmParserService {
   }
 
   async batch(rawId: string, options: ParseOptions & { mediaIds?: string[] }): Promise<BatchResult[]> {
-    await this.getRaw(rawId);
+    const raw = await this.getRaw(rawId);
     const ids =
       options.mediaIds ??
-      (await this.raws.getMediaArtifacts(rawId))
+      (await this.raws.getAnchoredMediaArtifacts(raw))
         .filter((item) => item.routeStatus === 'needs_vlm')
         .map((item) => item.mediaId);
     return Promise.all(
@@ -126,11 +126,24 @@ export class MediaVlmParserService {
     const occurrence = identifyWebImages(raw.id, raw.webImages).find((image) => image.mediaId === mediaId);
     const existing = (await this.raws.getMediaArtifacts(raw.id)).find((item) => item.mediaId === mediaId);
     if (!occurrence || !existing) throw new LlmError('RAW_MEDIA_NOT_FOUND', '没有找到该图片位置的解析记录。', 404);
+    const ensureAnchored = async (current: typeof raw) => {
+      if (
+        current !== raw &&
+        !identifyWebImages(current.id, current.webImages).some((image) => image.mediaId === mediaId)
+      )
+        throw new LlmError('RAW_MEDIA_NOT_FOUND', '图片位置已移除。', 404);
+      const source = await this.raws.mediaSource(current);
+      if (!source.markers.some(({ imageIndex }) => imageIndex === occurrence.imageIndex))
+        throw new LlmError('RAW_MEDIA_NOT_ANCHORED', '当前正文缺少可唯一定位的图片标记。', 409);
+      return source;
+    };
+    await ensureAnchored(raw);
     if (!force && !['needs_vlm', 'failed'].includes(existing.routeStatus)) return existing;
     if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法精读图片。', 400);
     const attempts: string[] = [];
     const save = (result: MediaArtifactResult) =>
       this.saveLocked(async () => {
+        await ensureAnchored(await this.getRaw(rawId));
         const saved = await this.raws.saveMediaArtifact(rawId, mediaId, { ...result, vlmAttempts: attempts });
         if (!saved) throw new LlmError('RAW_MEDIA_NOT_FOUND', '图片位置已移除。', 404);
         return saved;
@@ -153,14 +166,16 @@ export class MediaVlmParserService {
     let invalidRetry = false;
     let retryingJson = false;
     let tokenFieldRetried = false;
-    const user = JSON.stringify({
-      stage: 'media_vlm_extraction',
-      article_title: raw.title,
-      image_index: occurrence.imageIndex,
-      ...rawMediaContext(raw, occurrence.imageIndex),
-    });
     for (;;) {
       if (signal?.aborted) throw new LlmError('LLM_CANCELLED', '图片精读已取消。', 409);
+      const current = await this.getRaw(rawId);
+      const source = await ensureAnchored(current);
+      const user = JSON.stringify({
+        stage: 'media_vlm_extraction',
+        article_title: current.title,
+        image_index: occurrence.imageIndex,
+        ...rawMediaContext(current, occurrence.imageIndex, source),
+      });
       let result: unknown;
       try {
         assertNoKnownSecret(user, provider.secrets);
