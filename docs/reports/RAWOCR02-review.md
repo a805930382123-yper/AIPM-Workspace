@@ -58,3 +58,31 @@ PATCH 成功。两次请求的 `context_before` 均含 `DIRTY_LEGACY`。模拟�
 返修复验使用隔离临时目录、本地服务与模拟 Provider。真实 Provider 调用为零。
 
 主 Agent 核验的返修代码提交为 `e845e7f`。隔离环境执行 `npm.cmd run typecheck`、`npm.cmd run format:check`、`npm.cmd run lint`、`npm.cmd run guard`，均退出 0。以 `node --import tsx --import ./tests/support/css-stub.mjs --test --test-concurrency=6 tests/*.test.ts tests/*.test.tsx` 运行全量测试，1,031/1,031 通过，零跳过，随后 `npm.cmd run build` 成功。上面的编辑反例来自独立 HTTP 复验，仍须修复。
+
+## 第二次返修独立复验
+
+返修基线 `e3b0c29852039ff25bacd8b6d6e717c802a25046`。独立复算本轮实现与两份测试的聚合 SHA-256 为 `ad6db27ca467719eccb456f82ada3bf39212c27b68bda4e8864899be2b09e76f`，与施工交接一致。
+
+- **返修缺陷：PASS。** 在实际 PATCH 中删除原图标记并分别改标点、改词、替换整段及加入新行后，图片精读、草稿提取与问答补读的上游请求均未包含旧转录。孤立图未触发草稿自动精读，也未产生草稿或问答引用。两个阻塞均已关闭。
+- **第 2 轮 RAWOCR02：PASS。** 本轮独立 HTTP 复跑覆盖有效图片、歧义转录、真实续跑、确认及问答路径。结合前述已验证的 UI 来源链接、恢复兼容性和严格 Provider 协议，冻结卡范围已满足。全量检查由主 Agent 单独记录。
+
+| 实际命令 | 独立实测 |
+| --- | --- |
+| `node --import tsx --input-type=module -`，在内存运行 `tests/acceptance/rawocr02-http.mjs` 并增加歧义及正文对照 | 在已删第一图标记、已替换旧转录的真实 Raw 中再 PATCH 一个无锚完整转录块（`DIRTY_EXTRA_AMBIGUOUS`）、一个围栏代码示例（`VISIBLE_REVIEW_CODE`）及普通正文（`NORMAL_REVIEW`）。强制精读第二张图，抓到的请求同时保留代码和普通正文，排除两个转录块。对上游实际请求逐一断言，20 个精读、4 个草稿事实提取、4 个非空问答补读请求均无哨兵及转录替换行。含规划等在内共 44 次模拟调用，图片最高并发 3。 |
+| 同一 HTTP 流程，核对草稿、问答、Raw、原图及来源链接的响应 | 图前图后正文引文按当前 Raw UTF-16 偏移准确回切，保留图的引文仍绑在第二图。已编辑 Raw 文件字节保持一致。全删图后，批量为空、强制精读拒绝、旧来源链接 409，问答返回依据不足，原图仍可取。 |
+| `node --import tsx --import ./tests/support/css-stub.mjs --test tests/rawocr02.test.ts tests/rawocr01.test.ts tests/raw-integrity.test.ts tests/newsraw01.test.ts tests/kb02-planning-context.test.ts tests/rawux01-http.test.ts tests/lw02-main.test.ts` | 46/46 通过，零跳过。覆盖可核实的普通示例、文档首尾示例、行内和围栏代码、移动图片、旧检查点与历史草稿。 |
+
+实测使用隔离临时目录和回环模拟 Provider，真实 Provider 调用为零。首验的正式 Wiki 组件链接导航证据继续适用，本轮产品差异仅涉及 Raw 上下文计算。
+
+## 主 Agent 收尾核验
+
+2026-11-23，在 Windows Node 22.23.5 下逐项核对了第二次返修的三个文件指纹，与施工报告一致。版本以本节所在 Git 提交为准，父提交为 `e3b0c29`。以下检查使用新建临时数据目录和不存在的模型配置文件，并清除了继承的模型配置环境变量。
+
+| 实际命令 | 结果 |
+| --- | --- |
+| `npm.cmd run typecheck`、`npm.cmd run format:check`、`npm.cmd run lint`、`npm.cmd run guard` | 均退出 0。ESLint 为 0 个错误、825 条告警，与既有基线一致。仓库门禁 0 项违规。 |
+| `node --import tsx --import ./tests/support/css-stub.mjs --test --test-concurrency=6 tests/*.test.ts tests/*.test.tsx` | 首次 1,033/1,034。相同文件、相同命令在新的临时目录复跑 1,034/1,034，零跳过。 |
+| `node --import tsx --import ./tests/support/css-stub.mjs --test --test-name-pattern="with three failures" tests/pipe01.test.ts` | 当前版本单跑复现首次失败。在父提交独立导出的代码上单跑四次，两次在同一行失败，两次通过。 |
+| `npm.cmd run build` | 生产构建成功。Vite 提示压缩前的 JavaScript 产物超过 500 kB。 |
+
+首次失败位于 `tests/pipe01.test.ts:697`。两个并发保存请求返回相同 Raw ID，但断言假设第二个请求的 `created` 必为 false。返修前版本也有同一间歇失败，本批未修改该用例。第二次返修的两个缺陷均已关闭，RAWOCR02 整批独立验收通过，本地全量检查复跑通过。

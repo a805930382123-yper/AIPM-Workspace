@@ -62,7 +62,7 @@ const fake = createServer(async (request, response) => {
       }
       if (payload.article_title === '门店配图报告' && payload.image_index === 5)
         return reply({ error: { message: secret } }, 503);
-      const text = payload.article_title === '门店配图报告' ? `先核对${imageOnly}，再登记出库。` : `本地验证图片 ${payload.image_index}。`;
+      const text = ['门店配图报告', '返修保留图片'].includes(payload.article_title) ? `先核对${imageOnly}，再登记出库。` : `本地验证图片 ${payload.image_index}。`;
       return reply(format('```markdown\n' + text + '\n\n```text\n内部围栏\n```\n```'));
     }
     if (Array.isArray(payload)) {
@@ -89,7 +89,8 @@ const fake = createServer(async (request, response) => {
       }
       const picture = fragment.images.find((entry) => entry.quote.includes(imageOnly));
       assert.ok(picture, 'query found the image-only term');
-      assert.ok(fragment.images.some((entry) => entry.quote.includes(cleanOnly)));
+      assert.equal(fragment.images.some((entry) => entry.quote.includes(cleanOnly)), !payload.question.startsWith('已改转录'));
+      if (payload.question.startsWith('已改转录')) assert.match(fragment.quote, /本日门店图前记录/u);
       const start = picture.start + picture.quote.indexOf(imageOnly);
       return reply({ version: 1, sections: [{ kind: 'fact', text: `图片使用${imageOnly}。`, citationIds: ['picture'] }], citations: [{ id: 'picture', kind: 'raw', recordId: payload.question.includes('伪造') ? fragment.rawId : picture.mediaId, quote: imageOnly, start, end: start + imageOnly.length }], needsRaw: [] });
     }
@@ -295,9 +296,29 @@ try {
       assert.ok(calls.every(({ payload }) => !payload.context_before.includes('DIRTY_LEGACY')), 'old OCR leaked to an adjacent image');
       assert.equal(saved.routeStatus, 'vlm_done');
       const mediaRoute = `/api/raw/${edited.id}/media/${fixture.images[1].mediaId}/parse-vlm`;
-      const noMarker = await patch(edited, body.replace('【来源图片 1（原图已撤下）】\n', ''));
-      assert.equal((await api(mediaRoute, { force: true })).routeStatus, 'vlm_done');
-      assert.doesNotMatch(requests.at(-1).incoming, /DIRTY_LEGACY/u);
+      let noMarker = edited;
+      for (const [changed, replacement] of ['DIRTY_LEGACY。', 'DIRTY_REWORDED', 'DIRTY_REPLACEMENT\n本日门店图前的转录替换行'].entries()) {
+        const editedBody = fixture.raw.body.replace('【来源图片 1】', '').replace('DIRTY_LEGACY', replacement);
+        noMarker = await patch(noMarker, editedBody);
+        const requestIndex = requests.length;
+        const parsed = await api(mediaRoute, { force: true });
+        assert.ok(requests.slice(requestIndex).every(({ incoming }) => !dirty.test(incoming)), `edited orphan OCR variant ${changed + 1} reached VLM`);
+        assert.equal(parsed.routeStatus, 'vlm_done');
+      }
+      const editedBytes = await readFile(fixture.file);
+      const job = await api(`/api/raw/${edited.id}/extract`, {}, 202);
+      const complete = await wait(job.jobId);
+      assert.equal(complete.status, 'completed', JSON.stringify(complete));
+      const repairedDraft = await api(`/api/drafts/${complete.draftId}`);
+      assert.doesNotMatch(JSON.stringify(repairedDraft.pages), /DIRTY_|转录替换行/u);
+      const refs = repairedDraft.pages.flatMap((page) => page.source_evidence);
+      assert.ok(refs.some((ref) => ref.media?.mediaId === fixture.images[1].mediaId && ref.quote.includes(imageOnly)));
+      assert.ok(refs.every((ref) => !ref.media || ref.media.imageIndex === 2));
+      for (const text of ['图前', '图后']) {
+        const quote = refs.find((ref) => !ref.media && ref.quote.includes(text));
+        assert.equal(noMarker.body.slice(quote.start, quote.end), quote.quote);
+      }
+      assert.deepEqual(await readFile(fixture.file), editedBytes);
       const code = '```text\n【来源图片 2】\n【图片 OCR 转录（需核对）】\n普通代码示例\n【转录结束】\n```\n';
       const moved = await patch(noMarker, code + noMarker.body.replace('【来源图片 2】\n', '').replace('本日门店图后记录', '左侧正文【来源图片 2 · 移动并改名】右侧正文。本日门店图后记录'));
       const movedBytes = await readFile(fixture.file);
@@ -337,7 +358,13 @@ try {
   ]);
   assert.deepEqual(blockers.map((outcome) => outcome.status === 'fulfilled' ? 'passed' : String(outcome.reason)), ['passed', 'passed']);
 
-  await patch(flow.raw, '本日门店图前记录：图已移除。图后正文保留。');
+  const partiallyEditedBody = flow.raw.body.replace('【来源图片 1】', '').replace('DIRTY_LEGACY', 'DIRTY_REPLACED_FOR_ANSWER');
+  const partiallyEdited = await patch(flow.raw, partiallyEditedBody);
+  const editedAnswer = await ask('已改转录');
+  assert.equal(editedAnswer.status, 'completed', JSON.stringify(editedAnswer));
+  assert.equal(editedAnswer.citations[0].media.mediaId, cited.media.mediaId);
+  assert.equal(editedAnswer.citations[0].quote, imageOnly);
+  await patch(partiallyEdited, '本日门店图前记录：图已移除。图后正文保留。');
   const citationLink = `/api/raw/${flow.raw.id}/media/${cited.media.mediaId}?textSha256=${cited.media.textSha256}`;
   assert.equal((await api(citationLink, undefined, 409)).error.code, 'RAW_MEDIA_EVIDENCE_STALE');
   assert.equal((await ask('已移除')).status, 'insufficient');

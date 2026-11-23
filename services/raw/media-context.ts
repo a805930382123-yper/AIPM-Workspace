@@ -22,6 +22,7 @@ const mediaLabels = {
 type RawImageBody = Pick<RawRecord, 'body' | 'webImages'>;
 type Span = { start: number; end: number };
 type ImageMarker = Span & { imageIndex: number };
+type LegacyOcrBlock = Span & { header: number; text: string };
 const markerPattern = /【来源图片 ([1-9]\d*)(?: · [^】\r\n]*)?】/gu;
 const isBefore = (body: string, marker: ImageMarker, block: Span) =>
   marker.end <= block.start && /^[ \t]*$/u.test(body.slice(marker.end, block.start));
@@ -66,21 +67,55 @@ function imageMarkers(raw: RawImageBody, excluded: Span[] = []): ImageMarker[] {
     .sort((a, b) => a.start - b.start);
 }
 
-function legacyOcrBlocks(body: string) {
-  const blocks = [...body.matchAll(/^【图片 OCR 转录（需核对）】[ \t]*\r?\n([\s\S]*?)^【转录结束】[ \t]*(?=\r?$)/gmu)];
+function legacyOcrBlocks(body: string): LegacyOcrBlock[] {
+  const blocks: LegacyOcrBlock[] = [];
+  let opening: RegExpMatchArray | undefined;
+  for (const delimiter of body.matchAll(/^(【图片 OCR 转录（需核对）】|【转录结束】)[ \t]*(?=\r?$)/gmu)) {
+    if (delimiter[1] === '【图片 OCR 转录（需核对）】') {
+      opening = delimiter;
+      continue;
+    }
+    if (!opening) continue;
+    const header = opening.index!;
+    const headerEnd = header + opening[0].length;
+    const contentStart = headerEnd + (body[headerEnd] === '\r' ? 2 : 1);
+    blocks.push({
+      header,
+      start: header - (body.slice(header - 2, header) === '\r\n' ? 2 : body[header - 1] === '\n' ? 1 : 0),
+      end: delimiter.index + delimiter[0].length,
+      text: body.slice(contentStart, delimiter.index).replace(/\r\n/gu, '\n'),
+    });
+    opening = undefined;
+  }
   if (!blocks.length) return [];
   // Ignore fence-shaped lines inside possible OCR text when checking its opening delimiter.
-  const interiors = blocks.map((block) => ({ start: block.index, end: block.index + block[0].length }));
+  const interiors = blocks.map(({ header, end }) => ({ start: header, end }));
   const visible = new Set([...visibleLines(body, interiors)].map((line) => line.index));
-  return blocks
-    .filter((block) => visible.has(block.index))
-    .map((block) => ({
-      start:
-        block.index -
-        (body.slice(block.index - 2, block.index) === '\r\n' ? 2 : body[block.index - 1] === '\n' ? 1 : 0),
-      end: block.index + block[0].length,
-      text: block[1].replace(/\r\n/gu, '\n'),
-    }));
+  return blocks.filter((block) => visible.has(block.header));
+}
+
+function legacyOcrPositions(body: string, blocks: LegacyOcrBlock[], markers: ImageMarker[]) {
+  const neighborChars = 64;
+  return blocks.map((block, index) => {
+    const marker = markers.find((item) => isBefore(body, item, block));
+    const before = body
+      .slice(blocks[index - 1]?.end ?? 0, marker?.start ?? block.start)
+      .replace(/\r\n/gu, '\n')
+      .trimEnd()
+      .slice(-neighborChars);
+    const after = body
+      .slice(block.end, blocks[index + 1]?.start ?? body.length)
+      .replace(/\r\n/gu, '\n')
+      .trimStart()
+      .slice(0, neighborChars);
+    const hasLeftBoundary = before || index === 0;
+    const hasRightBoundary = after || index === blocks.length - 1;
+    return {
+      block,
+      marker,
+      neighbors: hasLeftBoundary && hasRightBoundary ? JSON.stringify([before || null, after || null]) : undefined,
+    };
+  });
 }
 
 /** History identifies legacy transcriptions. The current body alone authorizes a picture occurrence. */
@@ -96,22 +131,28 @@ export function inspectRawMedia(raw: RawImageBody, acquisition: RawImageBody = r
     }) ?? [];
   // Direct callers can supply a collected body with offsets already shifted by a harmless preface.
   const originalMarkers = acquired.length ? acquired : imageMarkers(acquisition, originalBlocks);
-  const originalText = new Map(
-    originalMarkers.flatMap((marker) => {
-      const block = originalBlocks.find((item) => isBefore(acquisition.body, marker, item));
-      return block ? [[marker.imageIndex, block.text] as const] : [];
-    }),
-  );
-  const knownText = new Set(originalText.values());
+  const original = legacyOcrPositions(acquisition.body, originalBlocks, originalMarkers);
+  if (!original.some(({ marker }) => marker)) return { markers: imageMarkers(raw), removed: [] };
   const currentBlocks = acquisition === raw ? originalBlocks : legacyOcrBlocks(raw.body);
-  const knownBlocks = currentBlocks.filter(({ text }) => knownText.has(text));
-  const markers = imageMarkers(raw, knownBlocks);
-  const removed: Span[] = currentBlocks.flatMap((block) => {
-    const prior = markers.find((marker) => isBefore(raw.body, marker, block));
-    if (!knownText.has(block.text) && !(prior && originalText.has(prior.imageIndex))) return [];
-    return [{ start: prior?.end ?? block.start, end: block.end }];
+  const markers = imageMarkers(raw, currentBlocks);
+  const current = legacyOcrPositions(raw.body, currentBlocks, markers);
+  const removed: Span[] = current.flatMap(({ block, marker, neighbors }, index) => {
+    // Once the acquisition proves there was legacy OCR, ambiguous complete blocks stay local.
+    // Keep an ordinary example when its original provenance and content are still verifiable.
+    if (acquisition === raw && !original[index].marker) return [];
+    if (!marker && neighbors) {
+      const matches = original.filter((candidate) => candidate.neighbors === neighbors);
+      if (
+        matches.length === 1 &&
+        !matches[0].marker &&
+        matches[0].block.text === block.text &&
+        current.filter((candidate) => candidate.neighbors === neighbors).length === 1
+      )
+        return [];
+    }
+    return [{ start: marker?.end ?? block.start, end: block.end }];
   });
-  return { markers: removed.length === knownBlocks.length ? markers : imageMarkers(raw, removed), removed };
+  return { markers, removed };
 }
 
 export type RawMediaSource = ReturnType<typeof inspectRawMedia>;

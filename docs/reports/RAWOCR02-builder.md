@@ -56,3 +56,29 @@
 | `git diff --check` | 退出码 0。 |
 
 本次仍使用系统临时目录与回环模拟 Provider，真实请求数为 0。返修的 9 个产品和测试文件按上节同一规则计算，聚合 SHA-256 为 `315448bdcbd3e6244628c93565bda99e7f30c0d30b80748fdbf0ddd5ac7e2d16`。`services/raw/media-context.ts` 的 SHA-256 为 `036b78c900043e71362101e47897789e8c5041f5c2db27894a6f044446961355`，`tests/acceptance/rawocr02-http.mjs` 为 `8c353c5db27f81e27f78c41ea4390db48b6f401b3478b55b866dd53993f865fd`。
+
+## 删除图标记并编辑转录的返修
+
+基线 `e3b0c29852039ff25bacd8b6d6e717c802a25046`。先在实际 HTTP 夹具加入删标记并加句号的复验，基线回环 Provider 捕获到旧 OCR。在同一基线上，整行替换的纯函数测试也确认拼装结果带出转录。
+
+采集版中实际图片标记与完整起止标识的邻接关系证明旧 OCR 归属。对于已有证实旧 OCR 的 Raw，当前正文中围栏外的完整候选块按采集版归属、唯一的两侧正文或文档首尾、以及普通示例内容是否仍一致来核验。可核对为普通正文的示例及围栏代码照常保留。无法核定归属的完整候选也留在本机，隔离范围止于其起止标识。图片能否进入精读或引用继续取决于当前唯一有效的图片标记。未证实含旧转录的 Raw 沿用普通正文路径。
+
+| 实际命令 | 结果 |
+| --- | --- |
+| `node --import tsx --test tests/rawocr02.test.ts` | 基线 2/3，整行替换反例未通过。 |
+| `node --import tsx tests/acceptance/rawocr02-http.mjs` | 基线复现加句号后漏出。终版实际服务入口通过，43 次回环模拟请求，图片最高并发为 3。 |
+| `node --import tsx --import ./tests/support/css-stub.mjs --test tests/rawocr02.test.ts tests/rawocr01.test.ts tests/raw-integrity.test.ts tests/newsraw01.test.ts tests/kb02-planning-context.test.ts tests/rawux01-http.test.ts tests/lw02-main.test.ts` | 终版 46/46。覆盖多块、剪除标记后重写、归属不明的完整块、普通示例、相同内容的代码示例和处于文档首尾的普通示例。 |
+| `npm.cmd run typecheck` | 退出码 0。 |
+| `node_modules/.bin/prettier.cmd --check services/raw/media-context.ts tests/rawocr02.test.ts` | 通过。 |
+| `node_modules/.bin/eslint.cmd services/raw/media-context.ts tests/rawocr02.test.ts` | 0 错误，0 告警。 |
+| `git diff --check` | 退出码 0。 |
+
+实际 PATCH 后，分别用改标点、改词、替换整行及追加一行的输入精读保留图片，模型收到的正文没有编辑后的旧转录。走正式草稿入口确认保留图的证据仍绑定正确图片，图前图后的引文按 UTF-16 区间切回当前 Raw，草稿落盘过程未改动已编辑的 Raw 文件字节。实际问答补读保留普通正文及仍关联的图片引用，移除的图片和修改过的旧 OCR 没有进入该次补读。全部使用隔离临时目录和回环模拟 Provider，真实调用为 0。
+
+按上节规则，3 个产品和测试文件的聚合 SHA-256 为 `ad6db27ca467719eccb456f82ada3bf39212c27b68bda4e8864899be2b09e76f`。
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `services/raw/media-context.ts` | `c0c5f643afdb9a91cafd31704a5f520a8d014e47485b90ada68fff07f4bd6d6b` |
+| `tests/acceptance/rawocr02-http.mjs` | `8c490aca76740e27c13a590b34d48bd228923de04a8789f446251ba19f73f4ec` |
+| `tests/rawocr02.test.ts` | `da0710ad80533dd75b2cc31cd94fe7ef3400f1c0f35b60a81ce0e29f85bddfee` |

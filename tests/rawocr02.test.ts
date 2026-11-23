@@ -146,3 +146,86 @@ test('Raw edits keep legacy transcriptions isolated independently from current i
   assert.ok(exampleProjection.body.endsWith(identicalExample));
   assert.equal(exampleProjection.body.match(/旧的调试文字/gu)?.length, 1);
 });
+
+test('complete owned blocks remain isolated after removal of the image marker and rewriting the transcription', () => {
+  const revised = raw.body.replace('【来源图片 1】', '').replace('旧的调试文字', '改写后整行已与采集文本不同');
+  const updated = { ...raw, body: revised };
+  const source = inspectRawMedia(updated, raw);
+  assert.deepEqual(
+    source.markers.map(({ imageIndex }) => imageIndex),
+    [2],
+  );
+  assert.doesNotMatch(rawMediaContext(updated, 2, source).context_before, /改写后整行/u);
+  assert.doesNotMatch(buildRawContentForAI(updated, [image], source).body, /改写后整行/u);
+  assert.match(buildRawContentForAI(updated, [image], source).body, /紧接正文/u);
+});
+
+test('opaque and ambiguous blocks stay local while verifiable prose and code examples remain', () => {
+  const ocr = (content: string) => `【图片 OCR 转录（需核对）】\n${content}\n【转录结束】`;
+  const left = '例子上方的公开说明。'.repeat(9);
+  const right = '例子下方的公开说明。'.repeat(9);
+  const ordinary = ocr('采集版已经明确保留的普通原文示范。');
+  const code = '```text\n' + ocr('采集旧转录甲。') + '\n```';
+  const acquisitionBody = [
+    '开头普通原文',
+    '【来源图片 1】',
+    ocr('采集旧转录甲。'),
+    left,
+    ordinary,
+    right,
+    '【来源图片 2】',
+    ocr('采集旧转录乙。'),
+    '收尾普通原文',
+    '【来源图片 3】',
+    code,
+  ].join('\n');
+  const acquisition = {
+    body: acquisitionBody,
+    webImages: [1, 2, 3].map((imageIndex) => ({
+      ...raw.webImages[0],
+      start: acquisitionBody.indexOf(`【来源图片 ${imageIndex}】`),
+    })),
+  };
+  const revised = {
+    ...acquisition,
+    body:
+      acquisitionBody
+        .replace('【来源图片 1】\n', '')
+        .replace(ocr('采集旧转录甲。'), ocr('标点改写后的第一块！'))
+        .replace('【来源图片 2】\n', '')
+        .replace(ocr('采集旧转录乙。'), ocr('第二块整行换掉，无法凭文本识别。'))
+        .replace('收尾普通原文', '收尾普通原文改写') +
+      '\n独立普通正文\n' +
+      ocr('远处新增，无法确定归属。'),
+  };
+  const projection = buildRawContentForAI(revised, [], inspectRawMedia(revised, acquisition));
+  assert.doesNotMatch(projection.body, /标点改写后的第一块|第二块整行换掉|远处新增/u);
+  for (const text of [ordinary, code, '开头普通原文', '收尾普通原文改写', '独立普通正文'])
+    assert.ok(projection.body.includes(text));
+  assert.deepEqual(
+    inspectRawMedia(revised, acquisition).markers.map(({ imageIndex }) => imageIndex),
+    [3],
+  );
+  assert.equal(buildRawContentForAI({ body: revised.body }, []).body, revised.body);
+  const noLegacy = { ...raw, body: '【来源图片 1】\n此处没有旧转录。' };
+  const ordinaryEdit = { ...noLegacy, body: noLegacy.body + '\n' + ordinary };
+  assert.equal(buildRawContentForAI(ordinaryEdit, [], inspectRawMedia(ordinaryEdit, noLegacy)).body, ordinaryEdit.body);
+});
+
+test('document boundaries preserve known ordinary examples while the middle transcription remains local', () => {
+  const example = '【图片 OCR 转录（需核对）】\n本文演示的字串属于公开正文。\n【转录结束】';
+  const padding = '两侧原有正文未编辑。'.repeat(9);
+  const originalBody = `${example}\n${padding}\n【来源图片 1】\n【图片 OCR 转录（需核对）】\n实际旧识别结果\n【转录结束】\n${padding}\n${example}`;
+  const acquired = {
+    body: originalBody,
+    webImages: [{ ...raw.webImages[0], start: originalBody.indexOf('【来源图片 1】') }],
+  };
+  const revised = {
+    ...acquired,
+    body: originalBody.replace('【来源图片 1】\n', '').replace('实际旧识别结果', '实际转录改写内容'),
+  };
+  const projection = buildRawContentForAI(revised, [], inspectRawMedia(revised, acquired));
+  assert.ok(projection.body.startsWith(example));
+  assert.ok(projection.body.endsWith(example));
+  assert.doesNotMatch(projection.body, /实际转录改写内容/u);
+});
