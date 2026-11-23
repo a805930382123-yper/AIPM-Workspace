@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **当前阶段**：NEWSRAW02 删除后重新导入及知识库状态关联已通过独立验收。同一资讯可从每日资讯与自动化交替重导。[任务卡](handoffs/NEWSRAW02-task.md) · [验收报告](reports/NEWSRAW02-review.md)。
+- **当前阶段**：个人知识库配图优化第 1 轮 RAWOCR01 首次独立验收 **FAIL**。图片产物存储与原文保护通过；紧邻汉字的大写乱码漏判为可用正文。详见[任务卡](handoffs/RAWOCR01-task.md)、[施工自查](reports/RAWOCR01-builder.md)和[独立验收](reports/RAWOCR01-review.md)。上一业务批次 NEWSRAW02 已通过[验收](reports/NEWSRAW02-review.md)。
 - **最近 5 个批次结论**：
   - `ENG04`（2026-11-23，**PASS**）：锁定接入 Prettier/ESLint 并串联至 `check`/CI，纯格式化 `02ab4ca`（411 文件）树哈希 100% 复现、核心文件 `esbuild` 等价、长行 `1,434 → 47`、产出 26 份大文件拆分与状态治理方案；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)（`6a5eff6`）双作业全绿（[施工报告](reports/ENG04-20261122-builder.md) · [验收报告](reports/ENG04-20261122-review.md)）。
   - `ENG03`（2026-11-22，**PASS**）：新增证据规范与 `npm run guard` 并接入 CI，8 个 >1 MiB 文件迁出归档，4 份核心台账无损瘦身；[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)（`3c9c273`）双作业全绿（[验收报告](reports/ENG03-20261122-review.md)）。
@@ -11,7 +11,7 @@
   - `AUTOUX02`（2026-11-21，**PASS**）：自动化收件箱漏斗、主从运行记录、滑出详情抽屉与统一弹窗上线并通过双尺寸 Edge 验收（[验收报告](reports/AUTOUX02-20261121-review.md)）。
   - `AUTOUX01`（2026-11-21，**PASS**）：自动化页重构为状态横幅 + 3-Tab 架构并可视化 5 组工作流与周报直达入口（[验收报告](reports/AUTOUX01-20261121-review.md)）。
 - **开放阻塞与待用户确认**：ENG04 发现的 9 项 ESLint 疑似缺陷与[拆分方案](reports/ENG04-20261122-split-plan.md)推荐的下一批候选（首选 `FE01` / 备选 `BE01`）待用户决策；`PDF01-GLOBAL` 62 页草稿仍待确认入库；正式 Wiki/Prompt 写入仍须用户明确操作。
-- **下一步**：等待用户明确授权开启后续批次（大文件拆分、前端状态治理或回归业务功能/KB02 质量收敛）。
+- **下一步**：本轮汇报后停下。建议先返修中英文相邻时的乱码计数，保留技术词对照，再由 Astra medium 独立复验。第 2 轮待第 1 轮通过且用户授权后启动。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
 
 ## ENG04 代码格式化与静态检查基线完成（PASS，2026-11-23）
