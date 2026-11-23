@@ -18,10 +18,20 @@ const statusLabels: Record<MeetingRawLink['status'], string> = {
   raw_deleted: 'Raw已删除',
 };
 
-export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }: Props) {
-  const [revision, setRevision] = useState(meeting.revision);
-  const [importId, setImportId] = useState('');
-  const [requestId, setRequestId] = useState(newId());
+export function MeetingRawLinks(props: Props) {
+  return <MeetingRawLinksContent key={props.meeting.meeting_id} {...props} />;
+}
+
+function MeetingRawLinksContent({ meeting, onRefresh, onRawChanged, onOpenRaw }: Props) {
+  const [revisionOverride, setRevisionOverride] = useState<{ base: number; value: number } | null>(null);
+  const revision = revisionOverride?.base === meeting.revision ? revisionOverride.value : meeting.revision;
+  const [selectedImportId, setSelectedImportId] = useState<string | null>(null);
+  const defaultImportId = meeting.active_import_id ?? meeting.imports[0]?.import_id ?? '';
+  const importId =
+    selectedImportId && meeting.imports.some((item) => item.import_id === selectedImportId)
+      ? selectedImportId
+      : defaultImportId;
+  const [requestId, setRequestId] = useState(() => newId());
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -31,33 +41,16 @@ export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }:
   const alive = useRef(true);
   const lock = useRef(false);
   const meetingIdRef = useRef(meeting.meeting_id);
-  meetingIdRef.current = meeting.meeting_id;
   const ownsMeeting = (id: string) => alive.current && meetingIdRef.current === id;
+  useEffect(() => {
+    meetingIdRef.current = meeting.meeting_id;
+  }, [meeting.meeting_id]);
   useEffect(() => {
     alive.current = true;
     return () => {
       alive.current = false;
     };
   }, []);
-  useEffect(() => {
-    setRevision(meeting.revision);
-    setImportId((current) =>
-      meeting.imports.some((item) => item.import_id === current)
-        ? current
-        : (meeting.active_import_id ?? meeting.imports[0]?.import_id ?? ''),
-    );
-  }, [meeting.meeting_id, meeting.revision, meeting.imports, meeting.active_import_id]);
-  useEffect(() => {
-    setImportId(meeting.active_import_id ?? meeting.imports[0]?.import_id ?? '');
-    setRequestId(newId());
-    setConfirmed(false);
-    setBusy(false);
-    setError('');
-    setConflict(false);
-    setUnlinkId(null);
-    setUnlinkConfirmed(false);
-    lock.current = false;
-  }, [meeting.meeting_id]);
   const activeLinks = useMemo(
     () =>
       new Set(
@@ -71,7 +64,7 @@ export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }:
     try {
       const latest = await api<Meeting>(`/api/meetings/${encodeURIComponent(actionMeetingId)}`);
       if (!ownsMeeting(actionMeetingId)) return;
-      setRevision(latest.revision);
+      setRevisionOverride({ base: meeting.revision, value: latest.revision });
       setConflict(false);
       onRefresh();
     } catch (caught) {
@@ -95,7 +88,7 @@ export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }:
         body: JSON.stringify({ baseRevision: revision, requestId, import_id: importId, confirm: true }),
       });
       if (!ownsMeeting(actionMeetingId)) return;
-      setRevision(result.revision);
+      setRevisionOverride({ base: meeting.revision, value: result.revision });
       setRequestId(newId());
       setConfirmed(false);
       onRefresh();
@@ -111,7 +104,7 @@ export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }:
     }
   };
   const retry = (link: MeetingRawLink) => {
-    setImportId(link.import_id);
+    setSelectedImportId(link.import_id);
     setRequestId(link.request_id);
     setConfirmed(false);
     setError('');
@@ -133,7 +126,7 @@ export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }:
         },
       );
       if (!ownsMeeting(actionMeetingId)) return;
-      setRevision(result.revision);
+      setRevisionOverride({ base: meeting.revision, value: result.revision });
       setUnlinkId(null);
       setUnlinkConfirmed(false);
       onRefresh();
@@ -181,7 +174,7 @@ export function MeetingRawLinks({ meeting, onRefresh, onRawChanged, onOpenRaw }:
             value={importId}
             disabled={!canRegister || busy}
             onChange={(event) => {
-              setImportId(event.target.value);
+              setSelectedImportId(event.target.value);
               setRequestId(newId());
               setConfirmed(false);
             }}

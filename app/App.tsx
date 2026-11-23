@@ -3,6 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { HomeAction } from '../services/home/actions';
 import type { CandidateFilter, ExtractionJob, Raw, RawProcessingState, Stats, WeeklyReviewTarget } from './api';
 import { api, extractionJob, rawProcessing } from './api';
+import { useLatestAsync } from './hooks/useLatestAsync';
+import { type AppPage } from './router/routes';
+import { useAppRoute } from './router/useAppRoute';
 import { HomePage } from './pages/HomePage';
 import { NewsPage } from './pages/NewsPage';
 import { RawPage } from './pages/RawPage';
@@ -20,7 +23,6 @@ import { Brand } from './components/Brand';
 import { RecoveryNotice } from './components/RecoveryNotice';
 import { QuickCaptureDialog } from './components/QuickCaptureDialog';
 
-type Page = 'news' | 'home' | 'wiki' | 'raw' | 'prompt' | 'settings' | 'meeting' | 'work' | 'automation';
 const emptyStats: Stats = {
   rawCount: 0,
   wikiCount: 0,
@@ -30,12 +32,11 @@ const emptyStats: Stats = {
   promptCount: 0,
   weekStartsOn: '',
 };
-const MEETING_QUERY_KEYS = ['meeting', 'mq', 'mt', 'mg', 'mc', 'mp', 'ml', 'mo'] as const;
 
 export function App() {
+  const { page, pageTitle, navigationGeneration, getNavigationGeneration, navigate: navigateRoute } = useAppRoute();
   const [rawCitation, setRawCitation] = useState<RawCitationTarget | null>(null);
   const [rawOriginal, setRawOriginal] = useState(false);
-  const [page, setPage] = useState<Page>('home');
   const [pipelineEntry, setPipelineEntry] = useState<CandidateFilter>();
   const [raws, setRaws] = useState<Raw[]>([]);
   const [stats, setStats] = useState<Stats>(emptyStats);
@@ -64,13 +65,11 @@ export function App() {
   const [weeklyReviewWeekKey, setWeeklyReviewWeekKey] = useState<string>();
   const [automationRunEntry, setAutomationRunEntry] = useState<string>();
   const [automationTabEntry, setAutomationTabEntry] = useState<AutomationTab>();
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
-  const refreshGeneration = useRef(0);
-  const rawSelectionGeneration = useRef(0);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [rawSelectionGeneration, setRawSelectionGeneration] = useState(0);
+  const rawSelectionGenerationRef = useRef(0);
   const rawSelectionRef = useRef<string | null>(null);
   const explicitRawTarget = useRef<string | null>(null);
-  const pageGeneration = useRef(0);
   const extractIntent = useRef<{
     jobId: string;
     rawId: string;
@@ -78,48 +77,66 @@ export function App() {
     selectionGeneration?: number;
   } | null>(null);
 
-  const commitRawSelection = (id: string | null) => {
+  const { error: loadError, run: runRefresh } = useLatestAsync<void>({
+    formatError: (e) => (e instanceof Error ? e.message : '无法连接本地服务。'),
+  });
+
+  const bumpRawSelectionGeneration = useCallback(() => {
+    rawSelectionGenerationRef.current += 1;
+    setRawSelectionGeneration(rawSelectionGenerationRef.current);
+    return rawSelectionGenerationRef.current;
+  }, []);
+
+  const commitRawSelection = useCallback((id: string | null) => {
     rawSelectionRef.current = id;
     setSelectedRawId(id);
-  };
+  }, []);
 
-  const selectRaw = (id: string | null) => {
-    explicitRawTarget.current = null;
-    rawSelectionGeneration.current += 1;
-    commitRawSelection(id);
-  };
+  const selectRaw = useCallback(
+    (id: string | null) => {
+      explicitRawTarget.current = null;
+      bumpRawSelectionGeneration();
+      commitRawSelection(id);
+    },
+    [bumpRawSelectionGeneration, commitRawSelection],
+  );
 
-  const refresh = async (preferredRawId?: string, preserveMissingTarget = false) => {
-    const generation = ++refreshGeneration.current;
-    const selectionGeneration = rawSelectionGeneration.current;
-    const targetRawId =
-      explicitRawTarget.current ?? (preferredRawId === undefined ? rawSelectionRef.current : preferredRawId);
-    const preserveMissing = explicitRawTarget.current !== null || preserveMissingTarget;
-    setLoadError('');
-    try {
-      const [raw, totals, states] = await Promise.all([
-        api<{ items: Raw[] }>('/api/raw'),
-        api<Stats>('/api/stats'),
-        rawProcessing(),
-      ]);
-      if (generation !== refreshGeneration.current) return;
-      setRaws(raw.items);
-      setStats(totals);
-      setProcessing(states);
-      if (selectionGeneration === rawSelectionGeneration.current) {
-        if (targetRawId && raw.items.some((item) => item.id === targetRawId)) commitRawSelection(targetRawId);
-        else if (preserveMissing) commitRawSelection(targetRawId ?? null);
-        else commitRawSelection(raw.items[0]?.id ?? null);
-      }
-    } catch (e) {
-      if (generation === refreshGeneration.current) setLoadError(e instanceof Error ? e.message : '无法连接本地服务。');
-    } finally {
-      if (generation === refreshGeneration.current) setLoading(false);
-    }
-  };
+  const refresh = useCallback(
+    async (preferredRawId?: string, preserveMissingTarget = false) => {
+      const selectionGeneration = rawSelectionGenerationRef.current;
+      const targetRawId =
+        explicitRawTarget.current ?? (preferredRawId === undefined ? rawSelectionRef.current : preferredRawId);
+      const preserveMissing = explicitRawTarget.current !== null || preserveMissingTarget;
+      let settled = false;
+      await runRefresh(async ({ signal, isCurrent }) => {
+        try {
+          const [raw, totals, states] = await Promise.all([
+            api<{ items: Raw[] }>('/api/raw', { signal }),
+            api<Stats>('/api/stats', { signal }),
+            rawProcessing(),
+          ]);
+          if (!isCurrent()) return;
+          setRaws(raw.items);
+          setStats(totals);
+          setProcessing(states);
+          if (selectionGeneration === rawSelectionGenerationRef.current) {
+            if (targetRawId && raw.items.some((item) => item.id === targetRawId)) commitRawSelection(targetRawId);
+            else if (preserveMissing) commitRawSelection(targetRawId ?? null);
+            else commitRawSelection(raw.items[0]?.id ?? null);
+          }
+          settled = true;
+        } catch (error) {
+          if (isCurrent()) settled = true;
+          throw error;
+        }
+      });
+      if (settled) setInitialLoading(false);
+    },
+    [commitRawSelection, runRefresh],
+  );
   useEffect(() => {
     void refresh();
-  }, []);
+  }, [refresh]);
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.key.toLowerCase() !== 'n') return;
@@ -165,9 +182,9 @@ export function App() {
             next.status === 'completed' &&
             next.draftId &&
             intent?.jobId === next.jobId &&
-            intent.pageGeneration === pageGeneration.current &&
+            intent.pageGeneration === getNavigationGeneration() &&
             (intent.selectionGeneration === undefined ||
-              intent.selectionGeneration === rawSelectionGeneration.current) &&
+              intent.selectionGeneration === rawSelectionGenerationRef.current) &&
             ['raw', 'wiki'].includes(page) &&
             (page !== 'raw' || rawSelectionRef.current === next.rawId)
           ) {
@@ -183,27 +200,10 @@ export function App() {
       active = false;
       clearInterval(timer);
     };
-  }, [observedJobId, page, jobPollGeneration]);
+  }, [observedJobId, page, jobPollGeneration, refresh, getNavigationGeneration]);
 
-  const nav = (destination: Page, preferredRawId?: string) => {
-    if (destination !== 'meeting' && typeof window !== 'undefined' && window.location.search) {
-      const params = new URLSearchParams(window.location.search);
-      let changed = false;
-      for (const key of MEETING_QUERY_KEYS) {
-        if (params.has(key)) {
-          params.delete(key);
-          changed = true;
-        }
-      }
-      if (changed) {
-        const nextQuery = params.toString();
-        window.history.replaceState(
-          {},
-          '',
-          `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`,
-        );
-      }
-    }
+  const nav = (destination: AppPage, preferredRawId?: string) => {
+    navigateRoute(destination);
     setPipelineEntry(undefined);
     setRawCitation(null);
     setRawOriginal(false);
@@ -212,15 +212,13 @@ export function App() {
     setWeeklyReviewWeekKey(undefined);
     setAutomationRunEntry(undefined);
     setAutomationTabEntry(undefined);
-    pageGeneration.current += 1;
     setPendingAudit(null);
     setWikiCheckEntry(null);
-    setPage(destination);
     setOpenImport(false);
     setMeetingCreate(false);
     setReviewDraftId(null);
     setWorkflowId(null);
-    rawSelectionGeneration.current += 1;
+    bumpRawSelectionGeneration();
     explicitRawTarget.current = destination === 'raw' && preferredRawId !== undefined ? preferredRawId : null;
     if (explicitRawTarget.current !== null) commitRawSelection(explicitRawTarget.current);
     if (destination === 'home' || destination === 'raw' || destination === 'work')
@@ -259,15 +257,15 @@ export function App() {
   };
   const handleJobStarted = (
     started: ExtractionJob,
-    requestedPageGeneration = pageGeneration.current,
+    requestedPageGeneration = getNavigationGeneration(),
     requestedSelectionGeneration?: number,
   ) => {
     setJobPollGeneration((value) => value + 1);
     setJob(started);
     setActiveJobId(started.jobId);
     if (
-      requestedPageGeneration !== pageGeneration.current ||
-      (requestedSelectionGeneration !== undefined && requestedSelectionGeneration !== rawSelectionGeneration.current)
+      requestedPageGeneration !== getNavigationGeneration() ||
+      (requestedSelectionGeneration !== undefined && requestedSelectionGeneration !== rawSelectionGenerationRef.current)
     ) {
       extractIntent.current = null;
       return;
@@ -304,24 +302,6 @@ export function App() {
     }
   };
   const clearPendingWikiId = useCallback(() => setPendingWikiId(null), []);
-  const pageTitle =
-    page === 'news'
-      ? '每日资讯'
-      : page === 'home'
-        ? '首页'
-        : page === 'raw'
-          ? 'Raw 原始资料'
-          : page === 'prompt'
-            ? 'Prompt 工作台'
-            : page === 'settings'
-              ? '设置'
-              : page === 'meeting'
-                ? '会议档案'
-                : page === 'work'
-                  ? '工作事项'
-                  : page === 'automation'
-                    ? '自动化'
-                    : '知识库';
   const currentBreadcrumb = workflowId ? '更新与综合审阅' : reviewDraftId ? 'AI 知识整理预览' : pageTitle;
   const canBreadcrumbBack = Boolean(workflowId || reviewDraftId || page === 'news');
   const handleBreadcrumbBack = () => {
@@ -529,7 +509,7 @@ export function App() {
             )}
             {page === 'work' && (
               <WorkItemsPage
-                key={pageGeneration.current}
+                key={navigationGeneration}
                 initialId={workItemTarget?.id ?? null}
                 initialFocusMaterials={workItemTarget?.focusMaterials}
                 raws={raws}
@@ -567,8 +547,8 @@ export function App() {
                 processing={processingById}
                 job={job}
                 onJobStarted={handleJobStarted}
-                navigationGeneration={pageGeneration.current}
-                selectionGeneration={rawSelectionGeneration.current}
+                navigationGeneration={navigationGeneration}
+                selectionGeneration={rawSelectionGeneration}
                 onOpenDraft={setReviewDraftId}
                 onOpenWorkflow={setWorkflowId}
                 onRefresh={refresh}
@@ -588,7 +568,7 @@ export function App() {
                 onInitialOpenHandled={clearPendingWikiId}
                 processing={processingById}
                 onJobStarted={handleJobStarted}
-                navigationGeneration={pageGeneration.current}
+                navigationGeneration={navigationGeneration}
                 onOpenDraft={setReviewDraftId}
                 onOpenWorkflow={setWorkflowId}
                 onImport={() => {
@@ -615,7 +595,7 @@ export function App() {
             )}
           </>
         )}
-        {loading && page === 'home' && <span className="loading-note">正在读取本机资料…</span>}
+        {initialLoading && page === 'home' && <span className="loading-note">正在读取本机资料…</span>}
         {quickCaptureOpen && (
           <QuickCaptureDialog
             onClose={() => setQuickCaptureOpen(false)}

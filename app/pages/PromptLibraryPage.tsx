@@ -112,9 +112,7 @@ export function PromptLibraryPage({
 
   const selectionVersion = useRef(0);
   const selectedIdRef = useRef(selectedId);
-  selectedIdRef.current = selectedId;
   const formActiveRef = useRef(!!form);
-  formActiveRef.current = !!form;
   const listRequest = useRef(0);
   const historyRequest = useRef(0);
   const renderRequest = useRef(0);
@@ -130,27 +128,14 @@ export function PromptLibraryPage({
   const initialSelectionDone = useRef(false);
   const copyRef = useRef<HTMLTextAreaElement>(null);
   const conditionsRef = useRef({ q: '', category: '', tag: '', favorite: false });
-  // Mirrors the four filters so a refresh triggered by a save/favourite/delete always queries the
-  // newest conditions rather than the ones captured when the request was created.
-  conditionsRef.current = { q: query, category, tag, favorite: favoriteOnly };
 
+  // Mirrors the selection, active-form and filter state so async refreshes always read the newest
+  // conditions after commit without touching refs during render.
   useEffect(() => {
-    const create = () => {
-      setWorkbench('library');
-      window.setTimeout(() => startCreate(), 0);
-    };
-    const generate = (event: Event) => {
-      const task = (event as CustomEvent<{ task?: string }>).detail?.task ?? '';
-      setTaskSeed(task);
-      setWorkbench('generator');
-    };
-    window.addEventListener('prompt:new', create);
-    window.addEventListener('prompt:generator', generate);
-    return () => {
-      window.removeEventListener('prompt:new', create);
-      window.removeEventListener('prompt:generator', generate);
-    };
-  }, [schema]);
+    selectedIdRef.current = selectedId;
+    formActiveRef.current = !!form;
+    conditionsRef.current = { q: query, category, tag, favorite: favoriteOnly };
+  }, [selectedId, form, query, category, tag, favoriteOnly]);
 
   /**
    * B07 repair (F07-04): the shared loading flag is owned by a token. A late response from an
@@ -169,6 +154,48 @@ export function PromptLibraryPage({
     busyToken.current += 1;
     setBusy(false);
   }, []);
+
+  const defaultCategoryId = schema?.categories[0]?.id ?? 'office';
+  const startCreate = useCallback(() => {
+    selectionVersion.current += 1;
+    historyRequest.current += 1;
+    renderRequest.current += 1;
+    releaseBusy();
+    setSelectedId(null);
+    setDetail(null);
+    setVersions([]);
+    setViewVersion(null);
+    setValues({});
+    setPreview(null);
+    setPreviewMissing([]);
+    setCopy({ status: 'idle', text: '', message: '' });
+    setError('');
+    setNotice('');
+    setBaseVersion(null);
+    setForm(emptyInput(defaultCategoryId));
+    // A retry of the *same* new-prompt session keeps its requestId; an id already claimed by an
+    // in-flight create belongs to a different form and must never be reused for this one.
+    if (requestId.current && inflightRequestIds.current.has(requestId.current)) requestId.current = null;
+    requestId.current = requestId.current ?? newRequestId();
+  }, [defaultCategoryId, releaseBusy]);
+
+  useEffect(() => {
+    const create = () => {
+      setWorkbench('library');
+      window.setTimeout(() => startCreate(), 0);
+    };
+    const generate = (event: Event) => {
+      const task = (event as CustomEvent<{ task?: string }>).detail?.task ?? '';
+      setTaskSeed(task);
+      setWorkbench('generator');
+    };
+    window.addEventListener('prompt:new', create);
+    window.addEventListener('prompt:generator', generate);
+    return () => {
+      window.removeEventListener('prompt:new', create);
+      window.removeEventListener('prompt:generator', generate);
+    };
+  }, [startCreate]);
 
   /**
    * Every selection change drops the previous record's variables, preview, form and messages.
@@ -279,10 +306,7 @@ export function PromptLibraryPage({
   }, [query, category, tag, favoriteOnly, refreshList, selectId]);
 
   useEffect(() => {
-    if (!selectedId) {
-      setDetail(null);
-      return;
-    }
+    if (!selectedId) return;
     let active = true;
     const version = selectionVersion.current;
     promptDetail(selectedId)
@@ -303,7 +327,8 @@ export function PromptLibraryPage({
     };
   }, [selectedId, reloadToken]);
 
-  const prompt = detail?.prompt ?? null;
+  const activeDetail = selectedId && detail?.prompt.id === selectedId ? detail : null;
+  const prompt = activeDetail?.prompt ?? null;
   const categories = schema?.categories ?? [];
   const categoryLabel = (id: string) => categories.find((item) => item.id === id)?.label ?? id;
   const variables = useMemo(() => extractVariables(prompt?.body ?? ''), [prompt?.body]);
@@ -324,29 +349,6 @@ export function PromptLibraryPage({
     : undefined;
   const activeCategory = categories.find((item) => item.id === (viewVersion?.snapshot.category ?? prompt?.category));
   const shownPrompt = viewVersion?.snapshot ?? prompt;
-
-  const startCreate = () => {
-    selectionVersion.current += 1;
-    historyRequest.current += 1;
-    renderRequest.current += 1;
-    releaseBusy();
-    setSelectedId(null);
-    setDetail(null);
-    setVersions([]);
-    setViewVersion(null);
-    setValues({});
-    setPreview(null);
-    setPreviewMissing([]);
-    setCopy({ status: 'idle', text: '', message: '' });
-    setError('');
-    setNotice('');
-    setBaseVersion(null);
-    setForm(emptyInput(categories[0]?.id ?? 'office'));
-    // A retry of the *same* new-prompt session keeps its requestId; an id already claimed by an
-    // in-flight create belongs to a different form and must never be reused for this one.
-    if (requestId.current && inflightRequestIds.current.has(requestId.current)) requestId.current = null;
-    requestId.current = requestId.current ?? newRequestId();
-  };
 
   const startEdit = (target: Prompt) => {
     if (viewVersion) return;
@@ -488,7 +490,7 @@ export function PromptLibraryPage({
   };
 
   const doRender = async () => {
-    if (!prompt || !detail) return;
+    if (!prompt || !activeDetail) return;
     const targetId = prompt.id;
     const targetVersion = prompt.version;
     const valuesAtRequest = { ...values };
@@ -616,7 +618,7 @@ export function PromptLibraryPage({
     if (copy.status === 'failed' && copyRef.current) copyRef.current.select();
   }, [copy]);
 
-  const linkById = new Map((detail?.wikiLinks ?? []).map((link) => [link.id, link]));
+  const linkById = new Map((activeDetail?.wikiLinks ?? []).map((link) => [link.id, link]));
   const wikiTitle = (id: string) => linkById.get(id)?.title ?? wikis.find((item) => item.id === id)?.title ?? null;
 
   return (
@@ -821,7 +823,7 @@ export function PromptLibraryPage({
                 <PromptDetail
                   prompt={shownPrompt}
                   activeCategory={activeCategory}
-                  links={detail?.wikiLinks ?? []}
+                  links={activeDetail?.wikiLinks ?? []}
                   wikiTitle={wikiTitle}
                   versions={versions}
                   busy={busy}

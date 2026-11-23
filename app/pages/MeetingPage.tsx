@@ -11,6 +11,8 @@ import {
 import { MeetingMinutes } from '../MeetingMinutes';
 import { MeetingRawLinks } from '../MeetingRawLinks';
 import { useDialogFocus } from '../components/useDialogFocus';
+import { readQueryParams, updateRouteQuery } from '../router/routes';
+import { subscribePopState } from '../router/useAppRoute';
 import '../meeting.css';
 
 const LEVELS: MeetingConfidentiality[] = ['Public', 'Internal', 'Sensitive', 'Restricted'];
@@ -29,7 +31,7 @@ type Filters = {
   order: 'desc' | 'asc';
 };
 const readFilters = (): Filters => {
-  const q = new URLSearchParams(location.search);
+  const q = readQueryParams();
   return {
     q: q.get('mq') || '',
     type: q.get('mt') || '',
@@ -41,19 +43,27 @@ const readFilters = (): Filters => {
   };
 };
 function saveFilters(f: Filters, meetingId?: string | null, push = false) {
-  const p = new URLSearchParams(location.search);
-  for (const [key, value] of Object.entries({
-    mq: f.q,
-    mt: f.type,
-    mg: f.tag,
-    mc: f.customer,
-    mp: f.project,
-    ml: f.level,
-    mo: f.order,
-    meeting: meetingId || '',
-  }))
-    value ? p.set(key, value) : p.delete(key);
-  history[push ? 'pushState' : 'replaceState']({}, '', `${location.pathname}${p.size ? `?${p}` : ''}`);
+  updateRouteQuery(
+    (p) => {
+      for (const [key, value] of Object.entries({
+        mq: f.q,
+        mt: f.type,
+        mg: f.tag,
+        mc: f.customer,
+        mp: f.project,
+        ml: f.level,
+        mo: f.order,
+        meeting: meetingId || '',
+      })) {
+        if (value) {
+          p.set(key, value);
+        } else {
+          p.delete(key);
+        }
+      }
+    },
+    { push },
+  );
 }
 const errText = (e: unknown) => (e instanceof Error ? e.message : '操作失败，请重试。');
 const byDate = (a: MeetingSummary, b: MeetingSummary, order: string) =>
@@ -68,7 +78,7 @@ export function MeetingPage({
 }: { onRawChanged?: () => Promise<void>; onOpenRaw?: (id: string) => void; initialCreate?: boolean } = {}) {
   const [catalog, setCatalog] = useState<MeetingCatalog | null>(null),
     [items, setItems] = useState<MeetingSummary[]>([]),
-    [selectedId, setSelectedId] = useState<string | null>(() => new URLSearchParams(location.search).get('meeting'));
+    [selectedId, setSelectedId] = useState<string | null>(() => readQueryParams().get('meeting'));
   const [detail, setDetail] = useState<Meeting | null>(null),
     [filters, setFilters] = useState<Filters>(readFilters),
     [busy, setBusy] = useState(false),
@@ -81,59 +91,69 @@ export function MeetingPage({
     [deleteConfirm, setDeleteConfirm] = useState(false),
     [deleteLocalConfirm, setDeleteLocalConfirm] = useState(false),
     [deleteRawConfirm, setDeleteRawConfirm] = useState(false);
+  const [modalToken, setModalToken] = useState(0);
   const epoch = useRef(0);
   const detailEpoch = useRef(0);
-  const modalEpoch = useRef(0);
+  const modalTokenRef = useRef(0);
   const mounted = useRef(false);
   const deleteLock = useRef(false);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-      epoch.current++;
-      detailEpoch.current++;
-      modalEpoch.current++;
-    };
+  const initialSelectedIdRef = useRef(selectedId);
+  const bumpModalToken = useCallback(() => {
+    modalTokenRef.current += 1;
+    setModalToken(modalTokenRef.current);
+    return modalTokenRef.current;
+  }, []);
+  const fetchDirectoryAndDetail = useCallback(async (target: string | null, token: number) => {
+    const [c, l] = await Promise.all([
+      api<MeetingCatalog>('/api/meeting-catalog'),
+      api<{ items: MeetingSummary[] }>('/api/meetings'),
+    ]);
+    if (token !== epoch.current) return;
+    setCatalog(c);
+    setItems(l.items);
+    if (target && l.items.some((x) => x.meeting_id === target)) {
+      setSelectedId(target);
+      const current = ++detailEpoch.current;
+      try {
+        const d = await api<Meeting>(`/api/meetings/${encodeURIComponent(target)}`);
+        if (token === epoch.current && current === detailEpoch.current) setDetail(d);
+      } catch (e) {
+        if (token === epoch.current && current === detailEpoch.current) setError(errText(e));
+      }
+    } else {
+      setSelectedId(null);
+      setDetail(null);
+      saveFilters(readFilters(), null);
+    }
   }, []);
   const load = useCallback(
-    async (target = selectedId) => {
+    async (target: string | null) => {
       const token = ++epoch.current;
       setLoading(true);
       setError('');
       try {
-        const [c, l] = await Promise.all([
-          api<MeetingCatalog>('/api/meeting-catalog'),
-          api<{ items: MeetingSummary[] }>('/api/meetings'),
-        ]);
-        if (token !== epoch.current) return;
-        setCatalog(c);
-        setItems(l.items);
-        if (target && l.items.some((x) => x.meeting_id === target)) {
-          setSelectedId(target);
-          const current = ++detailEpoch.current;
-          try {
-            const d = await api<Meeting>(`/api/meetings/${encodeURIComponent(target)}`);
-            if (token === epoch.current && current === detailEpoch.current) setDetail(d);
-          } catch (e) {
-            if (token === epoch.current && current === detailEpoch.current) setError(errText(e));
-          }
-        } else {
-          setSelectedId(null);
-          setDetail(null);
-          saveFilters(readFilters(), null);
-        }
+        await fetchDirectoryAndDetail(target, token);
       } catch (e) {
         if (token === epoch.current) setError(errText(e));
       } finally {
         if (token === epoch.current) setLoading(false);
       }
     },
-    [selectedId, filters],
+    [fetchDirectoryAndDetail],
   );
   useEffect(() => {
-    void load(selectedId);
-    const onPop = () => {
-      modalEpoch.current++;
+    mounted.current = true;
+    let active = true;
+    const token = ++epoch.current;
+    void fetchDirectoryAndDetail(initialSelectedIdRef.current, token)
+      .catch((e) => {
+        if (active && token === epoch.current) setError(errText(e));
+      })
+      .finally(() => {
+        if (active && token === epoch.current) setLoading(false);
+      });
+    const unsubscribe = subscribePopState(() => {
+      bumpModalToken();
       setNotice('');
       setForm(null);
       setPolicy(false);
@@ -141,20 +161,19 @@ export function MeetingPage({
       setDeleteConfirm(false);
       const f = readFilters();
       setFilters(f);
-      const id = new URLSearchParams(location.search).get('meeting');
+      const id = readQueryParams().get('meeting');
       setSelectedId(id);
       void load(id);
-    };
-    window.addEventListener('popstate', onPop);
+    });
     return () => {
-      epoch.current++;
-      detailEpoch.current++;
-      window.removeEventListener('popstate', onPop);
+      active = false;
+      mounted.current = false;
+      unsubscribe();
     };
-  }, []);
+  }, [bumpModalToken, fetchDirectoryAndDetail, load]);
   const select = async (id: string | null) => {
     epoch.current++;
-    modalEpoch.current++;
+    bumpModalToken();
     setLoading(false);
     setBusy(false);
     setNotice('');
@@ -178,8 +197,10 @@ export function MeetingPage({
       if (token === detailEpoch.current) setBusy(false);
     }
   };
-  const catalogName = (kind: 'types' | 'tags', id: string) =>
-    catalog?.[kind].find((x) => x.id === id)?.name ?? '已停用目录项';
+  const catalogName = useCallback(
+    (kind: 'types' | 'tags', id: string) => catalog?.[kind].find((x) => x.id === id)?.name ?? '已停用目录项',
+    [catalog],
+  );
   const filtered = useMemo(
     () =>
       items
@@ -197,7 +218,7 @@ export function MeetingPage({
           );
         })
         .sort((a, b) => byDate(a, b, filters.order)),
-    [items, catalog, filters],
+    [items, catalogName, filters],
   );
   const updateFilter = (key: keyof Filters, value: string) => {
     const next = { ...filters, [key]: value };
@@ -205,8 +226,8 @@ export function MeetingPage({
     saveFilters(next, selectedId);
   };
   const afterMutation = async (id: string | null, dialogToken: number) => {
-    if (!mounted.current || dialogToken !== modalEpoch.current) return;
-    modalEpoch.current++;
+    if (!mounted.current || dialogToken !== modalTokenRef.current) return;
+    bumpModalToken();
     setBusy(false);
     setForm(null);
     setPolicy(false);
@@ -215,28 +236,28 @@ export function MeetingPage({
     await load(id);
   };
   const openEditor = (value: 'create' | 'edit') => {
-    modalEpoch.current++;
+    bumpModalToken();
     setNotice('');
     setForm(value);
   };
   const closeEditor = () => {
-    modalEpoch.current++;
+    bumpModalToken();
     setForm(null);
   };
   const openPolicy = () => {
-    modalEpoch.current++;
+    bumpModalToken();
     setPolicy(true);
   };
   const closePolicy = () => {
-    modalEpoch.current++;
+    bumpModalToken();
     setPolicy(false);
   };
   const openCatalog = (value: 'types' | 'tags') => {
-    modalEpoch.current++;
+    bumpModalToken();
     setManage(value);
   };
   const closeCatalog = () => {
-    modalEpoch.current++;
+    bumpModalToken();
     setManage(null);
   };
   return (
@@ -566,7 +587,7 @@ export function MeetingPage({
                         void (async () => {
                           if (deleteLock.current) return;
                           deleteLock.current = true;
-                          const actionToken = modalEpoch.current;
+                          const actionToken = modalTokenRef.current;
                           const actionDetail = detail;
                           setBusy(true);
                           setError('');
@@ -583,11 +604,11 @@ export function MeetingPage({
                               }),
                             });
                             deleteLock.current = false;
-                            if (mounted.current && actionToken === modalEpoch.current)
+                            if (mounted.current && actionToken === modalTokenRef.current)
                               await afterMutation(null, actionToken);
                           } catch (e) {
                             deleteLock.current = false;
-                            if (mounted.current && actionToken === modalEpoch.current) {
+                            if (mounted.current && actionToken === modalTokenRef.current) {
                               setError(`${errText(e)} 会议记录未确认删除；请重新读取后再操作。`);
                               setBusy(false);
                             }
@@ -609,11 +630,11 @@ export function MeetingPage({
           mode={form}
           item={form === 'edit' ? detail! : null}
           catalog={catalog}
-          token={modalEpoch.current}
+          token={modalToken}
           onClose={closeEditor}
           onReload={() => void load(selectedId)}
           onSaved={async (id, token, upload) => {
-            if (!mounted.current || token !== modalEpoch.current) return;
+            if (!mounted.current || token !== modalTokenRef.current) return;
             setNotice('会议信息已保存。');
             await afterMutation(id, token);
             if (upload) {
@@ -630,7 +651,7 @@ export function MeetingPage({
       {policy && detail && (
         <PolicyDialog
           meeting={detail}
-          token={modalEpoch.current}
+          token={modalToken}
           onClose={closePolicy}
           onReload={() => void load(selectedId)}
           onSaved={(id, token) => afterMutation(id, token)}
@@ -640,11 +661,11 @@ export function MeetingPage({
         <CatalogDialog
           kind={manage}
           catalog={catalog}
-          token={modalEpoch.current}
+          token={modalToken}
           onClose={closeCatalog}
           onReload={() => void load(selectedId)}
           onSaved={async (c, token) => {
-            if (!mounted.current || token !== modalEpoch.current) return;
+            if (!mounted.current || token !== modalTokenRef.current) return;
             setCatalog(c);
             await load(selectedId);
           }}

@@ -4,6 +4,7 @@ import { KnowledgeMaintenanceReview } from './KnowledgeMaintenanceReview';
 import { RawOutcomeReview } from './RawOutcomeReview';
 import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
 import { useEffect, useMemo, useState, useRef } from 'react';
+import { useScopedQuery } from '../hooks/useScopedQuery';
 import type { DraftPatch, DraftPage, DraftView, Raw, WikiCommitStatus, WikiSchema, DuplicateResult } from '../api';
 import {
   hasTemplateFields,
@@ -31,11 +32,19 @@ import {
 } from '../api';
 
 type PageDraft = DraftPage & { renderedBody?: string };
+const duplicateInput = (page: PageDraft) => ({
+  title: page.title,
+  category: page.category,
+  content: [page.one_line_definition, ...page.source_facts.map((item) => item.text), ...page.ai_organized].join('\n'),
+});
 const reviewFingerprint = (value: DraftView, items: PageDraft[] = value.pages) =>
   JSON.stringify({
     document: value.document,
     ...(value.input ? { input: value.input } : { source: value.source }),
-    pages: items.map(({ renderedBody: _body, ...p }) => p),
+    pages: items.map(({ renderedBody, ...p }) => {
+      void renderedBody;
+      return p;
+    }),
   });
 
 const conflictText = (view: DraftView) => {
@@ -164,15 +173,7 @@ function TemplateFieldsEditor({
   );
 }
 
-export function DraftReviewPage({
-  draftId,
-  onBack,
-  onCommitted,
-  onOpenRaw,
-  onOpenWorkflow,
-  onOpenWiki,
-  backLabel,
-}: {
+type DraftReviewPageProps = {
   draftId: string;
   onBack: () => void;
   onCommitted: () => Promise<void>;
@@ -180,14 +181,33 @@ export function DraftReviewPage({
   onOpenWiki?: (id: string) => void;
   onOpenWorkflow?: (id: string) => void;
   backLabel?: string;
-}) {
+};
+
+export function DraftReviewPage(props: DraftReviewPageProps) {
+  return <DraftReviewPageContent key={props.draftId} {...props} />;
+}
+
+function DraftReviewPageContent({
+  draftId,
+  onBack,
+  onCommitted,
+  onOpenRaw,
+  onOpenWorkflow,
+  onOpenWiki,
+  backLabel,
+}: DraftReviewPageProps) {
   const [noteDirty, setNoteDirty] = useState(false),
     [showCards, setShowCards] = useState(false);
   const loadGeneration = useRef(0);
+  const mountedRef = useRef(true);
   const [view, setView] = useState<DraftView | null>(null);
   const [pages, setPages] = useState<PageDraft[]>([]);
   const [body, setBody] = useState('');
-  const [schema, setSchema] = useState<WikiSchema | null>(null);
+  const { data: schema = null } = useScopedQuery<WikiSchema>(
+    ['wiki', 'schema'],
+    ({ signal }) => api<WikiSchema>('/api/wiki/schema', { signal }),
+    { cache: false },
+  );
   const [mergePick, setMergePick] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
@@ -205,43 +225,39 @@ export function DraftReviewPage({
   const [duplicateErrors, setDuplicateErrors] = useState<Record<string, string>>({});
   const [savedFingerprint, setSavedFingerprint] = useState('');
 
-  const load = async () => {
-    const generation = ++loadGeneration.current;
-    setError('');
-    try {
-      const next = await draftView(draftId);
-      if (generation !== loadGeneration.current) return;
-      setView(next);
-      setSavedFingerprint(reviewFingerprint(next));
-      setPages(next.pages.map((page) => ({ ...page })));
-      const raw = next.input ? null : await api<Raw>(`/api/raw/${encodeURIComponent(next.rawId)}`).catch(() => null);
-      if (generation === loadGeneration.current) setBody(raw?.body ?? '');
-    } catch (problem) {
-      if (generation === loadGeneration.current)
-        setError(problem instanceof Error ? problem.message : '无法读取这份草稿。');
-    }
-  };
   useEffect(() => {
-    setView(null);
-    setBody('');
-    setShowCards(false);
-    setNoteDirty(false);
-    void load();
+    mountedRef.current = true;
     return () => {
-      loadGeneration.current++;
+      mountedRef.current = false;
     };
-  }, [draftId]);
+  }, []);
+
   useEffect(() => {
     let active = true;
-    api<WikiSchema>('/api/wiki/schema')
-      .then((value) => {
-        if (active) setSchema(value);
+    const generation = ++loadGeneration.current;
+    draftView(draftId)
+      .then((next) => {
+        if (!active || generation !== loadGeneration.current) return;
+        setView(next);
+        setSavedFingerprint(reviewFingerprint(next));
+        setPages(next.pages.map((page) => ({ ...page })));
+        if (next.input) return null;
+        return api<Raw>(`/api/raw/${encodeURIComponent(next.rawId)}`).catch(() => null);
       })
-      .catch(() => undefined);
+      .then((raw) => {
+        if (active && generation === loadGeneration.current && raw !== undefined) {
+          setBody(raw?.body ?? '');
+        }
+      })
+      .catch((problem) => {
+        if (active && generation === loadGeneration.current) {
+          setError(problem instanceof Error ? problem.message : '无法读取这份草稿。');
+        }
+      });
     return () => {
       active = false;
     };
-  }, []);
+  }, [draftId]);
 
   const typeOptions = useMemo(
     () => (schema?.types ?? []).filter((type) => type.id !== 'source' && type.id !== 'synthesis'),
@@ -258,9 +274,10 @@ export function DraftReviewPage({
     pages.every((p) =>
       view.humanReview!.approvals.some((a) => a.pageId === p.pageId && a.digest === view.reviewContentDigest),
     );
+  const canCheckDuplicates = Boolean(view && !view.input && !view.outcomeDigest && !readOnly && pages.length > 0);
 
   useEffect(() => {
-    if (!view || view.input || view.outcomeDigest || readOnly || pages.length === 0) return;
+    if (!canCheckDuplicates) return;
     let active = true;
     const timer = window.setTimeout(async () => {
       const results = await Promise.all(
@@ -284,7 +301,7 @@ export function DraftReviewPage({
       setDuplicateErrors((current) => {
         const next = { ...current };
         for (const [id, value] of results) if (value !== null) delete next[id];
-        for (const [id, _value, error] of results) if (error !== null) next[id] = error;
+        for (const [id, , errorMessage] of results) if (errorMessage !== null) next[id] = errorMessage;
         return next;
       });
     }, 100);
@@ -292,7 +309,7 @@ export function DraftReviewPage({
       active = false;
       window.clearTimeout(timer);
     };
-  }, [draftId, view?.revision, readOnly, pages]);
+  }, [draftId, canCheckDuplicates, view?.revision, pages]);
   const updatePage = (pageId: string, patch: Partial<PageDraft>) => {
     const currentPage = pages.find((page) => page.pageId === pageId);
     if (
@@ -361,11 +378,13 @@ export function DraftReviewPage({
     try {
       await work();
     } catch (problem) {
+      if (!mountedRef.current) return;
       if (problem instanceof ApiError && problem.code === 'DRAFT_CONFIRM_PARTIAL') setError(problem.message);
       else if (problem instanceof ApiError && (problem.details as { operationId?: string } | undefined)?.operationId) {
         const operationId = (problem.details as { operationId?: string }).operationId as string;
         setError(problem.message);
         const status = await wikiCommit(operationId).catch(() => null);
+        if (!mountedRef.current) return;
         if (status) setCommit(status);
         setResult({
           operationId,
@@ -377,7 +396,7 @@ export function DraftReviewPage({
         await onCommitted();
       } else setError(problem instanceof Error ? problem.message : '操作失败，请重试。');
     } finally {
-      setBusy('');
+      if (mountedRef.current) setBusy('');
     }
   };
   /** F04-01: one snapshot carrying every editable field (Source, document and pages). */
@@ -454,11 +473,6 @@ export function DraftReviewPage({
       if (!view?.reviewContentDigest || dirty) throw new Error('请先保存编辑，并重新审查当前内容。');
       applyView(await reviewDraftPage(draftId, pageId, view.revision, view.reviewContentDigest, confirmed));
     });
-  const duplicateInput = (page: PageDraft) => ({
-    title: page.title,
-    category: page.category,
-    content: [page.one_line_definition, ...page.source_facts.map((item) => item.text), ...page.ai_organized].join('\n'),
-  });
   const checkDuplicates = (pageId: string) =>
     run(`duplicates:${pageId}`, async () => {
       const page = pages.find((item) => item.pageId === pageId);
@@ -487,8 +501,10 @@ export function DraftReviewPage({
       if (view?.structuredNote)
         throw new Error('深度笔记需先保存，逐页审核知识卡片，并明确核对笔记后才可正式确认；旧Wiki更新暂不开放。');
       const saved = await patchDraft(draftId, snapshot());
+      if (!mountedRef.current) return;
       applyView(saved);
       const workflow = await startUpdateWorkflow({ draftId, pageId, targetWikiId, baseRevision: saved.revision });
+      if (!mountedRef.current) return;
       setError('更新预览已生成。');
       onOpenWorkflow?.(workflow.id);
     });
@@ -523,6 +539,7 @@ export function DraftReviewPage({
     run('discard', async () => {
       await discardDraft(draftId, view?.revision);
       await onCommitted();
+      if (!mountedRef.current) return;
       onBack();
     });
   // F04-02: confirming first persists the current review snapshot, then commits that exact

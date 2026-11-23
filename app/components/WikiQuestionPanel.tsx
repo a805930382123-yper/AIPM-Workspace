@@ -46,24 +46,25 @@ export function WikiQuestionPanel({
     [preview, setPreview] = useState<QuestionPreview | null>(null),
     [saveKey, setSaveKey] = useState('');
   const [openTrace, setOpenTrace] = useState('');
+  const [askedId, setAskedId] = useState('');
   const prose = useRef<HTMLDivElement>(null),
     generation = useRef(0),
-    typed = useRef(false),
-    askedId = useRef('');
+    typed = useRef(false);
   useEffect(() => {
+    let active = true;
     const turn = generation.current;
     currentKnowledgeAnswer()
       .then((r) => {
-        if (turn !== generation.current || !r) return;
+        if (!active || turn !== generation.current || !r) return;
         setAnswer(r.sections.length ? r : null);
         setAttempt(r);
         if (!typed.current) setQuestion(r.question);
       })
       .catch((e) => {
-        if (turn === generation.current) setError(e instanceof Error ? e.message : '无法读取上次问题。');
+        if (active && turn === generation.current) setError(e instanceof Error ? e.message : '无法读取上次问题。');
       });
     return () => {
-      generation.current++;
+      active = false;
     };
   }, []);
   const polling = (id: string, turn: number) =>
@@ -82,7 +83,7 @@ export function WikiQuestionPanel({
     if (!text) return;
     const id = retry && attempt ? attempt.id : crypto.randomUUID(),
       turn = ++generation.current;
-    askedId.current = id;
+    setAskedId(id);
     setOpenTrace('');
     setBusy('ask');
     setActivity(null);
@@ -198,7 +199,7 @@ export function WikiQuestionPanel({
     }
   };
   const latest = answer?.saves[answer.saves.length - 1];
-  const missingAttempt = !!askedId.current && askedId.current !== attempt?.id;
+  const missingAttempt = !!askedId && askedId !== attempt?.id;
   const trace = missingAttempt ? null : attempt;
   const completed = !busy && trace?.status === 'completed';
   const traceOpen = !!trace && openTrace === trace.id;
