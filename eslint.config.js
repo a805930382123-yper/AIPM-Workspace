@@ -77,29 +77,26 @@ export default [
   prettier,
   {
     rules: {
-      // ENG04 阶段 A 基线分级：仅将有存量违规的推荐规则设为 warn 并登记数量，0 违规推荐规则保持 error
-      '@typescript-eslint/no-explicit-any': 'warn', // 基线 523 处
-      '@typescript-eslint/no-unused-vars': 'warn', // 基线 125 处（含 107 处 _ 前缀占位与 18 处未使用绑定）
-      'react-hooks/exhaustive-deps': 'warn', // 预设默认 warn，基线 38 处
-      'react-hooks/set-state-in-effect': 'warn', // 基线 36 处（React Compiler 规则：effect 内同步 setState/加载重置）
-      'react-hooks/refs': 'warn', // 基线 28 处（render 期读写 ref，含疑似缺陷清单项）
-      'no-control-regex': 'warn', // 基线 18 处（文本清洗与控制字符过滤正则）
-      'no-useless-escape': 'warn', // 基线 10 处
-      'no-empty': 'warn', // 基线 5 处
-      'no-useless-assignment': 'warn', // 基线 5 处
-      'react-hooks/immutability': 'warn', // 基线 2 处（声明前访问回调，见疑似缺陷清单）
-      '@typescript-eslint/no-unused-expressions': 'warn', // 基线 2 处
-      'preserve-caught-error': 'warn', // 基线 2 处（catch 重抛未附带 cause，见疑似缺陷清单）
-      'no-useless-catch': 'warn', // 基线 2 处
-      'no-irregular-whitespace': 'warn', // 基线 2 处（文件中间残留 U+FEFF BOM）
-      'no-unsafe-finally': 'warn', // 基线 2 处（finally 中 throw 可能掩盖异常，见疑似缺陷清单）
+      // ENG05：以下 6 条已清零规则已从降级表移除，恢复推荐集默认 error 级别防回退：
+      // react-hooks/refs、react-hooks/immutability、no-irregular-whitespace、
+      // preserve-caught-error、no-useless-assignment、no-unsafe-finally
+      // 其余 10 条存量违规规则维持 warn（含下方 TS 作用域 prefer-const），全仓合计 761 条告警：
+      '@typescript-eslint/no-explicit-any': 'warn', // 存量 522 处
+      '@typescript-eslint/no-unused-vars': 'warn', // 存量 124 处
+      'react-hooks/set-state-in-effect': 'warn', // 存量 30 处（React Compiler 规则：effect 内同步 setState/加载重置）
+      'react-hooks/exhaustive-deps': 'warn', // 预设默认 warn，存量 22 处
+      'no-control-regex': 'warn', // 存量 18 处（文本清洗与控制字符过滤正则）
+      'no-useless-escape': 'warn', // 存量 10 处
+      'no-empty': 'warn', // 存量 5 处
+      'no-useless-catch': 'warn', // 存量 2 处
+      '@typescript-eslint/no-unused-expressions': 'warn', // 存量 1 处
     },
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     rules: {
       // 跟随 typescript-eslint/eslint-recommended 作用域（仅 TS 文件）降级为 warn
-      'prefer-const': 'warn', // 基线 27 处
+      'prefer-const': 'warn', // 存量 27 处
     },
   },
 ];

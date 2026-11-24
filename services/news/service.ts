@@ -465,8 +465,8 @@ export class NewsService {
     const sourceItems = section === 'ai' ? [...(previous.sourceItems ?? [])] : [];
     const retainedSourceCount = sourceItems.length;
     const now = new Date(previous.startedAt);
-    let status: NewsSection['status'] = 'failed',
-      items = retained,
+    let status: NewsSection['status'];
+    let items = retained,
       sources = previous.sources,
       error: string | undefined,
       checkMessage: string | undefined;

@@ -114,10 +114,15 @@ if (!reuse) {
   fixtures = { mainPromptId: main.id, otherPromptId: other.id, recyclePromptId: recycle.id, legacyPromptId: legacy.id };
   await writeFile(fixtureFile, JSON.stringify(fixtures, null, 2));
 } else {
+  let loaded: typeof fixtures | undefined;
   try {
-    fixtures = JSON.parse(await readFile(fixtureFile, 'utf8'));
+    loaded = JSON.parse(await readFile(fixtureFile, 'utf8'));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+  if (loaded) {
+    fixtures = loaded;
+  } else {
     const active = await prompts.list();
     const recycled = await Promise.all(
       (await readdir(path.join(root, 'prompts', 'recycle')))

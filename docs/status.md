@@ -7,15 +7,19 @@
 
 - **LLM-Wiki Batch 1A**：1A-4 与整批通过独立验收。25 问 A/B/C/D 命中分别为 7/7、3/5、5/5、3/3，E 误召回 4/5 与 Legacy 持平。长页 9/9；独立千页建库 1,584.05 ms、查询 P95 32.29 ms，实盘回滚通过；全仓测试 1,099/1,099。B1/B4 漏检及四项负样本误召回留档，后续阶段未启动。[任务卡](handoffs/LLMWIKI-1A-4.md) · [逐题快照](../evals/reports/batch-1a-baseline.md) · [独立验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）；工程维护波次 1 —— `FE01` 已 **`PASS`**（主交付 `e528039`，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿），当前停步等待用户指示下一方向。
+- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）；工程收敛批 `ENG05` 已完成本机施工与 Round 1 独立验收（`ENG05-01 ～ ENG05-04 PASS`，[施工报告](reports/ENG05-20261124-builder.md) · [验收报告](reports/ENG05-20261124-review.md)），待主交付推送与远端 Windows Node 22/24 CI 全量通过后签发 `PASS`。
 - **最近 5 个批次结论**：
+  - `ENG05`（2026-11-24，**PENDING_CI**）：清零剩余 3 类 9 处 ESLint 疑点（全仓 `0` 错、`770 → 761`），`eslint.config.js` 将 6 条零违规规则升回 `error`，无损校准 `acceptance.md` 锚点使 `docs-archive-check` 4/4 `OK`，新增 `eng05-hygiene` 单测；本机 `Node v25` 非原生 SQLite `1,082` 用例及 `typecheck`/`lint`/`guard`/`build`/3 条 `eval` 全过，待远端 Windows Node 22/24 CI 验证全套 `npm test`（[施工报告](reports/ENG05-20261124-builder.md) · [验收报告](reports/ENG05-20261124-review.md)）。
   - `FE01`（2026-11-24，**PASS**）：`app/api.ts` 无损拆分为 8 份域模块（130 运行时导出与 105 类型符号 100% 兼容）、轻路由与 `useLatestAsync`/`useScopedQuery` 落地、6 份前端文件告警 `55 → 0`（全仓 `825 → 770`）；隔离 `npm run check`（`1,062/1,062 PASS`）、真机 Edge 切页冒烟 `0` 错，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)（`e528039`）双作业全绿（[施工报告](reports/FE01-20261123-builder.md) · [验收报告](reports/FE01-20261123-review.md)）。
   - `CLOSE01`（2026-11-23，**PASS**）：63 项 A 类与 46 项 R 类逐项完成证据核对。并发保存的顺序断言已修正，恢复门禁通过，结项后的维护事项已移交。[独立复核](reports/CLOSE01-review.md)。
   - `RAWOCR04`（2026-11-23，**PASS**）：隔离库真实 CLI、Tesseract 和 Edge 验证通过。重复执行保留已有记录，历史正文、快照、原图与引文坐标保持不变。全库扫描能区分空库与目录损坏；全量复跑 1,055/1,055。[独立验收](reports/RAWOCR04-review.md)。
   - `RAWOCR03`（2026-11-23，**PASS**）：两入口真实 Tesseract 识别通过；Edge 实测五态、批量部分失败、重试、刷新和窄屏阅读，原文与原图字节一致。独立验收使用回环模拟模型，付费调用为零。本地全量 1,045/1,045。[验收报告](reports/RAWOCR03-review.md)。
-  - `RAWOCR02`（2026-11-23，**PASS**）：删除图片标记后再改写的旧 OCR 已从精读、草稿和问答中隔离，失去位置的图片也已退出引用。独立定向回归 46/46，全量复跑 1,034/1,034。首次全量出现的 NEWSRAW02 并发断言在返修前版本亦可复现。[复验与全量检查记录](reports/RAWOCR02-review.md#主-agent-收尾核验)。
-- **维护与业务待办**：ENG04 剩余 3 项后端/测试 ESLint 疑点与[拆分清单](reports/ENG04-20261122-split-plan.md)后续候选（如波次 2 前端大页拆分 / `BE01` `commits.ts`）待用户决策。62 页 PDF 草稿由资料所有者决定是否入库，正式 Wiki/Prompt 写入沿用现行人工确认流程。
+- **维护与业务待办**：`ENG05` 待远端 CI 闭环；下一顺位[拆分清单](reports/ENG04-20261122-split-plan.md)候选（波次 2 `FE02` 拆 `InboxTab`/`MeetingPage` → `BE01` `commits.ts`）及 `LLM-Wiki` 后续阶段待用户决策。`tests/prompt-ai-http.mjs` B08 历史 mock 漂移留档；62 页 PDF 草稿由资料所有者决定是否入库，正式 Wiki/Prompt 写入沿用现行人工确认流程。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
+
+## ENG05 小范围收敛（PENDING_CI，2026-11-24）
+
+按[任务卡](handoffs/ENG05-20261124-task.md)及校验口径校准完成：清零 `tests/prompt-ai-http.mjs`（2 × `no-unsafe-finally`）、`instance-lock.ts` / `lifeos-l5-isolated.ts`（2 × `preserve-caught-error`）及 `jobs.ts` / `meeting/store.ts` / `news/service.ts` / `llm-repair3.test.ts` / `r22-source-level.test.ts`（5 × `no-useless-assignment`）共 9 处疑点；`eslint.config.js` 将 6 条零违规规则升回 `error`，全仓 `lint` `0 errors / 761 warnings`；无损下移 [acceptance.md](acceptance.md) 结束锚点使 `docs-archive-check` 4/4 `OK`、`docs-link-check` 0 断链；新增 `tests/eng05-hygiene.test.ts`（`1/1`）。隔离 88 项定向单测、`typecheck`、`format:check`、`guard`、`build`、3 条 `eval` 及 `Node v25` `1,082` 项非原生 SQLite 用例均过（18 失败全系 `better_sqlite3.node` ABI 冲突），待远端 Windows Node 22/24 CI 验证全套 `npm test` 后 Round 2 签发 `PASS`。见[施工报告](reports/ENG05-20261124-builder.md)与[独立验收报告](reports/ENG05-20261124-review.md)。
 
 ## FE01 前端轻路由、`api.ts` 按域拆分与 React Hook 治理完成（PASS，2026-11-24）
 

@@ -407,7 +407,6 @@ export class ExtractionRunner {
   }
 
   private async persistSettlement(id: string, pending: PendingSettlement): Promise<void> {
-    let statusAtEntry = pending.status;
     const job = await this.deps.jobs.get(id);
     if (!job) this.conflict();
     await this.validateSettlement(job, pending);
@@ -461,7 +460,7 @@ export class ExtractionRunner {
       });
     }
     const draft = pending.draftId ? await this.deps.drafts.get(pending.draftId) : undefined;
-    statusAtEntry = pending.status;
+    const statusAtEntry = pending.status;
     let phase = 'checkpoint';
     try {
       const store = new ExtractionCheckpointStore(this.deps.root);

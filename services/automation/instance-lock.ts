@@ -30,7 +30,7 @@ function readLock(file: string): LockData | undefined {
     return data as LockData;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
-    throw new Error('RUNTIME_LOCK_UNREADABLE：无法确认数据目录的实例锁，原文件已保留。');
+    throw new Error('RUNTIME_LOCK_UNREADABLE：无法确认数据目录的实例锁，原文件已保留。', { cause: error });
   }
 }
 

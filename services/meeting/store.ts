@@ -1038,7 +1038,7 @@ export class MeetingStore {
       const imported = current.imports.find((item) => item.import_id === link.import_id);
       if (!imported || imported.original_sha256 !== link.original_sha256)
         throw new MeetingError('CORRUPT_MEETING', 'Raw登记请求与纪要原件摘要不一致。', 409);
-      let created = false;
+      let created: boolean;
       let raw: RawRecord;
       try {
         const result = await writeRaw({ meeting: current, link, imported });

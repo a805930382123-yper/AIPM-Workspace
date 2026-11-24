@@ -147,7 +147,7 @@ test('R22 single source manual grade persists through reload and explicit confir
     { draft, cp, args } = await f.extract('A');
   const rawFile = path.join(f.root, 'knowledge/raw/reports', f.raw.id + '.md'),
     before = await readFile(rawFile);
-  let next = await f.drafts.patch(
+  await f.drafts.patch(
     draft.id,
     {
       baseRevision: draft.revision,
@@ -157,7 +157,7 @@ test('R22 single source manual grade persists through reload and explicit confir
     { rules: f.rules, body: f.raw.body },
   );
   assert.equal((await new DraftStore(f.root).get(draft.id))!.source.source_level, 'B');
-  next = await approveDraft(f.drafts, draft.id, f.raw.body);
+  const next = await approveDraft(f.drafts, draft.id, f.raw.body);
   const result = await f.commits.confirm({
     draftId: draft.id,
     baseRevision: next.revision,

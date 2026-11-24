@@ -94,6 +94,7 @@ async function call(route, body) {
   if (!response.ok) throw new Error(`${route} ${response.status}: ${JSON.stringify(data)}`);
   return data;
 }
+let stopError;
 try {
   let healthy = false;
   for (let i = 0; i < 80; i++) {
@@ -167,11 +168,13 @@ try {
   await new Promise((resolve) => fake.close(resolve));
   await rm(root, { recursive: true, force: true });
   if (child.exitCode === null) {
+    let alive = true;
     try {
       process.kill(child.pid, 0);
-      throw new Error(`could not stop own API process ${child.pid}`);
     } catch (error) {
-      if (error instanceof Error && error.message.includes('could not stop')) throw error;
+      if (error?.code === 'ESRCH') alive = false;
     }
+    if (alive) stopError = new Error(`could not stop own API process ${child.pid}`);
   }
 }
+if (stopError) throw stopError;

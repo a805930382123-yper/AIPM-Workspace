@@ -38,7 +38,7 @@ const MERGE_EVIDENCE = path.join(os.tmpdir(), `KB02-R1-builder-merge-${process.p
 /** Records the real merge payload the product sent (test data only — never a key). */
 async function recordMergeEvidence(label: string, payload: unknown, summary: Record<string, unknown>) {
   await mkdir(path.dirname(MERGE_EVIDENCE), { recursive: true });
-  let existing: Record<string, unknown> = {};
+  let existing: Record<string, unknown>;
   try {
     existing = JSON.parse(await readFile(MERGE_EVIDENCE, 'utf8')) as Record<string, unknown>;
   } catch {
