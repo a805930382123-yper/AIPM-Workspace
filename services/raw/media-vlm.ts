@@ -47,6 +47,8 @@ const system = [
   'flowchart：用有序及嵌套列表，标明节点角色、->方向、分支条件和输入输出。comparison_table：还原 Markdown 行列和表头，按行展开合并单元格，用<br>保留格内换行。chart_or_ranking：先列坐标轴、单位和口径，再列可读数据；只陈述相对趋势或明确用“约”标注估算，不捏造精确数值。',
   'ui_screenshot：略去标签栏、状态栏、点赞等外壳，只留焦点配置、提示词与回复、日志或代码；保留内部代码围栏。text_excerpt：保留文字重点、自然段和列表层级。mixed：按信息主次组合。decorative：氛围配图、表情包、关注引导或无增量令 should_skip=true，summary、markdown 为空。',
 ].join('\n');
+const manualSystem =
+  '\n用户要求手动精读。先检查图中可核对的文字、数据和结构，即使此图通常会自动跳过。有可提取内容时使用相应的 image_type、令 should_skip=false 并填写 markdown。只有未发现可提取内容时才令 should_skip=true。';
 
 const concurrency = 3;
 const sizeLimit = 5 * 1024 * 1024;
@@ -93,7 +95,8 @@ async function prepareImage(bytes: Buffer) {
   if (jpeg.length <= sizeLimit) return jpeg;
 }
 
-type ParseOptions = { provider?: LlmProvider; force?: boolean; signal?: AbortSignal };
+type BatchOptions = { provider?: LlmProvider; signal?: AbortSignal; mediaIds?: string[] };
+type ParseOptions = { provider?: LlmProvider; force?: boolean; signal?: AbortSignal; pendingOnly?: boolean };
 type BatchResult = { mediaId: string; artifact?: MediaArtifact; error?: string };
 
 export function publicMediaArtifact(artifact: MediaArtifact): Omit<MediaArtifact, 'ocrRawText'> {
@@ -118,17 +121,17 @@ export class MediaVlmParserService {
     return raw;
   }
 
-  async batch(rawId: string, options: ParseOptions & { mediaIds?: string[] }): Promise<BatchResult[]> {
+  async batch(rawId: string, { mediaIds, provider, signal }: BatchOptions): Promise<BatchResult[]> {
     const raw = await this.getRaw(rawId);
     const ids =
-      options.mediaIds ??
+      mediaIds ??
       (await this.raws.getAnchoredMediaArtifacts(raw))
         .filter((item) => item.routeStatus === 'needs_vlm')
         .map((item) => item.mediaId);
     return Promise.all(
       ids.map(async (mediaId) => {
         try {
-          return { mediaId, artifact: await this.parse(rawId, mediaId, options) };
+          return { mediaId, artifact: await this.parse(rawId, mediaId, { provider, signal, pendingOnly: true }) };
         } catch (error) {
           return { mediaId, error: error instanceof LlmError ? error.code : 'MEDIA_STORAGE_FAILED' };
         }
@@ -158,7 +161,7 @@ export class MediaVlmParserService {
   private async parseOnce(
     rawId: string,
     mediaId: string,
-    { provider, force, signal }: ParseOptions,
+    { provider, force, signal, pendingOnly }: ParseOptions,
   ): Promise<MediaArtifact> {
     const raw = await this.getRaw(rawId);
     const occurrence = identifyWebImages(raw.id, raw.webImages).find((image) => image.mediaId === mediaId);
@@ -176,8 +179,9 @@ export class MediaVlmParserService {
       return source;
     };
     await ensureAnchored(raw);
+    if (pendingOnly && existing.routeStatus !== 'needs_vlm') return existing;
     if (!force && !['needs_vlm', 'failed'].includes(existing.routeStatus)) return existing;
-    if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法精读图片。', 400);
+    const manualOverride = force && (existing.routeStatus === 'skipped' || existing.routeStatus === 'failed');
     const attempts: string[] = [];
     const save = (result: MediaArtifactResult) =>
       this.saveLocked(async () => {
@@ -186,7 +190,7 @@ export class MediaVlmParserService {
         if (!saved) throw new LlmError('RAW_MEDIA_NOT_FOUND', '图片位置已移除。', 404);
         return saved;
       });
-    const { width, height, metrics, ocrRawText, ocrError, routeReasons } = existing;
+    const { width, height, metrics, ocrRawText, ocrError, routeReasons, decisionReason } = existing;
     const base = {
       width,
       height,
@@ -194,7 +198,8 @@ export class MediaVlmParserService {
       ocrRawText,
       ocrError,
       routeReasons,
-      vlmModel: provider.model,
+      decisionReason,
+      vlmModel: provider?.model,
       vlmParsedAt: new Date().toISOString(),
     };
     const fail = (mediaFailure: MediaFailure, vlmError: string) => {
@@ -222,6 +227,7 @@ export class MediaVlmParserService {
         { stage: 'image', code: 'MEDIA_IMAGE_PREPARE_FAILED' },
         '无法将原图转换为符合大小限制的 PNG 或 JPEG。',
       );
+    if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider，无法精读图片。', 400);
     const media: NonNullable<LlmCompletionRequest['media']> = { format: 'json_schema' };
     let transientRetry = false;
     let invalidRetry = false;
@@ -249,6 +255,7 @@ export class MediaVlmParserService {
           structuredOutput,
           system:
             system +
+            (manualOverride ? manualSystem : '') +
             (media.format === 'json_object' ? `\n字段须满足：${JSON.stringify(schema)}` : '') +
             (retryingJson ? '\n上次结果结构无效。请重新输出完整 JSON 对象。' : ''),
           user,
@@ -323,7 +330,6 @@ export class MediaVlmParserService {
         );
       }
       if (signal?.aborted) throw new LlmError('LLM_CANCELLED', '图片精读已取消。', 409);
-      attempts.push(`${media.format}:ok`);
       const value = result as {
         should_skip: boolean;
         image_type: VlmImageType;
@@ -337,6 +343,12 @@ export class MediaVlmParserService {
         .replace(/^```(?:markdown)?[ \t]*\r?\n(?:([\s\S]*?)\r?\n)?```$/iu, '$1')
         .trim();
       const skip = value.should_skip || value.image_type === 'decorative' || !markdown;
+      if (manualOverride && skip) {
+        const code = 'MEDIA_NO_EXTRACTABLE_CONTENT';
+        attempts.push(`${media.format}:${code}`);
+        return fail({ stage: 'response', code }, '模型已检查原图，未返回可提取的图像内容。');
+      }
+      attempts.push(`${media.format}:ok`);
       return save({
         ...base,
         routeStatus: skip ? 'skipped' : 'vlm_done',

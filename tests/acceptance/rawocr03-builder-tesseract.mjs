@@ -90,13 +90,14 @@ try {
     for (const [index, image] of raw.webImages.entries())
       assert.deepEqual(await readWebImage(root, image), index === 2 ? gif : png);
     assert.equal(raw.webImages[2].mime, 'image/gif');
-    assert.deepEqual(artifacts[2].routeReasons, ['tiny_or_banner_image']);
+    assert.deepEqual(artifacts[2].routeReasons, ['tiny_image']);
     await store.getAnchoredMediaArtifacts(raw);
     assert.deepEqual(await readFile(path.join(root, 'knowledge', 'raw', 'articles', `${id}.md`)), originalBytes);
     summary.push({ images: artifacts.length, states: artifacts.map((x) => x.routeStatus),
       bodySha256: raw.bodySha256, imageSha256: hash(png), avgConfidence: artifacts[0].metrics.avgConfidence });
   }
   assert.deepEqual(errors, []);
+  assert.deepEqual(await recognizeWebImageLines(gif), []);
   const engine = await checkLocalOcr();
   const tessdata = path.join(root, 'missing-tessdata');
   await mkdir(tessdata);

@@ -5,6 +5,7 @@ import { createCanvas, loadImage, type Image } from '@napi-rs/canvas';
 import { writeFileAtomic } from '../storage/files.ts';
 import { MAX_BODY_CHARS } from './limits.ts';
 import { checkLocalOcr, LocalOcrError, readLocalOcrTsv } from './local-ocr.ts';
+import { createWebImageScreening, webImagePositionSignals, type WebImageScreeningInput } from './media-image-screen.ts';
 import { evaluateImageOcr, type OcrLineInput } from './media-ocr-triage.ts';
 import type { MediaArtifactResult } from './media-artifact.ts';
 import { RawUrlError, readPublicRawUrl, readPublicResource, type WebOptions } from './url-import.ts';
@@ -40,7 +41,7 @@ const hash = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
 export const webImageRelativePath = (sha?: string) =>
   sha && /^[a-f\d]{64}$/u.test(sha) ? `knowledge/raw/web-images/${sha}` : undefined;
 
-export async function readWebImage(root: string, image: RawWebImage) {
+export async function readWebImage(root: string, image: Pick<RawWebImage, 'sha256' | 'mime'>) {
   const file = webImageRelativePath(image.sha256);
   if (!file) return;
   const bytes = await readFile(path.join(root, file)).catch((error) => {
@@ -122,7 +123,14 @@ export async function readWebMaterial(
   options: WebOptions & { ocr?: (bytes: Buffer) => Promise<string | OcrLineInput[]> } = {},
 ) {
   const page = await readPublicRawUrl(url, { ...options, images: true });
-  const candidates = page.images ?? [];
+  let offset = 0;
+  const candidates = (page.images ?? []).flatMap((candidate) => {
+    const start = page.body.indexOf(candidate.marker, offset);
+    if (start < 0) return [];
+    offset = start + candidate.marker.length;
+    return [{ ...candidate, start, end: offset }];
+  });
+  const positions = webImagePositionSignals(page.body, candidates);
   const hasProse = candidates.reduce((text, img) => text.replace(img.marker, ''), page.body).trim().length > 0;
   const images: RawWebImage[] = [];
   const issues: string[] = [];
@@ -140,45 +148,67 @@ export async function readWebMaterial(
   });
   const fallbackToVlm = process.env.FMCG_OCR_FALLBACK === 'vlm';
   let engine: ReturnType<typeof checkLocalOcr> | undefined;
+  const screening = createWebImageScreening(async (bytes, decoded) => {
+    const recognized = options.ocr
+      ? await options.ocr(bytes)
+      : await recognizeWebImageLines(bytes, decoded, (engine ??= checkLocalOcr()));
+    return typeof recognized === 'string' ? recognized.split(/\r?\n/u).map((text) => ({ text })) : recognized;
+  });
   const fetched = new Map<string, ImageResult>();
-  const readImage = async (sourceUrl: string) => {
+  const readImage = async (sourceUrl: string, label: string, position: WebImageScreeningInput['position']) => {
     const reused = fetched.get(sourceUrl);
-    if (reused) return reused;
-    let image: ImageResult = { status: 'failed', artifact: failedArtifact('original_image_unavailable') };
+    if (reused && !reused.sha256) return reused;
+    let image: ImageResult = reused ?? { status: 'failed', artifact: failedArtifact('original_image_unavailable') };
     let writing = false;
     try {
-      const result = await readPublicResource(
-        sourceUrl,
-        {
-          accept: 'image/png,image/jpeg,image/gif,image/webp',
-          mime: /^(?:image\/(?:png|jpeg|jpg|gif|webp)|application\/octet-stream)$/u,
-          bytes: 8 * 1024 * 1024,
-          label: '图片',
-          userAgent: ({ hostname }) =>
-            hostname === 'mmbiz.qpic.cn' || hostname === 'mmbiz.qlogo.cn'
-              ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
-              : undefined,
-        },
-        options,
-      );
-      const mime = imageType(result.bytes);
-      if (!mime) throw new RawUrlError('MEDIA_DOWNLOAD_INVALID_IMAGE', '响应不含受支持的图片字节。', 422);
-      const sha256 = hash(result.bytes);
-      writing = true;
-      await writeFileAtomic(path.join(root, webImageRelativePath(sha256)!), result.bytes);
-      image = { ...image, sha256, mime, finalUrl: result.finalUrl };
-      const decoded = await loadImage(result.bytes).catch(() => {
-        throw new LocalOcrError('local_ocr_image_decode_failed');
-      });
-      const { width, height } = decoded;
-      if (!width || !height) throw new LocalOcrError('local_ocr_image_decode_failed');
-      image.artifact = { ...image.artifact, width, height };
-      const recognized = options.ocr
-        ? await options.ocr(result.bytes)
-        : await recognizeWebImageLines(result.bytes, decoded, (engine ??= checkLocalOcr()));
-      const lines = typeof recognized === 'string' ? recognized.split(/\r?\n/u).map((text) => ({ text })) : recognized;
-      const artifact = evaluateImageOcr({ width, height, lines });
-      image = { ...image, status: artifact.metrics.effectiveCharCount >= 2 ? 'transcribed' : 'no_text', artifact };
+      let bytes: Buffer;
+      let sha256 = image.sha256;
+      if (sha256) {
+        const retained = await readWebImage(root, image).catch(() => undefined);
+        if (!retained) {
+          const mediaFailure = { stage: 'original' as const, code: 'MEDIA_ORIGINAL_UNAVAILABLE' };
+          console.warn('[raw-media] 本地原图校验失败', mediaFailure);
+          return {
+            ...image,
+            artifact: {
+              ...image.artifact,
+              routeReasons: ['original_image_unavailable'],
+              mediaFailure,
+              vlmError: '本地原图无法读取或校验失败。',
+            },
+          };
+        }
+        bytes = retained;
+      } else {
+        const result = await readPublicResource(
+          sourceUrl,
+          {
+            accept: 'image/png,image/jpeg,image/gif,image/webp',
+            mime: /^(?:image\/(?:png|jpeg|jpg|gif|webp)|application\/octet-stream)$/u,
+            bytes: 8 * 1024 * 1024,
+            label: '图片',
+            userAgent: ({ hostname }) =>
+              hostname === 'mmbiz.qpic.cn' || hostname === 'mmbiz.qlogo.cn'
+                ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+                : undefined,
+          },
+          options,
+        );
+        bytes = result.bytes;
+        const mime = imageType(bytes);
+        if (!mime) throw new RawUrlError('MEDIA_DOWNLOAD_INVALID_IMAGE', '响应不含受支持的图片字节。', 422);
+        sha256 = hash(bytes);
+        writing = true;
+        await writeFileAtomic(path.join(root, webImageRelativePath(sha256)!), bytes);
+        image = { ...image, sha256, mime, finalUrl: result.finalUrl };
+        fetched.set(sourceUrl, image);
+      }
+      const artifact = await screening.screen({ sha256, bytes, label, position });
+      return {
+        ...image,
+        status: artifact.metrics.effectiveCharCount >= 2 ? ('transcribed' as const) : ('no_text' as const),
+        artifact,
+      };
     } catch (error) {
       if (!image.sha256) {
         const code =
@@ -187,40 +217,40 @@ export async function readWebMaterial(
         const failure = { stage: 'download' as const, code, ...(httpStatus === undefined ? {} : { httpStatus }) };
         image.artifact.mediaFailure = failure;
         console.warn('[raw-media] 原图下载失败', failure);
+        fetched.set(sourceUrl, image);
       }
       if (image.sha256) {
         const diagnostic = error instanceof LocalOcrError ? error : new LocalOcrError('local_ocr_unavailable');
         const { code, source, affectedLanguages } = diagnostic;
         console.warn('[raw-ocr]', { code, source, affectedLanguages });
-        const { width, height, metrics } = image.artifact;
-        image.artifact = {
+        const { width, height } = screening.dimensions(image.sha256) ?? {};
+        const routedToVlm = fallbackToVlm && !!width && !!height && code !== 'local_ocr_image_decode_failed';
+        const artifact: MediaArtifactResult = {
           width,
           height,
-          metrics,
+          metrics: image.artifact.metrics,
           ocrRawText: '',
-          routeStatus:
-            fallbackToVlm && width && height && code !== 'local_ocr_image_decode_failed' ? 'needs_vlm' : 'failed',
+          routeStatus: routedToVlm ? 'needs_vlm' : 'failed',
           routeReasons: [code],
+          decisionReason: routedToVlm ? '本机 OCR 未完成，已列入待精读。' : '本机 OCR 未完成，等待人工处理。',
           ocrError: diagnostic.message,
         };
+        return { ...image, artifact };
       }
     }
-    fetched.set(sourceUrl, image);
     return image;
   };
 
   let body = '';
-  let offset = 0;
+  offset = 0;
   let inspected = 0;
   for (const candidate of candidates) {
-    const start = page.body.indexOf(candidate.marker, offset);
-    if (start < 0) continue;
+    const { start, end, label, url: sourceUrl } = candidate;
     body += page.body.slice(offset, start);
-    offset = start + candidate.marker.length;
-    const { label, url: sourceUrl } = candidate;
+    offset = end;
     const { artifact, ...image } =
       inspected++ < 16
-        ? await readImage(sourceUrl)
+        ? await readImage(sourceUrl, label, positions.get(start))
         : {
             status: 'failed' as const,
             artifact: failedArtifact('image_count_limit'),
@@ -231,8 +261,8 @@ export async function readWebMaterial(
     artifacts.push(artifact);
     body += marker;
     if (image.status === 'failed') {
-      const issue = image.sha256
-        ? `图片 ${number} 的本机 OCR 未完成。${artifact.ocrError ?? ''}`
+      const issue = artifact.ocrError
+        ? `图片 ${number} 的本机 OCR 未完成。${artifact.ocrError}`
         : `图片 ${number} 原图读取失败或超出读取限额。`;
       issues.push(issue);
     }

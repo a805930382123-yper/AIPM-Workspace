@@ -94,7 +94,7 @@ test('RAWOCR03 five states expose only clean text, collapse long results, and fo
   const records = [
     artifact(1, 'skipped'),
     { ...artifact(2, 'ocr_ready'), ocrCleanText: '干净文字'.repeat(300) },
-    artifact(3, 'needs_vlm'),
+    { ...artifact(3, 'needs_vlm'), routeReasons: ['chart_or_table_signal:0.8'] },
     {
       ...artifact(4, 'vlm_done'),
       vlmSummary: '测试摘要',
@@ -124,6 +124,10 @@ test('RAWOCR03 five states expose only clean text, collapse long results, and fo
     assert.ok(w.document.body.textContent?.includes('置信度：低'));
     assert.equal(w.document.querySelectorAll('a img').length, 5);
     assert.match(
+      w.document.querySelector('[data-image-index="3"]')?.textContent ?? '',
+      /图中有表格或图表线索，转入精读。/u,
+    );
+    assert.match(
       w.document.querySelector('[data-image-index="5"] [role="alert"]')?.textContent ?? '',
       /Provider 请求失败（LLM_NETWORK_ERROR · UND_ERR_CONNECT_TIMEOUT）。请检查访问 Provider 的网络和代理。/u,
     );
@@ -150,6 +154,34 @@ test('local OCR pending and visual fallback show the same diagnosis and never st
     assert.match(first.textContent!, /OCR 待处理.*精读此图.*本机 OCR 未完成。请检查 chi_sim.traineddata。/su);
     const second = w.document.querySelector('[data-image-index="2"]')!;
     assert.match(second.textContent!, /待精读.*精读此图.*本机 OCR 未完成。请检查 chi_sim.traineddata。/su);
+  } finally {
+    await screen.close();
+  }
+});
+
+test('skipped images show the routing reason and use a forced single-image request', async () => {
+  const current = { ...artifact(1, 'skipped'), decisionReason: '文末推广图片，自动跳过。' };
+  const legacy = { ...artifact(2, 'skipped'), routeReasons: ['tiny_or_banner_image'] };
+  const calls: Array<{ path: string; body: unknown }> = [];
+  const screen = await mount(raw(2), async (url, options) => {
+    if (!options?.method) return response({ items: [current, legacy] });
+    calls.push({ path: String(url), body: JSON.parse(String(options.body)) });
+    return response({ ...current, routeStatus: 'vlm_done', vlmSummary: '已核对图中文字' });
+  });
+  try {
+    const first = w.document.querySelector('[data-image-index="1"]')!;
+    const second = w.document.querySelector('[data-image-index="2"]')!;
+    assert.match(first.textContent!, /自动处理依据：文末推广图片，自动跳过。/u);
+    assert.match(second.textContent!, /自动处理依据：图片尺寸较小或长宽比较大，自动跳过。/u);
+    assert.equal(w.document.querySelectorAll('[data-media-status="skipped"]').length, 2);
+    assert.doesNotMatch(w.document.body.textContent!, /批量精读/u);
+    assert.deepEqual(calls, []);
+    await click('手动精读');
+    assert.deepEqual(calls, [
+      { path: `/api/raw/raw-images/media/${current.mediaId}/parse-vlm`, body: { force: true } },
+    ]);
+    assert.match(first.textContent!, /已核对图中文字/u);
+    assert.match(first.textContent!, /文末推广图片，自动跳过。/u);
   } finally {
     await screen.close();
   }
@@ -183,7 +215,7 @@ test('RAWOCR03 single parsing prevents duplicate clicks, returns failed state, r
     await click('重新精读');
     assert.deepEqual(
       calls.map((item) => item.body),
-      [{}, {}, { force: true }],
+      [{}, { force: true }, { force: true }],
     );
     assert.ok(calls.every((item) => item.path.endsWith(`/${record.mediaId}/parse-vlm`)));
   } finally {

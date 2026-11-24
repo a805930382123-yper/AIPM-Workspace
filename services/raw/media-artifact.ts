@@ -44,6 +44,8 @@ export interface MediaArtifactResult {
   height?: number;
   routeStatus: MediaRouteStatus;
   routeReasons: string[];
+  /** Human-readable rationale recorded by automatic image routing. */
+  decisionReason?: string;
   metrics: OcrQualityMetrics;
   /** Internal diagnostics. Excluded from ordinary Raw reads and AI context. */
   ocrRawText: string;

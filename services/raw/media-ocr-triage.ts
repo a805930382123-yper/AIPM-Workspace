@@ -10,6 +10,7 @@ export interface ImageMetaInput {
   width?: number;
   height?: number;
   lines: OcrLineInput[];
+  preserveVisuals?: boolean;
 }
 
 export const OCR_TRIAGE_CONFIG = {
@@ -205,15 +206,20 @@ export function evaluateImageOcr(input: ImageMetaInput): OcrEvaluation {
   if (!width || !height) {
     routeReasons.push('legacy_missing_dimensions');
   } else if (
-    width < config.minImageWidth ||
-    height < config.minImageHeight ||
-    (Math.max(width, height) / Math.min(width, height) > config.maxBannerAspectRatio &&
-      effectiveCharCount < config.minBannerTextChars)
+    !input.preserveVisuals &&
+    (width < config.minImageWidth ||
+      height < config.minImageHeight ||
+      (Math.max(width, height) / Math.min(width, height) > config.maxBannerAspectRatio &&
+        effectiveCharCount < config.minBannerTextChars))
   ) {
     routeReasons.push('tiny_or_banner_image');
     return { ...result, routeStatus: 'skipped' };
   }
   if (effectiveCharCount < config.minEffectiveChars && chartSignalScore < config.minDecorativeChartSignal) {
+    if (input.preserveVisuals) {
+      routeReasons.push('sparse_image_text');
+      return { ...result, routeStatus: 'needs_vlm' };
+    }
     routeReasons.push('low_text_decorative');
     return { ...result, routeStatus: 'skipped' };
   }

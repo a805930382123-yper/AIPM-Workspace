@@ -137,7 +137,7 @@ test('RAWOCR04 local migration triages normal, gibberish, decorative and repeate
     },
   });
   assert.equal(result.complete, true);
-  assert.equal(count, 4);
+  assert.equal(count, 2, 'the tiny image bypasses OCR and the repeated source shares its OCR result');
   const artifacts = await store.getMediaArtifacts(raw.id);
   assert.deepEqual(
     artifacts.map(({ routeStatus }) => routeStatus),

@@ -1,8 +1,9 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { loadImage } from '@napi-rs/canvas';
-import { evaluateImageOcr, type OcrLineInput } from './media-ocr-triage.ts';
+import { checkLocalOcr, LocalOcrError } from './local-ocr.ts';
+import { createWebImageScreening, webImagePositionSignals } from './media-image-screen.ts';
+import type { OcrLineInput } from './media-ocr-triage.ts';
 import { RawStore } from './store.ts';
 import { identifyWebImages, recognizeWebImageLines, webImageRelativePath } from './web-material.ts';
 
@@ -37,8 +38,13 @@ export async function migrateRawMedia(store: RawStore, options: MediaMigrationOp
         items.push({ rawId, status: 'no_images' });
         continue;
       }
-      const { markers } = await store.mediaSource(raw);
-      const anchored = new Set(markers.map(({ imageIndex }) => imageIndex));
+      const { markers, removed } = await store.mediaSource(raw);
+      const anchored = new Map(markers.map((marker) => [marker.imageIndex, marker]));
+      const positions = webImagePositionSignals(raw.body, markers, removed);
+      let engine: ReturnType<typeof checkLocalOcr> | undefined;
+      const screening = createWebImageScreening((bytes, decoded) =>
+        options.ocr ? options.ocr(bytes) : recognizeWebImageLines(bytes, decoded, (engine ??= checkLocalOcr())),
+      );
       const existing = new Map((await store.getMediaArtifacts(raw.id)).map((artifact) => [artifact.mediaId, artifact]));
       for (const image of images) {
         const item: MediaMigrationItem = {
@@ -53,9 +59,11 @@ export async function migrateRawMedia(store: RawStore, options: MediaMigrationOp
           item.status = 'existing';
           item.routeStatus = saved.routeStatus;
           if (!anchored.has(image.imageIndex)) item.reason = 'no_current_anchor';
+          else if (image.sha256) screening.noteOccurrence(image.sha256);
           continue;
         }
-        if (!anchored.has(image.imageIndex)) {
+        const marker = anchored.get(image.imageIndex);
+        if (!marker) {
           item.status = 'no_current_anchor';
           continue;
         }
@@ -73,11 +81,13 @@ export async function migrateRawMedia(store: RawStore, options: MediaMigrationOp
             continue;
           }
           if (!options.apply) continue;
-          item.reason = 'original_image_decode_failed';
-          const { width, height } = await loadImage(bytes);
           item.reason = 'local_ocr_unavailable';
-          const lines = await (options.ocr ?? recognizeWebImageLines)(bytes);
-          const result = evaluateImageOcr({ width, height, lines });
+          const result = await screening.screen({
+            sha256: image.sha256!,
+            bytes,
+            label: image.label,
+            position: positions.get(marker.start),
+          });
           item.reason = 'artifact_storage_failed';
           const artifact = await store.saveMediaArtifact(rawId, image.mediaId, result, { onlyIfMissing: true });
           if (!artifact) {
@@ -90,6 +100,8 @@ export async function migrateRawMedia(store: RawStore, options: MediaMigrationOp
           delete item.reason;
         } catch (error) {
           item.status = 'error';
+          if (error instanceof LocalOcrError && error.code === 'local_ocr_image_decode_failed')
+            item.reason = 'original_image_decode_failed';
           item.reason ??=
             (error as NodeJS.ErrnoException).code === 'ENOENT'
               ? 'original_image_missing'

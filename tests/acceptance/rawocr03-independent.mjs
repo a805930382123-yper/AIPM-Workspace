@@ -12,18 +12,20 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { pathToFileURL } from 'node:url';
 import { createCanvas } from '@napi-rs/canvas';
 import react from '@vitejs/plugin-react';
-import { createServer as createViteServer } from 'vite';
+import { createServer as createViteServer, preview } from 'vite';
 import { RawStore } from '../../services/raw/store.ts';
 import { identifyWebImages, readWebMaterial } from '../../services/raw/web-material.ts';
 
 // Independent reviewer owns this script. Every record and service is disposable.
+// To test a production bundle, build into a fresh directory and set RAWOCR03_BUILD_DIR to it.
+const builtUi = process.env.RAWOCR03_BUILD_DIR;
 const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-rawocr03-independent-'));
 const data = path.join(root, 'data');
 const envDir = path.join(root, 'empty-env');
 await mkdir(envDir);
 const requests = [];
 const errors = [];
-const evidence = { checks: [], pageErrors: [], consoleErrors: [], blocked: [] };
+const evidence = { checks: [], pageErrors: [], consoleErrors: [], httpErrors: [], blocked: [] };
 let active = 0;
 let maximum = 0;
 let failImage = true;
@@ -96,6 +98,7 @@ try {
   }
   const metrics = { effectiveCharCount: 30, nonEmptyLineCount: 2, shortLineRatio: 0, gibberishRatio: 0,
     layoutDispersion: 0, chartSignalScore: 0, avgConfidence: 0.95, qualityScore: 100 };
+  const skipReason = '文末推广区截断，已跳过此图。';
   async function seed(title, states, legacy = false) {
     const body = '独立正文开头😃。\n' + states.map((_, i) => `【来源图片 ${i + 1}】\n`).join('') + '独立正文结尾。';
     const raw = await store.create({ title, sourceType: 'article', sourceName: '合成来源', tags: [], body,
@@ -104,8 +107,10 @@ try {
     const images = identifyWebImages(raw.id, raw.webImages);
     if (!legacy) for (const [i, image] of images.entries()) {
       const routeStatus = states[i];
-      await store.saveMediaArtifact(raw.id, image.mediaId, { routeStatus, routeReasons: ['independent_fixture'], metrics,
+      await store.saveMediaArtifact(raw.id, image.mediaId, {
+        routeStatus, routeReasons: [routeStatus === 'skipped' ? 'promotion_tail' : 'independent_fixture'], metrics,
         ocrRawText: `DIRTY_${i}`, ...(routeStatus === 'ocr_ready' ? { ocrCleanText: '清洗文字独立哨兵。' } : {}),
+        ...(routeStatus === 'skipped' ? { decisionReason: skipReason } : {}),
         ...(routeStatus === 'vlm_done' ? { vlmSummary: '已保存摘要', vlmMarkdown: '已有解析正文。',
           vlmConfidence: 'medium', vlmWarnings: ['原图模糊'], vlmModel: 'synthetic', vlmParsedAt: new Date().toISOString() } : {}),
         ...(routeStatus === 'failed' ? { vlmError: '模拟已有失败' } : {}) });
@@ -127,8 +132,18 @@ try {
     const url = new URL(args[0] instanceof Request ? args[0].url : String(args[0]));
     if (!['127.0.0.1', 'localhost'].includes(url.hostname)) throw new Error('External request blocked');
     return native(...args); };`);
+  const uiOptions = { host: '127.0.0.1', port: 0, proxy: { '/api': base } };
+  if (builtUi) {
+    await readFile(path.join(builtUi, 'index.html'));
+    ui = await preview({ configFile: false, envDir, build: { outDir: builtUi }, preview: uiOptions });
+  } else {
+    ui = await createViteServer({ configFile: false, plugins: [react()], envDir, server: uiOptions });
+    await ui.listen();
+  }
+  evidence.frontend = builtUi ? 'production bundle' : 'development source';
+  const uiBase = `http://127.0.0.1:${ui.httpServer.address().port}`;
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(FMCG_|NODE_OPTIONS$)/i.test(key)));
-  Object.assign(env, { FMCG_PORT: String(port), FMCG_DATA_DIR: data, FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env'),
+  Object.assign(env, { FMCG_PORT: String(port), FMCG_UI_ORIGIN: uiBase, FMCG_DATA_DIR: data, FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env'),
     FMCG_LLM_BASE_URL: `http://127.0.0.1:${provider.address().port}/v1`, FMCG_LLM_MODEL: 'independent-fake',
     FMCG_LLM_API_KEY: 'synthetic-only', FMCG_NEWS_AI_ENABLED: 'false', NODE_ENV: 'test' });
   child = spawn(process.execPath, ['--import', pathToFileURL(preload).href, '--import', 'tsx', 'server/index.ts'],
@@ -140,10 +155,6 @@ try {
     return response.json();
   };
   assert.doesNotMatch(JSON.stringify(await api(`/api/raw/${main.raw.id}/media`)), /DIRTY_|ocrRawText/u);
-  ui = await createViteServer({ configFile: false, plugins: [react()], envDir,
-    server: { host: '127.0.0.1', port: 0, proxy: { '/api': base } } });
-  await ui.listen();
-  const uiBase = `http://127.0.0.1:${ui.httpServer.address().port}`;
   const { chromium } = createRequire(import.meta.url)(path.join(os.homedir(),
     '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));
   browser = await chromium.launch({ channel: 'msedge', args: ['--disable-background-networking', '--no-proxy-server'] });
@@ -152,6 +163,9 @@ try {
   page.setDefaultTimeout(15000);
   page.on('pageerror', error => evidence.pageErrors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') evidence.consoleErrors.push(message.text()); });
+  page.on('response', response => {
+    if (response.status() >= 400) evidence.httpErrors.push({ path: new URL(response.url()).pathname, status: response.status() });
+  });
   await page.route('**/*', route => {
     const url = route.request().url();
     if (url.startsWith(uiBase) || url.startsWith('data:')) return route.continue();
@@ -193,13 +207,33 @@ try {
   await wait('force result', () => card(4).innerText().then(text => text.includes('独立精读摘要')));
   assert.equal(requests.length, 3);
   evidence.checks.push('single parse, disabled pending state, retry, force, rendered table/list/warnings');
+  await card(1).getByText(skipReason, { exact: false }).waitFor();
+  const manualUrl = `/api/raw/${main.raw.id}/media/${main.images[0].mediaId}`;
+  const manualRequest = page.waitForRequest(request =>
+    request.method() === 'POST' && request.url() === `${uiBase}${manualUrl}/parse-vlm`,
+  );
+  await card(1).getByRole('button', { name: '手动精读', exact: true }).click();
+  assert.deepEqual((await manualRequest).postDataJSON(), { force: true });
+  await state(1, 'vlm_done');
+  assert.equal(requests.length, 4);
+  assert.equal(requests[3].payload.image_index, 1);
+  assert.equal(requests[3].payload.article_title, main.raw.title);
+  assert.match(requests[3].wire.messages[0].content, /用户要求手动精读/u);
+  assert.equal((await api(manualUrl)).decisionReason, skipReason);
+  await card(1).getByText('查看精读正文', { exact: true }).click();
+  assert.match(await card(1).innerText(), /独立结果图 1/u);
+  evidence.checks.push('skipped card displays reason and explicit force sends one request for that image');
   const mainCount = requests.length;
   await page.reload();
   await page.getByRole('button', { name: 'Raw 原始资料', exact: true }).click();
   await page.getByText(main.raw.title, { exact: true }).click();
+  await state(1, 'vlm_done');
   await state(3, 'vlm_done');
+  await card(1).getByText(skipReason, { exact: false }).waitFor();
+  await card(1).getByText('查看精读正文', { exact: true }).click();
+  assert.match(await card(1).innerText(), /独立结果图 1/u);
   assert.equal(requests.length, mainCount);
-  evidence.checks.push('refresh reloads saved result without model call');
+  evidence.checks.push('refresh reloads manual result and original routing reason without model call');
   await page.getByText(batch.raw.title, { exact: true }).click();
   await page.getByRole('heading', { name: batch.raw.title, exact: true }).waitFor();
   await page.getByRole('button', { name: '批量精读待解析图片（5）', exact: true }).click();
@@ -249,6 +283,8 @@ try {
   assert.equal((await store.getMediaArtifacts(legacy.raw.id)).length, 0);
   assert.deepEqual(errors, []);
   assert.deepEqual(evidence.pageErrors, []);
+  assert.deepEqual(evidence.httpErrors,
+    [{ path: `/api/raw/${unconfigured.raw.id}/media/${unconfigured.images[0].mediaId}/parse-vlm`, status: 400 }]);
   assert.deepEqual(evidence.consoleErrors, ['Failed to load resource: the server responded with a status of 400 (Bad Request)']);
   evidence.checks.push('Raw and original image bytes unchanged; historical records not migrated');
   evidence.maximumConcurrent = maximum;

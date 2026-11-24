@@ -39,7 +39,12 @@ const images = { '/text.png': png(), '/rank.png': png(700, 500), '/logo.png': pn
 const html =
   '<article><p>网页原文第一段。</p><img width="50" src="/text.png"><img src="/rank.png"><img src="/logo.png" alt="装饰"><img src="/text.png"><p>网页原文最后一段。</p></article>';
 
-async function fixture(t: TestContext, inputHtml = html, failOcr = false) {
+async function fixture(
+  t: TestContext,
+  inputHtml = html,
+  failOcr = false,
+  fixtures: { images?: Record<string, Buffer>; ocr?: (bytes: Buffer) => Promise<string> } = {},
+) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-rawocr03-import-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const raws = new RawStore(root);
@@ -49,15 +54,19 @@ async function fixture(t: TestContext, inputHtml = html, failOcr = false) {
       status: url.pathname === '/missing.png' ? 503 : 200,
       headers: { 'content-type': url.pathname === '/story' ? 'text/html' : 'image/png' },
       body: Readable.from([
-        url.pathname === '/story' ? inputHtml : (images[url.pathname as keyof typeof images] ?? ''),
+        url.pathname === '/story'
+          ? inputHtml
+          : (fixtures.images?.[url.pathname] ?? images[url.pathname as keyof typeof images] ?? ''),
       ]),
     }),
-    ocr: async (bytes: Buffer) => {
-      if (failOcr) throw new Error(errorSentinel);
-      return bytes.equals(images['/rank.png'])
-        ? [{ text: '排名   指标   数值' }, { text: '北京   2025   80%' }, { text: '上海   2026   90%' }]
-        : [{ text: `${paragraph}\n${sentinel}`, confidence: 0.98 }];
-    },
+    ocr:
+      fixtures.ocr ??
+      (async (bytes: Buffer) => {
+        if (failOcr) throw new Error(errorSentinel);
+        return bytes.equals(images['/rank.png'])
+          ? [{ text: '排名   指标   数值' }, { text: '北京   2025   80%' }, { text: '上海   2026   90%' }]
+          : [{ text: `${paragraph}\n${sentinel}`, confidence: 0.98 }];
+      }),
   };
   const read = () => readWebMaterial(root, item.url, options);
   const app = express();
@@ -115,6 +124,52 @@ test('both import entries retain source text and occurrence identity while persi
     const bytes = await readFile(path.join(root, 'knowledge', 'raw', 'articles', `${rawId}.md`));
     await raws.getAnchoredMediaArtifacts(raw);
     assert.deepEqual(await readFile(path.join(root, 'knowledge', 'raw', 'articles', `${rawId}.md`)), bytes);
+  }
+});
+
+test('both web import entries keep tail and pre-OCR skips separate from repeated editorial images', async (t) => {
+  const content = png(730, 340);
+  const emptyText = png(740, 340);
+  const thin = png(100, 800);
+  const tiny = png(99, 800);
+  const body = [
+    '<article><p>前言。</p><img src="/content.png"><p>补充说明。</p>',
+    '<img src="/thin.png"><p>纵向图表。</p><img src="/tiny.png"><p>信息图。</p><img src="/empty.png">',
+    `<p>${'正文信息用于核对上下文。'.repeat(30)}</p>`,
+    '<p>附加资源如有需要请加微信，欢迎交流。</p><img src="/content.png"><img src="/tiny.png"></article>',
+  ].join('');
+  let calls = 0;
+  const { root, raws, post, news } = await fixture(t, body, false, {
+    images: { '/content.png': content, '/thin.png': thin, '/tiny.png': tiny, '/empty.png': emptyText },
+    ocr: async (bytes) => {
+      calls++;
+      assert.ok(bytes.equals(content) || bytes.equals(emptyText));
+      return bytes.equals(content) ? paragraph : '';
+    },
+  });
+  const manual = await post();
+  assert.equal(manual.status, 201);
+  const imported = (await manual.json()).raw;
+  const saved = await news.save('2026-11-23', 'ai', item);
+  assert.equal(calls, 4, 'two local OCR calls per entry, with all pre-OCR routes bypassed');
+  for (const rawId of [imported.id, saved.rawId]) {
+    const raw = (await raws.get(rawId))!;
+    const artifacts = await raws.getMediaArtifacts(rawId);
+    assert.deepEqual(
+      artifacts.map(({ routeStatus }) => routeStatus),
+      ['ocr_ready', 'needs_vlm', 'skipped', 'needs_vlm', 'skipped', 'skipped'],
+    );
+    assert.deepEqual(
+      artifacts.map(({ routeReasons }) => routeReasons[0]),
+      ['clean_text_pass', 'body_slender_image', 'tiny_image', 'sparse_image_text', 'promotion_tail', 'promotion_tail'],
+    );
+    assert.match(artifacts[4].decisionReason!, /文末推广区截断/u);
+    assert.notEqual(artifacts[0].mediaId, artifacts[4].mediaId);
+    assert.equal(raw.webImages![0].sha256, raw.webImages![4].sha256);
+    assert.deepEqual(await readWebImage(root, raw.webImages![4]), content);
+    assert.deepEqual(await readWebImage(root, raw.webImages![5]), tiny);
+    assert.equal(raw.bodySha256, hash(raw.body));
+    assert.doesNotMatch(raw.body, /文末推广区截断|像素过小/u);
   }
 });
 

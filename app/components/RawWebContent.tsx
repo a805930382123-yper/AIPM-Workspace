@@ -25,6 +25,17 @@ const failureStages = {
   provider: 'Provider 请求',
   response: '结果解析',
 };
+const legacyDecisionReasons: Readonly<Record<string, string>> = {
+  tiny_or_banner_image: '图片尺寸较小或长宽比较大，自动跳过。',
+  low_text_decorative: '本机识别到的文字和图表线索较少，自动跳过。',
+  clean_text_pass: '本机 OCR 识别到清晰文字，已保留文字结果。',
+  high_gibberish: '本机 OCR 结果噪声较多，转入精读。',
+  high_short_line: '本机 OCR 结果有多处短行，转入精读。',
+  low_confidence: '本机 OCR 结果置信度较低，转入精读。',
+  scattered_layout: '图片版面结构较分散，转入精读。',
+  chart_or_table_signal: '图中有表格或图表线索，转入精读。',
+  low_quality_score: '本机 OCR 结果质量不足，转入精读。',
+};
 const batchErrors: Record<string, string> = {
   LLM_NOT_CONFIGURED: '尚未配置产品 LLM Provider，请先在设置中配置后重试。',
   RAW_MEDIA_NOT_FOUND: '图片位置已变化，请刷新资料后重试。',
@@ -246,6 +257,11 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
           `/api/raw/${encodeURIComponent(raw.id)}/web-images/${image.sha256}`;
         const running = !!artifact && pending.includes(artifact.mediaId);
         const error = artifact && errors[artifact.mediaId];
+        const skipAfterVlm = artifact?.routeStatus === 'skipped' && !!artifact.vlmParsedAt;
+        const decisionReason =
+          artifact?.decisionReason ??
+          artifact?.routeReasons.map((reason) => legacyDecisionReasons[reason.split(':', 1)[0]]).find(Boolean) ??
+          (artifact?.routeStatus === 'skipped' && !skipAfterVlm ? '历史记录未保存跳过原因。' : undefined);
         const localOcrPending =
           artifact?.routeStatus === 'failed' &&
           !!artifact.ocrError &&
@@ -286,18 +302,20 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                   <a href={image.sourceUrl} target="_blank" rel="noreferrer">
                     网页原地址
                   </a>
-                  {artifact && ['needs_vlm', 'failed'].includes(artifact.routeStatus) && (
+                  {artifact && ['needs_vlm', 'failed', 'skipped'].includes(artifact.routeStatus) && (
                     <button
                       type="button"
                       className="secondary-button"
                       disabled={disabled}
-                      onClick={() => void parse([artifact.mediaId])}
+                      onClick={() => void parse([artifact.mediaId], false, artifact.routeStatus !== 'needs_vlm')}
                     >
                       {running
                         ? '正在精读…'
-                        : (artifact.routeStatus === 'failed' && !localOcrPending) || error
-                          ? '重试精读'
-                          : '精读此图'}
+                        : artifact.routeStatus === 'skipped'
+                          ? '手动精读'
+                          : (artifact.routeStatus === 'failed' && !localOcrPending) || error
+                            ? '重试精读'
+                            : '精读此图'}
                     </button>
                   )}
                   {artifact?.routeStatus === 'vlm_done' && (
@@ -312,6 +330,8 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                   )}
                 </div>
               </figcaption>
+              {decisionReason && <p className="extract-note">自动处理依据：{decisionReason}</p>}
+              {skipAfterVlm && <p className="extract-note">模型未返回可提取的图像内容。</p>}
               {artifact?.routeStatus === 'ocr_ready' && artifact.ocrCleanText && (
                 <details className="raw-image-text">
                   <summary>查看识别文字（{artifact.ocrCleanText.length} 字）</summary>

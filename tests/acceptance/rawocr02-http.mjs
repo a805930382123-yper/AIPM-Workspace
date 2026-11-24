@@ -57,7 +57,8 @@ const fake = createServer(async (request, response) => {
         if (payload.image_index === 2 && wire.response_format.type === 'json_schema')
           return reply({ error: { param: 'response_format', message: 'json_schema is unsupported' } }, 400);
         if (payload.image_index === 3 && attempt <= 2) return reply(format('不会被保存。', { confidential_extra: secret }));
-        if (payload.image_index === 4) return reply(format('无效展示文本', { should_skip: true, image_type: 'decorative' }));
+        if (payload.image_index === 4 && !system.includes('用户要求手动精读'))
+          return reply(format('无效展示文本', { should_skip: true, image_type: 'decorative' }));
         if (payload.image_index === 5) return reply(format('```markdown\n```'));
       }
       if (payload.article_title === '门店配图报告' && payload.image_index === 5)
@@ -194,12 +195,23 @@ try {
   assert.equal(requests.length, count);
   await api(`${batchRoute}/${batch.images[0].mediaId}/parse-vlm`, { force: true });
   assert.equal(requests.length, ++count);
-  const retry = await api(`${batchRoute}/${batch.images[2].mediaId}/parse-vlm`, {});
+  const batchFailed = await api(`${batchRoute}/parse-vlm-batch`, { mediaIds: [batch.images[2].mediaId] });
+  assert.equal(batchFailed.items[0].artifact.routeStatus, 'failed');
+  assert.equal(requests.length, count);
+  const retry = await api(`${batchRoute}/${batch.images[2].mediaId}/parse-vlm`, { force: true });
   assert.equal(retry.routeStatus, 'vlm_done');
   assert.equal(requests.length, ++count);
   const selected = await api(`${batchRoute}/parse-vlm-batch`, { mediaIds: [batch.images[2].mediaId] });
   assert.deepEqual(selected.items.map((item) => item.artifact.mediaId), [batch.images[2].mediaId]);
   assert.equal(requests.length, count);
+  const skippedRoute = `${batchRoute}/${batch.images[3].mediaId}`;
+  assert.equal((await api(`${skippedRoute}/parse-vlm`, {})).routeStatus, 'skipped');
+  assert.equal(requests.length, count);
+  const manual = await api(`${skippedRoute}/parse-vlm`, { force: true });
+  assert.equal(manual.routeStatus, 'vlm_done');
+  assert.match(manual.vlmMarkdown, /本地验证图片 4/u);
+  assert.equal((await api(skippedRoute)).vlmMarkdown, manual.vlmMarkdown);
+  assert.equal(requests.length, ++count);
 
   const rawRoute = `/api/raw/${flow.raw.id}`;
   const wait = async (jobId) => {

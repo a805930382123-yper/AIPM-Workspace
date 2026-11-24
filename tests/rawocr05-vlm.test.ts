@@ -82,9 +82,20 @@ test('VLM sends normalized local image bytes and persists only stage, fixed code
   const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-rawocr05-vlm-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const warnings = t.mock.method(console, 'warn', () => undefined);
-  const outcomes = ['jpeg', 'webp', 'imageInput', 'auth', 'network', 'response', 'unretained', 'corrupt', 'decode'];
+  const outcomes = [
+    'jpeg',
+    'webp',
+    'imageInput',
+    'auth',
+    'network',
+    'response',
+    'unretained',
+    'corrupt',
+    'decode',
+    'noContent',
+  ];
   const undecodable = Buffer.from('47494638396100000000', 'hex');
-  const originalBytes = [jpeg, webp, png, png, png, png, undefined, png.subarray(0, 8), undecodable];
+  const originalBytes = [jpeg, webp, png, png, png, png, undefined, png.subarray(0, 8), undecodable, png];
   const originals = originalBytes.map((bytes, i) => ({
     start: 0,
     sourceUrl: 'https://example.invalid/image',
@@ -114,17 +125,18 @@ test('VLM sends normalized local image bytes and persists only stage, fixed code
     if (bytes) await writeFileAtomic(localPaths[index], index === 7 ? png : bytes);
     await raws.saveMediaArtifact(raw.id, occurrence.mediaId, {
       ...evaluateImageOcr({ lines: [] }),
-      routeStatus: 'failed',
+      routeStatus: [0, 9].includes(index) ? 'skipped' : 'failed',
+      decisionReason: index === 1 ? undefined : `示例处理依据 ${index + 1}`,
     });
   }
-  const requests: Array<{ index: number; data: string }> = [];
+  const requests: Array<{ index: number; data: string; manual: boolean }> = [];
   const providerServer = createServer(async (req, res) => {
     const chunks: Buffer[] = [];
     for await (const chunk of req) chunks.push(chunk);
     const { messages } = JSON.parse(Buffer.concat(chunks).toString());
     const [{ text }, { image_url }] = messages[1].content;
     const index = JSON.parse(text).image_index - 1;
-    requests.push({ index, data: image_url.url });
+    requests.push({ index, data: image_url.url, manual: messages[0].content.includes('用户要求手动精读') });
     if (outcomes[index] === 'network') {
       res.destroy();
       return;
@@ -136,11 +148,12 @@ test('VLM sends normalized local image bytes and persists only stage, fixed code
     if (outcomes[index] === 'imageInput')
       return reply({ error: { param: 'messages[1].content[1].image_url', message: secret } }, 400);
     if (outcomes[index] === 'auth') return reply({ error: { message: secret } }, 401);
+    const noContent = outcomes[index] === 'noContent';
     const value = {
-      should_skip: false,
-      image_type: 'flowchart',
-      summary: '精读成功',
-      markdown: '提取流程',
+      should_skip: noContent,
+      image_type: noContent ? 'decorative' : 'flowchart',
+      summary: noContent ? '' : '精读成功',
+      markdown: noContent ? '' : '提取流程',
       confidence: 'high',
       warnings: [],
     };
@@ -163,11 +176,21 @@ test('VLM sends normalized local image bytes and persists only stage, fixed code
     source: 'env',
   });
   const service = new MediaVlmParserService(raws);
+  assert.equal((await service.parse(raw.id, media[0].mediaId, { provider })).routeStatus, 'skipped');
+  assert.deepEqual(await service.batch(raw.id, { provider }), []);
+  assert.equal(requests.length, 0);
   const statuses = [];
-  for (const { mediaId } of media) statuses.push(await service.parse(raw.id, mediaId, { provider }));
+  for (const [index, { mediaId }] of media.entries()) {
+    statuses.push(
+      await service.parse(raw.id, mediaId, {
+        provider: index === 6 ? undefined : provider,
+        force: [0, 2, 6, 9].includes(index),
+      }),
+    );
+  }
   assert.deepEqual(
     statuses.map(({ routeStatus }) => routeStatus),
-    ['vlm_done', 'vlm_done', ...Array(7).fill('failed')],
+    ['vlm_done', 'vlm_done', ...Array(8).fill('failed')],
   );
   assert.deepEqual(
     statuses.map(({ mediaFailure }) => mediaFailure),
@@ -181,11 +204,16 @@ test('VLM sends normalized local image bytes and persists only stage, fixed code
       { stage: 'download', code: 'MEDIA_DOWNLOAD_UNAVAILABLE' },
       { stage: 'original', code: 'MEDIA_ORIGINAL_UNAVAILABLE' },
       { stage: 'image', code: 'MEDIA_IMAGE_PREPARE_FAILED' },
+      { stage: 'response', code: 'MEDIA_NO_EXTRACTABLE_CONTENT' },
     ],
   );
   assert.deepEqual(
     requests.map(({ index }) => index),
-    [0, 1, 2, 3, 4, 4, 5, 5],
+    [0, 1, 2, 3, 4, 4, 5, 5, 9],
+  );
+  assert.deepEqual(
+    requests.filter(({ manual }) => manual).map(({ index }) => index),
+    [0, 2, 9],
   );
   for (const [index, expectedMime, expectedSize] of [
     [0, 'image/jpeg', [1800, 900]],
@@ -198,9 +226,14 @@ test('VLM sends normalized local image bytes and persists only stage, fixed code
     assert.deepEqual(await readFile(localPaths[index]), originalBytes[index]);
   }
   assert.equal((await raws.get(raw.id))?.body, body);
-  assert.equal(warnings.mock.callCount(), 7);
+  const persisted = (await raws.getMediaArtifacts(raw.id)).map(publicMediaArtifact);
+  assert.deepEqual(
+    persisted.map(({ decisionReason }) => decisionReason),
+    outcomes.map((_, index) => (index === 1 ? undefined : `示例处理依据 ${index + 1}`)),
+  );
+  assert.equal(warnings.mock.callCount(), 8);
   const evidence = JSON.stringify({
-    artifacts: (await raws.getMediaArtifacts(raw.id)).map(publicMediaArtifact),
+    artifacts: persisted,
     logs: warnings.mock.calls.map(({ arguments: args }) => args),
   });
   assert.doesNotMatch(evidence, /sk-rawocr05|data:image|ocrRawText/u);
