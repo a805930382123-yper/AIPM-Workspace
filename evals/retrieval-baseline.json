@@ -1,0 +1,780 @@
+{
+  "version": 1,
+  "scoring": {
+    "k": 8,
+    "rankUnit": "实际送出的 Wiki 页，按调用方交付顺序。SQLite 同页多个块仍算一页。",
+    "positive": "前 K 页中任一金标准页实际送出完整逐字锚点即命中，金标准按正文 UTF-16 定位并校验 SHA-256。",
+    "heading": "命中后检查同一证据的标题路径。SQLite 检查已发送的定位标签及正文坐标。Legacy 检查已发送标题栈下的证据。",
+    "negative": "E 类人工核定无答案，前 K 页有任一非空正文/块即为误召回。"
+  },
+  "corpus": {
+    "description": "2026-11-24 正式 Wiki 正文与来源文件逐字只读复制，另加三篇明确标注的合成长页。",
+    "wikiFiles": [
+      {
+        "file": "knowledge/wiki/026808d6-c4ae-4b3e-ae95-6fe84af2345d.md",
+        "sha256": "cee24eca4d160edf762897f60f6eb00fe12a07f6d2c692ec95fe2952aeba9472"
+      },
+      {
+        "file": "knowledge/wiki/0268ebbe-39b7-4873-b018-280c5d040e24.md",
+        "sha256": "b1ed687e3fb46d1934565df8d40c8c3f7039e309226c2ce8ab71b87facc7c2bf"
+      },
+      {
+        "file": "knowledge/wiki/02afa734-0ef8-420e-a03f-a3e987bf73f9.md",
+        "sha256": "a4fdcbd531b0f3cd1ee9f12f49cb5f3ccd165a76ef5a759e9c3e5269c087e3b2"
+      },
+      {
+        "file": "knowledge/wiki/0642cfa4-433c-478c-968c-2cff1e280466.md",
+        "sha256": "318b738e46be98e76693b326ae12732ee938546711eb2561e71fa8f2f863cdf4"
+      },
+      {
+        "file": "knowledge/wiki/0e28daa4-5cc3-4806-997d-151117e33e08.md",
+        "sha256": "ebe115e84c94f31866afc90042479f8b6f2a3fd54da7929c5ba27f03df525077"
+      },
+      {
+        "file": "knowledge/wiki/105ae50a-fb6f-4126-abce-e5fe8b76a43d.md",
+        "sha256": "e97071efd082c2eefdf5a4055abee3b46211acfa3ca4bdbf5a74f7f48db9ac2d"
+      },
+      {
+        "file": "knowledge/wiki/10bc5769-5b96-4133-845a-17940d501cdd.md",
+        "sha256": "40ceac172b34f3f98116fa093a8bc500ae345bcaa9cefeaa6f82001fc2a41591"
+      },
+      {
+        "file": "knowledge/wiki/11a75748-c756-48b3-b237-ffc9aaf2afaa.md",
+        "sha256": "34de61f1e43c9209e14cd5a144e2af2d4e63a11ab24940ff5435c29e2578c407"
+      },
+      {
+        "file": "knowledge/wiki/1250ec7e-0f20-4b18-9b7b-76fd22e73ab5.md",
+        "sha256": "0d7f9028bddb243a841a3a609411d8d11405b06d2ec68430c55365796fb1f9e4"
+      },
+      {
+        "file": "knowledge/wiki/17082470-5937-4ad6-b309-a44c63b0d0fe.md",
+        "sha256": "0e0af2fd8f652c0a17d4d984fb124e391236dbe347f2f3bc16be8511ab6f0c79"
+      },
+      {
+        "file": "knowledge/wiki/1e55a7b7-9909-4252-ad0e-5c1cef91f409.md",
+        "sha256": "d1804595653f93b96ce796b64aedad4cb9d82013a6a8c08a1f3383f9fa9b2774"
+      },
+      {
+        "file": "knowledge/wiki/1f23b4ca-c76a-487d-aa4a-ad9b64bf1432.md",
+        "sha256": "dca437d34fe737e42aaafec770e462897de31f91814821e7af3dc86840e1a41e"
+      },
+      {
+        "file": "knowledge/wiki/25c3e097-32fe-4137-9025-ccd73a070540.md",
+        "sha256": "ea0e1b24977504675bb491b1df41546577dd82c8aa85219d4da5fd52170a34a0"
+      },
+      {
+        "file": "knowledge/wiki/290df7eb-348d-43db-ae70-cd75ba868d38.md",
+        "sha256": "a05ce3f0c8e8990155edc03e75f9bd6d1d47f886f4b78ccf0343fe5f99a69656"
+      },
+      {
+        "file": "knowledge/wiki/2b2a7ae4-d4bb-4a4c-8b53-cb2b321305a6.md",
+        "sha256": "e8bd6254e5fcfa5162f3b1320ea39222a72946ea5477fd1e1eab92f943150149"
+      },
+      {
+        "file": "knowledge/wiki/3311e11a-095a-4752-ab80-abcc151a8e76.md",
+        "sha256": "073087c8812bcefd5b4ecd2e8994a5a313978778d1c3b5802d983864c0dc09d2"
+      },
+      {
+        "file": "knowledge/wiki/3927e7ed-367c-47a0-a8c3-adbdea92e1ea.md",
+        "sha256": "115a75312c56b566eebadfa38359948f633d38c4a90dd38e5644ce4083266a19"
+      },
+      {
+        "file": "knowledge/wiki/3a55ba57-fa22-4b75-b902-91ee676b1257.md",
+        "sha256": "2026d88a1ddc181ed1ca82acac90c70ea5c8efb81e1357f74e22c69a111039b2"
+      },
+      {
+        "file": "knowledge/wiki/4ac48c25-7d00-4cf1-843a-803b4185489b.md",
+        "sha256": "3cbacaec1308aa7b428360c26393dfe99f354d5f53a9638d2961a9e59f88fbda"
+      },
+      {
+        "file": "knowledge/wiki/55fdd155-52ec-4052-9e1c-38be40828ed7.md",
+        "sha256": "fb7d30124cbbd9ec09df50a04aad9cf358a402e3da5e9893709b52a97525b78a"
+      },
+      {
+        "file": "knowledge/wiki/576c448e-f36f-4989-973b-5576f9bc2559.md",
+        "sha256": "01f00c6cdd854f86b9d504ffa1819f4139dd7926c88b9c19af21af09e00cee35"
+      },
+      {
+        "file": "knowledge/wiki/59480f15-2660-48e3-b4b6-893c7ee7e430.md",
+        "sha256": "a3204d161a2f79fd79b5d23d08a3ba7d84a9d79d5bb2c2daefca593242ef2ef8"
+      },
+      {
+        "file": "knowledge/wiki/5a5a6dce-338a-4f3a-935f-babd9b982c3b.md",
+        "sha256": "4d83357dc3f8db4a2d654331983cdff9c4c976993b9d4dca42b5329ebb8efb7f"
+      },
+      {
+        "file": "knowledge/wiki/5b0e5481-afb5-4b8f-a1f0-2679525447bd.md",
+        "sha256": "34f2cb3f65d74417d4009f0dfdd07cf905df8944624cbc4628183b31d81bc9f8"
+      },
+      {
+        "file": "knowledge/wiki/5b21f5d3-a1b3-42b3-998e-69972a7aa018.md",
+        "sha256": "8fbd143f1edf3905344f78406a728a46d66160f44b75587ed2b4fee556e74783"
+      },
+      {
+        "file": "knowledge/wiki/5f76d9ea-3982-4ae5-9102-369cd9614ab2.md",
+        "sha256": "3724dca5add6e3106b1f57c494c61dba44a5992a3216d9b7fee027a403b7ac97"
+      },
+      {
+        "file": "knowledge/wiki/625263cb-b83a-4b62-8302-23095d2624ea.md",
+        "sha256": "1346d254ab87556400eaf9a0893a8dd0e54b46084aea231153c30a5255a3498f"
+      },
+      {
+        "file": "knowledge/wiki/65ff23a3-ac61-403a-841a-a43252a4d7d3.md",
+        "sha256": "53415f1c127b3737a968070b33a36e1f2a59661d512d18f62af37b043a347b31"
+      },
+      {
+        "file": "knowledge/wiki/6a2fe266-95d0-4afa-bf45-3c2506fab27c.md",
+        "sha256": "1b18f2ec667ddacf2e03aa3026560d7eabb68c33801c9a05e115b1451e644477"
+      },
+      {
+        "file": "knowledge/wiki/6a5d524a-3145-43df-8ca4-3745f3e60d16.md",
+        "sha256": "e7806ea866216c0790b0a6c956e5888691465e1e9753326813265cb8e9eecf17"
+      },
+      {
+        "file": "knowledge/wiki/6b81fd74-f202-4920-a92a-d0b17909aaab.md",
+        "sha256": "36b2710b2b146f96de0901a228fbb16a44e44aebbebe663818cbc84ba7e272aa"
+      },
+      {
+        "file": "knowledge/wiki/6dda22de-f8a5-4d79-bc89-a3b70711400e.md",
+        "sha256": "ad4be199bef438bf9a2ad5dee561f9652ccb0e2e327dd8997fb51c0fc629273e"
+      },
+      {
+        "file": "knowledge/wiki/6e062f54-a9a7-422f-8cb7-7ca735b557dc.md",
+        "sha256": "267fd28bfd0cfce43a64f0473e5953f9e21dd5b158b7d4027a1e5e579e7f1246"
+      },
+      {
+        "file": "knowledge/wiki/743346d2-f08a-42c6-9a77-7f7b2d170e74.md",
+        "sha256": "f11953653991b822b68a3838378f2a4d25bca61997354894ed2a6b857a102906"
+      },
+      {
+        "file": "knowledge/wiki/776355bd-bbb0-4e3d-afe3-8a69550b3845.md",
+        "sha256": "3d43712d6577d4049bbb6655370b958cf4d4878a9c6e21a1ea6161f842e16ed6"
+      },
+      {
+        "file": "knowledge/wiki/7ae6513b-d553-42be-9dee-30af848750d5.md",
+        "sha256": "1bb63f001e28400ec557db01609b113584cffbf8e2ea2485d3eb46a8c3da8d3f"
+      },
+      {
+        "file": "knowledge/wiki/85091b97-0bd8-4884-8bbf-26287fb62e2d.md",
+        "sha256": "dc61ec82f811c674a32fb987ceaef2f74b0969e0e9adac640268dd113aa21d36"
+      },
+      {
+        "file": "knowledge/wiki/882f1233-acf6-4276-a64c-07c73d896559.md",
+        "sha256": "c4cdcb33d0a6469496b0fe84bfe432d5dd5651532ebcf19f5d988f4bc34fa4e2"
+      },
+      {
+        "file": "knowledge/wiki/8b25f81c-93cf-4600-a5ac-aad28ac0d1be.md",
+        "sha256": "7632d40f641a8ba93d5dea44f2d9abe9b659c659548eac83051bdad45b730d65"
+      },
+      {
+        "file": "knowledge/wiki/8e7f4907-e05e-4a00-ac0f-c0de8a5fd7f8.md",
+        "sha256": "e4bab718cb230ee3ea3287e2441cc26e913de8fbeab28c0d08d6a942b008e39d"
+      },
+      {
+        "file": "knowledge/wiki/8fd640d3-fb47-4f82-8dee-7b5565db3b5e.md",
+        "sha256": "279cab7b3caed85bbbf6dd8325b11b9cc9db75e018efea954ec69cd7ee8d476b"
+      },
+      {
+        "file": "knowledge/wiki/93607f6a-66a9-497f-95ed-44830d6aa28e.md",
+        "sha256": "927966beab4c0f2c7546716cb1b9736a887d0122ef57c80bae61024885fd16f2"
+      },
+      {
+        "file": "knowledge/wiki/93b76c4c-05b8-44e2-95b3-feb2f37d0694.md",
+        "sha256": "cc6be0762fd91181e801ee2f5f8d1061a9163b1149524d92608a2077e8003c75"
+      },
+      {
+        "file": "knowledge/wiki/9703a2ec-c61c-45e9-ac46-fb43e395876a.md",
+        "sha256": "d20477f15e694bd2c6f81e24df9722f206c26baf773e7209801ddf9be1525417"
+      },
+      {
+        "file": "knowledge/wiki/9862a4ad-5a06-4c8b-ada0-01ae32c43753.md",
+        "sha256": "84852d50f7ce0a57d056affa60867f0b88e2e28a090b8514a4431b181adee0d9"
+      },
+      {
+        "file": "knowledge/wiki/99c9ee79-8c86-4d47-895a-473e02b92567.md",
+        "sha256": "7198b9e57db4dbb4b399966aada649d59d226146ead908563a3f85743038ae09"
+      },
+      {
+        "file": "knowledge/wiki/9a0d1075-e6e4-4a85-a3b8-81ba71acca0a.md",
+        "sha256": "7122869c337d3976855dbeb6c2c86fc1b84717db0f20d77fb75922fb3c0a5975"
+      },
+      {
+        "file": "knowledge/wiki/9ab4a113-3324-4d8f-8e2d-bc9a16ed33f4.md",
+        "sha256": "522811e4a976b3d534fa0920eec85c8c7978cba9b31767a59e2cf8d1e32ed65c"
+      },
+      {
+        "file": "knowledge/wiki/9c50efa0-f2c0-4dbd-af2d-4e2b2b99d3cb.md",
+        "sha256": "871741b5856110edf97f2a3961bf7c7ce4e41464235cc2b14ce6e55b5b88763c"
+      },
+      {
+        "file": "knowledge/wiki/9ee1eb2a-c73e-4cfa-92b7-95560ae296d1.md",
+        "sha256": "6599e8baf03ec557b3cecf15f34bcd263a4197c3f9ad8dfe86250cebab107b54"
+      },
+      {
+        "file": "knowledge/wiki/a0963a5e-d020-4a9f-8997-e183fb1cde0a.md",
+        "sha256": "2d90d7ce7b17b924a4932f39ae908df807357a1274eeef5f1a59ef5fdec6587c"
+      },
+      {
+        "file": "knowledge/wiki/a85eca2a-a0a9-4ddf-88fd-4b2432ca808e.md",
+        "sha256": "15129d39df7f21149d5c1b1cafb85ec6b64b5407e1f0b519a809ad0a6c59ab55"
+      },
+      {
+        "file": "knowledge/wiki/a9eea1b7-fc3b-41ac-8e4f-e0658123baf1.md",
+        "sha256": "ad56e0e01982da7b2a6a39f23885c95a4cbf48eea1d9b387f4fac957b14f04fe"
+      },
+      {
+        "file": "knowledge/wiki/ad492b02-7ce2-4a90-bb8f-76c1a638bcc9.md",
+        "sha256": "895062816828d7f94d1c0f2c338083fa368fc9589876f14bddc86672e819dd36"
+      },
+      {
+        "file": "knowledge/wiki/ae7d17aa-8845-41a6-93ae-1a5f267e30a4.md",
+        "sha256": "1490801d5609b04fd9c16d6d9e3fea59ffc11f9c91b413f91509270feaf5b942"
+      },
+      {
+        "file": "knowledge/wiki/ae902838-28a2-4f59-a080-0305279995af.md",
+        "sha256": "e7391fb82fccd606df5834b5cde7cd8d9a4f1bdfd156bdd8eaa2bdce40d132b5"
+      },
+      {
+        "file": "knowledge/wiki/b4302224-b1bf-48b4-8733-d7aab202e161.md",
+        "sha256": "66483b287227e44f121dbe81bfe07fc298f9f26b3a0d2576ff614b3e94fe68ef"
+      },
+      {
+        "file": "knowledge/wiki/b45aa5d5-aed2-4d76-9bb9-3f749dd49206.md",
+        "sha256": "219e21640662e6b953440238a1e7a4541a93e0862fcff9b307419728eb6476a4"
+      },
+      {
+        "file": "knowledge/wiki/b651d089-a8e8-40a4-9937-e0519513f6ed.md",
+        "sha256": "b251721660a8717f8845315fb87c3219ad42c4e8cbcf348e6d8d302b3b8b94f6"
+      },
+      {
+        "file": "knowledge/wiki/b688f860-7ea1-4140-8fc4-0ded0b573746.md",
+        "sha256": "d046fc9c546092181a95f3f6ce70dd49432e5d8946038b01ad35620b0ff05144"
+      },
+      {
+        "file": "knowledge/wiki/b6f2e446-83cc-4334-bea8-a1b335380008.md",
+        "sha256": "12dd136b37da9cfcbb2b0ffbd25ffbe3d9b717b6ca805c4e90aebed8d8c5b770"
+      },
+      {
+        "file": "knowledge/wiki/b7b11705-33d4-455a-8b20-ed32105c6eda.md",
+        "sha256": "74c9f2429805a94161ad3f1f22ea82cb890109aa58f7b9cb4d911ff029476d9b"
+      },
+      {
+        "file": "knowledge/wiki/b93f20c5-37f1-4175-93b5-aa5899ae574d.md",
+        "sha256": "f24e674a265a6c30a170c166934c1a60bce857073be15a70e761d9444045f31e"
+      },
+      {
+        "file": "knowledge/wiki/bd18c057-2b0a-4933-948d-6bea1f898fba.md",
+        "sha256": "c930fa0092d0b8ebdf103190787cd8dcd6cc17fea4d484c03b89a5ad64aac734"
+      },
+      {
+        "file": "knowledge/wiki/bd997f19-75bd-4eb7-b3b6-59b7d192cbf3.md",
+        "sha256": "95a338a1a971ef82f7bda6a7a4a6e9ad1ed1f96fea945df4ae6b40b58bf2363a"
+      },
+      {
+        "file": "knowledge/wiki/bf77601d-9136-4b96-91f2-8f6010d74d9b.md",
+        "sha256": "99a31b05b17e2cc157c5bf81c91dc77ab8a97c7c5711e0e88bea06cda982d568"
+      },
+      {
+        "file": "knowledge/wiki/c29594b5-ff33-4a26-8f56-b5182fba1faf.md",
+        "sha256": "d3b82a0c02847f2629c83e9c26476c4a960cd5a9433e292da4bc3a3c21ce16bd"
+      },
+      {
+        "file": "knowledge/wiki/c2d3ad29-f78a-4aa1-8dc7-6d343349ea36.md",
+        "sha256": "067744911ad506d5a86fe2ecdff4ad65a0c772b817ef5540bdacd6edafd766e4"
+      },
+      {
+        "file": "knowledge/wiki/c4543e9e-5cfb-48fa-a09f-a1b766c15c88.md",
+        "sha256": "f3af520aaa18f5289da048f7da30c759e9cb22296bcefefb7f39800d6ffebd47"
+      },
+      {
+        "file": "knowledge/wiki/c4f6e0b8-df2f-4772-9239-eb07ecf92df0.md",
+        "sha256": "eb6163bf4654591edd0080d1785aa0e8258d0213bf354deb53b35ae3d777b507"
+      },
+      {
+        "file": "knowledge/wiki/c5045d93-f8f1-42c0-879b-82823bed3f67.md",
+        "sha256": "019c0a4dc9b3db9fa330467a2c4eb07dd012d929f7c5adf8953e19e9b23c4f76"
+      },
+      {
+        "file": "knowledge/wiki/cab17211-dd0d-4017-923a-5c3479881f68.md",
+        "sha256": "8183de4f41f48a7eac20b18910b58b97f8a1c2307b9ca7026ecb1815b047e3d2"
+      },
+      {
+        "file": "knowledge/wiki/cc3e00c8-722c-46a9-a486-c33433878649.md",
+        "sha256": "512d6b87dad8f15505434815360dc43b8e119fcc88faf2583618a02697b9b57b"
+      },
+      {
+        "file": "knowledge/wiki/cd315a6b-11b2-4639-a3e2-8be86f303640.md",
+        "sha256": "3f7f75ea743fbe14af8a2423d2975bddd963cf680196533ab593ac0407d2864a"
+      },
+      {
+        "file": "knowledge/wiki/cef0e19a-d7e9-45fb-a3e9-f807dba24e73.md",
+        "sha256": "44c11ad2a365b19bbc7995a77aea92e5498570d39250198d3dbd82cc1c672868"
+      },
+      {
+        "file": "knowledge/wiki/d14984ee-9481-4556-a672-80e2a5cc536f.md",
+        "sha256": "ea3282a5e3f61443bc9b3406ea4775eb74af808b8086efbfeb65cde2476c55b5"
+      },
+      {
+        "file": "knowledge/wiki/d3731dd0-7749-4442-a67a-f83179437c6a.md",
+        "sha256": "a7572fcd13c9dfc15ba49aeb01cb481094b32e3ab67b0beb1f536eb720184eee"
+      },
+      {
+        "file": "knowledge/wiki/da22a881-b294-457a-b1fd-ba3716ef5815.md",
+        "sha256": "8a3d880dd445db75b7df4657ba8b90c6ac0a03b9ecb546e4753d49617af52f76"
+      },
+      {
+        "file": "knowledge/wiki/dd159a0b-aa57-420d-bab5-4caeaef6041f.md",
+        "sha256": "c58071e9a2be67e33ab29a26ebca38be2faff67caae4fa3b277648e1db79e589"
+      },
+      {
+        "file": "knowledge/wiki/ddb2fdda-a67c-4436-8cce-7596dc71a1f9.md",
+        "sha256": "b2d4a1609ed9fcc758f830e84a8933f14b45455099c480e3d50d53502ecede52"
+      },
+      {
+        "file": "knowledge/wiki/def78d85-7dfd-454a-ae14-ccc1a3ceb2f2.md",
+        "sha256": "766f35ea439904f8eea5c1b25ea3ff4073fa65f86dbc6db65666ae570147e8a4"
+      },
+      {
+        "file": "knowledge/wiki/e209955c-427e-4425-9ac6-bd5a1f91c266.md",
+        "sha256": "944d2fa0aa39afd948558988c21be18115700310ade1d833dfb50917ee1b7724"
+      },
+      {
+        "file": "knowledge/wiki/e5d62ade-4e1d-44c3-846f-fbe22736f7d5.md",
+        "sha256": "dac2af26abc8d4c3bc1c8ebf08030c6a8ce1f99ab85562a0ce9b08b8f680a868"
+      },
+      {
+        "file": "knowledge/wiki/e735a99b-23cf-41f3-86a4-92df0e215c4b.md",
+        "sha256": "732748bcf2f3d2761bb9907a03304d2b0407421d33f0f4dc92e9e9a9e31da70d"
+      },
+      {
+        "file": "knowledge/wiki/e7de235c-fee8-499f-b129-fe4d1ad5582b.md",
+        "sha256": "49705ea09004a4476b2c9d64654c8c057265ffbfbfee6877802611e3e380ecb9"
+      },
+      {
+        "file": "knowledge/wiki/ebe981b7-6b62-4e8d-a5a9-aa7c57fd40e5.md",
+        "sha256": "20df7c3fb3ad9782ed79beb4736a765f35b0cd804da07a2ce1aff81d14c2da35"
+      },
+      {
+        "file": "knowledge/wiki/ed6bdd92-a120-4fb9-82b2-2f45b9b44523.md",
+        "sha256": "3b77b06456ac754ff8c79bf922402ec5117a09a2615117f9964ca1bd7ea501e9"
+      },
+      {
+        "file": "knowledge/wiki/eef4668a-a109-4344-ad61-6a3a87774d99.md",
+        "sha256": "216cf2ee7c4c57e74ae7368161508fd693270ee6e0ed67e4c4d7320232de45f0"
+      },
+      {
+        "file": "knowledge/wiki/f0bd276a-b0c5-4002-8a10-93acb6223b86.md",
+        "sha256": "7717152b32ce1123135fe71c07bcb70961e9b3925cdb5db1eca6b8667c9199be"
+      },
+      {
+        "file": "knowledge/wiki/f1adf941-642c-494f-ad18-5ef703969180.md",
+        "sha256": "91f4901d167f67f79045e32006a5793c43a17f47eae591fba5ccd8b68711ef86"
+      },
+      {
+        "file": "knowledge/wiki/f3b1c6ee-29ab-4a01-89b9-c3af8460a625.md",
+        "sha256": "a5c79386f7e6a2d826dd88572c1e0753e1fbdb0973cdbd638a3526414b094030"
+      },
+      {
+        "file": "knowledge/wiki/fca07c1e-08e9-48cd-bf49-c283ba6e664d.md",
+        "sha256": "046f3216da0ec4893de4c5d33af42c703ec3766416fa64c5044b4aed59303171"
+      },
+      {
+        "file": "knowledge/wiki/fe7e40ec-b3c7-44c3-a020-e480f0001899.md",
+        "sha256": "32bd12c6142b4d245ed2506b51089518b1dd87d10c9ffffd5530c0dde70eeb10"
+      },
+      {
+        "file": "knowledge/wiki/fef80345-2893-4936-aed3-7e032991b72d.md",
+        "sha256": "bd4ae7e72d30a0ee845e5274038c776c3d20e6f3ac82f76b865eb17942b94dfc"
+      },
+      {
+        "file": "knowledge/wiki/ff5ad41c-a7d4-42ca-a15c-f3fb610ee852.md",
+        "sha256": "b873a48dc9d0327bc0327eb0776df1693335f070eaef642d788a54ed709fc1e4"
+      }
+    ],
+    "rawFiles": [
+      {
+        "file": "knowledge/raw/articles/0afd01aa-742a-4eb5-a088-952c3626492c.md",
+        "sha256": "75bc33f1da7c9c9e9b0223076825514c56862a04f7491a4c7b23fa3836a6a631"
+      },
+      {
+        "file": "knowledge/raw/articles/35064c36-5882-47d9-838c-0e125389d5ca.md",
+        "sha256": "c671f45385db1f3939e53765330cf0570c321b12acbdf7a6bdb09516bebac489"
+      },
+      {
+        "file": "knowledge/raw/articles/7d12464a-b7d8-456f-9f60-4136f9b4eb1e.md",
+        "sha256": "20ba0310a1c1da838c9cbaf75176536bf560e1e7d0a3a7b7b986a142aaf1847a"
+      },
+      {
+        "file": "knowledge/raw/articles/9010a508-7a33-426f-adce-fa86d40f8451.md",
+        "sha256": "34a4039245116257a21905e1d8ac786ceabb1f8e9efcb1d7bfbc2b27510fa490"
+      },
+      {
+        "file": "knowledge/raw/articles/99ff3c57-c1e1-4823-b688-2d4b264e02c2.md",
+        "sha256": "9273f91de54329b309c443881bdfa9e13ca6af20c39e0f4676f62b327fcbd70b"
+      },
+      {
+        "file": "knowledge/raw/articles/daf6fde4-98e0-478d-8abe-f3abce1031ad.md",
+        "sha256": "91ce67d21312797bf465bcbd2618e86b00b7f387c550f4ae662443bca6fb09d2"
+      },
+      {
+        "file": "knowledge/raw/notes/0fde3418-831d-4d2e-983f-5a920cd71220.md",
+        "sha256": "874513c4a81e33cb819aad0cea337c8dd19e7d8d66e896958ec2afc69e49c73b"
+      },
+      {
+        "file": "knowledge/raw/notes/45656871-5c68-4cf5-a2e6-179fc7200d2f.md",
+        "sha256": "8251ba22209fef537ce123ef0657228b778de6033e34dd7f59d248bf058e8ece"
+      },
+      {
+        "file": "knowledge/raw/reports/b6dd4207-8afd-4e1f-8e66-4c0e40a24338.md",
+        "sha256": "c722e5cb02588e9a588e4448a7ef7d5c6ecced3cef699f2636b6cc025380c0a4"
+      }
+    ],
+    "missingRawIds": []
+  },
+  "cases": [
+    {
+      "id": "A1",
+      "question": "快速消费品（FMCG）定义",
+      "gold": [
+        {
+          "pageId": "1f23b4ca-c76a-487d-aa4a-ad9b64bf1432",
+          "start": 313,
+          "end": 344,
+          "sha256": "737ac9c9f58b3b0f461218ce6783e129e0921b0e89821765caf3af8dc1891d9c",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "question": "TGI计算方式",
+      "gold": [
+        {
+          "pageId": "ff5ad41c-a7d4-42ca-a15c-f3fb610ee852",
+          "start": 59,
+          "end": 101,
+          "sha256": "5e034af839ca87190c3c048f87ecc96dec6e4b568d9898170775f8d8c4d953aa",
+          "headingPath": "AI 整理"
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "question": "新增用户的设备统计口径",
+      "gold": [
+        {
+          "pageId": "b688f860-7ea1-4140-8fc4-0ded0b573746",
+          "start": 84,
+          "end": 122,
+          "sha256": "d3784139186817688aee08ed5b0881b3448af9efc553c75508f2ea7ed772bfe2",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "A4",
+      "question": "需求前置拦截",
+      "gold": [
+        {
+          "pageId": "5a5a6dce-338a-4f3a-935f-babd9b982c3b",
+          "start": 89,
+          "end": 132,
+          "sha256": "838b8063f20d9aebe10c74d15c2b33a1bdfdef21abeee39e02757ab59c047247",
+          "headingPath": "AI 整理"
+        }
+      ]
+    },
+    {
+      "id": "A5",
+      "question": "折扣店的价格定位",
+      "gold": [
+        {
+          "pageId": "0e28daa4-5cc3-4806-997d-151117e33e08",
+          "start": 299,
+          "end": 318,
+          "sha256": "3a99acaccfb0a4708e2979fe63162472e442aea08043399daacbdb42f1e9592e",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "A6",
+      "question": "留存率公式",
+      "gold": [
+        {
+          "pageId": "d14984ee-9481-4556-a672-80e2a5cc536f",
+          "start": 119,
+          "end": 132,
+          "sha256": "7831040f06d160739418eba30ee4fa35ff20207b961506172f0ddd85e9520918",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "A7",
+      "question": "gmv",
+      "gold": [
+        {
+          "pageId": "fca07c1e-08e9-48cd-bf49-c283ba6e664d",
+          "start": 288,
+          "end": 316,
+          "sha256": "4849379ccf2210507c2afba16706887337ebc4800ace06915afa593b2fcd250b",
+          "headingPath": "AI 整理"
+        },
+        {
+          "pageId": "f0bd276a-b0c5-4002-8a10-93acb6223b86",
+          "start": 234,
+          "end": 251,
+          "sha256": "4205aba9d5de6829f137e7203037920c16259a5cb0b725676eafd72f3a00147e",
+          "headingPath": "AI 整理"
+        }
+      ]
+    },
+    {
+      "id": "B1",
+      "question": "CVS 通常多大，多长时间营业？",
+      "gold": [
+        {
+          "pageId": "4ac48c25-7d00-4cf1-843a-803b4185489b",
+          "start": 32,
+          "end": 68,
+          "sha256": "b44fcb3cea8a682602abfe97f944eded8e72f2dd527115fe7bc63bdf0a273ffd",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "question": "夫妻俩自己守的小店都卖些啥？",
+      "gold": [
+        {
+          "pageId": "ddb2fdda-a67c-4436-8cce-7596dc71a1f9",
+          "start": 34,
+          "end": 92,
+          "sha256": "86dace3dbe4d657c62dee7c3a6f87e5a8fff0e40e82a321b149a46c064514277",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "B3",
+      "question": "厂家把货往外一层层送，先给谁再给谁？",
+      "gold": [
+        {
+          "pageId": "11a75748-c756-48b3-b237-ffc9aaf2afaa",
+          "start": 200,
+          "end": 223,
+          "sha256": "932799b5f40f326cadc603e88b284a4944866a8b58fde87b680cd9a4410472c7",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "question": "闪电仓常规下单后多久送到？",
+      "gold": [
+        {
+          "pageId": "25c3e097-32fe-4137-9025-ccd73a070540",
+          "start": 84,
+          "end": 115,
+          "sha256": "37cc68589149fc1bf89fe1dc428da71f96a5ca94c04181f8cb2c0f57933987d4",
+          "headingPath": "AI 整理"
+        }
+      ]
+    },
+    {
+      "id": "B5",
+      "question": "用户点进入口页就走，统计哪一个数？",
+      "gold": [
+        {
+          "pageId": "65ff23a3-ac61-403a-841a-a43252a4d7d3",
+          "start": 28,
+          "end": 61,
+          "sha256": "ff13d3be6170e70d176767bda00301b9954b4c478e150d68046582c661454a8c",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "question": "霜杉车队差异件怎样交接？",
+      "gold": [
+        {
+          "pageId": "a1000000-0000-4000-8000-000000000001",
+          "start": 9,
+          "end": 30,
+          "sha256": "323c2d68914904e498049a64f78daf306fbd8ee86d7c56906f717312dab60986",
+          "headingPath": "交接准备"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "question": "赤松温签的留档频次是多少？",
+      "gold": [
+        {
+          "pageId": "a1000000-0000-4000-8000-000000000001",
+          "start": 27045,
+          "end": 27069,
+          "sha256": "562643e34d5c5a03be7798f0d9e96ba9aae7c720c3b4c7afeb21be10310bac6f",
+          "headingPath": "测温处置"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "question": "紫榕缺签登记在何时由谁补核？",
+      "gold": [
+        {
+          "pageId": "a1000000-0000-4000-8000-000000000002",
+          "start": 54076,
+          "end": 54094,
+          "sha256": "0f9bd018a139a81305bce89fe75934889bd66baf39b89af20723710da6553e3e",
+          "headingPath": "异常归档"
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "question": "蓝桐立牌应放在哪里？",
+      "gold": [
+        {
+          "pageId": "a1000000-0000-4000-8000-000000000003",
+          "start": 9,
+          "end": 26,
+          "sha256": "8c5889742b6dcc0dc3d865fbc8b99afbfc878d2855dfc6412f6d603aae8d4f73",
+          "headingPath": "物料入场"
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "question": "银柚样包怎样盘点？",
+      "gold": [
+        {
+          "pageId": "a1000000-0000-4000-8000-000000000003",
+          "start": 27041,
+          "end": 27059,
+          "sha256": "93415ebca73467cf92647087a355e3b9f8374cdbcb22c425148992febecfd7d2",
+          "headingPath": "现场盘点"
+        }
+      ]
+    },
+    {
+      "id": "D1",
+      "question": "为亚太食品饮料创新汇报制作提纲，开斋餐预制食品可能有哪些机会？",
+      "selection": [
+        "f3b1c6ee-29ab-4a01-89b9-c3af8460a625",
+        "6b81fd74-f202-4920-a92a-d0b17909aaab",
+        "cef0e19a-d7e9-45fb-a3e9-f807dba24e73",
+        "882f1233-acf6-4276-a64c-07c73d896559",
+        "c2d3ad29-f78a-4aa1-8dc7-6d343349ea36",
+        "b4302224-b1bf-48b4-8733-d7aab202e161"
+      ],
+      "gold": [
+        {
+          "pageId": "c2d3ad29-f78a-4aa1-8dc7-6d343349ea36",
+          "start": 7513,
+          "end": 7561,
+          "sha256": "bd828f3a56f47abebc62e6e3920c7f664802c4c5b279c7a0dd3a7827c58b4d8f",
+          "headingPath": "文化相关性与食品饮料创新"
+        },
+        {
+          "pageId": "c2d3ad29-f78a-4aa1-8dc7-6d343349ea36",
+          "start": 1986,
+          "end": 2034,
+          "sha256": "bd828f3a56f47abebc62e6e3920c7f664802c4c5b279c7a0dd3a7827c58b4d8f",
+          "headingPath": "摘要"
+        },
+        {
+          "pageId": "f3b1c6ee-29ab-4a01-89b9-c3af8460a625",
+          "start": 305,
+          "end": 340,
+          "sha256": "965e2d6f16b4cf6953acbc577460c6c92b117c59d7f5e715efc2065bda6666f9",
+          "headingPath": "推断与来源观点"
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "question": "撰写用户行为埋点校验提纲，计算退出率时哪些外站和站内访问应当计入？",
+      "selection": [
+        "c4f6e0b8-df2f-4772-9239-eb07ecf92df0",
+        "2b2a7ae4-d4bb-4a4c-8b53-cb2b321305a6",
+        "65ff23a3-ac61-403a-841a-a43252a4d7d3",
+        "290df7eb-348d-43db-ae70-cd75ba868d38",
+        "ae902838-28a2-4f59-a080-0305279995af",
+        "bf77601d-9136-4b96-91f2-8f6010d74d9b"
+      ],
+      "gold": [
+        {
+          "pageId": "ae902838-28a2-4f59-a080-0305279995af",
+          "start": 4688,
+          "end": 4727,
+          "sha256": "27b2423d1f17dc2fecf20702acad141dcf401de22945890c7e692464839b2fd8",
+          "headingPath": "页面访问深度、跳出率与退出率"
+        },
+        {
+          "pageId": "ae902838-28a2-4f59-a080-0305279995af",
+          "start": 1182,
+          "end": 1221,
+          "sha256": "27b2423d1f17dc2fecf20702acad141dcf401de22945890c7e692464839b2fd8",
+          "headingPath": "摘要"
+        },
+        {
+          "pageId": "bf77601d-9136-4b96-91f2-8f6010d74d9b",
+          "start": 9,
+          "end": 112,
+          "sha256": "075e465c90f97f8459fdfa647031ec8131f3ba37c9784c510ad23d11bd14591b",
+          "headingPath": "来源事实"
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "question": "撰写即时零售经营培训提纲，安心和仪式时刻的数据能否当作互斥类别？",
+      "selection": [
+        "a85eca2a-a0a9-4ddf-88fd-4b2432ca808e",
+        "ff5ad41c-a7d4-42ca-a15c-f3fb610ee852",
+        "93607f6a-66a9-497f-95ed-44830d6aa28e",
+        "7ae6513b-d553-42be-9dee-30af848750d5",
+        "5a5a6dce-338a-4f3a-935f-babd9b982c3b",
+        "8b25f81c-93cf-4600-a5ac-aad28ac0d1be"
+      ],
+      "gold": [
+        {
+          "pageId": "5a5a6dce-338a-4f3a-935f-babd9b982c3b",
+          "start": 3275,
+          "end": 3310,
+          "sha256": "2215e0850a6850c8c741b3f6bf81c521eb0391d0da6a10d645517fcec085be2c",
+          "headingPath": "AI 推断"
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "question": "即时零售生鲜配送的冷链温控范围是多少？",
+      "gold": []
+    },
+    {
+      "id": "E2",
+      "question": "夜间酒水无人配送是否必须本人验收？",
+      "gold": []
+    },
+    {
+      "id": "E3",
+      "question": "家清用品即时零售退货上门是否收费？",
+      "gold": []
+    },
+    {
+      "id": "E4",
+      "question": "即时零售鲜花礼品坏损赔付上限是多少？",
+      "gold": []
+    },
+    {
+      "id": "E5",
+      "question": "户外运动商品即时零售跨城配送是否包邮？",
+      "gold": []
+    }
+  ]
+}

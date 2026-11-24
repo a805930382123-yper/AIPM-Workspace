@@ -85,6 +85,32 @@ test('Chinese and mixed queries are safe, rerank aliases, retain short terms and
   }
 });
 
+test('standalone questions need specific coverage but can retain evidence when some modifiers are absent', async (t) => {
+  const f = await fixture(t);
+  const quote = '经销商返利结算按季度核对回款记录，确认后下月抵扣货款。';
+  const page = await f.wiki.create(bodyInput('经销商返利结算', '## 来源事实\n\n' + quote));
+  const examples = [
+    { title: '经销商返利结算可以申请线上免息贷款或者跨境保函吗？', expected: false },
+    { title: '经销商返利结算核对回款记录后何时抵扣货款，能走加急通道吗？', expected: true },
+  ];
+  for (const { title, expected } of examples) {
+    // The answer service passes the question as both title and content.
+    const result = await retrieveKnowledgeContextDetailed(
+      f.wiki,
+      f.rawStore,
+      [{ title, content: title, tags: title.split(/[，？]/u).filter(Boolean) }],
+      { includeSources: true },
+    );
+    assert.equal(result.engine, 'sqlite_fts');
+    if (!expected) assert.deepEqual(result.context, [], title);
+    else
+      assert(
+        result.chunks.some((chunk) => chunk.pageId === page.id && chunk.rawText.includes(quote)),
+        title,
+      );
+  }
+});
+
 test('three long pages yield all nine distant original blocks, with permission and strict coordinate checks', async (t) => {
   const f = await fixture(t);
   for (let n = 0; n < 3; n++) {

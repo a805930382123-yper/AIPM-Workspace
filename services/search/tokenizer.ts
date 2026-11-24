@@ -8,6 +8,7 @@ const generic = new Set(
     ' ',
   ),
 );
+const questionFillers = new Set('哪里 怎样 何时 谁 哪个 哪 多久 到底 通常 俩 都 些 啥 把 一 先 再'.split(' '));
 const groups = dictionary.groups.map((terms) => terms.map((term) => term.toLowerCase()));
 const synonyms = new Map(groups.flatMap((group) => group.map((term) => [term, group] as const)));
 const compound = '[a-z0-9]+(?:-[a-z0-9]+)+';
@@ -49,20 +50,27 @@ export function tokenizeForFts(text: string) {
 // Limit expression depth for long extracts while keeping titles and tags ahead of body text.
 const MAX_GROUPS = 72;
 export function buildFtsQuery(inputs: string[]) {
-  const groups = new Map<string, { terms: string[]; generic: boolean }>();
+  const groups = new Map<string, { terms: string[]; generic: boolean; coverageWeight: number }>();
   for (const text of inputs) {
     for (const token of tokenize(text, queryPattern)) {
       const alternatives = synonyms.get(token);
       const key = alternatives?.[0] ?? token;
-      if (!groups.has(key))
-        groups.set(key, { terms: alternatives ?? [token], generic: !alternatives && generic.has(token) });
+      if (!groups.has(key)) {
+        const isGeneric = !alternatives && generic.has(token);
+        groups.set(key, {
+          terms: alternatives ?? [token],
+          generic: isGeneric,
+          coverageWeight: isGeneric || questionFillers.has(token) ? 0 : token.length,
+        });
+      }
       if (groups.size === MAX_GROUPS) break;
     }
     if (groups.size === MAX_GROUPS) break;
   }
   const queryGroups = [...groups.values()]
-    .map(({ terms, generic }) => ({
+    .map(({ terms, generic, coverageWeight }) => ({
       generic,
+      coverageWeight,
       terms: [
         ...new Set(
           terms.map((term) => (isCompound.test(term) ? term : tokenizeForFts(term).join(' '))).filter(Boolean),

@@ -28,6 +28,15 @@ export function rankWikiChunks(index: WikiSearchIndexer, queries: RetrievalQuery
   const keywords = queries.flatMap(({ title, tags }) => [title, ...tags]);
   const { match, queryGroups } = buildFtsQuery([...keywords, ...queries.map(({ content }) => content)]);
   if (!match) return [];
+  // For a longer standalone question, broad topic overlap alone is weak evidence.
+  // Count characters so segmentation into single Han characters does not give a
+  // fragmented word multiple votes. Briefs and document-based searches can use
+  // individual concepts from the supplied document or explicitly selected pages.
+  const standalone =
+    !options.pageIds && queries.length === 1 && (!queries[0].content || queries[0].content === queries[0].title);
+  const informative = queryGroups.filter(({ coverageWeight }) => coverageWeight > 0);
+  const minimumCoverage =
+    standalone && informative.length >= 6 ? informative.reduce((sum, group) => sum + group.coverageWeight, 0) / 2 : 0;
   const search = index.read((db) =>
     db
       .prepare<unknown[], Candidate>(
@@ -63,12 +72,20 @@ export function rankWikiChunks(index: WikiSearchIndexer, queries: RetrievalQuery
       const covered = queryGroups.filter(({ terms }) =>
         terms.some((term) => fields.some((field) => field.includes(' ' + term + ' '))),
       );
-      const exactName = [chunk.pageTitle, ...(JSON.parse(aliases) as string[])].some((title) => {
-        const name = title.toLowerCase().trim();
-        return name.length >= 2 && names.some((keyword) => name.includes(keyword) || keyword.includes(name));
-      });
+      const pageNames = [chunk.pageTitle, ...(JSON.parse(aliases) as string[])].map((title) =>
+        title.toLowerCase().trim(),
+      );
+      const exactName = pageNames.some(
+        (name) => name.length >= 2 && names.some((keyword) => name.includes(keyword) || keyword.includes(name)),
+      );
       const normalized = -bm25 / (1 - bm25);
       if (!covered.length || (covered.length === 1 && covered[0].generic && normalized < 0.35)) return [];
+      if (
+        minimumCoverage > 0 &&
+        !pageNames.includes(queries[0].title.toLowerCase().trim()) &&
+        covered.reduce((sum, group) => sum + group.coverageWeight, 0) < minimumCoverage
+      )
+        return [];
       const score = normalized + (covered.length / queryGroups.length) * 0.45 + (exactName ? 0.3 : 0);
       return [{ chunk: { ...chunk, score }, fileHash }];
     })

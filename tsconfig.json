@@ -17,7 +17,16 @@
     "noFallthroughCasesInSwitch": true,
     "types": ["vite/client", "node"]
   },
-  "include": ["app", "server", "tests", "scripts/smoke-sqlite.ts", "scripts/rebuild-search-index.ts", "vite.config.ts"],
+  "include": [
+    "app",
+    "server",
+    "tests",
+    "scripts/smoke-sqlite.ts",
+    "scripts/rebuild-search-index.ts",
+    "scripts/bench-1000-pages.ts",
+    "scripts/run-retrieval-eval.ts",
+    "vite.config.ts"
+  ],
   "exclude": [
     "tests/acceptance/kb02-storage-poc-20261020-case.mts",
     "tests/acceptance/KB02-FINAL-REPAIR-AUDIT-20261022-boundary.test.ts"
