@@ -19,6 +19,7 @@ import { RawTranslationService } from '../services/raw/translations.ts';
 import { validateRaw, validateRawBodyUpdate, InputError } from './validation.ts';
 import { getStats } from '../services/stats/index.ts';
 import { WikiError, WikiStore } from '../services/wiki/store.ts';
+import { WikiSearchIndexer } from '../services/search/indexer.ts';
 import { DraftStore } from '../services/wiki/drafts.ts';
 import { WikiCommitService } from '../services/wiki/commits.ts';
 import { validateBaseRevision, validateWikiInput } from './wiki-validation.ts';
@@ -97,7 +98,8 @@ const lock = await acquireInstanceLock(root, port, production ? 'production' : '
 process.once('exit', lock.releaseMetadata);
 const store = new RawStore(root);
 const assetStore = new AssetStore(root);
-const wikiStore = new WikiStore(root, store);
+const wikiSearch = process.env.SEARCH_ENGINE === 'legacy_scan' ? undefined : new WikiSearchIndexer(root);
+const wikiStore = new WikiStore(root, store, rulesDir, wikiSearch);
 const rawStates = new RawStateStore(root);
 const drafts = new DraftStore(root);
 const jobs = new ExtractionJobStore(root);
@@ -109,7 +111,7 @@ const audits = new AuditService(root, wikiStore, store);
 const prompts = new PromptStore(root, wikiStore, rulesDir);
 const providerContext = new AsyncLocalStorage<{ provider: LlmProvider | undefined }>();
 const activeProvider = () => providerContext.getStore()?.provider;
-const promptAi = new PromptAiService(root, wikiStore, prompts, activeProvider);
+const promptAi = new PromptAiService(root, wikiStore, prompts, activeProvider, store);
 const demo = new DemoService(root, store, wikiStore, prompts);
 const meetings = new MeetingStore(root);
 const meetingRawBridge = new MeetingRawBridge(meetings, store);
@@ -147,6 +149,7 @@ const runner = new ExtractionRunner({
   drafts,
   rawStates,
   rawStore: store,
+  wikiStore,
   media,
   rulesDir,
   provider: activeProvider,
@@ -165,6 +168,7 @@ const runner = new ExtractionRunner({
 await store.initialize();
 await assetStore.initialize();
 await wikiStore.initialize();
+await wikiSearch?.reconcileOnStartup();
 await rawStates.initialize();
 await drafts.initialize();
 await jobs.initialize();

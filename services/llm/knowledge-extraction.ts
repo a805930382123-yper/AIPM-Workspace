@@ -589,7 +589,9 @@ export async function runKnowledgePipeline(
     const planningInput = buildKnowledgePlanningInput(input.body, current.completedChunks, catalogByChunk);
     const feedback = input.planningRetry ? current.lastError?.diagnostic : undefined;
     const planningPayload = {
-      ...(current.maintenance ? { wikiContext: current.maintenance.context } : {}),
+      ...(current.maintenance
+        ? { wikiContext: current.maintenance.wikiRetrieval?.context ?? current.maintenance.context }
+        : {}),
       ...buildKnowledgePlanningWire(input.body, planningInput),
       source: {
         id: input.raw.id,

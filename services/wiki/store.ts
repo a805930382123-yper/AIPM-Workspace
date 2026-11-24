@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import type { RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
+import type { WikiSearchIndexer } from '../search/indexer.ts';
 
 const sourceFileStart = /^---\r?\n/;
 const idPattern = /^[0-9a-f-]{36}$/i;
@@ -143,6 +144,7 @@ export class WikiStore {
     public readonly root: string,
     private readonly rawStore: RawStore,
     rulesDir = path.resolve(here, '..', '..', 'rules'),
+    public readonly searchIndex?: WikiSearchIndexer,
   ) {
     this.rulesDir = rulesDir;
     this.recycleDir = path.join(root, 'knowledge', 'recycle', 'wiki');
@@ -407,7 +409,9 @@ export class WikiStore {
   /** Writes one formal page atomically without touching the Index or the Log. */
   async writePageLocked(record: WikiRecord): Promise<void> {
     assertFormalWriteAllowed();
-    await writeAtomic(recordPath(this.root, record.id), frontmatter(record));
+    const target = recordPath(this.root, record.id);
+    await writeAtomic(target, frontmatter(record));
+    await this.searchIndex?.syncPage(target);
   }
 
   /** Appends knowledge-log entries for one committed operation, deduplicated by operationId+id. */
@@ -539,6 +543,8 @@ export class WikiStore {
       await rm(pendingPath, { force: true }).catch(() => undefined);
       throw error;
     }
+    if (action === 'delete') await this.searchIndex?.removePage(record.id);
+    else await this.searchIndex?.syncPage(recordPath(this.root, record.id));
     try {
       await writeAtomic(pendingPath, JSON.stringify({ ...pending, record: metadata, phase: 'committed' }));
       await this.ensureLog(pending);

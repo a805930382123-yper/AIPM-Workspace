@@ -3,7 +3,7 @@ import {
   generateMaintenance,
   MAINTENANCE_LIMITS,
   reprepareMaintenance,
-  retrieveKnowledgeContext,
+  retrieveKnowledgeContextDetailed,
 } from './knowledge-maintenance.ts';
 import { changePageIndexes, type KnowledgeChange } from '../wiki/maintenance.ts';
 import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
@@ -593,6 +593,7 @@ export class ExtractionRunner {
       drafts: DraftStore;
       rawStates: RawStateStore;
       rawStore: RawStore;
+      wikiStore?: WikiStore;
       media?: MediaVlmParserService;
       provider: () => LlmProvider | undefined;
       draftRules: () => Promise<{
@@ -1141,10 +1142,16 @@ export class ExtractionRunner {
             : {}),
         });
       }
+      const wiki = this.deps.wikiStore ?? new WikiStore(this.deps.root, this.deps.rawStore, this.deps.rulesDir);
       const beforeCall = async (stage: 'extracting' | 'planning') => {
-        if (stage === 'planning')
-          for (const page of checkpoint.maintenance?.context ?? [])
-            for (const id of page.sources) assertRawNotMeeting(await this.deps.rawStore.get(id));
+        if (stage === 'planning') {
+          for (const page of checkpoint.maintenance?.context ?? []) {
+            const current = await wiki.get(page.id);
+            if (!current || JSON.stringify(current) !== JSON.stringify(page))
+              throw new LlmError('LLM_WIKI_BASIS_CHANGED', '检索依据已变化，请明确重新生成，原检查点保留。', 409);
+            await assertWikiSourcesAllowed(wiki, this.deps.rawStore, current);
+          }
+        }
         if (controller.signal.aborted) throw new LlmError('LLM_CANCELLED', '提取已取消。', 409);
         checkpoint = await saveCheckpoint({
           ...checkpoint,
@@ -1155,29 +1162,30 @@ export class ExtractionRunner {
         await this.deps.jobs.update(job.id, { callCount: checkpoint.attempts, stage });
         return checkpoint;
       };
-      const beforePlanning = async (cp: ExtractionCheckpoint) =>
-        saveCheckpoint({
+      const beforePlanning = async (cp: ExtractionCheckpoint) => {
+        const { records, context, engine, degraded } = await retrieveKnowledgeContextDetailed(
+          wiki,
+          this.deps.rawStore,
+          [
+            {
+              title: raw.title,
+              content: cp.completedChunks.flatMap((c) => c.facts.map((f) => f.text)).join('\n'),
+              tags: raw.tags ?? [],
+            },
+            ...cp.completedChunks.flatMap((c) =>
+              c.facts.slice(0, 8).map((f) => ({ title: f.text.slice(0, 80), content: f.text, tags: raw.tags ?? [] })),
+            ),
+          ],
+        );
+        return saveCheckpoint({
           ...cp,
           maintenance: {
             version: 1,
-            context: await retrieveKnowledgeContext(
-              new WikiStore(this.deps.root, this.deps.rawStore, this.deps.rulesDir),
-              this.deps.rawStore,
-              [
-                {
-                  title: raw.title,
-                  content: cp.completedChunks.flatMap((c) => c.facts.map((f) => f.text)).join('\n'),
-                  tags: raw.tags ?? [],
-                },
-                ...cp.completedChunks.flatMap((c) =>
-                  c.facts
-                    .slice(0, 8)
-                    .map((f) => ({ title: f.text.slice(0, 80), content: f.text, tags: raw.tags ?? [] })),
-                ),
-              ],
-            ),
+            context: records,
+            ...(wiki.searchIndex ? { wikiRetrieval: { engine, degraded, context } } : {}),
           },
         });
+      };
       const { outcome } = await (job.mode === 'deep' ? runDeepPipeline : runKnowledgePipeline)({
         raw: {
           id: raw.id,

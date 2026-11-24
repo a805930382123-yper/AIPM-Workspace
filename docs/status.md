@@ -5,7 +5,7 @@
 
 - **RAWOCR05–06 微信图片处理**：执行链路（`8f4e7ba`）与三层筛选、人工精读（`17ab0bc`）均通过独立验收。隔离库从微信原网址重新导入后，正文图 1、2 完成真实精读，推广图 3–6 全部由文末规则跳过。原始正文及六张图片的哈希与正式记录一致。[任务卡](handoffs/RAWOCR05-runtime-task.md) · [第一轮验收](reports/RAWOCR05-review.md) · [第二轮与整单验收](reports/RAWOCR06-review.md)
 
-- **LLM-Wiki 1A-2**：SQLite 派生索引、原子重建与正文切块通过独立验收。路径图后置归属和同级标题分类两项返修已关闭，Windows 定向回归 14/14。1A-3 待授权，Batch 1A 整体待验收。[任务卡](handoffs/LLMWIKI-1A-2.md) · [施工](reports/1A-2-builder.md) · [验收](reports/1A-2-review.md)
+- **LLM-Wiki 1A-3**：中文 FTS5 块检索及正式入口通过独立验收；回滚／降级过期引文、问答转维护整页送模两项返修关闭。返修版隔离全仓 1,098/1,098 通过。1A-4 待授权，Batch 1A 整体待验收。[任务卡](handoffs/LLMWIKI-1A-3.md) · [施工](reports/1A-3-builder.md) · [审查](reports/1A-3-review.md)
 
 - **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）；工程维护波次 1 —— `FE01` 已 **`PASS`**（主交付 `e528039`，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿），当前停步等待用户指示下一方向。
 - **最近 5 个批次结论**：

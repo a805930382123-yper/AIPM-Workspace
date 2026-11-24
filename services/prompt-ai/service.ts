@@ -4,7 +4,11 @@ import path from 'node:path';
 import { clearStorageScanIssue, reportStorageIssue, scanJsonRecords, writeFileAtomic } from '../storage/files.ts';
 import type { LlmProvider } from '../llm/provider.ts';
 import { assertNoKnownSecret, LlmError, sanitizeProviderText } from '../llm/provider.ts';
-import type { WikiStore, WikiRecord } from '../wiki/store.ts';
+import type { WikiStore } from '../wiki/store.ts';
+import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
+import type { RawStore } from '../raw/store.ts';
+import { retrieveKnowledgeContextDetailed } from '../llm/knowledge-maintenance.ts';
+import { completeWikiBodyInContext } from '../search/fts-retriever.ts';
 import type { PromptStore } from '../prompt/store.ts';
 import { normalizePromptInput, type PromptInput } from '../prompt/validate.ts';
 import { PROMPT_LIMITS } from '../prompt/limits.ts';
@@ -627,6 +631,7 @@ export class PromptAiService {
     private readonly wiki: WikiStore,
     private readonly prompts: PromptStore,
     private readonly provider: () => LlmProvider | undefined,
+    private readonly raws?: RawStore,
   ) {
     this.root = path.resolve(root);
     this.dir = path.join(root, 'drafts', 'prompts');
@@ -969,13 +974,54 @@ export class PromptAiService {
       new Set(ids).size !== ids.length
     )
       fail('INVALID_WIKI_SELECTION', `相关 Wiki 最多选择 ${BUDGETS.selectedWiki} 页。`);
-    const pages: WikiRecord[] = [];
-    for (const id of ids as string[]) {
+    const pageIds = ids as string[];
+    const load = async (id: string) => {
       const page = await this.wiki.get(id);
-      if (!page) fail('WIKI_NOT_FOUND', `选择的 Wiki ${id} 已不存在，请刷新后重选。`, 409);
-      await this.wiki.assertRecordSourcesAllowed(page!);
-      pages.push(page!);
+      if (!page) fail('WIKI_NOT_FOUND', '选择的 Wiki ' + id + ' 已不存在，请刷新后重选。', 409);
+      if (this.raws) await assertWikiSourcesAllowed(this.wiki, this.raws, page);
+      else await this.wiki.assertRecordSourcesAllowed(page);
+      return page;
+    };
+    let pages = await Promise.all(pageIds.map(load));
+    const retrieval =
+      this.raws &&
+      this.wiki.searchIndex &&
+      (await retrieveKnowledgeContextDetailed(
+        this.wiki,
+        this.raws,
+        [{ title: brief.taskName, tags: [], content: [brief.goal, brief.context, brief.tasks].join(' ') }],
+        { pageIds, includeSources: true, characters: BUDGETS.totalWikiChars, perPageCharacters: BUDGETS.perWikiChars },
+      ));
+    const wikiRetrieval = retrieval
+      ? { engine: retrieval.engine, degraded: retrieval.degraded }
+      : ({ engine: 'legacy_scan', degraded: false } as const);
+    if (retrieval && retrieval.engine === 'sqlite_fts') {
+      const used = retrieval.context.flatMap((item) => {
+        if (!('chunks' in item)) return [];
+        const page = retrieval.records.find((page) => page.id === item.id)!;
+        const excerpt = item.chunks.map((chunk) => chunk.label + '\n' + chunk.rawText).join('\n\n');
+        return [
+          {
+            id: page.id,
+            title: page.title,
+            type: page.type,
+            knowledgeStatus: page.knowledge_status,
+            excerpt,
+            sourceChars: page.body.length,
+            usedChars: excerpt.length,
+            truncated: !completeWikiBodyInContext(retrieval.context, page),
+          },
+        ];
+      });
+      return {
+        context: retrieval.context,
+        used,
+        pageIds,
+        wikiRetrieval,
+        usedChars: used.length ? JSON.stringify(retrieval.context).length : 0,
+      };
     }
+    if (retrieval && retrieval.degraded) pages = await Promise.all(pageIds.map(load));
     const terms = `${brief.taskName} ${brief.goal} ${brief.context} ${brief.tasks}`
       .toLocaleLowerCase('zh-CN')
       .split(/[^\p{L}\p{N}]+/u)
@@ -1010,11 +1056,37 @@ export class PromptAiService {
         truncated: excerpt.length < page.body.length,
       };
     });
-    return used;
+    if (!wikiRetrieval.degraded) return { context: used, used, pageIds, wikiRetrieval, usedChars: total };
+    const bounded: typeof used = [];
+    for (const page of used) {
+      const withExcerpt = (size: number) => {
+        const excerpt = page.excerpt.slice(0, size).replace(/[\uD800-\uDBFF]$/u, '');
+        return { ...page, excerpt, usedChars: excerpt.length, truncated: excerpt.length < page.sourceChars };
+      };
+      const fits = (item: (typeof used)[number]) =>
+        JSON.stringify(item).length <= BUDGETS.perWikiChars &&
+        JSON.stringify([...bounded, item]).length <= BUDGETS.totalWikiChars;
+      if (!fits(withExcerpt(0))) continue;
+      let low = 0;
+      let high = page.excerpt.length;
+      while (low < high) {
+        const middle = Math.ceil((low + high) / 2);
+        if (fits(withExcerpt(middle))) low = middle;
+        else high = middle - 1;
+      }
+      bounded.push(withExcerpt(low));
+    }
+    return {
+      context: bounded,
+      used: bounded,
+      pageIds,
+      wikiRetrieval,
+      usedChars: bounded.length ? JSON.stringify(bounded).length : 0,
+    };
   }
   async generate(rawBrief: unknown, ids: unknown, signal?: AbortSignal) {
     const brief = validateBrief(rawBrief, true);
-    const context = await this.context(ids, brief);
+    const { context, used, pageIds, wikiRetrieval, usedChars } = await this.context(ids, brief);
     try {
       assertNoKnownSecret({ brief, context }, this.provider()?.secrets ?? []);
     } catch {
@@ -1032,13 +1104,7 @@ export class PromptAiService {
       signal,
       'generate',
     );
-    const preview = this.validateResponse(response, 'generate', () =>
-      validateContent(
-        response,
-        context.map((item) => item.id),
-        categories,
-      ),
-    );
+    const preview = this.validateResponse(response, 'generate', () => validateContent(response, pageIds, categories));
     const draft = await this.save({
       id: randomUUID(),
       kind: 'generator',
@@ -1046,18 +1112,19 @@ export class PromptAiService {
       status: 'pending',
       brief,
       sourceTask: brief.goal,
-      wikiCandidateIds: context.map((item) => item.id),
+      wikiCandidateIds: pageIds,
       preview,
       calls: this.callByValue(response) ? [this.callByValue(response)!] : [],
     });
     return {
       draftId: draft.id,
       preview,
-      relatedWiki: context,
+      relatedWiki: used,
+      wikiRetrieval,
       contextBudget: {
         maxPerWiki: BUDGETS.perWikiChars,
         maxTotal: BUDGETS.totalWikiChars,
-        used: context.reduce((n, p) => n + p.usedChars, 0),
+        used: usedChars,
       },
       provider: this.providerMeta(),
     };

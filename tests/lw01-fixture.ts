@@ -13,16 +13,18 @@ import { loadExtractionRules } from '../services/llm/rules.ts';
 import { maintenanceDigest } from '../services/wiki/maintenance.ts';
 import type { LlmCompletionRequest, LlmProvider } from '../services/llm/provider.ts';
 import { deepReply } from './support/kb03-deep-fixture.ts';
+import type { WikiSearchIndexer } from '../services/search/indexer.ts';
 
-export async function lwFixture(existingRoot?: string) {
+export async function lwFixture(existingRoot?: string, searchIndex?: WikiSearchIndexer) {
   const root = existingRoot ?? (await mkdtemp(path.join(os.tmpdir(), 'lw01-')));
   const rawStore = new RawStore(root),
     rawStates = new RawStateStore(root),
-    wiki = new WikiStore(root, rawStore),
+    wiki = new WikiStore(root, rawStore, undefined, searchIndex),
     drafts = new DraftStore(root),
     jobs = new ExtractionJobStore(root);
   await Promise.all([rawStore.initialize(), rawStates.initialize(), drafts.initialize(), jobs.initialize()]);
   await wiki.initialize();
+  await searchIndex?.reconcileOnStartup();
   const requests: LlmCompletionRequest[] = [];
   let topics = ['渠道覆盖'],
     failure: string | undefined;
@@ -41,7 +43,7 @@ export async function lwFixture(existingRoot?: string) {
         result = {
           version: 1,
           changes: data.pages.map((p: any, pageIndex: number) => {
-            const old = data.context.find((r: any) => r.title === p.title || r.aliases.includes(p.title));
+            const old = data.context.find((r: any) => r.title === p.title || r.aliases?.includes(p.title));
             const action = old
               ? old.sources.includes(data.source.id)
                 ? 'noop'
@@ -52,9 +54,9 @@ export async function lwFixture(existingRoot?: string) {
             const incoming = p.source_facts.map((f: any) => f.text).join('\n');
             const body =
               action === 'noop' || action === 'link'
-                ? old.body
+                ? (old.body ?? '（正文保持原样）')
                 : old
-                  ? old.body +
+                  ? (old.body ?? old.chunks.map((c: { rawText: string }) => c.rawText).join('\n')) +
                     '\n\n## 本次来源事实\n' +
                     incoming +
                     '\n\n## 待核矛盾\n不同年份与统计口径并列，2025和2026不可直接比较；两份2026渠道数据不一致，待核。'
@@ -114,6 +116,7 @@ export async function lwFixture(existingRoot?: string) {
     deps = {
       root,
       rawStore,
+      wikiStore: wiki,
       rawStates,
       jobs,
       drafts,

@@ -91,7 +91,7 @@ test('clean and deleted indexes rebuild identical content, hashes, body coordina
   assert.deepEqual(versions, {
     schema_version: '1',
     chunking_version: '1',
-    tokenizer_version: 'intl-zh-v1',
+    tokenizer_version: 'intl-zh-v2',
     embedding_provider: '',
     embedding_model: '',
     embedding_dimensions: '0',
@@ -165,7 +165,7 @@ test('startup reconciles metadata-only changes with unchanged mtime, disk additi
       db.prepare('INSERT INTO meta VALUES (?, ?)').run('old_generation', 'true');
     });
     assert.equal(await index.reconcileOnStartup(), true);
-    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v1' : '1');
+    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : '1');
     assert.equal(meta().old_generation, undefined);
   }
 });

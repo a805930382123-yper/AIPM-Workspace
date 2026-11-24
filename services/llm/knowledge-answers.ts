@@ -15,7 +15,7 @@ import {
   type QuestionPreview,
 } from '../wiki/question-input.ts';
 import type { WikiRecord, WikiStore } from '../wiki/store.ts';
-import type { RawStore } from '../raw/store.ts';
+import type { RawRecord, RawStore } from '../raw/store.ts';
 import {
   buildRawContentForAI,
   mediaForEvidence,
@@ -23,7 +23,18 @@ import {
   type MediaEvidenceSource,
 } from '../raw/media-context.ts';
 import type { DraftStore } from '../wiki/drafts.ts';
-import { retrieveKnowledgeContext } from './knowledge-maintenance.ts';
+import {
+  MAINTENANCE_LIMITS,
+  retrieveKnowledgeContextDetailed,
+  type RetrievedKnowledgeContext,
+} from './knowledge-maintenance.ts';
+import {
+  addModelChunk,
+  completeWikiBodyInContext,
+  quoteInWikiContext,
+  WIKI_CHUNK_INSTRUCTIONS,
+} from '../search/fts-retriever.ts';
+import { chunkWikiPage } from '../search/chunking.ts';
 import { assertNoKnownSecret, LlmError, sanitizeProviderText, type LlmProvider } from './provider.ts';
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
@@ -74,6 +85,7 @@ export type KnowledgeAnswer = {
   attempts: number;
   candidateWikiIds: string[];
   readWiki: WikiRecord[];
+  wikiRetrieval?: Pick<RetrievedKnowledgeContext, 'engine' | 'degraded' | 'context'>;
   readRaw: AnswerReadRaw[];
   rawSnapshots: Array<{ id: string; bodySha256: string }>;
   sections: AnswerSection[];
@@ -351,6 +363,16 @@ export class KnowledgeAnswerService {
     await writeJsonAtomic(this.file(r.id), r);
     return r;
   }
+  private async readCurrentWiki(snapshot: WikiRecord, indexed: boolean) {
+    const current = await this.deps.wiki.get(snapshot.id);
+    if (!current || JSON.stringify(current) !== JSON.stringify(snapshot)) {
+      if (indexed && (!current || current.revision === snapshot.revision))
+        this.deps.wiki.searchIndex?.markDirty('answer', new Error('Wiki snapshot changed during answer processing'));
+      throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '依据页已变化，请重新提问核验。');
+    }
+    await assertWikiSourcesAllowed(this.deps.wiki, this.deps.raws, current);
+    return current;
+  }
   private async complete(
     provider: LlmProvider,
     schema: JsonSchemaNode,
@@ -430,7 +452,7 @@ export class KnowledgeAnswerService {
       }
       try {
         if (!r.readWiki.length) {
-          r.readWiki = await retrieveKnowledgeContext(
+          const retrieval = await retrieveKnowledgeContextDetailed(
             this.deps.wiki,
             this.deps.raws,
             [
@@ -442,6 +464,8 @@ export class KnowledgeAnswerService {
             ],
             { includeSources: true },
           );
+          r.readWiki = retrieval.records;
+          r.wikiRetrieval = { engine: retrieval.engine, degraded: retrieval.degraded, context: retrieval.context };
           r.candidateWikiIds = r.readWiki.map((p) => p.id);
           const roots = [...new Set(r.readWiki.flatMap((p) => knowledgeRoots(p).rawIds))];
           r.rawSnapshots = [];
@@ -467,13 +491,10 @@ export class KnowledgeAnswerService {
           return this.put(r);
         }
         let invocationCalls = 0;
+        const wikiContext = r.wikiRetrieval?.context ?? r.readWiki;
+        const indexed = r.wikiRetrieval?.engine === 'sqlite_fts';
         while (invocationCalls < 2) {
-          for (const p of r.readWiki) {
-            const current = await this.deps.wiki.get(p.id);
-            if (!current || current.revision !== p.revision)
-              throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '回答期间依据已变化，请重新提问。');
-            await assertWikiSourcesAllowed(this.deps.wiki, this.deps.raws, current);
-          }
+          for (const page of r.readWiki) await this.readCurrentWiki(page, indexed);
           r.provider = { name: provider.name, model: provider.model };
           r.attempts++;
           invocationCalls++;
@@ -487,12 +508,23 @@ export class KnowledgeAnswerService {
             'knowledge_answer',
             {
               question: r.question,
-              wiki: r.readWiki,
+              wiki: wikiContext,
               rawFragments: r.readRaw,
               availableRawIds: r.rawSnapshots.map((s) => s.id),
             },
-            '直接简洁回答问题，只据实际读取材料。区分来源事实、综合推断、建议、分歧、依据不足。年份/主体/门店统计口径不能混同，冲突保留双方不裁定。同Raw的多页不是独立多源，人工知识页无Raw时如实标识。关键事实及综合依据必须有本次实际读取的精确引用。citations.kind为wiki/raw，quote必须等于对应文本[start,end)；Raw正文位置为全原文UTF-16偏移。引用rawFragments.images时使用kind=raw、recordId=该图片的mediaId、位置为图片解析文本内UTF-16偏移，不可用Raw ID替代图片ID。若Wiki不足且确需原始细节/冲突核对，可needsRaw列已有底源rawId、必要原因及定位query；最多3份，总片段24000字符，仅一次补读。已有rawFragments后不得继续请求。没有依据就明确不足，不编造事实或引用。',
+            '直接简洁回答问题，只据实际读取材料。区分来源事实、综合推断、建议、分歧、依据不足。年份/主体/门店统计口径不能混同，冲突保留双方不裁定。同Raw的多页不是独立多源，人工知识页无Raw时如实标识。关键事实及综合依据必须有本次实际读取的精确引用。citations.kind为wiki/raw，quote必须等于对应文本[start,end)；Raw正文位置为全原文UTF-16偏移。引用rawFragments.images时使用kind=raw、recordId=该图片的mediaId、位置为图片解析文本内UTF-16偏移，不可用Raw ID替代图片ID。若Wiki不足且确需原始细节/冲突核对，可needsRaw列已有底源rawId、必要原因及定位query；最多3份，总片段24000字符，仅一次补读。已有rawFragments后不得继续请求。没有依据就明确不足，不编造事实或引用。' +
+              WIKI_CHUNK_INSTRUCTIONS,
           );
+          const currentWiki: WikiRecord[] = [];
+          for (const page of r.readWiki) currentWiki.push(await this.readCurrentWiki(page, indexed));
+          const currentRaw = new Map<string, RawRecord>();
+          for (const snapshot of r.rawSnapshots) {
+            const raw = await this.deps.raws.get(snapshot.id);
+            assertRawNotMeeting(raw);
+            if (raw?.bodySha256 !== snapshot.bodySha256)
+              throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '回答底层原文已变化，请重新提问核验。');
+            currentRaw.set(raw.id, raw);
+          }
           if (result.needsRaw.length) {
             r.stage = 'reading_raw';
             await this.put(r);
@@ -502,13 +534,10 @@ export class KnowledgeAnswerService {
             for (const need of result.needsRaw) {
               if (!r.rawSnapshots.some((s) => s.id === need.rawId) || r.readRaw.some((s) => s.rawId === need.rawId))
                 throw new KnowledgeAnswerError('ANSWER_RAW_NOT_ALLOWED', '模型请求了未读取Wiki以外的Raw。');
-              const raw = await this.deps.raws.get(need.rawId);
-              assertRawNotMeeting(raw);
-              if (raw!.bodySha256 !== r.rawSnapshots.find((snapshot) => snapshot.id === need.rawId)?.bodySha256)
-                throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '补读期间原文已变化，请重新提问。');
-              const content = raw!.webImages?.length
-                ? await this.deps.raws.buildMediaInput(raw!)
-                : buildRawContentForAI(raw!, []);
+              const raw = currentRaw.get(need.rawId)!;
+              const content = raw.webImages?.length
+                ? await this.deps.raws.buildMediaInput(raw)
+                : buildRawContentForAI(raw, []);
               const query = need.query || '';
               const limit = Math.min(8000, 24000 - total);
               const rawSpans = content.spans.filter((span) => !span.media && span.sourceStart !== undefined);
@@ -537,9 +566,9 @@ export class KnowledgeAnswerService {
               }
               const sourceStart = rawSpan?.sourceStart ?? 0;
               r.readRaw.push({
-                rawId: raw!.id,
-                title: raw!.title,
-                bodySha256: raw!.bodySha256,
+                rawId: raw.id,
+                title: raw.title,
+                bodySha256: raw.bodySha256,
                 start: sourceStart + rawSlice.start,
                 end: sourceStart + rawSlice.end,
                 quote: rawSlice.quote,
@@ -556,7 +585,7 @@ export class KnowledgeAnswerService {
           for (const c of result.citations) {
             if (seen.has(c.id)) throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '引用标识重复。');
             seen.add(c.id);
-            const p = c.kind === 'wiki' ? r.readWiki.find((p) => p.id === c.recordId) : undefined,
+            const p = c.kind === 'wiki' ? currentWiki.find((p) => p.id === c.recordId) : undefined,
               raw =
                 c.kind === 'raw'
                   ? r.readRaw.find((p) => p.rawId === c.recordId || p.images?.some((i) => i.mediaId === c.recordId))
@@ -569,14 +598,17 @@ export class KnowledgeAnswerService {
             if (
               c.start < offset ||
               c.end > offset + body.length ||
-              body.slice(c.start - offset, c.end - offset) !== c.quote
+              body.slice(c.start - offset, c.end - offset) !== c.quote ||
+              (p && !quoteInWikiContext(wikiContext, p.id, c.start, c.end, c.quote))
             )
               throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '引用原句或位置不匹配，未生成假链接。');
             const roots = p ? knowledgeRoots(p) : { rawIds: [raw!.rawId], manualWikiIds: [] };
             let media: MediaEvidenceSource | undefined;
+            if (raw && !picture && currentRaw.get(raw.rawId)?.body.slice(c.start, c.end) !== c.quote)
+              throw new KnowledgeAnswerError('ANSWER_CITATION_INVALID', '原文引用与当前原文不匹配。');
             if (picture) {
               media = { mediaId: picture.mediaId, imageIndex: picture.imageIndex, textSha256: picture.textSha256 };
-              const current = await this.deps.raws.get(raw!.rawId);
+              const current = currentRaw.get(raw!.rawId);
               const images = current
                 ? (await this.deps.raws.getAnchoredMediaArtifacts(current)).flatMap(
                     (item) => mediaForEvidence(item) ?? [],
@@ -764,20 +796,52 @@ export class KnowledgeAnswerService {
         await this.put(r);
       }
       try {
+        const resumedProposal = save.proposal;
         if (!save.proposal) {
-          const context = await retrieveKnowledgeContext(this.deps.wiki, this.deps.raws, [
-            { title: p.title, content: p.conclusion + '\n' + p.inferences, tags: p.tags },
-          ]);
+          const queries = [{ title: p.title, content: p.conclusion + '\n' + p.inferences, tags: p.tags }];
+          const retrieval = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries);
+          const { records: context, context: wire } = retrieval;
+          const indexed = retrieval.engine === 'sqlite_fts';
           if (p.targetWikiId && !context.some((w) => w.id === p.targetWikiId)) {
             const required = await this.deps.wiki.get(p.targetWikiId);
             if (!required || required.type === 'source')
               throw new KnowledgeAnswerError('SAVE_TARGET_UNREAD', '建议目标不是可维护的真实主题。');
             await assertWikiSourcesAllowed(this.deps.wiki, this.deps.raws, required);
-            if (context.length === 8) context.pop();
+            let requiredContext: typeof wire = [required];
+            if (indexed) {
+              const scoped = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries, {
+                pageIds: [required.id],
+              });
+              if (scoped.engine === 'sqlite_fts' && scoped.context.length) {
+                await this.readCurrentWiki(required, true);
+                requiredContext = scoped.context;
+              } else {
+                // An explicitly selected page stays available even when its text has no query terms.
+                const [chunk] = chunkWikiPage(required);
+                if (!chunk) throw new KnowledgeAnswerError('SAVE_TARGET_UNREAD', '建议目标没有可用的正文。');
+                requiredContext = addModelChunk([], required, { ...chunk, pageTitle: required.title, score: 0 });
+              }
+            }
+            if (context.length === MAINTENANCE_LIMITS.pages) {
+              context.pop();
+              wire.pop();
+            }
+            while (
+              indexed &&
+              wire.length &&
+              JSON.stringify([...wire, ...requiredContext]).length > MAINTENANCE_LIMITS.characters
+            ) {
+              context.pop();
+              wire.pop();
+            }
             context.push(required);
-            if (JSON.stringify(context).length > 48000)
+            wire.push(...requiredContext);
+            if (JSON.stringify(wire).length > MAINTENANCE_LIMITS.characters)
               throw new KnowledgeAnswerError('SAVE_CONTEXT_TOO_LARGE', '所选目标超出有界正文限制，请缩小保存范围。');
           }
+          const partialTargetIds = context
+            .filter((page) => !completeWikiBodyInContext(wire, page))
+            .map((page) => page.id);
           const provider = this.deps.provider();
           if (!provider) throw new KnowledgeAnswerError('LLM_NOT_CONFIGURED', '未配置维护生成模型。');
           save.attempts++;
@@ -785,17 +849,30 @@ export class KnowledgeAnswerService {
           save.provider = { name: provider.name, model: provider.model };
           r.stage = 'saving_draft';
           await this.put(r);
+          for (const page of context) await this.readCurrentWiki(page, indexed);
           const out = await this.complete(
             provider,
             saveSchema,
             'answer_maintenance',
-            { question: r.question, preview: p, sections: selected, citations: basis.citations, context },
-            '把用户已选并编辑的问答成果形成同知识维护链的一个完整候选。已有承载主题优先update原ID，确实新专题才create，已覆盖/无实质新增为no_change，不制造空版本。只可更新context中的真实ID/revision。完整body保留所有旧有效内容、人工补充及底源，年份口径/矛盾并列待核；推断建议保持清楚推断标签，回答不是新来源。不得追加本次更新审核章节。',
+            {
+              question: r.question,
+              preview: p,
+              sections: selected,
+              citations: basis.citations,
+              context: wire,
+              ...(partialTargetIds.length ? { partialTargetIds } : {}),
+            },
+            '把用户已选并编辑的问答成果形成同知识维护链的一个完整候选。已有承载主题优先update原ID，确实新专题才create，已覆盖/无实质新增为no_change，不制造空版本。只可更新context中的真实ID/revision。完整body保留所有旧有效内容、人工补充及底源，年份口径/矛盾并列待核；推断建议保持清楚推断标签，回答不是新来源。不得追加本次更新审核章节。' +
+              (indexed ? WIKI_CHUNK_INSTRUCTIONS : '') +
+              (partialTargetIds.length
+                ? '当update目标在partialTargetIds中时，body仅写应追加的独立Markdown内容，系统会保留完整原文再追加。不要复述已读旧段落。'
+                : ''),
           );
           await verifyQuestionInput(basis, this.deps.wiki, this.deps.raws);
-          const target = out.targetWikiId ? context.find((w) => w.id === out.targetWikiId) : undefined;
-          if (out.action !== 'create' && (!target || target.revision !== out.baseRevision))
+          const snapshot = out.targetWikiId ? context.find((w) => w.id === out.targetWikiId) : undefined;
+          if (out.action !== 'create' && (!snapshot || snapshot.revision !== out.baseRevision))
             throw new KnowledgeAnswerError('SAVE_TARGET_UNREAD', '维护目标未实际读取或版本不匹配。');
+          const target = snapshot && (await this.readCurrentWiki(snapshot, indexed));
           if (out.action === 'no_change') {
             save.status = 'no_change';
             r.stage = 'completed';
@@ -806,7 +883,7 @@ export class KnowledgeAnswerService {
           if (out.action === 'create' && (out.targetWikiId !== null || out.baseRevision !== null))
             throw new KnowledgeAnswerError('SAVE_TARGET_INVALID', '新建不能冒用旧目标。');
           if (!out.body.trim()) throw new KnowledgeAnswerError('SAVE_BODY_EMPTY', '维护候选正文为空，未生成草稿。');
-          let body = out.body;
+          let body = target && partialTargetIds.includes(target.id) ? target.body + '\n\n' + out.body : out.body;
           if (containsInference && !body.includes(p.inferences))
             body += '\n\n## 问答推断与建议（待核）\n' + p.inferences;
           const sources = [...new Set([...(target?.sources ?? []), ...basis.rawSnapshots.map((s) => s.id)])];
@@ -848,6 +925,11 @@ export class KnowledgeAnswerService {
           await this.put(r);
         }
         await verifyQuestionInput(save.input, this.deps.wiki, this.deps.raws);
+        if (resumedProposal) {
+          const targetId = resumedProposal.changes[0]?.targetWikiId;
+          const snapshot = resumedProposal.context.find((page) => page.id === targetId);
+          if (snapshot) await this.readCurrentWiki(snapshot, false);
+        }
         const draft = await this.deps.drafts.createQuestion({
           id: save.draftId!,
           input: save.input,

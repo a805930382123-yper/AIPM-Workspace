@@ -10,6 +10,7 @@ import { validCoverageDiagnostic, type CoverageDiagnostic } from './knowledge-at
 import { MAX_EVIDENCE_LOCATORS_PER_CHUNK } from './locators.ts';
 import { templateSections, type TemplateFieldKey } from '../wiki/template-fields.ts';
 import { validDeepState, type DeepState } from './knowledge-deep.ts';
+import type { RetrievedKnowledgeContext } from './knowledge-maintenance.ts';
 
 export const KB02_PIPELINE_VERSION = 'kb02-2';
 export type CheckpointFact = {
@@ -59,7 +60,13 @@ export type KnowledgePlan = {
 export type ExtractionCheckpoint = {
   mode?: 'standard' | 'deep';
   deep?: DeepState;
-  maintenance?: { version: 1; protocol?: 2; context: WikiRecord[]; proposal?: KnowledgeMaintenance };
+  maintenance?: {
+    version: 1;
+    protocol?: 2;
+    context: WikiRecord[];
+    proposal?: KnowledgeMaintenance;
+    wikiRetrieval?: Pick<RetrievedKnowledgeContext, 'engine' | 'degraded' | 'context'>;
+  };
   version: 1;
   jobId: string;
   rawId: string;
@@ -120,12 +127,18 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
   const cp = value as Record<string, any>;
   if (
     cp.maintenance !== undefined &&
-    (!hasKeys(cp.maintenance, ['version', 'context'], ['proposal', 'protocol']) ||
+    (!hasKeys(cp.maintenance, ['version', 'context'], ['proposal', 'protocol', 'wikiRetrieval']) ||
       cp.maintenance.version !== 1 ||
       (cp.maintenance.protocol !== undefined && cp.maintenance.protocol !== 2) ||
       !Array.isArray(cp.maintenance.context) ||
       cp.maintenance.context.length > 8 ||
-      JSON.stringify(cp.maintenance.context).length > 48000 ||
+      JSON.stringify(cp.maintenance.wikiRetrieval?.context ?? cp.maintenance.context).length > 48000 ||
+      (cp.maintenance.wikiRetrieval !== undefined &&
+        (!hasKeys(cp.maintenance.wikiRetrieval, ['engine', 'degraded', 'context']) ||
+          !['sqlite_fts', 'legacy_scan'].includes(cp.maintenance.wikiRetrieval.engine) ||
+          typeof cp.maintenance.wikiRetrieval.degraded !== 'boolean' ||
+          !Array.isArray(cp.maintenance.wikiRetrieval.context) ||
+          cp.maintenance.wikiRetrieval.context.length !== cp.maintenance.context.length)) ||
       (cp.maintenance.proposal !== undefined &&
         (!validMaintenance(cp.maintenance.proposal) ||
           (cp.maintenance.protocol === 2 &&

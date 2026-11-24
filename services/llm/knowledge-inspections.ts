@@ -19,7 +19,12 @@ import { type KnowledgeMaintenance, validMaintenance } from '../wiki/maintenance
 import { type LlmProvider, LlmError, assertNoKnownSecret, sanitizeProviderText } from './provider.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
-import { MAINTENANCE_LIMITS, retrieveKnowledgeContext } from './knowledge-maintenance.ts';
+import {
+  MAINTENANCE_LIMITS,
+  retrieveKnowledgeContextDetailed,
+  type RetrievedKnowledgeContext,
+} from './knowledge-maintenance.ts';
+import { quoteInWikiContext, WIKI_CHUNK_INSTRUCTIONS } from '../search/fts-retriever.ts';
 import { AuditService } from '../audit/service.ts';
 export type KnowledgeInspection = {
   sourceComparisonCount?: number;
@@ -39,6 +44,7 @@ export type KnowledgeInspection = {
     gaps: string[];
   };
   readWiki: WikiRecord[];
+  wikiRetrieval?: Pick<RetrievedKnowledgeContext, 'engine' | 'degraded'>;
   rawSnapshots: Array<{ id: string; bodySha256: string }>;
   findings: InspectionFinding[];
   lint: Array<{ code: string; objectId: string | null; message: string }>;
@@ -399,23 +405,18 @@ export class KnowledgeInspectionService {
     r.status = 'checking';
     r.stage = 'reading';
     await this.put(r);
+    let wikiContext: RetrievedKnowledgeContext['context'] = r.readWiki;
     if (r.includeRelated && r.readWiki.length) {
-      const related = await retrieveKnowledgeContext(
+      const related = await retrieveKnowledgeContextDetailed(
         this.deps.wiki,
         this.deps.raws,
         r.readWiki.map((p) => ({ title: p.title, content: p.body, tags: p.tags })),
+        { initialContext: r.readWiki, excludeIds: r.scope.selected },
       );
-      for (const p of related) {
+      wikiContext = related.context;
+      r.wikiRetrieval = { engine: related.engine, degraded: related.degraded };
+      for (const p of related.records) {
         if (!r.scope.candidates.includes(p.id)) r.scope.candidates.push(p.id);
-        if (r.readWiki.some((x) => x.id === p.id)) continue;
-        if (
-          r.readWiki.length === MAINTENANCE_LIMITS.pages ||
-          JSON.stringify([...r.readWiki, p]).length > MAINTENANCE_LIMITS.characters
-        ) {
-          if (!signal || !r.scope.skipped.some((item) => item.id === p.id))
-            r.scope.skipped.push({ id: p.id, reason: '相关扩展超出同一8页/48000字符额度，未读取发送模型。' });
-          continue;
-        }
         r.readWiki.push(p);
       }
       r.scope.gaps.push('相关候选来自现有有界检索，权限过滤/未检索页不代表已检查。');
@@ -505,16 +506,33 @@ export class KnowledgeInspectionService {
       r.attempts++;
       r.stage = 'checking';
       await this.put(r);
-      // Automatic skip reasons and excluded IDs are kept in the local record only.
-      const scope = signal ? { read: r.scope.read } : r.scope;
+      // The local record also keeps skipped pages and unread derivation references.
+      const scope = { read: r.scope.read };
+      const verifyCurrent = async () => {
+        for (const page of r.readWiki) {
+          const current = await this.deps.wiki.get(page.id);
+          if (!current || JSON.stringify(current) !== JSON.stringify(page)) {
+            if (
+              (!current || current.revision === page.revision) &&
+              wikiContext.some((item) => item.id === page.id && 'chunks' in item)
+            )
+              this.deps.wiki.searchIndex?.markDirty('inspection', new Error('Wiki snapshot changed during inspection'));
+            this.error('INSPECTION_BASIS_CHANGED', '检查期间依据已变化，请重新检查。');
+          }
+          await this.sourceCurrent(current);
+        }
+      };
+      await verifyCurrent();
       const output = await this.complete(
         provider,
         'knowledge_inspection',
-        { wiki: r.readWiki, scope, lint: r.lint, audits: r.audits, ...(signal ? {} : { gaps: r.scope.gaps }) },
+        { wiki: wikiContext, scope, lint: r.lint, audits: r.audits },
         schema,
-        '只在本次实读范围提出待核建议：重复主题须对照两页，不因相似标题/同年份合并；冲突区分主体/区域/年份/定义/目标与实际，保留双方不裁错。可能过时必须有明确新旧更新依据，旧年份本身不是失效；没有新依据不要输出outdated。证据不足明确不发现而不是编造。来源变化仅由系统快照比较，不自行输出。每条wikiIds及精确证据都来自输入wiki，重复和过时至少两条独立原句。只建议保留差异/补说明/改主题/暂缓，绝不删除合并或自动修正。',
+        '只在本次实读范围提出待核建议：重复主题须对照两页，不因相似标题/同年份合并；冲突区分主体/区域/年份/定义/目标与实际，保留双方不裁错。可能过时必须有明确新旧更新依据，旧年份本身不是失效；没有新依据不要输出outdated。证据不足明确不发现而不是编造。来源变化仅由系统快照比较，不自行输出。每条wikiIds及精确证据都来自输入wiki，重复和过时至少两条独立原句。只建议保留差异/补说明/改主题/暂缓，绝不删除合并或自动修正。' +
+          WIKI_CHUNK_INSTRUCTIONS,
         signal,
       );
+      await verifyCurrent();
       for (const f of output.findings) {
         if (
           new Set(f.wikiIds).size !== f.wikiIds.length ||
@@ -524,6 +542,8 @@ export class KnowledgeInspectionService {
         const refs = f.evidence.map((e: any, i: number) => {
           const p = r.readWiki.find((p) => p.id === e.wikiId);
           if (!p || !f.wikiIds.includes(p.id)) this.error('INSPECTION_UNREAD_EVIDENCE', '问题引用未实读成员。', 502);
+          if (!quoteInWikiContext(wikiContext, p.id, e.start, e.end, e.quote))
+            this.error('INSPECTION_EVIDENCE_INVALID', '引用必须完整落在本次发送的知识片段。', 502);
           return this.cite(p, e.start, e.end, e.quote, 'finding-' + r.findings.length + '-e' + i);
         });
         if (f.wikiIds.some((id: string) => !refs.some((c: AnswerCitation) => c.recordId === id)))
@@ -701,6 +721,8 @@ export class KnowledgeInspectionService {
         const provider = this.deps.provider();
         if (!provider) this.error('LLM_NOT_CONFIGURED', '未配置维护Provider。');
         if (!save.proposal) {
+          if (JSON.stringify(context).length > MAINTENANCE_LIMITS.characters)
+            this.error('INSPECTION_SCOPE_TOO_LARGE', '维护目标完整正文超过48000字符，请缩小所选问题范围。', 413);
           save.attempts++;
           await this.put(r);
           const output = await this.complete(

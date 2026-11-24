@@ -20,6 +20,10 @@ import {
 const READ_BATCH = 32;
 const SIDECARS = ['-wal', '-shm', '-journal'];
 
+export function wikiFileHash(contents: string | Buffer) {
+  return createHash('sha256').update(contents).digest('hex');
+}
+
 export interface RebuildResult {
   pagesIndexed: number;
   chunksIndexed: number;
@@ -151,6 +155,7 @@ export class WikiSearchIndexer {
     } catch (error) {
       const code = (error as NodeJS.ErrnoException).code;
       if (code !== 'SQLITE_NOTADB' && code !== 'SQLITE_CORRUPT') throw error;
+      this.markDirty('openExisting', error);
     }
   }
 
@@ -169,7 +174,7 @@ export class WikiSearchIndexer {
   private async readWiki(file: string, existing: Map<string, string>): Promise<IndexedPage | undefined>;
   private async readWiki(file: string, existing?: Map<string, string>): Promise<IndexedPage | undefined> {
     const bytes = await readFile(file);
-    const fileHash = createHash('sha256').update(bytes).digest('hex');
+    const fileHash = wikiFileHash(bytes);
     const filePath = path.relative(this.root, file);
     if (existing?.get(filePath) === fileHash) return;
     const page = parseWikiMarkdown(bytes.toString('utf8'));
@@ -223,7 +228,7 @@ export class WikiSearchIndexer {
     }
   }
 
-  private markDirty(operation: string, error: unknown) {
+  markDirty(operation: string, error: unknown) {
     this.dirty = true;
     try {
       if (this.db) setIndexMeta(this.db, { index_dirty: '1' });

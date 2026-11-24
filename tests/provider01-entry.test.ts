@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
@@ -62,13 +62,16 @@ test('formal entry carries provider context through answer and inspection operat
     else {
       const data = p;
       if (data.stage === 'knowledge_answer') {
+        const quotes = data.wiki.map(
+          (w: any) => w.chunks?.[0] ?? { rawText: w.body, startOffset: 0, endOffset: w.body.length },
+        );
         const citations = data.wiki.map((w: any, i: number) => ({
           id: 'wiki-' + i,
           kind: 'wiki',
           recordId: w.id,
-          quote: w.body,
-          start: 0,
-          end: w.body.length,
+          quote: quotes[i].rawText,
+          start: quotes[i].startOffset,
+          end: quotes[i].endOffset,
         }));
         result = {
           version: 1,
@@ -77,12 +80,17 @@ test('formal entry carries provider context through answer and inspection operat
           sections: [
             {
               kind: 'fact',
-              text: data.wiki.map((w: any) => w.body).join('\n'),
+              text: quotes.map((quote: { rawText: string }) => quote.rawText).join('\n'),
               citationIds: citations.map((c: any) => c.id),
             },
           ],
         };
       } else {
+        assert.equal(data.stage, 'answer_maintenance');
+        assert(data.context.length > 0);
+        assert(
+          data.context.every((wiki: { chunks?: unknown[] }) => wiki.chunks?.length && !Object.hasOwn(wiki, 'body')),
+        );
         result = {
           action: 'create',
           targetWikiId: null,
@@ -107,7 +115,7 @@ test('formal entry carries provider context through answer and inspection operat
   const cfg = path.join(dir, 'provider.env');
   await writeFile(cfg, '');
   const env = Object.fromEntries(
-    Object.entries(process.env).filter(([k]) => !/^FMCG_LLM_|proxy|^NODE_OPTIONS$/i.test(k)),
+    Object.entries(process.env).filter(([k]) => !/^FMCG_LLM_|proxy|^NODE_OPTIONS$|^SEARCH_ENGINE$/i.test(k)),
   );
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
     cwd: process.cwd(),
@@ -141,6 +149,8 @@ test('formal entry carries provider context through answer and inspection operat
     }
     const a = await req('/api/knowledge/answers', { requestId: randomUUID(), question: '有效门店统计的口径是什么？' });
     assert.equal(a.json.status, 'completed', JSON.stringify(a));
+    assert.equal(a.json.wikiRetrieval.engine, 'sqlite_fts');
+    assert.equal(a.json.wikiRetrieval.degraded, false);
     const save = await req(`/api/knowledge/answers/${a.json.id}/save`, {
       resultRevision: a.json.revision,
       key: randomUUID(),
@@ -185,12 +195,13 @@ test('manual and read routes work with absent and malformed optional configurati
     const dir = await mkdtemp(path.join(os.tmpdir(), 'provider01-manual-'));
     const cfg = path.join(dir, 'config.env');
     await writeFile(cfg, config);
+    if (!config) await mkdir(path.join(dir, 'state', 'search-index.sqlite'), { recursive: true });
     const sock = net.createServer();
     await new Promise<void>((r) => sock.listen(0, '127.0.0.1', r));
     const port = (sock.address() as net.AddressInfo).port;
     await new Promise<void>((r) => sock.close(() => r()));
     const env = Object.fromEntries(
-      Object.entries(process.env).filter(([k]) => !/^FMCG_LLM_|proxy|^NODE_OPTIONS$/i.test(k)),
+      Object.entries(process.env).filter(([k]) => !/^FMCG_LLM_|proxy|^NODE_OPTIONS$|^SEARCH_ENGINE$/i.test(k)),
     );
     const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
       cwd: process.cwd(),

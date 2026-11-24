@@ -1,7 +1,18 @@
 import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
 import { mediaEvidenceHref } from '../raw/media-artifact.ts';
-import { WikiStore, type WikiRecord } from '../wiki/store.ts';
+import { parseWikiMarkdown, WikiStore, type WikiRecord } from '../wiki/store.ts';
 import { findDuplicateCandidates } from '../search/duplicates.ts';
+import { wikiFileHash } from '../search/indexer.ts';
+import {
+  addModelChunk,
+  completeWikiBodyInContext,
+  rankWikiChunks,
+  WIKI_CHUNK_INSTRUCTIONS,
+  type ModelWikiContext,
+  type RetrievalQuery,
+  type RetrievedChunkItem,
+  type SearchOptions,
+} from '../search/fts-retriever.ts';
 import { assertNoKnownSecret, LlmError, type LlmProvider } from './provider.ts';
 import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-structured.ts';
@@ -11,14 +22,105 @@ import { validMaintenance, type KnowledgeChange, type KnowledgeMaintenance } fro
 import type { DraftPage, DraftRecord } from '../wiki/drafts.ts';
 
 export const MAINTENANCE_LIMITS = { pages: 8, characters: 48000 } as const;
+type Sources = { get(id: string): Promise<unknown> };
+type ContextOptions = SearchOptions & {
+  characters?: number;
+  perPageCharacters?: number;
+  initialContext?: WikiRecord[];
+};
+export type RetrievedKnowledgeContext = {
+  engine: 'sqlite_fts' | 'legacy_scan';
+  degraded: boolean;
+  records: WikiRecord[];
+  chunks: RetrievedChunkItem[];
+  context: ModelWikiContext;
+};
+
+export async function retrieveKnowledgeContextDetailed(
+  wiki: WikiStore,
+  rawStore: Sources,
+  queries: RetrievalQuery[],
+  options: ContextOptions = {},
+): Promise<RetrievedKnowledgeContext> {
+  const { searchIndex } = wiki;
+  let degraded = false;
+  const maxChars = options.characters ?? MAINTENANCE_LIMITS.characters;
+  const initial = options.initialContext ?? [];
+  if (searchIndex && process.env.SEARCH_ENGINE !== 'legacy_scan') {
+    try {
+      const candidates = rankWikiChunks(searchIndex, queries, options);
+      const checked = new Map<string, WikiRecord | undefined>();
+      const selected = new Map<string, WikiRecord>();
+      const chunks: RetrievedChunkItem[] = [];
+      let context: ModelWikiContext = initial;
+      for (const { chunk, fileHash } of candidates) {
+        const { pageId } = chunk;
+        if (
+          initial.some((page) => page.id === pageId) ||
+          (!selected.has(pageId) && initial.length + selected.size >= MAINTENANCE_LIMITS.pages) ||
+          chunks.filter((item) => item.pageId === pageId).length >= 5
+        )
+          continue;
+        if (!checked.has(pageId)) {
+          const markdown = await wiki.readPageFile(pageId);
+          if (markdown === undefined || wikiFileHash(markdown) !== fileHash)
+            throw new Error('Wiki search snapshot is stale');
+          const page = parseWikiMarkdown(markdown);
+          try {
+            await assertWikiSourcesAllowed(wiki, rawStore, page);
+            checked.set(pageId, page);
+          } catch {
+            checked.set(pageId, undefined);
+          }
+        }
+        const page = checked.get(pageId);
+        if (!page) continue;
+        if (
+          page.body.slice(chunk.startOffset, chunk.endOffset) !== chunk.rawText ||
+          wikiFileHash(chunk.rawText) !== chunk.rawHash
+        )
+          throw new Error('Wiki search chunk does not match the stored body');
+        const next = addModelChunk(context, page, chunk);
+        if (JSON.stringify(next).length > maxChars) continue;
+        if (
+          options.perPageCharacters !== undefined &&
+          JSON.stringify(next.find((item) => item.id === pageId)).length > options.perPageCharacters
+        )
+          continue;
+        context = next;
+        chunks.push(chunk);
+        selected.set(pageId, page);
+      }
+      const order = [...selected.keys()];
+      chunks.sort((a, b) => order.indexOf(a.pageId) - order.indexOf(b.pageId) || a.chunkIndex - b.chunkIndex);
+      return { engine: 'sqlite_fts', degraded, records: [...selected.values()], chunks, context };
+    } catch (error) {
+      if (!searchIndex.isDirty) searchIndex.markDirty('retrieve', error);
+      degraded = true;
+    }
+  }
+  const records = await retrieveKnowledgeContext(wiki, rawStore, queries, options);
+  return { engine: 'legacy_scan', degraded, records, chunks: [], context: [...initial, ...records] };
+}
+
 /** Category alone never selects a page. Bodies are locally ranked; only the bounded selection leaves the machine. */
 export async function retrieveKnowledgeContext(
   wiki: WikiStore,
-  rawStore: { get(id: string): Promise<unknown> },
-  queries: { title: string; content: string; tags: string[] }[],
-  options: { includeSources?: boolean } = {},
+  rawStore: Sources,
+  queries: RetrievalQuery[],
+  options: ContextOptions = {},
 ): Promise<WikiRecord[]> {
-  const all = (await wiki.allRecords()).filter((p) => options.includeSources || p.type !== 'source'),
+  const initial = options.initialContext ?? [];
+  const allowedPool = options.pageIds
+    ? await Promise.all(options.pageIds.map((id) => wiki.get(id)))
+    : await wiki.allRecords();
+  const all = allowedPool.filter(
+      (p): p is WikiRecord =>
+        !!p &&
+        (options.includeSources || p.type !== 'source') &&
+        !options.excludeIds?.includes(p.id) &&
+        !initial.some((page) => page.id === p.id),
+    ),
     scores = new Map<string, number>();
   for (const query of queries) {
     for (const hit of findDuplicateCandidates({ ...query, category: '', aliases: query.tags }, all)) {
@@ -54,12 +156,11 @@ export async function retrieveKnowledgeContext(
     ...ranked,
     ...all.filter((p) => !scores.has(p.id) && linked.has(p.title)).sort((a, b) => a.id.localeCompare(b.id)),
   ];
-  let size = 0;
   const selected: WikiRecord[] = [];
   for (const p of pool) {
-    if (selected.length === MAINTENANCE_LIMITS.pages) break;
-    const length = JSON.stringify(p).length;
-    if (size + length > MAINTENANCE_LIMITS.characters) continue;
+    if (initial.length + selected.length >= MAINTENANCE_LIMITS.pages) break;
+    if (JSON.stringify([...initial, ...selected, p]).length > (options.characters ?? MAINTENANCE_LIMITS.characters))
+      continue;
     // Do not send a restricted page or its metadata; malformed/missing source bindings are denied as well.
     let allowed = true;
     try {
@@ -69,7 +170,6 @@ export async function retrieveKnowledgeContext(
     }
     if (!allowed) continue;
     selected.push(p);
-    size += length;
   }
   return selected;
 }
@@ -147,7 +247,8 @@ export async function generateMaintenance(
     return proposal;
   }
   const context = input.checkpoint.maintenance?.context ?? [];
-  const cp = await input.beforeCall('planning');
+  const wikiRetrieval = input.checkpoint.maintenance?.wikiRetrieval;
+  let cp = await input.beforeCall('planning');
   const proposal = await requestMaintenance(
     input.provider,
     input.signal,
@@ -155,10 +256,15 @@ export async function generateMaintenance(
     outcome.document,
     outcome.pages,
     context,
+    undefined,
+    wikiRetrieval?.context,
+    async () => {
+      cp = await input.beforeCall('planning');
+    },
   );
   await input.saveCheckpoint({
     ...cp,
-    maintenance: { version: 1, protocol: 2, context, proposal },
+    maintenance: { version: 1, protocol: 2, context, ...(wikiRetrieval ? { wikiRetrieval } : {}), proposal },
     stage: 'assembling',
   });
   return proposal;
@@ -184,15 +290,15 @@ export async function reprepareMaintenance(
   return result.changes[0];
 }
 
-async function requestMaintenance(
+async function proposeMaintenance(
   provider: LlmProvider,
   signal: AbortSignal | undefined,
   raw: KnowledgeRunInput['raw'],
   document: ExtractOutcome['document'],
   pages: Topic[],
-  context: WikiRecord[],
+  context: ModelWikiContext,
   preparation?: Preparation,
-): Promise<KnowledgeMaintenance> {
+): Promise<WireChange[]> {
   const structuredOutput = kb02StructuredOutput('knowledge_maintenance', schema);
   const { id, title, sourceType, sourceName, author, publishedAt, url, tags } = raw;
   const request = {
@@ -220,6 +326,10 @@ async function requestMaintenance(
     structuredOutput,
     system:
       '知识维护提议，严格输出schema JSON。pages为从0开始的本次输入主题，每个索引必须恰好被一个成果的pageIndexes覆盖。同一真实targetWikiId只可出现一次：将涉及该页的所有主题归并在一个pageIndexes集合及一份完整候选内，保留全部主题的依据与待核问题。独立新主题按语义分开，同分类或检索命中不能作为合并依据。已有同主题优先update同一真实ID。完整body保留旧有效内容、人工补充、旧来源，并整合本次内容；事实/整理/推断/待核分别分段。不同年份、主体、条件、单位及口径并列；矛盾并列待核，禁止自行裁定。相同内容及来源无变化选noop；仅增加来源选link且body和title原样；新主题create。targetWikiId/baseRevision只可来自context，create为null。dependsOn填写被引用的新页面所属输入主题索引，同一成果内部无需依赖。不要引用未提议的新页。summary列实际差异和保留内容，questions列矛盾待核。不增加本次更新审核章节。若输入含requested，严格按指定动作/目标输出一份覆盖全部给定主题的候选。create只依据给定主题和原文证据，禁止带入旧页内容；update基于唯一新目标快照，若有同一目标此前候选，保留其中已有的人工编辑。' +
+      (context.some((page) => 'chunks' in page)
+        ? WIKI_CHUNK_INSTRUCTIONS +
+          '针对只有chunks的目标，link/noop保持原题名，body写为“（正文保持原样）”。update时依据已读片段判断目标并提出整合，系统会用完整目标正文复核不完整片段的更新提议。'
+        : '') +
       (pages.some((page) => page.source_evidence.some((entry) => entry.media))
         ? '有media标记的证据是来源图片解析，引用时注明图序，位置只对应图片解析文本。'
         : '') +
@@ -244,6 +354,29 @@ async function requestMaintenance(
       ({ pageIndex, ...change }) => ({ ...change, pageIndexes: [pageIndex] }),
     );
   } else throw new LlmError('LLM_SCHEMA_INVALID', '维护提议未通过结构校验。', 502);
+  return changes;
+}
+
+async function requestMaintenance(
+  provider: LlmProvider,
+  signal: AbortSignal | undefined,
+  raw: KnowledgeRunInput['raw'],
+  document: ExtractOutcome['document'],
+  pages: Topic[],
+  context: WikiRecord[],
+  preparation?: Preparation,
+  retrievedContext?: ModelWikiContext,
+  beforeRepair?: () => Promise<void>,
+): Promise<KnowledgeMaintenance> {
+  const changes = await proposeMaintenance(
+    provider,
+    signal,
+    raw,
+    document,
+    pages,
+    retrievedContext ?? context,
+    preparation,
+  );
   const owners = new Map<number, string>(),
     targets = new Set<string>();
   for (const change of changes) {
@@ -270,6 +403,36 @@ async function requestMaintenance(
       changes[0].targetWikiId !== (preparation.target?.id ?? null))
   )
     throw new LlmError('LLM_MAINTENANCE_TARGET', '重准备未遵守指定动作与目标，原草稿保留。', 502);
+  for (const c of changes) {
+    const old = context.find((page) => page.id === c.targetWikiId);
+    if (
+      !old ||
+      old.revision !== c.baseRevision ||
+      !retrievedContext?.some((page) => page.id === old.id && 'chunks' in page)
+    )
+      continue;
+    if ((c.action === 'link' || c.action === 'noop') && c.body === '（正文保持原样）') c.body = old.body;
+    if (c.action !== 'update' || completeWikiBodyInContext(retrievedContext, old)) continue;
+    if (JSON.stringify([old]).length > MAINTENANCE_LIMITS.characters)
+      throw new LlmError('LLM_MAINTENANCE_CONTEXT_TOO_LARGE', '更新目标完整正文超过48000字符，检查点保留。', 413);
+    await beforeRepair?.();
+    const topics = c.pageIndexes.map((index) => pages[index]);
+    const [repaired, extra] = await proposeMaintenance(provider, signal, raw, document, topics, [old], {
+      action: 'update',
+      target: old,
+    });
+    if (
+      !repaired ||
+      extra ||
+      repaired.action !== 'update' ||
+      repaired.targetWikiId !== old.id ||
+      repaired.baseRevision !== old.revision ||
+      repaired.pageIndexes.length !== topics.length ||
+      topics.some((_, index) => !repaired.pageIndexes.includes(index))
+    )
+      throw new LlmError('LLM_MAINTENANCE_TARGET', '完整目标复核没有返回覆盖原主题的同一目标更新。', 502);
+    Object.assign(c, { ...repaired, pageIndexes: c.pageIndexes, dependsOn: c.dependsOn });
+  }
   const proposal: KnowledgeMaintenance = {
     version: 1,
     context,

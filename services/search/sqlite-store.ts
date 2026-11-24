@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import type { WikiRecord } from '../wiki/store.ts';
 import type { WikiChunk } from './chunking.ts';
+import { TOKENIZER_VERSION, tokenizeForFts } from './tokenizer.ts';
 
 export type SearchDatabase = Database.Database;
 
@@ -11,7 +12,7 @@ export function openSearchDatabase(filename: string, options?: Database.Options)
 const versions = {
   schema_version: '1',
   chunking_version: '1',
-  tokenizer_version: 'intl-zh-v1',
+  tokenizer_version: TOKENIZER_VERSION,
 };
 
 export function openSearchIndex(filename: string, fileMustExist = false): SearchDatabase {
@@ -73,7 +74,7 @@ export function initSearchSchema(db: SearchDatabase) {
     CREATE INDEX idx_chunks_page_id ON chunks(page_id);
     CREATE VIRTUAL TABLE chunks_fts USING fts5(
       chunk_id UNINDEXED, page_id UNINDEXED, title_tokens, meta_tokens, body_tokens,
-      tokenize = 'unicode61 remove_diacritics 0'
+      tokenize = "unicode61 remove_diacritics 0 tokenchars '-'"
     );
   `);
   setIndexMeta(db, {
@@ -145,13 +146,11 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         page.updated ?? '',
         now,
       );
-      // 1A-2 seeds FTS5 with Unicode61 input. The 1A-3 tokenizer must rebuild these derived rows.
-      const meta = [...(page.aliases ?? []), ...(page.tags ?? []), page.type, page.category, page.source_level].join(
-        ' ',
-      );
+      const title = tokenizeForFts(page.title).join(' ');
+      const meta = tokenizeForFts([...(page.aliases ?? []), ...(page.tags ?? [])].join(' ')).join(' ');
       for (const chunk of chunks) {
         putChunk.run(chunk);
-        putFts.run(chunk.chunkId, page.id, page.title, meta, chunk.rawText);
+        putFts.run(chunk.chunkId, page.id, title, meta, tokenizeForFts(chunk.rawText).join(' '));
       }
     }
   })();
