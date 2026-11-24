@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **LLM-Wiki 1A-1**：施工自查及独立验收 PASS。最低 Node 22.13 原生 SQLite 缺少 FTS5，锁定 better-sqlite3 12.11.1。1A-2 待授权，Batch 1A 整体待验收。[任务卡](handoffs/LLMWIKI-1A-1.md) · [施工](reports/1A-1-builder.md) · [验收](reports/1A-1-review.md)
+
 - **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）；工程维护波次 1 —— `FE01` 已 **`PASS`**（主交付 `e528039`，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿），当前停步等待用户指示下一方向。
 - **最近 5 个批次结论**：
   - `FE01`（2026-11-24，**PASS**）：`app/api.ts` 无损拆分为 8 份域模块（130 运行时导出与 105 类型符号 100% 兼容）、轻路由与 `useLatestAsync`/`useScopedQuery` 落地、6 份前端文件告警 `55 → 0`（全仓 `825 → 770`）；隔离 `npm run check`（`1,062/1,062 PASS`）、真机 Edge 切页冒烟 `0` 错，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)（`e528039`）双作业全绿（[施工报告](reports/FE01-20261123-builder.md) · [验收报告](reports/FE01-20261123-review.md)）。
