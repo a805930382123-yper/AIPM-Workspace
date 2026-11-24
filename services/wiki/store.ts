@@ -94,6 +94,10 @@ function normalize(value: string) {
 function wikiDir(root: string) {
   return path.join(root, 'knowledge', 'wiki');
 }
+export function wikiPageIdFromFilename(name: string): string | undefined {
+  const id = name.replace(/\.md$/i, '');
+  return name.toLowerCase().endsWith('.md') && idPattern.test(id) ? id : undefined;
+}
 function recordPath(root: string, id: string) {
   return path.join(wikiDir(root), `${id}.md`);
 }
@@ -103,7 +107,7 @@ function frontmatter(record: WikiRecord) {
     record.isDemo && !body.startsWith('> 【演示数据】') ? `> 【演示数据】虚构教学内容，尚未核验。\n\n${body}` : body;
   return `---\n${yaml.dump(metadata, { lineWidth: -1, noRefs: true }).trimEnd()}\n---\n# ${metadata.title}\n\n${content}`;
 }
-function parse(markdown: string): WikiRecord {
+export function parseWikiMarkdown(markdown: string): WikiRecord {
   if (!sourceFileStart.test(markdown)) throw new WikiError('CORRUPT_WIKI', 'Wiki 文件缺少 YAML Frontmatter。', 500);
   const rest = markdown.replace(sourceFileStart, '');
   const close = rest.search(/^---\r?\n/m);
@@ -179,11 +183,13 @@ export class WikiStore {
 
   private async files(): Promise<string[]> {
     return (await readdir(wikiDir(this.root)).catch(() => []))
-      .filter((name) => idPattern.test(name.replace(/\.md$/i, '')) && name.toLowerCase().endsWith('.md'))
+      .filter(wikiPageIdFromFilename)
       .map((name) => path.join(wikiDir(this.root), name));
   }
   private async records(): Promise<WikiRecord[]> {
-    const records = await Promise.all((await this.files()).map(async (file) => parse(await readFile(file, 'utf8'))));
+    const records = await Promise.all(
+      (await this.files()).map(async (file) => parseWikiMarkdown(await readFile(file, 'utf8'))),
+    );
     return records.sort((a, b) => b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title, 'zh-CN'));
   }
   async list(options: { q?: string; category?: string } = {}): Promise<WikiRecord[]> {
@@ -209,7 +215,7 @@ export class WikiStore {
   async get(id: string): Promise<WikiRecord | undefined> {
     if (!idPattern.test(id)) return undefined;
     try {
-      return parse(await readFile(recordPath(this.root, id), 'utf8'));
+      return parseWikiMarkdown(await readFile(recordPath(this.root, id), 'utf8'));
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
       throw error;
