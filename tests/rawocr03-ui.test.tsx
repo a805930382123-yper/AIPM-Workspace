@@ -102,7 +102,11 @@ test('RAWOCR03 five states expose only clean text, collapse long results, and fo
       vlmConfidence: 'low',
       vlmWarnings: ['模糊处待核对'],
     },
-    { ...artifact(5, 'failed'), vlmError: '模拟识别失败' },
+    {
+      ...artifact(5, 'failed'),
+      vlmError: '请检查访问 Provider 的网络和代理。',
+      mediaFailure: { stage: 'provider', code: 'LLM_NETWORK_ERROR', networkCause: 'UND_ERR_CONNECT_TIMEOUT' },
+    },
   ];
   const calls: string[] = [];
   const screen = await mount(raw(5), async (url, options) => {
@@ -119,8 +123,33 @@ test('RAWOCR03 five states expose only clean text, collapse long results, and fo
     assert.equal(w.document.querySelectorAll('ol li').length, 2);
     assert.ok(w.document.body.textContent?.includes('置信度：低'));
     assert.equal(w.document.querySelectorAll('a img').length, 5);
+    assert.match(
+      w.document.querySelector('[data-image-index="5"] [role="alert"]')?.textContent ?? '',
+      /Provider 请求失败（LLM_NETWORK_ERROR · UND_ERR_CONNECT_TIMEOUT）。请检查访问 Provider 的网络和代理。/u,
+    );
     assert.equal(calls.length, 1);
     assert.ok(!w.document.body.innerHTML.includes('ocrRawText'));
+  } finally {
+    await screen.close();
+  }
+});
+
+test('local OCR pending and visual fallback show the same diagnosis and never start automatically', async () => {
+  const pending = {
+    ...artifact(1, 'failed'),
+    routeReasons: ['local_ocr_language_missing'],
+    ocrError: '请检查 chi_sim.traineddata。',
+  };
+  const queued = { ...pending, ...artifact(2, 'needs_vlm'), routeReasons: pending.routeReasons };
+  const screen = await mount(raw(2), async (_url, options) => {
+    assert.notEqual(options?.method, 'POST');
+    return response({ items: [pending, queued] });
+  });
+  try {
+    const first = w.document.querySelector('[data-image-index="1"]')!;
+    assert.match(first.textContent!, /OCR 待处理.*精读此图.*本机 OCR 未完成。请检查 chi_sim.traineddata。/su);
+    const second = w.document.querySelector('[data-image-index="2"]')!;
+    assert.match(second.textContent!, /待精读.*精读此图.*本机 OCR 未完成。请检查 chi_sim.traineddata。/su);
   } finally {
     await screen.close();
   }

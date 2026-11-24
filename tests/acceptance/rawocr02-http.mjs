@@ -345,7 +345,10 @@ try {
       assert.ok(generated.pages[0].source_evidence.every((item) => !item.media), 'detached image appears as draft evidence');
       assert.ok(!requests.some(({ payload }) => payload.article_title === fixture.raw.title), 'detached image sent for automatic completion');
       assert.deepEqual(await readFile(fixture.file), bytes);
-      assert.deepEqual(await api(`/api/raw/${edited.id}/media`), { items: [] });
+      assert.deepEqual(await api(`/api/raw/${edited.id}/media`), {
+        items: [],
+        readingSource: { bodySha256: edited.bodySha256, markers: [], removed: [] },
+      });
       assert.deepEqual(await api(`/api/raw/${edited.id}/media/parse-vlm-batch`, {}), { items: [] });
       const blocked = await api(`/api/raw/${edited.id}/media/${fixture.images[1].mediaId}/parse-vlm`, { force: true }, 409);
       assert.equal(blocked.error.code, 'RAW_MEDIA_NOT_ANCHORED');

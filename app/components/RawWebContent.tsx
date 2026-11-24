@@ -18,6 +18,13 @@ const statusLabels = {
   failed: '失败',
 };
 const confidenceLabels = { high: '高', medium: '中', low: '低' };
+const failureStages = {
+  download: '原图下载',
+  original: '本地原图读取或校验',
+  image: '图像转换',
+  provider: 'Provider 请求',
+  response: '结果解析',
+};
 const batchErrors: Record<string, string> = {
   LLM_NOT_CONFIGURED: '尚未配置产品 LLM Provider，请先在设置中配置后重试。',
   RAW_MEDIA_NOT_FOUND: '图片位置已变化，请刷新资料后重试。',
@@ -232,9 +239,18 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
       {source?.markers.map((marker, index) => {
         const image = raw.webImages![marker.imageIndex - 1];
         const artifact = artifacts.find((item) => item.imageIndex === marker.imageIndex);
-        const original = image.sha256 && `/api/raw/${encodeURIComponent(raw.id)}/web-images/${image.sha256}`;
+        const failure = artifact?.mediaFailure;
+        const original =
+          image.sha256 &&
+          failure?.stage !== 'original' &&
+          `/api/raw/${encodeURIComponent(raw.id)}/web-images/${image.sha256}`;
         const running = !!artifact && pending.includes(artifact.mediaId);
         const error = artifact && errors[artifact.mediaId];
+        const localOcrPending =
+          artifact?.routeStatus === 'failed' &&
+          !!artifact.ocrError &&
+          !failure &&
+          !artifact.routeReasons.includes('local_ocr_image_decode_failed');
         return (
           <Fragment key={`${marker.imageIndex}:${marker.start}`}>
             {inlineBody && bodySlice(index ? source.markers[index - 1].end : 0, marker.start)}
@@ -244,7 +260,7 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                   <img src={original} alt={image.label || `来源图片 ${marker.imageIndex}`} loading="lazy" />
                 </a>
               ) : (
-                <p className="extract-note">原图未能保留，可通过网页原地址查看。</p>
+                <p className="extract-note">本地原图不可用，可通过网页原地址查看。</p>
               )}
               <figcaption>
                 <div className="raw-image-caption">
@@ -253,7 +269,9 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                     {running
                       ? '正在精读…'
                       : artifact
-                        ? statusLabels[artifact.routeStatus]
+                        ? localOcrPending
+                          ? 'OCR 待处理'
+                          : statusLabels[artifact.routeStatus]
                         : loading
                           ? '读取状态中'
                           : '暂无解析记录'}
@@ -262,7 +280,7 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                 <div className="raw-image-actions">
                   {original && (
                     <a href={original} target="_blank" rel="noreferrer">
-                      打开原图
+                      打开原图（本地）
                     </a>
                   )}
                   <a href={image.sourceUrl} target="_blank" rel="noreferrer">
@@ -275,7 +293,11 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                       disabled={disabled}
                       onClick={() => void parse([artifact.mediaId])}
                     >
-                      {running ? '正在精读…' : artifact.routeStatus === 'failed' || error ? '重试精读' : '精读此图'}
+                      {running
+                        ? '正在精读…'
+                        : (artifact.routeStatus === 'failed' && !localOcrPending) || error
+                          ? '重试精读'
+                          : '精读此图'}
                     </button>
                   )}
                   {artifact?.routeStatus === 'vlm_done' && (
@@ -320,8 +342,19 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                   </details>
                 </div>
               )}
-              {artifact?.routeStatus === 'failed' && (
+              {artifact?.ocrError && artifact.routeStatus !== 'vlm_done' && (
+                <p className="extract-note">本机 OCR 未完成。{artifact.ocrError}</p>
+              )}
+              {artifact?.routeStatus === 'failed' && (failure || !artifact.ocrError) && (
                 <p className="form-error" role="alert">
+                  {failure &&
+                    `${failureStages[failure.stage]}失败（${[
+                      failure.code,
+                      failure.httpStatus && `HTTP ${failure.httpStatus}`,
+                      failure.networkCause,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}）。`}
                   {artifact.vlmError || '图片解析未完成，请重试精读。'}
                 </p>
               )}

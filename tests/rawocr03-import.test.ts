@@ -13,6 +13,7 @@ import { registerRawImportRoute } from '../server/raw-import.ts';
 import { AssetStore } from '../services/raw/assets.ts';
 import { RawMediaImportError, RawStore } from '../services/raw/store.ts';
 import { identifyWebImages, readWebImage, readWebMaterial } from '../services/raw/web-material.ts';
+import { checkLocalOcr } from '../services/raw/local-ocr.ts';
 import { publicMediaArtifact } from '../services/raw/media-vlm.ts';
 import { acquireNewsMaterial } from '../services/news/raw-material.ts';
 import { NewsRawSave } from '../services/news/raw-save.ts';
@@ -21,6 +22,7 @@ import type { NewsItem } from '../services/news/types.ts';
 const hash = (bytes: Buffer | string) => createHash('sha256').update(bytes).digest('hex');
 const paragraph = '清晰技术说明需要保留完整来源和核对信息。';
 const sentinel = 'RAW_OCR_PRIVATE_SENTINEL';
+const errorSentinel = 'RAW_OCR_PRIVATE_ERROR_DETAILS';
 const item: NewsItem = {
   id: 'r3',
   title: '网页样本',
@@ -51,7 +53,7 @@ async function fixture(t: TestContext, inputHtml = html, failOcr = false) {
       ]),
     }),
     ocr: async (bytes: Buffer) => {
-      if (failOcr) throw new Error('OCR unavailable');
+      if (failOcr) throw new Error(errorSentinel);
       return bytes.equals(images['/rank.png'])
         ? [{ text: '排名   指标   数值' }, { text: '北京   2025   80%' }, { text: '上海   2026   90%' }]
         : [{ text: `${paragraph}\n${sentinel}`, confidence: 0.98 }];
@@ -138,6 +140,66 @@ test('OCR and image download failures preserve available source material and req
   await assert.rejects(news.save('2026-11-23', 'ai', item), /OCR 未完成/u);
   const retained = await news.save('2026-11-23', 'ai', item, undefined, { keepPartial: true });
   assert.equal(retained.material.canSupplement, true);
+});
+
+test('explicit visual fallback queues retained images on both import entries and keeps the OCR diagnosis', async (t) => {
+  const warnings = t.mock.method(console, 'warn', () => {});
+  const previous = process.env.FMCG_OCR_FALLBACK;
+  process.env.FMCG_OCR_FALLBACK = 'vlm';
+  t.after(() => {
+    if (previous === undefined) delete process.env.FMCG_OCR_FALLBACK;
+    else process.env.FMCG_OCR_FALLBACK = previous;
+  });
+  const { root, raws, post, news } = await fixture(
+    t,
+    '<article><p>来源文字。</p><img src="/text.png"><img src="/missing.png"></article>',
+    true,
+  );
+  const response = await post();
+  assert.equal(response.status, 201);
+  const report = await response.json();
+  const { raw: imported } = report;
+  assert.doesNotMatch(JSON.stringify(report), new RegExp(errorSentinel, 'u'));
+  await assert.rejects(news.save('2026-11-23', 'ai', item), /OCR 未完成/u);
+  const saved = await news.save('2026-11-23', 'ai', item, undefined, { keepPartial: true });
+  for (const id of [imported.id, saved.rawId]) {
+    const raw = (await raws.get(id))!;
+    const [pending, missing] = await raws.getMediaArtifacts(id);
+    assert.equal(pending.routeStatus, 'needs_vlm');
+    assert.deepEqual(pending.routeReasons, ['local_ocr_unavailable']);
+    assert.match(pending.ocrError!, /本机 OCR 执行失败/u);
+    assert.equal(pending.ocrRawText, '');
+    assert.equal(pending.vlmMarkdown, undefined);
+    assert.equal(missing.routeStatus, 'failed');
+    assert.deepEqual(await readWebImage(root, raw.webImages![0]), images['/text.png']);
+  }
+  const logs = JSON.stringify(warnings.mock.calls.map((call) => call.arguments));
+  assert.match(logs, /local_ocr_unavailable/u);
+  assert.doesNotMatch(logs, new RegExp(errorSentinel, 'u'));
+});
+
+test('local OCR health errors distinguish an invalid configured executable and an invalid data directory', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-ocr-diagnostics-'));
+  const keys = ['FMCG_TESSERACT_PATH', 'TESSDATA_PREFIX'] as const;
+  const previous = keys.map((key) => process.env[key]);
+  t.after(async () => {
+    keys.forEach((key, index) => {
+      if (previous[index] === undefined) delete process.env[key];
+      else process.env[key] = previous[index];
+    });
+    await rm(root, { recursive: true, force: true });
+  });
+  delete process.env.TESSDATA_PREFIX;
+  process.env.FMCG_TESSERACT_PATH = path.join(root, 'missing-binary');
+  await assert.rejects(checkLocalOcr(), {
+    code: 'local_ocr_executable_path_invalid',
+    message: /FMCG_TESSERACT_PATH/u,
+  });
+  process.env.TESSDATA_PREFIX = path.join(root, 'private-data-directory');
+  await assert.rejects(checkLocalOcr(), {
+    code: 'local_ocr_tessdata_path_invalid',
+    message: /TESSDATA_PREFIX/u,
+  });
 });
 
 test('derivative write failure identifies the committed Raw and news retry repairs the same record without overwriting a later result', async (t) => {

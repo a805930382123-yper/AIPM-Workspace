@@ -2,6 +2,12 @@ export type MediaRouteStatus = 'skipped' | 'ocr_ready' | 'needs_vlm' | 'vlm_done
 export type VlmImageType =
   'flowchart' | 'comparison_table' | 'chart_or_ranking' | 'ui_screenshot' | 'text_excerpt' | 'mixed' | 'decorative';
 export type VlmConfidence = 'high' | 'medium' | 'low';
+export type MediaFailure = {
+  stage: 'download' | 'original' | 'image' | 'provider' | 'response';
+  code: string;
+  httpStatus?: number;
+  networkCause?: string;
+};
 
 export type MediaEvidenceSource = { mediaId: string; imageIndex: number; textSha256: string };
 
@@ -42,6 +48,7 @@ export interface MediaArtifactResult {
   /** Internal diagnostics. Excluded from ordinary Raw reads and AI context. */
   ocrRawText: string;
   ocrCleanText?: string;
+  ocrError?: string;
   vlmImageType?: VlmImageType;
   vlmSummary?: string;
   vlmMarkdown?: string;
@@ -50,6 +57,7 @@ export interface MediaArtifactResult {
   vlmModel?: string;
   vlmParsedAt?: string;
   vlmError?: string;
+  mediaFailure?: MediaFailure;
   vlmAttempts?: string[];
 }
 

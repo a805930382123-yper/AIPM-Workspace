@@ -4,6 +4,21 @@
 import { containsKnownSecret, safeBaseUrl, validateApiKey, validateModel, type LlmConfig } from './config.ts';
 import type { StructuredOutput } from './openai-structured.ts';
 
+export const llmNetworkCauses = [
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'ENETUNREACH',
+  'ETIMEDOUT',
+  'EAI_AGAIN',
+  'ENOTFOUND',
+  'UND_ERR_CONNECT_TIMEOUT',
+  'UND_ERR_SOCKET',
+  'CERT_HAS_EXPIRED',
+  'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'SELF_SIGNED_CERT_IN_CHAIN',
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+] as const;
+
 export class LlmError extends Error {
   constructor(
     public code: string,
@@ -180,44 +195,55 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const body = await readCapped(response, maxBytes);
     let detail = sanitizeProviderText(body, this.secrets);
     let parameter: string | undefined;
+    let errorCode: string | undefined;
     try {
-      const parsed = JSON.parse(body) as { error?: { message?: unknown; param?: unknown } };
+      const parsed = JSON.parse(body) as { error?: { message?: unknown; param?: unknown; code?: unknown } };
       const message = parsed?.error?.message;
       if (message !== undefined) detail = sanitizeProviderText(message, this.secrets);
       if (typeof parsed?.error?.param === 'string') parameter = parsed.error.param;
+      if (typeof parsed?.error?.code === 'string') errorCode = parsed.error.code;
     } catch {
       /* keep the sanitized raw snippet */
     }
-    const suffix = detail ? `（Provider 说明：${detail}）` : '';
+    const suffix = detail && !media ? `（Provider 说明：${detail}）` : '';
+    const mediaStatus = media ? { upstreamStatus: response.status } : undefined;
     if (response.status === 401 || response.status === 403) {
       return new LlmError(
         'LLM_AUTH_FAILED',
         `Provider 拒绝鉴权（HTTP ${response.status}）。请检查服务端 API Key 配置。${suffix}`,
         response.status,
+        mediaStatus,
       );
     }
     if (response.status === 429) {
-      return new LlmError('LLM_RATE_LIMITED', `Provider 限流（HTTP 429），请稍后重试。${suffix}`, 429);
+      return new LlmError('LLM_RATE_LIMITED', `Provider 限流（HTTP 429），请稍后重试。${suffix}`, 429, mediaStatus);
     }
     if (response.status >= 500) {
       return new LlmError(
         'LLM_PROVIDER_ERROR',
         `Provider 服务错误（HTTP ${response.status}）。${suffix}`,
         502,
-        media
-          ? {
-              upstreamStatus: response.status,
-            }
-          : undefined,
+        mediaStatus,
       );
     }
-    const recognizedParameter = /response_format|json_schema/u.test(parameter ?? detail)
+    const recognizedParameter = /response_format|json_schema/iu.test(parameter ?? detail)
       ? 'response_format'
-      : /temperature/u.test(parameter ?? detail)
+      : /temperature/iu.test(parameter ?? detail)
         ? 'temperature'
-        : /max_tokens|max_completion_tokens/u.test(parameter ?? detail)
+        : /max_tokens|max_completion_tokens/iu.test(parameter ?? detail)
           ? 'max_tokens'
           : undefined;
+    if (media && [400, 415, 422].includes(response.status)) {
+      const imageInputRejected =
+        /^(?:invalid_image(?:_url|_format|_mode|_size)?|unsupported_image(?:_format)?|image_(?:too_large|parse_error)|invalid_base64_image)$/iu.test(
+          errorCode ?? '',
+        ) ||
+        /\bimage_url\b|\bimage (?:input|format|type)\b|\bvision (?:input|is not supported)\b/iu.test(
+          `${parameter ?? ''} ${detail}`,
+        );
+      if (!recognizedParameter && imageInputRejected)
+        return new LlmError('LLM_IMAGE_REJECTED', 'Provider 拒绝本次图像输入。', 422, mediaStatus);
+    }
     return new LlmError(
       'LLM_PROVIDER_ERROR',
       `Provider 请求失败（HTTP ${response.status}）。${suffix}`,
@@ -274,7 +300,11 @@ export class OpenAiCompatibleProvider implements LlmProvider {
             ? 'image/jpeg'
             : undefined;
       if (!Buffer.isBuffer(request.image) || request.image.length > 5 * 1024 * 1024 || !mime) {
-        throw new LlmError('LLM_IMAGE_INVALID', '图像请求只接受大小有界的本地 PNG 页面。', 422);
+        throw new LlmError(
+          'LLM_IMAGE_INVALID',
+          media ? '精读图像需为不超过 5 MiB 的本地 PNG 或 JPEG。' : '图像请求只接受大小有界的本地 PNG 页面。',
+          422,
+        );
       }
       userContent = [
         { type: 'text', text: request.user },
@@ -332,6 +362,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       };
       try {
         payload = JSON.parse(text) as typeof payload;
+        if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new SyntaxError();
       } catch {
         throw new LlmError('LLM_PROVIDER_ERROR', 'Provider 返回的不是合法 JSON 响应。', 502, {
           category: 'response_invalid',
@@ -342,7 +373,9 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       if (payload.error)
         throw new LlmError(
           'LLM_PROVIDER_ERROR',
-          `Provider 返回错误：${sanitizeProviderText(payload.error.message, this.secrets)}`,
+          media
+            ? 'Provider 返回错误。'
+            : `Provider 返回错误：${sanitizeProviderText(payload.error.message, this.secrets)}`,
           502,
         );
       const choice = payload.choices?.[0];
@@ -400,6 +433,11 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         if (timedOut)
           throw new LlmError('LLM_TIMEOUT', `调用 Provider 超过 ${request.timeoutMs} ms 超时上限，未产生草稿。`, 504);
         throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
+      }
+      if (media) {
+        const cause = error instanceof Error ? (error.cause as { code?: unknown } | undefined) : undefined;
+        const networkCause = llmNetworkCauses.find((code) => code === cause?.code);
+        throw new LlmError('LLM_NETWORK_ERROR', 'Provider 网络请求失败。', 502, { networkCause });
       }
       throw new LlmError(
         'LLM_NETWORK_ERROR',

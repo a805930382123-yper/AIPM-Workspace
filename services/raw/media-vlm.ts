@@ -1,9 +1,21 @@
 import { createCanvas, loadImage } from '@napi-rs/canvas';
-import { assertNoKnownSecret, LlmError, type LlmCompletionRequest, type LlmProvider } from '../llm/provider.ts';
+import {
+  assertNoKnownSecret,
+  LlmError,
+  llmNetworkCauses,
+  type LlmCompletionRequest,
+  type LlmProvider,
+} from '../llm/provider.ts';
 import { validateSchema, type JsonSchemaNode } from '../llm/schema-validator.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import { rawMediaContext } from './media-context.ts';
-import type { MediaArtifact, MediaArtifactResult, VlmConfidence, VlmImageType } from './media-artifact.ts';
+import type {
+  MediaArtifact,
+  MediaArtifactResult,
+  MediaFailure,
+  VlmConfidence,
+  VlmImageType,
+} from './media-artifact.ts';
 import type { RawStore } from './store.ts';
 import { identifyWebImages, readWebImage } from './web-material.ts';
 
@@ -38,9 +50,31 @@ const system = [
 
 const concurrency = 3;
 const sizeLimit = 5 * 1024 * 1024;
+const providerErrors: Readonly<Record<string, string>> = {
+  LLM_NETWORK_ERROR: '无法连接 Provider。请检查运行工作台的进程是否能访问 Provider，或是否需要代理。',
+  LLM_TIMEOUT: '连接 Provider 或等待返回超时。请检查网络后重试。',
+  LLM_AUTH_FAILED: 'Provider 拒绝鉴权。请检查 API Key 和模型权限。',
+  LLM_CONFIGURATION_INVALID: 'Provider 配置无效。请检查模型设置。',
+  LLM_NOT_CONFIGURED: '尚未配置图片精读的 Provider。',
+  LLM_RATE_LIMITED: 'Provider 触发限流，请稍后重试。',
+  LLM_IMAGE_REJECTED: 'Provider 拒绝图像输入。请检查当前模型是否支持 PNG 或 JPEG 的多模态请求。',
+  LLM_IMAGE_INVALID: '待发送图像未通过 PNG 或 JPEG 大小校验。',
+  LLM_PROVIDER_ERROR: 'Provider 返回错误。请检查模型、接口和服务状态后重试。',
+  MEDIA_PROVIDER_FAILED: 'Provider 请求未完成，请重试。',
+};
+const responseErrors: Readonly<Record<string, string>> = {
+  MEDIA_JSON_INVALID: '模型输出不是可解析的 JSON 对象。',
+  MEDIA_SCHEMA_INVALID: '模型输出字段不满足图片精读结构。',
+  LLM_EMPTY_RESULT: '模型没有返回可用内容。',
+  LLM_OUTPUT_TRUNCATED: '模型输出被截断。',
+  LLM_RESPONSE_TOO_LARGE: '模型响应超过大小限制。',
+  LLM_OUTPUT_CONTAINS_SECRET: '模型结果未通过凭证检查。',
+  LLM_REFUSAL: '模型拒绝生成图片精读结果。',
+};
 
 async function prepareImage(bytes: Buffer) {
   const image = await loadImage(bytes);
+  if (!image.width || !image.height) return;
   const longEdge = Math.max(image.width, image.height);
   const scale = longEdge > 2048 ? 1800 / longEdge : 1;
   const canvas = createCanvas(
@@ -51,8 +85,12 @@ async function prepareImage(bytes: Buffer) {
   context.fillStyle = '#fff';
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  const png = canvas.toBuffer('image/png');
-  return png.length <= sizeLimit ? png : canvas.toBuffer('image/jpeg', 85);
+  if (!bytes.subarray(0, 3).equals(Buffer.from([255, 216, 255]))) {
+    const png = canvas.toBuffer('image/png');
+    if (png.length <= sizeLimit) return png;
+  }
+  const jpeg = canvas.toBuffer('image/jpeg', 85);
+  if (jpeg.length <= sizeLimit) return jpeg;
 }
 
 type ParseOptions = { provider?: LlmProvider; force?: boolean; signal?: AbortSignal };
@@ -148,19 +186,42 @@ export class MediaVlmParserService {
         if (!saved) throw new LlmError('RAW_MEDIA_NOT_FOUND', '图片位置已移除。', 404);
         return saved;
       });
-    const { width, height, metrics, ocrRawText, routeReasons } = existing;
+    const { width, height, metrics, ocrRawText, ocrError, routeReasons } = existing;
     const base = {
       width,
       height,
       metrics,
       ocrRawText,
+      ocrError,
       routeReasons,
       vlmModel: provider.model,
       vlmParsedAt: new Date().toISOString(),
     };
+    const fail = (mediaFailure: MediaFailure, vlmError: string) => {
+      console.warn('[raw-media] 精读失败', { rawId, mediaId, ...mediaFailure });
+      return save({ ...base, routeStatus: 'failed', mediaFailure, vlmError });
+    };
+    if (!occurrence.sha256)
+      return fail(
+        existing.mediaFailure?.stage === 'download'
+          ? existing.mediaFailure
+          : { stage: 'download', code: 'MEDIA_DOWNLOAD_UNAVAILABLE' },
+        existing.mediaFailure?.stage === 'download' && existing.vlmError
+          ? existing.vlmError
+          : '原图未保留在本机。请核对原网页或重新导入。',
+      );
     const retained = await readWebImage(this.raws.root, occurrence).catch(() => undefined);
-    const image = retained && (await prepareImage(retained).catch(() => undefined));
-    if (!image) return save({ ...base, routeStatus: 'failed', vlmError: '原图未保留、校验失败或无法解码。' });
+    if (!retained)
+      return fail(
+        { stage: 'original', code: 'MEDIA_ORIGINAL_UNAVAILABLE' },
+        '无法读取本地原图，或本地字节与采集校验值不符。',
+      );
+    const image = await prepareImage(retained).catch(() => undefined);
+    if (!image)
+      return fail(
+        { stage: 'image', code: 'MEDIA_IMAGE_PREPARE_FAILED' },
+        '无法将原图转换为符合大小限制的 PNG 或 JPEG。',
+      );
     const media: NonNullable<LlmCompletionRequest['media']> = { format: 'json_schema' };
     let transientRetry = false;
     let invalidRetry = false;
@@ -197,15 +258,20 @@ export class MediaVlmParserService {
         assertNoKnownSecret(result, provider.secrets);
       } catch (error) {
         if (signal?.aborted) throw error;
-        const code =
+        const reportedCode =
           error instanceof LlmError
             ? error.code
             : error instanceof SyntaxError
               ? 'MEDIA_JSON_INVALID'
               : 'MEDIA_PROVIDER_FAILED';
+        const code =
+          Object.hasOwn(providerErrors, reportedCode) || Object.hasOwn(responseErrors, reportedCode)
+            ? reportedCode
+            : 'MEDIA_PROVIDER_FAILED';
         const details =
           error instanceof LlmError
-            ? (error.details as { parameter?: string; upstreamStatus?: number; category?: string } | undefined)
+            ? (error.details as
+                { parameter?: string; upstreamStatus?: number; category?: string; networkCause?: string } | undefined)
             : undefined;
         attempts.push(`${media.format}:${code}`);
         if ([400, 422].includes(details?.upstreamStatus ?? 0)) {
@@ -240,7 +306,21 @@ export class MediaVlmParserService {
           retryingJson = true;
           continue;
         }
-        return save({ ...base, routeStatus: 'failed', vlmError: '图片精读未完成。请检查图片或 Provider 配置后重试。' });
+        const invalidEnvelope = code === 'LLM_PROVIDER_ERROR' && details?.category === 'response_invalid';
+        const responseError = invalidEnvelope ? 'Provider 响应不符合预期的模型结果格式。' : responseErrors[code];
+        const networkCause = llmNetworkCauses.find((cause) => cause === details?.networkCause);
+        const httpStatus = details?.upstreamStatus;
+        return fail(
+          {
+            stage: code === 'LLM_IMAGE_INVALID' ? 'image' : responseError ? 'response' : 'provider',
+            code,
+            ...(httpStatus && Number.isInteger(httpStatus) && httpStatus >= 400 && httpStatus <= 599
+              ? { httpStatus }
+              : {}),
+            ...(networkCause ? { networkCause } : {}),
+          },
+          responseError ?? providerErrors[code],
+        );
       }
       if (signal?.aborted) throw new LlmError('LLM_CANCELLED', '图片精读已取消。', 409);
       attempts.push(`${media.format}:ok`);

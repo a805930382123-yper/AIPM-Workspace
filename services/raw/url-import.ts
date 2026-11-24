@@ -15,7 +15,13 @@ type Address = { address: string; family: number };
 type WebResponse = { status: number; headers: IncomingHttpHeaders; body: Readable };
 export type WebOptions = {
   resolve?: (hostname: string) => Promise<Address[]>;
-  request?: (url: URL, address: Address, signal: AbortSignal, accept: string) => Promise<WebResponse>;
+  request?: (
+    url: URL,
+    address: Address,
+    signal: AbortSignal,
+    accept: string,
+    userAgent?: string,
+  ) => Promise<WebResponse>;
   timeoutMs?: number;
   images?: boolean;
   /** Preserve the importing entry's existing page budget when collecting images. */
@@ -41,11 +47,12 @@ export type ImportedWebText = {
   images?: WebImageCandidate[];
 };
 
-class RawUrlError extends Error {
+export class RawUrlError extends Error {
   constructor(
     public code: string,
     reason: string,
     public status: number,
+    public upstreamStatus?: number,
   ) {
     super(`${reason}${FALLBACK}`);
   }
@@ -139,7 +146,13 @@ function httpProxyFor(address: Address): URL | undefined {
   return bypass ? undefined : proxy;
 }
 
-function requestPinned(url: URL, address: Address, signal: AbortSignal, accept: string): Promise<WebResponse> {
+function requestPinned(
+  url: URL,
+  address: Address,
+  signal: AbortSignal,
+  accept: string,
+  userAgent = 'Mozilla/5.0 (compatible; AIPM Workspace/0.1)',
+): Promise<WebResponse> {
   const secure = url.protocol === 'https:';
   const proxy = secure ? undefined : httpProxyFor(address);
   const secureProxy = proxy?.protocol === 'https:';
@@ -166,7 +179,7 @@ function requestPinned(url: URL, address: Address, signal: AbortSignal, accept: 
         headers: {
           Host: url.host,
           Connection: 'close',
-          'User-Agent': 'Mozilla/5.0 (compatible; AIPM Workspace/0.1)',
+          'User-Agent': userAgent,
           Accept: accept,
           'Accept-Encoding': 'identity',
           ...(proxy ? { 'Proxy-Connection': 'close' } : {}),
@@ -293,7 +306,7 @@ function extractHtml(
 
 export async function readPublicResource(
   value: string,
-  limits: { accept: string; mime: RegExp; bytes: number; label: string },
+  limits: { accept: string; mime: RegExp; bytes: number; label: string; userAgent?: (url: URL) => string | undefined },
   options: WebOptions = {},
 ): Promise<{ bytes: Buffer; type: string; finalUrl: string }> {
   const resolve = options.resolve ?? ((hostname: string) => lookup(hostname, { all: true }));
@@ -322,7 +335,7 @@ export async function readPublicResource(
       if (!addresses.length || addresses.some((address) => !publicAddress(address))) {
         throw new RawUrlError('URL_FETCH_BLOCKED', '网页地址解析到内网、回环或保留地址，已停止读取。', 400);
       }
-      const response = await request(url, addresses[0], signal, limits.accept);
+      const response = await request(url, addresses[0], signal, limits.accept, limits.userAgent?.(url));
       const abortBody = () => response.body.destroy();
       signal.addEventListener('abort', abortBody, { once: true });
       try {
@@ -340,6 +353,7 @@ export async function readPublicResource(
             'URL_FETCH_FAILED',
             `网页返回 HTTP ${response.status}，可能需要登录或不允许读取。`,
             422,
+            response.status,
           );
         }
         const contentType = response.headers['content-type'] ?? '';

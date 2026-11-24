@@ -1,13 +1,13 @@
-import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { loadImage } from '@napi-rs/canvas';
+import { createCanvas, loadImage, type Image } from '@napi-rs/canvas';
 import { writeFileAtomic } from '../storage/files.ts';
 import { MAX_BODY_CHARS } from './limits.ts';
+import { checkLocalOcr, LocalOcrError, readLocalOcrTsv } from './local-ocr.ts';
 import { evaluateImageOcr, type OcrLineInput } from './media-ocr-triage.ts';
 import type { MediaArtifactResult } from './media-artifact.ts';
-import { readPublicRawUrl, readPublicResource, type WebOptions } from './url-import.ts';
+import { RawUrlError, readPublicRawUrl, readPublicResource, type WebOptions } from './url-import.ts';
 
 export type RawWebImage = {
   start: number;
@@ -47,33 +47,6 @@ export async function readWebImage(root: string, image: RawWebImage) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   });
   if (bytes && imageType(bytes) === image.mime && hash(bytes) === image.sha256) return bytes;
-}
-
-async function tesseract(bytes: Buffer, format?: 'tsv'): Promise<string> {
-  const configured = process.env.FMCG_TESSERACT_PATH;
-  const installed = path.join(process.env.ProgramFiles || 'C:/Program Files', 'Tesseract-OCR', 'tesseract.exe');
-  const run = (executable: string) =>
-    new Promise<string>((resolve, reject) => {
-      const child = execFile(
-        executable,
-        ['stdin', 'stdout', '-l', 'chi_sim+eng', '--psm', '11', ...(format ? [format] : [])],
-        {
-          timeout: 25_000,
-          windowsHide: true,
-          maxBuffer: 256 * 1024,
-          env: { ...process.env, OMP_THREAD_LIMIT: '1' },
-        },
-        (error, stdout) => (error ? reject(error) : resolve(stdout)),
-      );
-      child.stdin?.on('error', () => undefined);
-      child.stdin?.end(bytes);
-    });
-  try {
-    return await run(configured || 'tesseract');
-  } catch (error) {
-    if (configured || process.platform !== 'win32' || (error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-    return run(installed);
-  }
 }
 
 /** Tesseract TSV groups word records into lines with pixel coordinates and 0–1 confidence. */
@@ -120,8 +93,27 @@ export function parseTesseractTsv(tsv: string): OcrLineInput[] {
   }));
 }
 
-export async function recognizeWebImageLines(bytes: Buffer): Promise<OcrLineInput[]> {
-  return parseTesseractTsv(await tesseract(bytes, 'tsv'));
+export async function recognizeWebImageLines(
+  bytes: Buffer,
+  image?: Image,
+  engine = checkLocalOcr(),
+): Promise<OcrLineInput[]> {
+  const checked = await engine;
+  if (imageType(bytes) === 'image/gif') {
+    // Leptonica rejects animated GIFs. Only the OCR input uses the first frame.
+    try {
+      const frame = image ?? (await loadImage(bytes));
+      const canvas = createCanvas(frame.width, frame.height);
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#fff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(frame, 0, 0);
+      bytes = canvas.toBuffer('image/png');
+    } catch {
+      throw new LocalOcrError('local_ocr_image_decode_failed');
+    }
+  }
+  return parseTesseractTsv(await readLocalOcrTsv(checked, bytes));
 }
 
 export async function readWebMaterial(
@@ -136,22 +128,24 @@ export async function readWebMaterial(
   const issues: string[] = [];
   const artifacts: MediaArtifactResult[] = [];
   type ImageResult = Pick<RawWebImage, 'sha256' | 'mime' | 'finalUrl' | 'status'> & { artifact: MediaArtifactResult };
-  const failedArtifact = (reason: string): MediaArtifactResult => ({
+  const failedArtifact = (reason: 'original_image_unavailable' | 'image_count_limit'): MediaArtifactResult => ({
     ...evaluateImageOcr({ lines: [] }),
     routeStatus: 'failed',
     routeReasons: [reason],
     vlmError:
-      reason === 'local_ocr_unavailable'
-        ? '本机 OCR 未完成，可查看原图或手动精读。'
-        : reason === 'image_count_limit'
-          ? '超过本次 16 张图片读取限额，尚未读取原图。'
-          : '原图下载失败、格式无法识别或超过 8 MiB 限额。',
+      reason === 'image_count_limit'
+        ? '超过本次 16 张图片读取限额，尚未读取原图。'
+        : '原图下载失败、格式无法识别或超过 8 MiB 限额。',
+    ...(reason === 'image_count_limit' ? { mediaFailure: { stage: 'download', code: 'MEDIA_DOWNLOAD_LIMIT' } } : {}),
   });
+  const fallbackToVlm = process.env.FMCG_OCR_FALLBACK === 'vlm';
+  let engine: ReturnType<typeof checkLocalOcr> | undefined;
   const fetched = new Map<string, ImageResult>();
   const readImage = async (sourceUrl: string) => {
     const reused = fetched.get(sourceUrl);
     if (reused) return reused;
     let image: ImageResult = { status: 'failed', artifact: failedArtifact('original_image_unavailable') };
+    let writing = false;
     try {
       const result = await readPublicResource(
         sourceUrl,
@@ -160,22 +154,56 @@ export async function readWebMaterial(
           mime: /^(?:image\/(?:png|jpeg|jpg|gif|webp)|application\/octet-stream)$/u,
           bytes: 8 * 1024 * 1024,
           label: '图片',
+          userAgent: ({ hostname }) =>
+            hostname === 'mmbiz.qpic.cn' || hostname === 'mmbiz.qlogo.cn'
+              ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+              : undefined,
         },
         options,
       );
       const mime = imageType(result.bytes);
-      if (!mime) return image;
+      if (!mime) throw new RawUrlError('MEDIA_DOWNLOAD_INVALID_IMAGE', '响应不含受支持的图片字节。', 422);
       const sha256 = hash(result.bytes);
+      writing = true;
       await writeFileAtomic(path.join(root, webImageRelativePath(sha256)!), result.bytes);
-      image = { ...image, sha256, mime, finalUrl: result.finalUrl, artifact: failedArtifact('local_ocr_unavailable') };
-      const { width, height } = await loadImage(result.bytes);
+      image = { ...image, sha256, mime, finalUrl: result.finalUrl };
+      const decoded = await loadImage(result.bytes).catch(() => {
+        throw new LocalOcrError('local_ocr_image_decode_failed');
+      });
+      const { width, height } = decoded;
+      if (!width || !height) throw new LocalOcrError('local_ocr_image_decode_failed');
       image.artifact = { ...image.artifact, width, height };
-      const recognized = await (options.ocr ?? recognizeWebImageLines)(result.bytes);
+      const recognized = options.ocr
+        ? await options.ocr(result.bytes)
+        : await recognizeWebImageLines(result.bytes, decoded, (engine ??= checkLocalOcr()));
       const lines = typeof recognized === 'string' ? recognized.split(/\r?\n/u).map((text) => ({ text })) : recognized;
       const artifact = evaluateImageOcr({ width, height, lines });
       image = { ...image, status: artifact.metrics.effectiveCharCount >= 2 ? 'transcribed' : 'no_text', artifact };
-    } catch {
-      // A retained image remains available to verify when local OCR is unavailable.
+    } catch (error) {
+      if (!image.sha256) {
+        const code =
+          error instanceof RawUrlError ? error.code : writing ? 'MEDIA_DOWNLOAD_STORE_FAILED' : 'URL_FETCH_FAILED';
+        const httpStatus = error instanceof RawUrlError ? error.upstreamStatus : undefined;
+        const failure = { stage: 'download' as const, code, ...(httpStatus === undefined ? {} : { httpStatus }) };
+        image.artifact.mediaFailure = failure;
+        console.warn('[raw-media] 原图下载失败', failure);
+      }
+      if (image.sha256) {
+        const diagnostic = error instanceof LocalOcrError ? error : new LocalOcrError('local_ocr_unavailable');
+        const { code, source, affectedLanguages } = diagnostic;
+        console.warn('[raw-ocr]', { code, source, affectedLanguages });
+        const { width, height, metrics } = image.artifact;
+        image.artifact = {
+          width,
+          height,
+          metrics,
+          ocrRawText: '',
+          routeStatus:
+            fallbackToVlm && width && height && code !== 'local_ocr_image_decode_failed' ? 'needs_vlm' : 'failed',
+          routeReasons: [code],
+          ocrError: diagnostic.message,
+        };
+      }
     }
     fetched.set(sourceUrl, image);
     return image;
@@ -204,7 +232,7 @@ export async function readWebMaterial(
     body += marker;
     if (image.status === 'failed') {
       const issue = image.sha256
-        ? `图片 ${number} 的本机 OCR 未完成（需 Tesseract 和简中、英文语言数据）。`
+        ? `图片 ${number} 的本机 OCR 未完成。${artifact.ocrError ?? ''}`
         : `图片 ${number} 原图读取失败或超出读取限额。`;
       issues.push(issue);
     }

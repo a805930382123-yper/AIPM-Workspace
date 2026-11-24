@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { once } from 'node:events';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -10,7 +10,8 @@ import express from 'express';
 import { registerRawImportRoute } from '../../server/raw-import.ts';
 import { AssetStore } from '../../services/raw/assets.ts';
 import { RawStore } from '../../services/raw/store.ts';
-import { readWebMaterial, readWebImage, identifyWebImages } from '../../services/raw/web-material.ts';
+import { readWebMaterial, readWebImage, identifyWebImages, recognizeWebImageLines } from '../../services/raw/web-material.ts';
+import { checkLocalOcr } from '../../services/raw/local-ocr.ts';
 import { acquireNewsMaterial } from '../../services/news/raw-material.ts';
 import { NewsRawSave } from '../../services/news/raw-save.ts';
 
@@ -28,10 +29,14 @@ ctx.font = '36px sans-serif';
 ctx.fillText('Store operations report', 30, 65);
 ctx.fillText('Weekly results summary', 30, 130);
 const png = canvas.toBuffer('image/png');
-const html = '<article><p>保留网页原文字段。</p><img width="40" src="/figure.png"><p>保留图片后的正文。</p><img src="/figure.png"></article>';
+// Two transparent 1×1 frames. Leptonica rejects this GIF without first-frame conversion.
+const gif = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAAh+QQBAAAAACwAAAAAAQABAAACAUQAOw==', 'base64');
+const html = '<article><p>保留网页原文字段。</p><img width="40" src="/figure.png"><p>保留图片后的正文。</p><img src="/figure.png"><img src="/animation.gif"></article>';
 const fixture = http.createServer((req, res) => {
-  res.writeHead(200, { 'content-type': req.url === '/story' ? 'text/html' : 'image/png' });
-  res.end(req.url === '/story' ? html : png);
+  const [type, body] =
+    req.url === '/story' ? ['text/html', html] : req.url === '/animation.gif' ? ['image/gif', gif] : ['image/png', png];
+  res.writeHead(200, { 'content-type': type });
+  res.end(body);
 });
 let apiServer;
 try {
@@ -73,7 +78,7 @@ try {
   for (const id of [manual.raw.id, saved.rawId]) {
     const raw = await new RawStore(root).get(id);
     const artifacts = await store.getMediaArtifacts(id);
-    assert.deepEqual(artifacts.map((x) => x.routeStatus), ['ocr_ready', 'ocr_ready']);
+    assert.deepEqual(artifacts.map((x) => x.routeStatus), ['ocr_ready', 'ocr_ready', 'skipped']);
     assert.match(artifacts[0].ocrCleanText, /operations report/u);
     assert.equal(artifacts[0].width, 800);
     assert.equal(artifacts[0].height, 240);
@@ -82,14 +87,31 @@ try {
     const originalBytes = await readFile(path.join(root, 'knowledge', 'raw', 'articles', `${id}.md`));
     const occurrences = identifyWebImages(id, raw.webImages);
     assert.notEqual(occurrences[0].mediaId, occurrences[1].mediaId);
-    for (const image of raw.webImages) assert.deepEqual(await readWebImage(root, image), png);
+    for (const [index, image] of raw.webImages.entries())
+      assert.deepEqual(await readWebImage(root, image), index === 2 ? gif : png);
+    assert.equal(raw.webImages[2].mime, 'image/gif');
+    assert.deepEqual(artifacts[2].routeReasons, ['tiny_or_banner_image']);
     await store.getAnchoredMediaArtifacts(raw);
     assert.deepEqual(await readFile(path.join(root, 'knowledge', 'raw', 'articles', `${id}.md`)), originalBytes);
     summary.push({ images: artifacts.length, states: artifacts.map((x) => x.routeStatus),
       bodySha256: raw.bodySha256, imageSha256: hash(png), avgConfidence: artifacts[0].metrics.avgConfidence });
   }
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ result: 'PASS', manualAndNews: summary, realProviderRequests: 0 }, null, 2));
+  const engine = await checkLocalOcr();
+  const tessdata = path.join(root, 'missing-tessdata');
+  await mkdir(tessdata);
+  process.env.TESSDATA_PREFIX = tessdata;
+  await assert.rejects(checkLocalOcr(), {
+    code: 'local_ocr_language_missing',
+    affectedLanguages: ['chi_sim', 'eng'],
+  });
+  for (const language of ['chi_sim', 'eng'])
+    await writeFile(path.join(tessdata, `${language}.traineddata`), 'not a traineddata file');
+  await assert.rejects(recognizeWebImageLines(png), { code: 'local_ocr_language_load_failed' });
+  console.log(JSON.stringify({
+    result: 'PASS', engineSource: engine.source, manualAndNews: summary, realProviderRequests: 0,
+    languageDiagnostics: ['missing', 'unloadable'],
+  }, null, 2));
 } finally {
   await Promise.all([apiServer, fixture].filter(Boolean).map((server) => new Promise((resolve) => server.close(resolve))));
   await rm(root, { recursive: true, force: true });
