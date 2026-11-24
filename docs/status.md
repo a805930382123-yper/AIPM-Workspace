@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **RAWOCR05 微信图片处理第一轮**：执行链路独立验收通过，产品提交 `8f4e7ba`。样本图 1 通过 Windows 代理完成真实模型精读，图 4、6 的动画 GIF 已在两个导入入口实测。第二轮待进行三层筛选、人工兜底及六图重新导入验收。[任务卡](handoffs/RAWOCR05-runtime-task.md) · [验收报告](reports/RAWOCR05-review.md)
+- **RAWOCR05–06 微信图片处理**：执行链路（`8f4e7ba`）与三层筛选、人工精读（`17ab0bc`）均通过独立验收。隔离库从微信原网址重新导入后，正文图 1、2 完成真实精读，推广图 3–6 全部由文末规则跳过。原始正文及六张图片的哈希与正式记录一致。[任务卡](handoffs/RAWOCR05-runtime-task.md) · [第一轮验收](reports/RAWOCR05-review.md) · [第二轮与整单验收](reports/RAWOCR06-review.md)
 
 - **LLM-Wiki 1A-1**：施工自查及独立验收 PASS。最低 Node 22.13 原生 SQLite 缺少 FTS5，锁定 better-sqlite3 12.11.1。1A-2 待授权，Batch 1A 整体待验收。[任务卡](handoffs/LLMWIKI-1A-1.md) · [施工](reports/1A-1-builder.md) · [验收](reports/1A-1-review.md)
 
