@@ -68,6 +68,20 @@ export async function retrieveKnowledgeContextDetailed(
         requested === 'sqlite_fts'
           ? rankWikiChunks(searchIndex, queries, scope)
           : await rankHybridChunks(searchIndex, queries, scope, (reason) => reasons.push(reason));
+      // Read the first page window concurrently, but verify and admit pages in rank order.
+      const firstPages = [...new Set(candidates.map(({ chunk }) => chunk.pageId))].slice(
+        0,
+        Math.max(0, MAINTENANCE_LIMITS.pages - initial.length),
+      );
+      const prefetched = new Map(
+        firstPages.map((pageId) => [
+          pageId,
+          wiki.readPageFile(pageId).then(
+            (markdown) => ({ markdown }),
+            (error: unknown) => ({ error }),
+          ),
+        ]),
+      );
       const checked = new Map<string, WikiRecord | undefined>();
       const selected = new Map<string, WikiRecord>();
       const chunks: RetrievedChunkItem[] = [];
@@ -81,7 +95,9 @@ export async function retrieveKnowledgeContextDetailed(
         )
           continue;
         if (!checked.has(pageId)) {
-          const markdown = await wiki.readPageFile(pageId);
+          const file = await prefetched.get(pageId);
+          if (file && 'error' in file) throw file.error;
+          const markdown = file ? file.markdown : await wiki.readPageFile(pageId);
           if (markdown === undefined || wikiFileHash(markdown) !== fileHash)
             throw new Error('Wiki search snapshot is stale');
           const page = parseWikiMarkdown(markdown);

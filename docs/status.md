@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 1B-2**：内存向量检索、RRF、选页范围与三级降级通过独立验收。两项返修关闭，全仓 1,114/1,114。1B-3 待授权，整批尚待真实质量与性能评测。[任务卡](handoffs/LLMWIKI-1B-2.md) · [施工](reports/1B-2-builder.md) · [验收](reports/1B-2-review.md)
+- **LLM-Wiki 1B-3**：按用户指定范围完成离线交付与独立复验。质量门禁返修关闭，50/50 基线上下文一致，全量 1,121/1,121。千页余弦与混合检索平均 9.59/21.96 ms，实盘回滚通过。真实 Hybrid 语义质量与真实建向量开销待验证，Batch 1B 整体待验收。[任务卡](handoffs/LLMWIKI-1B-3.md) · [逐题结果](../evals/reports/batch-1b-hybrid.md) · [独立验收](reports/1B-3-review.md)
+
+- **LLM-Wiki 1B-2**：内存向量检索、RRF、选页范围与三级降级通过独立验收。两项返修关闭，全仓 1,114/1,114。后续离线评测见 1B-3。[任务卡](handoffs/LLMWIKI-1B-2.md) · [施工](reports/1B-2-builder.md) · [验收](reports/1B-2-review.md)
 
 - **LLM-Wiki 1B-1**：向量生成、版本锁、非阻塞补算通过独立验收。测试继承宿主 Embedding 配置的缺陷已关闭；注入回环配置的全量回归 1,108/1,108，哨兵收到 0 次请求。后续检索接入见 1B-2。[任务卡](handoffs/LLMWIKI-1B-1.md) · [施工](reports/1B-1-builder.md) · [独立验收](reports/1B-1-review.md)
 

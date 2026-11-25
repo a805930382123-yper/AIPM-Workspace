@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { once } from 'node:events';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -216,6 +216,27 @@ const wikiInput = (title: string, body: string): WikiInput => ({
   confidence: 'medium',
   source_level: 'D',
   review_status: 'unreviewed',
+});
+
+test('multi-lane dot products preserve cosine ranking and the tail of a non-multiple-of-four dimension', () => {
+  const cache = new WikiVectorCache();
+  const query = Float32Array.from({ length: 1537 }, (_, i) => Math.sin(i) / 32);
+  const vectors = Array.from({ length: 12 }, (_, row) =>
+    Float32Array.from({ length: query.length }, (_, i) => Math.sin(i + row) / 32),
+  );
+  cache.upsertChunks(vectors.map((vec, i) => ({ chunkId: String(i), pageId: String(i), wikiType: 'concept', vec })));
+  const scalar = vectors
+    .map((vector, i) => ({
+      chunkId: String(i),
+      score: vector.reduce((sum, value, j) => sum + value * query[j], 0),
+    }))
+    .sort((a, b) => b.score - a.score);
+  const actual = cache.rank(query, {}, -1);
+  assert.deepEqual(
+    actual.map(({ chunkId }) => chunkId),
+    scalar.map(({ chunkId }) => chunkId),
+  );
+  assert(actual.every(({ score }, i) => Math.abs(score - scalar[i].score) < 1e-12));
 });
 
 async function fixture(t: TestContext) {
@@ -917,6 +938,147 @@ test(
       child.kill();
       await finished;
     }
+  },
+);
+
+test(
+  'server process rolls back hybrid to FTS to Legacy without the SQLite file and verifies the same citation',
+  { timeout: 90_000 },
+  async (t) => {
+    const f = await fixture(t);
+    const title = '仓配回滚演练';
+    const quote = '临时货架交接按签收件数登记。';
+    const page = await f.wiki.create(wikiInput(title, '## 来源事实\n\n' + quote));
+    const file = path.join(f.root, 'knowledge', 'wiki', page.id + '.md');
+    const checksum = async () =>
+      createHash('sha256')
+        .update(await readFile(file))
+        .digest('hex');
+    const before = await checksum();
+    await f.index.close();
+    let answers = 0;
+    let expectChunks = false;
+    f.wire.handleChat(({ messages }) => {
+      const input = JSON.parse(messages.find(({ role }) => role === 'user')!.content);
+      assert.equal(input.stage, 'knowledge_answer');
+      assert.equal(input.wiki.length, 1);
+      const [sent] = input.wiki;
+      assert.equal(sent.id, page.id);
+      assert.equal('chunks' in sent, expectChunks);
+      const chunk = expectChunks ? sent.chunks[0] : undefined;
+      const offset = (chunk?.rawText ?? sent.body).indexOf(quote);
+      assert(offset >= 0);
+      const start = (chunk?.startOffset ?? 0) + offset;
+      answers++;
+      return {
+        version: 1,
+        needsRaw: [],
+        sections: [{ kind: 'fact', text: quote, citationIds: ['c1'] }],
+        citations: [{ id: 'c1', kind: 'wiki', recordId: page.id, quote, start, end: start + quote.length }],
+      };
+    });
+    const cleanEnv = withoutInheritedEmbeddings(
+      Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(FMCG_LLM_|NODE_OPTIONS$)/iu.test(key))),
+    );
+    const shutdown =
+      'data:text/javascript,' +
+      encodeURIComponent("process.once('message', () => { process.disconnect(); process.emit('SIGTERM'); });");
+    for (const engine of ['hybrid', 'sqlite_fts', 'legacy_scan'] as const) {
+      expectChunks = engine !== 'legacy_scan';
+      if (engine === 'legacy_scan') {
+        await rm(f.index.databaseFile);
+        await assert.rejects(access(f.index.databaseFile), { code: 'ENOENT' });
+      }
+      const probe = createServer();
+      await new Promise<void>((resolve) => probe.listen(0, '127.0.0.1', resolve));
+      const port = (probe.address() as AddressInfo).port;
+      await new Promise<void>((resolve) => probe.close(() => resolve()));
+      const base = `http://127.0.0.1:${port}`;
+      const child = spawn(process.execPath, ['--import', 'tsx', '--import', shutdown, 'server/index.ts'], {
+        env: {
+          ...cleanEnv,
+          SEARCH_ENGINE: engine,
+          SEARCH_VECTOR_MIN_SCORE: '0.42',
+          FMCG_PORT: String(port),
+          FMCG_DATA_DIR: f.root,
+          FMCG_LLM_CONFIG_FILE: path.join(f.root, 'missing.env'),
+          FMCG_LLM_BASE_URL: f.wire.baseUrl,
+          FMCG_LLM_API_KEY: 'synthetic-credential',
+          FMCG_LLM_MODEL: 'production-chat-stub',
+          EMBEDDING_MODEL: 'rollback-embedding',
+        },
+        stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+        windowsHide: true,
+      });
+      const finished = once(child, 'close');
+      let out = '';
+      let err = '';
+      assert(child.stdout && child.stderr);
+      child.stdout.on('data', (bytes) => {
+        out += String(bytes);
+      });
+      child.stderr.on('data', (bytes) => {
+        err += String(bytes);
+      });
+      try {
+        for (let i = 0; !out.includes(`API: ${base}`); i++) {
+          assert(child.exitCode === null && i < 180, out + err);
+          await setTimeout(100);
+        }
+        if (engine === 'hybrid') {
+          const db = openSearchDatabase(f.index.databaseFile, { readonly: true });
+          try {
+            const check = db.prepare<[], { version: string | null }>('SELECT embedding_ver AS version FROM chunks');
+            for (let i = 0; !check.get()?.version; i++) {
+              assert(child.exitCode === null && i < 60, out + err);
+              await setTimeout(100);
+            }
+          } finally {
+            db.close();
+          }
+        }
+        const get = async (route: string) => {
+          const response = await fetch(base + route, { signal: AbortSignal.timeout(5000) });
+          assert.equal(response.status, 200);
+          return response.json();
+        };
+        assert.equal((await get('/api/health')).ok, true);
+        assert.equal((await get('/api/wiki/' + page.id)).body, page.body);
+        const question = engine === 'hybrid' ? 'semanticonly' : title;
+        const response = await fetch(base + '/api/knowledge/answers', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ requestId: randomUUID(), question }),
+          signal: AbortSignal.timeout(15_000),
+        });
+        assert.equal(response.status, 200);
+        const answer = await response.json();
+        assert.equal(answer.status, 'completed');
+        assert.equal(answer.wikiRetrieval.engine, engine);
+        assert.equal(answer.wikiRetrieval.degraded, false);
+        const citation = answer.citations[0];
+        assert.equal(citation.quote, quote);
+        assert.equal(page.body.slice(citation.start, citation.end), quote);
+        assert.equal(await checksum(), before);
+        if (engine === 'legacy_scan') await assert.rejects(access(f.index.databaseFile), { code: 'ENOENT' });
+        else await access(f.index.databaseFile);
+        assert.equal(err, '');
+      } finally {
+        if (child.connected) child.send('stop');
+        const kill = AbortSignal.timeout(10_000);
+        const onTimeout = () => child.kill();
+        kill.addEventListener('abort', onTimeout, { once: true });
+        const [code] = await finished;
+        kill.removeEventListener('abort', onTimeout);
+        assert.equal(code, 0, out + err);
+      }
+    }
+    assert.equal(answers, 3);
+    assert.deepEqual(
+      f.wire.requests.map(({ input }) => input.length),
+      [1, 1],
+    );
+    assert.equal(f.wire.requests[1].input[0], 'semanticonly');
   },
 );
 

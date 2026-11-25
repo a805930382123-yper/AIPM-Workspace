@@ -67,23 +67,30 @@ export function rankWikiChunks(
   const informative = queryGroups.filter(({ coverageWeight }) => coverageWeight > 0);
   const minimumCoverage =
     standalone && informative.length >= 6 ? informative.reduce((sum, group) => sum + group.coverageWeight, 0) / 2 : 0;
+  // Apply the same scope and BM25 limit before joining the wide, vector-bearing chunk rows.
   const search = index.read((db) =>
     db
       .prepare<unknown[], Candidate>(
         `
+    WITH top_fts AS MATERIALIZED (
+      SELECT f.rowid, f.chunk_id, f.page_id, bm25(chunks_fts, 0, 0, 6.0, 3.0, 1.0) AS bm25
+      FROM chunks_fts AS f JOIN pages AS p ON p.page_id = f.page_id
+      WHERE chunks_fts MATCH ?
+        AND (? OR p.wiki_type <> 'source')
+        AND (? IS NULL OR f.page_id IN (SELECT value FROM json_each(?)))
+        AND f.page_id NOT IN (SELECT value FROM json_each(?))
+      ORDER BY bm25 ASC, f.chunk_id ASC LIMIT 30
+    )
     SELECT c.chunk_id AS chunkId, c.page_id AS pageId, c.chunk_index AS chunkIndex,
       c.heading_path AS headingPath, c.section_kind AS sectionKind, c.raw_text AS rawText,
       c.start_offset AS startOffset, c.end_offset AS endOffset, c.raw_hash AS rawHash,
       p.title AS pageTitle, p.aliases_json AS aliases, p.file_hash AS fileHash,
       f.title_tokens AS titleTokens, f.meta_tokens AS metaTokens, f.body_tokens AS bodyTokens,
-      bm25(chunks_fts, 0, 0, 6.0, 3.0, 1.0) AS bm25
-    FROM chunks_fts AS f JOIN chunks AS c ON c.chunk_id = f.chunk_id
+      t.bm25
+    FROM top_fts AS t JOIN chunks_fts AS f ON f.rowid = t.rowid
+    JOIN chunks AS c ON c.chunk_id = t.chunk_id AND c.page_id = t.page_id
     JOIN pages AS p ON p.page_id = c.page_id
-    WHERE chunks_fts MATCH ?
-      AND (? OR p.wiki_type <> 'source')
-      AND (? IS NULL OR p.page_id IN (SELECT value FROM json_each(?)))
-      AND p.page_id NOT IN (SELECT value FROM json_each(?))
-    ORDER BY bm25 ASC, c.chunk_id ASC LIMIT 30
+    ORDER BY t.bm25 ASC, t.chunk_id ASC
   `,
       )
       .all(

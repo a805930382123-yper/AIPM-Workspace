@@ -67,8 +67,21 @@ export class WikiVectorCache {
   rank(query: Float32Array, options: VectorSearchOptions, minScore: number, topK = 30): VectorHit[] {
     const scored: VectorHit[] = [];
     for (const { chunkId, vec } of this.eligible(options)) {
-      let score = 0;
-      for (let i = 0; i < vec.length; i++) score += query[i] * vec[i];
+      // Independent accumulators let the CPU overlap multiply-add work on long vectors.
+      let a = 0;
+      let b = 0;
+      let c = 0;
+      let d = 0;
+      const length = vec.length;
+      let i = 0;
+      for (; i + 3 < length; i += 4) {
+        a += query[i] * vec[i];
+        b += query[i + 1] * vec[i + 1];
+        c += query[i + 2] * vec[i + 2];
+        d += query[i + 3] * vec[i + 3];
+      }
+      let score = a + b + (c + d);
+      for (; i < length; i++) score += query[i] * vec[i];
       score = Math.max(-1, Math.min(1, score));
       if (score >= minScore) scored.push({ chunkId, score });
     }
