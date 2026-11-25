@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
@@ -33,7 +34,7 @@ async function startApi(dataRoot) {
   await new Promise((resolve, reject) => reservation.close(error => error ? reject(error) : resolve()));
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
     windowsHide: true,
-    env: { ...childEnv, FMCG_DATA_DIR: dataRoot, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config },
+    env: withoutInheritedEmbeddings({ ...childEnv, FMCG_DATA_DIR: dataRoot, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config }),
   });
   const stopped = new Promise(resolve => child.once('close', resolve));
   let stdout = '';

@@ -19,6 +19,8 @@ import { RawTranslationService } from '../services/raw/translations.ts';
 import { validateRaw, validateRawBodyUpdate, InputError } from './validation.ts';
 import { getStats } from '../services/stats/index.ts';
 import { WikiError, WikiStore } from '../services/wiki/store.ts';
+import { assertWikiSourcesAllowed } from '../services/wiki/source-lineage.ts';
+import { OpenAiEmbeddingProvider, resolveEmbeddingConfig } from '../services/search/embedding-provider.ts';
 import { WikiSearchIndexer } from '../services/search/indexer.ts';
 import { DraftStore } from '../services/wiki/drafts.ts';
 import { WikiCommitService } from '../services/wiki/commits.ts';
@@ -98,8 +100,27 @@ const lock = await acquireInstanceLock(root, port, production ? 'production' : '
 process.once('exit', lock.releaseMetadata);
 const store = new RawStore(root);
 const assetStore = new AssetStore(root);
-const wikiSearch = process.env.SEARCH_ENGINE === 'legacy_scan' ? undefined : new WikiSearchIndexer(root);
-const wikiStore = new WikiStore(root, store, rulesDir, wikiSearch);
+const wikiSearch: WikiSearchIndexer | undefined =
+  process.env.SEARCH_ENGINE === 'legacy_scan'
+    ? undefined
+    : new WikiSearchIndexer(root, {
+        provider: async () => {
+          if (!process.env.EMBEDDING_MODEL?.trim()) return null;
+          const main =
+            process.env.EMBEDDING_BASE_URL?.trim() && process.env.EMBEDDING_API_KEY?.trim()
+              ? undefined
+              : await loadConfig().catch(() => undefined);
+          const config = resolveEmbeddingConfig(process.env, main);
+          return config
+            ? new OpenAiEmbeddingProvider(config, (usage, error) => {
+                console.info('[search-embedding-usage]', { ...usage, error });
+              })
+            : null;
+        },
+        authorize: (page) => assertWikiSourcesAllowed(wikiStore, store, page),
+        withSourceLock: (work) => wikiStore.withLock(work),
+      });
+const wikiStore: WikiStore = new WikiStore(root, store, rulesDir, wikiSearch);
 const rawStates = new RawStateStore(root);
 const drafts = new DraftStore(root);
 const jobs = new ExtractionJobStore(root);

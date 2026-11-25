@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -222,7 +223,12 @@ async function fixture() {
       cwd: process.cwd(),
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...env, FMCG_DATA_DIR: root, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config },
+      env: withoutInheritedEmbeddings({
+        ...env,
+        FMCG_DATA_DIR: root,
+        FMCG_PORT: String(port),
+        FMCG_LLM_CONFIG_FILE: config,
+      }),
     });
     child.stdout?.on('data', (data) => {
       log += data;

@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -147,7 +148,7 @@ try {
     FMCG_LLM_BASE_URL: `http://127.0.0.1:${provider.address().port}/v1`, FMCG_LLM_MODEL: 'independent-fake',
     FMCG_LLM_API_KEY: 'synthetic-only', FMCG_NEWS_AI_ENABLED: 'false', NODE_ENV: 'test' });
   child = spawn(process.execPath, ['--import', pathToFileURL(preload).href, '--import', 'tsx', 'server/index.ts'],
-    { env, windowsHide: true, stdio: ['ignore', 'inherit', 'inherit'] });
+    { env: withoutInheritedEmbeddings(env), windowsHide: true, stdio: ['ignore', 'inherit', 'inherit'] });
   await wait('API healthy', () => fetch(`${base}/api/health`, { signal: AbortSignal.timeout(500) }).then(r => r.ok, () => false));
   const api = async route => {
     const response = await fetch(base + route);
@@ -268,7 +269,7 @@ try {
   delete env.FMCG_LLM_MODEL;
   delete env.FMCG_LLM_API_KEY;
   child = spawn(process.execPath, ['--import', pathToFileURL(preload).href, '--import', 'tsx', 'server/index.ts'],
-    { env, windowsHide: true, stdio: ['ignore', 'inherit', 'inherit'] });
+    { env: withoutInheritedEmbeddings(env), windowsHide: true, stdio: ['ignore', 'inherit', 'inherit'] });
   await wait('unconfigured API healthy', () => fetch(`${base}/api/health`, { signal: AbortSignal.timeout(500) }).then(r => r.ok, () => false));
   const beforeNoConfig = requests.length;
   await page.getByText(unconfigured.raw.title, { exact: true }).click();

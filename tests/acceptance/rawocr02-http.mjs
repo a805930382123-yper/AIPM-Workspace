@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -143,7 +144,7 @@ try {
   const port = portProbe.address().port;
   await new Promise((resolve) => portProbe.close(resolve));
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_LLM_/iu.test(key)));
-  child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, stdio: ['ignore', 'ignore', 'inherit'], env: { ...env, FMCG_PORT: String(port), FMCG_DATA_DIR: root, FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env'), FMCG_LLM_BASE_URL: `http://127.0.0.1:${fake.address().port}/v1`, FMCG_LLM_MODEL: 'fake-vision', FMCG_LLM_API_KEY: secret } });
+  child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, stdio: ['ignore', 'ignore', 'inherit'], env: withoutInheritedEmbeddings({ ...env, FMCG_PORT: String(port), FMCG_DATA_DIR: root, FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env'), FMCG_LLM_BASE_URL: `http://127.0.0.1:${fake.address().port}/v1`, FMCG_LLM_MODEL: 'fake-vision', FMCG_LLM_API_KEY: secret }) });
   const base = `http://127.0.0.1:${port}`;
   const api = async (route, input, expected = 200, method = 'POST') => {
     const response = await fetch(base + route, { ...(input === undefined ? {} : { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) }), signal: AbortSignal.timeout(25000) });

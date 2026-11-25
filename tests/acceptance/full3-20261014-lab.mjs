@@ -1,10 +1,11 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import fs from 'node:fs/promises';import path from 'node:path';import os from 'node:os';import {spawn}from'node:child_process';import{once}from'node:events';
 import {loadLlmConfig,llmConfigSummary}from'../../services/llm/config.ts';import{port,delay,fileSnapshot}from'./b07-harness.mjs';
 const prefix='docs/reports/FULL3-20261014-', config=await loadLlmConfig({filePath:path.resolve('.env.local')});if(!llmConfigSummary(config,'.env.local').configured)throw Error('Actual Provider config not valid');
 const root=await fs.mkdtemp(path.join(os.tmpdir(),'fmcg-full3-real-')),apiPort=await port(),uiPort=await port(),url=`http://127.0.0.1:${uiPort}`,controlFile=path.join(root,'control.json');await fs.writeFile(controlFile,'{}');
 const env={...process.env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_UI_ORIGIN:url,FMCG_LLM_CONFIG_FILE:path.join(root,'absent-private-config.env'),FMCG_LLM_BASE_URL:config.baseUrl,FMCG_LLM_MODEL:config.model,FMCG_LLM_API_KEY:config.apiKey,FULL3_TRACE:path.resolve(prefix+'provider-trace.jsonl')};
 const services=[];async function stop(s){if(s.exitCode===null&&s.signalCode===null){const d=once(s,'exit');s.kill();await d;}}
-const api=spawn(process.execPath,['--import','tsx','--import','./tests/acceptance/full3-20261014-trace-hook.mjs','server/index.ts'],{env,windowsHide:true,stdio:['ignore','pipe','pipe']});services.push(api);let logs='';api.stdout.on('data',b=>logs+=b);api.stderr.on('data',b=>logs+=b);
+const api=spawn(process.execPath,['--import','tsx','--import','./tests/acceptance/full3-20261014-trace-hook.mjs','server/index.ts'],{env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:['ignore','pipe','pipe']});services.push(api);let logs='';api.stdout.on('data',b=>logs+=b);api.stderr.on('data',b=>logs+=b);
 for(let i=0;i<160;i++){if(api.exitCode!==null)throw Error('Isolated API startup failed');try{if((await fetch(`http://127.0.0.1:${apiPort}/api/health`)).ok)break;}catch{}await delay(100);}
 const baseline=await fileSnapshot(root);const ui=spawn(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',String(uiPort),'--strictPort'],{env:{...process.env,FMCG_PORT:String(apiPort)},windowsHide:true,stdio:['ignore','pipe','pipe']});services.push(ui);ui.stdout.on('data',b=>logs+=b);ui.stderr.on('data',b=>logs+=b);
 for(let i=0;i<160;i++){if(ui.exitCode!==null)throw Error('Isolated UI startup failed');try{if((await fetch(url)).ok)break;}catch{}await delay(100);}

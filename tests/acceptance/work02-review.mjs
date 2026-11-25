@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
@@ -113,13 +114,13 @@ async function startApi(root, withFake = true) {
   await new Promise(resolve => reservation.close(resolve));
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
     windowsHide: true,
-    env: {
+    env: withoutInheritedEmbeddings({
       ...cleanEnv, FMCG_DATA_DIR: root, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config,
       ...(withFake ? {
         FMCG_LLM_BASE_URL: `http://127.0.0.1:${fake.address().port}/v1`,
         FMCG_LLM_MODEL: 'work02-local-fake', FMCG_LLM_API_KEY: fakeSecret,
       } : {}),
-    },
+    }),
   });
   const stopped = once(child, 'close');
   let logs = '';

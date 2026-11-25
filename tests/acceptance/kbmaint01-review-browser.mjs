@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { spawn, execFileSync } from 'node:child_process';
@@ -63,7 +64,7 @@ const envDir=path.join(run,'vite-env'), outDir=path.join(run,'dist');
 await build({ configFile:false, envDir, plugins:[react()],build:{outDir} });
 const env = Object.fromEntries(Object.entries(process.env).filter(([key])=>!/^FMCG_|^NODE_OPTIONS$/i.test(key)));
 Object.assign(env, { FMCG_PORT:String(apiPort),FMCG_DATA_DIR:data,FMCG_LLM_CONFIG_FILE:config,FMCG_UI_ORIGIN:base,FMCG_NEWS_AI_ENABLED:'false' });
-const child=spawn(process.execPath,['--import',pathToFileURL(guard).href,'--import','tsx','server/index.ts'],{env,windowsHide:true,stdio:'ignore'});
+const child=spawn(process.execPath,['--import',pathToFileURL(guard).href,'--import','tsx','server/index.ts'],{env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:'ignore'});
 const close=once(child,'close');
 let browser,ui;
 const report={real,node:process.version,viewport:[],errors:[],runs:[],hashes:[],screens:[]};

@@ -4,8 +4,10 @@ import { mkdir, readFile, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { SerialQueue } from '../storage/files.ts';
-import { parseWikiMarkdown, wikiPageIdFromFilename } from '../wiki/store.ts';
+import { parseWikiMarkdown, wikiPageIdFromFilename, type WikiRecord } from '../wiki/store.ts';
 import { chunkWikiPage } from './chunking.ts';
+import { EmbeddingBackfill, type EmbeddingStatus } from './embedding-backfill.ts';
+import { EmbeddingError, type EmbeddingProvider } from './embedding-provider.ts';
 import {
   closeIndexForReplacement,
   initSearchSchema,
@@ -30,6 +32,12 @@ export interface RebuildResult {
   durationMs: number;
 }
 
+type EmbeddingOptions = {
+  provider: () => Promise<EmbeddingProvider | null>;
+  authorize: (page: WikiRecord) => Promise<void>;
+  withSourceLock?: <T>(work: () => Promise<T>) => Promise<T>;
+};
+
 // The workbench holds its existing data-root instance lock and owns one indexer per root.
 export class WikiSearchIndexer {
   readonly databaseFile: string;
@@ -38,11 +46,32 @@ export class WikiSearchIndexer {
   private readonly queue = new SerialQueue();
   private db: SearchDatabase | undefined;
   private dirty = false;
+  private readonly embeddings: EmbeddingBackfill;
 
-  constructor(root: string) {
+  constructor(
+    root: string,
+    private readonly embeddingOptions?: EmbeddingOptions,
+  ) {
     this.root = path.resolve(root);
     this.wikiDir = path.join(this.root, 'knowledge', 'wiki');
     this.databaseFile = path.join(this.root, 'state', 'search-index.sqlite');
+    this.embeddings = new EmbeddingBackfill(
+      () => this.db,
+      embeddingOptions?.provider ?? (async () => null),
+      async ({ filePath, fileHash, pageId }) => {
+        const file = path.join(this.root, filePath);
+        if (wikiPageIdFromFilename(path.relative(this.wikiDir, file)) !== pageId)
+          throw new EmbeddingError('EMBEDDING_SOURCE_UNAVAILABLE');
+        const bytes = await readFile(file).catch(() => undefined);
+        if (!bytes || wikiFileHash(bytes) !== fileHash) throw new EmbeddingError('EMBEDDING_STALE');
+        const page = parseWikiMarkdown(bytes.toString('utf8'));
+        if (page.id !== pageId) throw new EmbeddingError('EMBEDDING_SOURCE_UNAVAILABLE');
+        await embeddingOptions?.authorize(page).catch(() => {
+          throw new EmbeddingError('EMBEDDING_SOURCE_UNAVAILABLE');
+        });
+      },
+      embeddingOptions?.withSourceLock ?? ((work) => work()),
+    );
   }
 
   get isDirty() {
@@ -53,6 +82,14 @@ export class WikiSearchIndexer {
   read<T>(query: (db: SearchDatabase) => T): T {
     if (!this.db) throw new Error('Search index is unavailable');
     return query(this.db);
+  }
+
+  getEmbeddingStatus(): EmbeddingStatus {
+    return this.embeddings.status();
+  }
+
+  backfillMissingEmbeddings(): Promise<void> {
+    return this.embeddings.request();
   }
 
   reconcileOnStartup(): Promise<boolean> {
@@ -91,6 +128,7 @@ export class WikiSearchIndexer {
           previous.filter((row) => replaced.has(row.page_id) || !present.has(row.file_path)).map((row) => row.page_id),
         );
         setIndexMeta(db, { last_reconciled_at: new Date().toISOString() });
+        if (this.embeddingOptions) void this.backfillMissingEmbeddings();
         return true;
       } catch (error) {
         this.markDirty('reconcileOnStartup', error);
@@ -109,6 +147,7 @@ export class WikiSearchIndexer {
         if (!db) throw new Error('Search index is unavailable');
         const page = await this.readWiki(file);
         writeIndexedPages(db, [page], [page.page.id]);
+        if (this.embeddingOptions) void this.backfillMissingEmbeddings();
         return true;
       } catch (error) {
         this.markDirty('syncPage', error);
@@ -143,6 +182,7 @@ export class WikiSearchIndexer {
 
   close(): Promise<void> {
     return this.queue.run(async () => {
+      this.embeddings.stop();
       this.db?.close();
       this.db = undefined;
     });
@@ -220,6 +260,7 @@ export class WikiSearchIndexer {
       }
       if (!this.db) throw new Error('Could not reopen the rebuilt search index');
       this.dirty = false;
+      if (this.embeddingOptions) void this.backfillMissingEmbeddings();
       return { pagesIndexed, chunksIndexed, durationMs: performance.now() - started };
     } catch (error) {
       if (temp.open) temp.close();

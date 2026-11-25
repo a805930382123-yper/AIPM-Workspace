@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import {spawn,execFileSync} from 'node:child_process';
 import {once} from 'node:events';
@@ -20,7 +21,7 @@ try{
 const fp=await listen(fake),reserve=createServer(),port=await listen(reserve);await new Promise(r=>reserve.close(r));
 await writeFile(config,`FMCG_LLM_BASE_URL=http://127.0.0.1:${fp}/v1\nFMCG_LLM_MODEL=closed-loop-fake\nFMCG_LLM_API_KEY=local-synthetic-key\n`);
 const clean=Object.fromEntries(Object.entries(process.env).filter(([k])=>!/^FMCG_|proxy|^NODE_OPTIONS$/i.test(k)));
-api=spawn(process.execPath,['--import','tsx','server/index.ts'],{env:{...clean,FMCG_DATA_DIR:data,FMCG_PORT:String(port),FMCG_LLM_CONFIG_FILE:config},windowsHide:true});closed=once(api,'close');api.stdout.on('data',x=>logs.push(String(x)));api.stderr.on('data',x=>logs.push(String(x)));
+api=spawn(process.execPath,['--import','tsx','server/index.ts'],{env:withoutInheritedEmbeddings({...clean,FMCG_DATA_DIR:data,FMCG_PORT:String(port),FMCG_LLM_CONFIG_FILE:config}),windowsHide:true});closed=once(api,'close');api.stdout.on('data',x=>logs.push(String(x)));api.stderr.on('data',x=>logs.push(String(x)));
 const base='http://127.0.0.1:'+port;
 for(let i=0;i<150;i++){if(await fetch(base+'/api/health').then(r=>r.ok,()=>false))break;await new Promise(r=>setTimeout(r,80));}
 assert.ok(logs.join('').includes('(data: '+data+')'));

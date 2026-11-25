@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
@@ -132,7 +133,7 @@ const api = `http://127.0.0.1:${apiPort}`;
 const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(FMCG_|OPENAI_|ANTHROPIC_|GEMINI_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(key)));
 const child = spawn(process.execPath,['--import','tsx','server/index.ts'],{
   cwd:process.cwd(), windowsHide:true, stdio:'inherit',
-  env:{...env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:config},
+  env:withoutInheritedEmbeddings({...env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:config}),
 });
 let ready = false;
 for(let attempt=0;attempt<150&&child.exitCode===null;attempt++) {

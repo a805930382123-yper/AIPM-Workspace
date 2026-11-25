@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -123,7 +124,7 @@ try {
   await new Promise(resolve => reserve.close(resolve));
   await writeFile(config, `FMCG_LLM_BASE_URL=http://127.0.0.1:${ports.fake}/v1\nFMCG_LLM_MODEL=work04b-fake\nFMCG_LLM_API_KEY=${key}\n`);
   child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true,
-    env: { ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(ports.api), FMCG_LLM_CONFIG_FILE: config } });
+    env: withoutInheritedEmbeddings({ ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(ports.api), FMCG_LLM_CONFIG_FILE: config }) });
   childExit = once(child, 'close');
   child.stdout.on('data', chunk => logs.push(String(chunk)));
   child.stderr.on('data', chunk => logs.push(String(chunk)));

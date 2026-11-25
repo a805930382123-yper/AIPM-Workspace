@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 import os from 'node:os'; // B04 public HTTP self-check: real server processes + a real (fake-backed) HTTP provider.
 // Covers configuration, the extract → review → confirm loop over the public API, failure
 // injections, cancel, restart recovery, the delete guard and the key-leak probe.
@@ -59,7 +60,13 @@ async function startServer(dir: string, env: Record<string, string>): Promise<Se
     cwd: root,
     windowsHide: true,
     stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...isolatedEnv, FMCG_DATA_DIR: dir, FMCG_PORT: String(port), ...env, FMCG_LLM_CONFIG_FILE: configFile },
+    env: withoutInheritedEmbeddings({
+      ...isolatedEnv,
+      FMCG_DATA_DIR: dir,
+      FMCG_PORT: String(port),
+      ...env,
+      FMCG_LLM_CONFIG_FILE: configFile,
+    }),
   });
   const service: Service = { child, base: `http://127.0.0.1:${port}`, dir, logs: '' };
   child.stdout?.on('data', (chunk) => {

@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -88,7 +89,7 @@ try {
     '/v1\nFMCG_LLM_MODEL=work05-sim-fake\nFMCG_LLM_API_KEY=work05-local-fixture-key\n');
   const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)));
   api = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-    env: { ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(ports.api), FMCG_LLM_CONFIG_FILE: config },
+    env: withoutInheritedEmbeddings({ ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(ports.api), FMCG_LLM_CONFIG_FILE: config }),
     windowsHide: true,
   });
   apiExit = once(api, 'close');

@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // B02 independent acceptance: real public HTTP + Markdown assets, no product imports.
 // Run only after frozen handoff: node tests/acceptance/b02-http.mjs
 import assert from 'node:assert/strict';
@@ -50,7 +51,7 @@ async function port() {
 }
 async function start(dir) {
   const value = await port();
-  const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { cwd: root, env: { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(value) }, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { cwd: root, env: withoutInheritedEmbeddings({ ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(value) }), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
   const result = { child, base: `http://127.0.0.1:${value}`, dir, logs: '' };
   child.stdout.on('data', chunk => { result.logs += chunk; });
   child.stderr.on('data', chunk => { result.logs += chunk; });

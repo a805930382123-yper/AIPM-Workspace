@@ -8,6 +8,7 @@ import path from 'node:path';
 import test, { type TestContext } from 'node:test';
 import { setTimeout as sleep } from 'node:timers/promises';
 import type { AutomationRun, AutomationSchedule, AutomationStatus } from '../services/automation/types.ts';
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 
 async function waitFor<T>(read: () => T | undefined | Promise<T | undefined>, label: string): Promise<T> {
   const deadline = Date.now() + 15_000;
@@ -45,7 +46,11 @@ async function fixture(t: TestContext) {
         'FMCG_LLM_API_KEY',
       ])
         delete env[key];
-      const child = spawn(process.execPath, ['--import', 'tsx', ...args], { env, windowsHide: true, stdio: 'pipe' });
+      const child = spawn(process.execPath, ['--import', 'tsx', ...args], {
+        env: withoutInheritedEmbeddings(env),
+        windowsHide: true,
+        stdio: 'pipe',
+      });
       let output = '';
       let stopped = false;
       child.stdout.setEncoding('utf8').on('data', (chunk: string) => {

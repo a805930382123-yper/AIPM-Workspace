@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // Independent B01 acceptance. Public HTTP + persisted files; no product internals imported.
 // Run after a frozen handoff: node tests/acceptance/b01-http.mjs
 import assert from 'node:assert/strict';
@@ -38,7 +39,7 @@ async function allocatePort() {
 async function start(dir) {
   const port = await allocatePort();
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-    cwd: root, env: { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
+    cwd: root, env: withoutInheritedEmbeddings({ ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
   });
   const result = { child, base: `http://127.0.0.1:${port}`, logs: '', dir };
   child.stdout.on('data', chunk => { result.logs += chunk.toString(); });

@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -52,13 +53,13 @@ async function startApi(t: TestContext, dataRoot: string, config: string, faultF
   const proc = spawn(process.execPath, [...args, 'server/index.ts'], {
     windowsHide: true,
     stdio: ['ignore', 'ignore', 'pipe'],
-    env: {
+    env: withoutInheritedEmbeddings({
       ...cleanEnv,
       FMCG_DATA_DIR: dataRoot,
       FMCG_PORT: String(port),
       FMCG_LLM_CONFIG_FILE: config,
       WORK01_FAULT_FILE: faultFile ?? '',
-    },
+    }),
   });
   let stderr = '';
   proc.stderr.on('data', (chunk) => {

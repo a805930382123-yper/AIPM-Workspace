@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -32,7 +33,7 @@ export async function createHarness(reply,dataDir){
  await new Promise(r=>fake.listen(0,'127.0.0.1',r));const fakeUrl=`http://127.0.0.1:${fake.address().port}/v1`;
  async function start(dir=dataRoot,configured=true,fixedPort){
   const apiPort=fixedPort??await port();
-  const child=spawn(process.execPath,['--import','./tests/acceptance/b08-fault-hook.mjs','--import','tsx','server/index.ts'],{cwd:process.cwd(),env:{...process.env,FMCG_DATA_DIR:dir,FMCG_PORT:String(apiPort),FMCG_LLM_BASE_URL:configured?fakeUrl:'',FMCG_LLM_MODEL:configured?'independent-b08-fake':'',FMCG_LLM_API_KEY:configured?fakeKey:''},windowsHide:true,stdio:['ignore','pipe','pipe']});
+  const child=spawn(process.execPath,['--import','./tests/acceptance/b08-fault-hook.mjs','--import','tsx','server/index.ts'],{cwd:process.cwd(),env:withoutInheritedEmbeddings({...process.env,FMCG_DATA_DIR:dir,FMCG_PORT:String(apiPort),FMCG_LLM_BASE_URL:configured?fakeUrl:'',FMCG_LLM_MODEL:configured?'independent-b08-fake':'',FMCG_LLM_API_KEY:configured?fakeKey:''}),windowsHide:true,stdio:['ignore','pipe','pipe']});
   const s={child,dir,port:apiPort,base:`http://127.0.0.1:${apiPort}`,logs:''};services.push(s);
   child.stdout.on('data',b=>s.logs+=b);child.stderr.on('data',b=>s.logs+=b);
   for(let n=0;n<120;n++){if(child.exitCode!==null)throw Error(s.logs);try{if((await fetch(s.base+'/api/health',{signal:AbortSignal.timeout(250)})).ok)return s;}catch{}await delay(100);}

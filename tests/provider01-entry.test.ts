@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawn } from 'node:child_process';
@@ -120,7 +121,7 @@ test('formal entry carries provider context through answer and inspection operat
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
     cwd: process.cwd(),
     windowsHide: true,
-    env: {
+    env: withoutInheritedEmbeddings({
       ...env,
       FMCG_DATA_DIR: dir,
       FMCG_PORT: String(port),
@@ -128,7 +129,7 @@ test('formal entry carries provider context through answer and inspection operat
       FMCG_LLM_BASE_URL: fake.url,
       FMCG_LLM_MODEL: 'fake',
       FMCG_LLM_API_KEY: 'synthetic',
-    },
+    }),
     stdio: 'ignore',
   });
   const url = `http://127.0.0.1:${port}`;
@@ -206,7 +207,12 @@ test('manual and read routes work with absent and malformed optional configurati
     const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
       cwd: process.cwd(),
       windowsHide: true,
-      env: { ...env, FMCG_DATA_DIR: dir, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: cfg },
+      env: withoutInheritedEmbeddings({
+        ...env,
+        FMCG_DATA_DIR: dir,
+        FMCG_PORT: String(port),
+        FMCG_LLM_CONFIG_FILE: cfg,
+      }),
       stdio: 'ignore',
     });
     const base = `http://127.0.0.1:${port}`;

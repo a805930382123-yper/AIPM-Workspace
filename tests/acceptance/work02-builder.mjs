@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
@@ -38,9 +39,9 @@ async function startApi(dataDir) {
   const portProbe = createServer();
   const port = await listen(portProbe);
   await new Promise(resolve => portProbe.close(resolve));
-  const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, stdio: 'inherit', env: {
+  const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, stdio: 'inherit', env: withoutInheritedEmbeddings({
     ...cleanEnv, FMCG_DATA_DIR: dataDir, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config,
-  } });
+  }) });
   const exit = once(child, 'exit');
   const stop = async () => { if (child.exitCode === null && !child.killed) child.kill(); await exit; };
   addresses.push(stop);

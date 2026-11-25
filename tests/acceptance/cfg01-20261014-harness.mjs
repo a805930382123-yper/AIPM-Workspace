@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -39,7 +40,7 @@ export async function createHarness({uiOrigin}={}){
  });
  await new Promise(r=>fake.listen(0,'127.0.0.1',r));const baseUrl=`http://127.0.0.1:${fake.address().port}/v1`;
  async function start(envOverrides={}){
-  const apiPort=await port();const child=spawn(process.execPath,['--import','./tests/acceptance/cfg01-20261013-fault-hook.mjs','--import','tsx','server/index.ts'],{cwd:process.cwd(),env:{...process.env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:configFile,FMCG_LLM_BASE_URL:'',FMCG_LLM_MODEL:'',FMCG_LLM_API_KEY:'',...(uiOrigin?{FMCG_UI_ORIGIN:uiOrigin}:{}),...envOverrides},windowsHide:true,stdio:['ignore','pipe','pipe']});
+  const apiPort=await port();const child=spawn(process.execPath,['--import','./tests/acceptance/cfg01-20261013-fault-hook.mjs','--import','tsx','server/index.ts'],{cwd:process.cwd(),env:withoutInheritedEmbeddings({...process.env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:configFile,FMCG_LLM_BASE_URL:'',FMCG_LLM_MODEL:'',FMCG_LLM_API_KEY:'',...(uiOrigin?{FMCG_UI_ORIGIN:uiOrigin}:{}),...envOverrides}),windowsHide:true,stdio:['ignore','pipe','pipe']});
   const s={child,base:`http://127.0.0.1:${apiPort}`,port:apiPort,logs:''};services.push(s);child.stdout.on('data',b=>s.logs+=b);child.stderr.on('data',b=>s.logs+=b);
   for(let i=0;i<160;i++){if(child.exitCode!==null)throw Error('Product startup failed '+redact(s.logs));try{if((await fetch(s.base+'/api/health',{signal:AbortSignal.timeout(250)})).ok)return s;}catch{}await delay(80);}
   await stop(s);throw Error('Product startup timed out');

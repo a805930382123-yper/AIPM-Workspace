@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -65,7 +66,7 @@ try {
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^(FMCG_|NODE_OPTIONS$)/i.test(key)));
   Object.assign(env, { FMCG_PORT: String(port), FMCG_DATA_DIR: data, FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env'), FMCG_LLM_BASE_URL: `http://127.0.0.1:${provider.address().port}/v1`, FMCG_LLM_MODEL: 'synthetic-only', FMCG_LLM_API_KEY: 'synthetic-only', FMCG_NEWS_AI_ENABLED: 'false', NODE_ENV: 'test' });
   if (process.env.FMCG_TESSERACT_PATH) env.FMCG_TESSERACT_PATH = process.env.FMCG_TESSERACT_PATH;
-  child = spawn(process.execPath, ['--import', pathToFileURL(preload).href, '--import', 'tsx', 'server/index.ts'], { env, windowsHide: true, stdio: ['ignore', 'inherit', 'inherit'] });
+  child = spawn(process.execPath, ['--import', pathToFileURL(preload).href, '--import', 'tsx', 'server/index.ts'], { env: withoutInheritedEmbeddings(env), windowsHide: true, stdio: ['ignore', 'inherit', 'inherit'] });
   await wait('API health', () => fetch(base + '/api/health', { signal: AbortSignal.timeout(500) }).then(r => r.ok, () => false));
   const api = async route => { const r = await fetch(base + route); assert.equal(r.status, 200); return r.json(); };
   ui = await createViteServer({ configFile: false, plugins: [react()], envDir, server: { host: '127.0.0.1', port: 0, proxy: { '/api': base } } }); await ui.listen();

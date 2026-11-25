@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
@@ -85,7 +86,7 @@ const denyOutbound='data:text/javascript,'+encodeURIComponent(
   "if (url.hostname === '127.0.0.1') return original(...args); " +
   "appendFileSync(process.env.NEWS07_BLOCKED_OUTBOUND, url.hostname + '\\n'); throw Error('External fetch blocked in NEWS07 review'); };",
 );
-const child=spawn(process.execPath,['--import',denyOutbound,'--import','tsx','server/index.ts'],{env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+const child=spawn(process.execPath,['--import',denyOutbound,'--import','tsx','server/index.ts'],{env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:['ignore','pipe','pipe']});
 const stopped=once(child,'close');
 let log='',server,browser;
 child.stdout.on('data',chunk=>{log+=chunk;});

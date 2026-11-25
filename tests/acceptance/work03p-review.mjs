@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -55,7 +56,7 @@ await once(probe, 'listening');
 const apiPort = probe.address().port;
 await new Promise(resolve => probe.close(resolve));
 const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)));
-const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, env: { ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: config, FMCG_LLM_BASE_URL: 'http://127.0.0.1:' + fake.address().port + '/v1', FMCG_LLM_MODEL: 'work03p-local-fake', FMCG_LLM_API_KEY: 'work03p-local-test-key' } });
+const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, env: withoutInheritedEmbeddings({ ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: config, FMCG_LLM_BASE_URL: 'http://127.0.0.1:' + fake.address().port + '/v1', FMCG_LLM_MODEL: 'work03p-local-fake', FMCG_LLM_API_KEY: 'work03p-local-test-key' }) });
 const stopped = once(child, 'close');
 let logs = '';
 child.stdout.on('data', value => { logs += value; });

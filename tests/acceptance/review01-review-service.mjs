@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -20,7 +21,7 @@ export async function startWeeklyService(f,mode,guardPath) {
   const manifest=path.join(f.run,'guard-input.json');
   await writeFile(manifest,JSON.stringify({run:f.run,data:f.data,weekKey:f.weekKey,mode,knownIds:f.knownIds,forbidden:f.forbidden,safeTitles:f.safeTitles}));
   Object.assign(env,{FMCG_DATA_DIR:f.data,FMCG_LLM_CONFIG_FILE:config,FMCG_PORT:String(apiPort),FMCG_UI_ORIGIN:ui,FMCG_NEWS_AI_ENABLED:'false',REVIEW01_GUARD:manifest,CI:'true'});
-  const child=spawn(process.execPath,['--import',pathToFileURL(guardPath).href,'--import','tsx','server/index.ts'],{env,windowsHide:true,stdio:'ignore'});
+  const child=spawn(process.execPath,['--import',pathToFileURL(guardPath).href,'--import','tsx','server/index.ts'],{env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:'ignore'});
   const closed=once(child,'close');const stop=async()=>{child.kill();await closed;};
   try{
     for(let n=0;!await fetch(api+'/api/health').then(r=>r.ok,()=>false);n++){assert(n<200&&child.exitCode===null,'isolated server startup');await delay(100);}

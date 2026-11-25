@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -73,7 +74,7 @@ const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^
 Object.assign(env, { FMCG_DATA_DIR: data, FMCG_PORT: String(apiPort), FMCG_UI_ORIGIN: uiBase,
   FMCG_LLM_CONFIG_FILE: config, FMCG_NEWS_AI_ENABLED: 'false', QUICKUX_EXTERNAL_LOG: externalLog });
 const child = spawn(process.execPath, ['--import', pathToFileURL(guard).href, '--import', 'tsx', 'server/index.ts'],
-  { env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+  { env: withoutInheritedEmbeddings(env), stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
 const exit = once(child, 'close');
 let serviceLog = '';
 child.stdout.on('data', chunk => { serviceLog += chunk; });

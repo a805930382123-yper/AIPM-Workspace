@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // R22 engineering/UI only. serve uses the complete product backend and complete built App,
 // with real LLM configuration disabled. No implicit real-model mode is provided.
 import fs from 'node:fs/promises';
@@ -79,7 +80,7 @@ export async function serve(root, uiPort = 5178, apiPort = 63991, smoke = false)
   must((await freeze()).sha256 === meta.freezeSha256, 'SOURCE_FREEZE_DRIFT');
   const env = { ...process.env, FMCG_DATA_DIR: root, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: path.join(root,'empty.env') };
   for (const key of Object.values(LLM_ENV)) delete env[key];
-  const child = spawn(process.execPath, ['--import','tsx','server/index.ts'], { cwd: process.cwd(), env, windowsHide: true, stdio: ['ignore','pipe','pipe'] });
+  const child = spawn(process.execPath, ['--import','tsx','server/index.ts'], { cwd: process.cwd(), env: withoutInheritedEmbeddings(env), windowsHide: true, stdio: ['ignore','pipe','pipe'] });
   const log = await fs.open(path.join(root,'backend.log'),'a');
   child.stdout.on('data', bytes => { void log.write(bytes); }); child.stderr.on('data', bytes => { void log.write(bytes); });
   const api = `http://127.0.0.1:${apiPort}`, app = express();

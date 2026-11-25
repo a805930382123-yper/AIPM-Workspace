@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -33,7 +34,7 @@ globalThis.fetch=async()=>{appendFileSync(${JSON.stringify(wire)},'blocked exter
 `);
   const env=Object.fromEntries(Object.entries(process.env).filter(([key])=>!/^FMCG_|^(NODE_OPTIONS|NODE_ENV|NODE_TEST_CONTEXT|CI)$/i.test(key)));
   Object.assign(env,{FMCG_DATA_DIR:data,FMCG_LLM_CONFIG_FILE:config,FMCG_PORT:String(apiPort),FMCG_UI_ORIGIN:base,FMCG_NEWS_AI_ENABLED:'false'});
-  const child=spawn(process.execPath,['--import',pathToFileURL(hook).href,'--import','tsx','server/index.ts'],{env,windowsHide:true,stdio:'ignore'});
+  const child=spawn(process.execPath,['--import',pathToFileURL(hook).href,'--import','tsx','server/index.ts'],{env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:'ignore'});
   const exit=once(child,'close');
   const stop=async()=>{child.kill();await exit;};
   try{

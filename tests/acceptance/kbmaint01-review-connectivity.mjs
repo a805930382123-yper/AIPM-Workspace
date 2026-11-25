@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -19,7 +20,7 @@ const guard=path.join(run,'offline.mjs');
 await writeFile(guard,"globalThis.fetch = async () => { throw Error('Diagnostic process blocks all service fetch calls'); };");
 const reservation=net.createServer().listen(0,'127.0.0.1');await once(reservation,'listening');const port=reservation.address().port;await new Promise(r=>reservation.close(r));assert(port!==4317);
 const env={...process.env,FMCG_PORT:String(port),FMCG_DATA_DIR:data,FMCG_LLM_CONFIG_FILE:path.resolve('.env.local'),FMCG_NEWS_AI_ENABLED:'false'};
-const child=spawn(process.execPath,['--import',pathToFileURL(guard).href,'--import','tsx','server/index.ts'],{env,stdio:'ignore',windowsHide:true});const exit=once(child,'close');
+const child=spawn(process.execPath,['--import',pathToFileURL(guard).href,'--import','tsx','server/index.ts'],{env: withoutInheritedEmbeddings(env),stdio:'ignore',windowsHide:true});const exit=once(child,'close');
 const base='http://127.0.0.1:'+port;
 try{
   for(let n=0;!await fetch(base+'/api/health').then(r=>r.ok,()=>false);n++){assert(n<150&&child.exitCode===null);await delay(100);}

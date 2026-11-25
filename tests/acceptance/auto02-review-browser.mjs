@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -48,11 +49,11 @@ const base = `http://127.0.0.1:${port}`;
 const childEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)));
 const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
   windowsHide: true, stdio: 'inherit',
-  env: {
+  env: withoutInheritedEmbeddings({
     ...childEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: config,
     FMCG_LLM_BASE_URL: `http://127.0.0.1:${fake.address().port}/v1`,
     FMCG_LLM_MODEL: 'auto02-fake', FMCG_LLM_API_KEY: 'auto02-isolated-synthetic-key',
-  },
+  }),
 });
 const stopped = once(child, 'exit');
 const request = async (url, body, expected = 200) => {

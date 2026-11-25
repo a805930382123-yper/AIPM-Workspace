@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
@@ -83,7 +84,7 @@ const guard='data:text/javascript,'+encodeURIComponent(
   "if(url.hostname==='127.0.0.1')return original(...args); "+
   "appendFileSync(process.env.NEWS09_BLOCKED,url.hostname+'\\n'); throw Error('External fetch blocked in NEWS09 review');};",
 );
-const child=spawn(process.execPath,['--import',guard,'--import','tsx','server/index.ts'],{env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+const child=spawn(process.execPath,['--import',guard,'--import','tsx','server/index.ts'],{env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:['ignore','pipe','pipe']});
 const exited=once(child,'close');
 let log='',ui,browser;
 child.stdout.on('data',chunk=>{log+=chunk;});

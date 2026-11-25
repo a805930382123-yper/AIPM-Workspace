@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // Isolated complete-App preparation; real calls require start AND per-stage releases.
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -73,7 +74,7 @@ export async function serve(root,mode='manual',uiPort=5179,apiPort=63992,startFi
   const s=await sessionAt(root);must(['manual','real'].includes(mode),'MODE_INVALID');must((await freeze()).sha256===s.freezeSha256,'SOURCE_FREEZE_DRIFT');if(mode==='real'){must(s.kind==='integration','MANUAL_INSTANCE_REAL_DENIED');await approved(s,startFile,startSha,'start');}
   const env={...process.env,FMCG_DATA_DIR:s.root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:mode==='real'?path.resolve('.env.local'):path.join(s.root,CONTROL,'empty.env'),B09_INTEGRATION_ROOT:s.root,B09_TRACE_MODE:mode};
   if(mode==='manual')for(const key of Object.values(LLM_ENV))delete env[key];
-  const child=spawn(process.execPath,['--import','tsx','--import','./tests/acceptance/B09-INTEGRATION-20261029-trace.mjs','server/index.ts'],{cwd:process.cwd(),env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+  const child=spawn(process.execPath,['--import','tsx','--import','./tests/acceptance/B09-INTEGRATION-20261029-trace.mjs','server/index.ts'],{cwd:process.cwd(),env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:['ignore','pipe','pipe']});
   const log=await fs.open(path.join(s.root,CONTROL,'backend.log'),'a');child.stdout.on('data',bytes=>{void log.write(bytes);});child.stderr.on('data',bytes=>{void log.write(bytes);});
   const api=`http://127.0.0.1:${apiPort}`,app=express();let inFlight=false;
   app.use('/api',async(req,res)=>{

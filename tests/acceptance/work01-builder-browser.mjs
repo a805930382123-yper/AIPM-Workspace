@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -36,7 +37,7 @@ const apiPort = await freePort();
 const apiBase = `http://127.0.0.1:${apiPort}`;
 const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)));
 const apiChild = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, stdio: 'inherit',
-  env: { ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: config } });
+  env: withoutInheritedEmbeddings({ ...cleanEnv, FMCG_DATA_DIR: data, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: config }) });
 const stopped = once(apiChild, 'exit');
 const request = async (route, { method = 'GET', body } = {}) => {
   const response = await fetch(`${apiBase}${route}`, { method, body: body === undefined ? undefined : JSON.stringify(body),

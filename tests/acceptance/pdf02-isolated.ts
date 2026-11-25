@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -78,7 +79,7 @@ await new Promise<void>((resolve,reject)=>reservation.close(error=>error?reject(
 const env=Object.fromEntries(Object.entries(process.env).filter(([key])=>!/^(FMCG_|OPENAI_|ANTHROPIC_|GEMINI_|NODE_OPTIONS$|NODE_USE_ENV_PROXY$|(?:HTTPS?|ALL|NO)_PROXY$)/iu.test(key)));
 const child=spawn(process.execPath,['--import','tsx','server/index.ts'],{
   cwd:process.cwd(),windowsHide:true,stdio:['ignore','pipe','pipe'],
-  env:{...env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:config},
+  env:withoutInheritedEmbeddings({...env,FMCG_DATA_DIR:root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:config}),
 });
 child.stdout?.pipe(process.stdout);
 child.stderr?.pipe(process.stderr);

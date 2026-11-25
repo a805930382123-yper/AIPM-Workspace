@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import net from 'node:net';
@@ -46,7 +47,7 @@ export async function createHarness(reply, reuseDataRoot) {
   async function start(dir = dataRoot, configured = true, fixedPort) {
     const apiPort = fixedPort ?? await port();
     const child = spawn(process.execPath, ['--import', './tests/acceptance/b07-fault-hook.mjs', '--import', 'tsx', 'server/index.ts'], {
-      cwd: process.cwd(), env: { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(apiPort), FMCG_LLM_BASE_URL: configured ? fakeUrl : '', FMCG_LLM_MODEL: configured ? 'independent-b07-fake' : '', FMCG_LLM_API_KEY: configured ? fakeKey : '' }, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: process.cwd(), env: withoutInheritedEmbeddings({ ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(apiPort), FMCG_LLM_BASE_URL: configured ? fakeUrl : '', FMCG_LLM_MODEL: configured ? 'independent-b07-fake' : '', FMCG_LLM_API_KEY: configured ? fakeKey : '' }), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
     });
     const service = { child, dir, base: `http://127.0.0.1:${apiPort}`, port: apiPort, logs: '' };
     child.stdout.on('data', chunk => service.logs += chunk); child.stderr.on('data', chunk => service.logs += chunk); services.push(service);

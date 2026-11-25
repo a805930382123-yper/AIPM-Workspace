@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // Independent KB02 infrastructure: synthetic credentials and isolated temporary data only.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -33,7 +34,7 @@ export async function createHarness(reply,fakeCredential){
  await new Promise(r=>fake.listen(0,'127.0.0.1',r));const fakeUrl=`http://127.0.0.1:${fake.address().port}/v1`;
  async function start(options={}){
   const apiPort=await port();
-  const child=spawn(process.execPath,['--import','./tests/acceptance/kb02-20261015-standards-fault-hook.mjs','--import','tsx','server/index.ts'],{cwd:process.cwd(),env:{...process.env,FMCG_DATA_DIR:dataRoot,FMCG_LLM_CONFIG_FILE:path.join(dataRoot,'isolated-provider.env'),FMCG_PORT:String(apiPort),FMCG_LLM_BASE_URL:fakeUrl,FMCG_LLM_MODEL:'kb02-independent-model',FMCG_LLM_API_KEY:fakeKey,...options.env},windowsHide:true,stdio:['ignore','pipe','pipe']});
+  const child=spawn(process.execPath,['--import','./tests/acceptance/kb02-20261015-standards-fault-hook.mjs','--import','tsx','server/index.ts'],{cwd:process.cwd(),env:withoutInheritedEmbeddings({...process.env,FMCG_DATA_DIR:dataRoot,FMCG_LLM_CONFIG_FILE:path.join(dataRoot,'isolated-provider.env'),FMCG_PORT:String(apiPort),FMCG_LLM_BASE_URL:fakeUrl,FMCG_LLM_MODEL:'kb02-independent-model',FMCG_LLM_API_KEY:fakeKey,...options.env}),windowsHide:true,stdio:['ignore','pipe','pipe']});
   const s={child,dir:dataRoot,port:apiPort,base:`http://127.0.0.1:${apiPort}`,logs:''};services.push(s);child.stdout.on('data',b=>s.logs+=b);child.stderr.on('data',b=>s.logs+=b);
   for(let n=0;n<150;n++){if(child.exitCode!==null)throw Error(s.logs);try{if((await fetch(s.base+'/api/health',{signal:AbortSignal.timeout(300)})).ok)return s;}catch{}await delay(100);}await stop(s);throw Error('Independent startup timeout '+s.logs);
  }

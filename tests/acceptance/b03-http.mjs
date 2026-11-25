@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // B03 construction self-check over the real public HTTP interface.
 // Runs its own isolated server + data directory on a free port; the user's data directory
 // and any unknown process are never touched.
@@ -66,7 +67,7 @@ async function freePort() {
 async function start(dir) {
   const port = await freePort();
   const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-    cwd: root, env: { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(port) },
+    cwd: root, env: withoutInheritedEmbeddings({ ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(port) }),
     windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
   });
   const result = { child, base: `http://127.0.0.1:${port}`, dir, logs: '' };

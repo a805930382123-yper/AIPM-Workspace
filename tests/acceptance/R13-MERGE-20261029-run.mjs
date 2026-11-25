@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 // R13 offline fixture + complete App. Preparation/startup never load a real Provider configuration.
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -27,7 +28,7 @@ export async function snapshot(root){const s=await session(root),raws=new RawSto
 export async function serve(root,uiPort=5182,apiPort=63995,smoke=false){
   const s=await session(root);if((await frozen()).sha256!==s.freezeSha256)throw Error('R13_FREEZE_DRIFT');
   const env={...process.env,FMCG_DATA_DIR:s.root,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:path.join(s.root,'empty.env'),R13_NO_PROVIDER:'1'};for(const key of Object.values(LLM_ENV))delete env[key];
-  const child=spawn(process.execPath,['--import','tsx','--import',import.meta.url,'server/index.ts'],{cwd:process.cwd(),env,windowsHide:true,stdio:['ignore','pipe','pipe']});const log=await fs.open(path.join(root,'backend.log'),'a');child.stdout.on('data',bytes=>{void log.write(bytes);});child.stderr.on('data',bytes=>{void log.write(bytes);});
+  const child=spawn(process.execPath,['--import','tsx','--import',import.meta.url,'server/index.ts'],{cwd:process.cwd(),env: withoutInheritedEmbeddings(env),windowsHide:true,stdio:['ignore','pipe','pipe']});const log=await fs.open(path.join(root,'backend.log'),'a');child.stdout.on('data',bytes=>{void log.write(bytes);});child.stderr.on('data',bytes=>{void log.write(bytes);});
   const app=express();app.use('/api',(req,res)=>{const outgoing=http.request(`http://127.0.0.1:${apiPort}/api${req.url}`,{method:req.method,headers:req.headers},response=>{res.writeHead(response.statusCode??502,response.headers);response.pipe(res);});outgoing.on('error',()=>{if(!res.headersSent)res.status(502).end();});req.pipe(outgoing);});app.get('/r13/export',async(_req,res)=>res.json(await snapshot(s.root)));app.use(express.static(path.resolve('dist')));
   const ui=app.listen(Number(uiPort),'127.0.0.1');await new Promise((resolve,reject)=>{ui.once('listening',resolve);ui.once('error',reject);});let stopped=false;const stop=async()=>{if(stopped)return;stopped=true;const ended=new Promise(resolve=>child.exitCode!==null?resolve():child.once('exit',resolve));child.kill();await ended;await new Promise(resolve=>ui.close(resolve));await log.close();};process.once('SIGINT',()=>{void stop();});process.once('SIGTERM',()=>{void stop();});
   for(let i=0;i<100;i++){if((await fetch(`http://127.0.0.1:${apiPort}/api/health`).catch(()=>null))?.ok)break;if(child.exitCode!==null||i===99){await stop();throw Error('R13_BACKEND_NOT_READY');}await new Promise(resolve=>setTimeout(resolve,100));}

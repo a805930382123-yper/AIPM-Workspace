@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -52,10 +53,10 @@ const freePort = async () => {
 const apiPort = await freePort();
 const apiBase = `http://127.0.0.1:${apiPort}`;
 const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_|proxy|^NODE_OPTIONS$/i.test(key)));
-const child = spawn(process.execPath,['--import','tsx','server/index.ts'],{windowsHide:true,stdio:'inherit',env:{
+const child = spawn(process.execPath,['--import','tsx','server/index.ts'],{windowsHide:true,stdio:'inherit',env:withoutInheritedEmbeddings({
   ...cleanEnv,FMCG_DATA_DIR:data,FMCG_PORT:String(apiPort),FMCG_LLM_CONFIG_FILE:config,
   FMCG_LLM_BASE_URL:`http://127.0.0.1:${fake.address().port}/v1`,FMCG_LLM_MODEL:'fake',FMCG_LLM_API_KEY:'auto02-test-key',
-}});
+})});
 const stopped = once(child,'exit');
 const request = async (route,body) => {
   const response = await fetch(apiBase+route,body===undefined?undefined:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});

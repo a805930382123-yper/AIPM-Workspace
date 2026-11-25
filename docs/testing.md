@@ -7,7 +7,7 @@
 - `npm run check`：依次执行类型检查（`typecheck`）、格式检查（`format:check`）、静态检查（`lint`）、体积守护（`guard`）、默认测试（`test`）及生产构建（`build`），任一失败即终止。
 - `tests/acceptance/` 是按对应任务卡单独运行的验收脚本，不属于默认 glob。`.mts` live/replay 脚本也不属于默认测试；live 会访问外部来源，必须另获明确授权；replay 通常依赖隔离快照，但 tests/news09-pdf-replay.mts 会真实补拉 PDF，同样须另获联网授权。
 
-测试前将 `FMCG_DATA_DIR` 指向新建的系统临时目录，并将 `FMCG_LLM_CONFIG_FILE` 指向该目录下不存在的配置文件；清除继承的 `FMCG_LLM_*` 凭据。不要使用正式 workspace、真实配置或用户已有服务端口。
+测试前将 `FMCG_DATA_DIR` 指向新建的系统临时目录，并将 `FMCG_LLM_CONFIG_FILE` 指向该目录下不存在的配置文件。清除继承的 `FMCG_LLM_*` 凭据和 `EMBEDDING_*` 配置。启动产品服务的测试在构造子进程环境时调用 `withoutInheritedEmbeddings`。Embedding 测试清理后显式写入本次回环配置。不要使用正式 workspace、真实配置或用户已有服务端口。
 
 ## 临时数据
 

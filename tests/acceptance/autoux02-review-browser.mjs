@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -815,7 +816,7 @@ Object.assign(env, {
 const child = spawn(
   process.execPath,
   ['--import', pathToFileURL(preloadFile).href, '--import', 'tsx', 'server/index.ts'],
-  { env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true },
+  { env: withoutInheritedEmbeddings(env), stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true },
 );
 const exited = once(child, 'close');
 let apiLog = '';

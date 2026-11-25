@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 // B08 builder-only public HTTP smoke. Starts an isolated API and OpenAI-compatible fake provider.
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -71,14 +72,14 @@ const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
   cwd: process.cwd(),
   windowsHide: true,
   stdio: ['ignore', 'pipe', 'pipe'],
-  env: {
+  env: withoutInheritedEmbeddings({
     ...process.env,
     FMCG_DATA_DIR: root,
     FMCG_PORT: String(apiPort),
     FMCG_LLM_BASE_URL: `http://127.0.0.1:${fakePort}/v1`,
     FMCG_LLM_MODEL: 'b08-fake',
     FMCG_LLM_API_KEY: 'b08-test-key',
-  },
+  }),
 });
 let logs = '';
 child.stdout.on('data', (x) => (logs += x));

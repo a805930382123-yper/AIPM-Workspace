@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import net from 'node:net';
@@ -57,7 +58,7 @@ let service, sequence = 0;
 async function port() { const s = net.createServer(); await new Promise(r => s.listen(0, '127.0.0.1', r)); const p = s.address().port; await new Promise(r => s.close(r)); return p; }
 async function start(dir, configured = true) {
   const p = await port(), env = { ...process.env, FMCG_DATA_DIR: dir, FMCG_PORT: String(p), FMCG_LLM_BASE_URL: configured ? fakeUrl : '', FMCG_LLM_MODEL: configured ? 'independent-fake-model' : '', FMCG_LLM_API_KEY: configured ? fakeKey : '' };
-  const child = spawn(process.execPath, ['--import', './tests/acceptance/b04-independent-fault-hook.mjs', '--import', 'tsx', 'server/index.ts'], { cwd: root, env, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, ['--import', './tests/acceptance/b04-independent-fault-hook.mjs', '--import', 'tsx', 'server/index.ts'], { cwd: root, env: withoutInheritedEmbeddings(env), windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
   const s = { child, dir, base: `http://127.0.0.1:${p}`, logs: '' }; child.stdout.on('data', b => s.logs += b); child.stderr.on('data', b => s.logs += b);
   for (let n = 0; n < 100; n++) { if (child.exitCode !== null) throw new Error('START_FAILED ' + s.logs); try { if ((await fetch(s.base + '/api/health', { signal: AbortSignal.timeout(250) })).ok) return s; } catch {} await delay(75); }
   child.kill(); throw new Error('START_TIMEOUT ' + s.logs);

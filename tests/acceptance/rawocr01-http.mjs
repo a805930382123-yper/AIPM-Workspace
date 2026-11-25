@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -70,7 +71,7 @@ try {
   child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
     windowsHide: true,
     stdio: ['ignore', 'ignore', 'inherit'],
-    env: { ...env, FMCG_DATA_DIR: root, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env') },
+    env: withoutInheritedEmbeddings({ ...env, FMCG_DATA_DIR: root, FMCG_PORT: String(port), FMCG_LLM_CONFIG_FILE: path.join(root, 'missing.env') }),
   });
   const url = `http://127.0.0.1:${port}`;
   const ready = async () => (await fetch(`${url}/api/health`, { signal: AbortSignal.timeout(500) })).ok;

@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -177,7 +178,7 @@ export async function setup(report, { pdf = true, fakeHttp = false } = {}) {
     apiOrigin = 'http://127.0.0.1:' + port;
     child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
       cwd: process.cwd(), windowsHide: true, stdio: ['ignore','pipe','pipe'],
-      env: { ...env, FMCG_DATA_DIR: data, FMCG_LLM_CONFIG_FILE: config, FMCG_PORT: String(port) },
+      env: withoutInheritedEmbeddings({ ...env, FMCG_DATA_DIR: data, FMCG_LLM_CONFIG_FILE: config, FMCG_PORT: String(port) }),
     });
     child.stdout.on('data', chunk => apiLog += chunk);
     child.stderr.on('data', chunk => apiLog += chunk);

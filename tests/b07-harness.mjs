@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 // B07 construction self-test helpers. Standalone (not part of `npm test`): these scripts boot a
 // throwaway product server against a temporary FMCG_DATA_DIR on a free port, so nothing here ever
 // touches the formal workspace or the user's running 4317/5173 services.
@@ -128,14 +129,14 @@ export async function createHarness({ dataRoot, faultHook } = {}) {
     const child = spawn(process.execPath, imports, {
       cwd: process.cwd(),
       // No LLM configuration at all: the manual Prompt Library must work with zero provider.
-      env: {
+      env: withoutInheritedEmbeddings({
         ...process.env,
         FMCG_DATA_DIR: dir,
         FMCG_PORT: String(apiPort),
         FMCG_LLM_BASE_URL: '',
         FMCG_LLM_MODEL: '',
         FMCG_LLM_API_KEY: '',
-      },
+      }),
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
     });

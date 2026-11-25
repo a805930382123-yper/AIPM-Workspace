@@ -1,3 +1,4 @@
+import { withoutInheritedEmbeddings } from '../support/isolated-embedding-env.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -118,7 +119,7 @@ async function poll(callback, accept) {
   assert.fail('timed out waiting for verification state');
 }
 async function startApi(dataRoot = data) {
-  child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, env: { ...cleanEnv, FMCG_DATA_DIR: dataRoot, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: config } });
+  child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { windowsHide: true, env: withoutInheritedEmbeddings({ ...cleanEnv, FMCG_DATA_DIR: dataRoot, FMCG_PORT: String(apiPort), FMCG_LLM_CONFIG_FILE: config }) });
   childExit = once(child, 'close');
   child.stdout.on('data', chunk => logs.push(String(chunk)));
   child.stderr.on('data', chunk => logs.push(String(chunk)));
