@@ -1,75 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  api,
-  ApiError,
-  type Meeting,
-  type MeetingCatalog,
-  type MeetingCatalogEntry,
-  type MeetingConfidentiality,
-  type MeetingSummary,
-} from '../api';
+import { api, type Meeting, type MeetingCatalog, type MeetingSummary } from '../api';
 import { MeetingMinutes } from '../MeetingMinutes';
 import { MeetingRawLinks } from '../MeetingRawLinks';
-import { useDialogFocus } from '../components/useDialogFocus';
-import { readQueryParams, updateRouteQuery } from '../router/routes';
+import { readQueryParams } from '../router/routes';
 import { subscribePopState } from '../router/useAppRoute';
+import { CatalogDialog } from './meeting/CatalogDialog';
+import { MeetingEditor } from './meeting/MeetingEditor';
+import { PolicyDialog } from './meeting/PolicyDialog';
+import {
+  DEFAULT_MEETING_FILTERS,
+  filterAndSortMeetings,
+  formatMeetingError,
+  MEETING_LEVELS,
+  type MeetingFilters,
+  readMeetingFilters,
+  safeMeetingHref,
+  saveMeetingFilters,
+} from './meeting/meetingFilters';
 import '../meeting.css';
-
-const LEVELS: MeetingConfidentiality[] = ['Public', 'Internal', 'Sensitive', 'Restricted'];
-const newId = () => crypto.randomUUID();
-const todayLocal = () => {
-  const date = new Date();
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-};
-type Filters = {
-  q: string;
-  type: string;
-  tag: string;
-  customer: string;
-  project: string;
-  level: string;
-  order: 'desc' | 'asc';
-};
-const readFilters = (): Filters => {
-  const q = readQueryParams();
-  return {
-    q: q.get('mq') || '',
-    type: q.get('mt') || '',
-    tag: q.get('mg') || '',
-    customer: q.get('mc') || '',
-    project: q.get('mp') || '',
-    level: q.get('ml') || '',
-    order: q.get('mo') === 'asc' ? 'asc' : 'desc',
-  };
-};
-function saveFilters(f: Filters, meetingId?: string | null, push = false) {
-  updateRouteQuery(
-    (p) => {
-      for (const [key, value] of Object.entries({
-        mq: f.q,
-        mt: f.type,
-        mg: f.tag,
-        mc: f.customer,
-        mp: f.project,
-        ml: f.level,
-        mo: f.order,
-        meeting: meetingId || '',
-      })) {
-        if (value) {
-          p.set(key, value);
-        } else {
-          p.delete(key);
-        }
-      }
-    },
-    { push },
-  );
-}
-const errText = (e: unknown) => (e instanceof Error ? e.message : '操作失败，请重试。');
-const byDate = (a: MeetingSummary, b: MeetingSummary, order: string) =>
-  order === 'asc'
-    ? a.meeting_date.localeCompare(b.meeting_date) || a.meeting_id.localeCompare(b.meeting_id)
-    : b.meeting_date.localeCompare(a.meeting_date) || b.meeting_id.localeCompare(a.meeting_id);
 
 export function MeetingPage({
   onRawChanged,
@@ -80,7 +28,7 @@ export function MeetingPage({
     [items, setItems] = useState<MeetingSummary[]>([]),
     [selectedId, setSelectedId] = useState<string | null>(() => readQueryParams().get('meeting'));
   const [detail, setDetail] = useState<Meeting | null>(null),
-    [filters, setFilters] = useState<Filters>(readFilters),
+    [filters, setFilters] = useState<MeetingFilters>(readMeetingFilters),
     [busy, setBusy] = useState(false),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(''),
@@ -118,12 +66,12 @@ export function MeetingPage({
         const d = await api<Meeting>(`/api/meetings/${encodeURIComponent(target)}`);
         if (token === epoch.current && current === detailEpoch.current) setDetail(d);
       } catch (e) {
-        if (token === epoch.current && current === detailEpoch.current) setError(errText(e));
+        if (token === epoch.current && current === detailEpoch.current) setError(formatMeetingError(e));
       }
     } else {
       setSelectedId(null);
       setDetail(null);
-      saveFilters(readFilters(), null);
+      saveMeetingFilters(readMeetingFilters(), null);
     }
   }, []);
   const load = useCallback(
@@ -134,7 +82,7 @@ export function MeetingPage({
       try {
         await fetchDirectoryAndDetail(target, token);
       } catch (e) {
-        if (token === epoch.current) setError(errText(e));
+        if (token === epoch.current) setError(formatMeetingError(e));
       } finally {
         if (token === epoch.current) setLoading(false);
       }
@@ -147,7 +95,7 @@ export function MeetingPage({
     const token = ++epoch.current;
     void fetchDirectoryAndDetail(initialSelectedIdRef.current, token)
       .catch((e) => {
-        if (active && token === epoch.current) setError(errText(e));
+        if (active && token === epoch.current) setError(formatMeetingError(e));
       })
       .finally(() => {
         if (active && token === epoch.current) setLoading(false);
@@ -159,7 +107,7 @@ export function MeetingPage({
       setPolicy(false);
       setManage(null);
       setDeleteConfirm(false);
-      const f = readFilters();
+      const f = readMeetingFilters();
       setFilters(f);
       const id = readQueryParams().get('meeting');
       setSelectedId(id);
@@ -183,7 +131,7 @@ export function MeetingPage({
     setSelectedId(id);
     setDetail(null);
     setDeleteConfirm(false);
-    saveFilters(filters, id, true);
+    saveMeetingFilters(filters, id, true);
     const token = ++detailEpoch.current;
     if (!id) return;
     setBusy(true);
@@ -192,7 +140,7 @@ export function MeetingPage({
       const d = await api<Meeting>(`/api/meetings/${encodeURIComponent(id)}`);
       if (token === detailEpoch.current) setDetail(d);
     } catch (e) {
-      if (token === detailEpoch.current) setError(errText(e));
+      if (token === detailEpoch.current) setError(formatMeetingError(e));
     } finally {
       if (token === detailEpoch.current) setBusy(false);
     }
@@ -202,28 +150,13 @@ export function MeetingPage({
     [catalog],
   );
   const filtered = useMemo(
-    () =>
-      items
-        .filter((m) => {
-          const tags = m.tags.map((t) => catalogName('tags', t));
-          const q = filters.q.trim().toLocaleLowerCase();
-          return (
-            (!q ||
-              [m.title, ...tags, m.customer || '', m.project || ''].some((x) => x.toLocaleLowerCase().includes(q))) &&
-            (!filters.type || m.meeting_type === filters.type) &&
-            (!filters.tag || m.tags.includes(filters.tag)) &&
-            (!filters.customer || m.customer === filters.customer) &&
-            (!filters.project || m.project === filters.project) &&
-            (!filters.level || m.confidentiality === filters.level)
-          );
-        })
-        .sort((a, b) => byDate(a, b, filters.order)),
-    [items, catalogName, filters],
+    () => filterAndSortMeetings(items, filters, (tagId) => catalogName('tags', tagId)),
+    [items, filters, catalogName],
   );
-  const updateFilter = (key: keyof Filters, value: string) => {
+  const updateFilter = (key: keyof MeetingFilters, value: string) => {
     const next = { ...filters, [key]: value };
     setFilters(next);
-    saveFilters(next, selectedId);
+    saveMeetingFilters(next, selectedId);
   };
   const afterMutation = async (id: string | null, dialogToken: number) => {
     if (!mounted.current || dialogToken !== modalTokenRef.current) return;
@@ -348,7 +281,7 @@ export function MeetingPage({
             onChange={(e) => updateFilter('level', e.target.value)}
           >
             <option value="">全部等级</option>
-            {LEVELS.map((x) => (
+            {MEETING_LEVELS.map((x) => (
               <option key={x}>{x}</option>
             ))}
           </select>
@@ -363,9 +296,8 @@ export function MeetingPage({
         <button
           className="text-button"
           onClick={() => {
-            const next = { q: '', type: '', tag: '', customer: '', project: '', level: '', order: 'desc' as const };
-            setFilters(next);
-            saveFilters(next, selectedId);
+            setFilters(DEFAULT_MEETING_FILTERS);
+            saveMeetingFilters(DEFAULT_MEETING_FILTERS, selectedId);
           }}
         >
           清除筛选
@@ -394,17 +326,8 @@ export function MeetingPage({
                 <button
                   className="secondary-button"
                   onClick={() => {
-                    const next = {
-                      q: '',
-                      type: '',
-                      tag: '',
-                      customer: '',
-                      project: '',
-                      level: '',
-                      order: 'desc' as const,
-                    };
-                    setFilters(next);
-                    saveFilters(next, selectedId);
+                    setFilters(DEFAULT_MEETING_FILTERS);
+                    saveMeetingFilters(DEFAULT_MEETING_FILTERS, selectedId);
                   }}
                 >
                   清除筛选
@@ -495,7 +418,7 @@ export function MeetingPage({
                 <div className="meeting-source-line">
                   <span>录音</span>
                   {detail.recording_url ? (
-                    <a href={safeHref(detail.recording_url)} target="_blank" rel="noopener noreferrer">
+                    <a href={safeMeetingHref(detail.recording_url)} target="_blank" rel="noopener noreferrer">
                       打开录音链接 ↗
                     </a>
                   ) : (
@@ -505,7 +428,7 @@ export function MeetingPage({
                 <div className="meeting-source-line">
                   <span>纪要</span>
                   {detail.minutes_url ? (
-                    <a href={safeHref(detail.minutes_url)} target="_blank" rel="noopener noreferrer">
+                    <a href={safeMeetingHref(detail.minutes_url)} target="_blank" rel="noopener noreferrer">
                       打开纪要链接 ↗
                     </a>
                   ) : (
@@ -609,7 +532,7 @@ export function MeetingPage({
                           } catch (e) {
                             deleteLock.current = false;
                             if (mounted.current && actionToken === modalTokenRef.current) {
-                              setError(`${errText(e)} 会议记录未确认删除；请重新读取后再操作。`);
+                              setError(`${formatMeetingError(e)} 会议记录未确认删除；请重新读取后再操作。`);
                               setBusy(false);
                             }
                           }
@@ -674,9 +597,11 @@ export function MeetingPage({
     </section>
   );
 }
+
 function detailOrNull(mode: string, detail: Meeting | null) {
   return mode === 'create' || !!detail;
 }
+
 function distinct(values: Array<string | null>) {
   return [...new Set(values.filter((x): x is string => !!x))].sort().map((x) => (
     <option key={x} value={x}>
@@ -684,694 +609,12 @@ function distinct(values: Array<string | null>) {
     </option>
   ));
 }
+
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div className="meeting-meta">
       <span>{label}</span>
       <b>{value}</b>
-    </div>
-  );
-}
-function safeHref(value: string) {
-  try {
-    const u = new URL(value);
-    return u.protocol === 'https:' && !u.username && !u.password ? value : undefined;
-  } catch {
-    return undefined;
-  }
-}
-type EditorProps = {
-  mode: 'create' | 'edit';
-  item: Meeting | null;
-  catalog: MeetingCatalog | null;
-  token: number;
-  onClose: () => void;
-  onReload: () => void;
-  onSaved: (id: string, token: number, upload?: boolean) => void;
-};
-function MeetingEditor({ mode, item, catalog, token, onClose, onReload, onSaved }: EditorProps) {
-  const dialog = useDialogFocus<HTMLElement>();
-  const requestId = useRef(newId());
-  const submitLock = useRef(false);
-  const [values, setValues] = useState(() => ({
-    title: item?.title || '',
-    meeting_date: item?.meeting_date || todayLocal(),
-    meeting_time: item?.meeting_time || '',
-    meeting_type: item?.meeting_type || catalog?.types.find((x) => x.active)?.id || '',
-    tags: item?.tags || ([] as string[]),
-    customer: item?.customer || '',
-    project: item?.project || '',
-    description: item?.description || '',
-    recording_url: item?.recording_url || '',
-    minutes_url: item?.minutes_url || '',
-    confidentiality: item?.confidentiality || ('Sensitive' as MeetingConfidentiality),
-  }));
-  const [uploadAfter, setUploadAfter] = useState(false);
-  const [saving, setSaving] = useState(false),
-    [error, setError] = useState(''),
-    [isConflict, setIsConflict] = useState(false);
-  const isRestricted = values.confidentiality === 'Restricted';
-  const set = (key: string, value: string) => {
-    if (mode === 'create') requestId.current = newId();
-    setValues((v) => ({
-      ...v,
-      [key]: value,
-      ...(key === 'confidentiality' && value === 'Restricted'
-        ? { tags: [], customer: '', project: '', description: '', recording_url: '', minutes_url: '' }
-        : {}),
-    }));
-  };
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (submitLock.current) return;
-    submitLock.current = true;
-    setSaving(true);
-    setError('');
-    setIsConflict(false);
-    try {
-      let result: Meeting;
-      if (mode === 'create') {
-        const body = {
-          requestId: requestId.current,
-          title: values.title,
-          meeting_date: values.meeting_date,
-          meeting_time: values.meeting_time || null,
-          meeting_type: values.meeting_type,
-          tags: isRestricted ? [] : values.tags,
-          customer: isRestricted ? null : values.customer || null,
-          project: isRestricted ? null : values.project || null,
-          description: isRestricted ? null : values.description || null,
-          recording_url: isRestricted ? null : values.recording_url || null,
-          minutes_url: isRestricted ? null : values.minutes_url || null,
-          confidentiality: values.confidentiality,
-        };
-        result = await api<Meeting>('/api/meetings', { method: 'POST', body: JSON.stringify(body) });
-      } else {
-        const body: Record<string, unknown> = { baseRevision: item!.revision };
-        for (const key of [
-          'title',
-          'meeting_date',
-          'meeting_time',
-          'customer',
-          'project',
-          'description',
-          'recording_url',
-          'minutes_url',
-        ] as const)
-          body[key] = key === 'meeting_time' ? values[key] || null : values[key] || null;
-        if (values.meeting_type !== item!.meeting_type) body.meeting_type = values.meeting_type;
-        if (values.tags.join(',') !== item!.tags.join(',')) body.tags = values.tags;
-        result = await api<Meeting>(`/api/meetings/${encodeURIComponent(item!.meeting_id)}`, {
-          method: 'PATCH',
-          body: JSON.stringify(body),
-        });
-      }
-      onSaved(result.meeting_id, token, uploadAfter);
-    } catch (e) {
-      setError(`${errText(e)} 输入仍保留。`);
-      setIsConflict(e instanceof ApiError && e.status === 409);
-      submitLock.current = false;
-      setSaving(false);
-    }
-  };
-  return (
-    <div
-      className="modal-scrim"
-      role="presentation"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !saving) onClose();
-      }}
-    >
-      <section
-        ref={dialog}
-        tabIndex={-1}
-        className="import-dialog meeting-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="meeting-editor-title"
-        onKeyDown={(e) => {
-          if (e.key === 'Escape' && !saving) onClose();
-        }}
-      >
-        <header className="dialog-header">
-          <div>
-            <h2 id="meeting-editor-title">{mode === 'create' ? '新建会议' : '编辑会议信息'}</h2>
-            <p>{mode === 'create' ? '会议标题、日期和主类型为必填。' : '普通编辑只修改会议资料，不改变安全策略。'}</p>
-          </div>
-          <button type="button" className="icon-button" aria-label="关闭" disabled={saving} onClick={onClose}>
-            ×
-          </button>
-        </header>
-        <form onSubmit={submit}>
-          <div className="form-grid">
-            <label className="field span-two">
-              会议标题 <em>*</em>
-              <input required maxLength={200} value={values.title} onChange={(e) => set('title', e.target.value)} />
-            </label>
-            <label className="field">
-              日期 <em>*</em>
-              <input
-                type="date"
-                required
-                value={values.meeting_date}
-                onChange={(e) => set('meeting_date', e.target.value)}
-              />
-            </label>
-            <label className="field">
-              时间
-              <input type="time" value={values.meeting_time} onChange={(e) => set('meeting_time', e.target.value)} />
-            </label>
-            <label className="field">
-              主类型 <em>*</em>
-              <select required value={values.meeting_type} onChange={(e) => set('meeting_type', e.target.value)}>
-                {!values.meeting_type && <option value="">请选择会议类型</option>}
-                {catalog?.types
-                  .filter((x) => x.active || x.id === values.meeting_type)
-                  .map((x) => (
-                    <option key={x.id} value={x.id}>
-                      {x.name}
-                      {!x.active ? '（历史引用）' : ''}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            {mode === 'create' && (
-              <label className="field">
-                保密等级
-                <select value={values.confidentiality} onChange={(e) => set('confidentiality', e.target.value)}>
-                  {LEVELS.map((x) => (
-                    <option key={x}>{x}</option>
-                  ))}
-                </select>
-              </label>
-            )}
-            {isRestricted ? (
-              <div className="meeting-restricted-note span-two">
-                Restricted 仅登记代称、日期、时间与主类型。标签、客户、项目、备注和云端链接均不会发送。
-              </div>
-            ) : (
-              <>
-                <label className="field span-two">
-                  标签（可多选）
-                  <select
-                    multiple
-                    size={4}
-                    value={values.tags}
-                    onChange={(e) => {
-                      if (mode === 'create') requestId.current = newId();
-                      setValues((v) => ({ ...v, tags: [...e.target.selectedOptions].map((o) => o.value) }));
-                    }}
-                  >
-                    {catalog?.tags
-                      .filter((x) => x.active || values.tags.includes(x.id))
-                      .map((x) => (
-                        <option key={x.id} value={x.id}>
-                          {x.name}
-                          {!x.active ? '（历史引用）' : ''}
-                        </option>
-                      ))}
-                  </select>
-                </label>
-                <label className="field">
-                  客户
-                  <input maxLength={200} value={values.customer} onChange={(e) => set('customer', e.target.value)} />
-                </label>
-                <label className="field">
-                  项目
-                  <input maxLength={200} value={values.project} onChange={(e) => set('project', e.target.value)} />
-                </label>
-                <label className="field span-two">
-                  备注
-                  <textarea
-                    maxLength={2000}
-                    value={values.description}
-                    onChange={(e) => set('description', e.target.value)}
-                  />
-                </label>
-                <label className="field span-two">
-                  录音链接（HTTPS）
-                  <input
-                    type="url"
-                    placeholder="https://"
-                    value={values.recording_url}
-                    onChange={(e) => set('recording_url', e.target.value)}
-                  />
-                </label>
-                <label className="field span-two">
-                  纪要链接（HTTPS）
-                  <input
-                    type="url"
-                    placeholder="https://"
-                    value={values.minutes_url}
-                    onChange={(e) => set('minutes_url', e.target.value)}
-                  />
-                </label>
-              </>
-            )}
-          </div>
-          {error && (
-            <div className="form-error" role="alert">
-              {error}
-              {isConflict && (
-                <>
-                  <p>当前编辑内容仍保留。先载入最新资料，再检查后提交。</p>
-                  <button type="button" className="text-button" onClick={onReload}>
-                    载入最新版
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-          <footer className="dialog-footer">
-            <span>
-              档案保存在本机。{mode === 'create' && uploadAfter ? ' 保存后请在本地纪要区确认授权并上传。' : ''}
-            </span>
-            <div>
-              <button type="button" className="secondary-button" disabled={saving} onClick={onClose}>
-                取消
-              </button>
-              {mode === 'create' && (
-                <button
-                  type="submit"
-                  className="secondary-button"
-                  disabled={saving}
-                  onClick={() => setUploadAfter(true)}
-                >
-                  保存并上传本地纪要
-                </button>
-              )}
-              <button className="primary-button" disabled={saving} onClick={() => setUploadAfter(false)}>
-                {saving ? '正在保存…' : '保存会议档案'}
-              </button>
-            </div>
-          </footer>
-        </form>
-      </section>
-    </div>
-  );
-}
-function PolicyDialog({
-  meeting,
-  token,
-  onClose,
-  onReload,
-  onSaved,
-}: {
-  meeting: Meeting;
-  token: number;
-  onClose: () => void;
-  onReload: () => void;
-  onSaved: (id: string, token: number) => void;
-}) {
-  const dialog = useDialogFocus<HTMLElement>();
-  const submitLock = useRef(false);
-  const [conf, setConf] = useState(meeting.confidentiality),
-    [mode, setMode] = useState(meeting.storage_mode),
-    [local, setLocal] = useState(meeting.local_storage_authorized),
-    [raw, setRaw] = useState(meeting.raw_transfer_authorized),
-    [confirmLocal, setConfirmLocal] = useState(false),
-    [confirmRaw, setConfirmRaw] = useState(false),
-    [confirmClear, setConfirmClear] = useState(false),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(''),
-    [isConflict, setIsConflict] = useState(false);
-  const restrictedFields = [
-    ['tags', meeting.tags.length > 0],
-    ['customer', !!meeting.customer],
-    ['project', !!meeting.project],
-    ['description', !!meeting.description],
-    ['recording_url', !!meeting.recording_url],
-    ['minutes_url', !!meeting.minutes_url],
-  ]
-    .filter((x) => x[1])
-    .map((x) => String(x[0]));
-  const index = LEVELS.indexOf(meeting.confidentiality);
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (submitLock.current) return;
-    submitLock.current = true;
-    setBusy(true);
-    setError('');
-    setIsConflict(false);
-    const effectiveRaw =
-      conf !== meeting.confidentiality || mode === 'cloud_index' || conf === 'Restricted' ? false : raw;
-    const body = {
-      baseRevision: meeting.revision,
-      confidentiality: conf,
-      storage_mode: mode,
-      local_storage_authorized: local,
-      raw_transfer_authorized: effectiveRaw,
-      external_ai_authorized: false,
-      ...(confirmLocal ? { confirm_local_storage: true } : {}),
-      ...(confirmRaw ? { confirm_raw_transfer: true } : {}),
-      ...(confirmClear ? { confirm_restricted_metadata_clear: true } : {}),
-    };
-    try {
-      const updated = await api<Meeting>(`/api/meetings/${encodeURIComponent(meeting.meeting_id)}/policy`, {
-        method: 'PATCH',
-        body: JSON.stringify(body),
-      });
-      onSaved(updated.meeting_id, token);
-    } catch (e) {
-      const details =
-        e instanceof ApiError && e.details && typeof e.details === 'object'
-          ? (e.details as { localCopies?: unknown })
-          : undefined;
-      const localCopies = details?.localCopies;
-      const message =
-        e instanceof ApiError &&
-        e.code === 'LOCAL_COPIES_PENDING' &&
-        Number.isSafeInteger(localCopies) &&
-        Number(localCopies) >= 0 &&
-        Number(localCopies) <= 1000000
-          ? `${e.message}（本地纪要副本：${localCopies} 份）`
-          : errText(e);
-      setError(`${message} 策略表单仍保留。`);
-      setIsConflict(e instanceof ApiError && e.status === 409);
-      submitLock.current = false;
-      setBusy(false);
-    }
-  };
-  return (
-    <div
-      className="modal-scrim"
-      role="presentation"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !busy) onClose();
-      }}
-    >
-      <section
-        ref={dialog}
-        tabIndex={-1}
-        className="import-dialog meeting-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="policy-title"
-        onKeyDown={(e) => {
-          if (e.key === 'Escape' && !busy) onClose();
-        }}
-      >
-        <header className="dialog-header">
-          <div>
-            <h2 id="policy-title">会议安全策略</h2>
-            <p>保存时会检查最新版本，避免覆盖已有修改。</p>
-          </div>
-          <button type="button" className="icon-button" onClick={onClose} disabled={busy} aria-label="关闭">
-            ×
-          </button>
-        </header>
-        <form onSubmit={submit}>
-          <div className="form-grid">
-            <label className="field">
-              保密等级
-              <select
-                value={conf}
-                onChange={(e) => {
-                  setConf(e.target.value as MeetingConfidentiality);
-                  if (e.target.value === 'Restricted') {
-                    setMode('cloud_index');
-                    setLocal(false);
-                    setRaw(false);
-                  }
-                }}
-              >
-                {LEVELS.slice(index).map((x) => (
-                  <option key={x}>{x}</option>
-                ))}
-              </select>
-            </label>
-            <label className="field">
-              存储模式
-              <select
-                value={mode}
-                disabled={conf === 'Restricted'}
-                onChange={(e) => setMode(e.target.value as 'cloud_index' | 'local_archive')}
-              >
-                <option value="cloud_index">云端索引</option>
-                <option value="local_archive">本地归档</option>
-              </select>
-            </label>
-            <label className="meeting-check span-two">
-              <input
-                type="checkbox"
-                checked={local}
-                disabled={conf === 'Restricted'}
-                onChange={(e) => setLocal(e.target.checked)}
-              />
-              授权本地保存（开启 Internal/Sensitive 本地模式时需本次独立确认）
-            </label>
-            {(mode === 'local_archive' ||
-              local ||
-              (conf === 'Internal' && meeting.storage_mode === 'local_archive')) && (
-              <label className="meeting-check span-two">
-                <input type="checkbox" checked={confirmLocal} onChange={(e) => setConfirmLocal(e.target.checked)} />
-                我确认本地保存授权适用于此会议
-              </label>
-            )}
-            <label className="meeting-check span-two">
-              <input
-                type="checkbox"
-                checked={raw}
-                disabled={!['Public', 'Internal'].includes(conf) || mode !== 'local_archive'}
-                onChange={(e) => setRaw(e.target.checked)}
-              />
-              授权本地 Raw 登记（仅 Public/Internal，且需逐次显式确认）
-            </label>
-            {raw && (
-              <label className="meeting-check span-two">
-                <input type="checkbox" checked={confirmRaw} onChange={(e) => setConfirmRaw(e.target.checked)} />
-                我单独确认 Raw 登记授权
-              </label>
-            )}
-            <div className="meeting-restricted-note span-two">
-              外部 AI 处理始终禁用。升级到 Restricted 会将不允许的标签、客户、项目、备注及云链接清空。
-            </div>
-            {conf === 'Restricted' && restrictedFields.length > 0 && (
-              <div className="meeting-clear-preview span-two">
-                <b>升级预览：将清空以下字段</b>
-                <p>{restrictedFields.join('、')}</p>
-                <label className="meeting-check">
-                  <input type="checkbox" checked={confirmClear} onChange={(e) => setConfirmClear(e.target.checked)} />
-                  我已查看并确认清空以上字段
-                </label>
-              </div>
-            )}
-          </div>
-          {error && (
-            <div className="form-error" role="alert">
-              {error}
-              {isConflict && (
-                <>
-                  <p>策略输入仍保留。载入最新版后，确认当前状态再提交。</p>
-                  <button type="button" className="text-button" onClick={onReload}>
-                    载入最新版
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-          <footer className="dialog-footer">
-            <span>纪要导入与授权 Raw 登记已支持；外部 AI 处理始终禁用。</span>
-            <div>
-              <button type="button" className="secondary-button" onClick={onClose} disabled={busy}>
-                取消
-              </button>
-              <button className="primary-button" disabled={busy}>
-                {busy ? '提交中…' : '保存策略'}
-              </button>
-            </div>
-          </footer>
-        </form>
-      </section>
-    </div>
-  );
-}
-function CatalogDialog({
-  kind,
-  catalog,
-  token,
-  onClose,
-  onReload,
-  onSaved,
-}: {
-  kind: 'types' | 'tags';
-  catalog: MeetingCatalog;
-  token: number;
-  onClose: () => void;
-  onReload: () => void;
-  onSaved: (c: MeetingCatalog, token: number) => void;
-}) {
-  const dialog = useDialogFocus<HTMLElement>();
-  const [name, setName] = useState(''),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(''),
-    [isConflict, setIsConflict] = useState(false);
-  const list = catalog[kind];
-  const mutateLock = useRef(false);
-  const mutate = async (entry?: MeetingCatalogEntry, patch: Record<string, unknown> = {}) => {
-    if (mutateLock.current) return false;
-    mutateLock.current = true;
-    setBusy(true);
-    setError('');
-    setIsConflict(false);
-    try {
-      const c = await api<MeetingCatalog>(
-        entry ? `/api/meeting-catalog/${kind}/${entry.id}` : `/api/meeting-catalog/${kind}`,
-        {
-          method: entry ? 'PATCH' : 'POST',
-          body: JSON.stringify({ baseRevision: catalog.revision, ...(entry ? patch : { name: name.trim() }) }),
-        },
-      );
-      onSaved(c, token);
-      if (!entry) setName('');
-      setBusy(false);
-      mutateLock.current = false;
-      return true;
-    } catch (e) {
-      setError(`${errText(e)} 当前目录编辑仍保留。`);
-      setIsConflict(e instanceof ApiError && e.status === 409);
-      setBusy(false);
-      mutateLock.current = false;
-      return false;
-    }
-  };
-  return (
-    <div
-      className="modal-scrim"
-      role="presentation"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget && !busy) onClose();
-      }}
-    >
-      <section
-        ref={dialog}
-        tabIndex={-1}
-        className="import-dialog meeting-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="catalog-title"
-        onKeyDown={(e) => {
-          if (e.key === 'Escape' && !busy) onClose();
-        }}
-      >
-        <header className="dialog-header">
-          <div>
-            <h2 id="catalog-title">管理{kind === 'types' ? '会议类型' : '业务标签'}</h2>
-            <p>改名和停用沿用稳定 ID；历史会议会显示最新名称并可筛选。</p>
-          </div>
-          <button type="button" className="icon-button" onClick={onClose} disabled={busy} aria-label="关闭">
-            ×
-          </button>
-        </header>
-        <div className="catalog-content">
-          <form
-            className="catalog-add"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void mutate();
-            }}
-          >
-            <label className="field">
-              新增名称
-              <input maxLength={100} value={name} onChange={(e) => setName(e.target.value)} />
-            </label>
-            <button className="primary-button" disabled={busy || !name.trim()}>
-              新增
-            </button>
-          </form>
-          <div className="catalog-items">
-            {list.map((item) => (
-              <CatalogItem
-                key={item.id}
-                entry={item}
-                busy={busy}
-                onRename={(next) => mutate(item, { name: next })}
-                onActive={(active) => void mutate(item, { active })}
-              />
-            ))}
-          </div>
-          {error && (
-            <div className="meeting-error" role="alert">
-              {error}
-              {isConflict && (
-                <button className="text-button" onClick={onReload}>
-                  载入最新目录
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-        <footer className="dialog-footer">
-          <span>目录版本 rev {catalog.revision}</span>
-          <button type="button" className="secondary-button" onClick={onClose} disabled={busy}>
-            完成
-          </button>
-        </footer>
-      </section>
-    </div>
-  );
-}
-function CatalogItem({
-  entry,
-  busy,
-  onRename,
-  onActive,
-}: {
-  entry: MeetingCatalogEntry;
-  busy: boolean;
-  onRename: (name: string) => Promise<boolean>;
-  onActive: (active: boolean) => void;
-}) {
-  const [editing, setEditing] = useState(false),
-    [name, setName] = useState(entry.name);
-  return (
-    <div className="catalog-item">
-      {editing ? (
-        <input
-          aria-label={`重命名 ${entry.name}`}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          maxLength={100}
-        />
-      ) : (
-        <>
-          <b>{entry.name}</b>
-          <small>{entry.active ? '启用' : '已停用'}</small>
-        </>
-      )}
-      <div>
-        {editing ? (
-          <>
-            <button
-              className="text-button"
-              disabled={busy || !name.trim()}
-              onClick={async () => {
-                if (await onRename(name)) setEditing(false);
-              }}
-            >
-              保存名称
-            </button>
-            <button
-              className="text-button"
-              onClick={() => {
-                setName(entry.name);
-                setEditing(false);
-              }}
-            >
-              取消
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="text-button" disabled={busy} onClick={() => setEditing(true)}>
-              改名
-            </button>
-            <button className="text-button" disabled={busy} onClick={() => onActive(!entry.active)}>
-              {entry.active ? '停用' : '恢复'}
-            </button>
-          </>
-        )}
-      </div>
     </div>
   );
 }
