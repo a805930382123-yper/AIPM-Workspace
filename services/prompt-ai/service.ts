@@ -7,7 +7,7 @@ import { assertNoKnownSecret, LlmError, sanitizeProviderText } from '../llm/prov
 import type { WikiStore } from '../wiki/store.ts';
 import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
 import type { RawStore } from '../raw/store.ts';
-import { retrieveKnowledgeContextDetailed } from '../llm/knowledge-maintenance.ts';
+import { getRetrievalStatus, retrieveKnowledgeContextDetailed } from '../llm/knowledge-maintenance.ts';
 import { completeWikiBodyInContext } from '../search/fts-retriever.ts';
 import type { PromptStore } from '../prompt/store.ts';
 import { normalizePromptInput, type PromptInput } from '../prompt/validate.ts';
@@ -966,7 +966,7 @@ export class PromptAiService {
     const p = this.provider();
     return p ? { name: p.name, model: p.model } : null;
   }
-  private async context(ids: unknown, brief: Brief) {
+  private async context(ids: unknown, brief: Brief, signal?: AbortSignal) {
     if (
       !Array.isArray(ids) ||
       ids.length > BUDGETS.selectedWiki ||
@@ -983,6 +983,12 @@ export class PromptAiService {
       return page;
     };
     let pages = await Promise.all(pageIds.map(load));
+    const verify = async (snapshots = pages) => {
+      for (const page of snapshots) {
+        if (JSON.stringify(await load(page.id)) !== JSON.stringify(page))
+          fail('WIKI_BASIS_CHANGED', '选择的 Wiki 已更新，请刷新后重选。', 409);
+      }
+    };
     const retrieval =
       this.raws &&
       this.wiki.searchIndex &&
@@ -990,12 +996,24 @@ export class PromptAiService {
         this.wiki,
         this.raws,
         [{ title: brief.taskName, tags: [], content: [brief.goal, brief.context, brief.tasks].join(' ') }],
-        { pageIds, includeSources: true, characters: BUDGETS.totalWikiChars, perPageCharacters: BUDGETS.perWikiChars },
+        {
+          pageIds,
+          includeSources: true,
+          characters: BUDGETS.totalWikiChars,
+          perPageCharacters: BUDGETS.perWikiChars,
+          signal,
+          authorizeQuery: async () => {
+            const provider = this.provider();
+            if (!provider) throw new LlmError('LLM_NOT_CONFIGURED', '尚未配置产品 LLM Provider。');
+            assertNoKnownSecret(brief, provider.secrets);
+            await verify();
+          },
+        },
       ));
     const wikiRetrieval = retrieval
-      ? { engine: retrieval.engine, degraded: retrieval.degraded }
+      ? getRetrievalStatus(retrieval)
       : ({ engine: 'legacy_scan', degraded: false } as const);
-    if (retrieval && retrieval.engine === 'sqlite_fts') {
+    if (retrieval && retrieval.engine !== 'legacy_scan') {
       const used = retrieval.context.flatMap((item) => {
         if (!('chunks' in item)) return [];
         const page = retrieval.records.find((page) => page.id === item.id)!;
@@ -1018,6 +1036,7 @@ export class PromptAiService {
         used,
         pageIds,
         wikiRetrieval,
+        verify: () => verify(retrieval.records),
         usedChars: used.length ? JSON.stringify(retrieval.context).length : 0,
       };
     }
@@ -1056,7 +1075,7 @@ export class PromptAiService {
         truncated: excerpt.length < page.body.length,
       };
     });
-    if (!wikiRetrieval.degraded) return { context: used, used, pageIds, wikiRetrieval, usedChars: total };
+    if (!wikiRetrieval.degraded) return { context: used, used, pageIds, wikiRetrieval, verify, usedChars: total };
     const bounded: typeof used = [];
     for (const page of used) {
       const withExcerpt = (size: number) => {
@@ -1081,12 +1100,13 @@ export class PromptAiService {
       used: bounded,
       pageIds,
       wikiRetrieval,
+      verify,
       usedChars: bounded.length ? JSON.stringify(bounded).length : 0,
     };
   }
   async generate(rawBrief: unknown, ids: unknown, signal?: AbortSignal) {
     const brief = validateBrief(rawBrief, true);
-    const { context, used, pageIds, wikiRetrieval, usedChars } = await this.context(ids, brief);
+    const { context, used, pageIds, wikiRetrieval, usedChars, verify } = await this.context(ids, brief, signal);
     try {
       assertNoKnownSecret({ brief, context }, this.provider()?.secrets ?? []);
     } catch {
@@ -1097,6 +1117,7 @@ export class PromptAiService {
       });
     }
     const categories = (await this.prompts.schema()).categories.map((item) => item.id);
+    await verify();
     const response = await this.call(
       `根据用户确认的 Brief 与已选择 Wiki 背景生成完整 Prompt 内容。只输出严格 JSON，契约：${JSON.stringify(contentContract(categories))}。分类必须从给定类别选。未知业务标记待用户补充，不虚构。不得输出相关Wiki、收藏、ID、版本等受控字段。`,
       { brief, relatedWiki: context, categories },

@@ -3,7 +3,16 @@ import type { WikiChunk } from './chunking.ts';
 import type { WikiSearchIndexer } from './indexer.ts';
 import { buildFtsQuery } from './tokenizer.ts';
 
-export type RetrievedChunkItem = Omit<WikiChunk, 'charCount'> & { pageTitle: string; score: number };
+export type RetrievedChunkItem = Omit<WikiChunk, 'charCount'> & {
+  pageTitle: string;
+  score: number;
+  hitSource?: 'both' | 'fts' | 'vector';
+  ftsRank?: number;
+  vectorRank?: number;
+  vectorScore?: number;
+  rrfScore?: number;
+};
+export type RankedWikiChunk = { chunk: RetrievedChunkItem; fileHash: string; exactName: boolean };
 type Candidate = Omit<RetrievedChunkItem, 'score'> & {
   aliases: string;
   fileHash: string;
@@ -22,7 +31,28 @@ export type SearchOptions = { includeSources?: boolean; pageIds?: string[]; excl
 
 const sectionLabels = { fact: '事实', inference: '推断', mixed: '混合', meta: '元信息' } as const;
 
-export function rankWikiChunks(index: WikiSearchIndexer, queries: RetrievalQuery[], options: SearchOptions) {
+export function queryPageNames(queries: RetrievalQuery[]) {
+  return [
+    ...new Set(
+      queries
+        .flatMap(({ title, tags }) => [title, ...tags])
+        .map((text) => text.trim().toLowerCase())
+        .filter((text) => text.length >= 2),
+    ),
+  ];
+}
+
+export function pageNameMatch(pageNames: string[], names: string[]) {
+  return pageNames.some(
+    (name) => name.length >= 2 && names.some((keyword) => name.includes(keyword) || keyword.includes(name)),
+  );
+}
+
+export function rankWikiChunks(
+  index: WikiSearchIndexer,
+  queries: RetrievalQuery[],
+  options: SearchOptions,
+): RankedWikiChunk[] {
   if (index.isDirty) throw new Error('Wiki search index is dirty');
   if (options.pageIds?.length === 0) return [];
   const keywords = queries.flatMap(({ title, tags }) => [title, ...tags]);
@@ -65,7 +95,7 @@ export function rankWikiChunks(index: WikiSearchIndexer, queries: RetrievalQuery
       ),
   );
 
-  const names = [...new Set(keywords.map((text) => text.trim().toLowerCase()).filter((text) => text.length >= 2))];
+  const names = queryPageNames(queries);
   return search
     .flatMap(({ bm25, aliases, titleTokens, metaTokens, bodyTokens, fileHash, ...chunk }) => {
       const fields = [titleTokens, metaTokens, bodyTokens].map((field) => ` ${field} `);
@@ -75,9 +105,7 @@ export function rankWikiChunks(index: WikiSearchIndexer, queries: RetrievalQuery
       const pageNames = [chunk.pageTitle, ...(JSON.parse(aliases) as string[])].map((title) =>
         title.toLowerCase().trim(),
       );
-      const exactName = pageNames.some(
-        (name) => name.length >= 2 && names.some((keyword) => name.includes(keyword) || keyword.includes(name)),
-      );
+      const exactName = pageNameMatch(pageNames, names);
       const normalized = -bm25 / (1 - bm25);
       if (!covered.length || (covered.length === 1 && covered[0].generic && normalized < 0.35)) return [];
       if (
@@ -87,7 +115,7 @@ export function rankWikiChunks(index: WikiSearchIndexer, queries: RetrievalQuery
       )
         return [];
       const score = normalized + (covered.length / queryGroups.length) * 0.45 + (exactName ? 0.3 : 0);
-      return [{ chunk: { ...chunk, score }, fileHash }];
+      return [{ chunk: { ...chunk, score }, fileHash, exactName }];
     })
     .sort((a, b) => b.chunk.score - a.chunk.score || a.chunk.chunkId.localeCompare(b.chunk.chunkId));
 }

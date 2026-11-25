@@ -8,16 +8,21 @@ import { parseWikiMarkdown, wikiPageIdFromFilename, type WikiRecord } from '../w
 import { chunkWikiPage } from './chunking.ts';
 import { EmbeddingBackfill, type EmbeddingStatus } from './embedding-backfill.ts';
 import { EmbeddingError, type EmbeddingProvider } from './embedding-provider.ts';
+import type { SearchOptions } from './fts-retriever.ts';
 import {
   closeIndexForReplacement,
   initSearchSchema,
+  matchesEmbeddingProvider,
   needsIndexRebuild,
   openSearchIndex,
+  readEmbeddingLock,
+  setEmbeddingLock,
   setIndexMeta,
   writeIndexedPages,
   type IndexedPage,
   type SearchDatabase,
 } from './sqlite-store.ts';
+import { readVectorHits, WikiVectorCache } from './vector-retriever.ts';
 
 const READ_BATCH = 32;
 const SIDECARS = ['-wal', '-shm', '-journal'];
@@ -38,6 +43,11 @@ type EmbeddingOptions = {
   withSourceLock?: <T>(work: () => Promise<T>) => Promise<T>;
 };
 
+export type VectorQueryAuthorization = {
+  authorizeQuery?: () => Promise<void> | void;
+  signal?: AbortSignal;
+};
+
 // The workbench holds its existing data-root instance lock and owns one indexer per root.
 export class WikiSearchIndexer {
   readonly databaseFile: string;
@@ -47,6 +57,7 @@ export class WikiSearchIndexer {
   private db: SearchDatabase | undefined;
   private dirty = false;
   private readonly embeddings: EmbeddingBackfill;
+  private readonly vectors = new WikiVectorCache();
 
   constructor(
     root: string,
@@ -57,7 +68,7 @@ export class WikiSearchIndexer {
     this.databaseFile = path.join(this.root, 'state', 'search-index.sqlite');
     this.embeddings = new EmbeddingBackfill(
       () => this.db,
-      embeddingOptions?.provider ?? (async () => null),
+      () => this.embeddingProvider(),
       async ({ filePath, fileHash, pageId }) => {
         const file = path.join(this.root, filePath);
         if (wikiPageIdFromFilename(path.relative(this.wikiDir, file)) !== pageId)
@@ -71,6 +82,7 @@ export class WikiSearchIndexer {
         });
       },
       embeddingOptions?.withSourceLock ?? ((work) => work()),
+      (pageIds) => this.read((db) => this.vectors.reloadFromStore(db, pageIds)),
     );
   }
 
@@ -90,6 +102,88 @@ export class WikiSearchIndexer {
 
   backfillMissingEmbeddings(): Promise<void> {
     return this.embeddings.request();
+  }
+
+  private async embeddingProvider() {
+    if (process.env.SEARCH_ENGINE === 'sqlite_fts' || process.env.SEARCH_ENGINE === 'legacy_scan') return null;
+    return (await this.embeddingOptions?.provider()) ?? null;
+  }
+
+  async rankVectorChunks(
+    query: string,
+    names: string[],
+    options: SearchOptions & VectorQueryAuthorization,
+    minScore: number,
+  ) {
+    const db = this.read((db) => db);
+    const provider = await this.embeddingProvider().catch(() => {
+      throw new EmbeddingError('EMBEDDING_CONFIG_ERROR');
+    });
+    if (!provider) throw new EmbeddingError('EMBEDDING_UNCONFIGURED');
+    if (this.dirty || this.db !== db) throw new EmbeddingError('EMBEDDING_STALE');
+    const lock = readEmbeddingLock(db);
+    if (!matchesEmbeddingProvider(lock, provider)) {
+      void this.backfillMissingEmbeddings();
+      throw new EmbeddingError('EMBEDDING_VERSION_CHANGED');
+    }
+    const scope = { ...options, allowedPageIds: options.pageIds };
+    if (!lock.version || !this.vectors.hasEligible(scope)) throw new EmbeddingError('EMBEDDING_EMPTY');
+    const authorize = async () => {
+      try {
+        await options.authorizeQuery?.();
+      } catch {
+        throw new EmbeddingError('EMBEDDING_SOURCE_UNAVAILABLE');
+      }
+    };
+    await authorize();
+    const result = await provider
+      .embedQuery(query, {
+        signal: options.signal,
+        dispatch: async (send) => {
+          const dispatch = async () => {
+            await authorize();
+            const currentProvider = await this.embeddingProvider();
+            if (
+              this.dirty ||
+              db !== this.db ||
+              !matchesEmbeddingProvider(lock, currentProvider) ||
+              readEmbeddingLock(db).version !== lock.version
+            )
+              throw new EmbeddingError('EMBEDDING_STALE');
+            return { response: send() };
+          };
+          const { response } = !this.embeddingOptions?.withSourceLock
+            ? await dispatch()
+            : await this.embeddingOptions.withSourceLock(dispatch);
+          return response;
+        },
+      })
+      .catch((error: unknown) => {
+        throw error instanceof EmbeddingError ? error : new EmbeddingError('EMBEDDING_QUERY_FAILED');
+      });
+    const currentProvider = await this.embeddingProvider().catch(() => null);
+    if (
+      this.dirty ||
+      this.db !== db ||
+      !matchesEmbeddingProvider(lock, currentProvider) ||
+      readEmbeddingLock(db).version !== lock.version
+    )
+      throw new EmbeddingError('EMBEDDING_STALE');
+    const { vector, dimensions } = result;
+    if (
+      !Number.isSafeInteger(dimensions) ||
+      dimensions <= 0 ||
+      vector.length !== dimensions ||
+      !vector.every(Number.isFinite)
+    )
+      throw new EmbeddingError('EMBEDDING_INVALID_RESPONSE');
+    if (dimensions !== lock.dimensions || provider.getVersionKey(dimensions) !== lock.version) {
+      setEmbeddingLock(db, { ...lock, dimensions, version: provider.getVersionKey(dimensions) });
+      this.vectors.clear();
+      void this.backfillMissingEmbeddings();
+      throw new EmbeddingError('EMBEDDING_VERSION_CHANGED');
+    }
+    return readVectorHits(db, this.vectors.rank(vector, scope, minScore), names);
   }
 
   reconcileOnStartup(): Promise<boolean> {
@@ -127,6 +221,7 @@ export class WikiSearchIndexer {
           changes,
           previous.filter((row) => replaced.has(row.page_id) || !present.has(row.file_path)).map((row) => row.page_id),
         );
+        this.vectors.reloadFromStore(db);
         setIndexMeta(db, { last_reconciled_at: new Date().toISOString() });
         if (this.embeddingOptions) void this.backfillMissingEmbeddings();
         return true;
@@ -147,6 +242,7 @@ export class WikiSearchIndexer {
         if (!db) throw new Error('Search index is unavailable');
         const page = await this.readWiki(file);
         writeIndexedPages(db, [page], [page.page.id]);
+        this.vectors.reloadFromStore(db, [page.page.id]);
         if (this.embeddingOptions) void this.backfillMissingEmbeddings();
         return true;
       } catch (error) {
@@ -160,6 +256,7 @@ export class WikiSearchIndexer {
     return this.queue.run(async () => {
       try {
         this.read((db) => writeIndexedPages(db, [], [pageId]));
+        this.vectors.removeByPageId(pageId);
         return true;
       } catch (error) {
         this.markDirty('removePage', error);
@@ -185,6 +282,7 @@ export class WikiSearchIndexer {
       this.embeddings.stop();
       this.db?.close();
       this.db = undefined;
+      this.vectors.clear();
     });
   }
 
@@ -252,6 +350,7 @@ export class WikiSearchIndexer {
         for (const suffix of SIDECARS) rmSync(this.databaseFile + suffix, { force: true });
       }
       this.db = undefined;
+      this.vectors.clear();
       try {
         renameSync(tempFile, this.databaseFile);
       } finally {
@@ -259,6 +358,7 @@ export class WikiSearchIndexer {
         this.openExisting();
       }
       if (!this.db) throw new Error('Could not reopen the rebuilt search index');
+      this.vectors.reloadFromStore(this.db);
       this.dirty = false;
       if (this.embeddingOptions) void this.backfillMissingEmbeddings();
       return { pagesIndexed, chunksIndexed, durationMs: performance.now() - started };

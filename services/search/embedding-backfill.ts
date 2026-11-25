@@ -1,6 +1,7 @@
 import { EmbeddingError, type EmbeddingProvider } from './embedding-provider.ts';
 import {
   countEmbeddings,
+  matchesEmbeddingProvider,
   readEmbeddingLock,
   readPendingEmbeddings,
   setEmbeddingLock,
@@ -32,6 +33,7 @@ export class EmbeddingBackfill {
     private readonly provider: () => Promise<EmbeddingProvider | null>,
     private readonly authorize: (row: Candidate) => Promise<void>,
     private readonly withSourceLock: <T>(work: () => Promise<T>) => Promise<T>,
+    private readonly onWrite: (pageIds?: readonly string[]) => void,
   ) {}
 
   status(): EmbeddingStatus {
@@ -93,27 +95,19 @@ export class EmbeddingBackfill {
       identity: provider.identity,
       configuredDimensions: provider.configuredDimensions ?? 0,
     };
-    const sameProvider = (other: EmbeddingProvider | null) =>
-      other?.providerName === target.provider &&
-      other.modelName === target.model &&
-      other.identity === target.identity &&
-      (other.configuredDimensions ?? 0) === target.configuredDimensions;
     let lock = readEmbeddingLock(db);
-    if (
-      lock.provider !== target.provider ||
-      lock.model !== target.model ||
-      lock.identity !== target.identity ||
-      lock.configuredDimensions !== target.configuredDimensions
-    ) {
+    if (!matchesEmbeddingProvider(lock, provider)) {
       lock = { ...target, dimensions: 0, version: null };
       setEmbeddingLock(db, lock);
+      this.onWrite();
     }
     let after = '';
     let roundDimensions: number | undefined;
     const checkProvider = async () => {
       const latest = await this.provider();
       if (signal.aborted || db !== this.currentDb()) throw new EmbeddingError('EMBEDDING_STALE');
-      if (!sameProvider(latest)) {
+      const current = readEmbeddingLock(db);
+      if (!matchesEmbeddingProvider(lock, latest) || current.version !== lock.version) {
         this.requested = true;
         throw new EmbeddingError('EMBEDDING_STALE');
       }
@@ -187,8 +181,10 @@ export class EmbeddingBackfill {
         if (lock.dimensions) after = '';
         lock = { ...target, dimensions, version };
         setEmbeddingLock(db, lock);
+        this.onWrite();
       }
-      writeEmbeddings(db, version, rows, vectors, currentPages);
+      const changed = writeEmbeddings(db, version, rows, vectors, currentPages);
+      if (changed.length) this.onWrite(changed);
     }
   }
 }

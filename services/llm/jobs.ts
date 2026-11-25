@@ -1,6 +1,7 @@
 import { WikiStore } from '../wiki/store.ts';
 import {
   generateMaintenance,
+  getRetrievalStatus,
   MAINTENANCE_LIMITS,
   reprepareMaintenance,
   retrieveKnowledgeContextDetailed,
@@ -1142,8 +1143,15 @@ export class ExtractionRunner {
         });
       }
       const wiki = this.deps.wikiStore ?? new WikiStore(this.deps.root, this.deps.rawStore, this.deps.rulesDir);
+      const verifyRawBasis = async () => {
+        const current = await this.deps.rawStore.get(raw.id);
+        assertRawNotMeeting(current);
+        if (current?.bodySha256 !== raw.bodySha256)
+          throw new LlmError('LLM_RAW_BASIS_CHANGED', '原始资料已变化。', 409);
+      };
       const beforeCall = async (stage: 'extracting' | 'planning') => {
         if (stage === 'planning') {
+          await verifyRawBasis();
           for (const page of checkpoint.maintenance?.context ?? []) {
             const current = await wiki.get(page.id);
             if (!current || JSON.stringify(current) !== JSON.stringify(page))
@@ -1162,7 +1170,7 @@ export class ExtractionRunner {
         return checkpoint;
       };
       const beforePlanning = async (cp: ExtractionCheckpoint) => {
-        const { records, context, engine, degraded } = await retrieveKnowledgeContextDetailed(
+        const retrieval = await retrieveKnowledgeContextDetailed(
           wiki,
           this.deps.rawStore,
           [
@@ -1175,13 +1183,22 @@ export class ExtractionRunner {
               c.facts.slice(0, 8).map((f) => ({ title: f.text.slice(0, 80), content: f.text, tags: raw.tags ?? [] })),
             ),
           ],
+          {
+            signal: controller.signal,
+            authorizeQuery: async () => {
+              await verifyRawBasis();
+              assertNoKnownSecret([raw.title, raw.tags, cp.completedChunks], secrets);
+            },
+          },
         );
         return saveCheckpoint({
           ...cp,
           maintenance: {
             version: 1,
-            context: records,
-            ...(wiki.searchIndex ? { wikiRetrieval: { engine, degraded, context } } : {}),
+            context: retrieval.records,
+            ...(wiki.searchIndex
+              ? { wikiRetrieval: { ...getRetrievalStatus(retrieval), context: retrieval.context } }
+              : {}),
           },
         });
       };

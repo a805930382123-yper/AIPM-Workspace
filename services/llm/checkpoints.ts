@@ -134,8 +134,10 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
       cp.maintenance.context.length > 8 ||
       JSON.stringify(cp.maintenance.wikiRetrieval?.context ?? cp.maintenance.context).length > 48000 ||
       (cp.maintenance.wikiRetrieval !== undefined &&
-        (!hasKeys(cp.maintenance.wikiRetrieval, ['engine', 'degraded', 'context']) ||
-          !['sqlite_fts', 'legacy_scan'].includes(cp.maintenance.wikiRetrieval.engine) ||
+        (!hasKeys(cp.maintenance.wikiRetrieval, ['engine', 'degraded', 'context'], ['degradeReason']) ||
+          !['hybrid', 'sqlite_fts', 'legacy_scan'].includes(cp.maintenance.wikiRetrieval.engine) ||
+          (cp.maintenance.wikiRetrieval.degradeReason !== undefined &&
+            typeof cp.maintenance.wikiRetrieval.degradeReason !== 'string') ||
           typeof cp.maintenance.wikiRetrieval.degraded !== 'boolean' ||
           !Array.isArray(cp.maintenance.wikiRetrieval.context) ||
           cp.maintenance.wikiRetrieval.context.length !== cp.maintenance.context.length)) ||

@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { retrieveKnowledgeContext } from '../llm/knowledge-maintenance.ts';
+import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
 import { decodeKb02StructuredOutput, kb02StructuredOutput } from '../llm/openai-structured.ts';
 import { assertNoKnownSecret, LlmError, type LlmProvider } from '../llm/provider.ts';
 import { validateSchema, type JsonSchemaNode } from '../llm/schema-validator.ts';
@@ -1358,34 +1359,36 @@ export class PdfCleanupService {
   }
 
   async draft(rawId: string, range: Range) {
-    await this.deps.wiki.withLock(() =>
+    const readBasis = async () => {
+      const input = await this.deps.pdf.cleanupInput(rawId, range.startPage, range.endPage);
+      const job = await this.job(rawId, range);
+      if (job?.status !== 'completed')
+        throw new CleanupError('PDF_CLEANUP_NOT_COMPLETE', '请先完成此页范围的内容整理。');
+      this.assertBasis(input, job);
+      const selected = await this.selected(rawId);
+      if (selected?.startPage !== range.startPage || selected.endPage !== range.endPage) {
+        throw new CleanupError('PDF_RANGE_NOT_SELECTED', '请先在 PDF 面板选择要生成草稿的已整理范围。');
+      }
+      const existing = job.draftId && (await this.deps.drafts.get(job.draftId));
+      const state = await this.deps.rawStates.get(rawId);
+      if (existing && !existing.discardedAt) {
+        if (existing.status === 'pending_confirmation' && state.draftId !== existing.id) {
+          if (state.status === 'processing' || state.status === 'pending_confirmation')
+            throw new CleanupError('PDF_DRAFT_ACTIVE', '请先完成本资料的其他整理。');
+          await this.bindDraft(rawId, existing, state);
+        }
+        return;
+      }
+      if (this.active.has(rawId) || state.status === 'processing' || (await this.deps.drafts.findActiveForRaw(rawId))) {
+        throw new CleanupError('PDF_DRAFT_ACTIVE', '请先完成本资料正在进行的整理或待审核草稿。');
+      }
+      return { input, job, existing, state };
+    };
+    const prepared = await this.deps.wiki.withLock(() =>
       this.queue.run(async () => {
-        const input = await this.deps.pdf.cleanupInput(rawId, range.startPage, range.endPage);
-        const job = await this.job(rawId, range);
-        if (job?.status !== 'completed')
-          throw new CleanupError('PDF_CLEANUP_NOT_COMPLETE', '请先完成此页范围的内容整理。');
-        this.assertBasis(input, job);
-        const selected = await this.selected(rawId);
-        if (selected?.startPage !== range.startPage || selected.endPage !== range.endPage) {
-          throw new CleanupError('PDF_RANGE_NOT_SELECTED', '请先在 PDF 面板选择要生成草稿的已整理范围。');
-        }
-        const existing = job.draftId && (await this.deps.drafts.get(job.draftId));
-        const state = await this.deps.rawStates.get(rawId);
-        if (existing && !existing.discardedAt) {
-          if (existing.status === 'pending_confirmation' && state.draftId !== existing.id) {
-            if (state.status === 'processing' || state.status === 'pending_confirmation')
-              throw new CleanupError('PDF_DRAFT_ACTIVE', '请先完成本资料的其他整理。');
-            await this.bindDraft(rawId, existing, state);
-          }
-          return;
-        }
-        if (
-          this.active.has(rawId) ||
-          state.status === 'processing' ||
-          (await this.deps.drafts.findActiveForRaw(rawId))
-        ) {
-          throw new CleanupError('PDF_DRAFT_ACTIVE', '请先完成本资料正在进行的整理或待审核草稿。');
-        }
+        const basis = await readBasis();
+        if (!basis) return;
+        const { input, job } = basis;
         const units = pdfPageUnits(input);
         const batches = batchesFor(units.map(wireUnit));
         if (batches.length !== job.batches.length)
@@ -1429,11 +1432,32 @@ export class PdfCleanupService {
           }
         if (!grouped.size)
           throw new CleanupError('PDF_CLEANUP_NO_CONTENT', '此范围没有可写入知识草稿的实质内容。', 422);
-        const context = await retrieveKnowledgeContext(
-          this.deps.wiki,
-          this.deps.raws,
-          [...grouped.keys()].map((title) => ({ title, content: '', tags: [] })),
-        );
+        return { job, catalog, grouped, written, topicEvidence };
+      }),
+    );
+    if (!prepared) return this.get(rawId);
+    const { job: snapshot, catalog, grouped, written, topicEvidence } = prepared;
+    const queries = [...grouped.keys()].map((title) => ({ title, content: '', tags: [] }));
+    const context = await retrieveKnowledgeContext(this.deps.wiki, this.deps.raws, queries, {
+      authorizeQuery: async () => {
+        assertRawNotMeeting(await this.deps.raws.get(rawId));
+        this.assertBasis(await this.deps.pdf.cleanupInput(rawId, range.startPage, range.endPage), snapshot);
+        assertNoKnownSecret(queries, (await this.deps.provider())?.secrets);
+      },
+    });
+    await this.deps.wiki.withLock(() =>
+      this.queue.run(async () => {
+        const basis = await readBasis();
+        if (!basis) return;
+        const { input, job, existing, state } = basis;
+        if (JSON.stringify(job) !== JSON.stringify(snapshot))
+          throw new CleanupError('PDF_CLEANUP_BASIS_CHANGED', '整理记录已变化，请重新生成草稿。', 409);
+        for (const page of context) {
+          const current = await this.deps.wiki.get(page.id);
+          if (!current || JSON.stringify(current) !== JSON.stringify(page))
+            throw new CleanupError('PDF_CLEANUP_BASIS_CHANGED', '关联 Wiki 已变化，请重新生成草稿。', 409);
+          await assertWikiSourcesAllowed(this.deps.wiki, this.deps.raws, current);
+        }
         const pages: Array<Omit<DraftPage, 'pageId' | 'selected'>> = [];
         const changes: KnowledgeChange[] = [];
         for (const [title, group] of grouped) {

@@ -75,12 +75,13 @@ test('Chinese and mixed queries are safe, rerank aliases, retain short terms and
   for (const title of ['门店怎么把货卖出去', 'KA-2026 "毛利" (华东) * OR NOT : ^', '华东口径']) {
     const result = await f.retrieve(title);
     assert.equal(result.engine, 'sqlite_fts');
-    assert.equal(result.degraded, false);
+    assert.equal(result.degraded, true);
+    assert.equal(result.degradeReason, 'embedding_unconfigured');
     assert.equal(result.chunks[0].pageId, page.id);
   }
   for (const title of ['', '* - : ^ ()？', '请问门店情况如何？']) {
     const result = await f.retrieve(title);
-    assert.equal(result.engine, 'sqlite_fts');
+    assert.equal(result.engine, title === '请问门店情况如何？' ? 'sqlite_fts' : 'hybrid');
     assert.deepEqual(result.chunks, [], title);
   }
 });
@@ -236,7 +237,7 @@ test('an answer rechecks disk and source permissions after the provider in every
       const f = await fixture(s);
       const prior = process.env.SEARCH_ENGINE;
       try {
-        if (mode === 'legacy_scan') process.env.SEARCH_ENGINE = 'legacy_scan';
+        if (mode !== 'degraded') process.env.SEARCH_ENGINE = mode;
         if (mode === 'degraded') f.index.markDirty('test', new Error('controlled index failure'));
         const raw = await f.rawStore.create({
           title: '来源复核',
@@ -488,7 +489,11 @@ test('inspection related expansion and Prompt explicit selection use chunks with
   assert.equal(generated.wikiRetrieval.engine, 'sqlite_fts');
   await f.index.close();
   const degraded = await promptAi.generate(brief, ids);
-  assert.deepEqual(degraded.wikiRetrieval, { engine: 'legacy_scan', degraded: true });
+  assert.deepEqual(degraded.wikiRetrieval, {
+    engine: 'legacy_scan',
+    degraded: true,
+    degradeReason: 'sqlite_unavailable',
+  });
   assert.equal(sent, 2);
 });
 

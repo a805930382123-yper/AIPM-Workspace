@@ -9,7 +9,11 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test, { type TestContext } from 'node:test';
 import { setTimeout } from 'node:timers/promises';
+import { KnowledgeAnswerService } from '../services/llm/knowledge-answers.ts';
 import { retrieveKnowledgeContextDetailed } from '../services/llm/knowledge-maintenance.ts';
+import type { LlmProvider } from '../services/llm/provider.ts';
+import { PromptAiService } from '../services/prompt-ai/service.ts';
+import { PromptStore } from '../services/prompt/store.ts';
 import {
   embeddingInput,
   OpenAiEmbeddingProvider,
@@ -17,6 +21,7 @@ import {
   type EmbeddingUsageMeta,
 } from '../services/search/embedding-provider.ts';
 import { WikiSearchIndexer } from '../services/search/indexer.ts';
+import { WikiVectorCache } from '../services/search/vector-retriever.ts';
 import {
   decodeEmbedding,
   openSearchDatabase,
@@ -29,6 +34,7 @@ import { lwFixture } from './lw01-fixture.ts';
 import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 
 type WireRequest = { model: string; input: string[]; dimensions?: number };
+type WireChat = { model: string; messages: Array<{ role: string; content: string }> };
 
 function reply(response: ServerResponse, request: WireRequest, dimensions = request.dimensions ?? 2) {
   const data = request.input.map((_, index) => ({
@@ -48,13 +54,28 @@ async function endpoint(t: TestContext) {
   const requests: WireRequest[] = [];
   const usage: Array<EmbeddingUsageMeta & { error?: string }> = [];
   let handler = reply;
+  let chat: ((request: WireChat) => unknown) | undefined;
   const server = createServer(async (req, res) => {
     const body: Buffer[] = [];
     for await (const bytes of req) body.push(bytes);
-    const request = JSON.parse(Buffer.concat(body).toString()) as WireRequest;
+    const request = JSON.parse(Buffer.concat(body).toString());
+    assert.equal(req.headers.authorization, 'Bearer synthetic-credential');
+    if (req.url === '/v1/chat/completions' && chat) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(
+        JSON.stringify({
+          choices: [
+            {
+              finish_reason: 'stop',
+              message: { content: JSON.stringify(chat(request)) },
+            },
+          ],
+        }),
+      );
+      return;
+    }
     requests.push(request);
     assert.equal(req.url, '/v1/embeddings');
-    assert.equal(req.headers.authorization, 'Bearer synthetic-credential');
     handler(res, request);
   });
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
@@ -72,6 +93,9 @@ async function endpoint(t: TestContext) {
     usage,
     handle: (next: typeof handler) => {
       handler = next;
+    },
+    handleChat: (next: NonNullable<typeof chat>) => {
+      chat = next;
     },
     provider: (env: NodeJS.ProcessEnv = {}) =>
       new OpenAiEmbeddingProvider(
@@ -230,6 +254,350 @@ async function fixture(t: TestContext) {
   };
 }
 
+test('memory dot products keep the best 30 after intersecting source, allow and exclude filters', () => {
+  const cache = new WikiVectorCache();
+  cache.upsertChunks(
+    Array.from({ length: 35 }, (_, i) => {
+      const x = 0.5 + i / 100;
+      return {
+        chunkId: String(i),
+        pageId: 'allowed',
+        wikiType: 'concept',
+        vec: Float32Array.of(x, Math.sqrt(1 - x * x)),
+      };
+    }),
+  );
+  cache.upsertChunks([
+    { chunkId: 'excluded-strong', pageId: 'excluded', wikiType: 'concept', vec: Float32Array.of(1, 0) },
+    { chunkId: 'source-strong', pageId: 'source', wikiType: 'source', vec: Float32Array.of(1, 0) },
+  ]);
+  const query = Float32Array.of(1, 0);
+  const hits = cache.rank(
+    query,
+    { allowedPageIds: new Set(['allowed', 'excluded', 'source']), excludeIds: ['excluded'] },
+    0.42,
+  );
+  assert.deepEqual(
+    hits.map(({ chunkId }) => chunkId),
+    Array.from({ length: 30 }, (_, i) => String(34 - i)),
+  );
+  assert.deepEqual(cache.rank(query, { allowedPageIds: [] }, 0.42), []);
+  assert.deepEqual(cache.rank(query, { allowedPageIds: ['source'], includeSources: true }, 0.42), [
+    { chunkId: 'source-strong', score: 1 },
+  ]);
+  cache.removeByPageId('allowed');
+  assert.deepEqual(cache.rank(query, { allowedPageIds: ['allowed'] }, 0.42), []);
+});
+
+test('hybrid runs RRF, protects exact aliases and rejects weak vector-only hits before assembling context', async (t) => {
+  const f = await fixture(t);
+  const both = await f.wiki.create(wikiInput('dualmark details', 'dualmark confirmed'));
+  const protectedPage = await f.wiki.create({ ...wikiInput('Protected', 'alias body'), aliases: ['dualmark'] });
+  const strong = await f.wiki.create(wikiInput('Strong', 'completely unrelated text'));
+  const weak = await f.wiki.create(wikiInput('Weak', 'marginal resemblance'));
+  const below = await f.wiki.create(wikiInput('Below', 'outside threshold'));
+  f.wire.handle((res, { input }) =>
+    res.end(
+      JSON.stringify({
+        data: input.map((part, index) => {
+          const x = part.startsWith('标题: Strong')
+            ? 1
+            : part.startsWith('标题: Weak')
+              ? 0.45
+              : part.startsWith('标题: Below')
+                ? 0.41
+                : part.startsWith('标题: Protected')
+                  ? 0.3
+                  : part.startsWith('标题: dualmark')
+                    ? 0.85
+                    : 1;
+          return { index, embedding: [x, Math.sqrt(1 - x * x)] };
+        }),
+      }),
+    ),
+  );
+  f.enable();
+  await f.index.backfillMissingEmbeddings();
+  const result = await f.retrieve('dualmark');
+  assert.equal(result.engine, 'hybrid');
+  assert.deepEqual(
+    result.chunks.map(({ pageId, hitSource }) => [pageId, hitSource]),
+    [
+      [both.id, 'both'],
+      [protectedPage.id, 'fts'],
+      [strong.id, 'vector'],
+    ],
+  );
+  const hit = result.chunks[0];
+  assert.equal(hit.vectorRank, 2);
+  assert.equal(hit.rrfScore, 1 / (60 + hit.ftsRank!) + 1 / 62);
+  assert.equal(result.chunks[1].score - result.chunks[1].rrfScore!, 0.008);
+  assert.equal(result.chunks[2].vectorScore, 1);
+  assert(!result.records.some(({ id }) => id === weak.id || id === below.id));
+  const paraphrase = await f.retrieve('semantically connected but unshared wording');
+  assert(paraphrase.chunks.some(({ pageId, hitSource }) => pageId === both.id && hitSource === 'vector'));
+  const previous = process.env.SEARCH_VECTOR_MIN_SCORE;
+  const previousRrfK = process.env.SEARCH_RRF_K;
+  try {
+    process.env.SEARCH_VECTOR_MIN_SCORE = '0.35';
+    assert((await f.retrieve('dualmark')).chunks.some(({ pageId }) => pageId === weak.id));
+    process.env.SEARCH_VECTOR_MIN_SCORE = '0.42';
+    process.env.SEARCH_RRF_K = '10';
+    const tuned = await f.retrieve('dualmark');
+    const dual = tuned.chunks.find(({ pageId }) => pageId === both.id)!;
+    const single = tuned.chunks.find(({ pageId }) => pageId === strong.id)!;
+    assert.equal(dual.rrfScore, 1 / (10 + dual.ftsRank!) + 1 / 12);
+    assert.equal(single.rrfScore, 1 / 11);
+    for (const invalid of ['', '0', '-10', 'Infinity', 'invalid']) {
+      process.env.SEARCH_RRF_K = invalid;
+      assert.equal((await f.retrieve('dualmark')).chunks[0].rrfScore, hit.rrfScore);
+    }
+    process.env.SEARCH_RRF_K = '10';
+    process.env.SEARCH_VECTOR_MIN_SCORE = '0.99';
+    const highThreshold = await f.retrieve('semantically connected but unshared wording');
+    assert.deepEqual(
+      highThreshold.chunks.map(({ pageId, hitSource, vectorScore, rrfScore }) => ({
+        pageId,
+        hitSource,
+        vectorScore,
+        rrfScore,
+      })),
+      [{ pageId: strong.id, hitSource: 'vector', vectorScore: 1, rrfScore: 1 / 11 }],
+    );
+  } finally {
+    if (previous === undefined) delete process.env.SEARCH_VECTOR_MIN_SCORE;
+    else process.env.SEARCH_VECTOR_MIN_SCORE = previous;
+    if (previousRrfK === undefined) delete process.env.SEARCH_RRF_K;
+    else process.env.SEARCH_RRF_K = previousRrfK;
+  }
+});
+
+test('the actual Prompt generation path embeds only with authorized selected pages and never sends unselected context', async (t) => {
+  const f = await fixture(t);
+  const kept = await f.wiki.create(wikiInput('Saved reference', 'selected wire text'));
+  const excluded = await f.wiki.create(wikiInput('Unchosen reference', 'offscope wire text'));
+  f.enable();
+  await f.index.backfillMissingEmbeddings();
+  const prompts = new PromptStore(f.root, f.wiki);
+  await prompts.initialize();
+  const sent: Array<{ relatedWiki: { id: string; chunks: { rawText: string }[] }[] }> = [];
+  const provider: LlmProvider = {
+    name: 'loopback-only',
+    model: 'prompt-stub',
+    async complete({ user }) {
+      sent.push(JSON.parse(user));
+      const text = JSON.stringify({
+        version: 1,
+        name: '生成测试',
+        category: 'customer',
+        scenario: '访谈',
+        sections: [{ heading: '任务目标', content: '分析' }],
+        inputRequirements: '资料',
+        outputRequirements: '结果',
+        examples: '',
+        tags: [],
+      });
+      return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
+    },
+  };
+  const service = new PromptAiService(f.root, f.wiki, prompts, () => provider, f.rawStore);
+  await service.initialize();
+  const brief = {
+    taskName: 'semantic query',
+    taskType: '访谈',
+    role: '产品经理',
+    goal: '核验',
+    context: '测试',
+    input: '资料',
+    tasks: '准备',
+    constraints: '客观',
+    output: '结果',
+  };
+  const one = await service.generate(brief, [kept.id]);
+  assert.equal(one.wikiRetrieval.engine, 'hybrid');
+  assert.deepEqual(
+    sent[0].relatedWiki.map(({ id }) => id),
+    [kept.id],
+  );
+  assert.equal(sent[0].relatedWiki[0].chunks[0].rawText, kept.body);
+  assert(!JSON.stringify(sent[0]).includes(excluded.id));
+  const calls = f.wire.requests.length;
+  const none = await service.generate(brief, []);
+  assert.equal(none.wikiRetrieval.engine, 'hybrid');
+  assert.deepEqual(sent[1].relatedWiki, []);
+  assert.equal(f.wire.requests.length, calls);
+});
+
+test('pure-vector QA checks UTF-16 citations against the current file and authorization after completion', async (t) => {
+  const f = await fixture(t);
+  const raw = await f.rawStore.create({
+    title: '合成',
+    sourceType: 'report',
+    sourceName: '合成',
+    tags: [],
+    body: '保留原始记录。',
+  });
+  const quote = '🧾 精确口径是22%。';
+  const page = await f.wiki.create({ ...wikiInput('实读页', '## 来源事实\n\n' + quote), sources: [raw.id] });
+  f.enable();
+  await f.index.backfillMissingEmbeddings();
+  const q = 'unshared paraphrase';
+  const result = await f.retrieve(q);
+  assert.equal(result.engine, 'hybrid');
+  assert.equal(result.chunks[0].hitSource, 'vector');
+  const expected = result.chunks[0];
+  assert.equal(page.body.slice(expected.startOffset, expected.endOffset), expected.rawText);
+  const start = page.body.indexOf(quote);
+  const file = path.join(f.root, 'knowledge', 'wiki', page.id + '.md');
+  const original = await readFile(file, 'utf8');
+  let duringCall = async () => {};
+  const provider: LlmProvider = {
+    name: 'loopback-only',
+    model: 'answer-stub',
+    async complete({ user }) {
+      assert.equal(JSON.parse(user).wiki[0].chunks[0].rawText, expected.rawText);
+      await duringCall();
+      const text = JSON.stringify({
+        version: 1,
+        needsRaw: [],
+        sections: [{ kind: 'fact', text: quote, citationIds: ['citation-1'] }],
+        citations: [{ id: 'citation-1', kind: 'wiki', recordId: page.id, quote, start, end: start + quote.length }],
+      });
+      return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' };
+    },
+  };
+  const service = new KnowledgeAnswerService({
+    root: f.root,
+    wiki: f.wiki,
+    raws: f.rawStore,
+    drafts: f.drafts,
+    provider: () => provider,
+  });
+  await service.initialize();
+  const ask = () => service.ask({ requestId: randomUUID(), question: q });
+  const good = await ask();
+  assert.equal(good.status, 'completed');
+  assert.equal(good.wikiRetrieval?.engine, 'hybrid');
+  assert.equal(good.citations[0].quote, quote);
+  duringCall = () => writeFile(file, original.replace(quote, '在模型等待期间变更。'));
+  const stale = await ask();
+  assert.equal(stale.error?.code, 'ANSWER_BASIS_CHANGED');
+  assert.deepEqual(stale.citations, []);
+  assert(f.index.isDirty);
+  await writeFile(file, original);
+  assert(await f.index.reconcileOnStartup());
+  await f.index.backfillMissingEmbeddings();
+  duringCall = () => rm(path.join(f.root, 'knowledge', 'raw', 'reports', raw.id + '.md'));
+  const deniedId = randomUUID();
+  await assert.rejects(service.ask({ requestId: deniedId, question: q }), { code: 'KNOWLEDGE_SOURCE_MISSING' });
+  assert.deepEqual((await service.get(deniedId))?.citations, []);
+  assert.deepEqual((await f.retrieve(q)).records, []);
+});
+
+test('hybrid cache follows edits, deletions, reopen, rebuild and dimensions observed by an online query', async (t) => {
+  const f = await fixture(t);
+  const query = 'unshared phrase';
+  let page = await f.wiki.create(wikiInput('Cache status', 'first version'));
+  assert.equal((await f.retrieve(query)).degradeReason, 'embedding_unconfigured');
+  f.enable();
+  await f.index.backfillMissingEmbeddings();
+  assert.equal((await f.retrieve(query)).chunks[0].rawText, page.body);
+  page = await f.wiki.update(page.id, page.revision, { ...page, body: 'edited version' });
+  await f.index.backfillMissingEmbeddings();
+  assert.equal((await f.retrieve(query)).chunks[0].rawText, 'edited version');
+  await f.index.close();
+  assert(await f.index.reconcileOnStartup());
+  assert.equal((await f.retrieve(query)).chunks[0].pageId, page.id);
+  await f.index.rebuildAll();
+  await f.index.backfillMissingEmbeddings();
+  assert.equal((await f.retrieve(query)).chunks[0].pageId, page.id);
+  f.wire.handle((res, req) => reply(res, req, 3));
+  const changedDimension = await f.retrieve(query);
+  assert.equal(changedDimension.engine, 'sqlite_fts');
+  assert.equal(changedDimension.degradeReason, 'embedding_version_changed');
+  await f.index.backfillMissingEmbeddings();
+  assert.equal(f.index.read(readEmbeddingLock).dimensions, 3);
+  assert.equal((await f.retrieve(query)).engine, 'hybrid');
+  const noDispatch = f.wire.requests.length;
+  const protectedQuery = await retrieveKnowledgeContextDetailed(
+    f.wiki,
+    f.rawStore,
+    [{ title: 'Cache status', content: 'restricted raw content', tags: [] }],
+    {
+      authorizeQuery: () => {
+        throw new Error('current source policy denies');
+      },
+    },
+  );
+  assert.equal(protectedQuery.degradeReason, 'embedding_source_unavailable');
+  assert.equal(f.wire.requests.length, noDispatch);
+  const knownSecret = await f.retrieve('synthetic-credential');
+  assert.equal(knownSecret.degradeReason, 'embedding_secret_blocked');
+  assert.equal(f.wire.requests.length, noDispatch);
+  await f.wiki.delete(page.id, page.revision);
+  const empty = await f.retrieve(query);
+  assert.equal(empty.degradeReason, 'embedding_empty');
+  assert.equal(f.wire.requests.length, noDispatch);
+});
+
+test('query failures preserve lexical context and formal saves, with chained failure diagnostics and pure rollback', async (t) => {
+  const f = await fixture(t);
+  await f.wiki.create(wikiInput('lexicalmark', 'lexicalmark local evidence'));
+  f.enable(f.wire.provider({ EMBEDDING_QUERY_TIMEOUT_MS: '85' }));
+  await f.index.backfillMissingEmbeddings();
+  f.wire.handle((res, req) => {
+    if (req.input[0].startsWith('标题:')) reply(res, req);
+  });
+  const hung = f.retrieve('lexicalmark');
+  const written = await f.wiki.create(wikiInput('Still writable', 'formal save during offline query'));
+  assert(await f.wiki.get(written.id));
+  const timedOut = await hung;
+  assert.equal(timedOut.engine, 'sqlite_fts');
+  assert.equal(timedOut.degradeReason, 'embedding_timeout');
+  assert.equal(timedOut.chunks.length, 1);
+  assert.equal(f.index.isDirty, false);
+  await f.index.backfillMissingEmbeddings();
+  for (const handler of [(res: ServerResponse) => res.writeHead(500).end(), (res: ServerResponse) => res.destroy()]) {
+    f.wire.handle(handler);
+    const fallback = await f.retrieve('lexicalmark');
+    assert.equal(fallback.engine, 'sqlite_fts');
+    assert.equal(fallback.degradeReason, 'embedding_error');
+    assert.equal(fallback.chunks.length, 1);
+  }
+  f.wire.handle((res) => {
+    f.index.read((db) => db.exec('DROP TABLE chunks_fts'));
+    res.writeHead(503).end();
+  });
+  const chained = await f.retrieve('lexicalmark');
+  assert.equal(chained.engine, 'legacy_scan');
+  assert.equal(chained.degradeReason, 'embedding_error -> sqlite_error');
+  assert.equal(chained.records.length, 1);
+  f.wire.handle(reply);
+  await f.index.rebuildAll();
+  await f.index.backfillMissingEmbeddings();
+  const previous = process.env.SEARCH_ENGINE;
+  const before = f.wire.requests.length;
+  try {
+    process.env.SEARCH_ENGINE = 'sqlite_fts';
+    const keywordOnly = await f.retrieve('lexicalmark');
+    assert.equal(keywordOnly.engine, 'sqlite_fts');
+    assert.equal(keywordOnly.degraded, false);
+    await f.wiki.create(wikiInput('Rollback write', 'keyword-only save'));
+    await f.index.backfillMissingEmbeddings();
+    process.env.SEARCH_ENGINE = 'legacy_scan';
+    await f.index.close();
+    await rm(f.index.databaseFile);
+    const legacy = await f.retrieve('lexicalmark');
+    assert.equal(legacy.engine, 'legacy_scan');
+    assert.equal(legacy.degraded, false);
+    assert.equal(legacy.records.length, 1);
+    assert.equal(f.wire.requests.length, before);
+  } finally {
+    if (previous === undefined) delete process.env.SEARCH_ENGINE;
+    else process.env.SEARCH_ENGINE = previous;
+  }
+});
+
 test(
   'source authorization excludes missing, restricted and recursively derived pages from actual outbound inputs',
   { timeout: 8_000 },
@@ -285,7 +653,7 @@ test(
       isBackfilling: false,
       lastError: 'EMBEDDING_SOURCE_UNAVAILABLE',
     });
-    assert.equal((await f.retrieve('safemark')).engine, 'sqlite_fts');
+    assert.equal((await f.retrieve('safemark')).engine, 'hybrid');
     assert.equal(f.index.isDirty, false);
   },
 );
@@ -328,7 +696,7 @@ test(
     );
     assert.equal(f.index.read(readEmbeddingLock).dimensions, 3);
     assert.equal(f.index.isDirty, false);
-    assert.equal((await f.retrieve('retentionmark')).engine, 'sqlite_fts');
+    assert.equal((await f.retrieve('retentionmark')).engine, 'hybrid');
     const row = f.index.read((db) =>
       db
         .prepare<[], { chunkId: string; pageId: string; fileHash: string; filePath: string; input: string }>(
@@ -459,6 +827,7 @@ test(
         FMCG_LLM_CONFIG_FILE: path.join(f.root, 'missing.env'),
         FMCG_LLM_BASE_URL: f.wire.baseUrl,
         FMCG_LLM_API_KEY: 'synthetic-credential',
+        FMCG_LLM_MODEL: 'production-chat-stub',
         EMBEDDING_MODEL: 'production-smoke',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -504,6 +873,43 @@ test(
       } finally {
         db.close();
       }
+      let answerCalls = 0;
+      f.wire.handleChat(({ model, messages }) => {
+        answerCalls++;
+        assert.equal(model, 'production-chat-stub');
+        const { wiki } = JSON.parse(messages.find(({ role }) => role === 'user')!.content);
+        const chunk = wiki.find(({ id }: { id: string }) => id === startup.id).chunks[0];
+        assert.equal(chunk.rawText, startup.body);
+        return {
+          version: 1,
+          needsRaw: [],
+          sections: [{ kind: 'fact', text: startup.body, citationIds: ['startup-citation'] }],
+          citations: [
+            {
+              id: 'startup-citation',
+              kind: 'wiki',
+              recordId: startup.id,
+              quote: startup.body,
+              start: chunk.startOffset,
+              end: chunk.endOffset,
+            },
+          ],
+        };
+      });
+      const question = 'semanticprobe';
+      const answerResponse = await fetch(`${base}/api/knowledge/answers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId: randomUUID(), question }),
+        signal: AbortSignal.timeout(5000),
+      });
+      const answer = await answerResponse.json();
+      assert.equal(answerResponse.status, 200, JSON.stringify(answer));
+      assert.equal(answer.status, 'completed', JSON.stringify(answer));
+      assert.equal(answer.wikiRetrieval.engine, 'hybrid');
+      assert.equal(answer.citations[0].quote, startup.body);
+      assert.equal(answerCalls, 1);
+      assert(f.wire.requests.some(({ input }) => input[0] === question));
       assert(f.wire.requests.every(({ model }) => model === 'production-smoke'));
       assert.match(logs, /\[search-embedding-usage\]/);
       assert(!logs.includes('synthetic-credential'));

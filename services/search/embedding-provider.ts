@@ -164,6 +164,7 @@ export class OpenAiEmbeddingProvider implements EmbeddingProvider {
   }
 
   async embedQuery(query: string, options: RequestOptions = {}) {
+    if (containsKnownSecret(query, [this.config.apiKey])) throw new EmbeddingError('EMBEDDING_SECRET_BLOCKED');
     const { vectors, dimensions, usage } = await this.request(
       [query],
       options.timeoutMs ?? this.config.queryTimeoutMs,

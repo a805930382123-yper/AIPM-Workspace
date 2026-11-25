@@ -22,6 +22,8 @@ import { validateSchema, type JsonSchemaNode } from './schema-validator.ts';
 import {
   MAINTENANCE_LIMITS,
   retrieveKnowledgeContextDetailed,
+  getRetrievalStatus,
+  type RetrievalStatus,
   type RetrievedKnowledgeContext,
 } from './knowledge-maintenance.ts';
 import { quoteInWikiContext, WIKI_CHUNK_INSTRUCTIONS } from '../search/fts-retriever.ts';
@@ -44,7 +46,7 @@ export type KnowledgeInspection = {
     gaps: string[];
   };
   readWiki: WikiRecord[];
-  wikiRetrieval?: Pick<RetrievedKnowledgeContext, 'engine' | 'degraded'>;
+  wikiRetrieval?: RetrievalStatus;
   rawSnapshots: Array<{ id: string; bodySha256: string }>;
   findings: InspectionFinding[];
   lint: Array<{ code: string; objectId: string | null; message: string }>;
@@ -411,10 +413,24 @@ export class KnowledgeInspectionService {
         this.deps.wiki,
         this.deps.raws,
         r.readWiki.map((p) => ({ title: p.title, content: p.body, tags: p.tags })),
-        { initialContext: r.readWiki, excludeIds: r.scope.selected },
+        {
+          initialContext: r.readWiki,
+          excludeIds: r.scope.selected,
+          signal,
+          authorizeQuery: async () => {
+            if (!provider) this.error('LLM_NOT_CONFIGURED', '未配置主动检查Provider。', 400);
+            assertNoKnownSecret(r.readWiki, provider.secrets);
+            for (const page of r.readWiki) {
+              const current = await this.deps.wiki.get(page.id);
+              if (!current || JSON.stringify(current) !== JSON.stringify(page))
+                this.error('INSPECTION_BASIS_CHANGED', '检查期间依据已变化，请重新检查。');
+              await this.sourceCurrent(current);
+            }
+          },
+        },
       );
       wikiContext = related.context;
-      r.wikiRetrieval = { engine: related.engine, degraded: related.degraded };
+      r.wikiRetrieval = getRetrievalStatus(related);
       for (const p of related.records) {
         if (!r.scope.candidates.includes(p.id)) r.scope.candidates.push(p.id);
         r.readWiki.push(p);

@@ -2,7 +2,8 @@ import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
 import { mediaEvidenceHref } from '../raw/media-artifact.ts';
 import { parseWikiMarkdown, WikiStore, type WikiRecord } from '../wiki/store.ts';
 import { findDuplicateCandidates } from '../search/duplicates.ts';
-import { wikiFileHash } from '../search/indexer.ts';
+import { wikiFileHash, type VectorQueryAuthorization } from '../search/indexer.ts';
+import { rankHybridChunks } from '../search/hybrid-retriever.ts';
 import {
   addModelChunk,
   completeWikiBodyInContext,
@@ -23,18 +24,26 @@ import type { DraftPage, DraftRecord } from '../wiki/drafts.ts';
 
 export const MAINTENANCE_LIMITS = { pages: 8, characters: 48000 } as const;
 type Sources = { get(id: string): Promise<unknown> };
-type ContextOptions = SearchOptions & {
-  characters?: number;
-  perPageCharacters?: number;
-  initialContext?: WikiRecord[];
-};
-export type RetrievedKnowledgeContext = {
-  engine: 'sqlite_fts' | 'legacy_scan';
+type ContextOptions = SearchOptions &
+  VectorQueryAuthorization & {
+    characters?: number;
+    perPageCharacters?: number;
+    initialContext?: WikiRecord[];
+  };
+export type RetrievalStatus = {
+  engine: 'hybrid' | 'sqlite_fts' | 'legacy_scan';
   degraded: boolean;
+  degradeReason?: string;
+};
+export type RetrievedKnowledgeContext = RetrievalStatus & {
   records: WikiRecord[];
   chunks: RetrievedChunkItem[];
   context: ModelWikiContext;
 };
+
+export function getRetrievalStatus({ engine, degraded, degradeReason }: RetrievalStatus): RetrievalStatus {
+  return { engine, degraded, ...(degradeReason ? { degradeReason } : {}) };
+}
 
 export async function retrieveKnowledgeContextDetailed(
   wiki: WikiStore,
@@ -43,12 +52,22 @@ export async function retrieveKnowledgeContextDetailed(
   options: ContextOptions = {},
 ): Promise<RetrievedKnowledgeContext> {
   const { searchIndex } = wiki;
-  let degraded = false;
+  const reasons: string[] = [];
   const maxChars = options.characters ?? MAINTENANCE_LIMITS.characters;
   const initial = options.initialContext ?? [];
-  if (searchIndex && process.env.SEARCH_ENGINE !== 'legacy_scan') {
+  const requested = process.env.SEARCH_ENGINE;
+  const status = (engine: RetrievalStatus['engine']): RetrievalStatus => ({
+    engine,
+    degraded: reasons.length > 0,
+    ...(reasons.length ? { degradeReason: reasons.join(' -> ') } : {}),
+  });
+  if (searchIndex && requested !== 'legacy_scan') {
     try {
-      const candidates = rankWikiChunks(searchIndex, queries, options);
+      const scope = { ...options, excludeIds: [...(options.excludeIds ?? []), ...initial.map((page) => page.id)] };
+      const candidates =
+        requested === 'sqlite_fts'
+          ? rankWikiChunks(searchIndex, queries, scope)
+          : await rankHybridChunks(searchIndex, queries, scope, (reason) => reasons.push(reason));
       const checked = new Map<string, WikiRecord | undefined>();
       const selected = new Map<string, WikiRecord>();
       const chunks: RetrievedChunkItem[] = [];
@@ -93,18 +112,41 @@ export async function retrieveKnowledgeContextDetailed(
       }
       const order = [...selected.keys()];
       chunks.sort((a, b) => order.indexOf(a.pageId) - order.indexOf(b.pageId) || a.chunkIndex - b.chunkIndex);
-      return { engine: 'sqlite_fts', degraded, records: [...selected.values()], chunks, context };
+      return {
+        ...status(requested === 'sqlite_fts' || reasons.length ? 'sqlite_fts' : 'hybrid'),
+        records: [...selected.values()],
+        chunks,
+        context,
+      };
     } catch (error) {
+      const code = (error as NodeJS.ErrnoException | undefined)?.code;
+      reasons.push(
+        searchIndex.isDirty
+          ? 'sqlite_dirty'
+          : code === 'SQLITE_CORRUPT' || code === 'SQLITE_NOTADB'
+            ? 'sqlite_corrupt'
+            : error instanceof Error && error.message === 'Search index is unavailable'
+              ? 'sqlite_unavailable'
+              : 'sqlite_error',
+      );
       if (!searchIndex.isDirty) searchIndex.markDirty('retrieve', error);
-      degraded = true;
     }
   }
-  const records = await retrieveKnowledgeContext(wiki, rawStore, queries, options);
-  return { engine: 'legacy_scan', degraded, records, chunks: [], context: [...initial, ...records] };
+  const records = await retrieveLegacyKnowledgeContext(wiki, rawStore, queries, options);
+  return { ...status('legacy_scan'), records, chunks: [], context: [...initial, ...records] };
+}
+
+export async function retrieveKnowledgeContext(
+  wiki: WikiStore,
+  rawStore: Sources,
+  queries: RetrievalQuery[],
+  options: ContextOptions = {},
+): Promise<WikiRecord[]> {
+  return (await retrieveKnowledgeContextDetailed(wiki, rawStore, queries, options)).records;
 }
 
 /** Category alone never selects a page. Bodies are locally ranked; only the bounded selection leaves the machine. */
-export async function retrieveKnowledgeContext(
+async function retrieveLegacyKnowledgeContext(
   wiki: WikiStore,
   rawStore: Sources,
   queries: RetrievalQuery[],
@@ -161,6 +203,7 @@ export async function retrieveKnowledgeContext(
     if (initial.length + selected.length >= MAINTENANCE_LIMITS.pages) break;
     if (JSON.stringify([...initial, ...selected, p]).length > (options.characters ?? MAINTENANCE_LIMITS.characters))
       continue;
+    if (options.perPageCharacters !== undefined && JSON.stringify(p).length > options.perPageCharacters) continue;
     // Do not send a restricted page or its metadata; malformed/missing source bindings are denied as well.
     let allowed = true;
     try {

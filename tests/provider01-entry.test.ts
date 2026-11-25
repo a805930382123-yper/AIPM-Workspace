@@ -151,7 +151,8 @@ test('formal entry carries provider context through answer and inspection operat
     const a = await req('/api/knowledge/answers', { requestId: randomUUID(), question: '有效门店统计的口径是什么？' });
     assert.equal(a.json.status, 'completed', JSON.stringify(a));
     assert.equal(a.json.wikiRetrieval.engine, 'sqlite_fts');
-    assert.equal(a.json.wikiRetrieval.degraded, false);
+    assert.equal(a.json.wikiRetrieval.degraded, true);
+    assert.equal(a.json.wikiRetrieval.degradeReason, 'embedding_unconfigured');
     const save = await req(`/api/knowledge/answers/${a.json.id}/save`, {
       resultRevision: a.json.revision,
       key: randomUUID(),

@@ -25,7 +25,9 @@ import {
 import type { DraftStore } from '../wiki/drafts.ts';
 import {
   MAINTENANCE_LIMITS,
+  getRetrievalStatus,
   retrieveKnowledgeContextDetailed,
+  type RetrievalStatus,
   type RetrievedKnowledgeContext,
 } from './knowledge-maintenance.ts';
 import {
@@ -85,7 +87,7 @@ export type KnowledgeAnswer = {
   attempts: number;
   candidateWikiIds: string[];
   readWiki: WikiRecord[];
-  wikiRetrieval?: Pick<RetrievedKnowledgeContext, 'engine' | 'degraded' | 'context'>;
+  wikiRetrieval?: RetrievalStatus & Pick<RetrievedKnowledgeContext, 'context'>;
   readRaw: AnswerReadRaw[];
   rawSnapshots: Array<{ id: string; bodySha256: string }>;
   sections: AnswerSection[];
@@ -462,10 +464,10 @@ export class KnowledgeAnswerService {
                 tags: r.question.split(/[\s，。？?、；:：]+/u).filter((t) => t.length >= 2),
               },
             ],
-            { includeSources: true },
+            { includeSources: true, authorizeQuery: () => assertNoKnownSecret(r!.question, provider.secrets) },
           );
           r.readWiki = retrieval.records;
-          r.wikiRetrieval = { engine: retrieval.engine, degraded: retrieval.degraded, context: retrieval.context };
+          r.wikiRetrieval = { ...getRetrievalStatus(retrieval), context: retrieval.context };
           r.candidateWikiIds = r.readWiki.map((p) => p.id);
           const roots = [...new Set(r.readWiki.flatMap((p) => knowledgeRoots(p).rawIds))];
           r.rawSnapshots = [];
@@ -492,7 +494,7 @@ export class KnowledgeAnswerService {
         }
         let invocationCalls = 0;
         const wikiContext = r.wikiRetrieval?.context ?? r.readWiki;
-        const indexed = r.wikiRetrieval?.engine === 'sqlite_fts';
+        const indexed = !!r.wikiRetrieval && r.wikiRetrieval.engine !== 'legacy_scan';
         while (invocationCalls < 2) {
           for (const page of r.readWiki) await this.readCurrentWiki(page, indexed);
           r.provider = { name: provider.name, model: provider.model };
@@ -799,9 +801,15 @@ export class KnowledgeAnswerService {
         const resumedProposal = save.proposal;
         if (!save.proposal) {
           const queries = [{ title: p.title, content: p.conclusion + '\n' + p.inferences, tags: p.tags }];
-          const retrieval = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries);
+          const authorizeQuery = async () => {
+            await verifyQuestionInput(basis, this.deps.wiki, this.deps.raws);
+            assertNoKnownSecret(queries, this.deps.provider()?.secrets);
+          };
+          const retrieval = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries, {
+            authorizeQuery,
+          });
           const { records: context, context: wire } = retrieval;
-          const indexed = retrieval.engine === 'sqlite_fts';
+          const indexed = retrieval.engine !== 'legacy_scan';
           if (p.targetWikiId && !context.some((w) => w.id === p.targetWikiId)) {
             const required = await this.deps.wiki.get(p.targetWikiId);
             if (!required || required.type === 'source')
@@ -811,8 +819,12 @@ export class KnowledgeAnswerService {
             if (indexed) {
               const scoped = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries, {
                 pageIds: [required.id],
+                authorizeQuery: async () => {
+                  await authorizeQuery();
+                  await this.readCurrentWiki(required, true);
+                },
               });
-              if (scoped.engine === 'sqlite_fts' && scoped.context.length) {
+              if (scoped.engine !== 'legacy_scan' && scoped.context.length) {
                 await this.readCurrentWiki(required, true);
                 requiredContext = scoped.context;
               } else {

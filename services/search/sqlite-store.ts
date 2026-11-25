@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import type { WikiRecord } from '../wiki/store.ts';
 import type { WikiChunk } from './chunking.ts';
-import { embeddingInput } from './embedding-provider.ts';
+import { embeddingInput, type EmbeddingProvider } from './embedding-provider.ts';
 import { TOKENIZER_VERSION, tokenizeForFts } from './tokenizer.ts';
 
 export type SearchDatabase = Database.Database;
@@ -110,7 +110,7 @@ export interface IndexedPage {
   chunks: WikiChunk[];
 }
 
-type EmbeddingLock = {
+export type EmbeddingLock = {
   provider: string;
   model: string;
   identity: string;
@@ -118,6 +118,15 @@ type EmbeddingLock = {
   dimensions: number;
   version: string | null;
 };
+
+export function matchesEmbeddingProvider(lock: EmbeddingLock, provider: EmbeddingProvider | null) {
+  return (
+    provider?.providerName === lock.provider &&
+    provider.modelName === lock.model &&
+    provider.identity === lock.identity &&
+    (provider.configuredDimensions ?? 0) === lock.configuredDimensions
+  );
+}
 
 export function readEmbeddingLock(db: SearchDatabase): EmbeddingLock {
   const entries = db
@@ -130,7 +139,7 @@ export function readEmbeddingLock(db: SearchDatabase): EmbeddingLock {
     identity: metadata.get('embedding_identity') ?? '',
     configuredDimensions: Number(metadata.get('embedding_configured_dimensions') ?? 0),
     dimensions: Number(metadata.get('embedding_dimensions') ?? 0),
-    version: metadata.get('embedding_version') ?? null,
+    version: metadata.get('embedding_version') || null,
   };
 }
 
@@ -199,12 +208,18 @@ export function writeEmbeddings(
     `UPDATE chunks SET embedding = ?, embedding_ver = ? WHERE chunk_id = ? AND page_id = ?
      AND EXISTS (SELECT 1 FROM pages WHERE page_id = chunks.page_id AND file_hash = ?)`,
   );
-  db.transaction(() => {
+  return db.transaction(() => {
+    const changed = new Set<string>();
     for (const [index, { chunkId, pageId, fileHash }] of rows.entries()) {
       if (!currentPages.has(pageId)) continue;
       const vector = vectors[index];
-      update.run(Buffer.from(vector.buffer, vector.byteOffset, vector.byteLength), version, chunkId, pageId, fileHash);
+      if (
+        update.run(Buffer.from(vector.buffer, vector.byteOffset, vector.byteLength), version, chunkId, pageId, fileHash)
+          .changes
+      )
+        changed.add(pageId);
     }
+    return [...changed];
   })();
 }
 

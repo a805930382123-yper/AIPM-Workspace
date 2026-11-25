@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 1B-1**：向量生成、版本锁、非阻塞补算通过独立验收。测试继承宿主 Embedding 配置的缺陷已关闭；注入回环配置的全量回归 1,108/1,108，哨兵收到 0 次请求。1B-2 待授权，Batch 1B 整体待验收。[任务卡](handoffs/LLMWIKI-1B-1.md) · [施工](reports/1B-1-builder.md) · [独立验收](reports/1B-1-review.md)
+- **LLM-Wiki 1B-2**：内存向量检索、RRF、选页范围与三级降级通过独立验收。两项返修关闭，全仓 1,114/1,114。1B-3 待授权，整批尚待真实质量与性能评测。[任务卡](handoffs/LLMWIKI-1B-2.md) · [施工](reports/1B-2-builder.md) · [验收](reports/1B-2-review.md)
+
+- **LLM-Wiki 1B-1**：向量生成、版本锁、非阻塞补算通过独立验收。测试继承宿主 Embedding 配置的缺陷已关闭；注入回环配置的全量回归 1,108/1,108，哨兵收到 0 次请求。后续检索接入见 1B-2。[任务卡](handoffs/LLMWIKI-1B-1.md) · [施工](reports/1B-1-builder.md) · [独立验收](reports/1B-1-review.md)
 
 - **RAWOCR05–06 微信图片处理**：执行链路（`8f4e7ba`）与三层筛选、人工精读（`17ab0bc`）均通过独立验收。隔离库从微信原网址重新导入后，正文图 1、2 完成真实精读，推广图 3–6 全部由文末规则跳过。原始正文及六张图片的哈希与正式记录一致。[任务卡](handoffs/RAWOCR05-runtime-task.md) · [第一轮验收](reports/RAWOCR05-review.md) · [第二轮与整单验收](reports/RAWOCR06-review.md)
 
