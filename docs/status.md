@@ -17,8 +17,9 @@
 
 - **LLM-Wiki Batch 1A**：1A-4 与整批通过独立验收。25 问 A/B/C/D 命中分别为 7/7、3/5、5/5、3/3，E 误召回 4/5 与 Legacy 持平。长页 9/9；独立千页建库 1,584.05 ms、查询 P95 32.29 ms，实盘回滚通过；全仓测试 1,099/1,099。B1/B4 漏检及四项负样本误召回留档，后续阶段未启动。[任务卡](handoffs/LLMWIKI-1A-4.md) · [逐题快照](../evals/reports/batch-1a-baseline.md) · [独立验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A 已签收。FE03 已完成 Prompt 库与草稿审阅页拆分，待独立验收与远端 CI。[FE03 任务卡](handoffs/FE03-task.md)
-- **最近 5 个批次结论**：
+- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A 已签收。FE03 已签收，下一批待用户决定。[FE03 任务卡](handoffs/FE03-task.md)
+- **工程批次结论**：
+  - **FE03 整体 PASS（2026-11-26）**。Prompt 库和草稿审阅入口分别缩至 315 和 458 行，15 个产品模块均低于 40 KiB、800 行。独立 Edge 实测覆盖 Prompt 版本与草稿人工确认写入，隔离全量 1,143/1,143。产品提交 `cf9ba5e` 的 Windows Node 22.x、24.x CI 双绿。[独立验收](reports/FE03-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887)。
   - **FE02 整体 PASS（2026-11-26）**。Round 2 独立复验已签发，覆盖前端拆分、Edge 冒烟、全量测试及文档门禁。提交 `ee02a10` 的 Windows Node 22.x、24.x 作业均成功。[远端 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842) · [验收记录](reports/FE02-20261125-review.md)。
   - `ENG05`（2026-11-24，**PASS**）：清零 3 类 9 处 ESLint 疑点（`770 → 761`、`0` 错），6 条规则升回 `error`，校准 `acceptance.md` 锚点使 `docs-archive-check` 4/4 `OK`，新增 `eng05-hygiene`；[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416)（`fae6724`）全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
   - `FE01`（2026-11-24，**PASS**）：`app/api.ts` 拆为 8 份域模块（130 运行时导出与 105 类型兼容）、轻路由与 `useLatestAsync`/`useScopedQuery` 落地、6 文件告警 `55 → 0`；隔离 `check` 1,062/1,062、Edge 冒烟 0 错，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)（`e528039`）全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
