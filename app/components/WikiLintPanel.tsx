@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import type { LintCode } from '../../services/audit/lint';
 import type { WikiLintResult } from '../api';
+import { freshnessLabels } from './WikiReview';
 
 const rules: Record<string, { label: string; guide: string }> = {
   BROKEN_WIKI_LINK: {
@@ -108,6 +109,26 @@ export function WikiLintPanel({ result, busy, error, editingDisabled, onRun, onE
                 <span>没有发现结构问题。</span>
               )}
             </p>
+            {result.freshness && (
+              <section className="wiki-lint-freshness" aria-label="时效汇总">
+                <h3>时效汇总</h3>
+                <p>
+                  截至 {result.freshness.asOf} · 待复核 {result.freshness.pending} 页 · 已暂缓{' '}
+                  {result.freshness.snoozed} 页
+                </p>
+                <dl className="wiki-review-index">
+                  {Object.entries(freshnessLabels).map(([key, label]) => (
+                    <div key={key}>
+                      <dt>{label}</dt>
+                      <dd>{result.freshness!.byStatus[key as keyof typeof freshnessLabels]} 页</dd>
+                    </div>
+                  ))}
+                </dl>
+                {!result.freshness.remindersAvailable && (
+                  <p role="status">复核提醒暂时不可读取，汇总仅包含可计算的时效状态。</p>
+                )}
+              </section>
+            )}
             {total > 0 && (
               <>
                 <div className="lint-filters" role="group" aria-label="按问题类型筛选">

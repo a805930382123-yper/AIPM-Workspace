@@ -5,11 +5,13 @@ export async function assertWikiSourcesAllowed(
   raws: { get(id: string): Promise<unknown> },
   page: WikiRecord,
   seen = new Set<string>(),
+  allowMissing = false,
 ): Promise<void> {
   if (seen.has(page.id)) return;
   seen.add(page.id);
   for (const id of knowledgeRoots(page).rawIds) {
     const raw = await raws.get(id);
+    if (!raw && allowMissing) continue;
     if (!raw) throw Object.assign(Error('底层原始来源已缺失。'), { code: 'KNOWLEDGE_SOURCE_MISSING', status: 409 });
     assertRawNotMeeting(raw);
   }
@@ -17,12 +19,13 @@ export async function assertWikiSourcesAllowed(
     [...(page.answerDerivations ?? []), ...(page.inspectionDerivations ?? [])].flatMap((d) => d.wikiIds),
   )) {
     const source = await wiki.get(id);
+    if (!source && allowMissing) continue;
     if (!source)
       throw Object.assign(Error('派生知识的依据页不存在，已拒绝问答处理。'), {
         code: 'KNOWLEDGE_SOURCE_MISSING',
         status: 409,
       });
-    await assertWikiSourcesAllowed(wiki, raws, source, seen);
+    await assertWikiSourcesAllowed(wiki, raws, source, seen, allowMissing);
   }
 }
 export function knowledgeRoots(page: WikiRecord): { rawIds: string[]; manualWikiIds: string[] } {

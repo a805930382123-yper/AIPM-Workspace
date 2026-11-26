@@ -275,6 +275,12 @@ test(
     const queue = (await api('/api/wiki/review-queue')).data.items;
     assert.equal(queue.length, 5);
     assert(!queue.some(({ pageId }: { pageId: string }) => pageId === denied.id));
+    assert.deepEqual((await api('/api/wiki/review-index')).data, { engine: 'sqlite_fts', sqlite: 'ready' });
+    assert.deepEqual((await api('/api/wiki/review-queue?view=due_soon')).data.items, []);
+    const unverified = (await api('/api/wiki/review-queue?view=unverified')).data.items;
+    assert.equal(unverified.length, 5);
+    assert(unverified.every((item: { status: string }) => item.status === 'unverified'));
+    assert(!unverified.some(({ pageId }: { pageId: string }) => pageId === denied.id));
     for (const { pageId } of queue.filter(({ reminders }: { reminders: unknown[] }) => reminders.length)) {
       const detail = (await api(`/api/wiki/${pageId}`)).data;
       assert.deepEqual(found.items.find(({ id }: { id: string }) => id === pageId).freshness, detail.freshness);
@@ -296,22 +302,41 @@ test(
       answer.data.readWiki.find(({ id }: { id: string }) => id === page.id).body.slice(citation.start, citation.end),
       citation.quote,
     );
-    assert.deepEqual((await api(`/api/knowledge/answers/${answer.data.id}/citations/${citation.id}`)).data, citation);
+    const citationPath = `/api/knowledge/answers/${answer.data.id}/citations/${citation.id}`;
+    assert.deepEqual((await api(citationPath)).data, citation);
+    assert.equal(citation.reviewRevision, 5);
+    assert.equal((await api(citationPath + '/review', { baseRevision: citation.reviewRevision })).status, 200);
+    const afterConfirmation = await api(citationPath);
+    assert.equal(afterConfirmation.status, 200, JSON.stringify(afterConfirmation.data));
+    const { freshness: afterFreshness, reviewRevision: afterRevision, ...afterEvidence } = afterConfirmation.data;
+    const priorEvidence = { ...citation };
+    delete priorEvidence.freshness;
+    delete priorEvidence.reviewRevision;
+    assert.deepEqual(afterEvidence, priorEvidence);
+    assert.equal(afterRevision, 6);
+    assert.equal(afterFreshness.snoozed, false);
     assert.equal(fake.requests.length, 1);
     assert.equal((await api(`/api/wiki/${weak.id}`)).data.freshness.reminders.length, 0);
     const lint = await api('/api/wiki-lint');
     assert.equal(lint.data.freshness.byStatus.evergreen, 1);
     assert.equal(lint.data.freshness.byStatus.unverified, matching.length + 1);
+    assert(!lint.data.findings.some((finding: { objectId: string }) => finding.objectId === denied.id));
+    assert(!JSON.stringify(lint.data).includes('受限旧页合成标记'));
 
     const stateFile = path.join(root, 'state', 'review-triggers.json');
     await writeFile(stateFile, '{ damaged JSON');
     const beforeFailure = await readFile(wikiFile, 'utf8');
-    assert.equal((await api(`${wi}/review/confirm`, { baseRevision: 5 })).status, 500);
+    assert.equal((await api(`${wi}/review/confirm`, { baseRevision: afterRevision })).status, 500);
     assert.equal(await readFile(wikiFile, 'utf8'), beforeFailure);
     const third = await api(rawPath, rawEdit(second.data, '状态文件损坏时依然保存的第四版。'), 'PATCH');
     assert.equal(third.status, 200);
     assert.equal((await api(`/api/raw/${raw.id}`)).data.body, third.data.body);
     assert.equal((await api(wi)).data.freshness.remindersAvailable, false);
+    assert.equal((await api(citationPath)).status, 409);
+    assert.equal((await api(citationPath + '/review', { baseRevision: afterRevision })).status, 409);
+    assert.equal((await api('/api/knowledge/answers/current')).data.citations[0].reviewRevision, undefined);
+    assert.equal((await api('/api/knowledge/answers/current')).data.citations[0].quote, citation.quote);
+    assert.equal(await readFile(wikiFile, 'utf8'), beforeFailure);
     assert.equal(await readFile(stateFile, 'utf8'), '{ damaged JSON');
   },
 );
@@ -324,6 +349,8 @@ test('freshness switch restores ordinary Wiki response and skips new Raw reminde
   await wiki.initialize();
   const denied = await restrictedWiki(wiki, raws, '隔离开关复核资料', '受限的开关回退正文。');
   const api = await server(t, root, { WIKI_FRESHNESS_ENABLED: '0' });
+  assert.equal((await api('/api/wiki/schema')).data.freshnessEnabled, undefined);
+  assert.equal((await api('/api/wiki/review-index')).status, 404);
   const page = await api('/api/wiki', wikiInput('隔离开关复核资料公开页', '产品模型仍走旧检索。'));
   const raw = await api('/api/raw', rawInput(page.data.title, '产品模型仍走旧检索。'));
   assert.equal(raw.status, 201);

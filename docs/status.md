@@ -3,29 +3,23 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 2A-2 PASS**：Raw 双触发、读时时效、人工复核接口和 Lint 汇总完成独立验收。搜索可见性与向量请求凭据隔离两项返修关闭。全仓 1,139/1,139，冻结 25 问两路上下文 50/50 一致。2A-3 待授权，整批未验收。[任务卡](handoffs/LLMWIKI-2A-2.md) · [施工](reports/2A-2-builder.md) · [独立验收](reports/2A-2-review.md)
+- **LLM-Wiki Batch 2A 整体 PASS（2026-11-26）**。2A-3 复核工作台贯通 Raw 编辑、系统提醒与人工处理。旧引用在关闭开关后可定位，依据变化后确认请求会被拒绝。独立 Edge 复验通过，冻结 25 问双路 50/50 一致，全量 1,139/1,139。[任务卡](handoffs/LLMWIKI-2A-3.md) · [施工](reports/2A-3-builder.md) · [整批独立验收](reports/2A-3-review.md)
+
+- **2A-2 PASS**。Raw 双触发、读时时效、人工复核与 Lint 汇总完成；搜索可见性与向量凭据隔离已复验。[独立验收](reports/2A-2-review.md)
 
 - **LLM-Wiki 2A-1 PASS**：时效字段、四档规则、优先级及可重建复核队列通过独立验收。提醒与暂缓的历史重放缺陷已关闭，全量 1,136/1,136。后续写时与读时接入见 2A-2。[任务卡](handoffs/LLMWIKI-2A-1.md) · [施工](reports/2A-1-builder.md) · [独立验收](reports/2A-1-review.md)
 
 - **LLM-Wiki Batch 1B 整体 PASS**：2026-11-26 独立复核产品提交 74be77d。默认阈值 0.42，真实 Hybrid 的 A/B/C/D 为 7/7、4/5、5/5、3/3，E 误召回 4/5。B1 命中，E2 空；长页 9/9，纯向量引文 20/20。千页基准和实盘回滚达标。[真实逐题结果](../evals/reports/batch-1b-final-live.md) · [最终独立验收](reports/1B-final-review.md)
 
-- **B1/E2 关键词检索返修**：独立离线验收通过，SQLite B1 命中并定位，B 类 4/5；E2 仍空，其他 24 条 SQLite 及 25 条 Legacy 上下文不变。全仓 1,130/1,130。该轮为离线返修；最终真实复验见上。[施工](reports/1B-fts-repair-builder.md) · [复验](reports/1B-fts-repair-review.md) · [25 问](../evals/reports/batch-1b-fts-repair.md)
-
-- **LLM-Wiki 1B 首次真实质量验收（历史）**：2026-11-26 以 text-embedding-3-small 实跑冻结 25 问。默认 0.42 的 B 为 3/5、E 误召回 4/5；校准 0.36 找回 B1，B 为 4/5，但 E 增至 5/5。两轮 A/C/D 均为 7/7、5/5、3/3。保持默认值，已回报 685,994 个 Token，按标准单价约 0.01372 美元。[默认阈值](../evals/reports/batch-1b-real.md) · [校准阈值](../evals/reports/batch-1b-real-036.md)
-
-- **LLM-Wiki 1B-3**：按用户指定范围完成离线交付与独立复验。质量门禁返修关闭，50/50 基线上下文一致，全量 1,121/1,121。千页余弦与混合检索平均 9.59/21.96 ms，实盘回滚通过。真实评测后续结论见上。[任务卡](handoffs/LLMWIKI-1B-3.md) · [逐题结果](../evals/reports/batch-1b-hybrid.md) · [独立验收](reports/1B-3-review.md)
-
-- **LLM-Wiki 1B-2**：内存向量检索、RRF、选页范围与三级降级通过独立验收。两项返修关闭，全仓 1,114/1,114。后续离线评测见 1B-3。[任务卡](handoffs/LLMWIKI-1B-2.md) · [施工](reports/1B-2-builder.md) · [验收](reports/1B-2-review.md)
-
-- **LLM-Wiki 1B-1**：向量生成、版本锁、非阻塞补算通过独立验收。测试继承宿主 Embedding 配置的缺陷已关闭；注入回环配置的全量回归 1,108/1,108，哨兵收到 0 次请求。后续检索接入见 1B-2。[任务卡](handoffs/LLMWIKI-1B-1.md) · [施工](reports/1B-1-builder.md) · [独立验收](reports/1B-1-review.md)
+- **1B 历史证据**：[向量生成](reports/1B-1-review.md) · [混合检索与降级](reports/1B-2-review.md) · [离线基准](reports/1B-3-review.md) · [真实评测](../evals/reports/batch-1b-real.md) · [阈值校准](../evals/reports/batch-1b-real-036.md) · [B1/E2 返修](reports/1B-fts-repair-review.md)。
 
 - **RAWOCR05–06 微信图片处理**：执行链路（`8f4e7ba`）与三层筛选、人工精读（`17ab0bc`）均通过独立验收。隔离库从微信原网址重新导入后，正文图 1、2 完成真实精读，推广图 3–6 全部由文末规则跳过。原始正文及六张图片的哈希与正式记录一致。[任务卡](handoffs/RAWOCR05-runtime-task.md) · [第一轮验收](reports/RAWOCR05-review.md) · [第二轮与整单验收](reports/RAWOCR06-review.md)
 
 - **LLM-Wiki Batch 1A**：1A-4 与整批通过独立验收。25 问 A/B/C/D 命中分别为 7/7、3/5、5/5、3/3，E 误召回 4/5 与 Legacy 持平。长页 9/9；独立千页建库 1,584.05 ms、查询 P95 32.29 ms，实盘回滚通过；全仓测试 1,099/1,099。B1/B4 漏检及四项负样本误召回留档，后续阶段未启动。[任务卡](handoffs/LLMWIKI-1A-4.md) · [逐题快照](../evals/reports/batch-1a-baseline.md) · [独立验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）；`ENG05` 已 `PASS`，波次 2 `FE02` 已完成施工与 Round 1 本地/Edge 验收（`PENDING_CI`），正等待 Commit 1 远端 Windows Node `22.x / 24.x` CI 闭环。
+- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A 已签收，下一批待用户决定。
 - **最近 5 个批次结论**：
-  - `FE02`（2026-11-25，**Round 1 PASS / PENDING_CI**）：`InboxTab` 与 `MeetingPage` 拆分为 8 份无环前端模块（均 `< 40 KiB` / `< 800 L`，0 警告）；44/44 定向单测、1,097 非 SQLite 本地测试与隔离 Edge 冒烟通过（29 项本机失败全系 Node 25 SQLite ABI 冲突，待远端 CI 闭环；[施工](reports/FE02-20261125-builder.md) · [验收](reports/FE02-20261125-review.md)）。
+  - `FE02`：前端拆分与本地 Edge 首轮验收通过；提交 `ee02a10` 的 Windows Node 22.x、24.x 作业均成功。[远端 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842) · [验收记录](reports/FE02-20261125-review.md)。
   - `ENG05`（2026-11-24，**PASS**）：清零 3 类 9 处 ESLint 疑点（`770 → 761`、`0` 错），6 条规则升回 `error`，校准 `acceptance.md` 锚点使 `docs-archive-check` 4/4 `OK`，新增 `eng05-hygiene`；[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416)（`fae6724`）全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
   - `FE01`（2026-11-24，**PASS**）：`app/api.ts` 拆为 8 份域模块（130 运行时导出与 105 类型兼容）、轻路由与 `useLatestAsync`/`useScopedQuery` 落地、6 文件告警 `55 → 0`；隔离 `check` 1,062/1,062、Edge 冒烟 0 错，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)（`e528039`）全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
   - `CLOSE01`（2026-11-23，**PASS**）：63 项 A 类与 46 项 R 类逐项核对证据，并发保存顺序断言与恢复门禁通过，移交维护事项。[独立复核](reports/CLOSE01-review.md)。
@@ -33,9 +27,9 @@
 - **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续候选（`FE03` `PromptLibraryPage`/`DraftReviewPage` 或波次 3 `BE01` `commits.ts`）与 `LLM-Wiki` 后续阶段待用户决策。`tests/prompt-ai-http.mjs` B08 历史 mock 漂移留档；62 页 PDF 草稿待资料所有者决定入库，正式 Wiki/Prompt 写入须人工确认。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
 
-## FE02 前端页面拆分（InboxTab + MeetingPage）推进中（Round 1 PASS / PENDING_CI，2026-11-25）
+## FE02 前端页面拆分（远端 CI 已核验，2026-11-26）
 
-按[任务卡](handoffs/FE02-20261125-task.md)及独立验收先审 6 项约束完成：将 `InboxTab.tsx`（`32,051 B / 908 L → 5,930 B / 185 L`）拆为 `WorkRemindersPanel.tsx`（`7,994 B / 213 L`）、`NewsInboxPanel.tsx`（`18,574 B / 512 L`）与 `InboxTab.tsx`；将 `MeetingPage.tsx`（`51,403 B / 1,377 L → 24,313 B / 620 L`）拆为 `meeting/meetingFilters.ts`（`3,231 B / 108 L`）、`MeetingEditor.tsx`（`11,170 B / 276 L`）、`PolicyDialog.tsx`（`8,621 B / 217 L`）、`CatalogDialog.tsx`（`5,890 B / 190 L`）与 `MeetingPage.tsx`，8 份前端模块全部严格 `< 40 KiB / < 800 L` 且无环，导出兼容、后端与既有测试 0 改动。9 份交付文件 ESLint `0 errors / 0 warnings`（全仓 `761` 警告 `0` 错），`typecheck`、`format:check`、`guard`、`build` 通过；隔离 15 份定向单测 `44/44 PASS`，本机 Node v25 全量 `1,097/1,126` 通过（0 非 SQLite 失败，29 项仅系 `better_sqlite3.node` ABI 冲突），隔离生产 Edge `158.0.4370.33` 冒烟 0 错。见[施工报告](reports/FE02-20261125-builder.md)与[独立验收报告](reports/FE02-20261125-review.md)，当前提交 Push 后等待远端 Windows Node `22.x / 24.x` CI 闭环。
+InboxTab 与 MeetingPage 拆分后的 8 个模块均小于 40 KiB、800 行，无循环依赖。定向测试 44/44、隔离 Edge 冒烟通过。本机 Node 25 的 SQLite ABI 限制见首轮报告；提交 `ee02a10` 的 Windows Node 22.x 和 24.x 作业已完成全套 CI。[任务卡](handoffs/FE02-20261125-task.md) · [施工](reports/FE02-20261125-builder.md) · [独立验收及 CI 回填](reports/FE02-20261125-review.md)
 
 ## ENG05 小范围收敛完成（PASS，2026-11-24）
 

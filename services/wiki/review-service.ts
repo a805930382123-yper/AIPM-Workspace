@@ -12,6 +12,7 @@ import {
   wikiFreshnessEnabled,
   wikiReviewDate,
   type ReviewPage,
+  type ReviewQueueView,
 } from './freshness.ts';
 import { assertWikiSourcesAllowed } from './source-lineage.ts';
 import { parseWikiMarkdown, type WikiRecord, type WikiStore } from './store.ts';
@@ -81,7 +82,7 @@ export async function readWikiFreshness(wiki: WikiStore, raws: RawSources, recor
   );
 }
 
-export async function wikiReviewQueue(wiki: WikiStore, raws: RawSources, view: 'pending' | 'snoozed') {
+export async function wikiReviewQueue(wiki: WikiStore, raws: RawSources, view: ReviewQueueView) {
   const asOf = wikiReviewDate();
   const state = await wiki.reviewTriggers.read();
   const pages = (await wiki.allVisibleRecords()).map((page) => ({ ...page, pageId: page.id }));

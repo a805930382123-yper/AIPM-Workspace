@@ -1,5 +1,5 @@
 import { KnowledgeInspectionService } from '../services/llm/knowledge-inspections.ts';
-import { KnowledgeAnswerService } from '../services/llm/knowledge-answers.ts';
+import { KnowledgeAnswerService, type KnowledgeAnswer } from '../services/llm/knowledge-answers.ts';
 import type express from 'express';
 import type { RawStore } from '../services/raw/store.ts';
 import type { DraftStore } from '../services/wiki/drafts.ts';
@@ -8,6 +8,7 @@ import { KnowledgeWorkflowStore } from '../services/wiki/knowledge-workflows.ts'
 import type { LlmProvider } from '../services/llm/provider.ts';
 import { findDuplicateCandidates } from '../services/search/duplicates.ts';
 import { validateHumanReview } from './llm-validation.ts';
+import { validateBaseRevision } from './wiki-validation.ts';
 import { wikiFreshnessEnabled } from '../services/wiki/freshness.ts';
 import { readWikiFreshness } from '../services/wiki/review-service.ts';
 import { questionHash, type AnswerCitation } from '../services/wiki/question-input.ts';
@@ -54,19 +55,23 @@ export function registerKnowledgeRoutes(
     );
     for (const page of pages) await assertWikiSourcesAllowed(deps.wiki, deps.raws, page);
     const freshness = await readWikiFreshness(deps.wiki, deps.raws, pages);
-    const hashes = new Map(pages.map((page) => [page.id, questionHash(page.body)]));
+    const pagesById = new Map(pages.map((page) => [page.id, page]));
     return citations.map((citation) => {
+      const page = pagesById.get(citation.recordId);
       const status =
-        citation.kind === 'wiki' && hashes.get(citation.recordId) === citation.bodySha256
+        citation.kind === 'wiki' && page && questionHash(page.body) === citation.bodySha256
           ? freshness?.[citation.recordId]
           : undefined;
-      return status ? { ...citation, freshness: status } : citation;
+      return status && page ? { ...citation, freshness: status, reviewRevision: page.revision } : citation;
     });
   };
-  const displayAnswer = async <T extends { citations: AnswerCitation[] }>(answer: T) => ({
-    ...answer,
-    citations: await displayCitations(answer.citations),
-  });
+  const displayAnswer = async (answer: KnowledgeAnswer) => {
+    if (!wikiFreshnessEnabled()) return answer;
+    const eligible = await answers.reviewableWikiCitations(answer);
+    const annotated = await displayCitations(answer.citations.filter(({ id }) => eligible.has(id)));
+    const byId = new Map(annotated.map((citation) => [citation.id, citation]));
+    return { ...answer, citations: answer.citations.map((citation) => byId.get(citation.id) ?? citation) };
+  };
   app.post('/api/knowledge/inspections', async (req, res, next) => {
     try {
       await ready;
@@ -155,6 +160,22 @@ export function registerKnowledgeRoutes(
       next(error);
     }
   });
+  if (wikiFreshnessEnabled()) {
+    app.post('/api/knowledge/answers/:id/citations/:citationId/review', async (req, res, next) => {
+      try {
+        await ready;
+        const page = await answers.confirmWikiCitation(
+          String(req.params.id),
+          String(req.params.citationId),
+          validateBaseRevision(req.body?.baseRevision),
+        );
+        const freshness = await readWikiFreshness(deps.wiki, deps.raws, [page]);
+        res.json({ ...page, freshness: freshness?.[page.id] });
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
   app.post('/api/knowledge/answers/:id/save', async (req, res, next) => {
     try {
       await ready;

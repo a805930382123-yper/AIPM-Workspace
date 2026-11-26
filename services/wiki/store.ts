@@ -406,6 +406,7 @@ export class WikiStore {
     id: string,
     baseRevision: number,
     action: { kind: 'confirm' } | { kind: 'snooze' } | { kind: 'cycle'; days: number | null },
+    verify?: () => Promise<void>,
   ): Promise<WikiRecord> {
     return this.withLock(async () => {
       const markdown = await this.readPageFile(id);
@@ -416,6 +417,7 @@ export class WikiStore {
         throw new WikiError('REVISION_CONFLICT', '页面已经被修改，请刷新后重新复核。', 409, {
           currentRevision: current.revision,
         });
+      await verify?.();
       const now = new Date();
       const date = wikiReviewDate(now);
       if (action.kind === 'snooze') {

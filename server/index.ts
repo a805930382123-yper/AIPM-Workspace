@@ -577,7 +577,7 @@ app.post('/api/raw', async (req, res, next) => {
 });
 app.get('/api/wiki/schema', async (_req, res, next) => {
   try {
-    res.json(await wikiStore.schema());
+    res.json({ ...(await wikiStore.schema()), ...(wikiFreshnessEnabled() ? { freshnessEnabled: true } : {}) });
   } catch (error) {
     next(error);
   }
@@ -586,11 +586,29 @@ if (wikiFreshnessEnabled()) {
   app.get('/api/wiki/review-queue', async (req, res, next) => {
     try {
       const view = req.query.view ?? 'pending';
-      if (view !== 'pending' && view !== 'snoozed') throw new WikiError('INVALID_REVIEW_VIEW', '复核列表类型无效。');
+      if (view !== 'pending' && view !== 'snoozed' && view !== 'due_soon' && view !== 'unverified')
+        throw new WikiError('INVALID_REVIEW_VIEW', '复核列表类型无效。');
       res.json(await wikiReviewQueue(wikiStore, store, view));
     } catch (error) {
       next(error);
     }
+  });
+  app.get('/api/wiki/review-index', (_req, res) => {
+    const engine = !wikiSearch ? 'legacy_scan' : process.env.SEARCH_ENGINE === 'sqlite_fts' ? 'sqlite_fts' : 'hybrid';
+    const sqlite = wikiSearch?.availability ?? 'disabled';
+    const vectors = engine === 'hybrid' && sqlite === 'ready' ? wikiSearch?.getEmbeddingStatus() : undefined;
+    const vectorState = vectors
+      ? vectors.lastError
+        ? 'error'
+        : vectors.isBackfilling
+          ? 'building'
+          : !vectors.enabled
+            ? 'disabled'
+            : vectors.embeddedChunks
+              ? 'ready'
+              : 'empty'
+      : undefined;
+    res.json({ engine, sqlite, vectorState });
   });
   for (const kind of ['confirm', 'snooze', 'cycle'] as const) {
     app.post(`/api/wiki/:id/review/${kind}`, async (req, res, next) => {

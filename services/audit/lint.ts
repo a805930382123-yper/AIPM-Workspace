@@ -4,6 +4,7 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 import type { RawStore } from '../raw/store.ts';
 import type { AuditService } from './service.ts';
+import { SourcePolicyError } from '../meeting/source-policy.ts';
 import { wikiFreshnessEnabled, wikiReviewDate, type FreshnessStatus } from '../wiki/freshness.ts';
 import { readWikiFreshness } from '../wiki/review-service.ts';
 import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
@@ -205,6 +206,7 @@ export class WikiLint {
     const files = await mdFiles(wikiDir);
     const indexFile = path.join(wikiDir, 'index.md');
     const pages: Page[] = [];
+    const restrictedIds = new Set<string>();
     for (const file of files) {
       const text = await readFile(file, 'utf8');
       if (path.resolve(file) === path.resolve(indexFile)) continue;
@@ -227,6 +229,16 @@ export class WikiLint {
           ? front.title
           : (/^#\s+(.+)$/m.exec(body)?.[1]?.trim() ?? path.basename(file, '.md'));
       const id = typeof front?.id === 'string' ? front.id : path.basename(file, '.md');
+      if (front && Array.isArray(front.sources)) {
+        const record = parseWikiMarkdown(text);
+        try {
+          await assertWikiSourcesAllowed(this.wiki, this.raws, record, new Set(), true);
+        } catch (error) {
+          if (!(error instanceof SourcePolicyError) || error.status !== 403) throw error;
+          restrictedIds.add(id);
+          continue;
+        }
+      }
       pages.push({
         id,
         title,
@@ -400,6 +412,7 @@ export class WikiLint {
         for (const page of group)
           add('DUPLICATE_TITLE', page, page.file, `标题“${page.title}”规范化后与 ${group.length - 1} 个页面重复。`);
     for (const audit of await this.audits.list({ status: 'open' })) {
+      if (restrictedIds.has(audit.wikiId)) continue;
       const page = pages.find((p) => p.id === audit.wikiId);
       add(
         'OPEN_AUDIT',

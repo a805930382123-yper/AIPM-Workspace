@@ -4,5 +4,5 @@ export * from './api/llm';
 export * from './api/meeting';
 export * from './api/prompt';
 export * from './api/raw';
-export * from './api/wiki';
+export type * from './api/wiki';
 export * from './api/work-items';

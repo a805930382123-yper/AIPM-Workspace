@@ -399,7 +399,7 @@ export const knowledgeAnswer = (id: string) => api<KnowledgeAnswer>('/api/knowle
 export const currentKnowledgeAnswer = () => api<KnowledgeAnswer | null>('/api/knowledge/answers/current');
 
 export const answerCitation = (id: string, citationId: string) =>
-  api<AnswerCitation>(
+  api<import('./wiki').DisplayAnswerCitation>(
     '/api/knowledge/answers/' + encodeURIComponent(id) + '/citations/' + encodeURIComponent(citationId),
   );
 

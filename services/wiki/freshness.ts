@@ -8,6 +8,7 @@ export type WikiFreshnessFields = {
 };
 
 export type FreshnessStatus = 'unverified' | 'evergreen' | 'fresh' | 'due_soon' | 'due';
+export type ReviewQueueView = 'pending' | 'snoozed' | 'due_soon' | 'unverified';
 export const reviewTriggerKinds = ['new_source', 'source_changed', 'inference'] as const;
 export type ReviewTriggerKind = (typeof reviewTriggerKinds)[number];
 export type ReviewEvent =
@@ -160,7 +161,7 @@ export function rankReviewQueue(
   state: Readonly<Record<string, ReviewPageState>>,
   limit = 5,
   allowedRawIds?: ReadonlySet<string>,
-  view: 'pending' | 'snoozed' = 'pending',
+  view: ReviewQueueView = 'pending',
 ) {
   if (!civilDate(asOf)) throw new RangeError('Review date must be YYYY-MM-DD');
   return pages
@@ -171,7 +172,10 @@ export function rankReviewQueue(
       category: page.category,
       ...evaluateFreshness(page, asOf, state[page.pageId], undefined, allowedRawIds),
     }))
-    .filter((row) => (view === 'pending' ? row.priority > 0 && !row.snoozed : row.snoozed))
+    .filter((row) => {
+      if (view === 'snoozed') return row.snoozed;
+      return row.priority > 0 && !row.snoozed && (view === 'pending' || row.status === view);
+    })
     .sort((a, b) => {
       const aDue = a.dueOn ?? '\uffff';
       const bDue = b.dueOn ?? '\uffff';

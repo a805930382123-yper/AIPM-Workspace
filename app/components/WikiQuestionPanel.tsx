@@ -6,12 +6,16 @@ import {
   knowledgeAnswer,
   saveKnowledgeAnswer,
   ApiError,
+  type DisplayAnswerCitation,
+  type Wiki,
 } from '../api';
 import type { KnowledgeAnswer } from '../../services/llm/knowledge-answers';
-import type { QuestionPreview } from '../../services/wiki/question-input';
+import type { AnswerCitation, QuestionPreview } from '../../services/wiki/question-input';
 import { mediaEvidenceHref } from '../../services/raw/media-artifact';
 import { answerText, answerSelection } from '../../services/wiki/question-display';
 import { parseWikiAnswer } from './wiki-answer-display';
+import { WikiFreshnessBadge, WikiReviewActions } from './WikiReview';
+import { confirmWikiAnswerCitation } from '../api/wiki';
 export type RawCitationTarget = { rawId: string; start: number; end: number; quote: string; bodySha256: string };
 const stages = {
   retrieving: '正在检索并读取知识页',
@@ -31,10 +35,14 @@ export function WikiQuestionPanel({
   onOpenWiki,
   onOpenRaw,
   onOpenDraft,
+  reviewChange = 0,
+  onReviewed,
 }: {
-  onOpenWiki: (id: string) => void;
+  onOpenWiki: (id: string, citation?: AnswerCitation) => void;
   onOpenRaw: (id: string, target?: RawCitationTarget) => void;
   onOpenDraft: (id: string) => void;
+  reviewChange?: number;
+  onReviewed?: (wiki: Wiki) => void;
 }) {
   const [question, setQuestion] = useState(''),
     [answer, setAnswer] = useState<KnowledgeAnswer | null>(null),
@@ -61,12 +69,15 @@ export function WikiQuestionPanel({
         if (!typed.current) setQuestion(r.question);
       })
       .catch((e) => {
-        if (active && turn === generation.current) setError(e instanceof Error ? e.message : '无法读取上次问题。');
+        if (active && turn === generation.current) {
+          if (e instanceof ApiError && [403, 404, 409].includes(e.status)) setAnswer(null);
+          setError(e instanceof Error ? e.message : '无法读取上次问题。');
+        }
       });
     return () => {
       active = false;
     };
-  }, []);
+  }, [reviewChange]);
   const polling = (id: string, turn: number) =>
     window.setInterval(() => {
       knowledgeAnswer(id)
@@ -185,7 +196,11 @@ export function WikiQuestionPanel({
     setError('');
     try {
       const ref = await answerCitation(answer.id, id);
-      if (ref.kind === 'wiki') onOpenWiki(ref.recordId);
+      if (ref.kind === 'wiki')
+        onOpenWiki(
+          ref.recordId,
+          ref.reviewRevision === undefined ? undefined : { ...ref, revision: ref.reviewRevision },
+        );
       else
         onOpenRaw(ref.recordId, {
           rawId: ref.recordId,
@@ -197,6 +212,17 @@ export function WikiQuestionPanel({
     } catch (e) {
       setError(e instanceof Error ? e.message : '引用当前不可访问，请重新核验。');
     }
+  };
+  const refreshCitationReview = async (id: string, citationId: string) => {
+    const turn = generation.current;
+    const current = await knowledgeAnswer(id).catch(() => null);
+    if (turn !== generation.current) return;
+    setAnswer(current);
+    if (!current) setError('这份回答的依据已不存在或当前无法访问。');
+    else if (
+      !(current.citations as DisplayAnswerCitation[]).find((citation) => citation.id === citationId)?.reviewRevision
+    )
+      setError('这条引用的依据已变化，请重新提问核验。');
   };
   const latest = answer?.saves[answer.saves.length - 1];
   const missingAttempt = !!askedId && askedId !== attempt?.id;
@@ -498,13 +524,14 @@ export function WikiQuestionPanel({
               <h3>引用依据</h3>
               {answer.citations.length ? (
                 <ol className="answer-citations">
-                  {answer.citations.map((c, index) => (
+                  {(answer.citations as DisplayAnswerCitation[]).map((c, index) => (
                     <li key={c.id} id={'answer-citation-' + index} tabIndex={-1}>
                       <div className="answer-citation-heading">
                         <span className="answer-citation-number">[{index + 1}]</span>
                         <span className={'answer-source-tag answer-source-' + c.kind}>
                           {c.media ? `来源图片 ${c.media.imageIndex}` : c.kind === 'raw' ? 'Raw 原文' : 'Wiki 知识页'}
                         </span>
+                        {c.freshness && <WikiFreshnessBadge freshness={c.freshness} />}
                         {c.media ? (
                           <a
                             className="text-button"
@@ -522,6 +549,16 @@ export function WikiQuestionPanel({
                         )}
                       </div>
                       {c.quote && <blockquote>{c.quote}</blockquote>}
+                      {c.kind === 'wiki' && c.freshness && c.reviewRevision !== undefined && onReviewed && (
+                        <WikiReviewActions
+                          id={c.recordId}
+                          revision={c.reviewRevision}
+                          cycleDays={c.freshness.cycleDays}
+                          onConfirm={(revision) => confirmWikiAnswerCitation(answer.id, c.id, revision)}
+                          onUpdated={onReviewed}
+                          onOutdated={() => refreshCitationReview(answer.id, c.id)}
+                        />
+                      )}
                     </li>
                   ))}
                 </ol>

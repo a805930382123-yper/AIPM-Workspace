@@ -248,11 +248,23 @@ const answerDigest = (r: KnowledgeAnswer) =>
     readWiki: r.readWiki,
     readRaw: r.readRaw,
   });
+function wikiCitationContent(page: WikiRecord) {
+  return JSON.stringify({
+    ...page,
+    updated: undefined,
+    revision: undefined,
+    last_verified_at: undefined,
+    review_cycle_days: undefined,
+    review_trigger_checkpoint: undefined,
+  });
+}
+
 export async function verifyQuestionInput(
   input: QuestionDraftInput,
   wiki: WikiStore,
   raws: RawStore,
   appliedTargets: WikiRecord[] = [],
+  allowReviewMetadataChanges = false,
 ): Promise<void> {
   const answer = await readJsonRecord<KnowledgeAnswer>(
     wiki.root,
@@ -266,6 +278,16 @@ export async function verifyQuestionInput(
     input.citations.some((c) => !answer.citations.some((original) => JSON.stringify(original) === JSON.stringify(c)))
   )
     throw new KnowledgeAnswerError('ANSWER_INPUT_CHANGED', '问答结果或真实引用目录已变化。');
+  await verifyQuestionEvidence(input, wiki, raws, appliedTargets, allowReviewMetadataChanges);
+}
+
+async function verifyQuestionEvidence(
+  input: QuestionDraftInput,
+  wiki: WikiStore,
+  raws: RawStore,
+  appliedTargets: WikiRecord[] = [],
+  allowReviewMetadataChanges = false,
+) {
   for (const p of input.wikiSnapshots) {
     const current = await wiki.get(p.id);
     const applied =
@@ -276,10 +298,12 @@ export async function verifyQuestionInput(
           current.revision === expected.revision &&
           wiki.pageContent(current) === wiki.pageContent(expected),
       );
-    if (
-      !current ||
-      (!applied && (current.revision !== p.revision || questionHash(current.body) !== questionHash(p.body)))
-    )
+    const matches =
+      current &&
+      (allowReviewMetadataChanges
+        ? wikiCitationContent(current) === wikiCitationContent(p)
+        : current.revision === p.revision && questionHash(current.body) === questionHash(p.body));
+    if (!current || (!applied && !matches))
       throw new KnowledgeAnswerError('ANSWER_BASIS_CHANGED', '回答依据页已变化，请保留旧答案并重新提问核验。');
     await assertWikiSourcesAllowed(wiki, raws, current);
   }
@@ -684,21 +708,51 @@ export class KnowledgeAnswerService {
       }
     });
   }
-  async citation(id: string, citationId: string): Promise<AnswerCitation> {
-    const r = await this.get(id),
-      c = r?.citations.find((c) => c.id === citationId);
-    if (!r || !c) throw new KnowledgeAnswerError('ANSWER_CITATION_MISSING', '引用不存在。', 404);
-    const input = this.inputFor(r, {
+  private citationInput(answer: KnowledgeAnswer, citation: AnswerCitation) {
+    return this.inputFor(answer, {
       title: '引用核验',
       conclusion: '',
       inferences: '',
       tags: [],
       selectedSectionIds: [],
       selectedText: '',
-      citationIds: [c.id],
+      citationIds: [citation.id],
     });
-    await verifyQuestionInput(input, this.deps.wiki, this.deps.raws);
+  }
+  async reviewableWikiCitations(answer: KnowledgeAnswer) {
+    const ids = new Set<string>();
+    await Promise.all(
+      answer.citations
+        .filter((citation) => citation.kind === 'wiki')
+        .map(async (citation) => {
+          await verifyQuestionEvidence(
+            this.citationInput(answer, citation),
+            this.deps.wiki,
+            this.deps.raws,
+            [],
+            true,
+          ).then(
+            () => ids.add(citation.id),
+            () => undefined,
+          );
+        }),
+    );
+    return ids;
+  }
+  async citation(id: string, citationId: string): Promise<AnswerCitation> {
+    const r = await this.get(id),
+      c = r?.citations.find((c) => c.id === citationId);
+    if (!r || !c) throw new KnowledgeAnswerError('ANSWER_CITATION_MISSING', '引用不存在。', 404);
+    await verifyQuestionInput(this.citationInput(r, c), this.deps.wiki, this.deps.raws, [], c.kind === 'wiki');
     return c;
+  }
+  async confirmWikiCitation(id: string, citationId: string, baseRevision: number) {
+    const r = await this.get(id);
+    const c = r?.citations.find((citation) => citation.id === citationId && citation.kind === 'wiki');
+    if (!r || !c) throw new KnowledgeAnswerError('ANSWER_CITATION_MISSING', 'Wiki 引用不存在。', 404);
+    return this.deps.wiki.review(c.recordId, baseRevision, { kind: 'confirm' }, () =>
+      verifyQuestionInput(this.citationInput(r, c), this.deps.wiki, this.deps.raws, [], true),
+    );
   }
   private inputFor(r: KnowledgeAnswer, preview: QuestionPreview): QuestionDraftInput {
     const citations = r.citations.filter((c) => preview.citationIds.includes(c.id)),

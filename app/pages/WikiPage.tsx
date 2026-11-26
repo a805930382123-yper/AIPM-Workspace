@@ -2,6 +2,7 @@ import type { AnswerCitation } from '../../services/wiki/question-input';
 import { WikiInspectionPanel } from '../components/WikiInspectionPanel';
 import { WikiQuestionPanel, type RawCitationTarget } from '../components/WikiQuestionPanel';
 import { WikiLintPanel } from '../components/WikiLintPanel';
+import { WikiFreshnessBadge, WikiReviewActions, WikiReviewDrawer, WikiReviewReasons } from '../components/WikiReview';
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type {
   Audit,
@@ -104,6 +105,8 @@ export function WikiPage({
   const [detailReload, setDetailReload] = useState(0);
   const detailPanel = useRef<HTMLElement>(null);
   const [schema, setSchema] = useState<WikiSchema | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewChange, setReviewChange] = useState(0);
   const [raws, setRaws] = useState<RawSummary[]>([]);
   const [items, setItems] = useState<Wiki[]>([]);
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
@@ -411,6 +414,7 @@ export function WikiPage({
       links: _links,
       ...fields
     } = item;
+    delete fields.freshness;
     setForm(fields);
   }
   const chooseItem = (id: string) => {
@@ -430,6 +434,22 @@ export function WikiPage({
     setInspectionCitation(citation ?? null);
     setDetailTarget({ id });
     setActiveSubView('overview');
+  };
+  const applyReview = (page: Wiki) => {
+    setSelected((current) =>
+      current?.id === page.id && current.revision <= page.revision ? { ...page, links: current.links } : current,
+    );
+    setReviewChange((previous) => previous + 1);
+    if (activeSubView === 'lint') void runLint();
+    else setLintResult(null);
+  };
+  const refreshReviewPage = async (id: string) => {
+    const version = selectionVersion.current;
+    const page = await api<Wiki>(`/api/wiki/${encodeURIComponent(id)}`).catch(() => null);
+    if (version === selectionVersion.current && selectedIdRef.current === id) {
+      setSelected(page);
+      if (!page) setError('这条 Wiki 已不存在或当前无法访问。');
+    }
   };
   const openLintEditor = (id: string) => {
     openWiki(id);
@@ -589,6 +609,16 @@ export function WikiPage({
             ))}
           </div>
           <div className="wiki-create-action">
+            {schema?.freshnessEnabled && (
+              <button
+                type="button"
+                className="secondary-button"
+                aria-haspopup="dialog"
+                onClick={() => setReviewOpen(true)}
+              >
+                复核工作台
+              </button>
+            )}
             <button className="secondary-button" onClick={startCreate} disabled={!schema}>
               <span aria-hidden="true">＋</span> 手动创建 Wiki
             </button>
@@ -597,7 +627,13 @@ export function WikiPage({
       </div>
       <div role="tabpanel" id="wiki-view-ask" aria-labelledby="wiki-tab-ask" hidden={activeSubView !== 'ask'}>
         {hasOpenedAsk && (
-          <WikiQuestionPanel onOpenWiki={openWiki} onOpenRaw={onOpenRaw} onOpenDraft={(id) => onOpenDraft?.(id)} />
+          <WikiQuestionPanel
+            onOpenWiki={openWiki}
+            onOpenRaw={onOpenRaw}
+            onOpenDraft={(id) => onOpenDraft?.(id)}
+            reviewChange={reviewChange}
+            onReviewed={applyReview}
+          />
         )}
       </div>
       <div
@@ -813,6 +849,8 @@ export function WikiPage({
                 onOpenRaw={onOpenRaw}
                 onOpenWiki={openWiki}
                 onChanged={onChanged}
+                onReviewed={applyReview}
+                onReviewOutdated={() => refreshReviewPage(selected.id)}
               />
             ) : (
               <div className="detail-empty">
@@ -896,6 +934,9 @@ export function WikiPage({
           </div>
         </section>
       </div>
+      {schema?.freshnessEnabled && reviewOpen && (
+        <WikiReviewDrawer onClose={() => setReviewOpen(false)} onOpenWiki={openWiki} onReviewed={applyReview} />
+      )}
       {deleteTarget && (
         <WikiDeleteDialog
           item={deleteTarget}
@@ -1189,6 +1230,8 @@ function WikiDetail({
   onOpenRaw,
   onOpenWiki,
   onChanged,
+  onReviewed,
+  onReviewOutdated,
   initialAudit,
 }: {
   citation?: AnswerCitation | null;
@@ -1202,6 +1245,8 @@ function WikiDetail({
   onOpenRaw: (id: string) => void;
   onOpenWiki: (id: string) => void;
   onChanged: () => void;
+  onReviewed: (wiki: Wiki) => void;
+  onReviewOutdated: () => Promise<void>;
 }) {
   const [reading, setReading] = useState(true);
   const links = item.links ?? [];
@@ -1242,6 +1287,7 @@ function WikiDetail({
             {schema?.categories.find((value) => value.id === item.category)?.label ?? item.category}
           </span>
           <span className="status wiki-status">{statusLabels[item.knowledge_status] ?? item.knowledge_status}</span>
+          {item.freshness && <WikiFreshnessBadge freshness={item.freshness} />}
         </div>
         <div className="action-group">
           <a
@@ -1270,6 +1316,21 @@ function WikiDetail({
           第 {item.revision} 版 · 更新于 {dateText(item.updated)}
         </span>
       </div>
+      {item.freshness && (
+        <section className="wiki-review-detail" aria-label="时效复核">
+          {item.freshness.lastVerifiedAt && <p>人工核验日期 {item.freshness.lastVerifiedAt}</p>}
+          {!item.freshness.remindersAvailable && <p role="status">复核提醒暂时不可读取。</p>}
+          <WikiReviewReasons freshness={item.freshness} />
+          <WikiReviewActions
+            id={item.id}
+            revision={item.revision}
+            cycleDays={item.freshness.cycleDays}
+            options
+            onUpdated={onReviewed}
+            onOutdated={onReviewOutdated}
+          />
+        </section>
+      )}
       <div className="wiki-meta-grid">
         <Meta label="知识状态" value={statusLabels[item.knowledge_status] ?? item.knowledge_status} />
         <Meta label="人工审核" value={statusLabels[item.review_status] ?? item.review_status} />

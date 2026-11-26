@@ -95,6 +95,12 @@ export class WikiSearchIndexer {
     return this.dirty;
   }
 
+  get availability() {
+    if (this.dirty) return 'stale';
+    if (!this.db) return 'unavailable';
+    return 'ready';
+  }
+
   // Read callbacks must materialize results synchronously and leave the connection owned by the indexer.
   read<T>(query: (db: SearchDatabase) => T): T {
     if (!this.db) throw new Error('Search index is unavailable');

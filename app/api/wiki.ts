@@ -1,3 +1,36 @@
+import type { WikiFreshnessSummary } from '../../services/audit/lint';
+import type { AnswerCitation } from '../../services/wiki/question-input';
+import type { readWikiFreshness, wikiReviewQueue } from '../../services/wiki/review-service';
+import type { ReviewQueueView } from '../../services/wiki/freshness';
+import { api } from './client';
+
+export type WikiReviewFreshness = NonNullable<Awaited<ReturnType<typeof readWikiFreshness>>>[string];
+export type DisplayAnswerCitation = AnswerCitation & { freshness?: WikiReviewFreshness; reviewRevision?: number };
+export type WikiReviewQueue = Awaited<ReturnType<typeof wikiReviewQueue>>;
+export type WikiReviewIndex = {
+  engine: 'legacy_scan' | 'sqlite_fts' | 'hybrid';
+  sqlite: 'disabled' | 'stale' | 'unavailable' | 'ready';
+  vectorState?: 'error' | 'building' | 'disabled' | 'ready' | 'empty';
+};
+export type WikiReviewAction = { kind: 'confirm' | 'snooze' } | { kind: 'cycle'; days: number };
+
+export const getWikiReviewQueue = (view: ReviewQueueView) =>
+  api<WikiReviewQueue>(`/api/wiki/review-queue?view=${view}`);
+export const getWikiReviewIndex = () => api<WikiReviewIndex>('/api/wiki/review-index');
+export const reviewWiki = (id: string, baseRevision: number, action: WikiReviewAction) =>
+  api<Wiki>(`/api/wiki/${encodeURIComponent(id)}/review/${action.kind}`, {
+    method: 'POST',
+    body: JSON.stringify({ baseRevision, ...(action.kind === 'cycle' ? { reviewCycleDays: action.days } : {}) }),
+  });
+export const confirmWikiAnswerCitation = (answerId: string, citationId: string, baseRevision: number) =>
+  api<Wiki>(
+    `/api/knowledge/answers/${encodeURIComponent(answerId)}/citations/${encodeURIComponent(citationId)}/review`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ baseRevision }),
+    },
+  );
+
 export type WikiType = 'source' | 'concept' | 'entity' | 'business_process' | 'metric' | 'synthesis';
 
 export type Wiki = {
@@ -18,6 +51,7 @@ export type Wiki = {
   revision: number;
   body: string;
   isDemo?: boolean;
+  freshness?: WikiReviewFreshness;
   links?: Array<{
     target: string;
     status: 'resolved' | 'missing' | 'ambiguous';
@@ -99,9 +133,11 @@ export type WikiLintResult = {
     location: { scope: 'page' | 'line'; line: number; text?: string };
   }>;
   summary: Record<string, number>;
+  freshness?: WikiFreshnessSummary;
 };
 
 export type WikiSchema = {
+  freshnessEnabled?: boolean;
   domain: string;
   types: Array<{ id: WikiType; label: string; description: string }>;
   categories: Array<{ id: string; label: string }>;
