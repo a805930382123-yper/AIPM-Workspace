@@ -4,6 +4,7 @@ import { mkdir, readFile, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { SerialQueue } from '../storage/files.ts';
+import { ReviewTriggerStore } from '../wiki/review-triggers.ts';
 import { parseWikiMarkdown, wikiPageIdFromFilename, type WikiRecord } from '../wiki/store.ts';
 import { chunkWikiPage } from './chunking.ts';
 import { EmbeddingBackfill, type EmbeddingStatus } from './embedding-backfill.ts';
@@ -13,9 +14,11 @@ import {
   closeIndexForReplacement,
   initSearchSchema,
   matchesEmbeddingProvider,
-  needsIndexRebuild,
   openSearchIndex,
   readEmbeddingLock,
+  readIndexedFiles,
+  readReviewQueue,
+  searchIndexState,
   setEmbeddingLock,
   setIndexMeta,
   writeIndexedPages,
@@ -51,6 +54,7 @@ export type VectorQueryAuthorization = {
 // The workbench holds its existing data-root instance lock and owns one indexer per root.
 export class WikiSearchIndexer {
   readonly databaseFile: string;
+  readonly reviewTriggers: ReviewTriggerStore;
   private readonly root: string;
   private readonly wikiDir: string;
   private readonly queue = new SerialQueue();
@@ -66,6 +70,7 @@ export class WikiSearchIndexer {
     this.root = path.resolve(root);
     this.wikiDir = path.join(this.root, 'knowledge', 'wiki');
     this.databaseFile = path.join(this.root, 'state', 'search-index.sqlite');
+    this.reviewTriggers = new ReviewTriggerStore(this.root);
     this.embeddings = new EmbeddingBackfill(
       () => this.db,
       () => this.embeddingProvider(),
@@ -94,6 +99,12 @@ export class WikiSearchIndexer {
   read<T>(query: (db: SearchDatabase) => T): T {
     if (!this.db) throw new Error('Search index is unavailable');
     return query(this.db);
+  }
+
+  async reviewQueue(asOf: string, allowedPageIds?: ReadonlySet<string>) {
+    const state = await this.reviewTriggers.read();
+    if (this.dirty) throw new Error('Wiki review index is stale');
+    return this.read((db) => readReviewQueue(db, asOf, state, allowedPageIds));
   }
 
   getEmbeddingStatus(): EmbeddingStatus {
@@ -191,17 +202,14 @@ export class WikiSearchIndexer {
       try {
         this.openExisting();
         const db = this.db;
-        if (!db || this.dirty || needsIndexRebuild(db)) {
+        const state = db && !this.dirty ? searchIndexState(db) : 'rebuild';
+        if (!db || state === 'rebuild') {
           await this.buildAndSwap();
           return true;
         }
 
-        const previous = db
-          .prepare<[], { file_path: string; page_id: string; file_hash: string }>(
-            'SELECT file_path, page_id, file_hash FROM pages',
-          )
-          .all();
-        const hashes = new Map(previous.map((row) => [row.file_path, row.file_hash]));
+        const previous = readIndexedFiles(db);
+        const hashes = new Map(state === 'upgrade' ? [] : previous.map((row) => [row.file_path, row.file_hash]));
         const files = await this.wikiFiles();
         const present = new Set(files.map((file) => path.relative(this.root, file)));
         const replaced = new Set<string>();
@@ -220,6 +228,7 @@ export class WikiSearchIndexer {
           db,
           changes,
           previous.filter((row) => replaced.has(row.page_id) || !present.has(row.file_path)).map((row) => row.page_id),
+          state === 'upgrade',
         );
         this.vectors.reloadFromStore(db);
         setIndexMeta(db, { last_reconciled_at: new Date().toISOString() });

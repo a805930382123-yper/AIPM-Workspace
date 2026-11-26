@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import { rankReviewQueue, type ReviewPage, type ReviewPageState } from '../wiki/freshness.ts';
 import type { WikiRecord } from '../wiki/store.ts';
 import type { WikiChunk } from './chunking.ts';
 import { embeddingInput, type EmbeddingProvider } from './embedding-provider.ts';
@@ -11,10 +12,13 @@ export function openSearchDatabase(filename: string, options?: Database.Options)
 }
 
 const versions = {
-  schema_version: '1',
+  schema_version: '2',
   chunking_version: '1',
   tokenizer_version: TOKENIZER_VERSION,
 };
+
+const reviewQueueView = `CREATE VIEW review_queue AS
+  SELECT page_id, title, wiki_type, category, last_verified_at, source_published_at, review_cycle_days FROM pages`;
 
 export function openSearchIndex(filename: string, fileMustExist = false): SearchDatabase {
   // There is one owner. An external SQLite lock should fail promptly on the server thread.
@@ -56,7 +60,10 @@ export function initSearchSchema(db: SearchDatabase) {
       file_hash TEXT NOT NULL,
       char_count INTEGER NOT NULL,
       updated_at TEXT NOT NULL,
-      indexed_at TEXT NOT NULL
+      indexed_at TEXT NOT NULL,
+      last_verified_at TEXT,
+      source_published_at TEXT,
+      review_cycle_days INTEGER
     );
     CREATE TABLE chunks (
       chunk_id TEXT PRIMARY KEY,
@@ -77,6 +84,7 @@ export function initSearchSchema(db: SearchDatabase) {
       chunk_id UNINDEXED, page_id UNINDEXED, title_tokens, meta_tokens, body_tokens,
       tokenize = "unicode61 remove_diacritics 0 tokenchars '-'"
     );
+    ${reviewQueueView};
   `);
   setIndexMeta(db, {
     ...versions,
@@ -94,12 +102,58 @@ export function setIndexMeta(db: SearchDatabase, entries: Record<string, string>
   for (const [key, value] of Object.entries(entries)) put.run(key, value);
 }
 
-export function needsIndexRebuild(db: SearchDatabase) {
-  if (!db.prepare("SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'meta'").get()) return true;
+export function searchIndexState(db: SearchDatabase): 'current' | 'upgrade' | 'rebuild' {
+  if (!db.prepare("SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'meta'").get()) return 'rebuild';
   const entries = db.prepare<[], { key: string; value: string }>('SELECT key, value FROM meta').all();
   const current = new Map(entries.map(({ key, value }) => [key, value]));
-  return (
-    current.get('index_dirty') !== '0' || Object.entries(versions).some(([key, value]) => current.get(key) !== value)
+  if (
+    current.get('index_dirty') !== '0' ||
+    current.get('chunking_version') !== versions.chunking_version ||
+    current.get('tokenizer_version') !== versions.tokenizer_version
+  )
+    return 'rebuild';
+  const schemaVersion = current.get('schema_version');
+  return schemaVersion === versions.schema_version ? 'current' : schemaVersion === '1' ? 'upgrade' : 'rebuild';
+}
+
+export function readIndexedFiles(db: SearchDatabase) {
+  return db
+    .prepare<[], { file_path: string; page_id: string; file_hash: string }>(
+      'SELECT file_path, page_id, file_hash FROM pages',
+    )
+    .all();
+}
+
+export function readReviewQueue(
+  db: SearchDatabase,
+  asOf: string,
+  state: Readonly<Record<string, ReviewPageState>>,
+  allowedPageIds?: ReadonlySet<string>,
+) {
+  const rows = db
+    .prepare<
+      [],
+      Omit<ReviewPage, 'last_verified_at' | 'source_published_at' | 'review_cycle_days'> & {
+        last_verified_at: string | null;
+        source_published_at: string | null;
+        review_cycle_days: number | null;
+      }
+    >(
+      `SELECT page_id AS pageId, title, wiki_type AS type, category, last_verified_at, source_published_at,
+        review_cycle_days FROM review_queue`,
+    )
+    .all();
+  return rankReviewQueue(
+    rows
+      .filter((row) => !allowedPageIds || allowedPageIds.has(row.pageId))
+      .map((row) => ({
+        ...row,
+        last_verified_at: row.last_verified_at ?? undefined,
+        source_published_at: row.source_published_at ?? undefined,
+        review_cycle_days: row.review_cycle_days ?? undefined,
+      })),
+    asOf,
+    state,
   );
 }
 
@@ -223,25 +277,49 @@ export function writeEmbeddings(
   })();
 }
 
-export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], removeIds: string[]) {
-  const removeFts = db.prepare<[string]>('DELETE FROM chunks_fts WHERE page_id = ?');
-  const removePage = db.prepare<[string]>('DELETE FROM pages WHERE page_id = ?');
-  const putPage = db.prepare<
-    [string, string, string, string, string, string, string, string, string, number, string, string]
-  >(
-    `INSERT INTO pages (page_id, file_path, title, aliases_json, tags_json, wiki_type, category, source_grade,
-      file_hash, char_count, updated_at, indexed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  );
-  const putChunk = db.prepare<WikiChunk & { embedding: Buffer | null; embeddingVer: string | null }>(
-    `INSERT INTO chunks (chunk_id, page_id, chunk_index, heading_path, section_kind,
+export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], removeIds: string[], upgrade = false) {
+  db.transaction(() => {
+    if (upgrade) {
+      db.exec(`ALTER TABLE pages ADD COLUMN last_verified_at TEXT;
+      ALTER TABLE pages ADD COLUMN source_published_at TEXT;
+      ALTER TABLE pages ADD COLUMN review_cycle_days INTEGER;
+      ${reviewQueueView};`);
+      setIndexMeta(db, { schema_version: versions.schema_version });
+    }
+    const removeFts = db.prepare<[string]>('DELETE FROM chunks_fts WHERE page_id = ?');
+    const removePage = db.prepare<[string]>('DELETE FROM pages WHERE page_id = ?');
+    const putPage = db.prepare<
+      [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        number,
+        string,
+        string,
+        string | null,
+        string | null,
+        number | null,
+      ]
+    >(
+      `INSERT INTO pages (page_id, file_path, title, aliases_json, tags_json, wiki_type, category, source_grade,
+      file_hash, char_count, updated_at, indexed_at, last_verified_at, source_published_at,
+      review_cycle_days) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    const putChunk = db.prepare<WikiChunk & { embedding: Buffer | null; embeddingVer: string | null }>(
+      `INSERT INTO chunks (chunk_id, page_id, chunk_index, heading_path, section_kind,
     raw_text, start_offset, end_offset, raw_hash, char_count, embedding, embedding_ver) VALUES
     (@chunkId, @pageId, @chunkIndex, @headingPath, @sectionKind, @rawText, @startOffset, @endOffset, @rawHash, @charCount,
      @embedding, @embeddingVer)`,
-  );
-  const putFts = db.prepare<[string, string, string, string, string]>(`INSERT INTO chunks_fts
+    );
+    const putFts = db.prepare<[string, string, string, string, string]>(`INSERT INTO chunks_fts
     (chunk_id, page_id, title_tokens, meta_tokens, body_tokens) VALUES (?, ?, ?, ?, ?)`);
 
-  db.transaction(() => {
     const lock = readEmbeddingLock(db);
     const reusable = new Map<string, Map<string, Buffer>>();
     if (lock.identity && lock.version && removeIds.length && pages.length) {
@@ -281,6 +359,9 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         page.body.length,
         page.updated ?? '',
         now,
+        page.last_verified_at ?? null,
+        page.source_published_at ?? null,
+        page.review_cycle_days === null ? 0 : (page.review_cycle_days ?? null),
       );
       const title = tokenizeForFts(page.title).join(' ');
       const meta = tokenizeForFts([...(page.aliases ?? []), ...(page.tags ?? [])].join(' ')).join(' ');

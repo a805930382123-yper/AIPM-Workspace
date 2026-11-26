@@ -10,17 +10,34 @@ import yaml from 'js-yaml';
 import type { RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import type { WikiSearchIndexer } from '../search/indexer.ts';
+import { civilDate, readReviewCycleDays, type WikiFreshnessFields } from './freshness.ts';
 
 const sourceFileStart = /^---\r?\n/;
 const idPattern = /^[0-9a-f-]{36}$/i;
 const here = path.dirname(fileURLToPath(import.meta.url));
+// Keep js-yaml's existing value semantics for all other metadata, including unknown timestamp fields.
+const defaultTimestamp = (yaml as typeof yaml & { types: { timestamp: yaml.Type } }).types.timestamp;
+const timestampLiteral = new WeakMap<Date, string>();
+const wikiYamlSchema = yaml.DEFAULT_SCHEMA.extend({
+  implicit: [
+    new yaml.Type('tag:yaml.org,2002:timestamp', {
+      kind: 'scalar',
+      resolve: defaultTimestamp.resolve,
+      construct(value: string) {
+        const date: Date = defaultTimestamp.construct(value);
+        timestampLiteral.set(date, value);
+        return date;
+      },
+    }),
+  ],
+});
 
 export type WikiType = 'source' | 'concept' | 'entity' | 'business_process' | 'metric' | 'synthesis';
 export type KnowledgeStatus = 'verified' | 'source_supported' | 'ai_organized' | 'inferred' | 'needs_verification';
 export type Confidence = 'high' | 'medium' | 'low';
 export type SourceLevel = 'A' | 'B' | 'C' | 'D';
 export type ReviewStatus = 'unreviewed' | 'reviewed';
-export type WikiRecord = {
+export type WikiRecord = WikiFreshnessFields & {
   pdfDerivations?: PdfDerivation[];
   inspectionDerivations?: InspectionDerivation[];
   answerDerivations?: AnswerDerivation[];
@@ -42,7 +59,10 @@ export type WikiRecord = {
   body: string;
   isDemo?: boolean;
 };
-export type WikiInput = Omit<WikiRecord, 'id' | 'domain' | 'created' | 'updated' | 'revision'>;
+export type WikiInput = Omit<
+  WikiRecord,
+  keyof WikiFreshnessFields | 'id' | 'domain' | 'created' | 'updated' | 'revision'
+>;
 type Schema = {
   domain: string;
   types: Array<{ id: WikiType; label: string; description: string }>;
@@ -113,7 +133,16 @@ export function parseWikiMarkdown(markdown: string): WikiRecord {
   const rest = markdown.replace(sourceFileStart, '');
   const close = rest.search(/^---\r?\n/m);
   if (close < 0) throw new WikiError('CORRUPT_WIKI', 'Wiki 文件 Frontmatter 未闭合。', 500);
-  const metadata = yaml.load(rest.slice(0, close)) as Omit<WikiRecord, 'body'>;
+  const metadata = yaml.load(rest.slice(0, close), { schema: wikiYamlSchema }) as Record<string, unknown> | undefined;
+  if (metadata) {
+    for (const key of ['last_verified_at', 'source_published_at']) {
+      if (!Object.hasOwn(metadata, key)) continue;
+      const value = metadata[key];
+      metadata[key] = civilDate(value instanceof Date ? timestampLiteral.get(value) : value);
+    }
+    if (Object.hasOwn(metadata, 'review_cycle_days'))
+      metadata.review_cycle_days = readReviewCycleDays(metadata.review_cycle_days);
+  }
   const content = rest.slice(close).replace(/^---\r?\n/, '');
   const body = content.replace(/^# [^\r\n]*(?:\r?\n){2}/, '');
   return { ...metadata, body } as WikiRecord;
@@ -325,6 +354,7 @@ export class WikiStore {
       )
         aliases.push(current.title);
       const updated: WikiRecord = {
+        ...current,
         ...clean,
         ...(current.inspectionDerivations
           ? { inspectionDerivations: structuredClone(current.inspectionDerivations) }

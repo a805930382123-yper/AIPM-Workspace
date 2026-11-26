@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **LLM-Wiki 2A-1 PASS**：时效字段、四档规则、优先级及可重建复核队列通过独立验收。提醒与暂缓的历史重放缺陷已关闭，全量 1,136/1,136。2A-2 待授权，整批未验收。[任务卡](handoffs/LLMWIKI-2A-1.md) · [施工](reports/2A-1-builder.md) · [独立验收](reports/2A-1-review.md)
+
 - **LLM-Wiki Batch 1B 整体 PASS**：2026-11-26 独立复核产品提交 74be77d。默认阈值 0.42，真实 Hybrid 的 A/B/C/D 为 7/7、4/5、5/5、3/3，E 误召回 4/5。B1 命中，E2 空；长页 9/9，纯向量引文 20/20。千页基准和实盘回滚达标。[真实逐题结果](../evals/reports/batch-1b-final-live.md) · [最终独立验收](reports/1B-final-review.md)
 
 - **B1/E2 关键词检索返修**：独立离线验收通过，SQLite B1 命中并定位，B 类 4/5；E2 仍空，其他 24 条 SQLite 及 25 条 Legacy 上下文不变。全仓 1,130/1,130。该轮为离线返修；最终真实复验见上。[施工](reports/1B-fts-repair-builder.md) · [复验](reports/1B-fts-repair-review.md) · [25 问](../evals/reports/batch-1b-fts-repair.md)
