@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 1B-3**：按用户指定范围完成离线交付与独立复验。质量门禁返修关闭，50/50 基线上下文一致，全量 1,121/1,121。千页余弦与混合检索平均 9.59/21.96 ms，实盘回滚通过。真实 Hybrid 语义质量与真实建向量开销待验证，Batch 1B 整体待验收。[任务卡](handoffs/LLMWIKI-1B-3.md) · [逐题结果](../evals/reports/batch-1b-hybrid.md) · [独立验收](reports/1B-3-review.md)
+- **LLM-Wiki 1B 真实质量验收未通过**：2026-11-26 以 text-embedding-3-small 实跑冻结 25 问。默认 0.42 的 B 为 3/5、E 误召回 4/5；校准 0.36 找回 B1，B 为 4/5，但 E 增至 5/5。两轮 A/C/D 均为 7/7、5/5、3/3。保持默认值，已回报 685,994 个 Token，按标准单价约 0.01372 美元。[默认阈值](../evals/reports/batch-1b-real.md) · [校准阈值](../evals/reports/batch-1b-real-036.md)
+
+- **LLM-Wiki 1B-3**：按用户指定范围完成离线交付与独立复验。质量门禁返修关闭，50/50 基线上下文一致，全量 1,121/1,121。千页余弦与混合检索平均 9.59/21.96 ms，实盘回滚通过。真实评测后续结论见上。[任务卡](handoffs/LLMWIKI-1B-3.md) · [逐题结果](../evals/reports/batch-1b-hybrid.md) · [独立验收](reports/1B-3-review.md)
 
 - **LLM-Wiki 1B-2**：内存向量检索、RRF、选页范围与三级降级通过独立验收。两项返修关闭，全仓 1,114/1,114。后续离线评测见 1B-3。[任务卡](handoffs/LLMWIKI-1B-2.md) · [施工](reports/1B-2-builder.md) · [验收](reports/1B-2-review.md)
 
