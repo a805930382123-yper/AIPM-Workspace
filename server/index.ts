@@ -36,7 +36,7 @@ import {
 } from '../services/llm/config.ts';
 import { LlmConfigManager } from '../services/llm/config-manager.ts';
 import { ConfigError } from '../services/llm/config.ts';
-import { OpenAiCompatibleProvider, type LlmProvider } from '../services/llm/provider.ts';
+import { assertNoKnownSecret, OpenAiCompatibleProvider, type LlmProvider } from '../services/llm/provider.ts';
 import { LLMService } from '../services/llm/service.ts';
 import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
@@ -75,6 +75,8 @@ import { createWikiInspect } from '../services/automation/tasks/wiki-inspect.ts'
 import { WikiHealth } from '../services/automation/wiki-health.ts';
 import { KnowledgeInspectionService } from '../services/llm/knowledge-inspections.ts';
 import { WikiLint } from '../services/audit/lint.ts';
+import { readReviewCycleDays, wikiFreshnessEnabled } from '../services/wiki/freshness.ts';
+import { readWikiFreshness, recordRawReview, wikiReviewQueue } from '../services/wiki/review-service.ts';
 import { createDesktopNotifier } from '../services/automation/desktop-notify.ts';
 import { RemindersStore } from '../services/automation/reminders.ts';
 import { createWorkReminders } from '../services/automation/tasks/work-reminders.ts';
@@ -98,7 +100,18 @@ if (production)
   });
 const lock = await acquireInstanceLock(root, port, production ? 'production' : 'development');
 process.once('exit', lock.releaseMetadata);
-const store = new RawStore(root);
+const store: RawStore = new RawStore(root, (kind, raw) =>
+  recordRawReview(wikiStore, store, kind, raw, async (queries) => {
+    const config = await loadConfig();
+    const secrets = [config.apiKey, ...(config.knownSecrets ?? [])];
+    // A complete environment configuration skips the local file in loadLlmConfig.
+    if (Object.values(LLM_ENV).every((name) => Boolean(process.env[name]?.trim()))) {
+      const local = await readLocalEnvFile(configFile);
+      secrets.push(local[LLM_ENV.apiKey] ?? '');
+    }
+    assertNoKnownSecret(queries, secrets);
+  }),
+);
 const assetStore = new AssetStore(root);
 const wikiSearch: WikiSearchIndexer | undefined =
   process.env.SEARCH_ENGINE === 'legacy_scan'
@@ -315,7 +328,9 @@ const automation: AutomationScheduler = new AutomationScheduler({
       isProviderConfigured: async () => (await configManager.get()).configured,
     }),
     createDailyNews(news, pipeline),
-    createWikiLint(new WikiLint(root, store, audits), lintSnapshots, () => automation.successfulRuns(wikiLintType)),
+    createWikiLint(new WikiLint(root, store, audits, wikiStore), lintSnapshots, () =>
+      automation.successfulRuns(wikiLintType),
+    ),
     createWikiInspect(wikiStore, store, knowledgeInspections),
     createWorkReminders({ root, items: workItems, analysis: workAnalysis, raws: store }, reminders),
     weeklyTask.task,
@@ -567,17 +582,47 @@ app.get('/api/wiki/schema', async (_req, res, next) => {
     next(error);
   }
 });
+if (wikiFreshnessEnabled()) {
+  app.get('/api/wiki/review-queue', async (req, res, next) => {
+    try {
+      const view = req.query.view ?? 'pending';
+      if (view !== 'pending' && view !== 'snoozed') throw new WikiError('INVALID_REVIEW_VIEW', '复核列表类型无效。');
+      res.json(await wikiReviewQueue(wikiStore, store, view));
+    } catch (error) {
+      next(error);
+    }
+  });
+  for (const kind of ['confirm', 'snooze', 'cycle'] as const) {
+    app.post(`/api/wiki/:id/review/${kind}`, async (req, res, next) => {
+      try {
+        const days = readReviewCycleDays(req.body?.reviewCycleDays);
+        if (kind === 'cycle' && days === undefined)
+          throw new WikiError('INVALID_REVIEW_CYCLE', '复核周期须为正整数天数、0 或 null。');
+        const page = await wikiStore.review(
+          req.params.id,
+          validateBaseRevision(req.body?.baseRevision),
+          kind === 'cycle' ? { kind, days: days! } : { kind },
+        );
+        res.json({ ...page, freshness: (await readWikiFreshness(wikiStore, store, [page]))?.[page.id] });
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
+}
 app.get('/api/wiki', async (req, res, next) => {
   try {
     const q = typeof req.query.q === 'string' ? req.query.q : undefined;
     const category = typeof req.query.category === 'string' ? req.query.category : undefined;
-    const [items, categoryCounts, schema] = await Promise.all([
-      wikiStore.list({ q, category }),
-      wikiStore.categoryCounts(),
-      wikiStore.schema(),
-    ]);
+    const [pages, schema] = await Promise.all([wikiStore.allVisibleRecords(), wikiStore.schema()]);
     if (category && !schema.categories.some((item) => item.id === category))
       throw new WikiError('INVALID_CATEGORY', 'Wiki 分类无效。');
+    const [matches, categoryCounts] = await Promise.all([
+      wikiStore.list({ q, category }, pages, schema),
+      wikiStore.categoryCounts(pages, schema),
+    ]);
+    const freshness = await readWikiFreshness(wikiStore, store, matches);
+    const items = freshness ? matches.map((page) => ({ ...page, freshness: freshness[page.id] })) : matches;
     res.json({ items, categoryCounts });
   } catch (error) {
     next(error);
@@ -597,6 +642,7 @@ app.get('/api/wiki/:id/export', async (req, res, next) => {
       res.status(404).json({ error: { code: 'NOT_FOUND', message: '没有找到这条 Wiki。' } });
       return;
     }
+    await assertWikiSourcesAllowed(wikiStore, store, result.record);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="wiki-${result.record.id}.md"`);
     res.send(result.markdown);
@@ -606,7 +652,9 @@ app.get('/api/wiki/:id/export', async (req, res, next) => {
 });
 app.get('/api/wiki/:id/references', async (req, res, next) => {
   try {
-    const items = await wikiStore.references(req.params.id);
+    const page = await wikiStore.get(req.params.id);
+    if (page) await assertWikiSourcesAllowed(wikiStore, store, page);
+    const items = page ? await wikiStore.references(page.id, true) : [];
     res.json({
       items: [...new Map(items.map((item) => [item.pageId, { id: item.pageId, title: item.title }])).values()],
     });
@@ -621,12 +669,14 @@ app.get('/api/wiki/:id', async (req, res, next) => {
       res.status(404).json({ error: { code: 'NOT_FOUND', message: '没有找到这条 Wiki。' } });
       return;
     }
-    const links = (await wikiStore.links(item.id)).map((link) => ({
+    await assertWikiSourcesAllowed(wikiStore, store, item);
+    const links = (await wikiStore.links(item.id, true)).map((link) => ({
       target: link.text,
       status: link.status === 'found' ? 'resolved' : link.status,
       candidates: link.candidates,
     }));
-    res.json({ ...item, links });
+    const freshness = (await readWikiFreshness(wikiStore, store, [item]))?.[item.id];
+    res.json({ ...item, links, ...(freshness ? { freshness } : {}) });
   } catch (error) {
     next(error);
   }

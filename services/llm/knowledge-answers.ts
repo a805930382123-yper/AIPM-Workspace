@@ -33,6 +33,7 @@ import {
 import {
   addModelChunk,
   completeWikiBodyInContext,
+  modelWikiRecord,
   quoteInWikiContext,
   WIKI_CHUNK_INSTRUCTIONS,
 } from '../search/fts-retriever.ts';
@@ -493,7 +494,7 @@ export class KnowledgeAnswerService {
           return this.put(r);
         }
         let invocationCalls = 0;
-        const wikiContext = r.wikiRetrieval?.context ?? r.readWiki;
+        const wikiContext = r.wikiRetrieval?.context ?? r.readWiki.map(modelWikiRecord);
         const indexed = !!r.wikiRetrieval && r.wikiRetrieval.engine !== 'legacy_scan';
         while (invocationCalls < 2) {
           for (const page of r.readWiki) await this.readCurrentWiki(page, indexed);
@@ -815,7 +816,7 @@ export class KnowledgeAnswerService {
             if (!required || required.type === 'source')
               throw new KnowledgeAnswerError('SAVE_TARGET_UNREAD', '建议目标不是可维护的真实主题。');
             await assertWikiSourcesAllowed(this.deps.wiki, this.deps.raws, required);
-            let requiredContext: typeof wire = [required];
+            let requiredContext: typeof wire = [modelWikiRecord(required)];
             if (indexed) {
               const scoped = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries, {
                 pageIds: [required.id],

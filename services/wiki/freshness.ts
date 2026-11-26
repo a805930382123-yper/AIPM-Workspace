@@ -4,14 +4,19 @@ export type WikiFreshnessFields = {
   last_verified_at?: string;
   source_published_at?: string;
   review_cycle_days?: number | null;
+  review_trigger_checkpoint?: number;
 };
 
 export type FreshnessStatus = 'unverified' | 'evergreen' | 'fresh' | 'due_soon' | 'due';
 export const reviewTriggerKinds = ['new_source', 'source_changed', 'inference'] as const;
 export type ReviewTriggerKind = (typeof reviewTriggerKinds)[number];
+export type ReviewEvent =
+  | { kind: 'snooze'; date: string }
+  | { kind: 'source_changed' | 'new_source'; date: string; rawId: string; bodyRevision: number; reason: string };
 export type ReviewPageState = {
   triggers?: Partial<Record<ReviewTriggerKind, readonly string[]>>;
   snoozedOn?: readonly string[];
+  events?: readonly ReviewEvent[];
 };
 
 export type ReviewPage = WikiFreshnessFields & { pageId: string; title: string; type: string; category: string };
@@ -25,6 +30,16 @@ const DAY_MS = 86_400_000;
 const LAST_DAY = Date.parse('9999-12-31T00:00:00Z') / DAY_MS;
 const SOON_DAYS = 30;
 export const SNOOZE_DAYS = 30;
+
+export function wikiFreshnessEnabled() {
+  return process.env.WIKI_FRESHNESS_ENABLED !== '0';
+}
+
+const reviewDateFormatter = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' });
+
+export function wikiReviewDate(time: Date = new Date()) {
+  return reviewDateFormatter.format(time);
+}
 
 export function civilDate(value: unknown): string | undefined {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000-')) return;
@@ -64,7 +79,32 @@ function latestApplicableDate(dates: readonly string[] | undefined, asOf: string
   return latest;
 }
 
-export function evaluateFreshness(page: ReviewPage, asOf: string, state?: ReviewPageState, rules?: ReviewRules) {
+export function pendingReviewEvents(
+  page: WikiFreshnessFields,
+  asOf: string,
+  state?: ReviewPageState,
+  allowedRawIds?: ReadonlySet<string>,
+) {
+  const verified = civilDate(page.last_verified_at);
+  const lastVerifiedAt = verified && verified <= asOf ? verified : undefined;
+  const checkpoint = lastVerifiedAt ? page.review_trigger_checkpoint : undefined;
+  return (state?.events ?? []).filter(
+    (event, index) =>
+      event.date <= asOf &&
+      (!lastVerifiedAt ||
+        event.date > lastVerifiedAt ||
+        (event.date === lastVerifiedAt && index >= (checkpoint ?? 0))) &&
+      (event.kind === 'snooze' || !allowedRawIds || allowedRawIds.has(event.rawId)),
+  );
+}
+
+export function evaluateFreshness(
+  page: ReviewPage,
+  asOf: string,
+  state?: ReviewPageState,
+  rules?: ReviewRules,
+  allowedRawIds?: ReadonlySet<string>,
+) {
   if (!civilDate(asOf)) throw new RangeError('Review date must be YYYY-MM-DD');
   const asOfDay = civilDay(asOf);
   const verified = civilDate(page.last_verified_at);
@@ -80,11 +120,25 @@ export function evaluateFreshness(page: ReviewPage, asOf: string, state?: Review
       dueOn = new Date((verifiedDay + cycleDays) * DAY_MS).toISOString().slice(0, 10);
     status = daysRemaining <= 0 ? 'due' : daysRemaining <= SOON_DAYS ? 'due_soon' : 'fresh';
   }
+  const checkpoint = lastVerifiedAt ? page.review_trigger_checkpoint : undefined;
+  const pending = pendingReviewEvents(page, asOf, state, allowedRawIds);
   const activeTriggers = reviewTriggerKinds.filter((kind) => {
     const date = latestApplicableDate(state?.triggers?.[kind], asOf);
-    return date && (!lastVerifiedAt || date >= lastVerifiedAt);
+    return (
+      pending.some((event) => event.kind === kind) ||
+      (date && (!lastVerifiedAt || (checkpoint === undefined ? date >= lastVerifiedAt : date > lastVerifiedAt)))
+    );
   });
-  const snoozedOn = latestApplicableDate(state?.snoozedOn, asOf);
+  const legacySnooze = latestApplicableDate(state?.snoozedOn, asOf);
+  const snoozedOn = latestApplicableDate(
+    [
+      ...pending.filter((event) => event.kind === 'snooze').map((event) => event.date),
+      ...(legacySnooze && (!lastVerifiedAt || checkpoint === undefined || legacySnooze > lastVerifiedAt)
+        ? [legacySnooze]
+        : []),
+    ],
+    asOf,
+  );
   const elapsedSnoozeDays = snoozedOn ? asOfDay - civilDay(snoozedOn) : -1;
   return {
     status,
@@ -98,11 +152,15 @@ export function evaluateFreshness(page: ReviewPage, asOf: string, state?: Review
   };
 }
 
+export type WikiFreshness = ReturnType<typeof evaluateFreshness>;
+
 export function rankReviewQueue(
   pages: readonly ReviewPage[],
   asOf: string,
   state: Readonly<Record<string, ReviewPageState>>,
   limit = 5,
+  allowedRawIds?: ReadonlySet<string>,
+  view: 'pending' | 'snoozed' = 'pending',
 ) {
   if (!civilDate(asOf)) throw new RangeError('Review date must be YYYY-MM-DD');
   return pages
@@ -111,9 +169,9 @@ export function rankReviewQueue(
       title: page.title,
       type: page.type,
       category: page.category,
-      ...evaluateFreshness(page, asOf, state[page.pageId]),
+      ...evaluateFreshness(page, asOf, state[page.pageId], undefined, allowedRawIds),
     }))
-    .filter((row) => row.priority > 0 && !row.snoozed)
+    .filter((row) => (view === 'pending' ? row.priority > 0 && !row.snoozed : row.snoozed))
     .sort((a, b) => {
       const aDue = a.dueOn ?? '\uffff';
       const bDue = b.dueOn ?? '\uffff';

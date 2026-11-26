@@ -10,7 +10,9 @@ import yaml from 'js-yaml';
 import type { RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import type { WikiSearchIndexer } from '../search/indexer.ts';
-import { civilDate, readReviewCycleDays, type WikiFreshnessFields } from './freshness.ts';
+import { civilDate, readReviewCycleDays, wikiReviewDate, type WikiFreshnessFields } from './freshness.ts';
+import { ReviewTriggerStore } from './review-triggers.ts';
+import { assertWikiSourcesAllowed } from './source-lineage.ts';
 
 const sourceFileStart = /^---\r?\n/;
 const idPattern = /^[0-9a-f-]{36}$/i;
@@ -23,6 +25,11 @@ const wikiYamlSchema = yaml.DEFAULT_SCHEMA.extend({
     new yaml.Type('tag:yaml.org,2002:timestamp', {
       kind: 'scalar',
       resolve: defaultTimestamp.resolve,
+      instanceOf: Date,
+      represent(value) {
+        const date = value as Date;
+        return timestampLiteral.get(date) ?? date.toISOString();
+      },
       construct(value: string) {
         const date: Date = defaultTimestamp.construct(value);
         timestampLiteral.set(date, value);
@@ -128,12 +135,21 @@ function frontmatter(record: WikiRecord) {
     record.isDemo && !body.startsWith('> 【演示数据】') ? `> 【演示数据】虚构教学内容，尚未核验。\n\n${body}` : body;
   return `---\n${yaml.dump(metadata, { lineWidth: -1, noRefs: true }).trimEnd()}\n---\n# ${metadata.title}\n\n${content}`;
 }
-export function parseWikiMarkdown(markdown: string): WikiRecord {
+function splitWikiMarkdown(markdown: string) {
   if (!sourceFileStart.test(markdown)) throw new WikiError('CORRUPT_WIKI', 'Wiki 文件缺少 YAML Frontmatter。', 500);
   const rest = markdown.replace(sourceFileStart, '');
   const close = rest.search(/^---\r?\n/m);
   if (close < 0) throw new WikiError('CORRUPT_WIKI', 'Wiki 文件 Frontmatter 未闭合。', 500);
-  const metadata = yaml.load(rest.slice(0, close), { schema: wikiYamlSchema }) as Record<string, unknown> | undefined;
+  const delimiter = sourceFileStart.exec(rest.slice(close))![0];
+  return {
+    yamlText: rest.slice(0, close),
+    suffix: rest.slice(close + delimiter.length),
+    delimiter,
+  };
+}
+export function parseWikiMarkdown(markdown: string): WikiRecord {
+  const { yamlText, suffix } = splitWikiMarkdown(markdown);
+  const metadata = yaml.load(yamlText, { schema: wikiYamlSchema }) as Record<string, unknown> | undefined;
   if (metadata) {
     for (const key of ['last_verified_at', 'source_published_at']) {
       if (!Object.hasOwn(metadata, key)) continue;
@@ -142,9 +158,11 @@ export function parseWikiMarkdown(markdown: string): WikiRecord {
     }
     if (Object.hasOwn(metadata, 'review_cycle_days'))
       metadata.review_cycle_days = readReviewCycleDays(metadata.review_cycle_days);
+    if (Object.hasOwn(metadata, 'review_trigger_checkpoint')) {
+      metadata.review_trigger_checkpoint = readReviewCycleDays(metadata.review_trigger_checkpoint) ?? undefined;
+    }
   }
-  const content = rest.slice(close).replace(/^---\r?\n/, '');
-  const body = content.replace(/^# [^\r\n]*(?:\r?\n){2}/, '');
+  const body = suffix.replace(/^# [^\r\n]*(?:\r?\n){2}/, '');
   return { ...metadata, body } as WikiRecord;
 }
 async function writeAtomic(target: string, value: string) {
@@ -168,6 +186,7 @@ export class WikiStore {
   private readonly recycleDir: string;
   private readonly logFile: string;
   private readonly pendingDir: string;
+  readonly reviewTriggers: ReviewTriggerStore;
 
   constructor(
     public readonly root: string,
@@ -179,6 +198,7 @@ export class WikiStore {
     this.recycleDir = path.join(root, 'knowledge', 'recycle', 'wiki');
     this.logFile = path.join(root, 'knowledge', 'logs', 'wiki.jsonl');
     this.pendingDir = path.join(root, 'state', 'wiki-operations');
+    this.reviewTriggers = searchIndex?.reviewTriggers ?? new ReviewTriggerStore(root);
   }
 
   private serialized<T>(work: () => Promise<T>): Promise<T> {
@@ -223,10 +243,16 @@ export class WikiStore {
     );
     return records.sort((a, b) => b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title, 'zh-CN'));
   }
-  async list(options: { q?: string; category?: string } = {}): Promise<WikiRecord[]> {
-    const records = await this.records();
+  async list(
+    options: { q?: string; category?: string } = {},
+    pages?: WikiRecord[],
+    schema?: WikiSchema,
+  ): Promise<WikiRecord[]> {
+    const records = pages ?? (await this.records());
     const terms = options.q ? normalize(options.q).split(' ').filter(Boolean) : [];
-    const categoryLabels = new Map((await this.schema()).categories.map((category) => [category.id, category.label]));
+    const categoryLabels = new Map(
+      (schema ?? (await this.schema())).categories.map((category) => [category.id, category.label]),
+    );
     return records.filter((record) => {
       if (options.category && record.category !== options.category) return false;
       if (!terms.length) return true;
@@ -237,8 +263,8 @@ export class WikiStore {
       return terms.every((term) => fields.some((field) => field.includes(term)));
     });
   }
-  async categoryCounts(): Promise<Record<string, number>> {
-    const [pages, rules] = await Promise.all([this.records(), this.schema()]);
+  async categoryCounts(records?: WikiRecord[], schema?: WikiSchema): Promise<Record<string, number>> {
+    const [pages, rules] = await Promise.all([records ?? this.records(), schema ?? this.schema()]);
     const counts = Object.fromEntries(rules.categories.map((category) => [category.id, 0]));
     for (const page of pages) if (page.category in counts) counts[page.category]++;
     return counts;
@@ -376,6 +402,46 @@ export class WikiStore {
     });
   }
 
+  async review(
+    id: string,
+    baseRevision: number,
+    action: { kind: 'confirm' } | { kind: 'snooze' } | { kind: 'cycle'; days: number | null },
+  ): Promise<WikiRecord> {
+    return this.withLock(async () => {
+      const markdown = await this.readPageFile(id);
+      if (markdown === undefined) throw new WikiError('NOT_FOUND', '没有找到这条 Wiki。', 404);
+      const current = parseWikiMarkdown(markdown);
+      await assertWikiSourcesAllowed(this, this.rawStore, current);
+      if (baseRevision !== current.revision)
+        throw new WikiError('REVISION_CONFLICT', '页面已经被修改，请刷新后重新复核。', 409, {
+          currentRevision: current.revision,
+        });
+      const now = new Date();
+      const date = wikiReviewDate(now);
+      if (action.kind === 'snooze') {
+        assertFormalWriteAllowed();
+        await this.reviewTriggers.appendEvent([id], { kind: 'snooze', date }, current.review_trigger_checkpoint);
+        return current;
+      }
+      const patch =
+        action.kind === 'confirm'
+          ? {
+              last_verified_at: date,
+              review_trigger_checkpoint: (await this.reviewTriggers.read())[id]?.events?.length ?? 0,
+            }
+          : { review_cycle_days: action.days };
+      const { yamlText, suffix, delimiter } = splitWikiMarkdown(markdown);
+      const metadata = yaml.load(yamlText, { schema: wikiYamlSchema }) as Record<string, unknown>;
+      const changed = Object.assign(metadata, patch, { updated: now.toISOString(), revision: current.revision + 1 });
+      const newline = delimiter.slice(3);
+      const yamlOutput = yaml.dump(changed, { schema: wikiYamlSchema, lineWidth: -1 }).replace(/\n/gu, newline);
+      const next = delimiter + yamlOutput + delimiter + suffix;
+      const updated = parseWikiMarkdown(next);
+      await this.commitChange('update', updated, () => writeAtomic(recordPath(this.root, id), next));
+      return updated;
+    });
+  }
+
   async delete(id: string, baseRevision: number): Promise<{ id: string; title: string; references: WikiReference[] }> {
     return this.serialized(async () => {
       const current = await this.get(id);
@@ -418,6 +484,19 @@ export class WikiStore {
    */
   async allRecords(): Promise<WikiRecord[]> {
     return this.records();
+  }
+
+  async allVisibleRecords(): Promise<WikiRecord[]> {
+    const records = await this.records();
+    const allowed = await Promise.all(
+      records.map((page) =>
+        assertWikiSourcesAllowed(this, this.rawStore, page).then(
+          () => true,
+          () => false,
+        ),
+      ),
+    );
+    return records.filter((_, index) => allowed[index]);
   }
 
   /** The exact Markdown that will be written for a record; used for snapshot digests. */
@@ -480,10 +559,10 @@ export class WikiStore {
     await this.rebuildIndex();
   }
 
-  async references(id: string): Promise<WikiReference[]> {
+  async references(id: string, visibleOnly = false): Promise<WikiReference[]> {
     const target = await this.get(id);
     if (!target) return [];
-    const pages = await this.records();
+    const pages = visibleOnly ? await this.allVisibleRecords() : await this.records();
     const aliases = new Set([normalize(target.title), ...target.aliases.map(normalize)]);
     const incoming: WikiReference[] = [];
     for (const page of pages) {
@@ -505,12 +584,14 @@ export class WikiStore {
     }
     return incoming;
   }
-  async links(id: string): Promise<WikiLink[]> {
+  async links(id: string, visibleOnly = false): Promise<WikiLink[]> {
     const record = await this.get(id);
     if (!record) return [];
-    const pages = await this.records();
+    const matches = [...record.body.matchAll(/\[\[([^\]]+)\]\]/gu)];
+    if (!matches.length) return [];
+    const pages = visibleOnly ? await this.allVisibleRecords() : await this.records();
     const links = new Map<string, WikiLink>();
-    for (const [, rawText] of record.body.matchAll(/\[\[([^\]]+)\]\]/gu)) {
+    for (const [, rawText] of matches) {
       const text = rawText.trim();
       const candidates = pages.filter((page) =>
         [page.title, ...page.aliases].some((name) => normalize(name) === normalize(text)),

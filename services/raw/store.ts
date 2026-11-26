@@ -134,7 +134,22 @@ function verifyIntegrity(record: RawRecord): RawRecord {
 export class RawStore {
   private readonly mediaWrites = new SerialQueue();
 
-  constructor(public readonly root: string) {}
+  constructor(
+    public readonly root: string,
+    private readonly onSaved?: (kind: 'new_source' | 'source_changed', raw: RawRecord) => Promise<void>,
+  ) {}
+
+  private notifySaved(kind: 'new_source' | 'source_changed', record: RawRecord) {
+    const notify = this.onSaved;
+    if (!notify) return;
+    setImmediate(() => {
+      void Promise.resolve()
+        .then(() => notify(kind, record))
+        .catch(() => {
+          console.warn('[wiki-review] Raw saved; review reminders could not be recorded.', { kind, rawId: record.id });
+        });
+    });
+  }
 
   async initialize() {
     for (const dir of new Set([...Object.values(folderFor), 'assets']))
@@ -246,6 +261,7 @@ export class RawStore {
       await rm(temp, { force: true }).catch(() => undefined);
       throw error;
     }
+    if (!isDemo) this.notifySaved('new_source', record);
     await this.saveImportedMedia(record, webImageArtifacts);
     return record;
   }
@@ -424,6 +440,7 @@ export class RawStore {
     if (newsInput && record.webImages?.length) {
       await this.mediaWrites.run(async () => {
         await writeFileAtomic(file, serialize(updated));
+        if (updated.bodySha256 !== record.bodySha256) this.notifySaved('source_changed', updated);
         const currentMediaIds = new Set(identifyWebImages(id, updated.webImages).map(({ mediaId }) => mediaId));
         for (const { mediaId } of identifyWebImages(id, record.webImages)) {
           if (!currentMediaIds.has(mediaId))
@@ -432,6 +449,7 @@ export class RawStore {
       });
     } else {
       await writeFileAtomic(file, serialize(updated));
+      if (updated.bodySha256 !== record.bodySha256) this.notifySaved('source_changed', updated);
     }
     await this.saveImportedMedia(updated, webImageArtifacts);
     return updated;

@@ -4,6 +4,18 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 import type { RawStore } from '../raw/store.ts';
 import type { AuditService } from './service.ts';
+import { wikiFreshnessEnabled, wikiReviewDate, type FreshnessStatus } from '../wiki/freshness.ts';
+import { readWikiFreshness } from '../wiki/review-service.ts';
+import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
+import { parseWikiMarkdown, wikiPageIdFromFilename, WikiStore, type WikiRecord } from '../wiki/store.ts';
+
+export type WikiFreshnessSummary = {
+  asOf: string;
+  byStatus: Record<FreshnessStatus, number>;
+  pending: number;
+  snoozed: number;
+  remindersAvailable: boolean;
+};
 
 export type LintCode =
   | 'BROKEN_WIKI_LINK'
@@ -186,6 +198,7 @@ export class WikiLint {
     private root: string,
     private raws: RawStore,
     private audits: AuditService,
+    private wiki = new WikiStore(root, raws),
   ) {}
   async inspect() {
     const wikiDir = path.join(this.root, 'knowledge', 'wiki');
@@ -395,12 +408,36 @@ export class WikiLint {
         `Audit ${audit.id} 尚未处理：${audit.comment}`,
       );
     }
+    let freshness: WikiFreshnessSummary | undefined;
+    if (wikiFreshnessEnabled()) {
+      const records: WikiRecord[] = [];
+      for (const page of pages) {
+        if (!page.front || wikiPageIdFromFilename(path.basename(page.file)) !== page.id) continue;
+        try {
+          const record = parseWikiMarkdown(page.text);
+          await assertWikiSourcesAllowed(this.wiki, this.raws, record);
+          records.push(record);
+        } catch {
+          // The structural checks above already cover invalid pages or source bindings.
+        }
+      }
+      const statuses = Object.values((await readWikiFreshness(this.wiki, this.raws, records)) ?? {});
+      freshness = {
+        asOf: statuses[0]?.asOf ?? wikiReviewDate(),
+        byStatus: { unverified: 0, evergreen: 0, fresh: 0, due_soon: 0, due: 0 },
+        pending: statuses.filter(({ priority, snoozed }) => priority > 0 && !snoozed).length,
+        snoozed: statuses.filter(({ snoozed }) => snoozed).length,
+        remindersAvailable: statuses.every(({ remindersAvailable }) => remindersAvailable),
+      };
+      for (const { status } of statuses) freshness.byStatus[status]++;
+    }
     return {
       generatedAt: new Date().toISOString(),
       wikiFilesSha256: hash(
         (await Promise.all(files.map((f) => readFile(f)))).map((b) => b.toString('base64')).join('|'),
       ),
       findings,
+      ...(freshness ? { freshness } : {}),
       summary: Object.fromEntries(
         (
           [

@@ -26,7 +26,7 @@ import {
   type RetrievalStatus,
   type RetrievedKnowledgeContext,
 } from './knowledge-maintenance.ts';
-import { quoteInWikiContext, WIKI_CHUNK_INSTRUCTIONS } from '../search/fts-retriever.ts';
+import { modelWikiRecord, quoteInWikiContext, WIKI_CHUNK_INSTRUCTIONS } from '../search/fts-retriever.ts';
 import { AuditService } from '../audit/service.ts';
 export type KnowledgeInspection = {
   sourceComparisonCount?: number;
@@ -407,7 +407,7 @@ export class KnowledgeInspectionService {
     r.status = 'checking';
     r.stage = 'reading';
     await this.put(r);
-    let wikiContext: RetrievedKnowledgeContext['context'] = r.readWiki;
+    let wikiContext: RetrievedKnowledgeContext['context'] = r.readWiki.map(modelWikiRecord);
     if (r.includeRelated && r.readWiki.length) {
       const related = await retrieveKnowledgeContextDetailed(
         this.deps.wiki,

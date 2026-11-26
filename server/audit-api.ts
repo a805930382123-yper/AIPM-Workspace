@@ -15,7 +15,7 @@ export function registerAuditRoutes(
     provider: () => LlmProvider | undefined;
   },
 ) {
-  const lint = new WikiLint(deps.root, deps.raws, deps.audits);
+  const lint = new WikiLint(deps.root, deps.raws, deps.audits, deps.wiki);
   app.post('/api/audits', async (req, res, next) => {
     try {
       res.status(201).json(await deps.audits.create(req.body));

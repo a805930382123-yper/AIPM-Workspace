@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
-import type { LintFinding, WikiLint } from '../../audit/lint.ts';
+import type { LintFinding, WikiFreshnessSummary, WikiLint } from '../../audit/lint.ts';
 import {
   clearStorageScanIssue,
   readJsonRecord,
@@ -22,6 +22,7 @@ export type WikiLintSnapshot = {
   total: number;
   byCode: Record<string, number>;
   findings: SnapshotFinding[];
+  freshness?: WikiFreshnessSummary;
   diff: {
     isBaseline: boolean;
     previousRunId: string | null;
@@ -168,7 +169,7 @@ export function createWikiLint(
     mayCallModel: false,
     async execute(context) {
       await context.step('检查知识库结构并保存快照', async () => {
-        const { generatedAt, findings: inspected, summary } = await lint.inspect();
+        const { generatedAt, findings: inspected, summary, freshness } = await lint.inspect();
         const previous = await snapshots.latest(successfulRuns());
         const occurrences = new Map<string, number>();
         const current = inspected
@@ -218,6 +219,7 @@ export function createWikiLint(
           total: current.length,
           byCode: summary,
           findings: current,
+          ...(freshness ? { freshness } : {}),
           diff,
         });
         await context.link({ lintSnapshotId: context.runId });

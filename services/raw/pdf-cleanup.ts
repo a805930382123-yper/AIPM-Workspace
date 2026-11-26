@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { retrieveKnowledgeContext } from '../llm/knowledge-maintenance.ts';
+import { retrieveKnowledgeContextDetailed } from '../llm/knowledge-maintenance.ts';
 import { assertWikiSourcesAllowed } from '../wiki/source-lineage.ts';
 import { decodeKb02StructuredOutput, kb02StructuredOutput } from '../llm/openai-structured.ts';
 import { assertNoKnownSecret, LlmError, type LlmProvider } from '../llm/provider.ts';
@@ -1438,7 +1438,7 @@ export class PdfCleanupService {
     if (!prepared) return this.get(rawId);
     const { job: snapshot, catalog, grouped, written, topicEvidence } = prepared;
     const queries = [...grouped.keys()].map((title) => ({ title, content: '', tags: [] }));
-    const context = await retrieveKnowledgeContext(this.deps.wiki, this.deps.raws, queries, {
+    const { records: context } = await retrieveKnowledgeContextDetailed(this.deps.wiki, this.deps.raws, queries, {
       authorizeQuery: async () => {
         assertRawNotMeeting(await this.deps.raws.get(rawId));
         this.assertBasis(await this.deps.pdf.cleanupInput(rawId, range.startPage, range.endPage), snapshot);

@@ -7,6 +7,7 @@ import { rankHybridChunks } from '../search/hybrid-retriever.ts';
 import {
   addModelChunk,
   completeWikiBodyInContext,
+  modelWikiRecord,
   rankWikiChunks,
   WIKI_CHUNK_INSTRUCTIONS,
   type ModelWikiContext,
@@ -21,6 +22,7 @@ import type { KnowledgeRunInput } from './knowledge-extraction.ts';
 import type { ExtractOutcome } from './service.ts';
 import { validMaintenance, type KnowledgeChange, type KnowledgeMaintenance } from '../wiki/maintenance.ts';
 import type { DraftPage, DraftRecord } from '../wiki/drafts.ts';
+import { readWikiFreshness } from '../wiki/review-service.ts';
 
 export const MAINTENANCE_LIMITS = { pages: 8, characters: 48000 } as const;
 type Sources = { get(id: string): Promise<unknown> };
@@ -85,7 +87,7 @@ export async function retrieveKnowledgeContextDetailed(
       const checked = new Map<string, WikiRecord | undefined>();
       const selected = new Map<string, WikiRecord>();
       const chunks: RetrievedChunkItem[] = [];
-      let context: ModelWikiContext = initial;
+      let context: ModelWikiContext = initial.map(modelWikiRecord);
       for (const { chunk, fileHash } of candidates) {
         const { pageId } = chunk;
         if (
@@ -149,7 +151,7 @@ export async function retrieveKnowledgeContextDetailed(
     }
   }
   const records = await retrieveLegacyKnowledgeContext(wiki, rawStore, queries, options);
-  return { ...status('legacy_scan'), records, chunks: [], context: [...initial, ...records] };
+  return { ...status('legacy_scan'), records, chunks: [], context: [...initial, ...records].map(modelWikiRecord) };
 }
 
 export async function retrieveKnowledgeContext(
@@ -157,8 +159,10 @@ export async function retrieveKnowledgeContext(
   rawStore: Sources,
   queries: RetrievalQuery[],
   options: ContextOptions = {},
-): Promise<WikiRecord[]> {
-  return (await retrieveKnowledgeContextDetailed(wiki, rawStore, queries, options)).records;
+): Promise<Array<WikiRecord & { freshness?: NonNullable<Awaited<ReturnType<typeof readWikiFreshness>>>[string] }>> {
+  const { records } = await retrieveKnowledgeContextDetailed(wiki, rawStore, queries, options);
+  const freshness = await readWikiFreshness(wiki, rawStore, records);
+  return freshness ? records.map((page) => ({ ...page, freshness: freshness[page.id] })) : records;
 }
 
 /** Category alone never selects a page. Bodies are locally ranked; only the bounded selection leaves the machine. */
@@ -217,9 +221,16 @@ async function retrieveLegacyKnowledgeContext(
   const selected: WikiRecord[] = [];
   for (const p of pool) {
     if (initial.length + selected.length >= MAINTENANCE_LIMITS.pages) break;
-    if (JSON.stringify([...initial, ...selected, p]).length > (options.characters ?? MAINTENANCE_LIMITS.characters))
+    if (
+      JSON.stringify([...initial, ...selected, p].map(modelWikiRecord)).length >
+      (options.characters ?? MAINTENANCE_LIMITS.characters)
+    )
       continue;
-    if (options.perPageCharacters !== undefined && JSON.stringify(p).length > options.perPageCharacters) continue;
+    if (
+      options.perPageCharacters !== undefined &&
+      JSON.stringify(modelWikiRecord(p)).length > options.perPageCharacters
+    )
+      continue;
     // Do not send a restricted page or its metadata; malformed/missing source bindings are denied as well.
     let allowed = true;
     try {
@@ -365,7 +376,7 @@ async function proposeMaintenance(
     source: { id, title, sourceType, sourceName, author, publishedAt, url, tags },
     document,
     pages,
-    context,
+    context: context.map((page) => ('chunks' in page ? page : modelWikiRecord(page))),
     ...(preparation
       ? {
           requested: {
@@ -472,7 +483,7 @@ async function requestMaintenance(
       continue;
     if ((c.action === 'link' || c.action === 'noop') && c.body === '（正文保持原样）') c.body = old.body;
     if (c.action !== 'update' || completeWikiBodyInContext(retrievedContext, old)) continue;
-    if (JSON.stringify([old]).length > MAINTENANCE_LIMITS.characters)
+    if (JSON.stringify([modelWikiRecord(old)]).length > MAINTENANCE_LIMITS.characters)
       throw new LlmError('LLM_MAINTENANCE_CONTEXT_TOO_LARGE', '更新目标完整正文超过48000字符，检查点保留。', 413);
     await beforeRepair?.();
     const topics = c.pageIndexes.map((index) => pages[index]);

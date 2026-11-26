@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 2A-1 PASS**：时效字段、四档规则、优先级及可重建复核队列通过独立验收。提醒与暂缓的历史重放缺陷已关闭，全量 1,136/1,136。2A-2 待授权，整批未验收。[任务卡](handoffs/LLMWIKI-2A-1.md) · [施工](reports/2A-1-builder.md) · [独立验收](reports/2A-1-review.md)
+- **LLM-Wiki 2A-2 PASS**：Raw 双触发、读时时效、人工复核接口和 Lint 汇总完成独立验收。搜索可见性与向量请求凭据隔离两项返修关闭。全仓 1,139/1,139，冻结 25 问两路上下文 50/50 一致。2A-3 待授权，整批未验收。[任务卡](handoffs/LLMWIKI-2A-2.md) · [施工](reports/2A-2-builder.md) · [独立验收](reports/2A-2-review.md)
+
+- **LLM-Wiki 2A-1 PASS**：时效字段、四档规则、优先级及可重建复核队列通过独立验收。提醒与暂缓的历史重放缺陷已关闭，全量 1,136/1,136。后续写时与读时接入见 2A-2。[任务卡](handoffs/LLMWIKI-2A-1.md) · [施工](reports/2A-1-builder.md) · [独立验收](reports/2A-1-review.md)
 
 - **LLM-Wiki Batch 1B 整体 PASS**：2026-11-26 独立复核产品提交 74be77d。默认阈值 0.42，真实 Hybrid 的 A/B/C/D 为 7/7、4/5、5/5、3/3，E 误召回 4/5。B1 命中，E2 空；长页 9/9，纯向量引文 20/20。千页基准和实盘回滚达标。[真实逐题结果](../evals/reports/batch-1b-final-live.md) · [最终独立验收](reports/1B-final-review.md)
 

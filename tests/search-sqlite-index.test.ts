@@ -89,7 +89,7 @@ test('clean and deleted indexes rebuild identical content, hashes, body coordina
   const { last_reconciled_at, ...versions } = meta();
   assert.equal(new Date(last_reconciled_at).toISOString(), last_reconciled_at);
   assert.deepEqual(versions, {
-    schema_version: '2',
+    schema_version: '3',
     chunking_version: '1',
     tokenizer_version: 'intl-zh-v2',
     embedding_provider: '',
@@ -165,7 +165,7 @@ test('startup reconciles metadata-only changes with unchanged mtime, disk additi
       db.prepare('INSERT INTO meta VALUES (?, ?)').run('old_generation', 'true');
     });
     assert.equal(await index.reconcileOnStartup(), true);
-    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : key === 'schema_version' ? '2' : '1');
+    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : key === 'schema_version' ? '3' : '1');
     assert.equal(meta().old_generation, undefined);
   }
 });

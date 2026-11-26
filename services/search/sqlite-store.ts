@@ -12,13 +12,14 @@ export function openSearchDatabase(filename: string, options?: Database.Options)
 }
 
 const versions = {
-  schema_version: '2',
+  schema_version: '3',
   chunking_version: '1',
   tokenizer_version: TOKENIZER_VERSION,
 };
 
 const reviewQueueView = `CREATE VIEW review_queue AS
-  SELECT page_id, title, wiki_type, category, last_verified_at, source_published_at, review_cycle_days FROM pages`;
+  SELECT page_id, title, wiki_type, category, last_verified_at, source_published_at, review_cycle_days,
+    review_trigger_checkpoint FROM pages`;
 
 export function openSearchIndex(filename: string, fileMustExist = false): SearchDatabase {
   // There is one owner. An external SQLite lock should fail promptly on the server thread.
@@ -63,7 +64,8 @@ export function initSearchSchema(db: SearchDatabase) {
       indexed_at TEXT NOT NULL,
       last_verified_at TEXT,
       source_published_at TEXT,
-      review_cycle_days INTEGER
+      review_cycle_days INTEGER,
+      review_trigger_checkpoint INTEGER
     );
     CREATE TABLE chunks (
       chunk_id TEXT PRIMARY KEY,
@@ -113,7 +115,11 @@ export function searchIndexState(db: SearchDatabase): 'current' | 'upgrade' | 'r
   )
     return 'rebuild';
   const schemaVersion = current.get('schema_version');
-  return schemaVersion === versions.schema_version ? 'current' : schemaVersion === '1' ? 'upgrade' : 'rebuild';
+  return schemaVersion === versions.schema_version
+    ? 'current'
+    : schemaVersion === '1' || schemaVersion === '2'
+      ? 'upgrade'
+      : 'rebuild';
 }
 
 export function readIndexedFiles(db: SearchDatabase) {
@@ -133,14 +139,18 @@ export function readReviewQueue(
   const rows = db
     .prepare<
       [],
-      Omit<ReviewPage, 'last_verified_at' | 'source_published_at' | 'review_cycle_days'> & {
+      Omit<
+        ReviewPage,
+        'last_verified_at' | 'source_published_at' | 'review_cycle_days' | 'review_trigger_checkpoint'
+      > & {
         last_verified_at: string | null;
         source_published_at: string | null;
         review_cycle_days: number | null;
+        review_trigger_checkpoint: number | null;
       }
     >(
       `SELECT page_id AS pageId, title, wiki_type AS type, category, last_verified_at, source_published_at,
-        review_cycle_days FROM review_queue`,
+        review_cycle_days, review_trigger_checkpoint FROM review_queue`,
     )
     .all();
   return rankReviewQueue(
@@ -151,6 +161,7 @@ export function readReviewQueue(
         last_verified_at: row.last_verified_at ?? undefined,
         source_published_at: row.source_published_at ?? undefined,
         review_cycle_days: row.review_cycle_days ?? undefined,
+        review_trigger_checkpoint: row.review_trigger_checkpoint ?? undefined,
       })),
     asOf,
     state,
@@ -280,9 +291,14 @@ export function writeEmbeddings(
 export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], removeIds: string[], upgrade = false) {
   db.transaction(() => {
     if (upgrade) {
-      db.exec(`ALTER TABLE pages ADD COLUMN last_verified_at TEXT;
-      ALTER TABLE pages ADD COLUMN source_published_at TEXT;
-      ALTER TABLE pages ADD COLUMN review_cycle_days INTEGER;
+      const previous = db.prepare<[], { value: string }>("SELECT value FROM meta WHERE key = 'schema_version'").get();
+      if (previous?.value === '1') {
+        db.exec(`ALTER TABLE pages ADD COLUMN last_verified_at TEXT;
+        ALTER TABLE pages ADD COLUMN source_published_at TEXT;
+        ALTER TABLE pages ADD COLUMN review_cycle_days INTEGER;`);
+      }
+      db.exec(`DROP VIEW IF EXISTS review_queue;
+      ALTER TABLE pages ADD COLUMN review_trigger_checkpoint INTEGER;
       ${reviewQueueView};`);
       setIndexMeta(db, { schema_version: versions.schema_version });
     }
@@ -305,11 +321,12 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         string | null,
         string | null,
         number | null,
+        number | null,
       ]
     >(
       `INSERT INTO pages (page_id, file_path, title, aliases_json, tags_json, wiki_type, category, source_grade,
       file_hash, char_count, updated_at, indexed_at, last_verified_at, source_published_at,
-      review_cycle_days) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      review_cycle_days, review_trigger_checkpoint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const putChunk = db.prepare<WikiChunk & { embedding: Buffer | null; embeddingVer: string | null }>(
       `INSERT INTO chunks (chunk_id, page_id, chunk_index, heading_path, section_kind,
@@ -362,6 +379,7 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         page.last_verified_at ?? null,
         page.source_published_at ?? null,
         page.review_cycle_days === null ? 0 : (page.review_cycle_days ?? null),
+        page.review_trigger_checkpoint ?? null,
       );
       const title = tokenizeForFts(page.title).join(' ');
       const meta = tokenizeForFts([...(page.aliases ?? []), ...(page.tags ?? [])].join(' ')).join(' ');

@@ -288,7 +288,12 @@ test('formal create/edit/delete sync, nonblocking failure degrades, disk recover
     const legacy = await f.retrieve('动销回退');
     assert.equal(legacy.engine, 'legacy_scan');
     assert.equal(legacy.degraded, false);
-    assert.deepEqual(legacy.records, await retrieveKnowledgeContext(f.wiki, f.rawStore, query('动销回退')));
+    const projected = await retrieveKnowledgeContext(f.wiki, f.rawStore, query('动销回退'));
+    assert.deepEqual(
+      projected,
+      legacy.records.map((record, index) => ({ ...record, freshness: projected[index].freshness })),
+    );
+    assert.equal(projected[0].freshness?.status, 'unverified');
   } finally {
     if (prior === undefined) delete process.env.SEARCH_ENGINE;
     else process.env.SEARCH_ENGINE = prior;

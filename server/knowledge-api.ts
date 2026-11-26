@@ -3,11 +3,15 @@ import { KnowledgeAnswerService } from '../services/llm/knowledge-answers.ts';
 import type express from 'express';
 import type { RawStore } from '../services/raw/store.ts';
 import type { DraftStore } from '../services/wiki/drafts.ts';
-import { WikiError, type WikiStore } from '../services/wiki/store.ts';
+import { WikiError, type WikiRecord, type WikiStore } from '../services/wiki/store.ts';
 import { KnowledgeWorkflowStore } from '../services/wiki/knowledge-workflows.ts';
 import type { LlmProvider } from '../services/llm/provider.ts';
 import { findDuplicateCandidates } from '../services/search/duplicates.ts';
 import { validateHumanReview } from './llm-validation.ts';
+import { wikiFreshnessEnabled } from '../services/wiki/freshness.ts';
+import { readWikiFreshness } from '../services/wiki/review-service.ts';
+import { questionHash, type AnswerCitation } from '../services/wiki/question-input.ts';
+import { assertWikiSourcesAllowed } from '../services/wiki/source-lineage.ts';
 
 export function registerKnowledgeRoutes(
   app: express.Express,
@@ -42,6 +46,27 @@ export function registerKnowledgeRoutes(
     answers.initialize(),
     deps.inspections ? undefined : inspections.initialize(),
   ]);
+  const displayCitations = async (citations: AnswerCitation[]) => {
+    if (!wikiFreshnessEnabled()) return citations;
+    const ids = new Set(citations.filter(({ kind }) => kind === 'wiki').map(({ recordId }) => recordId));
+    const pages = (await Promise.all([...ids].map((id) => deps.wiki.get(id)))).filter(
+      (page): page is WikiRecord => page !== undefined,
+    );
+    for (const page of pages) await assertWikiSourcesAllowed(deps.wiki, deps.raws, page);
+    const freshness = await readWikiFreshness(deps.wiki, deps.raws, pages);
+    const hashes = new Map(pages.map((page) => [page.id, questionHash(page.body)]));
+    return citations.map((citation) => {
+      const status =
+        citation.kind === 'wiki' && hashes.get(citation.recordId) === citation.bodySha256
+          ? freshness?.[citation.recordId]
+          : undefined;
+      return status ? { ...citation, freshness: status } : citation;
+    });
+  };
+  const displayAnswer = async <T extends { citations: AnswerCitation[] }>(answer: T) => ({
+    ...answer,
+    citations: await displayCitations(answer.citations),
+  });
   app.post('/api/knowledge/inspections', async (req, res, next) => {
     try {
       await ready;
@@ -97,7 +122,7 @@ export function registerKnowledgeRoutes(
   app.post('/api/knowledge/answers', async (req, res, next) => {
     try {
       await ready;
-      res.json(await answers.ask(req.body));
+      res.json(await displayAnswer(await answers.ask(req.body)));
     } catch (error) {
       next(error);
     }
@@ -105,7 +130,8 @@ export function registerKnowledgeRoutes(
   app.get('/api/knowledge/answers/current', async (_req, res, next) => {
     try {
       await ready;
-      res.json((await answers.current()) ?? null);
+      const answer = await answers.current();
+      res.json(answer ? await displayAnswer(answer) : null);
     } catch (error) {
       next(error);
     }
@@ -115,7 +141,7 @@ export function registerKnowledgeRoutes(
       await ready;
       const result = await answers.read(String(req.params.id));
       if (!result) throw new WikiError('ANSWER_MISSING', '回答不存在。', 404);
-      res.json(result);
+      res.json(await displayAnswer(result));
     } catch (error) {
       next(error);
     }
@@ -123,7 +149,8 @@ export function registerKnowledgeRoutes(
   app.get('/api/knowledge/answers/:id/citations/:citationId', async (req, res, next) => {
     try {
       await ready;
-      res.json(await answers.citation(String(req.params.id), String(req.params.citationId)));
+      const citation = await answers.citation(String(req.params.id), String(req.params.citationId));
+      res.json((await displayCitations([citation]))[0]);
     } catch (error) {
       next(error);
     }

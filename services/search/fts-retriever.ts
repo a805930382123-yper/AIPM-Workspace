@@ -26,6 +26,12 @@ export type ModelWikiPage = Pick<WikiRecord, 'id' | 'title' | 'type' | 'revision
   chunks: ModelWikiChunk[];
 };
 export type ModelWikiContext = (WikiRecord | ModelWikiPage)[];
+export function modelWikiRecord(page: WikiRecord) {
+  if (!Object.hasOwn(page, 'review_trigger_checkpoint')) return page;
+  const wire = { ...page };
+  delete wire.review_trigger_checkpoint;
+  return wire;
+}
 export type RetrievalQuery = { title: string; content: string; tags: string[] };
 export type SearchOptions = { includeSources?: boolean; pageIds?: string[]; excludeIds?: string[] };
 
