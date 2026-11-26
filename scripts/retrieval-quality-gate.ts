@@ -17,16 +17,18 @@ export function judgeRetrievalQuality(
   sqlite: Scorecard,
   hybrid: (Scorecard & { vectorChecks: number }) | undefined,
   requestedLive: boolean,
+  sqliteReference: '1a' | 'fts-repair' = '1a',
 ) {
   const requiredLocations = [...FROZEN_FTS.a, ...FROZEN_FTS.c, ...FROZEN_FTS.d];
   const frozenHits = [...requiredLocations, ...FROZEN_FTS.b];
   const sqliteProblems: string[] = [];
   for (const id of [...frozenHits, ...FROZEN_FTS.bMisses, ...FROZEN_FTS.negativeCases]) {
     const grade = sqlite.grades.get(id);
-    const positive = frozenHits.some((expected) => expected === id);
+    const positive =
+      frozenHits.some((expected) => expected === id) || (sqliteReference === 'fts-repair' && id === 'B1');
     const falseRecall = FROZEN_FTS.falseRecalls.some((expected) => expected === id);
     if (!grade || grade.hit !== positive || grade.heading !== positive || grade.falseRecall !== falseRecall)
-      sqliteProblems.push(`${id} 与冻结结果不同`);
+      sqliteProblems.push(`${id} 与${sqliteReference === '1a' ? '冻结结果' : 'FTS 修复预期'}不同`);
   }
   if (sqlite.longAnchors !== FROZEN_FTS.longAnchors) sqliteProblems.push('长页定位未达 9/9');
 

@@ -1,7 +1,7 @@
 import type { WikiRecord } from '../wiki/store.ts';
 import type { WikiChunk } from './chunking.ts';
 import type { WikiSearchIndexer } from './indexer.ts';
-import { buildFtsQuery } from './tokenizer.ts';
+import { buildFtsQuery, buildStoreFactQuery } from './tokenizer.ts';
 
 export type RetrievedChunkItem = Omit<WikiChunk, 'charCount'> & {
   pageTitle: string;
@@ -64,6 +64,7 @@ export function rankWikiChunks(
   // individual concepts from the supplied document or explicitly selected pages.
   const standalone =
     !options.pageIds && queries.length === 1 && (!queries[0].content || queries[0].content === queries[0].title);
+  const storeFacts = standalone ? buildStoreFactQuery(queries[0].title) : undefined;
   const informative = queryGroups.filter(({ coverageWeight }) => coverageWeight > 0);
   const minimumCoverage =
     standalone && informative.length >= 6 ? informative.reduce((sum, group) => sum + group.coverageWeight, 0) / 2 : 0;
@@ -94,7 +95,7 @@ export function rankWikiChunks(
   `,
       )
       .all(
-        match,
+        storeFacts?.match ?? match,
         Number(options.includeSources ?? false),
         options.pageIds ? 1 : null,
         JSON.stringify(options.pageIds ?? []),
@@ -109,18 +110,21 @@ export function rankWikiChunks(
       const covered = queryGroups.filter(({ terms }) =>
         terms.some((term) => fields.some((field) => field.includes(' ' + term + ' '))),
       );
-      const pageNames = [chunk.pageTitle, ...(JSON.parse(aliases) as string[])].map((title) =>
-        title.toLowerCase().trim(),
-      );
+      const pageAliases = JSON.parse(aliases) as string[];
+      const pageNames = [chunk.pageTitle, ...pageAliases].map((title) => title.toLowerCase().trim());
       const exactName = pageNameMatch(pageNames, names);
       const normalized = -bm25 / (1 - bm25);
-      if (!covered.length || (covered.length === 1 && covered[0].generic && normalized < 0.35)) return [];
-      if (
-        minimumCoverage > 0 &&
-        !pageNames.includes(queries[0].title.toLowerCase().trim()) &&
-        covered.reduce((sum, group) => sum + group.coverageWeight, 0) < minimumCoverage
-      )
-        return [];
+      if (storeFacts) {
+        if (!storeFacts.hasEvidence(chunk.rawText, titleTokens, pageAliases)) return [];
+      } else {
+        if (!covered.length || (covered.length === 1 && covered[0].generic && normalized < 0.35)) return [];
+        if (
+          minimumCoverage > 0 &&
+          !pageNames.includes(queries[0].title.toLowerCase().trim()) &&
+          covered.reduce((sum, group) => sum + group.coverageWeight, 0) < minimumCoverage
+        )
+          return [];
+      }
       const score = normalized + (covered.length / queryGroups.length) * 0.45 + (exactName ? 0.3 : 0);
       return [{ chunk: { ...chunk, score }, fileHash, exactName }];
     })

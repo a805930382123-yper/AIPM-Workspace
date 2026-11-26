@@ -10,6 +10,7 @@ import { retrieveKnowledgeContext, retrieveKnowledgeContextDetailed } from '../s
 import type { LlmProvider } from '../services/llm/provider.ts';
 import { PromptAiService } from '../services/prompt-ai/service.ts';
 import { PromptStore } from '../services/prompt/store.ts';
+import { quoteInWikiContext } from '../services/search/fts-retriever.ts';
 import { WikiSearchIndexer } from '../services/search/indexer.ts';
 import { tokenizeForFts } from '../services/search/tokenizer.ts';
 import type { WikiInput } from '../services/wiki/store.ts';
@@ -109,6 +110,115 @@ test('standalone questions need specific coverage but can retain evidence when s
         result.chunks.some((chunk) => chunk.pageId === page.id && chunk.rawText.includes(quote)),
         title,
       );
+  }
+});
+
+test('store size and operating hours paraphrases retrieve original evidence for the requested storefront', async (t) => {
+  const f = await fixture(t);
+  const discountArea = '单店营业面积在 280–340㎡。';
+  const discountHours = '每天 08:30 到 21:00 营业。';
+  const memberArea = '门店占地约 5200 平方米。';
+  const memberHours = '每天营业十六小时。';
+  const freshHours = '营业时间为 07:15 至 20:30。';
+  const discount = await f.wiki.create(
+    bodyInput('折扣店经营口径', ['## 经营规模', discountArea, '## 开店安排', discountHours].join('\n\n')),
+  );
+  const member = await f.wiki.create(
+    bodyInput('仓储会员店', ['## 经营规模', memberArea, '## 开店安排', memberHours].join('\n\n')),
+  );
+  const fresh = await f.wiki.create(bodyInput('社区生鲜店运营记录', '## 开店安排\n\n' + freshHours));
+  await f.wiki.create(
+    bodyInput('折扣店物流规范', '## 配送\n\n货架投影面积 2 平方米。营业商品在 10 小时内送到，司机本人验收交接单。'),
+  );
+  const examples = [
+    { title: '折扣超市一般占地多少？', page: discount, heading: '经营规模', quote: discountArea },
+    { title: '折扣店从几点到几点营业？', page: discount, heading: '开店安排', quote: discountHours },
+    { title: '会员制超市店面有多大？', page: member, heading: '经营规模', quote: memberArea },
+    { title: '仓储会员店每天开几个小时？', page: member, heading: '开店安排', quote: memberHours },
+    { title: '请问社区生鲜店几点关门？', page: fresh, heading: '开店安排', quote: freshHours },
+  ];
+  for (const { title, page, heading, quote } of examples) {
+    const result = await f.retrieve(title);
+    assert.equal(result.engine, 'sqlite_fts', title);
+    assert.deepEqual(
+      result.chunks.map(({ pageId, headingPath }) => [pageId, headingPath]),
+      [[page.id, heading]],
+      title,
+    );
+    const start = page.body.indexOf(quote);
+    assert(quoteInWikiContext(result.context, page.id, start, start + quote.length, quote), title);
+  }
+
+  const title = '折扣店店面多大和每天营业多久？';
+  const both = await retrieveKnowledgeContextDetailed(
+    f.wiki,
+    f.rawStore,
+    [{ title, content: title, tags: ['折扣店店面多大', '每天营业多久'] }],
+    { includeSources: true },
+  );
+  assert.equal(both.engine, 'sqlite_fts');
+  assert.deepEqual(
+    both.context.map(({ id }) => id),
+    [discount.id],
+  );
+  for (const quote of [discountArea, discountHours]) {
+    const start = discount.body.indexOf(quote);
+    assert(quoteInWikiContext(both.context, discount.id, start, start + quote.length, quote));
+  }
+});
+
+test('store fact evidence excludes another storefront, unrelated units and delivery obligations', async (t) => {
+  const f = await fixture(t);
+  await f.wiki.create(
+    bodyInput(
+      '药店经营资料',
+      '## 配送\n\n货架占用面积约 2 平方米，店面到配送站距离为 6 公里。登记的营业面积单位误为 6 平方公里。营业商品承诺 24 小时内送达，签收交由司机。',
+    ),
+  );
+  await f.wiki.create(bodyInput('咖啡店', '## 开店安排\n\n店面占地 150 平方米，每天 8 点开门。'));
+  await f.wiki.create(
+    bodyInput(
+      '商业街巡查记录',
+      '## 门店\n\n甲商铺的营业面积 850 平米，营业时间为 09:00 至 21:00。药店的清洁用品已经送到。',
+    ),
+  );
+  for (const title of [
+    '药店通常多大？',
+    '药店每天营业多久？',
+    '药店半夜冷链配送必须实名出示身份证并由本人验收吗？',
+    '药店营业结束后送出的处方药，必须由下单人本人持证验收吗？',
+  ]) {
+    const result = await f.retrieve(title);
+    assert.equal(result.engine, 'sqlite_fts', title);
+    assert.deepEqual(result.context, [], title);
+  }
+});
+
+test('store evidence follows the subject of each fact before inheriting the page title', async (t) => {
+  const f = await fixture(t);
+  await f.wiki.create(bodyInput('药店巡检', '隔壁咖啡店营业面积为 120 平方米，每天营业十小时。'));
+  await f.wiki.create(bodyInput('药店资料', '货架占地 2 平方米。'));
+  await f.wiki.create(bodyInput('眼镜店案例', '同一楼层的百货店到了旺季，每天 8 点开门。展台占地三平方米。'));
+  const pharmacy = await f.wiki.create(bodyInput('药店记录', '门店营业面积为 85 平方米。'));
+  const optical = await f.wiki.create(bodyInput('眼镜店', '每天营业十二小时。'));
+
+  for (const [title, page, quote] of [
+    ['药店通常多大？', pharmacy, '门店营业面积为 85 平方米。'],
+    ['眼镜店每天营业多久？', optical, '每天营业十二小时。'],
+  ] as const) {
+    const result = await f.retrieve(title);
+    assert.equal(result.engine, 'sqlite_fts', title);
+    assert.deepEqual(
+      result.context.map(({ id }) => id),
+      [page.id],
+      title,
+    );
+    assert(quoteInWikiContext(result.context, page.id, 0, quote.length, quote), title);
+  }
+  for (const title of ['药店每天营业多久？', '眼镜店的门店面积？']) {
+    const result = await f.retrieve(title);
+    assert.equal(result.engine, 'sqlite_fts', title);
+    assert.deepEqual(result.context, [], title);
   }
 });
 

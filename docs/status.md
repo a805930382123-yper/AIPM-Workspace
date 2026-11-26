@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **B1/E2 关键词检索返修**：独立离线验收通过，SQLite B1 命中并定位，B 类 4/5；E2 仍空，其他 24 条 SQLite 及 25 条 Legacy 上下文不变。全仓 1,130/1,130。真实 Hybrid 本轮未测，整批准入仍未通过。[施工](reports/1B-fts-repair-builder.md) · [复验](reports/1B-fts-repair-review.md) · [25 问](../evals/reports/batch-1b-fts-repair.md)
+
 - **LLM-Wiki 1B 真实质量验收未通过**：2026-11-26 以 text-embedding-3-small 实跑冻结 25 问。默认 0.42 的 B 为 3/5、E 误召回 4/5；校准 0.36 找回 B1，B 为 4/5，但 E 增至 5/5。两轮 A/C/D 均为 7/7、5/5、3/3。保持默认值，已回报 685,994 个 Token，按标准单价约 0.01372 美元。[默认阈值](../evals/reports/batch-1b-real.md) · [校准阈值](../evals/reports/batch-1b-real-036.md)
 
 - **LLM-Wiki 1B-3**：按用户指定范围完成离线交付与独立复验。质量门禁返修关闭，50/50 基线上下文一致，全量 1,121/1,121。千页余弦与混合检索平均 9.59/21.96 ms，实盘回滚通过。真实评测后续结论见上。[任务卡](handoffs/LLMWIKI-1B-3.md) · [逐题结果](../evals/reports/batch-1b-hybrid.md) · [独立验收](reports/1B-3-review.md)

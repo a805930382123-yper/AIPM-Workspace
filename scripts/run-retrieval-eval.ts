@@ -34,17 +34,27 @@ import { FROZEN_FTS, judgeRetrievalQuality } from './retrieval-quality-gate.ts';
 const [rootArg, ...args] = process.argv.slice(2);
 assert(
   rootArg && !rootArg.startsWith('--'),
-  'Usage: node --import tsx scripts/run-retrieval-eval.ts <local data snapshot> [output.md] [--live] [--threshold=0.42]',
+  'Usage: node --import tsx scripts/run-retrieval-eval.ts <local data snapshot> [output.md] [--live] [--threshold=0.42] [--fts-repair]',
 );
 const source = path.resolve(rootArg);
 const outputs = args.filter((arg) => !arg.startsWith('--'));
 const thresholds = args.filter((arg) => arg.startsWith('--threshold=')).map((arg) => arg.slice(12));
-assert(args.every((arg) => !arg.startsWith('--') || arg === '--live' || arg.startsWith('--threshold=')));
+assert(
+  args.every(
+    (arg) => !arg.startsWith('--') || ['--live', '--fts-repair'].includes(arg) || arg.startsWith('--threshold='),
+  ),
+);
 assert(outputs.length <= 1 && thresholds.length <= 1);
-const report = path.resolve(outputs[0] ?? 'evals/reports/batch-1b-hybrid.md');
+const requestedLive = args.includes('--live');
+const sqliteReference = args.includes('--fts-repair') ? 'fts-repair' : '1a';
+const report = path.resolve(
+  outputs[0] ??
+    (sqliteReference === 'fts-repair'
+      ? `evals/results/batch-1b-fts-repair${requestedLive ? '-live' : ''}.md`
+      : 'evals/reports/batch-1b-hybrid.md'),
+);
 const threshold = thresholds.length ? Number(thresholds[0] || NaN) : 0.42;
 assert(Number.isFinite(threshold) && threshold >= -1 && threshold <= 1, '阈值必须为 -1 至 1 的数字');
-const requestedLive = args.includes('--live');
 const main =
   requestedLive &&
   process.env.EMBEDDING_MODEL?.trim() &&
@@ -512,7 +522,8 @@ try {
   const budgetRate = shortlisted.length ? budgetLosses.length / shortlisted.length : undefined;
   const bRows = bMisses.map((id) => {
     const row = diagnostics.get(id);
-    if (!row) return `| ${id} | 漏检 | 待验证 | — | — | — | — | — |`;
+    const lexical = scores.sqlite_fts.get(id)!.hit ? '命中' : '漏检';
+    if (!row) return `| ${id} | ${lexical} | 待验证 | — | — | — | — | — |`;
     const chunk = row.sentGold ?? row.fusedGold;
     const where = row.sentGold
       ? '实际送出'
@@ -523,7 +534,7 @@ try {
           : row.rawVectorGold
             ? '最低阈值裁切'
             : '两路均未进入 Top-30';
-    return `| ${id} | 漏检 | ${where} | ${row.ftsGold ?? '—'} | ${row.vectorGold ?? '—'} | ${row.rawVectorGold ?? '—'} | ${row.rawVectorGoldScore?.toFixed(6) ?? '—'} | ${chunk?.hitSource ?? '—'} |`;
+    return `| ${id} | ${lexical} | ${where} | ${row.ftsGold ?? '—'} | ${row.vectorGold ?? '—'} | ${row.rawVectorGold ?? '—'} | ${row.rawVectorGoldScore?.toFixed(6) ?? '—'} | ${chunk?.hitSource ?? '—'} |`;
   });
   const eCases = baseline.cases.filter(({ id }) => id.startsWith('E'));
   const eRows = eCases.map(({ id }) => {
@@ -539,6 +550,7 @@ try {
     { grades: scores.sqlite_fts, longAnchors: nAnchors },
     embeddings ? { grades: scores.hybrid, longAnchors: nHybridAnchors, vectorChecks: vectorChecked } : undefined,
     requestedLive,
+    sqliteReference,
   );
   const section = (lines: string[]) => lines.join('\n');
   const lines = [
@@ -546,7 +558,7 @@ try {
     '',
     embeddings ? `真实 Hybrid 质量门槛${quality.exitCode === 0 ? '通过' : '未通过'}。` : skip,
     '',
-    `SQLite 冻结基线核对${quality.sqliteProblems.length ? '未通过' : '通过'}。`,
+    `SQLite ${sqliteReference === '1a' ? '1A 历史冻结基线' : '本轮 FTS 修复预期（B1 新增命中及定位，其余沿用 1A）'}核对${quality.sqliteProblems.length ? '未通过' : '通过'}。`,
     ...quality.sqliteProblems.map((problem) => `- SQLite ${problem}。`),
     ...(quality.hybridProblems ?? []).map((problem) => `- Hybrid ${problem}。`),
     '',
@@ -604,7 +616,7 @@ try {
       ? `实际发出的纯向量块逐字核验 ${vectorChecked}/${vectorChecked}${vectorChecked ? '。' : '，本次未观察到纯向量出块。'}`
       : '真实 Hybrid 纯向量出块及逐字引文待验证。',
     '',
-    '## B 类漏题',
+    '## 1A 的 B 类漏题复查',
     '',
     '| 题号 | SQLite | Hybrid 结果 | ftsRank | vectorRank | 阈值前向量排名 | vectorScore | hitSource |',
     '| --- | --- | --- | ---: | ---: | ---: | ---: | --- |',
@@ -644,7 +656,8 @@ try {
   await mkdir(path.dirname(report), { recursive: true });
   await writeFile(report, lines.join('\n'));
   console.log(section(table));
-  console.log(`SQLite 长页 ${nAnchors}/9，冻结 1A 的 B 类漏检 ${bMisses.join('、')}`);
+  const currentBMisses = [...FROZEN_FTS.b, ...bMisses].filter((id) => !scores.sqlite_fts.get(id)?.hit);
+  console.log(`SQLite 长页 ${nAnchors}/9，本轮 B 类漏检 ${currentBMisses.join('、') || '无'}`);
   for (const problem of quality.sqliteProblems) console.log('SQLite 基线核对失败，' + problem);
   for (const problem of quality.hybridProblems ?? []) console.log('Hybrid 质量核对失败，' + problem);
   process.exitCode = quality.exitCode;

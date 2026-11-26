@@ -79,3 +79,21 @@ test('improving B by one, all nine long-page anchors and verified vector citatio
   assert.deepEqual(result.hybridProblems, ['B 类命中低于 4/5', '长页定位未达 9/9', '缺少已核验的纯向量引文']);
   assert.equal(result.exitCode, 1);
 });
+
+test('the explicit FTS repair reference expects B1 to improve and keeps the historical and Hybrid checks intact', () => {
+  const { sqlite, hybrid } = scores();
+  assert.equal(judgeRetrievalQuality(sqlite, undefined, false, 'fts-repair').exitCode, 1);
+  sqlite.grades.set('B1', { ...grades.get('B1')!, hit: true, heading: true });
+  assert.equal(judgeRetrievalQuality(sqlite, undefined, false).exitCode, 1);
+  assert.equal(judgeRetrievalQuality(sqlite, undefined, false, 'fts-repair').exitCode, 0);
+  assert.equal(judgeRetrievalQuality(sqlite, undefined, true, 'fts-repair').exitCode, 2);
+  assert.equal(judgeRetrievalQuality(sqlite, hybrid, true, 'fts-repair').exitCode, 0);
+  hybrid.grades.set('E2', { ...grades.get('E2')!, falseRecall: true });
+  assert.deepEqual(judgeRetrievalQuality(sqlite, hybrid, true, 'fts-repair').hybridProblems, ['E 类误召回超过 4/5']);
+  sqlite.grades.set('B1', { ...grades.get('B1')!, hit: true, heading: false });
+  sqlite.grades.set('E2', { ...grades.get('E2')!, falseRecall: true });
+  assert.deepEqual(judgeRetrievalQuality(sqlite, undefined, false, 'fts-repair').sqliteProblems, [
+    'B1 与FTS 修复预期不同',
+    'E2 与FTS 修复预期不同',
+  ]);
+});
