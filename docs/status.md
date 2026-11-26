@@ -19,7 +19,7 @@
 
 - **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A 已签收，下一批待用户决定。
 - **最近 5 个批次结论**：
-  - `FE02`：前端拆分与本地 Edge 首轮验收通过；提交 `ee02a10` 的 Windows Node 22.x、24.x 作业均成功。[远端 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842) · [验收记录](reports/FE02-20261125-review.md)。
+  - **FE02 整体 PASS（2026-11-26）**。Round 2 独立复验已签发，覆盖前端拆分、Edge 冒烟、全量测试及文档门禁。提交 `ee02a10` 的 Windows Node 22.x、24.x 作业均成功。[远端 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842) · [验收记录](reports/FE02-20261125-review.md)。
   - `ENG05`（2026-11-24，**PASS**）：清零 3 类 9 处 ESLint 疑点（`770 → 761`、`0` 错），6 条规则升回 `error`，校准 `acceptance.md` 锚点使 `docs-archive-check` 4/4 `OK`，新增 `eng05-hygiene`；[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416)（`fae6724`）全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
   - `FE01`（2026-11-24，**PASS**）：`app/api.ts` 拆为 8 份域模块（130 运行时导出与 105 类型兼容）、轻路由与 `useLatestAsync`/`useScopedQuery` 落地、6 文件告警 `55 → 0`；隔离 `check` 1,062/1,062、Edge 冒烟 0 错，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)（`e528039`）全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
   - `CLOSE01`（2026-11-23，**PASS**）：63 项 A 类与 46 项 R 类逐项核对证据，并发保存顺序断言与恢复门禁通过，移交维护事项。[独立复核](reports/CLOSE01-review.md)。
@@ -27,9 +27,9 @@
 - **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续候选（`FE03` `PromptLibraryPage`/`DraftReviewPage` 或波次 3 `BE01` `commits.ts`）与 `LLM-Wiki` 后续阶段待用户决策。`tests/prompt-ai-http.mjs` B08 历史 mock 漂移留档；62 页 PDF 草稿待资料所有者决定入库，正式 Wiki/Prompt 写入须人工确认。
 - **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
 
-## FE02 前端页面拆分（远端 CI 已核验，2026-11-26）
+## FE02 前端页面拆分（Round 2 独立验收 PASS，2026-11-26）
 
-InboxTab 与 MeetingPage 拆分后的 8 个模块均小于 40 KiB、800 行，无循环依赖。定向测试 44/44、隔离 Edge 冒烟通过。本机 Node 25 的 SQLite ABI 限制见首轮报告；提交 `ee02a10` 的 Windows Node 22.x 和 24.x 作业已完成全套 CI。[任务卡](handoffs/FE02-20261125-task.md) · [施工](reports/FE02-20261125-builder.md) · [独立验收及 CI 回填](reports/FE02-20261125-review.md)
+InboxTab 与 MeetingPage 拆分后的 8 个模块均小于 40 KiB、800 行，无循环依赖。定向测试 44/44、隔离 Edge 冒烟通过。本机 Node 25 的 SQLite ABI 限制见首轮报告；提交 `ee02a10` 的 Windows Node 22.x 和 24.x 作业已完成全套 CI。[任务卡](handoffs/FE02-20261125-task.md) · [施工](reports/FE02-20261125-builder.md) · [两轮独立验收](reports/FE02-20261125-review.md)
 
 ## ENG05 小范围收敛完成（PASS，2026-11-24）
 
