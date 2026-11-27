@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 2B-2 PASS（2026-11-27）**。产品提交 `dbd7b4d`。直接命中后可补充最多两篇一跳邻页，问答入模与原文引用、范围、预算和关闭开关经独立复验。全仓 1,148/1,148。下一阶段为 2B-3 向量重复提示与整批验收。[任务卡](handoffs/LLMWIKI-2B-2.md) · [施工](reports/2B-2-builder.md) · [独立验收](reports/2B-2-review.md)
+- **LLM-Wiki Batch 2B 整体 PASS（2026-11-27）**。关系索引与反链、一跳检索、普通 Raw 草稿显式向量查重均已签收。产品提交 `098fb5a`。PDF 与失效媒体边界通过独立浏览器及 HTTP 复验，全仓 1,151/1,151。[2B-3 任务卡](handoffs/LLMWIKI-2B-3.md) · [施工](reports/2B-3-builder.md) · [整批独立验收](reports/2B-3-review.md)
+
+- **LLM-Wiki 2B-2 PASS（2026-11-27）**。产品提交 `dbd7b4d`。直接命中后可补充最多两篇一跳邻页，问答入模与原文引用、范围、预算和关闭开关经独立复验。全仓 1,148/1,148。向量重复提示与整批结论见 2B-3。[任务卡](handoffs/LLMWIKI-2B-2.md) · [施工](reports/2B-2-builder.md) · [独立验收](reports/2B-2-review.md)
 
 - **LLM-Wiki 2B-1 PASS（2026-11-27）**。Wiki 详情可查看并打开反向链接。产品提交 `4263606`，已验证索引重建、离线回退与真实浏览器导航。冻结 25 问双路 50 行与基线一致。后续一跳检索见 2B-2。[任务卡](handoffs/LLMWIKI-2B-1.md) · [施工](reports/2B-1-builder.md) · [独立验收](reports/2B-1-review.md)
 
@@ -21,7 +23,7 @@
 
 - **LLM-Wiki Batch 1A**：1A-4 与整批通过独立验收。25 问 A/B/C/D 命中分别为 7/7、3/5、5/5、3/3，E 误召回 4/5 与 Legacy 持平。长页 9/9；独立千页建库 1,584.05 ms、查询 P95 32.29 ms，实盘回滚通过；全仓测试 1,099/1,099。B1/B4 漏检及四项负样本误召回留档，后续阶段未启动。[任务卡](handoffs/LLMWIKI-1A-4.md) · [逐题快照](../evals/reports/batch-1a-baseline.md) · [独立验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A、2B-1、2B-2 与 FE03 已签收。2B-3 待授权。[FE03 任务卡](handoffs/FE03-task.md)
+- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A、2B 与 FE03 已签收。下一批待用户决定。[FE03 任务卡](handoffs/FE03-task.md)
 - **工程批次结论**：
   - **FE03 整体 PASS（2026-11-26）**。Prompt 库和草稿审阅入口分别缩至 315 和 458 行，15 个产品模块均低于 40 KiB、800 行。独立 Edge 实测覆盖 Prompt 版本与草稿人工确认写入，隔离全量 1,143/1,143。产品提交 `cf9ba5e` 的 Windows Node 22.x、24.x CI 双绿。[独立验收](reports/FE03-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887)。
   - **FE02 整体 PASS（2026-11-26）**。Round 2 独立复验已签发，覆盖前端拆分、Edge 冒烟、全量测试及文档门禁。提交 `ee02a10` 的 Windows Node 22.x、24.x 作业均成功。[远端 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842) · [验收记录](reports/FE02-20261125-review.md)。
