@@ -45,6 +45,7 @@ export const duplicateDimension: Record<string, string> = {
   category: '分类',
   tags: '标签',
   content: '内容相似',
+  semantic: '语义相似',
 };
 
 export function editedTemplateFields(

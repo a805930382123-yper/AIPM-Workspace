@@ -100,17 +100,18 @@ if (production)
   });
 const lock = await acquireInstanceLock(root, port, production ? 'production' : 'development');
 process.once('exit', lock.releaseMetadata);
+const assertSafeEmbeddingQuery = async (query: unknown) => {
+  const config = await loadConfig();
+  const secrets = [config.apiKey, ...(config.knownSecrets ?? [])];
+  // A complete environment configuration skips the local file in loadLlmConfig.
+  if (Object.values(LLM_ENV).every((name) => Boolean(process.env[name]?.trim()))) {
+    const local = await readLocalEnvFile(configFile);
+    secrets.push(local[LLM_ENV.apiKey] ?? '');
+  }
+  assertNoKnownSecret(query, secrets);
+};
 const store: RawStore = new RawStore(root, (kind, raw) =>
-  recordRawReview(wikiStore, store, kind, raw, async (queries) => {
-    const config = await loadConfig();
-    const secrets = [config.apiKey, ...(config.knownSecrets ?? [])];
-    // A complete environment configuration skips the local file in loadLlmConfig.
-    if (Object.values(LLM_ENV).every((name) => Boolean(process.env[name]?.trim()))) {
-      const local = await readLocalEnvFile(configFile);
-      secrets.push(local[LLM_ENV.apiKey] ?? '');
-    }
-    assertNoKnownSecret(queries, secrets);
-  }),
+  recordRawReview(wikiStore, store, kind, raw, assertSafeEmbeddingQuery),
 );
 const assetStore = new AssetStore(root);
 const wikiSearch: WikiSearchIndexer | undefined =
@@ -743,6 +744,7 @@ registerKnowledgeRoutes(app, {
   wiki: wikiStore,
   provider: activeProvider,
   inspections: knowledgeInspections,
+  assertSafeEmbeddingQuery,
 });
 registerAuditRoutes(app, { root, audits, wiki: wikiStore, raws: store, provider: activeProvider });
 registerPromptRoutes(app, { store: prompts });

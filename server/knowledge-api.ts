@@ -7,6 +7,9 @@ import { WikiError, type WikiRecord, type WikiStore } from '../services/wiki/sto
 import { KnowledgeWorkflowStore } from '../services/wiki/knowledge-workflows.ts';
 import type { LlmProvider } from '../services/llm/provider.ts';
 import { findDuplicateCandidates } from '../services/search/duplicates.ts';
+import { embeddingInput } from '../services/search/embedding-provider.ts';
+import { wikiFileHash } from '../services/search/indexer.ts';
+import { assertRawNotMeeting } from '../services/meeting/source-policy.ts';
 import { validateHumanReview } from './llm-validation.ts';
 import { validateBaseRevision } from './wiki-validation.ts';
 import { wikiFreshnessEnabled } from '../services/wiki/freshness.ts';
@@ -23,6 +26,7 @@ export function registerKnowledgeRoutes(
     wiki: WikiStore;
     provider: () => LlmProvider | undefined;
     inspections?: KnowledgeInspectionService;
+    assertSafeEmbeddingQuery?: (query: string) => Promise<void>;
   },
 ) {
   const workflows = new KnowledgeWorkflowStore(deps.root, deps.wiki, deps.raws);
@@ -196,16 +200,22 @@ export function registerKnowledgeRoutes(
   };
   const duplicateResponse = async (req: express.Request, res: express.Response) => {
     await ready;
+    const semantic = req.method === 'POST';
+    const baseRevision = semantic ? validateBaseRevision(req.body?.baseRevision) : undefined;
+    if (semantic && req.body?.allowEmbedding !== true)
+      throw new WikiError('DUPLICATE_EMBEDDING_CONSENT_REQUIRED', '请确认将本页内容发送至向量服务。');
     const draftId = Array.isArray(req.params.draftId) ? req.params.draftId[0] : req.params.draftId;
     const pageId = Array.isArray(req.params.pageId) ? req.params.pageId[0] : req.params.pageId;
     const draft = await deps.drafts.get(draftId);
     if (!draft) throw new WikiError('DRAFT_NOT_FOUND', '没有找到这份草稿。', 404);
     const storedPage = draft.pages.find((item) => item.pageId === pageId);
     if (!storedPage) throw new WikiError('PAGE_NOT_FOUND', '没有找到这条知识建议。', 404);
-    const pageTitle = typeof req.query.title === 'string' ? req.query.title : storedPage.title;
-    const pageCategory = typeof req.query.category === 'string' ? req.query.category : storedPage.category;
+    if (semantic && (baseRevision !== draft.revision || draft.status !== 'pending_confirmation' || draft.deferredAt))
+      throw new WikiError('DRAFT_REVISION_CONFLICT', '草稿已变化或不可编辑，请刷新后重试。', 409);
+    const pageTitle = !semantic && typeof req.query.title === 'string' ? req.query.title : storedPage.title;
+    const pageCategory = !semantic && typeof req.query.category === 'string' ? req.query.category : storedPage.category;
     const pageContent =
-      typeof req.query.content === 'string'
+      !semantic && typeof req.query.content === 'string'
         ? req.query.content
         : [
             storedPage.one_line_definition,
@@ -213,16 +223,90 @@ export function registerKnowledgeRoutes(
             ...storedPage.ai_organized,
           ].join('\n');
     const raw = await deps.raws.get(draft.rawId);
+    const visible = await deps.wiki.allVisibleRecords();
     const candidates = findDuplicateCandidates(
       { title: pageTitle, category: pageCategory, tags: raw?.tags ?? [], content: pageContent },
-      await deps.wiki.allRecords(),
+      visible,
     );
+    let semanticStatus: 'checked' | 'unavailable' | undefined;
+    if (semantic) {
+      semanticStatus = 'unavailable';
+      const index = deps.wiki.searchIndex;
+      const assertSafe = deps.assertSafeEmbeddingQuery;
+      if (
+        !draft.pdfInput &&
+        index &&
+        assertSafe &&
+        visible.length &&
+        /[\p{L}\p{N}]/u.test(`${pageTitle}${pageContent}`)
+      ) {
+        try {
+          const input = embeddingInput(pageTitle, '草稿知识卡片', '内容', pageContent);
+          const hits = await index.rankVectorChunks(
+            input,
+            [],
+            {
+              includeSources: true,
+              pageIds: visible.map(({ id }) => id),
+              authorizeQuery: async () => {
+                const current = await deps.drafts.get(draft.id);
+                const source = await deps.raws.get(draft.rawId);
+                if (
+                  current?.revision !== baseRevision ||
+                  current?.status !== 'pending_confirmation' ||
+                  current.deferredAt ||
+                  current.pdfInput ||
+                  !source ||
+                  source.bodySha256 !== draft.rawSha256 ||
+                  storedPage.source_evidence.some(({ rawId }) => rawId !== draft.rawId)
+                )
+                  throw new Error('Draft or source changed before embedding');
+                assertRawNotMeeting(source);
+                await deps.drafts.assertEvidenceStillValid(current, source.body, [storedPage]);
+                await assertSafe(input);
+              },
+            },
+            0.7,
+            15,
+          );
+          const vectorMatches = await deps.wiki.withLock(async () => {
+            const current = new Map((await deps.wiki.allVisibleRecords()).map((page) => [page.id, page]));
+            for (let i = candidates.length - 1; i >= 0; i--) {
+              if (!current.has(candidates[i].wiki.id)) candidates.splice(i, 1);
+            }
+            const matches = [];
+            for (const { chunk, fileHash } of hits) {
+              const page = current.get(chunk.pageId);
+              const file = page && (await deps.wiki.readPageFile(page.id));
+              if (!page || !file || wikiFileHash(file) !== fileHash) continue;
+              matches.push({ page, score: chunk.score });
+              if (matches.length === 5) break;
+            }
+            return matches;
+          });
+          for (const { page, score } of vectorMatches) {
+            const match = {
+              dimension: 'semantic' as const,
+              score,
+              reason: `系统提示，段落向量相似度 ${(score * 100).toFixed(1)}%`,
+            };
+            const existing = candidates.find(({ wiki }) => wiki.id === page.id);
+            if (existing) existing.matches.push(match);
+            else candidates.push({ wiki: page, score: 0, matches: [match] });
+          }
+          semanticStatus = 'checked';
+        } catch {
+          // Vector hints are optional. Lexical candidates still support the existing review flow.
+        }
+      }
+    }
     res.json({
       draftId: draft.id,
       pageId: storedPage.pageId,
       draftRevision: draft.revision,
       decision: storedPage.reviewDecision ?? null,
       targetWikiId: storedPage.updateTargetWikiId ?? null,
+      ...(semanticStatus ? { semanticStatus } : {}),
       candidates: candidates.map((item) => ({ wiki: item.wiki, score: item.score, matches: item.matches })),
     });
   };
@@ -235,6 +319,13 @@ export function registerKnowledgeRoutes(
     }
   });
   app.get('/api/knowledge/drafts/:draftId/pages/:pageId/duplicates', async (req, res, next) => {
+    try {
+      await duplicateResponse(req, res);
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.post('/api/knowledge/drafts/:draftId/pages/:pageId/duplicates', async (req, res, next) => {
     try {
       await duplicateResponse(req, res);
     } catch (error) {

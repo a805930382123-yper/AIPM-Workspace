@@ -153,6 +153,7 @@ export class WikiSearchIndexer {
     names: string[],
     options: SearchOptions & VectorQueryAuthorization,
     minScore: number,
+    hintPageLimit?: number,
   ) {
     const db = this.read((db) => db);
     const provider = await this.embeddingProvider().catch(() => {
@@ -162,7 +163,7 @@ export class WikiSearchIndexer {
     if (this.dirty || this.db !== db) throw new EmbeddingError('EMBEDDING_STALE');
     const lock = readEmbeddingLock(db);
     if (!matchesEmbeddingProvider(lock, provider)) {
-      void this.backfillMissingEmbeddings();
+      if (hintPageLimit === undefined) void this.backfillMissingEmbeddings();
       throw new EmbeddingError('EMBEDDING_VERSION_CHANGED');
     }
     const scope = { ...options, allowedPageIds: options.pageIds };
@@ -217,12 +218,18 @@ export class WikiSearchIndexer {
     )
       throw new EmbeddingError('EMBEDDING_INVALID_RESPONSE');
     if (dimensions !== lock.dimensions || provider.getVersionKey(dimensions) !== lock.version) {
-      setEmbeddingLock(db, { ...lock, dimensions, version: provider.getVersionKey(dimensions) });
-      this.vectors.clear();
-      void this.backfillMissingEmbeddings();
+      if (hintPageLimit === undefined) {
+        setEmbeddingLock(db, { ...lock, dimensions, version: provider.getVersionKey(dimensions) });
+        this.vectors.clear();
+        void this.backfillMissingEmbeddings();
+      }
       throw new EmbeddingError('EMBEDDING_VERSION_CHANGED');
     }
-    return readVectorHits(db, this.vectors.rank(vector, scope, minScore), names);
+    return readVectorHits(
+      db,
+      this.vectors.rank(vector, scope, minScore, hintPageLimit, hintPageLimit !== undefined),
+      names,
+    );
   }
 
   reconcileOnStartup(): Promise<boolean> {

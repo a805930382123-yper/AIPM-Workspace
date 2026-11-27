@@ -64,9 +64,16 @@ export class WikiVectorCache {
     return !this.eligible(options).next().done;
   }
 
-  rank(query: Float32Array, options: VectorSearchOptions, minScore: number, topK = 30): VectorHit[] {
+  rank(
+    query: Float32Array,
+    options: VectorSearchOptions,
+    minScore: number,
+    topK = 30,
+    distinctPages = false,
+  ): VectorHit[] {
     const scored: VectorHit[] = [];
-    for (const { chunkId, vec } of this.eligible(options)) {
+    const bestByPage = distinctPages ? new Map<string, VectorHit>() : undefined;
+    for (const { chunkId, pageId, vec } of this.eligible(options)) {
       // Independent accumulators let the CPU overlap multiply-add work on long vectors.
       let a = 0;
       let b = 0;
@@ -83,9 +90,17 @@ export class WikiVectorCache {
       let score = a + b + (c + d);
       for (; i < length; i++) score += query[i] * vec[i];
       score = Math.max(-1, Math.min(1, score));
-      if (score >= minScore) scored.push({ chunkId, score });
+      if (score < minScore || !Number.isFinite(score)) continue;
+      if (!bestByPage) scored.push({ chunkId, score });
+      else {
+        const prior = bestByPage.get(pageId);
+        if (!prior || score > prior.score || (score === prior.score && chunkId.localeCompare(prior.chunkId) < 0))
+          bestByPage.set(pageId, { chunkId, score });
+      }
     }
-    return scored.sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId)).slice(0, topK);
+    return (bestByPage ? [...bestByPage.values()] : scored)
+      .sort((a, b) => b.score - a.score || a.chunkId.localeCompare(b.chunkId))
+      .slice(0, topK);
   }
 }
 

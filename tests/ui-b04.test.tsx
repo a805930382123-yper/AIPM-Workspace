@@ -248,6 +248,7 @@ function stubFetch(
     config?: unknown;
     confirmResponse?: () => Response;
     duplicateResponse?: () => Response | Promise<Response>;
+    semanticResponse?: () => Response | Promise<Response>;
   } = {},
 ): Stub {
   let draft = options.draft ?? makeDraft();
@@ -462,6 +463,7 @@ function stubFetch(
     if (url.startsWith('/api/drafts/') && url.endsWith('/discard') && method === 'POST')
       return reply({ id: draft.id, status: 'discarded', rawId: draft.rawId });
     if (url.includes('/duplicates') && method === 'GET') return duplicateResponse();
+    if (url.includes('/duplicates') && method === 'POST' && options.semanticResponse) return options.semanticResponse();
     if (url.includes('/decision') && method === 'PATCH') {
       const pageId = url.split('/').at(-2) ?? '';
       const body = JSON.parse(String(init.body)) as { decision: 'update' | 'create' | 'defer'; targetWikiId?: string };
@@ -1057,6 +1059,94 @@ test('B04 审核页：冲突提示与部分提交面板', async () => {
     assert.ok(partial.calls.some((call) => call.url.startsWith('/api/wiki-commits/')));
   } finally {
     await stubbed.unmount();
+  }
+});
+
+test('2B-3 成果卡语义查重由人工触发，等待结果时仍可确认入库', async () => {
+  const draft = makeDraft({ outcomeDigest: 'outcome-digest' });
+  let complete!: (value: Response) => void;
+  const semanticResponse = new Promise<Response>((resolve) => (complete = resolve));
+  const stub = stubFetch({ draft, semanticResponse: () => semanticResponse });
+  let opened: string | undefined;
+  const mounted = await mount(
+    <DraftReviewPage
+      draftId={draft.id}
+      onBack={() => undefined}
+      onCommitted={async () => undefined}
+      onOpenRaw={() => undefined}
+      onOpenWiki={(id) => (opened = id)}
+    />,
+  );
+  try {
+    const card = required(mounted.container.querySelector('article[aria-label="成果 库存周转"]'), '成果卡');
+    const confirm = required(byText('确认所选成果入库', mounted.container), '确认按钮');
+    assert.equal(confirm.disabled, false);
+    assert(!stub.calls.some(({ method }) => method === 'POST'));
+    await click(required(byText('发送本页内容进行语义查重', card), '语义查重'));
+    const posts = stub.calls.filter(({ method }) => method === 'POST');
+    assert.equal(posts.length, 1);
+    assert.match(posts[0].url, /\/pages\/page-2\/duplicates$/);
+    assert.deepEqual(JSON.parse(posts[0].body!), { baseRevision: draft.revision, allowEmbedding: true });
+    assert.equal(confirm.disabled, false);
+    await act(async () => {
+      complete(
+        reply({
+          draftId: draft.id,
+          pageId: 'page-2',
+          draftRevision: draft.revision,
+          decision: null,
+          targetWikiId: null,
+          semanticStatus: 'checked',
+          candidates: [
+            {
+              wiki: { id: 'semantic-wiki', title: '资金占用周期', sources: [] },
+              score: 0,
+              matches: [{ dimension: 'semantic', score: 0.91, reason: '系统提示，段落向量相似度 91.0%' }],
+            },
+          ],
+        }),
+      );
+    });
+    assert.match(card.textContent ?? '', /资金占用周期.*语义相似.*系统提示.*91\.0%/);
+    assert(!byText('生成旧 Wiki 更新预览', card));
+    await click(required(byText('打开 Wiki', card), '候选 Wiki'));
+    assert.equal(opened, 'semantic-wiki');
+    assert.equal(confirm.disabled, false);
+    assert(!stub.calls.some(({ method }) => method === 'PATCH'));
+  } finally {
+    await mounted.unmount();
+  }
+});
+
+test('2B-3 PDF 成果卡只提供词法刷新', async () => {
+  const draft = makeDraft({
+    outcomeDigest: 'pdf-outcome-digest',
+    pdfInput: {
+      startPage: 1,
+      endPage: 1,
+      pageCount: 1,
+      assetId: makeRaw().id,
+      assetSha256: 'b'.repeat(64),
+      basisDigest: 'c'.repeat(64),
+    },
+  });
+  const stub = stubFetch({ draft });
+  const mounted = await mount(
+    <DraftReviewPage
+      draftId={draft.id}
+      onBack={() => undefined}
+      onCommitted={async () => undefined}
+      onOpenRaw={() => undefined}
+    />,
+  );
+  try {
+    const card = required(mounted.container.querySelector('article[aria-label="成果 库存周转"]'), 'PDF 成果卡');
+    assert(!byText('发送本页内容进行语义查重', card));
+    await click(required(byText('刷新重复候选', card), '词法刷新'));
+    assert(stub.calls.some(({ url, method }) => url.includes('/pages/page-2/duplicates') && method === 'GET'));
+    assert(!stub.calls.some(({ method }) => method === 'POST'));
+  } finally {
+    await mounted.unmount();
   }
 });
 

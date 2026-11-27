@@ -140,6 +140,7 @@ export type DuplicateResult = {
   draftRevision: number;
   decision: 'update' | 'create' | 'defer' | null;
   targetWikiId: string | null;
+  semanticStatus?: 'checked' | 'unavailable';
   candidates: Array<{
     wiki: Wiki;
     score: number;
@@ -564,7 +565,14 @@ export const duplicateCandidates = (
   draftId: string,
   pageId: string,
   edited?: { title: string; category: string; content: string },
+  semanticRevision?: number,
 ) => {
+  const path = `/api/knowledge/drafts/${encodeURIComponent(draftId)}/pages/${encodeURIComponent(pageId)}/duplicates`;
+  if (semanticRevision !== undefined)
+    return api<DuplicateResult>(path, {
+      method: 'POST',
+      body: JSON.stringify({ baseRevision: semanticRevision, allowEmbedding: true }),
+    });
   const query = new URLSearchParams();
   if (edited) {
     query.set('title', edited.title);
@@ -573,9 +581,7 @@ export const duplicateCandidates = (
   }
   const encoded = query.toString();
   const suffix = encoded ? `?${encoded}` : '';
-  return api<DuplicateResult>(
-    `/api/knowledge/drafts/${encodeURIComponent(draftId)}/pages/${encodeURIComponent(pageId)}/duplicates${suffix}`,
-  );
+  return api<DuplicateResult>(`${path}${suffix}`);
 };
 
 export const savePageDecision = (

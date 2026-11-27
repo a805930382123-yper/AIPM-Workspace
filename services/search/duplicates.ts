@@ -3,7 +3,11 @@ import type { WikiRecord } from '../wiki/store.ts';
 export type DuplicateCandidate = {
   wiki: WikiRecord;
   score: number;
-  matches: Array<{ dimension: 'title' | 'aliases' | 'category' | 'tags' | 'content'; score: number; reason: string }>;
+  matches: Array<{
+    dimension: 'title' | 'aliases' | 'category' | 'tags' | 'content' | 'semantic';
+    score: number;
+    reason: string;
+  }>;
 };
 
 const norm = (value: string) =>

@@ -9,9 +9,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test, { type TestContext } from 'node:test';
 import { setTimeout } from 'node:timers/promises';
+import express from 'express';
+import { registerKnowledgeRoutes } from '../server/knowledge-api.ts';
+import { registerB04Routes } from '../server/llm-api.ts';
 import { KnowledgeAnswerService } from '../services/llm/knowledge-answers.ts';
 import { retrieveKnowledgeContextDetailed } from '../services/llm/knowledge-maintenance.ts';
-import type { LlmProvider } from '../services/llm/provider.ts';
+import { assertNoKnownSecret, type LlmProvider } from '../services/llm/provider.ts';
+import { LLMService } from '../services/llm/service.ts';
 import { PromptAiService } from '../services/prompt-ai/service.ts';
 import { PromptStore } from '../services/prompt/store.ts';
 import {
@@ -30,6 +34,7 @@ import {
 } from '../services/search/sqlite-store.ts';
 import { assertWikiSourcesAllowed } from '../services/wiki/source-lineage.ts';
 import type { WikiInput } from '../services/wiki/store.ts';
+import type { DuplicateResult } from '../app/api/llm.ts';
 import { lwFixture } from './lw01-fixture.ts';
 import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 
@@ -308,6 +313,270 @@ test('memory dot products keep the best 30 after intersecting source, allow and 
   ]);
   cache.removeByPageId('allowed');
   assert.deepEqual(cache.rank(query, { allowedPageIds: ['allowed'] }, 0.42), []);
+});
+
+test('2B-3 duplicate HTTP hints are scoped, optional, read-only and excluded from confirmation', async (t) => {
+  const f = await fixture(t);
+  const raw = await f.rawStore.create({
+    title: '渠道经营月记',
+    sourceType: 'report',
+    sourceName: '合成数据',
+    tags: [],
+    body: '2026年渠道覆盖120家，按签约门店口径。',
+  });
+  const draft = await f.accept(await f.generate(raw.id));
+  const [page] = draft.pages;
+  const lexical = await f.wiki.create(
+    wikiInput(
+      '同期门店台账',
+      [page.one_line_definition, ...page.source_facts.map(({ text }) => text), ...page.ai_organized].join('\n'),
+    ),
+  );
+  const wiki = (title: string, body: string) => f.wiki.create({ ...wikiInput(title, body), category: 'sales' });
+  const semantic = await wiki('销售点位渗透率', '## 概览\n\n统计终端进入占比。\n\n## 说明\n\n衡量铺设网点的广度。');
+  const weak = await wiki('节庆备货', '销售季临时提高仓库储量。');
+  const stale = await wiki('待更新页', '正文已经过时。');
+  const hidden = await wiki('受限内容', '此页在向量生成后变为不可见。');
+  const extra = [];
+  for (let i = 0; i < 4; i++) extra.push(await wiki(`其他相近主题${i}`, '分不同门店查看渗透。'));
+  const app = express();
+  app.use(express.json());
+  registerB04Routes(app, {
+    root: f.root,
+    rulesDir: 'rules',
+    provider: () => f.provider,
+    llm: new LLMService('rules'),
+    runner: f.runner,
+    jobs: f.jobs,
+    drafts: f.drafts,
+    commits: f.commits,
+    rawStates: f.rawStates,
+    rawStore: f.rawStore,
+    wikiStore: f.wiki,
+  });
+  registerKnowledgeRoutes(app, {
+    root: f.root,
+    raws: f.rawStore,
+    drafts: f.drafts,
+    wiki: f.wiki,
+    provider: () => f.provider,
+    assertSafeEmbeddingQuery: async (input) => assertNoKnownSecret(input, ['synthetic-chat-secret']),
+  });
+  app.use(((error, _req, res, next) => {
+    if (res.headersSent) return next(error);
+    res.status(error.status ?? 500).json({ error: { code: error.code, message: error.message } });
+  }) as express.ErrorRequestHandler);
+  const server = app.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  t.after(() => {
+    server.close();
+    server.closeAllConnections();
+  });
+  const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+  const duplicatePath = `/api/knowledge/drafts/${draft.id}/pages/${page.pageId}/duplicates`;
+  const request = (url: string, body?: unknown) =>
+    fetch(
+      base + url,
+      body === undefined
+        ? {}
+        : {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+          },
+    );
+  const check = async (consent = { baseRevision: draft.revision, allowEmbedding: true }) => {
+    const response = await request(duplicatePath + '?title=forged-title&content=forged-content', consent);
+    return { status: response.status, result: (await response.json()) as DuplicateResult };
+  };
+  const getLexical = async () => {
+    const response = await request(duplicatePath);
+    assert.equal(response.status, 200);
+    return (await response.json()) as DuplicateResult;
+  };
+  const initial = await getLexical();
+  assert.deepEqual(
+    initial.candidates.map(({ wiki }) => wiki.id),
+    [lexical.id],
+  );
+  assert.equal(initial.semanticStatus, undefined);
+  assert.equal((await check({ baseRevision: draft.revision, allowEmbedding: false })).status, 400);
+  assert.equal((await check({ baseRevision: draft.revision + 1, allowEmbedding: true })).status, 409);
+  assert.equal((await check()).result.semanticStatus, 'unavailable');
+  assert.equal(f.wire.requests.length, 0);
+
+  const answerVectors = (res: ServerResponse, { input }: WireRequest) => {
+    res.end(
+      JSON.stringify({
+        data: input.map((part, index) => {
+          const x = part.includes('章节: 草稿知识卡片')
+            ? 1
+            : part.includes(hidden.title)
+              ? 0.99
+              : part.includes(stale.title)
+                ? 0.98
+                : part.includes(lexical.title)
+                  ? 0.96
+                  : part.includes(semantic.title)
+                    ? part.includes('概览')
+                      ? 0.85
+                      : 0.91
+                    : part.includes(weak.title)
+                      ? 0.69
+                      : 0.81;
+          return { index, embedding: [x, Math.sqrt(1 - x * x)] };
+        }),
+      }),
+    );
+  };
+  f.wire.handle(answerVectors);
+  f.enable();
+  await f.index.backfillMissingEmbeddings();
+  const fileFor = (id: string) => path.join(f.root, 'knowledge', 'wiki', `${id}.md`);
+  await writeFile(fileFor(stale.id), f.wiki.pageContent({ ...stale, body: '磁盘文件已变化。' }));
+  await writeFile(fileFor(hidden.id), f.wiki.pageContent({ ...hidden, sources: [randomUUID()] }));
+  const draftFile = path.join(f.root, 'drafts', `${draft.id}.json`);
+  const draftBefore = await readFile(draftFile);
+  const files = [lexical, semantic, stale, hidden, weak, ...extra];
+  const wikiBefore = await Promise.all(files.map(({ id }) => readFile(fileFor(id))));
+  const rowsBefore = f.rows();
+  const lockBefore = f.index.read(readEmbeddingLock);
+  const requestsBefore = f.wire.requests.length;
+  assert.deepEqual((await getLexical()).candidates, initial.candidates);
+  assert.equal(f.wire.requests.length, requestsBefore);
+
+  const checked = await check();
+  assert.equal(checked.status, 200);
+  assert.equal(checked.result.semanticStatus, 'checked');
+  assert.equal(checked.result.decision, null);
+  assert.equal(checked.result.targetWikiId, null);
+  assert.equal(checked.result.candidates.length, 5);
+  const both = checked.result.candidates.find(({ wiki }) => wiki.id === lexical.id)!;
+  assert.equal(both.score, initial.candidates[0].score);
+  assert.deepEqual(both.matches.slice(0, -1), initial.candidates[0].matches);
+  assert.equal(both.matches.at(-1)?.dimension, 'semantic');
+  const positive = checked.result.candidates.find(({ wiki }) => wiki.id === semantic.id)!;
+  assert.equal(positive.score, 0);
+  assert.equal(positive.matches.length, 1);
+  assert.equal(positive.matches[0].dimension, 'semantic');
+  assert(Math.abs(positive.matches[0].score - 0.91) < 0.0001);
+  assert.match(positive.matches[0].reason, /系统提示.*91\.0%/);
+  assert(!checked.result.candidates.some(({ wiki }) => [weak.id, hidden.id, stale.id].includes(wiki.id)));
+  assert.equal(f.wire.requests.length, requestsBefore + 1);
+  const [sent] = f.wire.requests.at(-1)!.input;
+  assert.match(sent, /渠道覆盖.*\n章节: 草稿知识卡片/);
+  assert.match(sent, /按签约门店口径/);
+  assert.doesNotMatch(sent, /forged-title|forged-content|渠道经营月记/);
+
+  f.wire.handle((res) => res.writeHead(503).end());
+  assert.deepEqual((await check()).result, { ...initial, semanticStatus: 'unavailable' });
+  f.wire.handle((res, req) => reply(res, req, 3));
+  assert.deepEqual((await check()).result, { ...initial, semanticStatus: 'unavailable' });
+  const beforeDisabled = f.wire.requests.length;
+  f.enable(f.wire.provider({ EMBEDDING_MODEL: 'different-model' }));
+  assert.deepEqual((await check()).result, { ...initial, semanticStatus: 'unavailable' });
+  assert.equal(f.wire.requests.length, beforeDisabled);
+  f.enable();
+  const getRaw = f.rawStore.get.bind(f.rawStore);
+  const restricted = t.mock.method(f.rawStore, 'get', async (id: string) =>
+    id === raw.id
+      ? {
+          ...raw,
+          origin: {
+            kind: 'meeting',
+            meeting_id: randomUUID(),
+            import_id: randomUUID(),
+            original_sha256: 'a'.repeat(64),
+            registered_confidentiality: 'Internal',
+            processing_policy: 'meeting_local_only',
+          },
+        }
+      : getRaw(id),
+  );
+  assert.deepEqual((await check()).result, { ...initial, semanticStatus: 'unavailable' });
+  restricted.mock.restore();
+  const secretDraft = { ...draft, pages: [{ ...page, one_line_definition: 'synthetic-chat-secret' }] };
+  await writeFile(draftFile, JSON.stringify(secretDraft));
+  const secretResult = await check();
+  assert.equal(secretResult.status, 200);
+  assert.equal(secretResult.result.semanticStatus, 'unavailable');
+  assert.equal(f.wire.requests.length, beforeDisabled);
+  const staleMedia = {
+    ...page.source_evidence[0],
+    media: { mediaId: 'd'.repeat(64), imageIndex: 1, textSha256: 'e'.repeat(64) },
+  };
+  const staleEvidenceDraft = { ...draft, pages: [{ ...page, source_evidence: [staleMedia] }] };
+  await writeFile(draftFile, JSON.stringify(staleEvidenceDraft));
+  assert.deepEqual((await check()).result, { ...initial, semanticStatus: 'unavailable' });
+  await writeFile(draftFile, draftBefore);
+  const searchEngine = process.env.SEARCH_ENGINE;
+  try {
+    process.env.SEARCH_ENGINE = 'sqlite_fts';
+    assert.deepEqual((await check()).result, { ...initial, semanticStatus: 'unavailable' });
+  } finally {
+    if (searchEngine === undefined) delete process.env.SEARCH_ENGINE;
+    else process.env.SEARCH_ENGINE = searchEngine;
+  }
+  assert.equal(f.wire.requests.length, beforeDisabled);
+  assert.deepEqual(await readFile(draftFile), draftBefore);
+  assert.deepEqual(await Promise.all(files.map(({ id }) => readFile(fileFor(id)))), wikiBefore);
+  assert.deepEqual(f.rows(), rowsBefore);
+  assert.deepEqual(f.index.read(readEmbeddingLock), lockBefore);
+
+  const pdfDraft = await f.drafts.createPdf({
+    id: randomUUID(),
+    raw,
+    binding: {
+      startPage: 1,
+      endPage: 1,
+      pageCount: 1,
+      assetId: randomUUID(),
+      assetSha256: 'b'.repeat(64),
+      basisDigest: 'c'.repeat(64),
+    },
+    pages: [
+      {
+        ...page,
+        pdfEvidence: [
+          { unitId: 'p1-content-1', page: 1, resultSha256: 'f'.repeat(64), text: '图像理解依据', kind: 'image' },
+        ],
+      },
+    ],
+    maintenance: draft.maintenance!,
+    provider: draft.provider,
+    callCount: 1,
+    batchCount: 1,
+  });
+  const pdfResponse = await request(
+    `/api/knowledge/drafts/${pdfDraft.id}/pages/${pdfDraft.pages[0].pageId}/duplicates`,
+    {
+      baseRevision: pdfDraft.revision,
+      allowEmbedding: true,
+    },
+  );
+  assert.equal(pdfResponse.status, 200);
+  const pdfHint = (await pdfResponse.json()) as DuplicateResult;
+  assert.equal(pdfHint.semanticStatus, 'unavailable');
+  assert.deepEqual(pdfHint.candidates, initial.candidates);
+  assert.equal(f.wire.requests.length, beforeDisabled);
+
+  // The manual outcome path can confirm this draft independently of either the hint or its failure.
+  f.wire.handle(answerVectors);
+  const confirmation = await request(`/api/drafts/${draft.id}/confirm`, {
+    baseRevision: draft.revision,
+    selectedPageIds: [page.pageId],
+    idempotencyKey: randomUUID(),
+    outcomeDigest: f.drafts.outcomeDigest(draft),
+  });
+  const result = await confirmation.json();
+  assert.equal(confirmation.status, 201, JSON.stringify(result));
+  assert.equal(result.writtenWikiIds.length, 2);
+  await f.index.backfillMissingEmbeddings();
+  assert(
+    f.wire.requests
+      .slice(beforeDisabled)
+      .every(({ input }) => !input.some((part) => part.includes('章节: 草稿知识卡片'))),
+  );
 });
 
 test('hybrid runs RRF, protects exact aliases and rejects weak vector-only hits before assembling context', async (t) => {

@@ -6,6 +6,7 @@ import type { DraftReviewPageProps } from './draft-review/draftReviewModel';
 import { useDraftReviewState } from './draft-review/useDraftReviewState';
 import { DraftAssignmentEditor } from './draft-review/DraftAssignmentEditor';
 import { DraftPageEditors } from './draft-review/DraftPageEditors';
+import { DuplicateCheckSection } from './draft-review/DuplicateCheckSection';
 
 export function DraftReviewPage(props: DraftReviewPageProps) {
   return <DraftReviewPageContent key={props.draftId} {...props} />;
@@ -96,6 +97,16 @@ function DraftReviewPageContent({
         onCommitted={onCommitted}
         advancedDirty={legacyDirty}
         advancedBusy={!!busy}
+        duplicateCheck={(page, disabled) => (
+          <DuplicateCheckSection
+            state={state}
+            view={view}
+            page={page}
+            advisory
+            disabled={disabled}
+            onOpenWiki={onOpenWiki}
+          />
+        )}
         advanced={
           <>
             {error && (

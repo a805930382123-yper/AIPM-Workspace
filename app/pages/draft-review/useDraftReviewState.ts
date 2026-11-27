@@ -59,6 +59,9 @@ export function useDraftReviewState({ draftId, onBack, onCommitted, onOpenWorkfl
   } | null>(null);
   const [idempotencyKey] = useState(() => globalThis.crypto?.randomUUID?.() ?? `key-${Date.now()}`);
   const [duplicateViews, setDuplicateViews] = useState<Record<string, DuplicateResult>>({});
+  const [semanticDuplicates, setSemanticDuplicates] = useState<
+    Record<string, { revision: number; pending?: boolean; result?: DuplicateResult; failed?: boolean }>
+  >({});
   const [duplicateErrors, setDuplicateErrors] = useState<Record<string, string>>({});
   const [savedFingerprint, setSavedFingerprint] = useState('');
 
@@ -316,12 +319,24 @@ export function useDraftReviewState({ draftId, onBack, onCommitted, onOpenWorkfl
       if (!page) throw new ApiError('没有找到这条建议。', 'PAGE_NOT_FOUND', 404);
       const result = await duplicateCandidates(draftId, pageId, duplicateInput(page));
       setDuplicateViews((current) => ({ ...current, [pageId]: result }));
+      setSemanticDuplicates((current) => {
+        const next = { ...current };
+        delete next[pageId];
+        return next;
+      });
       setDuplicateErrors((current) => {
         const next = { ...current };
         delete next[pageId];
         return next;
       });
     });
+  const checkSemanticDuplicates = async (pageId: string) => {
+    if (!view || dirty || semanticDuplicates[pageId]?.pending) return;
+    const revision = view.revision;
+    setSemanticDuplicates((current) => ({ ...current, [pageId]: { revision, pending: true } }));
+    const result = await duplicateCandidates(draftId, pageId, undefined, revision).catch(() => undefined);
+    setSemanticDuplicates((current) => ({ ...current, [pageId]: { revision, result, failed: !result } }));
+  };
   const decide = (pageId: string, decision: 'update' | 'create' | 'defer', targetWikiId?: string) =>
     run(`decision:${pageId}`, async () => {
       const saved = await patchDraft(draftId, snapshot());
@@ -479,6 +494,7 @@ export function useDraftReviewState({ draftId, onBack, onCommitted, onOpenWorkfl
     dirty,
     reviewComplete,
     duplicateViews,
+    semanticDuplicates,
     duplicateErrors,
     updatePage,
     updateTemplateField,
@@ -489,6 +505,7 @@ export function useDraftReviewState({ draftId, onBack, onCommitted, onOpenWorkfl
     markQuestion,
     confirmPage,
     checkDuplicates,
+    checkSemanticDuplicates,
     decide,
     makeUpdate,
     saveEdits,

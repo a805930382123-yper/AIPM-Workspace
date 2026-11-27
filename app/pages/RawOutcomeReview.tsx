@@ -15,7 +15,7 @@ import {
   startUpdateWorkflow,
   wikiCommit,
 } from '../api';
-import type { DraftView, RawDraftView, Wiki, WikiCommitStatus } from '../api';
+import type { DraftPage, DraftView, RawDraftView, Wiki, WikiCommitStatus } from '../api';
 import { FormalNoteReader } from '../components/FormalNoteReader';
 import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
 import type { RawCitationTarget } from '../components/WikiQuestionPanel';
@@ -37,6 +37,7 @@ type Props = {
   advanced: ReactNode;
   advancedDirty: boolean;
   advancedBusy: boolean;
+  duplicateCheck?: (page: DraftPage, disabled: boolean) => ReactNode;
 };
 type Edit = { id: string; title: string; text: string; description?: string };
 type Duplicate = { pageId: string; candidates: Array<{ id: string; title: string }> };
@@ -104,6 +105,7 @@ function RawOutcomeReviewContent({
   advanced,
   advancedDirty,
   advancedBusy,
+  duplicateCheck,
 }: Props) {
   const dismissedKey = `aipm.outcome.dismissed.v1:${view.id}`;
   const [dismissedIds, setDismissedIds] = useState(() => readDismissedIds(dismissedKey));
@@ -1049,6 +1051,7 @@ function RawOutcomeReviewContent({
                   · v{change?.baseRevision}
                 </p>
               )}
+              {dismissible && duplicateCheck?.(page, disabled || editing || !!adjustment || noteDirty)}
               {!!existing.length && page.reviewDecision !== 'create' && (
                 <div className="notice-warn">
                   <p>可能与已有主题重复。请选择保留独立主题、更新已有主题，或取消本次选择。</p>
