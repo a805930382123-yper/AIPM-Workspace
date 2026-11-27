@@ -393,6 +393,37 @@ test('hybrid runs RRF, protects exact aliases and rejects weak vector-only hits 
   }
 });
 
+test('a vector-only direct hit can add one-hop evidence in Hybrid without another embedding request', async (t) => {
+  const f = await fixture(t);
+  const neighbor = await f.wiki.create(wikiInput('Journal', 'Separate ledger evidence.'));
+  const seed = await f.wiki.create(wikiInput('Vector seed', 'Primary record. [[Journal]]'));
+  f.wire.handle((res, { input }) =>
+    res.end(
+      JSON.stringify({
+        data: input.map((part, index) => ({
+          index,
+          embedding: part.startsWith('标题: Journal') ? [0, 1] : [1, 0],
+        })),
+      }),
+    ),
+  );
+  f.enable();
+  await f.index.backfillMissingEmbeddings();
+  const requests = f.wire.requests.length;
+  const result = await f.retrieve('paraphraseprobe');
+  assert.equal(result.engine, 'hybrid');
+  assert.equal(result.degraded, false);
+  assert.equal(f.wire.requests.length, requests + 1);
+  assert.deepEqual(
+    result.chunks.map(({ pageId, hitSource }) => [pageId, hitSource]),
+    [
+      [seed.id, 'vector'],
+      [neighbor.id, 'relation'],
+    ],
+  );
+  assert.equal(result.chunks[1].rawText, neighbor.body);
+});
+
 test('the actual Prompt generation path embeds only with authorized selected pages and never sends unselected context', async (t) => {
   const f = await fixture(t);
   const kept = await f.wiki.create(wikiInput('Saved reference', 'selected wire text'));

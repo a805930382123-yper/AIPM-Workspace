@@ -4,6 +4,7 @@ import { wikiLinkTitles } from '../wiki/link-titles.ts';
 import type { WikiRecord } from '../wiki/store.ts';
 import type { WikiChunk } from './chunking.ts';
 import { embeddingInput, type EmbeddingProvider } from './embedding-provider.ts';
+import type { RetrievedChunkItem, SearchOptions } from './fts-retriever.ts';
 import { TOKENIZER_VERSION, tokenizeForFts } from './tokenizer.ts';
 
 export type SearchDatabase = Database.Database;
@@ -157,6 +158,54 @@ export function readBacklinkIds(db: SearchDatabase, pageId: string) {
     )
     .all(pageId)
     .map(({ id }) => id);
+}
+
+export function readRelatedWikiChunks(
+  db: SearchDatabase,
+  seedIds: string[],
+  directIds: Set<string>,
+  scope: SearchOptions,
+) {
+  const rows = db
+    .prepare<unknown[], Omit<RetrievedChunkItem, 'score'> & { fileHash: string }>(
+      `WITH seeds AS (SELECT key AS rank, value AS id FROM json_each(?)),
+        edges AS (
+          SELECT seeds.rank, r.target_page_id AS id
+          FROM seeds JOIN relations AS r ON r.source_page_id = seeds.id
+          UNION ALL
+          SELECT seeds.rank, r.source_page_id AS id
+          FROM seeds JOIN relations AS r ON r.target_page_id = seeds.id
+        ), neighbors AS MATERIALIZED (
+          SELECT e.id, MIN(e.rank) AS seed_rank
+          FROM edges AS e JOIN pages AS p ON p.page_id = e.id
+          WHERE (? OR p.wiki_type <> 'source')
+            AND (? IS NULL OR e.id IN (SELECT value FROM json_each(?)))
+            AND e.id NOT IN (SELECT value FROM json_each(?))
+          GROUP BY e.id
+          ORDER BY seed_rank, e.id LIMIT 16
+        )
+        SELECT c.chunk_id AS chunkId, c.page_id AS pageId, c.chunk_index AS chunkIndex,
+          c.heading_path AS headingPath, c.section_kind AS sectionKind, c.raw_text AS rawText,
+          c.start_offset AS startOffset, c.end_offset AS endOffset, c.raw_hash AS rawHash,
+          p.title AS pageTitle, p.file_hash AS fileHash
+        FROM neighbors AS n JOIN pages AS p ON p.page_id = n.id
+        JOIN chunks AS c ON c.chunk_id = (
+          SELECT chunk_id FROM chunks WHERE page_id = n.id
+          ORDER BY section_kind <> 'fact', section_kind = 'meta', chunk_index LIMIT 1
+        )
+        ORDER BY n.seed_rank, n.id`,
+    )
+    .all(
+      JSON.stringify(seedIds),
+      Number(scope.includeSources ?? false),
+      scope.pageIds ? 1 : null,
+      JSON.stringify(scope.pageIds ?? []),
+      JSON.stringify([...directIds, ...(scope.excludeIds ?? [])]),
+    );
+  return rows.map(({ fileHash, ...chunk }) => ({
+    fileHash,
+    chunk: { ...chunk, score: 0, hitSource: 'relation' as const },
+  }));
 }
 
 export function readReviewQueue(

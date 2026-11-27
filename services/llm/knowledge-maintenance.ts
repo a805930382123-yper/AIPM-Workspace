@@ -25,6 +25,7 @@ import type { DraftPage, DraftRecord } from '../wiki/drafts.ts';
 import { readWikiFreshness } from '../wiki/review-service.ts';
 
 export const MAINTENANCE_LIMITS = { pages: 8, characters: 48000 } as const;
+const RELATED_PAGE_LIMIT = 2;
 type Sources = { get(id: string): Promise<unknown> };
 type ContextOptions = SearchOptions &
   VectorQueryAuthorization & {
@@ -88,6 +89,26 @@ export async function retrieveKnowledgeContextDetailed(
       const selected = new Map<string, WikiRecord>();
       const chunks: RetrievedChunkItem[] = [];
       let context: ModelWikiContext = initial.map(modelWikiRecord);
+      const admit = (page: WikiRecord, chunk: RetrievedChunkItem) => {
+        if (
+          chunk.startOffset < 0 ||
+          chunk.endOffset > page.body.length ||
+          chunk.endOffset <= chunk.startOffset ||
+          page.body.slice(chunk.startOffset, chunk.endOffset) !== chunk.rawText ||
+          wikiFileHash(chunk.rawText) !== chunk.rawHash
+        )
+          throw new Error('Wiki search chunk does not match the stored body');
+        const next = addModelChunk(context, page, chunk);
+        if (JSON.stringify(next).length > maxChars) return;
+        if (
+          options.perPageCharacters !== undefined &&
+          JSON.stringify(next.find((item) => item.id === page.id)).length > options.perPageCharacters
+        )
+          return;
+        context = next;
+        chunks.push(chunk);
+        selected.set(page.id, page);
+      };
       for (const { chunk, fileHash } of candidates) {
         const { pageId } = chunk;
         if (
@@ -111,22 +132,28 @@ export async function retrieveKnowledgeContextDetailed(
           }
         }
         const page = checked.get(pageId);
-        if (!page) continue;
-        if (
-          page.body.slice(chunk.startOffset, chunk.endOffset) !== chunk.rawText ||
-          wikiFileHash(chunk.rawText) !== chunk.rawHash
-        )
-          throw new Error('Wiki search chunk does not match the stored body');
-        const next = addModelChunk(context, page, chunk);
-        if (JSON.stringify(next).length > maxChars) continue;
-        if (
-          options.perPageCharacters !== undefined &&
-          JSON.stringify(next.find((item) => item.id === pageId)).length > options.perPageCharacters
-        )
-          continue;
-        context = next;
-        chunks.push(chunk);
-        selected.set(pageId, page);
+        if (page) admit(page, chunk);
+      }
+      const seeds = [...selected.keys()];
+      if (
+        process.env.SEARCH_WIKI_ONE_HOP !== '0' &&
+        seeds.length &&
+        context.length < MAINTENANCE_LIMITS.pages &&
+        JSON.stringify(context).length < maxChars - 1
+      ) {
+        const related = searchIndex.relatedChunks(seeds, new Set(candidates.map(({ chunk }) => chunk.pageId)), scope);
+        for (const { chunk, fileHash } of related) {
+          if (context.length >= MAINTENANCE_LIMITS.pages || selected.size - seeds.length >= RELATED_PAGE_LIMIT) break;
+          try {
+            const markdown = await wiki.readPageFile(chunk.pageId);
+            if (markdown === undefined || wikiFileHash(markdown) !== fileHash) continue;
+            const page = parseWikiMarkdown(markdown);
+            await assertWikiSourcesAllowed(wiki, rawStore, page);
+            admit(page, chunk);
+          } catch {
+            // A restricted, unavailable or invalid neighbor cannot displace direct evidence.
+          }
+        }
       }
       const order = [...selected.keys()];
       chunks.sort((a, b) => order.indexOf(a.pageId) - order.indexOf(b.pageId) || a.chunkIndex - b.chunkIndex);

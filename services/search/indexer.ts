@@ -18,6 +18,7 @@ import {
   readBacklinkIds,
   readEmbeddingLock,
   readIndexedFiles,
+  readRelatedWikiChunks,
   readReviewQueue,
   searchIndexState,
   setEmbeddingLock,
@@ -121,6 +122,16 @@ export class WikiSearchIndexer {
     } catch (error) {
       this.markDirty('backlinkIds', error);
       return undefined;
+    }
+  }
+
+  relatedChunks(seedIds: string[], directIds: Set<string>, scope: SearchOptions) {
+    if (this.availability !== 'ready') return [];
+    try {
+      return this.read((db) => readRelatedWikiChunks(db, seedIds, directIds, scope));
+    } catch {
+      // Relations are supplemental. Direct matches remain usable if this query fails.
+      return [];
     }
   }
 

@@ -10,9 +10,11 @@ import { retrieveKnowledgeContext, retrieveKnowledgeContextDetailed } from '../s
 import type { LlmProvider } from '../services/llm/provider.ts';
 import { PromptAiService } from '../services/prompt-ai/service.ts';
 import { PromptStore } from '../services/prompt/store.ts';
-import { quoteInWikiContext } from '../services/search/fts-retriever.ts';
+import { quoteInWikiContext, type ModelWikiContext } from '../services/search/fts-retriever.ts';
 import { WikiSearchIndexer } from '../services/search/indexer.ts';
 import { tokenizeForFts } from '../services/search/tokenizer.ts';
+import { wikiReviewDate } from '../services/wiki/freshness.ts';
+import { recordRawReview } from '../services/wiki/review-service.ts';
 import type { WikiInput } from '../services/wiki/store.ts';
 import { lwFixture } from './lw01-fixture.ts';
 
@@ -47,6 +49,185 @@ const reply = (value: unknown) => {
   const text = JSON.stringify(value);
   return { text, bytes: Buffer.byteLength(text), finishReason: 'stop' as const };
 };
+
+test('Wiki one-hop sends original incoming and outgoing evidence to the answer model', async (t) => {
+  const f = await fixture(t);
+  const originalSwitch = process.env.SEARCH_WIKI_ONE_HOP;
+  t.after(() => {
+    if (originalSwitch === undefined) delete process.env.SEARCH_WIKI_ONE_HOP;
+    else process.env.SEARCH_WIKI_ONE_HOP = originalSwitch;
+  });
+  const q = 'orchidprobe';
+  const raw = await f.rawStore.create({
+    title: '实测来源',
+    sourceType: 'report',
+    sourceName: '合成',
+    tags: [],
+    body: '可读',
+  });
+  const secondHop = await f.wiki.create(bodyInput('下层记录', '二跳保留原句。'));
+  const quote = '归档日期为七月八日。';
+  const out = await f.wiki.create(
+    bodyInput('归档记录', `## 来源事实 🧾\r\n\r\n${quote}\r\n\r\n[[检索枢纽]] [[下层记录]]`),
+  );
+  const incoming = await f.wiki.create(bodyInput('调查记录', '调查记录仍有效。\n\n[[检索枢纽]]'));
+  const restricted = await f.wiki.create(bodyInput('受限邻页', '受限外联原句。'));
+  await f.wiki.writePageLocked({ ...restricted, sources: [randomUUID()] });
+  const indirect = await f.wiki.create(bodyInput('隔离记录', '仅隐藏种子的邻页原句。'));
+  const deniedSeed = await f.wiki.create(bodyInput('隐藏种子', `${q} [[隔离记录]]`));
+  await f.wiki.writePageLocked({ ...deniedSeed, sources: [randomUUID()] });
+  const seed = await f.wiki.create({
+    ...bodyInput('检索枢纽', '直接证据。\n\n[[归档记录]] [[归档记录]] [[受限邻页]]'),
+    aliases: [q],
+  });
+
+  process.env.SEARCH_WIKI_ONE_HOP = '0';
+  const direct = await f.retrieve(q);
+  assert.deepEqual(
+    direct.context.map(({ id }) => id),
+    [seed.id],
+  );
+  process.env.SEARCH_WIKI_ONE_HOP = '1';
+  const expanded = await f.retrieve(q);
+  assert.deepEqual(expanded.context.slice(0, 1), direct.context);
+  assert.deepEqual(
+    expanded.records.map(({ id }) => id),
+    [seed.id, ...[out.id, incoming.id].sort()],
+  );
+  assert.equal(expanded.degradeReason, 'embedding_unconfigured');
+  assert.deepEqual(
+    expanded.chunks.map(({ hitSource }) => hitSource),
+    [undefined, 'relation', 'relation'],
+  );
+  assert.deepEqual((await f.retrieve(q)).context, expanded.context);
+  const blocked = [secondHop, restricted, indirect, deniedSeed];
+  const start = out.body.indexOf(quote);
+  const end = start + quote.length;
+  const provider: LlmProvider = {
+    name: 'fake',
+    model: 'one-hop-test',
+    async complete({ user }) {
+      const { wiki } = JSON.parse(user) as { wiki: ModelWikiContext };
+      assert.deepEqual(wiki, expanded.context);
+      assert(quoteInWikiContext(wiki, out.id, start, end, quote));
+      for (const { id } of blocked) assert(!user.includes(id));
+      return reply({
+        version: 1,
+        needsRaw: [],
+        sections: [{ kind: 'fact', text: quote, citationIds: ['c1'] }],
+        citations: [{ id: 'c1', kind: 'wiki', recordId: out.id, quote, start, end }],
+      });
+    },
+  };
+  const answers = new KnowledgeAnswerService({
+    root: f.root,
+    wiki: f.wiki,
+    raws: f.rawStore,
+    drafts: f.drafts,
+    provider: () => provider,
+  });
+  await answers.initialize();
+  const answer = await answers.ask({ requestId: randomUUID(), question: q });
+  assert.equal(answer.status, 'completed');
+  assert.equal(answer.citations[0].start, start);
+  assert.equal(answer.citations[0].recordId, out.id);
+
+  await f.wiki.reviewTriggers.appendEvent([seed.id, out.id], {
+    kind: 'new_source',
+    date: wikiReviewDate(),
+    rawId: raw.id,
+    bodyRevision: 0,
+    reason: '合成提醒',
+  });
+  const reviewed = await retrieveKnowledgeContext(f.wiki, f.rawStore, query(q));
+  assert.equal(reviewed[0].freshness?.reminders.length, 1);
+  assert.equal(reviewed.find(({ id }) => id === out.id)?.freshness?.reminders.length, 1);
+});
+
+test('Wiki one-hop respects explicit scope, source type, exclusions, budgets and isolated graph failure', async (t) => {
+  const f = await fixture(t);
+  const originalEngine = process.env.SEARCH_ENGINE;
+  const originalSwitch = process.env.SEARCH_WIKI_ONE_HOP;
+  process.env.SEARCH_ENGINE = 'sqlite_fts';
+  process.env.SEARCH_WIKI_ONE_HOP = '1';
+  t.after(() => {
+    if (originalEngine === undefined) delete process.env.SEARCH_ENGINE;
+    else process.env.SEARCH_ENGINE = originalEngine;
+    if (originalSwitch === undefined) delete process.env.SEARCH_WIKI_ONE_HOP;
+    else process.env.SEARCH_WIKI_ONE_HOP = originalSwitch;
+  });
+  const title = '渠道补货季度核验';
+  const marker = 'scopeprobe';
+  const raw = await f.rawStore.create({
+    title,
+    body: '复核输入。',
+    sourceType: 'report',
+    sourceName: '合成',
+    tags: [],
+  });
+  const source = await f.wiki.create({
+    ...bodyInput('专用来源', '可用来源页内容。'),
+    type: 'source',
+    sources: [raw.id],
+  });
+  const longer = await f.wiki.create(bodyInput('旁证记录', '可用记录文本。'.repeat(60)));
+  const third = await f.wiki.create(bodyInput('另一记录', '另一条可用证据。'));
+  const fourth = await f.wiki.create(bodyInput('同类记录', '同类可用证据。'));
+  const seed = await f.wiki.create({
+    ...bodyInput('补货手册', '直接证据。\n\n[[专用来源]] [[旁证记录]] [[另一记录]] [[同类记录]]'),
+    aliases: [marker, title],
+  });
+  const used = await f.rawStore.create({
+    title,
+    body: '新建来源复核输入。',
+    sourceType: 'report',
+    sourceName: '合成',
+    tags: [],
+  });
+  await recordRawReview(f.wiki, f.rawStore, 'new_source', used);
+  const triggers = await f.wiki.reviewTriggers.read();
+  assert.deepEqual(Object.keys(triggers), [seed.id]);
+  const retrieve = (options?: Parameters<typeof retrieveKnowledgeContextDetailed>[3]) =>
+    retrieveKnowledgeContextDetailed(f.wiki, f.rawStore, query(marker), options);
+  const ids = (result: Awaited<ReturnType<typeof retrieve>>) => result.records.map(({ id }) => id);
+  const direct = await retrieve({ pageIds: [seed.id] });
+  const scope = { pageIds: [seed.id, source.id, longer.id] };
+  assert.deepEqual(ids(direct), [seed.id]);
+  assert.deepEqual(ids(await retrieve(scope)), [seed.id, longer.id]);
+  assert.deepEqual(ids(await retrieve({ ...scope, includeSources: true, excludeIds: [longer.id] })), [
+    seed.id,
+    source.id,
+  ]);
+  assert.deepEqual(ids(await retrieve({ ...scope, characters: JSON.stringify(direct.context).length })), [seed.id]);
+  assert.deepEqual(ids(await retrieve({ ...scope, perPageCharacters: JSON.stringify(direct.context[0]).length })), [
+    seed.id,
+  ]);
+  assert.deepEqual(ids(await retrieve({ initialContext: [seed] })), []);
+  assert.deepEqual(ids(await f.retrieve('unmatchedneedle')), []);
+  assert.deepEqual(ids(await retrieve()), [seed.id, ...[longer.id, third.id, fourth.id].sort().slice(0, 2)]);
+  const initial = await Promise.all(
+    Array.from({ length: 7 }, (_, i) => f.wiki.create(bodyInput(`已读页 ${i}`, '已有上下文。'))),
+  );
+  const capped = await retrieve({ ...scope, initialContext: initial });
+  assert.deepEqual(
+    capped.context.map(({ id }) => id),
+    [...initial.map(({ id }) => id), seed.id],
+  );
+  const fallback = await retrieve({ pageIds: [seed.id] });
+  f.index.read((db) => {
+    db.prepare('UPDATE chunks SET start_offset = -1 WHERE page_id = ?').run(longer.id);
+  });
+  assert.deepEqual(await retrieve(scope), fallback);
+  f.index.read((db) => {
+    db.prepare('UPDATE chunks SET start_offset = 0 WHERE page_id = ?').run(longer.id);
+  });
+  const changed = f.wiki.pageContent(longer).replace('可用记录文本。', '失效记录文本。');
+  await writeFile(path.join(f.root, 'knowledge', 'wiki', `${longer.id}.md`), changed);
+  assert.deepEqual(await retrieve(scope), fallback);
+  f.index.read((db) => db.exec('DROP TABLE relations'));
+  assert.deepEqual(await retrieve({ ...scope, includeSources: true }), fallback);
+  assert(!f.index.isDirty);
+});
 
 test('Chinese and mixed queries are safe, rerank aliases, retain short terms and find colloquial synonyms', async (t) => {
   const f = await fixture(t);

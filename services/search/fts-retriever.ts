@@ -6,7 +6,7 @@ import { buildFtsQuery, buildStoreFactQuery } from './tokenizer.ts';
 export type RetrievedChunkItem = Omit<WikiChunk, 'charCount'> & {
   pageTitle: string;
   score: number;
-  hitSource?: 'both' | 'fts' | 'vector';
+  hitSource?: 'both' | 'fts' | 'vector' | 'relation';
   ftsRank?: number;
   vectorRank?: number;
   vectorScore?: number;

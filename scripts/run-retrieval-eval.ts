@@ -112,6 +112,7 @@ type Diagnostics = {
   vectorGold?: number;
   fusedGold?: RetrievedChunkItem;
   sentGold?: RetrievedChunkItem;
+  relatedGold: boolean;
   topCosine?: number;
 };
 type Grade = {
@@ -409,10 +410,16 @@ try {
           const raw = await index.rankVectorChunks(queryText, queryPageNames(query), scope, -1);
           const vector = raw.filter(({ chunk }) => chunk.score >= threshold);
           const fused = await rankHybridChunks(index, query, scope, (reason) => assert.fail(reason));
-          const sentIds = new Set(
-            wire.slice(0, k).flatMap((page) => ('chunks' in page ? page.chunks.map(({ chunkId }) => chunkId) : [])),
-          );
-          const goldMatch = ({ pageId, startOffset, endOffset, rawText }: RetrievedChunkItem) =>
+          const sent = wire
+            .slice(0, k)
+            .flatMap((page) => ('chunks' in page ? page.chunks.map((chunk) => ({ ...chunk, pageId: page.id })) : []));
+          const sentIds = new Set(sent.map(({ chunkId }) => chunkId));
+          const goldMatch = ({
+            pageId,
+            startOffset,
+            endOffset,
+            rawText,
+          }: Pick<RetrievedChunkItem, 'pageId' | 'startOffset' | 'endOffset' | 'rawText'>) =>
             test.gold.some(
               (gold) =>
                 gold.pageId === pageId &&
@@ -425,8 +432,15 @@ try {
           const vectorGold = vector.findIndex(({ chunk }) => goldMatch(chunk));
           const fusedGold = fused.find(({ chunk }) => goldMatch(chunk))?.chunk;
           const sentGold = fused.find(({ chunk }) => sentIds.has(chunk.chunkId) && goldMatch(chunk))?.chunk;
-          assert.equal(Boolean(sentGold), scores.hybrid.get(test.id)!.hit, '融合复算与实际发送证据不一致');
-          assert([...sentIds].every((id) => fused.some(({ chunk }) => chunk.chunkId === id)));
+          const fusedIds = new Set(fused.map(({ chunk }) => chunk.chunkId));
+          const fusedPages = new Set(fused.map(({ chunk }) => chunk.pageId));
+          const related = sent.filter(({ chunkId }) => !fusedIds.has(chunkId));
+          for (const { pageId, startOffset, endOffset, rawText } of related) {
+            assert(!fusedPages.has(pageId), '关联证据须来自未命中的页');
+            assert.equal(records.get(pageId)!.body.slice(startOffset, endOffset), rawText);
+          }
+          const relatedGold = related.some(goldMatch);
+          assert.equal(Boolean(sentGold) || relatedGold, scores.hybrid.get(test.id)!.hit, '复算与实际发送证据不一致');
           diagnostics.set(test.id, {
             ftsGold: ftsGold < 0 ? undefined : ftsGold + 1,
             rawVectorGold: rawVectorGold < 0 ? undefined : rawVectorGold + 1,
@@ -434,6 +448,7 @@ try {
             vectorGold: vectorGold < 0 ? undefined : vectorGold + 1,
             fusedGold,
             sentGold,
+            relatedGold,
             topCosine: raw[0]?.chunk.score,
           });
           verifyVectorQuotes(
@@ -524,17 +539,19 @@ try {
     const row = diagnostics.get(id);
     const lexical = scores.sqlite_fts.get(id)!.hit ? '命中' : '漏检';
     if (!row) return `| ${id} | ${lexical} | 待验证 | — | — | — | — | — |`;
-    const chunk = row.sentGold ?? row.fusedGold;
+    const hitSource = row.sentGold?.hitSource ?? (row.relatedGold ? 'relation' : row.fusedGold?.hitSource);
     const where = row.sentGold
       ? '实际送出'
-      : row.fusedGold
-        ? '预算后丢失'
-        : row.vectorGold
-          ? 'RRF 前灰区裁切'
-          : row.rawVectorGold
-            ? '最低阈值裁切'
-            : '两路均未进入 Top-30';
-    return `| ${id} | ${lexical} | ${where} | ${row.ftsGold ?? '—'} | ${row.vectorGold ?? '—'} | ${row.rawVectorGold ?? '—'} | ${row.rawVectorGoldScore?.toFixed(6) ?? '—'} | ${chunk?.hitSource ?? '—'} |`;
+      : row.relatedGold
+        ? '关联证据送出'
+        : row.fusedGold
+          ? '预算后丢失'
+          : row.vectorGold
+            ? 'RRF 前灰区裁切'
+            : row.rawVectorGold
+              ? '最低阈值裁切'
+              : '两路均未进入 Top-30';
+    return `| ${id} | ${lexical} | ${where} | ${row.ftsGold ?? '—'} | ${row.vectorGold ?? '—'} | ${row.rawVectorGold ?? '—'} | ${row.rawVectorGoldScore?.toFixed(6) ?? '—'} | ${hitSource ?? '—'} |`;
   });
   const eCases = baseline.cases.filter(({ id }) => id.startsWith('E'));
   const eRows = eCases.map(({ id }) => {
