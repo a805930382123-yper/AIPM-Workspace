@@ -3,60 +3,40 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 3-2 PASS（2026-11-28）**。跨模型检查点续跑、草稿人工复核提示、主备健康状态及无模型离线操作通过独立验收。API 导出和无配置自检两项回归已关闭。产品提交 `ceff6cc`，全仓 1,156/1,156，Windows Node 22/24 CI 通过。3-3 与 Batch 3 整批终验待后续授权。[独立验收](reports/3-2-review.md) · [任务卡](handoffs/LLMWIKI-3-2.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46030737982)。
+- **LLM-Wiki 3-2 PASS（2026-11-28）**。跨模型检查点续跑、草稿人工提示、主备健康与离线操作验收通过，两项回归已关闭。`ceff6cc`，1,156/1,156，CI 通过；3-3 与 Batch 3 终验待授权。[验收](reports/3-2-review.md) · [任务卡](handoffs/LLMWIKI-3-2.md) · [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46030737982)。
 
-- **LLM-Wiki 3-1 PASS（2026-11-27）**。主备 Provider、重轻分档与独立 Embedding 已接入；分端账本记录每次实际尝试。产品提交 `59261d5`，六核全仓 1,153/1,153。阶段裁决见[独立验收](reports/3-1-review.md) · [任务卡](handoffs/LLMWIKI-3-1.md) · [施工](reports/3-1-builder.md)。
+- **LLM-Wiki 3-1 PASS（2026-11-27）**。主备 Provider、重轻分档与独立 Embedding 接入，分端账本记录尝试。`59261d5`，1,153/1,153。[验收](reports/3-1-review.md) · [任务卡](handoffs/LLMWIKI-3-1.md) · [施工](reports/3-1-builder.md)。
 
-- **LLM-Wiki Batch 2B 整体 PASS（2026-11-27）**。关系索引与反链、一跳检索、普通 Raw 草稿显式向量查重均已签收。产品提交 `098fb5a`。PDF 与失效媒体边界通过独立浏览器及 HTTP 复验，全仓 1,151/1,151。[2B-3 任务卡](handoffs/LLMWIKI-2B-3.md) · [施工](reports/2B-3-builder.md) · [整批独立验收](reports/2B-3-review.md)
+- **LLM-Wiki Batch 2B 整体 PASS（2026-11-27）**。关系反链、一跳检索、普通 Raw 草稿向量查重签收。`098fb5a`，1,151/1,151。[任务卡](handoffs/LLMWIKI-2B-3.md) · [施工](reports/2B-3-builder.md) · [验收](reports/2B-3-review.md)
 
-- **LLM-Wiki 2B-2 PASS（2026-11-27）**。产品提交 `dbd7b4d`。直接命中后可补充最多两篇一跳邻页，问答入模与原文引用、范围、预算和关闭开关经独立复验。全仓 1,148/1,148。向量重复提示与整批结论见 2B-3。[任务卡](handoffs/LLMWIKI-2B-2.md) · [施工](reports/2B-2-builder.md) · [独立验收](reports/2B-2-review.md)
+- **LLM-Wiki 2B-2 / 2B-1 PASS（2026-11-27）**。`dbd7b4d`（1,148/1,148）实现有界一跳邻页检索与关闭开关（[2B-2](reports/2B-2-review.md) · [施工](reports/2B-2-builder.md) · [卡](handoffs/LLMWIKI-2B-2.md)）；`4263606` 实现 Wiki 反链与离线回退，冻结 25 问双路 50 行一致（[2B-1](reports/2B-1-review.md) · [施工](reports/2B-1-builder.md) · [卡](handoffs/LLMWIKI-2B-1.md)）。
 
-- **LLM-Wiki 2B-1 PASS（2026-11-27）**。Wiki 详情可查看并打开反向链接。产品提交 `4263606`，已验证索引重建、离线回退与真实浏览器导航。冻结 25 问双路 50 行与基线一致。后续一跳检索见 2B-2。[任务卡](handoffs/LLMWIKI-2B-1.md) · [施工](reports/2B-1-builder.md) · [独立验收](reports/2B-1-review.md)
+- **LLM-Wiki Batch 2A 整体 PASS（2026-11-26）**。2A-3 复核工作台贯通 Raw/提醒/人工处理，冻结 25 问双路 50/50 一致，1,139/1,139（[2A-3](reports/2A-3-review.md) · [施工](reports/2A-3-builder.md) · [卡](handoffs/LLMWIKI-2A-3.md)）；`2A-2`（[验收](reports/2A-2-review.md)）与 `2A-1` 1,136/1,136（[验收](reports/2A-1-review.md) · [施工](reports/2A-1-builder.md) · [卡](handoffs/LLMWIKI-2A-1.md)）均通过。
 
-- **LLM-Wiki Batch 2A 整体 PASS（2026-11-26）**。2A-3 复核工作台贯通 Raw 编辑、系统提醒与人工处理。旧引用在关闭开关后可定位，依据变化后确认请求会被拒绝。独立 Edge 复验通过，冻结 25 问双路 50/50 一致，全量 1,139/1,139。[任务卡](handoffs/LLMWIKI-2A-3.md) · [施工](reports/2A-3-builder.md) · [整批独立验收](reports/2A-3-review.md)
+- **LLM-Wiki Batch 1B 整体 PASS（2026-11-26）**。`74be77d`，阈值 0.42 下真实 Hybrid A/B/C/D 为 7/7、4/5、5/5、3/3，E 误召回 4/5，B1 命中、E2 空，长页 9/9、纯向量引文 20/20，基准与回滚达标。[实测](../evals/reports/batch-1b-final-live.md) · [终验](reports/1B-final-review.md) · 历史：[1B-1](reports/1B-1-review.md) · [1B-2](reports/1B-2-review.md) · [1B-3](reports/1B-3-review.md) · [实测](../evals/reports/batch-1b-real.md) · [0.36](../evals/reports/batch-1b-real-036.md) · [返修](reports/1B-fts-repair-review.md)。
 
-- **2A-2 PASS**。Raw 双触发、读时时效、人工复核与 Lint 汇总完成；搜索可见性与向量凭据隔离已复验。[独立验收](reports/2A-2-review.md)
+- **RAWOCR05–06 微信图片处理（PASS）**：执行链路（`8f4e7ba`）与筛选精读（`17ab0bc`）通过独立验收，正文图 1–2 精读、推广图 3–6 跳过，原文与六图哈希一致。[卡](handoffs/RAWOCR05-runtime-task.md) · [一轮](reports/RAWOCR05-review.md) · [整单](reports/RAWOCR06-review.md)
 
-- **LLM-Wiki 2A-1 PASS**：时效字段、四档规则、优先级及可重建复核队列通过独立验收。提醒与暂缓的历史重放缺陷已关闭，全量 1,136/1,136。后续写时与读时接入见 2A-2。[任务卡](handoffs/LLMWIKI-2A-1.md) · [施工](reports/2A-1-builder.md) · [独立验收](reports/2A-1-review.md)
+- **LLM-Wiki Batch 1A（PASS）**：A/B/C/D 7/7、3/5、5/5、3/3，E 4/5；长页 9/9，千页建库 1,584.05 ms、P95 32.29 ms，1,099/1,099；B1/B4 漏检与 4 负样本留档。[卡](handoffs/LLMWIKI-1A-4.md) · [快照](../evals/reports/batch-1a-baseline.md) · [验收](reports/1A-4-review.md)
 
-- **LLM-Wiki Batch 1B 整体 PASS**：2026-11-26 独立复核产品提交 74be77d。默认阈值 0.42，真实 Hybrid 的 A/B/C/D 为 7/7、4/5、5/5、3/3，E 误召回 4/5。B1 命中，E2 空；长页 9/9，纯向量引文 20/20。千页基准和实盘回滚达标。[真实逐题结果](../evals/reports/batch-1b-final-live.md) · [最终独立验收](reports/1B-final-review.md)
-
-- **1B 历史证据**：[向量生成](reports/1B-1-review.md) · [混合检索与降级](reports/1B-2-review.md) · [离线基准](reports/1B-3-review.md) · [真实评测](../evals/reports/batch-1b-real.md) · [阈值校准](../evals/reports/batch-1b-real-036.md) · [B1/E2 返修](reports/1B-fts-repair-review.md)。
-
-- **RAWOCR05–06 微信图片处理**：执行链路（`8f4e7ba`）与三层筛选、人工精读（`17ab0bc`）均通过独立验收。隔离库从微信原网址重新导入后，正文图 1、2 完成真实精读，推广图 3–6 全部由文末规则跳过。原始正文及六张图片的哈希与正式记录一致。[任务卡](handoffs/RAWOCR05-runtime-task.md) · [第一轮验收](reports/RAWOCR05-review.md) · [第二轮与整单验收](reports/RAWOCR06-review.md)
-
-- **LLM-Wiki Batch 1A**：1A-4 与整批通过独立验收。25 问 A/B/C/D 命中分别为 7/7、3/5、5/5、3/3，E 误召回 4/5 与 Legacy 持平。长页 9/9；独立千页建库 1,584.05 ms、查询 P95 32.29 ms，实盘回滚通过；全仓测试 1,099/1,099。B1/B4 漏检及四项负样本误召回留档，后续阶段未启动。[任务卡](handoffs/LLMWIKI-1A-4.md) · [逐题快照](../evals/reports/batch-1a-baseline.md) · [独立验收](reports/1A-4-review.md)
-
-- **当前阶段**：工作台已按承诺范围结项（产品基线 `aff5b32`，109 项需求通过、正式库配图迁移核验完成；[结项与交付矩阵](delivery-matrix.md) · [独立结项复核](reports/CLOSE01-review.md)）。LLM-Wiki 2A、2B 与 FE03 已签收，Batch 3 正按子阶段推进。[FE03 任务卡](handoffs/FE03-task.md)
+- **当前阶段**：工作台已按承诺结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [结项复核](reports/CLOSE01-review.md)）；`LLM-Wiki 3-2`、`FE03` 已签收，波次 3 后端核心首发 **`BE01`（拆分 `services/wiki/commits.ts`）已完成施工与 Round 1 本地验收（`PENDING_CI`）**，等待 Commit 1 远端 Windows Node `22.x / 24.x` CI 闭环。
 - **工程批次结论**：
-  - **FE03 整体 PASS（2026-11-26）**。Prompt 库和草稿审阅入口分别缩至 315 和 458 行，15 个产品模块均低于 40 KiB、800 行。独立 Edge 实测覆盖 Prompt 版本与草稿人工确认写入，隔离全量 1,143/1,143。产品提交 `cf9ba5e` 的 Windows Node 22.x、24.x CI 双绿。[独立验收](reports/FE03-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887)。
-  - **FE02 整体 PASS（2026-11-26）**。Round 2 独立复验已签发，覆盖前端拆分、Edge 冒烟、全量测试及文档门禁。提交 `ee02a10` 的 Windows Node 22.x、24.x 作业均成功。[远端 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842) · [验收记录](reports/FE02-20261125-review.md)。
-  - `ENG05`（2026-11-24，**PASS**）：清零 3 类 9 处 ESLint 疑点（`770 → 761`、`0` 错），6 条规则升回 `error`，校准 `acceptance.md` 锚点使 `docs-archive-check` 4/4 `OK`，新增 `eng05-hygiene`；[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416)（`fae6724`）全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
-  - `FE01`（2026-11-24，**PASS**）：`app/api.ts` 拆为 8 份域模块（130 运行时导出与 105 类型兼容）、轻路由与 `useLatestAsync`/`useScopedQuery` 落地、6 文件告警 `55 → 0`；隔离 `check` 1,062/1,062、Edge 冒烟 0 错，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)（`e528039`）全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
-  - `CLOSE01`（2026-11-23，**PASS**）：63 项 A 类与 46 项 R 类逐项核对证据，并发保存顺序断言与恢复门禁通过，移交维护事项。[独立复核](reports/CLOSE01-review.md)。
-  - `RAWOCR04`（2026-11-23，**PASS**）：隔离 CLI、Tesseract 与 Edge 验证通过，重复执行不改历史正文/原图/引文坐标，全量复跑 1,055/1,055。[独立验收](reports/RAWOCR04-review.md)。
-- **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续候选（波次 3 `BE01` `commits.ts` 等）与 `LLM-Wiki` 后续阶段待用户决策。`tests/prompt-ai-http.mjs` B08 历史 mock 漂移留档；62 页 PDF 草稿待资料所有者决定入库，正式 Wiki/Prompt 写入须人工确认。
-- **规范与归档索引**：[证据存放规范](evidence-policy.md) · [2026 年 10 月](archive/status-2026-10.md) · [2026 年 11 月初](archive/status-2026-11a.md) · [2026 年 11 月中（2026-11-20 及更早条目）](archive/status-2026-11b.md)
+  - **`BE01`（2026-11-28，Round 1 PASS / PENDING_CI）**：B 模式单文件拆分 `commits.ts`（`68,163 B / 1,535 L → 606 B / 15 L`）为 5 份无环模块（`< 40 KiB / < 800 L`），导出与事务/锁/恢复 1:1 等价，ESLint `0/0`；隔离 23 份回归 `244/244`、3 条离线 `eval`（8/8、12/12、4/4）与非 SQLite 全量 `1,117` 项 `0` 错（42 fail+2 cancel 全系本地 Node 25 SQLite ABI 冲突，待远端 CI；[施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)）。
+  - **`FE03`（2026-11-26，PASS）**：Prompt 库与草稿审阅入口缩至 315/458 行，15 模块均 `< 40 KiB / 800 L`，隔离全量 1,143/1,143，`cf9ba5e` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887) 双绿（[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)）。
+  - **`FE02`（2026-11-26，PASS）**：`InboxTab`/`MeetingPage` 拆为 8 份无环模块（`< 40 KiB / 800 L`），定向 44/44 与 Edge 冒烟通过，`ee02a10` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842)（1,126/1,126）双绿（[施工](reports/FE02-20261125-builder.md) · [验收](reports/FE02-20261125-review.md)）。
+  - **`ENG05`（2026-11-24，PASS）**：清零 3 类 9 处疑点（`770 → 761`、`0` 错），6 规则升回 `error`，校准 `acceptance.md` 锚点，`fae6724` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
+  - **`FE01`（2026-11-24，PASS）**：`api.ts` 按域拆为 8 模块、轻路由与异步 Hook 落地、6 文件告警 `55 → 0`，`check` 1,062/1,062，`e528039` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
+  - **`CLOSE01`（2026-11-23，PASS）**：63 A + 46 R 核对通过，恢复门禁通过（[复核](reports/CLOSE01-review.md)）。
+- **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续（波次 3 `BE02` `drafts.ts` 等）与 `LLM-Wiki 3-3` 待用户决策。`tests/prompt-ai-http.mjs` B08 mock 漂移与 `docs-archive-check` 基线既有 `architecture:8` 10 B 漂移留档；62 页 PDF 草稿待决定入库，正式写入须人工确认。
+- **规范与归档索引**：[证据规范](evidence-policy.md) · [2026-10](archive/status-2026-10.md) · [2026-11 初](archive/status-2026-11a.md) · [2026-11 中](archive/status-2026-11b.md)
 
-## FE02 前端页面拆分（Round 2 独立验收 PASS，2026-11-26）
+## BE01 正式 Wiki 提交服务拆分（Round 1 PASS / PENDING_CI，2026-11-28）
 
-InboxTab 与 MeetingPage 拆分后的 8 个模块均小于 40 KiB、800 行，无循环依赖。定向测试 44/44、隔离 Edge 冒烟通过。本机 Node 25 的 SQLite ABI 限制见首轮报告；提交 `ee02a10` 的 Windows Node 22.x 和 24.x 作业已完成全套 CI。[任务卡](handoffs/FE02-20261125-task.md) · [施工](reports/FE02-20261125-builder.md) · [两轮独立验收](reports/FE02-20261125-review.md)
+B 模式（7 分）单文件拆分 [commits.ts](../services/wiki/commits.ts)（`68,163 B / 1,535 L → 606 B / 15 L`）为 [commit-types.ts](../services/wiki/commit-types.ts)、[commit-freeze.ts](../services/wiki/commit-freeze.ts)、[commit-executor.ts](../services/wiki/commit-executor.ts)、[commit-service.ts](../services/wiki/commit-service.ts) 与门面 `commits.ts`（均 `< 40 KiB / < 800 L`，纯 LF、无环），保留精确 4 运行时 + 7 类型导出、单 `SerialQueue`、就地 `manifest` 闭包与全部错误码，新增 `be01-commit-split.test.ts`；6 交付文件 ESLint `0/0`，23 份核心/恢复回归 `244/244`、3 条离线 `eval` 及非 SQLite 全量 `1,117` 项通过（42 fail+2 cancel 全系 Node 25 SQLite ABI 冲突），待 `origin/main` Commit 1 CI 闭环。见[任务卡](handoffs/BE01-20261128-task.md) · [施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)。
 
-## ENG05 小范围收敛完成（PASS，2026-11-24）
+## 工程整固历史完成摘要（ENG03–FE02，均 PASS）
 
-清零 3 类 9 处 ESLint 疑点（`prompt-ai-http.mjs`、`instance-lock.ts`、`lifeos-l5-isolated.ts`、`jobs.ts`、`meeting/store.ts`、`news/service.ts` 等），`eslint.config.js` 将 6 条规则升回 `error`（全仓 `0 errors / 761 warnings`）；校准 `acceptance.md` 锚点使 `docs-archive-check` 4/4 `OK`；新增 `eng05-hygiene.test.ts`（1/1）。主交付 `fae6724` 的[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 双作业全绿，Round 2 签发 `PASS`。见[施工](reports/ENG05-20261124-builder.md)与[验收](reports/ENG05-20261124-review.md)。
-
-## FE01 前端基础设施与 React Hook 治理完成（PASS，2026-11-24）
-
-按[任务卡](handoffs/FE01-20261123-task.md)完成 `app/api.ts`（`55,053 B → 318 B`）按域拆为 8 份无环模块（130 导出 + 105 类型兼容）、零依赖 `app/router/*` 与 `app/hooks/{useLatestAsync,useScopedQuery}.ts`（默认 `cache: false`），清零 `App.tsx`/`MeetingPage.tsx` 等 6 文件 55 条警告（全仓 `825 → 770`）。隔离 `check` 1,062/1,062、Edge 冒烟 0 错，主交付 `e528039` 的[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿。见[施工](reports/FE01-20261123-builder.md)与[验收](reports/FE01-20261123-review.md)。
-
-## ENG04 代码格式化与静态检查基线完成（PASS，2026-11-23）
-
-落地 Prettier `3.10.1`、ESLint `10.15.0` 与 `.editorconfig`/`.git-blame-ignore-revs`（`2c1a4d7`、`453db99`、`02ab4ca`、`6a5eff6`），411 文件格式化等价、产出 26 文件[拆分方案](reports/ENG04-20261122-split-plan.md)；`check` 1,012/1,012、Edge 5 页 0 错，[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788) 全绿。见[施工](reports/ENG04-20261122-builder.md)与[验收](reports/ENG04-20261122-review.md)。
-
-## ENG03 证据存放规范与文档瘦身完成（PASS，2026-11-22）
-
-新增[证据规范](evidence-policy.md)与 `npm run guard`（6 项单测、CI 接入），8 个 >1 MiB 文件迁至仓外归档，`status.md`/`agent-control.md`/`acceptance.md`/`architecture.md` 无损瘦身由 `docs-archive-check` 4/4 重构匹配；`check` 1,012/1,012，主交付 `3c9c273` 的[Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169) 全绿。见[施工](reports/ENG03-20261122-builder.md)与[验收](reports/ENG03-20261122-review.md)。
+`FE02`（2026-11-26，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842)，[验收](reports/FE02-20261125-review.md)）；`ENG05`（2026-11-24，`fae6724`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416)，[验收](reports/ENG05-20261124-review.md)）；`FE01`（2026-11-24，`e528039`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)，[验收](reports/FE01-20261123-review.md)）；`ENG04`（2026-11-23，`6a5eff6`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)，[施工](reports/ENG04-20261122-builder.md) · [验收](reports/ENG04-20261122-review.md)）；`ENG03`（2026-11-22，`3c9c273`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)，[施工](reports/ENG03-20261122-builder.md) · [验收](reports/ENG03-20261122-review.md)）。
 <!-- ENG03 inserted:end -->
 ## ENG02 工作区清理与同步核实完成（PASS，2026-11-22）
 
