@@ -19,9 +19,9 @@
 
 - **LLM-Wiki Batch 1A（PASS）**：A/B/C/D 7/7、3/5、5/5、3/3，E 4/5；长页 9/9，千页建库 1,584.05 ms、P95 32.29 ms，1,099/1,099；B1/B4 漏检与 4 负样本留档。[卡](handoffs/LLMWIKI-1A-4.md) · [快照](../evals/reports/batch-1a-baseline.md) · [验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [结项复核](reports/CLOSE01-review.md)）；`LLM-Wiki 3-2`、`FE03` 已签收，波次 3 后端核心首发 **`BE01`（拆分 `services/wiki/commits.ts`）已完成施工与 Round 1 本地验收（`PENDING_CI`）**，等待 Commit 1 远端 Windows Node `22.x / 24.x` CI 闭环。
+- **当前阶段**：工作台已按承诺结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [结项复核](reports/CLOSE01-review.md)）；`LLM-Wiki 3-2`、`FE03` 与波次 3 后端核心首发 **`BE01`（`commits.ts` 拆分，`83c4af4`）均已 `PASS`**，停步等待用户指示下一方向（如波次 3 `BE02` `drafts.ts` 或 `LLM-Wiki 3-3`）。
 - **工程批次结论**：
-  - **`BE01`（2026-11-28，Round 1 PASS / PENDING_CI）**：B 模式单文件拆分 `commits.ts`（`68,163 B / 1,535 L → 606 B / 15 L`）为 5 份无环模块（`< 40 KiB / < 800 L`），导出与事务/锁/恢复 1:1 等价，ESLint `0/0`；隔离 23 份回归 `244/244`、3 条离线 `eval`（8/8、12/12、4/4）与非 SQLite 全量 `1,117` 项 `0` 错（42 fail+2 cancel 全系本地 Node 25 SQLite ABI 冲突，待远端 CI；[施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)）。
+  - **`BE01`（2026-11-28，PASS）**：B 模式单文件拆分 `commits.ts`（`68,163 B / 1,535 L → 606 B / 15 L`）为 5 份无环模块（`< 40 KiB / < 800 L`），导出与事务/锁/恢复 1:1 等价，ESLint `0/0`；23 份回归 `244/244`、3 条 `eval` 及 `83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) 双绿闭环（[施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)）。
   - **`FE03`（2026-11-26，PASS）**：Prompt 库与草稿审阅入口缩至 315/458 行，15 模块均 `< 40 KiB / 800 L`，隔离全量 1,143/1,143，`cf9ba5e` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887) 双绿（[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)）。
   - **`FE02`（2026-11-26，PASS）**：`InboxTab`/`MeetingPage` 拆为 8 份无环模块（`< 40 KiB / 800 L`），定向 44/44 与 Edge 冒烟通过，`ee02a10` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842)（1,126/1,126）双绿（[施工](reports/FE02-20261125-builder.md) · [验收](reports/FE02-20261125-review.md)）。
   - **`ENG05`（2026-11-24，PASS）**：清零 3 类 9 处疑点（`770 → 761`、`0` 错），6 规则升回 `error`，校准 `acceptance.md` 锚点，`fae6724` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
@@ -30,9 +30,9 @@
 - **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续（波次 3 `BE02` `drafts.ts` 等）与 `LLM-Wiki 3-3` 待用户决策。`tests/prompt-ai-http.mjs` B08 mock 漂移与 `docs-archive-check` 基线既有 `architecture:8` 10 B 漂移留档；62 页 PDF 草稿待决定入库，正式写入须人工确认。
 - **规范与归档索引**：[证据规范](evidence-policy.md) · [2026-10](archive/status-2026-10.md) · [2026-11 初](archive/status-2026-11a.md) · [2026-11 中](archive/status-2026-11b.md)
 
-## BE01 正式 Wiki 提交服务拆分（Round 1 PASS / PENDING_CI，2026-11-28）
+## BE01 正式 Wiki 提交服务拆分完成（PASS，2026-11-28）
 
-B 模式（7 分）单文件拆分 [commits.ts](../services/wiki/commits.ts)（`68,163 B / 1,535 L → 606 B / 15 L`）为 [commit-types.ts](../services/wiki/commit-types.ts)、[commit-freeze.ts](../services/wiki/commit-freeze.ts)、[commit-executor.ts](../services/wiki/commit-executor.ts)、[commit-service.ts](../services/wiki/commit-service.ts) 与门面 `commits.ts`（均 `< 40 KiB / < 800 L`，纯 LF、无环），保留精确 4 运行时 + 7 类型导出、单 `SerialQueue`、就地 `manifest` 闭包与全部错误码，新增 `be01-commit-split.test.ts`；6 交付文件 ESLint `0/0`，23 份核心/恢复回归 `244/244`、3 条离线 `eval` 及非 SQLite 全量 `1,117` 项通过（42 fail+2 cancel 全系 Node 25 SQLite ABI 冲突），待 `origin/main` Commit 1 CI 闭环。见[任务卡](handoffs/BE01-20261128-task.md) · [施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)。
+B 模式（7 分）单文件拆分 [commits.ts](../services/wiki/commits.ts)（`68,163 B / 1,535 L → 606 B / 15 L`）为 [commit-types.ts](../services/wiki/commit-types.ts)、[commit-freeze.ts](../services/wiki/commit-freeze.ts)、[commit-executor.ts](../services/wiki/commit-executor.ts)、[commit-service.ts](../services/wiki/commit-service.ts) 与门面 `commits.ts`（均 `< 40 KiB / < 800 L`，纯 LF、无环），保留精确 4 运行时 + 7 类型导出、单 `SerialQueue`、就地 `manifest` 闭包与全部错误码，新增 `be01-commit-split.test.ts`；6 交付文件 ESLint `0/0`，23 份核心/恢复回归 `244/244`、3 条离线 `eval` 通过，主交付 `83c4af4` 的[远端 Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) 双作业全绿闭环全量 `npm test`（含原生 `better-sqlite3`），Round 2 独立签发 `PASS`。见[任务卡](handoffs/BE01-20261128-task.md) · [施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)。
 
 ## 工程整固历史完成摘要（ENG03–FE02，均 PASS）
 
