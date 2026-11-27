@@ -33,4 +33,24 @@
 
 主 Agent 运行冻结 25 问，一跳开关各 50 行，非耗时字段均与 3-1 一致。千页 6,000 块，重建 2,629.48 ms；SQLite FTS 平均 13.94 ms、P95 28.91 ms，历史扫描平均 603.00 ms、P95 744.32 ms。
 
-本轮样例通过。3-2 整体签发待同版全仓门禁和最终提交标识。
+## 冻结版本与独立复验（2026-11-28）
+
+产品提交 `ceff6cc58fb1278da10232ccb59a21b1132f8524`，父提交 `d4c62e33d5fdafca5cfd66b71439d1da28161892`。独立验收逐项核对首轮冻结树 `1ee7d65f77921d3bc0ba86a11941f45e0147cbfa` 的 48 项差异。22 个前端文件对应模型可用状态、AI 操作入口、健康抽屉与人工审阅标注，2 个服务入口接入状态和诊断，12 个服务模块负责检查点、来源、草稿与路由健康，8 个测试和 4 份任务或交付记录覆盖上述行为。48 项均归属 3-2。
+
+首轮全仓 1,154/1,156。FE01 发现前端公共 API 多导出一个函数，RUN01 发现无模型配置时自检误报已配置。用 `git diff 1ee7d65 6c54243` 核对返修仅涉及三个文件。状态抽屉直接读取相同的路由，公共 API 恢复原有 130 个导出；自检改为检查加载结果中的实际路由配置。用 `git show -s --format='%H %T %P' HEAD` 核实产品提交对应最终树 `6c5424368818a305bb00cea4dca1e87f2c5b8cb6`。
+
+| 独立复验实际命令（Node v24.22.1） | 结果 |
+|---|---|
+| 首轮树：`node --import tsx --import ./tests/support/css-stub.mjs --test --test-concurrency=2 tests/kb03-deep.test.ts tests/pdf01-http.test.ts tests/pdf02-http.test.ts tests/provider01-entry.test.ts tests/provider-router.test.ts` | 52/52，0 跳过。覆盖标准与深度 Raw、新旧检查点、两条 PDF 链、生产 HTTP 主备与手动恢复。 |
+| 最终树：`node --import tsx --import ./tests/support/css-stub.mjs --test --test-concurrency=2 tests/fe01-api-barrel.test.ts tests/run01-api.test.ts tests/provider01-entry.test.ts` | 8/8，0 跳过。公共 API、无配置自检和真实路由健康接口复验通过。 |
+| 最终树：`node --import tsx --input-type=module -`，以 JSDOM 挂载 WikiModelStatus，点击“刷新状态”，记录 fetch 并断言 DOM | 显示主端已关闭、备端未配置。模拟返回的 HTTP 503 刷新后更新为 502。挂载与刷新各发一次只读 GET /api/llm/routing。 |
+
+上文 Edge、冻结 25 问及千页基准为此前实测，本轮复用。首轮冻结时两个施工报告所列的 10 项 SHA-256 全部匹配；独立报告之后改动的文件仅为兼容测试及施工说明。返修三文件未改动检查点、离线业务或检索引擎，受影响的自检、抽屉和路由接口在最终树单独复验。旧 Edge 临时探针已无法从本机临时目录取回，本轮 UI 复验使用 JSDOM。
+
+最终树全仓门禁复用主 Agent 的同版运行记录。六项依次为 `typecheck`、`format:check`、`lint`、`guard`、全仓测试和 `build`，均退出 0。lint 0 错误、769 条警告（3-1 为 761 条），guard 检查 6,267 份、0 违规。六并发全仓 1,156/1,156，0 跳过和取消，耗时 110.57 秒；生产构建成功，保留包体积提示。
+
+产品提交的 GitHub Actions 两个作业均完成并通过。[工作流 46030737982](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46030737982) · [Node 24.x](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46030737982/job/140613571029) · [Node 22.x](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46030737982/job/140613571428)
+
+**本轮缺陷复验 PASS。** 存储结算缺陷已由生产探针验证关闭。首轮全仓发现的公共 API 导出与无配置自检回归均在最终产品树通过独立复验。
+
+**3-2 整体独立验收 PASS。** 跨模型续跑和草稿来源、模型健康与手动恢复、离线操作、冻结检索评测、千页基准及同版全仓门禁均有对应证据。签发范围为 3-2 任务卡。

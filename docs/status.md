@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **LLM-Wiki 3-1 PASS（2026-11-27）**。主备 Provider、重轻分档与独立 Embedding 已接入；分端账本记录每次实际尝试。产品提交 `59261d5`，六核全仓 1,153/1,153。阶段裁决见[独立验收](reports/3-1-review.md) · [任务卡](handoffs/LLMWIKI-3-1.md) · [施工](reports/3-1-builder.md)。下一阶段为 3-2 检查点续跑、无模型降级与健康抽屉。
+- **LLM-Wiki 3-2 PASS（2026-11-28）**。跨模型检查点续跑、草稿人工复核提示、主备健康状态及无模型离线操作通过独立验收。API 导出和无配置自检两项回归已关闭。产品提交 `ceff6cc`，全仓 1,156/1,156，Windows Node 22/24 CI 通过。3-3 与 Batch 3 整批终验待后续授权。[独立验收](reports/3-2-review.md) · [任务卡](handoffs/LLMWIKI-3-2.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46030737982)。
+
+- **LLM-Wiki 3-1 PASS（2026-11-27）**。主备 Provider、重轻分档与独立 Embedding 已接入；分端账本记录每次实际尝试。产品提交 `59261d5`，六核全仓 1,153/1,153。阶段裁决见[独立验收](reports/3-1-review.md) · [任务卡](handoffs/LLMWIKI-3-1.md) · [施工](reports/3-1-builder.md)。
 
 - **LLM-Wiki Batch 2B 整体 PASS（2026-11-27）**。关系索引与反链、一跳检索、普通 Raw 草稿显式向量查重均已签收。产品提交 `098fb5a`。PDF 与失效媒体边界通过独立浏览器及 HTTP 复验，全仓 1,151/1,151。[2B-3 任务卡](handoffs/LLMWIKI-2B-3.md) · [施工](reports/2B-3-builder.md) · [整批独立验收](reports/2B-3-review.md)
 
