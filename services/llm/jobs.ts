@@ -36,7 +36,14 @@ import {
   runDeepPipeline,
   validateDeepCheckpoint,
 } from './knowledge-deep.ts';
-import { ExtractionCheckpointStore, KB02_PIPELINE_VERSION, type ExtractionCheckpoint } from './checkpoints.ts';
+import {
+  extractionCompletedBlocks,
+  extractionTaskFingerprint,
+  ExtractionCheckpointStore,
+  KB02_PIPELINE_VERSION,
+  type ExtractionCheckpoint,
+} from './checkpoints.ts';
+import { summarizeCompletedModels } from './checkpoint-models.ts';
 
 export const JOB_STATUSES = ['running', 'completed', 'failed', 'cancelled'] as const;
 export type JobStatus = (typeof JOB_STATUSES)[number];
@@ -348,14 +355,7 @@ export class ExtractionRunner {
     if (cp?.pipelineVersion === KB02_PIPELINE_VERSION && !cp.mediaPending) {
       const bundle = await loadExtractionRules(this.deps.rulesDir);
       const currentProvider = this.deps.provider();
-      if (
-        !draft &&
-        (cp.rulesVersion !== bundle.rulesVersion ||
-          (currentProvider &&
-            cp.providerIdentity !==
-              `${currentProvider.cacheIdentity ?? currentProvider.name}|${currentProvider.model}`))
-      )
-        this.conflict();
+      if (!draft && cp.rulesVersion !== bundle.rulesVersion) this.conflict();
       // Prompt revisions do not invalidate completed drafts. Validate the saved atoms, plan
       // and evidence using the unchanged strict schema, without a Provider call.
       await validateKnowledgeCheckpoint(
@@ -444,6 +444,9 @@ export class ExtractionRunner {
           body: raw.body,
           outcome: result.outcome,
           maintenance: pending.checkpoint.maintenance?.proposal,
+          modelProvenance: summarizeCompletedModels([
+            { models: result.checkpoint.completedModels, blocks: extractionCompletedBlocks(result.checkpoint) },
+          ]),
           jobId: job.id,
           rules: await this.deps.draftRules(),
         },
@@ -920,14 +923,15 @@ export class ExtractionRunner {
             priorCheckpoint.rawSha256 !== actualSha ||
             priorCheckpoint.rulesVersion !== bundle.rulesVersion ||
             priorCheckpoint.pipelineVersion !== (mode === 'deep' ? DEEP_VERSION : KB02_PIPELINE_VERSION) ||
-            priorCheckpoint.providerIdentity !== providerIdentity ||
+            (priorCheckpoint.taskFingerprint &&
+              priorCheckpoint.taskFingerprint !== extractionTaskFingerprint(raw, priorCheckpoint)) ||
             (!priorCheckpoint.mediaPending &&
               (priorCheckpoint.mediaInputSha256 !== content.digest ||
                 JSON.stringify(priorCheckpoint.chunks) !== JSON.stringify(chunks)))
           )
             throw new JobError(
               'LLM_CHECKPOINT_INCOMPATIBLE',
-              '原文、规则、Provider或pipeline已变化；检查点保留，请显式重新生成。',
+              '来源、原文、规则或处理版本已变化；检查点保留，请显式重新生成。',
               409,
             );
           if (!priorCheckpoint.mediaPending)
@@ -979,6 +983,15 @@ export class ExtractionRunner {
           maxRawChars: bundle.rules.budgets.maxRawChars,
         }).map(({ index, start, end }) => ({ index, start, end }));
     const actualSha = createHash('sha256').update(raw.body).digest('hex');
+    const checkpointBasis = {
+      pipelineVersion: mode === 'deep' ? DEEP_VERSION : KB02_PIPELINE_VERSION,
+      rulesVersion: bundle.rulesVersion,
+      mode,
+      mediaInputSha256: content.digest,
+      mediaPending:
+        this.deps.media && artifacts.some((item) => item.routeStatus === 'needs_vlm') ? (true as const) : undefined,
+      chunks,
+    };
     const checkpoint =
       resume ??
       (await checkpoints.save({
@@ -986,16 +999,10 @@ export class ExtractionRunner {
         jobId,
         rawId,
         rawSha256: actualSha,
-        ...(content.digest ? { mediaInputSha256: content.digest } : {}),
-        ...(this.deps.media && artifacts.some((item) => item.routeStatus === 'needs_vlm')
-          ? { mediaPending: true as const }
-          : {}),
-        pipelineVersion: mode === 'deep' ? DEEP_VERSION : KB02_PIPELINE_VERSION,
-        mode,
+        ...checkpointBasis,
         ...(mode === 'deep' ? { deep: { version: 1 as const, scan: scanDeepStructure(content.body, actualSha) } } : {}),
-        rulesVersion: bundle.rulesVersion,
         providerIdentity,
-        chunks,
+        taskFingerprint: extractionTaskFingerprint(raw, checkpointBasis),
         completedChunks: [],
         attempts: 0,
         stage: 'extracting',
@@ -1037,6 +1044,8 @@ export class ExtractionRunner {
           chunksTotal: chunks.length,
           chunksDone: checkpoint.completedChunks.length,
           callCount: checkpoint.attempts,
+          provider: job.provider,
+          checkpoint: job.checkpoint,
           error: undefined,
           finishedAt: undefined,
           cancelRequested: false,
@@ -1098,6 +1107,7 @@ export class ExtractionRunner {
     let phase = 'pipeline';
     const progressWrites: Promise<void>[] = [];
     const saveCheckpoint = async (value: Omit<ExtractionCheckpoint, 'integrity'>) => {
+      value = { ...value, taskFingerprint: extractionTaskFingerprint(raw, value) };
       assertNoKnownSecret(
         [
           ...value.completedChunks,
@@ -1105,6 +1115,7 @@ export class ExtractionRunner {
           ...(value.lastError ? [value.lastError] : []),
           ...(value.deep ? [value.deep] : []),
           ...(value.maintenance ? [value.maintenance] : []),
+          value.completedModels,
         ],
         secrets,
       );
@@ -1221,6 +1232,7 @@ export class ExtractionRunner {
         checkpoint,
         signal: controller.signal,
         saveCheckpoint,
+        continuation: extractionCompletedBlocks(initial).length > 0,
         planningRetry,
         beforePlanning,
         beforeCall,
@@ -1254,6 +1266,7 @@ export class ExtractionRunner {
           signal: controller.signal,
           beforeCall,
           saveCheckpoint,
+          continuation: extractionCompletedBlocks(initial).length > 0,
         },
         outcome,
       );
@@ -1289,6 +1302,9 @@ export class ExtractionRunner {
             body: raw.body,
             rules,
             maintenance,
+            modelProvenance: summarizeCompletedModels([
+              { models: checkpoint.completedModels, blocks: extractionCompletedBlocks(checkpoint) },
+            ]),
           },
           job.mode === 'deep'
             ? {

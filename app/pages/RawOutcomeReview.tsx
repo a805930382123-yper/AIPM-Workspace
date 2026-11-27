@@ -16,8 +16,10 @@ import {
   wikiCommit,
 } from '../api';
 import type { DraftPage, DraftView, RawDraftView, Wiki, WikiCommitStatus } from '../api';
+import { DraftModelNotice } from './draft-review/DraftModelNotice';
 import { FormalNoteReader } from '../components/FormalNoteReader';
 import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 import type { RawCitationTarget } from '../components/WikiQuestionPanel';
 import { mediaEvidenceHref } from '../../services/raw/media-artifact';
 import { parseNoteGrid, renderStructuredNote } from '../../services/wiki/structured-note';
@@ -107,6 +109,7 @@ function RawOutcomeReviewContent({
   advancedBusy,
   duplicateCheck,
 }: Props) {
+  const modelDisabled = useLlmDisabled();
   const dismissedKey = `aipm.outcome.dismissed.v1:${view.id}`;
   const [dismissedIds, setDismissedIds] = useState(() => readDismissedIds(dismissedKey));
   const [topicQuery, setTopicQuery] = useState('');
@@ -604,6 +607,7 @@ function RawOutcomeReviewContent({
                     : statusLabels[view.status]}{' '}
             · 草稿 v{view.revision}
           </p>
+          <DraftModelNotice provenance={view.modelProvenance} />
         </div>
         <div className="heading-actions">
           <button className="secondary-button" onClick={onBack} disabled={navigationDisabled}>
@@ -1067,7 +1071,8 @@ function RawOutcomeReviewContent({
                       {!view.structuredNote && onOpenWorkflow && (
                         <button
                           className="text-button"
-                          disabled={disabled || editing}
+                          disabled={disabled || editing || !!modelDisabled}
+                          title={modelDisabled}
                           onClick={() => void resolveDuplicate(page.pageId, candidate.id)}
                         >
                           生成更新预览
@@ -1160,7 +1165,14 @@ function RawOutcomeReviewContent({
                       </p>
                       <button
                         className="secondary-button"
-                        disabled={disabled || (adjustment.action !== 'create' && !adjustment.targetWikiId)}
+                        disabled={
+                          disabled ||
+                          (adjustment.action !== 'create' && !adjustment.targetWikiId) ||
+                          ((adjustment.action === 'create' || adjustment.action === 'update') && !!modelDisabled)
+                        }
+                        title={
+                          adjustment.action === 'create' || adjustment.action === 'update' ? modelDisabled : undefined
+                        }
                         onClick={() => void saveAdjustment()}
                       >
                         {busy === 'prepare' ? '正在准备成果…' : '准备新成果'}

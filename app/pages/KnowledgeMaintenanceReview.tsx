@@ -4,6 +4,7 @@ import { StructuredNoteEditor } from '../components/StructuredNoteEditor';
 import { moveDraftUnits } from '../api';
 import { useState } from 'react';
 import { api, confirmDraft, draftView, type DraftView } from '../api';
+import { DraftModelNotice } from './draft-review/DraftModelNotice';
 import { renderStructuredNote } from '../../services/wiki/structured-note';
 import type { KnowledgeChange } from '../../services/wiki/maintenance';
 
@@ -149,6 +150,7 @@ export function KnowledgeMaintenanceReview({
                   : '标准整理'}{' '}
             · 草稿 v{view.revision}
           </p>
+          {!view.input && <DraftModelNotice provenance={view.modelProvenance} />}
         </div>
         <div className="heading-actions">
           <button className="secondary-button" onClick={onBack}>

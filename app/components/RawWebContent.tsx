@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import Markdown from 'react-markdown';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 import { parseNoteGrid } from '../../services/wiki/structured-note';
 import {
   parseRawMedia,
@@ -108,6 +109,7 @@ function ImageMarkdown({ body }: { body: string }) {
 
 /** Reading only fetches existing derivatives; model calls require an explicit button action. */
 export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody?: boolean }) {
+  const modelDisabled = useLlmDisabled();
   const [artifacts, setArtifacts] = useState<RawMediaArtifact[]>([]);
   const [source, setSource] = useState<RawMediaReadingSource>();
   const [loading, setLoading] = useState(true);
@@ -205,7 +207,8 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
           <button
             type="button"
             className="secondary-button"
-            disabled={disabled}
+            disabled={disabled || !!modelDisabled}
+            title={modelDisabled}
             onClick={() =>
               void parse(
                 waiting.map((item) => item.mediaId),
@@ -217,6 +220,7 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
           </button>
         )}
       </div>
+      {modelDisabled && <p className="field-help">{modelDisabled}</p>}
       {readError && (
         <div className="form-error" role="alert">
           {readError}{' '}
@@ -306,7 +310,8 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                     <button
                       type="button"
                       className="secondary-button"
-                      disabled={disabled}
+                      disabled={disabled || !!modelDisabled}
+                      title={modelDisabled}
                       onClick={() => void parse([artifact.mediaId], false, artifact.routeStatus !== 'needs_vlm')}
                     >
                       {running
@@ -322,7 +327,8 @@ export function RawWebContent({ raw, inlineBody = true }: { raw: Raw; inlineBody
                     <button
                       type="button"
                       className="text-button"
-                      disabled={disabled}
+                      disabled={disabled || !!modelDisabled}
+                      title={modelDisabled}
                       onClick={() => void parse([artifact.mediaId], false, true)}
                     >
                       {running ? '正在精读…' : '重新精读（重新调用模型）'}

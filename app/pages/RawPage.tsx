@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PdfPages } from '../PdfPages';
 import { RawWebContent } from '../components/RawWebContent';
 import { useDialogFocus } from '../components/useDialogFocus';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 import type {
   ExtractionJob,
   Raw,
@@ -113,6 +114,7 @@ export function RawPage({
   onOpenWorkflow?: (id: string) => void;
   onRefresh: () => Promise<void>;
 }) {
+  const modelDisabled = useLlmDisabled();
   const selected = items.find((item) => item.id === selectedId) ?? (selectedId ? null : (items[0] ?? null));
   const [rawQuery, setRawQuery] = useState('');
   const [rawStatusFilter, setRawStatusFilter] = useState<'all' | RawStatus>('all');
@@ -230,7 +232,8 @@ export function RawPage({
         <div className="action-group">
           <button
             className="secondary-button"
-            disabled={items.length < 2}
+            disabled={items.length < 2 || !!modelDisabled}
+            title={modelDisabled}
             onClick={async () => {
               if (synthesisOpening.current) return;
               synthesisOpening.current = true;
@@ -452,6 +455,7 @@ function SynthesisDialog({
   onClose: () => void;
   onCreated: (workflowId: string) => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const dialog = useDialogFocus<HTMLElement>();
   const [synthesisIds, setSynthesisIds] = useState<string[]>([]);
   const [synthesisSourceIds, setSynthesisSourceIds] = useState<string[]>([]);
@@ -571,7 +575,8 @@ function SynthesisDialog({
             <button
               type="button"
               className="primary-button"
-              disabled={synthesisBusy || selectedCount < 2}
+              disabled={synthesisBusy || selectedCount < 2 || !!modelDisabled}
+              title={modelDisabled}
               onClick={() => void submit()}
             >
               {synthesisBusy ? '正在生成…' : '生成 Synthesis 草稿'}
@@ -614,6 +619,7 @@ function RawDetail({
   onOpenDraft: (draftId: string) => void;
   onBodySaved: (raw: Raw) => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [editing, setEditing] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [savedBodyNotice, setSavedBodyNotice] = useState('');
@@ -1035,7 +1041,8 @@ function RawDetail({
                   <div>
                     <button
                       className="text-button ai-action"
-                      disabled={busy || storageBlocked}
+                      disabled={busy || storageBlocked || !!modelDisabled}
+                      title={modelDisabled}
                       onClick={() =>
                         onStartAi(
                           false,
@@ -1053,9 +1060,10 @@ function RawDetail({
                             : '整理到知识库'}
                     </button>
                     <p className="extract-note">
-                      {status === 'failed' && activeJob?.pipelineVersion
-                        ? `从现有检查点尝试继续，沿用原任务${activeJob.mode === 'deep' ? '深度' : '标准'}模式并保留累计调用；可恢复性由服务端判定。`
-                        : '自动准备知识页成果，待你选择并确认。'}
+                      {modelDisabled ||
+                        (status === 'failed' && activeJob?.pipelineVersion
+                          ? `从现有检查点尝试继续，沿用原任务${activeJob.mode === 'deep' ? '深度' : '标准'}模式并保留累计调用；可恢复性由服务端判定。`
+                          : '自动准备知识页成果，待你选择并确认。')}
                     </p>
                   </div>
                 </>
@@ -1109,7 +1117,8 @@ function RawDetail({
                   <div>
                     <button
                       className="text-button"
-                      disabled={busy || storageBlocked}
+                      disabled={busy || storageBlocked || !!modelDisabled}
+                      title={modelDisabled}
                       onClick={() => onStartAi(false, true, 'standard')}
                     >
                       仅重新规划（带覆盖诊断）
@@ -1121,7 +1130,8 @@ function RawDetail({
                 <div>
                   <button
                     className="text-button"
-                    disabled={busy || storageBlocked}
+                    disabled={busy || storageBlocked || !!modelDisabled}
+                    title={modelDisabled}
                     onClick={() => onStartAi(true, false, mode)}
                   >
                     明确重新生成
@@ -1236,7 +1246,8 @@ function RawDetail({
               </div>
               <button
                 className="secondary-button"
-                disabled={!!translationAction}
+                disabled={!!translationAction || !!modelDisabled}
+                title={modelDisabled}
                 onClick={() => void updateTranslation('retry')}
               >
                 {translationAction === 'retry' ? '正在重试…' : '重试翻译'}
@@ -1248,7 +1259,8 @@ function RawDetail({
               <span>翻译已取消，仍可阅读原文。</span>
               <button
                 className="secondary-button"
-                disabled={!!translationAction}
+                disabled={!!translationAction || !!modelDisabled}
+                title={modelDisabled}
                 onClick={() => void updateTranslation('retry')}
               >
                 继续翻译
@@ -1606,6 +1618,7 @@ export function ImportDialog({
   onGenerate: (raw: Raw) => Promise<void>;
   prefill?: Raw | null;
 }) {
+  const modelDisabled = useLlmDisabled();
   // The original tag array is kept verbatim; the text field is only a view of it until edited.
   const dialogRef = useDialogFocus<HTMLElement>();
   const initialTags = prefill?.tags ?? [];
@@ -1749,7 +1762,7 @@ export function ImportDialog({
       } else if (material === 'url') {
         const { raw, translation } = await api<RawUrlImportResult>('/api/raw/import', {
           method: 'POST',
-          body: JSON.stringify({ metadata: metadata(), translateToChinese }),
+          body: JSON.stringify({ metadata: metadata(), translateToChinese: translateToChinese && !modelDisabled }),
         });
         await onCommitted(raw);
         onOpen(raw, translation);
@@ -1989,10 +2002,12 @@ export function ImportDialog({
                   <label className="raw-translate-choice span-two">
                     <input
                       type="checkbox"
-                      checked={translateToChinese}
+                      checked={translateToChinese && !modelDisabled}
+                      disabled={!!modelDisabled}
                       onChange={(event) => setTranslateToChinese(event.target.checked)}
                     />
                     翻译成中文（会调用已配置模型）
+                    {modelDisabled && <small>{modelDisabled}</small>}
                   </label>
                 )}
                 <label className="field span-two">
@@ -2114,7 +2129,8 @@ export function ImportDialog({
                         <button
                           type="button"
                           className="primary-button"
-                          disabled={saving}
+                          disabled={saving || !!modelDisabled}
+                          title={modelDisabled}
                           onClick={(event) => {
                             const form = event.currentTarget.form;
                             if (form?.reportValidity()) void submit(true);
@@ -2123,6 +2139,7 @@ export function ImportDialog({
                           {saving ? '正在处理…' : '保存并生成 Wiki 草稿'}
                         </button>
                       )}
+                      {!pdfFile && modelDisabled && <small className="field-help">{modelDisabled}</small>}
                     </>
                   )}
                 </div>

@@ -273,6 +273,10 @@ h1 {
   background: #f5f7fa;
   border-color: #c8d2df;
 }
+:is(.primary-button, .secondary-button, .text-button, .raw-list-item):disabled[title] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .stats-grid {
   display: grid;
   gap: 12px;

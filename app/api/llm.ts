@@ -1,5 +1,6 @@
 import type { InspectionDraftInput, InspectionFinding } from '../../services/wiki/inspection-input';
 import type { KnowledgeAnswer } from '../../services/llm/knowledge-answers';
+import type { ChatEndpoint, ChatTier, LlmAttemptLedger, LlmAvailability } from '../../services/llm/provider-router';
 import type { AnswerCitation, QuestionDraftInput, QuestionPreview } from '../../services/wiki/question-input';
 import type { KnowledgeChange, KnowledgeMaintenance } from '../../services/wiki/maintenance';
 import type {
@@ -9,6 +10,7 @@ import type {
   NoteApproval,
 } from '../../services/wiki/structured-note';
 import type { DeepQualityReport } from '../../services/llm/knowledge-deep';
+import type { DraftModelProvenance } from '../../services/llm/checkpoint-models';
 import type { HumanReview } from '../../services/wiki/human-review.ts';
 import type { TemplateFields, InputTemplateFields, MergedTemplateFields } from '../../services/wiki/template-fields';
 import type { MediaEvidenceSource } from '../../services/raw/media-artifact';
@@ -31,6 +33,10 @@ export type LlmConfigSummary = {
   revision: string;
   writeToken: string;
   environmentLocked: boolean;
+};
+
+export type LlmRoutingStatus = Pick<Awaited<ReturnType<LlmAttemptLedger['read']>>, 'endpoints' | 'switches'> & {
+  availability: LlmAvailability;
 };
 
 export type RawStatus = 'unprocessed' | 'processing' | 'pending_confirmation' | 'generated' | 'failed';
@@ -217,6 +223,7 @@ export type DraftPreview = {
 
 export type RawDraftView = {
   input?: undefined;
+  modelProvenance?: DraftModelProvenance;
   pdfInput?: PdfCleanupRange & { pageCount: number; assetId: string; assetSha256: string; basisDigest: string };
   outcomeDigest?: string;
   sourceRenderedBody?: string;
@@ -428,10 +435,11 @@ export const saveLlmConfig = (config: LlmConfigSummary, input: { baseUrl: string
 export const clearLlmConfig = (config: LlmConfigSummary) =>
   configRequest<LlmConfigSummary>('/api/llm/config', config, 'DELETE', { revision: config.revision, confirm: true });
 
-export const testLlmConfig = (config: LlmConfigSummary) =>
+export const testLlmConfig = (config: LlmConfigSummary, target?: { endpoint: ChatEndpoint; tier: ChatTier }) =>
   configRequest<{ ok: boolean; message: string; elapsedMs: number }>('/api/llm/config/test', config, 'POST', {
     revision: config.revision,
     confirm: true,
+    ...target,
   });
 
 export const rawProcessing = () =>

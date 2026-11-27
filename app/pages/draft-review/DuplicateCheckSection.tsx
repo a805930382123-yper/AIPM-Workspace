@@ -1,4 +1,5 @@
 import type { RawDraftView } from '../../api';
+import { useLlmDisabled } from '../../hooks/llmAvailability';
 import { duplicateDimension, type PageDraft } from './draftReviewModel';
 import type { DraftReviewState } from './useDraftReviewState';
 
@@ -17,6 +18,7 @@ export function DuplicateCheckSection({
   disabled?: boolean;
   onOpenWiki?: (id: string) => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const { readOnly, dirty, busy, duplicateErrors, duplicateViews, checkDuplicates, decide, makeUpdate } = state;
   const semantic = state.semanticDuplicates[page.pageId];
   const currentSemantic = !dirty && semantic?.revision === view.revision ? semantic : undefined;
@@ -109,7 +111,8 @@ export function DuplicateCheckSection({
           {!advisory && page.reviewDecision === 'update' && page.updateTargetWikiId && (
             <button
               className="text-button"
-              disabled={!!view.structuredNote || busy !== ''}
+              disabled={!!view.structuredNote || busy !== '' || !!modelDisabled}
+              title={modelDisabled}
               onClick={() => void makeUpdate(page.pageId, page.updateTargetWikiId!)}
             >
               生成旧 Wiki 更新预览

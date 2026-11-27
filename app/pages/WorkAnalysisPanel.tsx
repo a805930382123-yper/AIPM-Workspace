@@ -10,6 +10,7 @@ import {
   type WorkAnalysisRunWithReview,
   type WorkItem,
 } from '../api';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 
 const runLabels: Record<WorkAnalysisRun['status'], string> = {
   running: '分析中',
@@ -148,6 +149,7 @@ function WorkBasisReviewPanel({
   round: number;
   onReviewChanged: (review?: Awaited<ReturnType<typeof startWorkBasisReview>>) => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [preview, setPreview] = useState<string | null>();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
@@ -184,6 +186,11 @@ function WorkBasisReviewPanel({
     <section className="work-basis-review" aria-labelledby={`work-review-${run.id}`}>
       <h4 id={`work-review-${run.id}`}>模型复核</h4>
       <p className="work-note">核对草稿的依据和证据强度，复核意见由你确认。</p>
+      {modelDisabled && (
+        <p className="field-help" role="status">
+          {modelDisabled}
+        </p>
+      )}
       {inProgress && (
         <p className="work-note" role="status">
           正在检查分析依据…
@@ -282,7 +289,12 @@ function WorkBasisReviewPanel({
             </details>
           ))}
           <div className="work-buttons">
-            <button className="primary-button" type="button" disabled={inProgress} onClick={() => void launch()}>
+            <button
+              className="primary-button"
+              type="button"
+              disabled={inProgress || !!modelDisabled}
+              onClick={() => void launch()}
+            >
               开始检查
             </button>
             <button
@@ -304,6 +316,7 @@ function WorkBasisReviewPanel({
           <button
             className="secondary-button"
             type="button"
+            disabled={!!modelDisabled}
             onClick={() => {
               setError('');
               setPreview(retry ?? null);
@@ -378,6 +391,7 @@ export function WorkAnalysisPanel({
   saveStage: (body: string, analysisRunId: string | undefined, onSaved: () => void) => void;
   stageNotice: ReactNode;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [runs, setRuns] = useState<WorkAnalysisRunWithReview[] | null>(null);
   const [readError, setReadError] = useState('');
   const [launchError, setLaunchError] = useState('');
@@ -433,7 +447,14 @@ export function WorkAnalysisPanel({
   const showSuggestion =
     !readError && runs !== null && completed.length > 0 && newRaws.length > 0 && !running && item.status !== 'closed';
   const canStart =
-    !busy && !running && !readError && runs !== null && item.status !== 'closed' && rawIds.length > 0 && !needsReload;
+    !busy &&
+    !running &&
+    !readError &&
+    runs !== null &&
+    item.status !== 'closed' &&
+    rawIds.length > 0 &&
+    !needsReload &&
+    !modelDisabled;
   useEffect(() => {
     if (showPreview) previewHeading.current?.focus();
   }, [showPreview]);
@@ -482,6 +503,11 @@ export function WorkAnalysisPanel({
         <div className="work-section-heading">
           <h2 id="work-analysis">AI 分析</h2>
         </div>
+        {modelDisabled && (
+          <p className="field-help" role="status">
+            {modelDisabled}
+          </p>
+        )}
         {showSuggestion && (
           <div className="work-analysis-preview" aria-label="事项推进建议">
             <p>有 {newRaws.length} 条关联资料尚未用于已完成的分析。</p>

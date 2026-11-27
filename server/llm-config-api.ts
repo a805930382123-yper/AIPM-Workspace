@@ -2,7 +2,7 @@ import type express from 'express';
 import { LlmConfigManager } from '../services/llm/config-manager.ts';
 import { ConfigError } from '../services/llm/config.ts';
 import { assertNoKnownSecret, LlmError, type LlmProvider } from '../services/llm/provider.ts';
-import type { LlmAttemptLedger } from '../services/llm/provider-router.ts';
+import type { ChatEndpoint, LlmAttemptLedger, LlmAvailability } from '../services/llm/provider-router.ts';
 
 const fail = (res: express.Response, status: number, code: string, message: string) =>
   res.status(status).json({ error: { code, message } });
@@ -38,10 +38,23 @@ function allowedOrigin(req: express.Request): boolean {
 export function registerLlmConfigRoutes(
   app: express.Express,
   manager: LlmConfigManager,
-  provider: () => LlmProvider | undefined | Promise<LlmProvider | undefined>,
+  provider: (endpoint: ChatEndpoint) => LlmProvider | undefined | Promise<LlmProvider | undefined>,
   routing?: LlmAttemptLedger,
-  readRoutingConfig?: () => Promise<unknown>,
+  readAvailability?: () => Promise<LlmAvailability>,
 ): void {
+  if (readAvailability) {
+    app.get('/api/llm/availability', async (req, res, next) => {
+      if (!localHost(req.get('host')) || !allowedOrigin(req) || req.get('sec-fetch-site') === 'cross-site') {
+        fail(res, 403, 'CONFIG_ORIGIN_FORBIDDEN', '仅允许本机可信页面读取模型可用状态。');
+        return;
+      }
+      try {
+        res.set('Cache-Control', 'no-store').json(await readAvailability());
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
   if (routing) {
     app.get('/api/llm/routing', async (req, res, next) => {
       if (!localHost(req.get('host')) || !allowedOrigin(req) || req.get('sec-fetch-site') === 'cross-site') {
@@ -57,8 +70,20 @@ export function registerLlmConfigRoutes(
         return;
       }
       try {
-        const [ledger, availableRoutes] = await Promise.all([routing.read(requestId), readRoutingConfig?.()]);
-        res.json({ ...ledger, availableRoutes });
+        const [ledger, availability] = await Promise.all([
+          routing.read(requestId),
+          readAvailability?.().catch(() => undefined),
+        ]);
+        const view = (endpoint?: LlmAvailability['primary']) => {
+          if (endpoint?.configuration !== 'configured') return null;
+          const { label, heavyModel, lightModel, timeoutMs } = endpoint;
+          return { label, heavyModel, lightModel, timeoutMs };
+        };
+        res.json({
+          ...ledger,
+          availableRoutes: { primary: view(availability?.primary), backup: view(availability?.backup) },
+          availability,
+        });
       } catch (error) {
         next(error);
       }
@@ -120,17 +145,23 @@ export function registerLlmConfigRoutes(
     }
   });
   app.post('/api/llm/config/test', guard, async (req, res, next) => {
-    if (!fields(req.body, ['revision', 'confirm'], res)) return;
+    if (!fields(req.body, ['revision', 'confirm', 'endpoint', 'tier'], res)) return;
     const started = Date.now();
     try {
       if (req.body.confirm !== true) throw new ConfigError('CONFIRM_REQUIRED', '请明确确认发送固定连接测试消息。');
       await manager.assertRevision(req.body.revision);
-      const target = await provider();
+      const { endpoint = 'primary', tier = 'heavy' } = req.body;
+      if (!['primary', 'backup'].includes(endpoint as string) || !['heavy', 'light'].includes(tier as string)) {
+        fail(res, 400, 'INVALID_CONFIG_REQUEST', '请选择有效的 Provider 和模型档位。');
+        return;
+      }
+      const target = await provider(endpoint as ChatEndpoint);
       if (!target) throw new LlmError('LLM_NOT_CONFIGURED', '尚未保存完整有效的 Provider 配置。', 409);
       const completion = await target.complete({
         system: 'You are a connectivity check. Return only the word OK.',
         user: 'Reply with OK.',
         purpose: 'diagnostic',
+        tier: tier as 'heavy' | 'light',
         timeoutMs: 15000,
         maxOutputBytes: 4096,
       });

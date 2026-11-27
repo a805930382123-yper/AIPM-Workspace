@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { changePdfCleanup, changeRawPdfJob, getPdfCleanup, getRawPdf, getRawPdfPage } from './api';
 import type { PdfCleanupRange, PdfCleanupView, PdfPage, RawPdf } from './api';
+import { useLlmDisabled } from './hooks/llmAvailability';
 
 const activeJob = (job: RawPdf['job']) => job?.status === 'queued' || job?.status === 'running';
 const jobLabels = {
@@ -12,6 +13,7 @@ const jobLabels = {
 };
 
 export function PdfPages({ rawId, onOpenDraft }: { rawId: string; onOpenDraft?: (id: string) => void }) {
+  const modelDisabled = useLlmDisabled();
   const [pdf, setPdf] = useState<RawPdf | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [page, setPage] = useState<PdfPage | null>(null);
@@ -130,7 +132,8 @@ export function PdfPages({ rawId, onOpenDraft }: { rawId: string; onOpenDraft?: 
               )}
               {job?.status !== 'completed' && (
                 <p className="extract-note">
-                  页理解按整份 PDF 进行。开始或继续后，会把未完成页的图像和已有文字发送给已配置的模型。
+                  {modelDisabled ||
+                    '页理解按整份 PDF 进行。开始或继续后，会把未完成页的图像和已有文字发送给已配置的模型。'}
                 </p>
               )}
             </div>
@@ -140,7 +143,11 @@ export function PdfPages({ rawId, onOpenDraft }: { rawId: string; onOpenDraft?: 
               </button>
             ) : (
               job?.status !== 'completed' && (
-                <button className="primary-button" disabled={!!action} onClick={() => void updateJob('understand')}>
+                <button
+                  className="primary-button"
+                  disabled={!!action || !!modelDisabled}
+                  onClick={() => void updateJob('understand')}
+                >
                   {job ? '继续 AI 页理解' : '开始 AI 页理解'}
                 </button>
               )
@@ -333,6 +340,7 @@ function PdfCleanup({
   onOpenDraft: (id: string) => void;
   onEvidence: (page: number, trigger: HTMLButtonElement) => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [view, setView] = useState<PdfCleanupView | null>(null);
   const [rangeMode, setRangeMode] = useState<'all' | 'range'>('all');
   const [choosingRange, setChoosingRange] = useState(false);
@@ -510,7 +518,12 @@ function PdfCleanup({
       )}
       <div className="heading-actions">
         {view && !running && (choosingRange || job?.status !== 'completed') && (
-          <button className="primary-button" disabled={!ready} onClick={() => void update('start')}>
+          <button
+            className="primary-button"
+            disabled={!ready || !!modelDisabled}
+            title={modelDisabled}
+            onClick={() => void update('start')}
+          >
             {job && !choosingRange ? '继续内容清理' : '开始内容清理'}
           </button>
         )}

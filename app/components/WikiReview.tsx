@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { ApiError } from '../api';
+import { WikiModelStatus } from './WikiModelStatus';
 import {
   getWikiReviewIndex,
   getWikiReviewQueue,
@@ -212,7 +213,7 @@ const tabs = [
   { key: 'pending', label: '待复核', empty: '当前没有待复核页面。' },
   { key: 'due_soon', label: '30天内到期', empty: '当前没有 30 天内到期的页面待处理。' },
   { key: 'unverified', label: '历史未核验', empty: '当前没有历史未核验页面待处理。' },
-  { key: 'index', label: '索引状态', empty: '' },
+  { key: 'index', label: '索引与系统状态', empty: '' },
 ] as const;
 
 const indexLabels = {
@@ -426,6 +427,7 @@ export function WikiReviewDrawer({
             )}
           </dl>
         )}
+        {current.key === 'index' && <WikiModelStatus />}
       </section>
     </dialog>
   );

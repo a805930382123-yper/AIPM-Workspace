@@ -40,13 +40,14 @@ function close(server: http.Server) {
 }
 
 async function fakeProvider() {
-  const calls: Array<{ page?: number; text?: string; image?: Buffer; userContent: unknown }> = [];
+  const calls: Array<{ page?: number; text?: string; image?: Buffer; userContent: unknown; system: string }> = [];
   let respond = async (page: number) => ({ status: 200, value: answer(page) as unknown });
   const server = http.createServer(async (request, res) => {
     try {
       const received: Buffer[] = [];
       for await (const bytes of request) received.push(Buffer.from(bytes));
-      const userContent = JSON.parse(Buffer.concat(received).toString('utf8')).messages[1].content;
+      const { messages } = JSON.parse(Buffer.concat(received).toString('utf8'));
+      const userContent = messages[1].content;
       let page: number | undefined;
       let text: string | undefined;
       let image: Buffer | undefined;
@@ -63,7 +64,7 @@ async function fakeProvider() {
         image = Buffer.from(url.split(',')[1], 'base64');
         assert.equal(image.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
       }
-      calls.push({ page, text, image, userContent });
+      calls.push({ page, text, image, userContent, system: messages[0].content });
       const reply = await respond(page ?? 0);
       const body =
         reply.status === 200
@@ -353,26 +354,34 @@ test('Middle-page invalid JSON, rejected images and changed Provider preserve su
       [1, 2, 2, 'PDF_PAGE_OUTPUT_INVALID'],
     );
     assert.equal((await api.request(`${route}/pages/2`)).json.understanding, undefined);
-    other = await local(api.root, provider(fake.url, 'other-model'));
-    await other.request(route + '/understand', {});
-    failed = await other.wait(route, 'failed');
-    assert.equal(failed.job.error.code, 'PDF_PROVIDER_CHANGED');
-    assert.equal(fake.calls.length, 2);
-    await other.close();
-    other = undefined;
+    const manifestPath = path.join(api.root, 'state', 'raw-pdf', uploaded.json.raw.id, 'manifest.json');
+    const saved = JSON.parse(await readFile(manifestPath, 'utf8'));
+    const first = saved.results[0];
+    assert.deepEqual(Object.keys(saved.completedModels), ['page-1']);
     fake.setResponse(async () => ({ status: 400, value: 'model rejects images' }));
     await api.request(route + '/understand', {});
     failed = await api.wait(route, 'failed');
     assert.deepEqual([failed.job.completedPages, failed.job.failedPage, failed.job.attempts], [1, 2, 3]);
     assert.match(failed.job.error.message, /支持图像/);
     assert(fake.calls[2].image);
+    other = await local(api.root, provider(fake.url, 'other-model'));
     fake.setResponse(async (page) => ({ status: 200, value: answer(page) }));
-    await api.request(route + '/understand', {});
-    const done = await api.wait(route, 'completed');
+    await other.request(route + '/understand', {});
+    const done = await other.wait(route, 'completed');
     assert.equal(done.job.attempts, 5);
     assert.deepEqual(
       fake.calls.map((call) => call.page),
       [1, 2, 2, 2, 3],
+    );
+    assert(fake.calls.slice(3).every(({ system }) => system.includes('结构衔接')));
+    const resumed = JSON.parse(await readFile(manifestPath, 'utf8'));
+    assert.deepEqual(resumed.results[0], first);
+    assert.equal(resumed.taskFingerprint, saved.taskFingerprint);
+    assert.deepEqual(
+      Object.values(resumed.completedModels)
+        .flat()
+        .map((entry: any) => entry.model),
+      ['fixture-vision', 'other-model', 'other-model'],
     );
     assert.deepEqual((await api.request(done.originalUrl)).bytes, bytes);
   } finally {

@@ -284,6 +284,8 @@ async function resumeRevisionFour(fixture: Awaited<ReturnType<typeof setup>>) {
   await fixture.cleanup.start(fixture.rawId, range);
   await terminal(fixture, 'completed');
   const legacy = JSON.parse(await readFile(fixture.state, 'utf8'));
+  delete legacy.completedModels;
+  delete legacy.taskFingerprint;
   legacy.promptRevision = 4;
   legacy.attempts -= legacy.writing.length;
   legacy.status = 'failed';
@@ -1018,6 +1020,8 @@ test('long PDF explicit resume archives a revision-five cleaning prefix and send
     const failed = await terminal(fixture, 'failed');
     assert.equal(failed.completedBatches, 1);
     const saved = JSON.parse(await readFile(fixture.state, 'utf8'));
+    delete saved.completedModels;
+    delete saved.taskFingerprint;
     saved.promptRevision = 5;
     const priorBytes = JSON.stringify(saved);
     await writeFile(fixture.state, priorBytes);
@@ -1048,7 +1052,7 @@ test('long PDF explicit resume archives a revision-five cleaning prefix and send
 });
 
 test('global PDF directory upgrades a full revision-six checkpoint atomically and resumes the long writer', async () => {
-  await withHttpProvider(async ({ calls, provider, fallback, respond, respondWriting }) => {
+  await withHttpProvider(async ({ calls, provider, respond, respondWriting }) => {
     const range = { startPage: 1, endPage: 2 };
     type Topic = {
       id: string;
@@ -1141,6 +1145,8 @@ test('global PDF directory upgrades a full revision-six checkpoint atomically an
     assert.equal(firstFailure.promptRevision, 7);
     assert.equal(firstFailure.completedBatches, firstFailure.totalBatches);
     const prior = JSON.parse(await readFile(fixture.state, 'utf8'));
+    delete prior.completedModels;
+    delete prior.taskFingerprint;
     prior.promptRevision = 6;
     prior.attempts += 9;
     prior.index = labels.slice(0, 128).map((topic) => ({ topic, title: '局部议题' }));
@@ -1150,9 +1156,6 @@ test('global PDF directory upgrades a full revision-six checkpoint atomically an
     const before = calls.length;
     let current = { ...fixture, cleanup: fixture.restart() };
     assert.equal((await current.cleanup.get(fixture.rawId)).job?.promptRevision, 6);
-    fixture.setProvider(fallback);
-    await assert.rejects(current.cleanup.start(fixture.rawId, range), { code: 'PDF_CLEANUP_PROVIDER_CHANGED' });
-    fixture.setProvider(provider);
     const oldBasis = fixture.pdfInput.binding.basisDigest;
     fixture.pdfInput.binding.basisDigest = sha('changed-r1-or-raw');
     await assert.rejects(current.cleanup.start(fixture.rawId, range), { code: 'PDF_CLEANUP_BASIS_CHANGED' });
@@ -1219,6 +1222,7 @@ test('global PDF directory upgrades a full revision-six checkpoint atomically an
     const { job } = await restarted.cleanup.draft(fixture.rawId, range);
     const draft = (await fixture.drafts.get(job!.draftId!))!;
     assert.equal(draft.status, 'pending_confirmation');
+    assert.equal(draft.modelProvenance?.untrackedBlocks, prior.batches.length + 2);
     assert.equal(draft.pages.length, 1);
     assert.equal(draft.pages[0].pdfEvidence?.length, 1002);
     const candidate = draft.maintenance!.changes[0].candidate.body;
@@ -1455,6 +1459,8 @@ test('a completed revision-four checkpoint stays readable and explicit revision-
     await fixture.cleanup.start(fixture.rawId, range);
     await terminal(fixture, 'completed');
     const legacy = JSON.parse(await readFile(fixture.state, 'utf8'));
+    delete legacy.completedModels;
+    delete legacy.taskFingerprint;
     legacy.promptRevision = 4;
     legacy.attempts -= legacy.writing.length;
     delete legacy.writing;

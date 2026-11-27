@@ -12,6 +12,7 @@ import {
   type StructuredNote,
 } from '../wiki/structured-note.ts';
 import { validDeepQuality, validDeepQualityLocations } from '../llm/knowledge-deep.ts';
+import { validDraftModelProvenance } from '../llm/checkpoint-models.ts';
 import {
   validTemplateFields,
   validInputTemplateFields,
@@ -28,9 +29,17 @@ export function isExtractionDraft(v: unknown, id?: string): boolean {
   if (obj(v) && Object.hasOwn(v, 'input')) {
     if (
       !validEvidenceInput(v.input) ||
-      ['rawId', 'rawSha256', 'rawTitle', 'rawMeta', 'jobId', 'source', 'deferredAt', 'pdfInput'].some((k) =>
-        Object.hasOwn(v, k),
-      ) ||
+      [
+        'rawId',
+        'rawSha256',
+        'rawTitle',
+        'rawMeta',
+        'jobId',
+        'source',
+        'deferredAt',
+        'pdfInput',
+        'modelProvenance',
+      ].some((k) => Object.hasOwn(v, k)) ||
       !isUuid(v.id) ||
       (id !== undefined && v.id !== id) ||
       !Number.isInteger(v.revision) ||
@@ -72,6 +81,7 @@ export function isExtractionDraft(v: unknown, id?: string): boolean {
     );
   }
 
+  if (obj(v) && v.modelProvenance !== undefined && !validDraftModelProvenance(v.modelProvenance)) return false;
   if (obj(v) && v.maintenance !== undefined) {
     if (!validMaintenance(v.maintenance) || !Array.isArray(v.pages)) return false;
     const pageCount = v.pages.length;

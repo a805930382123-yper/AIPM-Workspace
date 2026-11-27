@@ -208,11 +208,10 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     return [...new Set([this.config.apiKey, ...(this.config.knownSecrets ?? [])].filter(Boolean))];
   }
   matchesTarget(other: OpenAiCompatibleProvider): boolean {
-    return (
-      this.cacheIdentity === other.cacheIdentity &&
-      this.model === other.model &&
-      this.config.apiKey === other.config.apiKey
-    );
+    return this.matchesConnection(other) && this.model === other.model;
+  }
+  matchesConnection(other: OpenAiCompatibleProvider): boolean {
+    return this.cacheIdentity === other.cacheIdentity && this.config.apiKey === other.config.apiKey;
   }
 
   private async httpError(response: Response, maxBytes: number, media: boolean): Promise<LlmError> {

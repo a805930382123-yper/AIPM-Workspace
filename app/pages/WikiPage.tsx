@@ -22,6 +22,7 @@ import { api, dateText, drafts, knowledgeWorkflows, sourceLabels, startExtract }
 import '../wiki.css';
 import { FormalNoteReader } from '../components/FormalNoteReader';
 import { useDialogFocus } from '../components/useDialogFocus';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 
 const statusLabels: Record<string, string> = {
   verified: '已核实',
@@ -95,6 +96,7 @@ export function WikiPage({
   onOpenWorkflow?: (id: string) => void;
   onImport?: () => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [activeSubView, setActiveSubView] = useState<WikiSubView>(initialCheck?.view ?? 'overview');
   const [hasOpenedAsk, setHasOpenedAsk] = useState(false);
   const [hasOpenedInspection, setHasOpenedInspection] = useState(initialCheck?.view === 'active-check');
@@ -349,6 +351,7 @@ export function WikiPage({
         onOpenDraft?.(state.draftId);
         return;
       }
+      if (modelDisabled && state?.status !== 'processing') return;
       const job = await startExtract(raw.id);
       onJobStarted?.(job, requestedPageGeneration);
     } catch (problem) {
@@ -885,6 +888,11 @@ export function WikiPage({
             </div>
           </div>
           <div className="wiki-raw-generator-body">
+            {modelDisabled && (
+              <p className="field-help" role="status">
+                {modelDisabled}
+              </p>
+            )}
             {extractError && (
               <div className="form-error" role="alert">
                 {extractError}
@@ -893,12 +901,15 @@ export function WikiPage({
             <div className="raw-list">
               {raws.map((raw) => {
                 const state = processing[raw.id];
-                const disabled = !!raw.origin || extractingRawId !== null;
+                const needsModel =
+                  state?.status !== 'processing' && !(state?.status === 'pending_confirmation' && state.draftId);
+                const disabled = !!raw.origin || extractingRawId !== null || (needsModel && !!modelDisabled);
                 return (
                   <button
                     className="raw-list-item"
                     key={raw.id}
                     disabled={disabled}
+                    title={needsModel ? modelDisabled : undefined}
                     onClick={() => void generateFromRaw(raw)}
                   >
                     <span className="file-icon">{raw.origin ? '锁' : state?.status === 'processing' ? '…' : '文'}</span>
@@ -1508,6 +1519,7 @@ function AuditPanel({
   selectedAnchor: { before: string; text: string; after: string } | null;
   onClearAnchor?: () => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [expanded, setExpanded] = useState(!!initialAudit);
   const [audits, setAudits] = useState<Audit[]>([]);
   const [selected, setSelected] = useState<Audit | null>(null);
@@ -1916,8 +1928,11 @@ function AuditPanel({
                     <button
                       className="secondary-button"
                       onClick={() => void propose()}
+                      title={modelDisabled}
                       disabled={
-                        busy || (selected.location?.status !== 'found' && selected.location?.status !== 'located')
+                        busy ||
+                        !!modelDisabled ||
+                        (selected.location?.status !== 'found' && selected.location?.status !== 'located')
                       }
                     >
                       生成 AI 修订建议
@@ -1926,6 +1941,7 @@ function AuditPanel({
                       用选中段落重新定位
                     </button>
                   </div>
+                  {modelDisabled && <p className="field-help">{modelDisabled}</p>}
                   {draft?.status === 'pending' && (
                     <div className="audit-draft">
                       <b>

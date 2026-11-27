@@ -590,7 +590,12 @@ test('SEMANTIC old completed revision11 chunks+1 draft reconciles, edits and exp
       extraction: { ...draft.extraction, callCount: 2 },
     };
     await writeFile(path.join(f.root, 'drafts', draft.id + '.json'), JSON.stringify(legacy));
-    const { maintenance: _newContext, ...historicalCheckpoint } = original;
+    const {
+      maintenance: _newContext,
+      completedModels: _completedModels,
+      taskFingerprint: _taskFingerprint,
+      ...historicalCheckpoint
+    } = original;
     const old = await new ExtractionCheckpointStore(f.root).save({
       ...historicalCheckpoint,
       rulesVersion: oldRules,

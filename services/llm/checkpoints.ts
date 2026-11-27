@@ -11,6 +11,8 @@ import { MAX_EVIDENCE_LOCATORS_PER_CHUNK } from './locators.ts';
 import { templateSections, type TemplateFieldKey } from '../wiki/template-fields.ts';
 import { validDeepState, type DeepState } from './knowledge-deep.ts';
 import type { RetrievedKnowledgeContext } from './knowledge-maintenance.ts';
+import { validCompletedModels, type CompletedBlockModels } from './checkpoint-models.ts';
+import type { RawRecord } from '../raw/store.ts';
 
 export const KB02_PIPELINE_VERSION = 'kb02-2';
 export type CheckpointFact = {
@@ -76,6 +78,8 @@ export type ExtractionCheckpoint = {
   pipelineVersion: string;
   rulesVersion: string;
   providerIdentity: string;
+  taskFingerprint?: string;
+  completedModels?: CompletedBlockModels;
   chunks: Array<{ index: number; start: number; end: number }>;
   completedChunks: CheckpointChunk[];
   plan?: KnowledgePlan;
@@ -89,6 +93,44 @@ export type ExtractionCheckpoint = {
 const MAX_CHECKPOINT_BYTES = 16 * 1024 * 1024;
 const MAX_CHUNKS = Math.ceil(FROZEN_BUDGETS.maxRawChars / (FROZEN_BUDGETS.maxChunkChars - FROZEN_BUDGETS.chunkOverlap));
 const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+export function extractionTaskFingerprint(
+  raw: RawRecord,
+  cp: Pick<
+    ExtractionCheckpoint,
+    'pipelineVersion' | 'rulesVersion' | 'mode' | 'mediaInputSha256' | 'mediaPending' | 'chunks'
+  >,
+) {
+  return hash([
+    raw.id,
+    raw.bodySha256,
+    raw.title,
+    raw.sourceType,
+    raw.sourceName,
+    raw.author,
+    raw.publishedAt,
+    raw.url,
+    raw.tags ?? [],
+    cp.pipelineVersion,
+    cp.rulesVersion,
+    cp.mode ?? 'standard',
+    cp.mediaInputSha256,
+    cp.mediaPending,
+    cp.chunks,
+  ]);
+}
+
+export function extractionCompletedBlocks(
+  cp: Pick<ExtractionCheckpoint, 'completedChunks' | 'plan' | 'deep' | 'maintenance'>,
+) {
+  return [
+    ...cp.completedChunks.map(({ index }) => `chunk-${index}`),
+    ...(cp.plan ? ['plan'] : []),
+    ...(cp.deep?.outline ? ['outline'] : []),
+    ...(cp.deep?.note ? ['writing'] : []),
+    ...(cp.deep?.qualityReport ? ['quality'] : []),
+    ...(cp.maintenance?.proposal ? ['maintenance'] : []),
+  ];
+}
 const unsigned = (value: ExtractionCheckpoint) => {
   const { integrity: _integrity, ...rest } = value;
   return rest;
@@ -120,7 +162,18 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
         'updatedAt',
         'integrity',
       ],
-      ['plan', 'draftId', 'lastError', 'mode', 'deep', 'maintenance', 'mediaInputSha256', 'mediaPending'],
+      [
+        'plan',
+        'draftId',
+        'lastError',
+        'mode',
+        'deep',
+        'maintenance',
+        'mediaInputSha256',
+        'mediaPending',
+        'taskFingerprint',
+        'completedModels',
+      ],
     )
   )
     return false;
@@ -164,6 +217,7 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
     !['kb02-1', KB02_PIPELINE_VERSION, 'kb03-1'].includes(cp.pipelineVersion) ||
     !isText(cp.rulesVersion, 256) ||
     !isText(cp.providerIdentity, 512) ||
+    (cp.taskFingerprint !== undefined && !/^[0-9a-f]{64}$/u.test(cp.taskFingerprint)) ||
     !Number.isSafeInteger(cp.attempts) ||
     (cp.attempts as number) < 0 ||
     !['extracting', 'planning', 'assembling', 'done'].includes(String(cp.stage)) ||
@@ -349,6 +403,11 @@ const validCheckpoint = (value: unknown, id: string): value is ExtractionCheckpo
   )
     return false;
   if (cp.pipelineVersion === 'kb03-1' && cp.stage === 'done' && !cp.deep?.qualityReport) return false;
+  if (
+    cp.completedModels !== undefined &&
+    !validCompletedModels(cp.completedModels, extractionCompletedBlocks(cp as ExtractionCheckpoint))
+  )
+    return false;
   return true;
 };
 export class ExtractionCheckpointStore {

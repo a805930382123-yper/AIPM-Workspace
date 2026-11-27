@@ -10,6 +10,7 @@ import {
   LlmAttemptLedger,
   llmRequestContext,
   loadRouterConfig,
+  resolveRouterConfig,
   ProviderRouter,
 } from '../services/llm/provider-router.ts';
 import { startFakeProvider } from './support/fake-llm.ts';
@@ -46,6 +47,8 @@ test('routes real HTTP attempts once per endpoint and persists only diagnostic m
   assert(config);
   const provider = new ProviderRouter(config, ledger);
   const request = { system: 'synthetic-system', user: 'synthetic-private-user-text', maxOutputBytes: 4096 };
+  const availability = (key: string = primaryConfig.apiKey) =>
+    ledger.availability(resolveRouterConfig({ ...primaryConfig, apiKey: key }, env, {}));
   assert.equal(loadRouterConfig(primaryConfig, {}, {})?.primary?.timeoutMs, 45_000);
   assert.equal((await provider.complete(request)).route?.attempts[0]?.model, 'main-heavy');
   assert.equal((await provider.complete({ ...request, tier: 'light' })).route?.attempts[0]?.model, 'main-light');
@@ -167,6 +170,11 @@ test('routes real HTTP attempts once per endpoint and persists only diagnostic m
     return route.attempts.map(({ upstreamStatus }) => upstreamStatus).join() === '503,502';
   });
   assert.equal(backup.requests.length, backupAttempts + 1);
+  assert.deepEqual(availability().heavy, { available: false, reason: 'unavailable' });
+  const changedKey = availability('replacement-key');
+  assert.equal(changedKey.heavy.available, true);
+  assert.equal(changedKey.primary.configuration, 'configured');
+  if (changedKey.primary.configuration === 'configured') assert.equal(changedKey.primary.heavy.status, 'unverified');
   const saved = await readFile(path.join(dir, 'state', 'llm-routing', 'attempts.jsonl'), 'utf8');
   for (const secret of [request.user, request.system, primaryConfig.apiKey, env.FMCG_LLM_BACKUP_API_KEY])
     assert(!saved.includes(secret));

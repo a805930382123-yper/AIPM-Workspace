@@ -7,6 +7,7 @@ import { useDraftReviewState } from './draft-review/useDraftReviewState';
 import { DraftAssignmentEditor } from './draft-review/DraftAssignmentEditor';
 import { DraftPageEditors } from './draft-review/DraftPageEditors';
 import { DuplicateCheckSection } from './draft-review/DuplicateCheckSection';
+import { DraftModelNotice } from './draft-review/DraftModelNotice';
 
 export function DraftReviewPage(props: DraftReviewPageProps) {
   return <DraftReviewPageContent key={props.draftId} {...props} />;
@@ -166,6 +167,7 @@ function DraftReviewPageContent({
               } as Record<string, string>
             )[view.status] ?? view.status}
           </p>
+          <DraftModelNotice provenance={view.modelProvenance} />
           <details className="review-technical">
             <summary>规则与提供方信息</summary>
             <p>

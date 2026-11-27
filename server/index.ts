@@ -33,7 +33,7 @@ import { assertNoKnownSecret, type LlmProvider } from '../services/llm/provider.
 import {
   LlmAttemptLedger,
   llmRequestContext,
-  loadRouterConfig,
+  resolveRouterConfig,
   ProviderRouter,
 } from '../services/llm/provider-router.ts';
 import { LLMService } from '../services/llm/service.ts';
@@ -174,10 +174,10 @@ const loadRouting = async () => {
     throw error;
   });
   const config = await loadLlmConfig({ filePath: configFile, local });
-  return loadRouterConfig(config, process.env, local);
+  return resolveRouterConfig(config, process.env, local);
 };
 const providerFactory = async (): Promise<LlmProvider | undefined> => {
-  const routing = await loadRouting();
+  const { routing } = await loadRouting();
   if (routing) return new ProviderRouter(routing, llmAttempts);
 };
 const media = new MediaVlmParserService(store, (work) => wikiStore.withLock(work));
@@ -335,7 +335,7 @@ const automation: AutomationScheduler = new AutomationScheduler({
       root,
       lockIsCurrent: lock.isCurrent,
       scanRecovery: () => recovery.scan(),
-      isProviderConfigured: async () => Boolean(await loadRouting()),
+      isProviderConfigured: async () => Boolean((await loadRouting()).routing),
     }),
     createDailyNews(news, pipeline),
     createWikiLint(new WikiLint(root, store, audits, wikiStore), lintSnapshots, () =>
@@ -748,24 +748,13 @@ registerB04Routes(app, {
 registerLlmConfigRoutes(
   app,
   configManager,
-  async () => {
-    const primary = (await loadRouting())?.primary;
-    if (primary) return new ProviderRouter({ primary, preferred: primary }, llmAttempts);
+  async (id) => {
+    const { routing } = await loadRouting();
+    const endpoint = routing?.[id];
+    if (endpoint) return new ProviderRouter({ [id]: endpoint, preferred: endpoint }, llmAttempts);
   },
   llmAttempts,
-  async () => {
-    const routing = await loadRouting().catch(() => undefined);
-    const view = (endpoint: NonNullable<typeof routing>['primary']) =>
-      endpoint
-        ? {
-            label: endpoint.label,
-            heavyModel: endpoint.heavy.model,
-            lightModel: endpoint.light.model,
-            timeoutMs: endpoint.timeoutMs,
-          }
-        : null;
-    return { primary: view(routing?.primary), backup: view(routing?.backup) };
-  },
+  async () => llmAttempts.availability(await loadRouting()),
 );
 registerKnowledgeRoutes(app, {
   root,

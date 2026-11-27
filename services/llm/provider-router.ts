@@ -28,6 +28,8 @@ import {
 
 type Tier = NonNullable<LlmCompletionRequest['tier']>;
 type Endpoint = 'primary' | 'backup' | 'embedding';
+export type ChatEndpoint = Exclude<Endpoint, 'embedding'>;
+export type ChatTier = Tier;
 type Usage = NonNullable<LlmCompletion['usage']>;
 export type LlmRouteAttempt = {
   endpoint: Endpoint;
@@ -55,6 +57,7 @@ type AttemptRecord = LlmRouteAttempt & {
   runId?: string;
   tier: Tier | 'embedding';
   purpose?: LlmCompletionRequest['purpose'];
+  fallbackFrom?: { errorCode?: string; upstreamStatus?: number };
 };
 
 export const llmRequestContext = new AsyncLocalStorage<string>();
@@ -73,7 +76,7 @@ const optionNames = {
 } as const;
 
 type RouteEndpoint = Record<Tier, OpenAiCompatibleProvider> & {
-  id: 'primary' | 'backup';
+  id: ChatEndpoint;
   label: string;
   timeoutMs: number;
 };
@@ -88,6 +91,10 @@ export function loadRouterConfig(
   env: NodeJS.ProcessEnv,
   local: Record<string, string>,
 ): RouterConfig | undefined {
+  return resolveRouterConfig(main, env, local).routing;
+}
+
+export function resolveRouterConfig(main: LlmConfig, env: NodeJS.ProcessEnv, local: Record<string, string>) {
   const get = (name: string) => envValue(env, name) || local[name] || '';
   const knownSecrets = [
     ...new Set([main.apiKey, ...(main.knownSecrets ?? []), ...getRoutingSecrets(env, local)].filter(Boolean)),
@@ -130,42 +137,147 @@ export function loadRouterConfig(
       return undefined;
     }
   };
-  const primary =
-    get(optionNames.enabled).toLowerCase() !== 'false'
-      ? endpoint(
-          'primary',
-          main,
-          get(optionNames.lightModel),
-          get(optionNames.label),
-          Number(get(optionNames.timeoutMs)),
-        )
-      : undefined;
-  const backup =
-    get(optionNames.backupEnabled).toLowerCase() === 'true'
-      ? endpoint(
-          'backup',
-          {
-            ...main,
-            baseUrl: get(optionNames.backupBaseUrl),
-            apiKey: get(optionNames.backupKey),
-            model: get(optionNames.backupModel),
-          },
-          get(optionNames.backupLightModel),
-          get(optionNames.backupLabel),
-          Number(get(optionNames.backupTimeoutMs)),
-        )
-      : undefined;
+  const primaryEnabled = get(optionNames.enabled).toLowerCase() !== 'false';
+  const backupEnabled = get(optionNames.backupEnabled).toLowerCase() === 'true';
+  const primary = primaryEnabled
+    ? endpoint('primary', main, get(optionNames.lightModel), get(optionNames.label), Number(get(optionNames.timeoutMs)))
+    : undefined;
+  const backup = backupEnabled
+    ? endpoint(
+        'backup',
+        {
+          ...main,
+          baseUrl: get(optionNames.backupBaseUrl),
+          apiKey: get(optionNames.backupKey),
+          model: get(optionNames.backupModel),
+        },
+        get(optionNames.backupLightModel),
+        get(optionNames.backupLabel),
+        Number(get(optionNames.backupTimeoutMs)),
+      )
+    : undefined;
   const preferred = primary ?? backup;
-  return preferred ? { primary, backup, preferred } : undefined;
+  return { primaryEnabled, backupEnabled, routing: preferred ? { primary, backup, preferred } : undefined };
 }
+
+type Observation = {
+  status: 'ready' | 'unavailable';
+  at: string;
+  errorCode?: string;
+  upstreamStatus?: number;
+};
+type TargetStatus = Observation | { status: 'unverified' };
+type ObservedTarget = { target: OpenAiCompatibleProvider; result: Observation; sequence: number };
+type EndpointStatus =
+  | { configuration: 'disabled' | 'unconfigured' }
+  | {
+      configuration: 'configured';
+      label: string;
+      heavyModel: string;
+      lightModel: string;
+      timeoutMs: number;
+      heavy: TargetStatus;
+      light: TargetStatus;
+    };
+
+export type LlmAvailability = {
+  primary: EndpointStatus;
+  backup: EndpointStatus;
+  heavy: { available: boolean; reason?: 'disabled' | 'unconfigured' | 'unavailable' | 'authentication' };
+  light: { available: boolean; reason?: 'disabled' | 'unconfigured' | 'unavailable' | 'authentication' };
+};
+
+const canFailOver = ({ errorCode, upstreamStatus }: Pick<LlmRouteAttempt, 'errorCode' | 'upstreamStatus'>) =>
+  upstreamStatus === undefined
+    ? errorCode === 'LLM_TIMEOUT' || errorCode === 'LLM_NETWORK_ERROR'
+    : upstreamStatus === 408 || upstreamStatus === 429 || upstreamStatus >= 500;
 
 export class LlmAttemptLedger {
   private readonly file: string;
   private readonly queue = new SerialQueue();
   private writeErrors = 0;
+  private readonly observations: Record<ChatEndpoint, Partial<Record<Tier | 'connection', ObservedTarget>>> = {
+    primary: {},
+    backup: {},
+  };
+  private observationSequence = 0;
 
   constructor(root: string) {
     this.file = path.join(root, 'state', 'llm-routing', 'attempts.jsonl');
+  }
+
+  observe(endpoint: RouteEndpoint, tier: Tier, attempt: LlmRouteAttempt): void {
+    const { outcome, errorCode, upstreamStatus } = attempt;
+    if (errorCode === 'LLM_CANCELLED') return;
+    const target = endpoint[tier];
+    const observations = this.observations[endpoint.id];
+    if (outcome === 'failure' && !canFailOver(attempt) && errorCode !== 'LLM_AUTH_FAILED') return;
+    const result: Observation = {
+      status: outcome === 'success' ? 'ready' : 'unavailable',
+      at: new Date().toISOString(),
+      errorCode,
+      upstreamStatus,
+    };
+    const observation = { target, result, sequence: ++this.observationSequence };
+    observations[tier] = observation;
+    const otherTier = tier === 'light' ? 'heavy' : 'light';
+    if (endpoint[otherTier].matchesTarget(target)) observations[otherTier] = observation;
+    if ((errorCode === 'LLM_NETWORK_ERROR' && upstreamStatus === undefined) || upstreamStatus === 401) {
+      observations.connection = observation;
+    } else if (outcome === 'success' || upstreamStatus) {
+      for (const tracked of Object.values(this.observations)) {
+        if (tracked.connection?.target.matchesConnection(target)) delete tracked.connection;
+      }
+    }
+  }
+
+  availability({ primaryEnabled, backupEnabled, routing }: ReturnType<typeof resolveRouterConfig>): LlmAvailability {
+    const view = (enabled: boolean, endpoint?: RouteEndpoint, identicalTo?: RouteEndpoint): EndpointStatus => {
+      if (!enabled) return { configuration: 'disabled' };
+      if (!endpoint) return { configuration: 'unconfigured' };
+      const health = (tier: Tier): TargetStatus => {
+        const target = endpoint[tier];
+        const direct = this.observations[endpoint.id];
+        const shared =
+          identicalTo && target.matchesConnection(identicalTo[tier]) ? this.observations[identicalTo.id] : {};
+        return (
+          [direct.connection, shared.connection, direct[tier], shared[tier]]
+            .filter(
+              (item, index): item is ObservedTarget =>
+                !!item && (index < 2 ? target.matchesConnection(item.target) : target.matchesTarget(item.target)),
+            )
+            .sort((a, b) => b.sequence - a.sequence)[0]?.result ?? { status: 'unverified' }
+        );
+      };
+      return {
+        configuration: 'configured',
+        label: endpoint.label,
+        heavyModel: endpoint.heavy.model,
+        lightModel: endpoint.light.model,
+        timeoutMs: endpoint.timeoutMs,
+        heavy: health('heavy'),
+        light: health('light'),
+      };
+    };
+    const primary = view(primaryEnabled, routing?.primary, routing?.backup);
+    const backup = view(backupEnabled, routing?.backup, routing?.primary);
+    const capability = (tier: Tier): LlmAvailability[Tier] => {
+      const main = primary.configuration === 'configured' ? primary[tier] : undefined;
+      const reserve = backup.configuration === 'configured' ? backup[tier] : undefined;
+      if (!main && !reserve)
+        return { available: false, reason: primaryEnabled || backupEnabled ? 'unconfigured' : 'disabled' };
+      if (main?.status === 'unavailable' && main.errorCode === 'LLM_AUTH_FAILED')
+        return { available: false, reason: 'authentication' };
+      if ([main, reserve].some((health) => health && health.status !== 'unavailable')) return { available: true };
+      return {
+        available: false,
+        reason:
+          reserve?.status === 'unavailable' && reserve.errorCode === 'LLM_AUTH_FAILED'
+            ? 'authentication'
+            : 'unavailable',
+      };
+    };
+    return { primary, backup, heavy: capability('heavy'), light: capability('light') };
   }
 
   async append(record: Omit<AttemptRecord, 'requestId' | 'runId'>): Promise<void> {
@@ -199,6 +311,13 @@ export class LlmAttemptLedger {
       });
       const endpoints = { primary: empty(), backup: empty(), embedding: empty() };
       const recent: AttemptRecord[] = [];
+      const switches: Array<{
+        at: string;
+        tier: AttemptRecord['tier'];
+        errorCode?: string;
+        upstreamStatus?: number;
+        outcome: AttemptRecord['outcome'];
+      }> = [];
       let unreadableRecords = 0;
       const lines = createInterface({ input: createReadStream(this.file, { encoding: 'utf8' }), crlfDelay: Infinity });
       try {
@@ -234,6 +353,19 @@ export class LlmAttemptLedger {
             endpoint.usage[field] = (endpoint.usage[field] ?? 0) + tokens;
             endpoint.knownUsage[field]++;
           }
+          if (item.endpoint === 'backup' && item.fallback) {
+            const origin =
+              item.fallbackFrom ??
+              recent.find((attempt) => attempt.callId === item.callId && attempt.endpoint === 'primary');
+            switches.push({
+              at: item.startedAt,
+              tier: item.tier,
+              errorCode: origin?.errorCode,
+              upstreamStatus: origin?.upstreamStatus,
+              outcome: item.outcome,
+            });
+            if (switches.length > 5) switches.shift();
+          }
           recent.push(item);
           if (recent.length > 100) recent.shift();
         }
@@ -247,7 +379,13 @@ export class LlmAttemptLedger {
         if (completed) endpoint.failureRate = endpoint.failures / completed;
         if (endpoint.attempts) endpoint.averageLatencyMs = endpoint.totalLatencyMs / endpoint.attempts;
       }
-      return { endpoints, attempts: recent.reverse(), unreadableRecords, writeErrors: this.writeErrors };
+      return {
+        endpoints,
+        attempts: recent.reverse(),
+        switches: switches.reverse(),
+        unreadableRecords,
+        writeErrors: this.writeErrors,
+      };
     });
   }
 }
@@ -316,11 +454,14 @@ export class ProviderRouter implements LlmProvider {
             record.latencyMs = Math.round(performance.now() - start);
             route.attempts.push(record);
             route.fallback = route.attempts.length === 2;
+            const origin = route.fallback ? route.attempts[0] : undefined;
+            this.ledger.observe(endpoint, tier, record);
             await this.ledger.append({
               callId: route.callId,
               tier,
               fallback: route.fallback,
               purpose: request.purpose,
+              fallbackFrom: origin && { errorCode: origin.errorCode, upstreamStatus: origin.upstreamStatus },
               ...record,
             });
           }
@@ -340,9 +481,7 @@ export class ProviderRouter implements LlmProvider {
           request.signal?.aborted ||
           !failed ||
           failed.outcome !== 'failure' ||
-          !(failed.upstreamStatus === undefined
-            ? failed.errorCode === 'LLM_TIMEOUT' || failed.errorCode === 'LLM_NETWORK_ERROR'
-            : failed.upstreamStatus === 408 || failed.upstreamStatus === 429 || failed.upstreamStatus >= 500)
+          !canFailOver(failed)
         )
           throw error;
         completion = await attempt(backup);

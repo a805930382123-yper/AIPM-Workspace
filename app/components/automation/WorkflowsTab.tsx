@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import type { ReactNode } from 'react';
 import { automationTime } from '../../api';
+import { useLlmDisabled } from '../../hooks/llmAvailability';
 import type {
   AutomationList,
   AutomationSchedule,
@@ -172,6 +173,8 @@ function TaskActions({
   onRunTask: (type: string, trigger: HTMLElement | null) => void;
   extra?: ReactNode;
 }) {
+  const modelDisabled = useLlmDisabled('light');
+  const runDisabled = task.type === 'wiki.inspect' ? modelDisabled : undefined;
   return (
     <div className="automation-actions">
       <button type="button" className="secondary-button" disabled={pending} onClick={() => onEditSchedule(task)}>
@@ -180,11 +183,13 @@ function TaskActions({
       <button
         type="button"
         className="primary-button"
-        disabled={pending || !hasStatus || Boolean(task.lastRun && isActive(task.lastRun.status))}
+        disabled={pending || !hasStatus || Boolean(task.lastRun && isActive(task.lastRun.status)) || !!runDisabled}
+        title={runDisabled}
         onClick={(event) => onRunTask(task.type, event.currentTarget)}
       >
         立即运行
       </button>
+      {runDisabled && <small className="field-help">{runDisabled}</small>}
       {extra}
     </div>
   );

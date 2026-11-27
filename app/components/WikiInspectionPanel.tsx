@@ -11,6 +11,7 @@ import {
 } from '../api';
 import type { AnswerCitation } from '../../services/wiki/question-input';
 import type { RawCitationTarget } from './WikiQuestionPanel';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 const types = {
   duplicate: '重复主题候选',
   conflict: '冲突 / 口径待核',
@@ -92,6 +93,8 @@ export function WikiInspectionPanel({
   onOpenRaw: (id: string, target?: RawCitationTarget) => void;
   onOpenDraft: (id: string) => void;
 }) {
+  const checkDisabled = useLlmDisabled('light');
+  const draftDisabled = useLlmDisabled();
   const [selected, setSelected] = useState<string[]>(currentWikiId ? [currentWikiId] : []),
     [related, setRelated] = useState(false),
     [result, setResult] = useState<KnowledgeInspection | null>(null),
@@ -266,11 +269,16 @@ export function WikiInspectionPanel({
           </label>
           <button
             className="primary-button"
-            disabled={!selected.length || selected.length > 8}
+            disabled={!selected.length || selected.length > 8 || !!checkDisabled}
             onClick={() => void check()}
           >
             开始本次检查
           </button>
+          {checkDisabled && (
+            <p className="field-help" role="status">
+              {checkDisabled}
+            </p>
+          )}
           {selected.length === 1 && !related && (
             <p className="muted-copy">当前仅选 1 页，将只做单页自检；勾选“包含有界相关知识”可排查跨页重复与冲突。</p>
           )}
@@ -321,7 +329,12 @@ export function WikiInspectionPanel({
               </p>
             )}
             {result.status === 'failed' && (
-              <button className="secondary-button" disabled={locked} onClick={() => void check(true)}>
+              <button
+                className="secondary-button"
+                disabled={locked || !!checkDisabled}
+                title={checkDisabled}
+                onClick={() => void check(true)}
+              >
                 明确重试本次检查
               </button>
             )}
@@ -398,7 +411,8 @@ export function WikiInspectionPanel({
                 <span>已选 {chosen.length} 个问题</span>
                 <button
                   className="primary-button"
-                  disabled={locked || !chosen.length || result.status === 'failed'}
+                  disabled={locked || !chosen.length || result.status === 'failed' || !!draftDisabled}
+                  title={draftDisabled}
                   onClick={() => void draft()}
                 >
                   为所选问题生成维护草稿

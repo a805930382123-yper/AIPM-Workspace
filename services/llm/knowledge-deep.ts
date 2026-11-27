@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { LlmError, assertNoKnownSecret, describeUnparsable } from './provider.ts';
 import { runKnowledgePipeline, validateKnowledgeCheckpoint, type KnowledgeRunInput } from './knowledge-extraction.ts';
 import type { ExtractionCheckpoint } from './checkpoints.ts';
+import { completedModel, continuationInstruction, recordCompletedModels } from './checkpoint-models.ts';
 import { sourceRange, type RawAiContent } from '../raw/media-context.ts';
 import {
   validStructuredNote,
@@ -534,14 +535,20 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
   await validateDeepCheckpoint(input);
   const base = await runKnowledgePipeline(input);
   let cp = base.checkpoint;
-  const save = async (deep: DeepState) => {
-    cp = await input.saveCheckpoint({ ...cp, deep, stage: 'assembling', lastError: undefined });
+  const save = async (deep: DeepState, block: string, model: ReturnType<typeof completedModel>) => {
+    cp = await input.saveCheckpoint({
+      ...cp,
+      deep,
+      completedModels: recordCompletedModels(cp.completedModels, block, [model]),
+      stage: 'assembling',
+      lastError: undefined,
+    });
   };
   const call = async (stage: string, payload: unknown, instruction: string) => {
     cp = await input.beforeCall('planning');
     const response = await input.provider.complete({
       purpose: 'knowledge',
-      system: `KB03 ${stage}。仅输出严格JSON，不改写事实或引文。${instruction}`,
+      system: `KB03 ${stage}。仅输出严格JSON，不改写事实或引文。${instruction}${input.continuation ? continuationInstruction : ''}`,
       user: JSON.stringify({ stage, ...(payload as object) }),
       timeoutMs: 120000,
       maxOutputBytes: 3 * 1024 * 1024,
@@ -563,7 +570,7 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
       );
     }
     assertNoKnownSecret(parsed, input.provider.secrets);
-    return parsed;
+    return { parsed, model: completedModel(input.provider, response) };
   };
   const facts = cp.completedChunks.flatMap((c) => c.facts),
     questions = cp.completedChunks.flatMap((c) => c.questions);
@@ -576,17 +583,17 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
   const boundaryInstruction =
     'source只含用户登记线索，作者、日期和链接并非外部核验结果，不能把摘录或拼接材料说成已核实单一作者全文。sourceNotes是独立非业务说明，禁止转成业务事实或创造业务页面；其中缺失图表、转载/摘录来源等重要限制应在笔记正文用needs_verification及reason保留，不能只在质量报告提及。事实中的疑似错字、语句不通、转录含糊或kind=ambiguous须保留原句并标待核，禁止凭常识静默纠正；不编造未提供的图表内容、作者或来源结论。';
   if (!cp.deep!.outline) {
-    const outline = await call(
+    const { parsed: outline, model } = await call(
       'outline',
       { facts, questions, scan: cp.deep!.scan, ...context },
       '输出{version:1,sections:[{id,title,question,factIds,questionIds}],excluded:[{kind:"fact|question",id,reason}]}。全部事实和问题各唯一归属章节或有理由排除；章节ID和标题唯一。' +
         boundaryInstruction,
     );
     if (!validDeepOutline(outline, cp)) fail('LLM_DEEP_OUTLINE_INVALID', '深度大纲遗漏、重复、未知ID或结构非法。');
-    await save({ ...cp.deep!, outline });
+    await save({ ...cp.deep!, outline }, 'outline', model);
   }
   if (!cp.deep!.note) {
-    const output = await call(
+    const { parsed: output, model } = await call(
       'writing',
       { outline: cp.deep!.outline, facts, questions, ...context },
       '输出唯一R1笔记{version:1,orientation,sections:[{id,title,question,blocks}]}。block五类paragraph(text/role/factIds)、list(items各text/role/factIds)、table(title/headings/rows各cells/role/factIds)、path_diagram(title/nodes各id/text/role/factIds、edges各from/to/text/role/factIds)、callout(title/text/role/factIds)。角色source_supported/reorganized必须有所属章节factIds；supplementary为空factIds且仅独立补充概念，不含具体公司/数据/日期/排名/预测，最多20%叶项；needs_verification需非空reason。所有included事实至少引用一次，excluded不引用。章节ID/顺序一致，不改变主体、条件、数值、日期或单位，未上线/未知保持。' +
@@ -599,11 +606,11 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
       fail('LLM_DEEP_WRITING_INVALID', '笔记结构或事实引用非法。');
     const note = preserveDeepBoundaries(output, cp.deep!.outline!, cp);
     checkDeepNote(note, cp.deep!.outline!, cp);
-    await save({ ...cp.deep!, note });
+    await save({ ...cp.deep!, note }, 'writing', model);
   }
   checkDeepNote(cp.deep!.note!, cp.deep!.outline!, cp);
   if (!cp.deep!.qualityReport) {
-    const output = await call(
+    const { parsed: output, model } = await call(
       'quality',
       { note: cp.deep!.note, outline: cp.deep!.outline, facts, questions, ...context },
       '只读检查，禁止改正文。逐断言对照事实检查主体、条件、数值/单位、未知/否定、覆盖及补充边界。逐项核对sourceNotes的重要材料限制、缺图/缺表、摘录拼接声明是否实际进入笔记正文，疑似转录或ambiguous是否保留原句并待核，来源登记线索是否被误称为已核验。被大纲排除也不能掩盖已识别歧义；不能只因引用/evidence含原句就算正文已表达。遗漏或边界误表须给coverage/semantic发现，定位受影响sectionId/blockIndex；此自检不等于独立质量通过。输出{version:1,findings:[{severity:"warning|error",category:"semantic|numeric|coverage|supplementary|structure",sectionId:章节ID或null,blockIndex:从0开始或null,reason:非空文本}]}。无发现findings=[]。' +
@@ -618,15 +625,19 @@ export async function runDeepPipeline(input: KnowledgeRunInput) {
       )
     )
       fail('LLM_DEEP_QUALITY_INVALID', '模型质量报告无效，检查未完成。');
-    await save({
-      ...cp.deep!,
-      qualityReport: {
-        version: 1,
-        deterministic: 'passed',
-        model: output.findings.length ? 'warning' : 'passed',
-        findings: output.findings,
+    await save(
+      {
+        ...cp.deep!,
+        qualityReport: {
+          version: 1,
+          deterministic: 'passed',
+          model: output.findings.length ? 'warning' : 'passed',
+          findings: output.findings,
+        },
       },
-    });
+      'quality',
+      model,
+    );
   }
   return {
     outcome: {

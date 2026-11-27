@@ -226,6 +226,56 @@ test('formal entry carries provider context through answer and inspection operat
       (await fetch(url + '/api/llm/routing', { headers: { origin: 'https://untrusted.invalid' } })).status,
       403,
     );
+    const current = () => req('/api/llm/availability');
+    const attemptsBeforeReads = [primary.requests.length, backup.requests.length];
+    const degraded = await current();
+    assert.equal(degraded.json.primary.heavy.status, 'unavailable');
+    assert.equal(degraded.json.primary.light.status, 'ready');
+    assert.equal(degraded.json.backup.heavy.status, 'ready');
+    assert.equal(degraded.json.heavy.available, true);
+    assert.equal(degraded.json.light.available, true);
+    assert.equal(answerRoute.json.switches[0].upstreamStatus, 503);
+    assert.equal(answerRoute.json.switches[0].outcome, 'success');
+    assert.deepEqual([primary.requests.length, backup.requests.length], attemptsBeforeReads);
+
+    const diagnose = (endpoint: string, tier: string, token = config.json.writeToken) =>
+      fetch(url + '/api/llm/config/test', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-fmcg-config-token': token },
+        body: JSON.stringify({ revision: config.json.revision, confirm: true, endpoint, tier }),
+      });
+    backup.setHandler(() => ({ kind: 'status', status: 502 }));
+    assert.equal((await diagnose('backup', 'heavy', 'incorrect-token')).status, 403);
+    assert.equal(backup.requests.length, 1);
+    assert.equal((await diagnose('backup', 'heavy')).status, 502);
+    assert.deepEqual((await current()).json.heavy, { available: false, reason: 'unavailable' });
+    assert.equal((await current()).json.light.available, true);
+
+    primary.setHandler(() => ({ kind: 'status', status: 401 }));
+    backup.setHandler(() => ({ kind: 'status', status: 403 }));
+    assert.equal((await diagnose('primary', 'heavy')).status, 401);
+    assert.equal((await diagnose('backup', 'heavy')).status, 403);
+    const rejected = (await current()).json;
+    assert.deepEqual(rejected.heavy, { available: false, reason: 'authentication' });
+    assert.deepEqual(rejected.light, { available: false, reason: 'authentication' });
+    assert.equal(rejected.primary.light.upstreamStatus, 401);
+    assert.equal(rejected.backup.heavy.upstreamStatus, 403);
+
+    primary.setHandler(() => ({ kind: 'content', content: 'OK' }));
+    assert.equal((await diagnose('primary', 'light')).status, 200);
+    assert.equal(primary.requests.at(-1)?.model, 'primary-light');
+    assert.equal((await current()).json.light.available, true);
+    assert.equal((await diagnose('primary', 'heavy')).status, 200);
+    assert.equal((await current()).json.heavy.available, true);
+
+    await Promise.all([primary.close(), backup.close()]);
+    assert.equal((await diagnose('primary', 'heavy')).status, 502);
+    assert.equal((await diagnose('backup', 'heavy')).status, 502);
+    const disconnected = (await current()).json;
+    assert.deepEqual(disconnected.heavy, { available: false, reason: 'unavailable' });
+    assert.deepEqual(disconnected.light, { available: false, reason: 'unavailable' });
+    assert.equal(disconnected.primary.light.errorCode, 'LLM_NETWORK_ERROR');
+    assert.equal(disconnected.backup.heavy.errorCode, 'LLM_NETWORK_ERROR');
   } finally {
     await new Promise<void>((resolve) => {
       child.once('exit', () => resolve());
@@ -236,11 +286,15 @@ test('formal entry carries provider context through answer and inspection operat
   }
 });
 
-test('manual and read routes work with absent and malformed optional configuration', async () => {
-  for (const config of ['', 'FMCG_LLM_BASE_URL=not-a-url\n']) {
+test('manual and read routes work with absent, disabled and malformed optional configuration', async () => {
+  for (const [config, reason] of [
+    ['', 'unconfigured'],
+    ['FMCG_LLM_BASE_URL=not-a-url\n', 'unconfigured'],
+    ['FMCG_LLM_ENABLED=false\nFMCG_LLM_BACKUP_ENABLED=false\n', 'disabled'],
+  ]) {
     const dir = await mkdtemp(path.join(os.tmpdir(), 'provider01-manual-'));
     const cfg = path.join(dir, 'config.env');
-    await writeFile(cfg, config);
+    if (config) await writeFile(cfg, config);
     if (!config) await mkdir(path.join(dir, 'state', 'search-index.sqlite'), { recursive: true });
     const sock = net.createServer();
     await new Promise<void>((r) => sock.listen(0, '127.0.0.1', r));
@@ -273,6 +327,11 @@ test('manual and read routes work with absent and malformed optional configurati
         await new Promise((r) => setTimeout(r, 100));
       }
       assert(ready);
+      const availability = await fetch(base + '/api/llm/availability');
+      assert.equal(availability.status, 200);
+      const state = await availability.json();
+      assert.deepEqual(state.heavy, { available: false, reason });
+      assert.deepEqual(state.light, { available: false, reason });
       assert.equal((await fetch(base + '/api/knowledge/answers/current')).status, 200);
       assert.equal((await fetch(base + '/api/raw')).status, 200);
       const raw = await fetch(base + '/api/raw', {

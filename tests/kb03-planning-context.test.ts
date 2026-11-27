@@ -426,7 +426,12 @@ for (const revision of ['17', '18'])
       try {
         const job = await f.start(),
           cp = (await f.checkpoints.get(job.id))!;
-        const { maintenance: _newContext, ...historicalCheckpoint } = cp;
+        const {
+          maintenance: _newContext,
+          completedModels: _completedModels,
+          taskFingerprint: _taskFingerprint,
+          ...historicalCheckpoint
+        } = cp;
         await f.checkpoints.save({
           ...historicalCheckpoint,
           rulesVersion: cp.rulesVersion.replace(KB02_PROMPT_REVISION, 'kb02-atoms-planning-' + revision),

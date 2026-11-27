@@ -37,6 +37,7 @@ import {
 import { validDeepQuality, type DeepQualityReport } from '../llm/knowledge-deep.ts';
 import path from 'node:path';
 import type { LlmError } from '../llm/provider.ts';
+import type { DraftModelProvenance } from '../llm/checkpoint-models.ts';
 import { locateEvidenceInBody } from '../llm/evidence.ts';
 import type { ExtractOutcome, ExtractedPage } from '../llm/service.ts';
 import { mkdir } from 'node:fs/promises';
@@ -134,6 +135,7 @@ export type DraftSource = {
 };
 export type DraftRecord = {
   pdfInput?: PdfDraftInput;
+  modelProvenance?: DraftModelProvenance;
   maintenance?: KnowledgeMaintenance;
   structuredNote?: StructuredNote;
   extractionMode?: 'deep';
@@ -167,7 +169,7 @@ export type DraftRecord = {
 };
 export type QuestionDraftRecord = Omit<
   DraftRecord,
-  'rawId' | 'rawSha256' | 'rawTitle' | 'rawMeta' | 'jobId' | 'maintenance' | 'source' | 'deferredAt'
+  'rawId' | 'rawSha256' | 'rawTitle' | 'rawMeta' | 'jobId' | 'maintenance' | 'source' | 'deferredAt' | 'modelProvenance'
 > & { input: EvidenceDraftInput; maintenance: KnowledgeMaintenance };
 export type KnowledgeDraftRecord = DraftRecord | QuestionDraftRecord;
 export function isQuestionDraft(record: KnowledgeDraftRecord): record is QuestionDraftRecord {
@@ -926,6 +928,7 @@ export class DraftStore {
     pages: Array<Omit<DraftPage, 'pageId' | 'selected'>>;
     maintenance: KnowledgeMaintenance;
     provider: DraftRecord['provider'];
+    modelProvenance?: DraftModelProvenance;
     callCount: number;
     batchCount: number;
   }): Promise<DraftRecord> {
@@ -976,6 +979,7 @@ export class DraftStore {
         updatedAt: now,
         rulesVersion: 'pdf-cleanup-1',
         provider: input.provider,
+        ...(input.modelProvenance ? { modelProvenance: input.modelProvenance } : {}),
         jobId: input.id,
         warnings: ['图像理解为 AI 衍生内容；请对照 PDF 原页审核。'],
         extraction: { callCount: input.callCount, chunkCount: input.batchCount, pagesFound: pages.length },
@@ -1406,6 +1410,7 @@ export class DraftStore {
       body: string;
       rules: DraftRules;
       maintenance?: KnowledgeMaintenance;
+      modelProvenance?: DraftModelProvenance;
     },
     deep?: { note: StructuredNote; qualityReport: DeepQualityReport },
   ): Promise<DraftRecord> {
@@ -1457,6 +1462,7 @@ export class DraftStore {
         updatedAt: now,
         rulesVersion: input.outcome.rulesVersion,
         provider: input.outcome.provider,
+        ...(input.modelProvenance ? { modelProvenance: input.modelProvenance } : {}),
         jobId: input.jobId,
         document: input.outcome.document,
         pages,

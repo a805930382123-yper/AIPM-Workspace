@@ -9,6 +9,7 @@ import fs from 'node:fs/promises';
 import { syncBuiltinESMExports } from 'node:module';
 import { fork, type ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
+import { randomUUID } from 'node:crypto';
 import express from 'express';
 import type { AddressInfo } from 'node:net';
 
@@ -283,7 +284,7 @@ test('KB03 30001 rejected before outbound; 30000 accepted; no provider/invalid m
     await absent.clean();
   }
 });
-test('KB03 regressed attempt count and mode/provider/raw/rule mismatches reject without outbound; corrupt checkpoint retained', async () => {
+test('KB03 regressed attempt count and mode/input/rule mismatches reject without outbound; corrupt checkpoint retained', async () => {
   const f = await deepFixture();
   f.hook(async () => {
     throw Error('stop');
@@ -295,7 +296,7 @@ test('KB03 regressed attempt count and mode/provider/raw/rule mismatches reject 
       cp = (await store.get(r.json.jobId))!,
       used = f.requests.length;
     for (const patch of [
-      { providerIdentity: 'other|model' },
+      { taskFingerprint: 'b'.repeat(64) },
       { rawSha256: 'a'.repeat(64) },
       { rulesVersion: 'changed' },
       { attempts: 0 },
@@ -321,6 +322,92 @@ test('KB03 regressed attempt count and mode/provider/raw/rule mismatches reject 
     await f.clean();
   }
 });
+
+for (const [mode, legacy] of [
+  ['standard', false],
+  ['deep', false],
+  ['deep', true],
+] as const)
+  test(`3-2 ${mode} resumes from ${legacy ? 'legacy' : 'attributed'} checkpoints and records actual completed models`, async () => {
+    const f = await deepFixture();
+    const store = new ExtractionCheckpointStore(f.root);
+    const stopAt = mode === 'deep' ? 'writing' : 'planning';
+    f.hook(async (stage) => {
+      if (stage === stopAt) throw Error('fixture interruption');
+    });
+    try {
+      const first = await f.start(mode);
+      const { jobId } = first.json;
+      assert.equal((await f.wait(jobId)).job?.status, 'failed');
+      const previous = (await store.get(jobId))!;
+      assert.match(previous.taskFingerprint!, /^[a-f0-9]{64}$/u);
+      assert.equal(previous.completedModels?.[stopAt], undefined);
+      if (legacy) await store.save({ ...previous, taskFingerprint: undefined, completedModels: undefined });
+
+      f.hook(undefined);
+      const complete = f.provider.complete;
+      const attempt = {
+        provider: 'fake',
+        startedAt: new Date().toISOString(),
+        latencyMs: 1,
+      };
+      Object.assign(f.provider, {
+        model: 'failed-primary',
+        complete: async (...args: Parameters<typeof complete>) => {
+          const first =
+            args[0].system.startsWith('KB03 writing') || args[0].user.includes('请对下列全部已验证事实规划知识页');
+          return {
+            ...(await complete(...args)),
+            route: {
+              callId: randomUUID(),
+              tier: 'heavy',
+              fallback: true,
+              attempts: [
+                { ...attempt, endpoint: 'primary', label: '主端', model: 'failed-primary', outcome: 'failure' },
+                {
+                  ...attempt,
+                  endpoint: 'backup',
+                  label: '备用',
+                  model: first ? 'actual-backup' : 'budget-model',
+                  outcome: 'success',
+                },
+              ],
+            },
+          };
+        },
+      });
+      const requestCount = f.requests.length;
+      const resumed = await f.start(mode);
+      assert.equal(resumed.json.jobId, jobId);
+      const { job, recovery } = await f.wait(jobId);
+      assert.equal(job?.status, 'completed', JSON.stringify(recovery));
+      assert.equal(job?.checkpoint?.reusedChunks, previous.completedChunks.length);
+      assert(f.requests.slice(requestCount).every(({ system }) => system.includes('结构衔接')));
+      const checkpoint = (await store.get(jobId))!;
+      assert.equal(checkpoint.taskFingerprint, previous.taskFingerprint);
+      assert.deepEqual(checkpoint.completedChunks, previous.completedChunks);
+      const { json: draft } = await f.http.request(`/api/drafts/${job?.draftId}`);
+      assert.equal(draft.status, 'pending_confirmation');
+      assert.equal(draft.modelProvenance.crossModel, true);
+      assert.equal(draft.modelProvenance.untrackedBlocks, legacy ? Object.keys(previous.completedModels!).length : 0);
+      assert.deepEqual(
+        draft.modelProvenance.models.map((entry: any) => entry.model),
+        legacy ? ['actual-backup', 'budget-model'] : ['budget-model', 'actual-backup'],
+      );
+      assert.deepEqual(
+        draft.modelProvenance.model_switches.map(({ block, from, to }: any) => [block, from.model, to.model]),
+        [
+          ...(legacy ? [] : [[mode === 'deep' ? 'writing' : 'plan', 'budget-model', 'actual-backup']]),
+          [mode === 'deep' ? 'quality' : 'maintenance', 'actual-backup', 'budget-model'],
+        ],
+      );
+      assert.deepEqual(draft.humanReview.approvals, []);
+      assert.equal((await f.rawStore.get(f.raw.id))?.body, f.raw.body);
+    } finally {
+      await f.clean();
+    }
+  });
+
 test('KB03 runner reconstruction reconciles without outbound and explicit resume keeps original job', async () => {
   const f = await deepFixture();
   let once = true;

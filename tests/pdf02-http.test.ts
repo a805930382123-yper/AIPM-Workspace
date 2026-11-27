@@ -33,7 +33,7 @@ type Call =
       existing: string[];
       basis: Array<{ topic: string; samples: Unit[]; suggestedTopic?: string }>;
     };
-type Tracked = Call & { bytes: number };
+type Tracked = Call & { bytes: number; system: string };
 const key = 'synthetic-pdf02-test-key';
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
@@ -145,13 +145,9 @@ async function fixture() {
           call.stage,
         ),
       );
-      if (call.stage === 'pdf_page_understanding') {
-        assert.match(user[1].image_url.url, /^data:image\/png;base64,/u);
-        calls.push({ stage: call.stage, page: call.page, bytes: Buffer.byteLength(wire) });
-      } else {
-        assert.equal(typeof user, 'string');
-        calls.push({ ...call, bytes: Buffer.byteLength(wire) });
-      }
+      if (call.stage === 'pdf_page_understanding') assert.match(user[1].image_url.url, /^data:image\/png;base64,/u);
+      else assert.equal(typeof user, 'string');
+      calls.push({ ...call, bytes: Buffer.byteLength(wire), system: messages[0].content });
       const result = await reply(call);
       res.writeHead(200, { 'content-type': 'application/json' }).end(
         JSON.stringify({
@@ -713,10 +709,7 @@ test('range readiness, dropped or distinct merged units, durable restart, explic
     );
     await delay(50);
     assert.equal(calls().length, prior);
-    await api.configure('different-model');
-    assert.equal((await api.request(cleanup, range(1, 5))).json.error.code, 'PDF_CLEANUP_PROVIDER_CHANGED');
-    assert.equal(calls().length, prior);
-    await api.configure('fixture-pdf02');
+    await api.configure('cancelled-model');
     let cancelling!: () => void;
     const cancellingSent = new Promise<void>((resolve) => {
       cancelling = resolve;
@@ -740,6 +733,7 @@ test('range readiness, dropped or distinct merged units, durable restart, explic
     await delay(100);
     const cancelled = (await api.request(cleanup)).json.job;
     assert.deepEqual([cancelled.status, cancelled.completedBatches, cancelled.attempts], ['cancelled', 1, 5]);
+    await api.configure('different-model');
     api.setReply(defaultReply);
     await api.request(cleanup, range(1, 5));
     const done = (await api.wait(cleanup, 'completed')).job;
@@ -748,9 +742,21 @@ test('range readiness, dropped or distinct merged units, durable restart, explic
       calls().map((call) => call.units[0].page),
       [1, 1, 1, 5, 5, 5],
     );
+    assert(
+      calls()
+        .slice(prior)
+        .every(({ system }) => system.includes('结构衔接')),
+    );
     const generated = await api.request(cleanup + '/draft', range(1, 5));
     assert.equal(generated.status, 200, JSON.stringify(generated));
     const draft = (await api.request('/api/drafts/' + generated.json.job.draftId)).json;
+    assert.equal(draft.status, 'pending_confirmation');
+    assert.equal(draft.modelProvenance.crossModel, true);
+    assert.equal(draft.modelProvenance.untrackedBlocks, 0);
+    assert.deepEqual(
+      draft.modelProvenance.models.map((entry: any) => entry.model),
+      ['fixture-pdf02', 'different-model'],
+    );
     assert.deepEqual([draft.pdfInput.startPage, draft.pdfInput.endPage, draft.pdfInput.pageCount], [1, 5, 6]);
     assert(draft.pages.every((page: any) => page.pdfEvidence.every((unit: any) => unit.page <= 5)));
   } finally {

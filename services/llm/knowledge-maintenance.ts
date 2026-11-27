@@ -23,6 +23,12 @@ import type { ExtractOutcome } from './service.ts';
 import { validMaintenance, type KnowledgeChange, type KnowledgeMaintenance } from '../wiki/maintenance.ts';
 import type { DraftPage, DraftRecord } from '../wiki/drafts.ts';
 import { readWikiFreshness } from '../wiki/review-service.ts';
+import {
+  completedModel,
+  continuationInstruction,
+  recordCompletedModels,
+  type CompletedBlockModels,
+} from './checkpoint-models.ts';
 
 export const MAINTENANCE_LIMITS = { pages: 8, characters: 48000 } as const;
 const RELATED_PAGE_LIMIT = 2;
@@ -346,6 +352,7 @@ export async function generateMaintenance(
   const context = input.checkpoint.maintenance?.context ?? [];
   const wikiRetrieval = input.checkpoint.maintenance?.wikiRetrieval;
   let cp = await input.beforeCall('planning');
+  const models: CompletedBlockModels[string] = [];
   const proposal = await requestMaintenance(
     input.provider,
     input.signal,
@@ -358,9 +365,12 @@ export async function generateMaintenance(
     async () => {
       cp = await input.beforeCall('planning');
     },
+    { models, continuation: input.continuation },
   );
+  if (input.signal?.aborted) throw new LlmError('LLM_CANCELLED', '知识维护已取消。', 409);
   await input.saveCheckpoint({
     ...cp,
+    completedModels: recordCompletedModels(cp.completedModels, 'maintenance', models),
     maintenance: { version: 1, protocol: 2, context, ...(wikiRetrieval ? { wikiRetrieval } : {}), proposal },
     stage: 'assembling',
   });
@@ -395,6 +405,7 @@ async function proposeMaintenance(
   pages: Topic[],
   context: ModelWikiContext,
   preparation?: Preparation,
+  provenance?: { models: CompletedBlockModels[string]; continuation?: boolean },
 ): Promise<WireChange[]> {
   const structuredOutput = kb02StructuredOutput('knowledge_maintenance', schema);
   const { id, title, sourceType, sourceName, author, publishedAt, url, tags } = raw;
@@ -430,7 +441,8 @@ async function proposeMaintenance(
       (pages.some((page) => page.source_evidence.some((entry) => entry.media))
         ? '有media标记的证据是来源图片解析，引用时注明图序，位置只对应图片解析文本。'
         : '') +
-      JSON.stringify(schema),
+      JSON.stringify(schema) +
+      (provenance?.continuation ? continuationInstruction : ''),
     user: JSON.stringify(request),
   });
   if (signal?.aborted) throw new LlmError('LLM_CANCELLED', '知识维护已取消。', 409);
@@ -451,6 +463,7 @@ async function proposeMaintenance(
       ({ pageIndex, ...change }) => ({ ...change, pageIndexes: [pageIndex] }),
     );
   } else throw new LlmError('LLM_SCHEMA_INVALID', '维护提议未通过结构校验。', 502);
+  provenance?.models.push(completedModel(provider, response));
   return changes;
 }
 
@@ -464,6 +477,7 @@ async function requestMaintenance(
   preparation?: Preparation,
   retrievedContext?: ModelWikiContext,
   beforeRepair?: () => Promise<void>,
+  provenance?: Parameters<typeof proposeMaintenance>[7],
 ): Promise<KnowledgeMaintenance> {
   const changes = await proposeMaintenance(
     provider,
@@ -473,6 +487,7 @@ async function requestMaintenance(
     pages,
     retrievedContext ?? context,
     preparation,
+    provenance,
   );
   const owners = new Map<number, string>(),
     targets = new Set<string>();
@@ -514,10 +529,19 @@ async function requestMaintenance(
       throw new LlmError('LLM_MAINTENANCE_CONTEXT_TOO_LARGE', '更新目标完整正文超过48000字符，检查点保留。', 413);
     await beforeRepair?.();
     const topics = c.pageIndexes.map((index) => pages[index]);
-    const [repaired, extra] = await proposeMaintenance(provider, signal, raw, document, topics, [old], {
-      action: 'update',
-      target: old,
-    });
+    const [repaired, extra] = await proposeMaintenance(
+      provider,
+      signal,
+      raw,
+      document,
+      topics,
+      [old],
+      {
+        action: 'update',
+        target: old,
+      },
+      provenance,
+    );
     if (
       !repaired ||
       extra ||

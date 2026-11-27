@@ -19,6 +19,7 @@ import { kb02StructuredOutput, decodeKb02StructuredOutput } from './openai-struc
 import type { ExtractOutcome, ExtractProgress, ExtractRawInput } from './service.ts';
 import type { CheckpointChunk, ExtractionCheckpoint } from './checkpoints.ts';
 import { evidenceSourceId, sourceRange, type RawAiContent } from '../raw/media-context.ts';
+import { completedModel, continuationInstruction, recordCompletedModels } from './checkpoint-models.ts';
 
 const exact = (value: unknown, schema: object, label: string) => {
   const issues = validateSchema(value, schema as never);
@@ -67,6 +68,7 @@ export type KnowledgeRunInput = {
   checkpoint: ExtractionCheckpoint;
   beforePlanning?: (checkpoint: ExtractionCheckpoint) => Promise<ExtractionCheckpoint>;
   planningRetry?: boolean;
+  continuation?: boolean;
   signal?: AbortSignal;
   beforeCall: (stage: 'extracting' | 'planning') => Promise<ExtractionCheckpoint>;
   saveCheckpoint: (value: Omit<ExtractionCheckpoint, 'integrity'>) => Promise<ExtractionCheckpoint>;
@@ -356,6 +358,7 @@ export async function runKnowledgePipeline(
 ): Promise<{ outcome: ExtractOutcome; checkpoint: ExtractionCheckpoint }> {
   const { bundle, chunks, catalogByChunk } = await validateKnowledgeCheckpoint(input);
   const checkpoint = input.checkpoint;
+  const continuation = input.continuation ? continuationInstruction : '';
   const mediaRange = (start: number, end: number) => {
     if (!input.content) return { start, end };
     const range = sourceRange(input.content, start, end);
@@ -456,7 +459,8 @@ export async function runKnowledgePipeline(
       const completion = await input.provider.complete({
         structuredOutput: factsOutput,
         system:
-          '你是严格的原文陈述分类器。只选择给定atom ID并区分业务事实、歧义、原文明示未知与来源声明。保留否定和业务限制，不补维度，不改写原文。只返回JSON object。',
+          '你是严格的原文陈述分类器。只选择给定atom ID并区分业务事实、歧义、原文明示未知与来源声明。保留否定和业务限制，不补维度，不改写原文。只返回JSON object。' +
+          continuation,
         user: prompt,
         purpose: 'knowledge',
         timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())),
@@ -576,6 +580,9 @@ export async function runKnowledgePipeline(
       current = await input.saveCheckpoint({
         ...current,
         completedChunks: nextChunks,
+        completedModels: recordCompletedModels(current.completedModels, `chunk-${chunk.index}`, [
+          completedModel(input.provider, completion),
+        ]),
         stage: 'extracting',
         lastError: undefined,
       });
@@ -623,7 +630,7 @@ export async function runKnowledgePipeline(
     const planningOutput = kb02StructuredOutput('kb02_planning', plannerSchema);
     const result = await input.provider.complete({
       structuredOutput: planningOutput,
-      system: planningSystem,
+      system: planningSystem + continuation,
       user: `请对下列全部已验证事实规划知识页，只输出JSON。\n${planningJson}`,
       purpose: 'knowledge',
       timeoutMs: Math.min(FROZEN_BUDGETS.callTimeoutMs, Math.max(1000, deadline - Date.now())),
@@ -678,6 +685,7 @@ export async function runKnowledgePipeline(
     guard();
     current = await input.saveCheckpoint({
       ...current,
+      completedModels: recordCompletedModels(current.completedModels, 'plan', [completedModel(input.provider, result)]),
       plan: {
         document: { ...rawPlan.document, summary: sourceSummary(allFacts.map((item) => item.text)) },
         pages: rawPlan.pages,

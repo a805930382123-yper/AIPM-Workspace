@@ -16,6 +16,7 @@ import { answerText, answerSelection } from '../../services/wiki/question-displa
 import { parseWikiAnswer } from './wiki-answer-display';
 import { WikiFreshnessBadge, WikiReviewActions } from './WikiReview';
 import { confirmWikiAnswerCitation } from '../api/wiki';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 export type RawCitationTarget = { rawId: string; start: number; end: number; quote: string; bodySha256: string };
 const stages = {
   retrieving: '正在检索并读取知识页',
@@ -44,6 +45,7 @@ export function WikiQuestionPanel({
   reviewChange?: number;
   onReviewed?: (wiki: Wiki) => void;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [question, setQuestion] = useState(''),
     [answer, setAnswer] = useState<KnowledgeAnswer | null>(null),
     [attempt, setAttempt] = useState<KnowledgeAnswer | null>(null),
@@ -237,7 +239,7 @@ export function WikiQuestionPanel({
         : latest?.status === 'no_change'
           ? '没有实质新增'
           : '';
-  const submitDisabled = busy !== '' || !question.trim();
+  const submitDisabled = busy !== '' || !question.trim() || !!modelDisabled;
   const status =
     busy === 'ask'
       ? activity?.status === 'running' && activity.stage
@@ -317,6 +319,11 @@ export function WikiQuestionPanel({
             </button>
           </div>
         </form>
+        {modelDisabled && (
+          <p className="field-help" role="status">
+            {modelDisabled}
+          </p>
+        )}
         {status && (
           <div className="answer-status-bar">
             <div className="answer-status-summary" role="status">
@@ -393,7 +400,12 @@ export function WikiQuestionPanel({
         )}
         {attempt?.status === 'failed' && question.trim() === attempt.question && (
           <div>
-            <button className="secondary-button" disabled={busy !== ''} onClick={() => void ask(true)}>
+            <button
+              className="secondary-button"
+              disabled={busy !== '' || !!modelDisabled}
+              title={modelDisabled}
+              onClick={() => void ask(true)}
+            >
               明确重试本次问题
             </button>
           </div>
@@ -656,7 +668,8 @@ export function WikiQuestionPanel({
               </button>
               <button
                 className="primary-button"
-                disabled={busy !== '' || !preview.title.trim()}
+                disabled={busy !== '' || !preview.title.trim() || !!modelDisabled}
+                title={modelDisabled}
                 onClick={() => void save()}
               >
                 生成维护草稿

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { LlmConfigSummary } from '../api';
 import { api, clearLlmConfig, llmConfig, saveLlmConfig, testLlmConfig } from '../api';
+import type { ChatTier } from '../../services/llm/provider-router';
+import { useLlmAvailability } from '../hooks/llmAvailability';
 
 export function SettingsPage({
   onOpenExampleTask = () => undefined,
@@ -19,6 +21,20 @@ export function SettingsPage({
   const [configMessage, setConfigMessage] = useState('');
   const [configError, setConfigError] = useState('');
   const [testMessage, setTestMessage] = useState('');
+  const { status: availability, refresh: refreshAvailability } = useLlmAvailability();
+  const [testSelection, setTestSelection] = useState('primary-heavy');
+  const targets = (['primary', 'backup'] as const).flatMap((endpoint) => {
+    const route = availability?.[endpoint];
+    if (route?.configuration !== 'configured') return [];
+    const tiers: ChatTier[] = route.lightModel === route.heavyModel ? ['heavy'] : ['heavy', 'light'];
+    return tiers.map((tier) => ({
+      endpoint,
+      tier,
+      key: `${endpoint}-${tier}`,
+      label: `${route.label} · ${tier === 'heavy' ? route.heavyModel : route.lightModel}`,
+    }));
+  });
+  const testTarget = targets.find((item) => item.key === testSelection) ?? targets[0];
   const sequence = useRef(0);
   const [demo, setDemo] = useState<{
     version: number;
@@ -91,6 +107,7 @@ export function SettingsPage({
     setTestMessage('');
     try {
       const value = await saveLlmConfig(config, { baseUrl, model, ...(apiKey ? { apiKey } : {}) });
+      refreshAvailability?.();
       if (id === sequence.current) {
         setConfig(value);
         setBaseUrl(value.baseUrl);
@@ -115,11 +132,15 @@ export function SettingsPage({
     setConfigMessage('');
     setTestMessage('');
     try {
-      const result = await testLlmConfig(config);
+      const result = await testLlmConfig(
+        config,
+        testTarget && { endpoint: testTarget.endpoint, tier: testTarget.tier },
+      );
       if (id === sequence.current) setTestMessage(`${result.message}（${result.elapsedMs} ms）`);
     } catch (problem) {
       if (id === sequence.current) setConfigError(problem instanceof Error ? problem.message : '连接测试失败。');
     } finally {
+      refreshAvailability?.();
       if (id === sequence.current) setConfigBusy(false);
     }
   };
@@ -133,6 +154,7 @@ export function SettingsPage({
     setTestMessage('');
     try {
       const value = await clearLlmConfig(config);
+      refreshAvailability?.();
       if (id === sequence.current) {
         setConfig(value);
         setBaseUrl('');
@@ -287,6 +309,22 @@ export function SettingsPage({
               连接测试会向此 Provider 发送固定的非业务消息，可能产生少量 API 费用。不会发送
               Raw、Wiki、Prompt、会议内容或草稿，也不会写入业务资产。
             </p>
+            {testTarget && (targets.length > 1 || testTarget.endpoint !== 'primary') && (
+              <label className="field">
+                <span>测试目标</span>
+                <select
+                  disabled={configBusy}
+                  value={testTarget.key}
+                  onChange={(event) => setTestSelection(event.target.value)}
+                >
+                  {targets.map((target) => (
+                    <option key={target.key} value={target.key}>
+                      {target.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <div className="settings-config-actions">
               <button
                 className="primary-button"
@@ -298,7 +336,7 @@ export function SettingsPage({
               <button
                 className="secondary-button"
                 onClick={() => void testConfig()}
-                disabled={!config?.configured || configLoading || configBusy || changed}
+                disabled={!(availability ? testTarget : config?.configured) || configLoading || configBusy || changed}
               >
                 测试连接
               </button>
@@ -339,8 +377,7 @@ export function SettingsPage({
           </div>
           {config && !config.configured && (
             <p className="notice-warn">
-              尚未配置：{config.missing.join('、')}。未配置时导入、手动 Wiki、搜索与导出仍可用；点击「AI
-              整理知识」会返回明确的缺配置错误。
+              主 Provider 缺少 {config.missing.join('、')}。导入、手动 Wiki、搜索与导出仍可用。
             </p>
           )}
           <details className="settings-help">

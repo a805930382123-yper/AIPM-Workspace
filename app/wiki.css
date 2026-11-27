@@ -150,6 +150,19 @@
 .wiki-review-detail > p {
   margin: 0;
 }
+.wiki-model-status {
+  margin-block-start: 20px;
+}
+.wiki-model-status > section {
+  padding-block: 12px;
+  border-block-start: 1px solid var(--line);
+}
+.wiki-model-status :is(h3, h4, p, ul, ol) {
+  margin: 0 0 8px;
+}
+.wiki-model-status :is(ul, ol) {
+  padding-inline-start: 20px;
+}
 .tag.wiki-review-badge[data-urgent='true'] {
   color: #92400e;
   background: #fef3c7;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Prompt, PromptCategory, PromptInput, PromptVersion, Wiki } from '../api';
 import { ApiError, api } from '../api';
+import { useLlmDisabled } from '../hooks/llmAvailability';
 import '../prompt.css';
 import { scenarioGuidance } from '../prompt-scenario-guidance';
 
@@ -99,6 +100,7 @@ export function PromptAiWorkbench({
   categories: PromptCategory[];
   initialTask?: string;
 }) {
+  const modelDisabled = useLlmDisabled();
   const [schema, setSchema] = useState<{ templates: Array<{ id: string; label: string }> } | null>(null);
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [promptsLoaded, setPromptsLoaded] = useState(false);
@@ -460,6 +462,11 @@ export function PromptAiWorkbench({
           返回模板库
         </button>
       </div>
+      {modelDisabled && (
+        <p className="field-help" role="status">
+          {modelDisabled}
+        </p>
+      )}
       {(error || targetConflict) && (
         <p className="prompt-message error-message" role="alert">
           {error || targetConflict}
@@ -512,7 +519,11 @@ export function PromptAiWorkbench({
               </label>
               <div className="field">
                 <span>&nbsp;</span>
-                <button className="primary-button" disabled={busy || !task.trim()} onClick={() => void runBrief()}>
+                <button
+                  className="primary-button"
+                  disabled={busy || !task.trim() || !!modelDisabled}
+                  onClick={() => void runBrief()}
+                >
                   {busy ? '正在整理…' : '生成 Brief'}
                 </button>
                 <button
@@ -640,7 +651,7 @@ export function PromptAiWorkbench({
                 >
                   返回修改任务
                 </button>
-                <button className="primary-button" disabled={busy} onClick={() => void generate()}>
+                <button className="primary-button" disabled={busy || !!modelDisabled} onClick={() => void generate()}>
                   {busy ? '正在生成…' : '生成 Prompt'}
                 </button>
               </div>
@@ -690,7 +701,11 @@ export function PromptAiWorkbench({
                   </p>
                 ))}
               </section>
-              <button className="primary-button" disabled={busy || !!targetConflict} onClick={() => void rewrite()}>
+              <button
+                className="primary-button"
+                disabled={busy || !!targetConflict || !!modelDisabled}
+                onClick={() => void rewrite()}
+              >
                 {busy ? '正在重写…' : '继续生成优化版'}
               </button>
             </section>
@@ -743,7 +758,9 @@ export function PromptAiWorkbench({
                 <span>&nbsp;</span>
                 <button
                   className="primary-button"
-                  disabled={busy || !original.trim() || !!(target && promptsLoaded && !selectedTarget)}
+                  disabled={
+                    busy || !original.trim() || !!(target && promptsLoaded && !selectedTarget) || !!modelDisabled
+                  }
                   onClick={() => void optimize()}
                 >
                   {busy ? '正在检查…' : '检查 Prompt'}
@@ -970,7 +987,7 @@ export function PromptAiWorkbench({
               重新编辑{mode === 'generator' ? 'Brief' : '原 Prompt'}
             </button>
             {mode === 'generator' && (
-              <button className="secondary-button" disabled={busy} onClick={() => void generate()}>
+              <button className="secondary-button" disabled={busy || !!modelDisabled} onClick={() => void generate()}>
                 重新生成
               </button>
             )}
