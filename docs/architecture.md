@@ -149,7 +149,13 @@ LIFEOS L5使用反馈保存在同一`prompts/<id>.json`的可选顶层`feedback`
 
 ## LLM、导入与搜索
 
-产品采用单一OpenAI-compatible非流式Provider，开发协作模型与产品配置分开。CFG01由服务端config-manager集中校验、读写、HMAC revision与串行原子提交；设置页显式保存/清除/连接测试，旧Key只以固定掩码返回。Host/Origin/JSON/writeToken门禁限本机可信页面，配置不进业务数据或备份。环境三字段按字段优先本机文件，任一非空环境覆盖锁定编辑。默认项目根.env.local，服务端FMCG_LLM_CONFIG_FILE可用于隔离测试。三LLM值采用版本化UTF8 base64url无损编码、旧单双引号格式保留内部反斜杠；编码不是加密，0600不声称Windows完整ACL保护。
+产品使用 OpenAI-compatible 非流式 Chat Completions，开发协作模型与产品配置分开。CFG01 由服务端 config-manager 负责主端地址、重档模型、Key 的校验、读写、HMAC revision 与串行原子提交。设置页可显式保存、清除及直测已启用的主端，旧 Key 只以固定掩码返回。Host、Origin、JSON 与 writeToken 门禁限本机可信页面。启动环境按字段优先于本机文件，主端三字段任一非空环境覆盖锁定对应的设置页编辑。默认配置文件是项目根 `.env.local`，服务端可通过 `FMCG_LLM_CONFIG_FILE` 使用隔离配置。设置页以版本化 UTF-8 base64url 编码写入三字段，旧单双引号格式保留内部反斜杠。配置文件和 Key 不进入业务数据或备份。
+
+Batch 3-1 在产品 Provider 工厂接入重档与轻档路由。问答、维护、Prompt 生成优化、Raw/PDF 核心提取使用重档。资讯摘要、分类与建议、周期摘要和主动巡检的发现阶段使用轻档。每端的轻档模型留空时复用该端的重档模型。同一端的两档共用地址与 Key。按 [配置示例](../.env.example) 设置可选名称、超时和备用端。主端默认启用，备用端需显式启用且配置有效。每端缺省超时为 45 秒，任务可明确覆盖。若主端停用且备用端可用，请求直接发到备用端。
+
+主端超时、网络故障或 HTTP 408、429、5xx 时，单个调用最多切换一次有效备用端。端点、模型和凭据完全相同时不会再发一次。调用取消、权限拒绝、响应契约错误及其他 HTTP 4xx 保持原错误。Embedding 保留独立的 `EMBEDDING_*` 配置、`/embeddings` 传输及独立使用统计，不参与聊天主备切换。
+
+实际尝试以每行一条记录写入 `state/llm-routing/attempts.jsonl`，记录端、名称、模型、时间、延迟、可知用量、完成情况和错误分类。业务 API 响应的 `X-FMCG-LLM-Request-Id` 可用于本机可信页面读取 `GET /api/llm/routing?requestId=…`，同一标识覆盖后台任务的后续尝试。无过滤时返回近期 100 条尝试及各端累计统计，故障率分母扣除调用取消。诊断包含当前可用路由的模型与超时，账本不含输入、输出、地址或凭据。设置页固定测试只探测启用的主端，并以 `diagnostic` 标识入账。
 
 server/index.ts为每个AI请求加载有效Provider并用AsyncLocalStorage绑定该请求，后台提取持有启动快照；不会全局交换Provider串线。配置读取/保存不调用Provider，测试仅发送固定非业务探针，15秒及响应体预算限制，无业务资产写入。地址/模型检查新、环境和可读本机已知Key及百分号编码，异常配置不成为公开摘要或发起请求。六链解析后秘密门禁与Raw/Meeting来源约束继续生效。详见[CFG01接口卡](batches/CFG01.md)与[验收](reports/CFG01-20261014-acceptance.md)。
 

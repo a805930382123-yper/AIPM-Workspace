@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   LLM_ENV,
+  getRoutingSecrets,
   ConfigError,
   containsKnownSecret,
   encodeConfigValue,
@@ -51,7 +52,11 @@ export class LlmConfigManager {
     const bytes = await this.bytes();
     const config = await loadLlmConfig({ env: this.env, filePath: this.filePath });
     const local = parseLocalEnvText(bytes.toString('utf8'));
-    const knownSecrets = [this.env[LLM_ENV.apiKey]?.trim() ?? '', local[LLM_ENV.apiKey] ?? ''].filter(Boolean);
+    const knownSecrets = [
+      this.env[LLM_ENV.apiKey]?.trim() ?? '',
+      local[LLM_ENV.apiKey] ?? '',
+      ...getRoutingSecrets(this.env, local),
+    ].filter(Boolean);
     return llmConfigSummary(config, this.filePath, {
       revision: this.revision(bytes),
       writeToken: this.writeToken,

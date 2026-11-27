@@ -3,6 +3,7 @@
 // provider response is ever put into an error message, cause or log line.
 import { containsKnownSecret, safeBaseUrl, validateApiKey, validateModel, type LlmConfig } from './config.ts';
 import type { StructuredOutput } from './openai-structured.ts';
+import type { LlmRouteEvidence } from './provider-router.ts';
 
 export const llmNetworkCauses = [
   'ECONNREFUSED',
@@ -20,6 +21,8 @@ export const llmNetworkCauses = [
 ] as const;
 
 export class LlmError extends Error {
+  upstreamStatus?: number;
+
   constructor(
     public code: string,
     message: string,
@@ -33,10 +36,11 @@ export class LlmError extends Error {
 export type LlmCompletionRequest = {
   system: string;
   user: string;
-  timeoutMs: number;
+  timeoutMs?: number;
   maxOutputBytes: number;
   signal?: AbortSignal;
-  purpose?: 'knowledge' | 'prompt';
+  purpose?: 'knowledge' | 'prompt' | 'diagnostic';
+  tier?: 'heavy' | 'light';
   structuredOutput?: StructuredOutput;
   image?: Buffer;
   media?: { format: 'json_schema' | 'json_object'; omitTemperature?: boolean; completionTokenField?: boolean };
@@ -47,8 +51,21 @@ export type LlmCompletion = {
   bytes: number;
   /** text remains the original response; the caller owns wire decoding. */
   structuredOutputApplied?: true;
-  usage?: { promptTokens?: number; completionTokens?: number };
+  usage?: { promptTokens?: number; completionTokens?: number; totalTokens?: number };
+  route?: LlmRouteEvidence;
 };
+
+export const DEFAULT_LLM_TIMEOUT_MS = 45_000;
+
+type WireUsage = { prompt_tokens?: unknown; completion_tokens?: unknown; total_tokens?: unknown };
+function readUsage(value?: WireUsage): LlmCompletion['usage'] {
+  const tokens = (n: unknown) => (typeof n === 'number' && Number.isSafeInteger(n) && n >= 0 ? n : undefined);
+  const promptTokens = tokens(value?.prompt_tokens);
+  const completionTokens = tokens(value?.completion_tokens);
+  const totalTokens = tokens(value?.total_tokens);
+  if (promptTokens !== undefined || completionTokens !== undefined || totalTokens !== undefined)
+    return { promptTokens, completionTokens, totalTokens };
+}
 export interface LlmProvider {
   readonly name: string;
   readonly model: string;
@@ -190,14 +207,26 @@ export class OpenAiCompatibleProvider implements LlmProvider {
   get secrets(): readonly string[] {
     return [...new Set([this.config.apiKey, ...(this.config.knownSecrets ?? [])].filter(Boolean))];
   }
+  matchesTarget(other: OpenAiCompatibleProvider): boolean {
+    return (
+      this.cacheIdentity === other.cacheIdentity &&
+      this.model === other.model &&
+      this.config.apiKey === other.config.apiKey
+    );
+  }
 
   private async httpError(response: Response, maxBytes: number, media: boolean): Promise<LlmError> {
     const body = await readCapped(response, maxBytes);
     let detail = sanitizeProviderText(body, this.secrets);
     let parameter: string | undefined;
     let errorCode: string | undefined;
+    let usage: LlmCompletion['usage'];
     try {
-      const parsed = JSON.parse(body) as { error?: { message?: unknown; param?: unknown; code?: unknown } };
+      const parsed = JSON.parse(body) as {
+        error?: { message?: unknown; param?: unknown; code?: unknown };
+        usage?: WireUsage;
+      };
+      usage = readUsage(parsed?.usage);
       const message = parsed?.error?.message;
       if (message !== undefined) detail = sanitizeProviderText(message, this.secrets);
       if (typeof parsed?.error?.param === 'string') parameter = parsed.error.param;
@@ -206,24 +235,27 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       /* keep the sanitized raw snippet */
     }
     const suffix = detail && !media ? `（Provider 说明：${detail}）` : '';
-    const mediaStatus = media ? { upstreamStatus: response.status } : undefined;
+    const upstream =
+      media || usage
+        ? { ...(media ? { upstreamStatus: response.status } : {}), ...(usage ? { usage } : {}) }
+        : undefined;
     if (response.status === 401 || response.status === 403) {
       return new LlmError(
         'LLM_AUTH_FAILED',
         `Provider 拒绝鉴权（HTTP ${response.status}）。请检查服务端 API Key 配置。${suffix}`,
         response.status,
-        mediaStatus,
+        upstream,
       );
     }
     if (response.status === 429) {
-      return new LlmError('LLM_RATE_LIMITED', `Provider 限流（HTTP 429），请稍后重试。${suffix}`, 429, mediaStatus);
+      return new LlmError('LLM_RATE_LIMITED', `Provider 限流（HTTP 429），请稍后重试。${suffix}`, 429, upstream);
     }
     if (response.status >= 500) {
       return new LlmError(
         'LLM_PROVIDER_ERROR',
         `Provider 服务错误（HTTP ${response.status}）。${suffix}`,
         502,
-        mediaStatus,
+        upstream,
       );
     }
     const recognizedParameter = /response_format|json_schema/iu.test(parameter ?? detail)
@@ -242,7 +274,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
           `${parameter ?? ''} ${detail}`,
         );
       if (!recognizedParameter && imageInputRejected)
-        return new LlmError('LLM_IMAGE_REJECTED', 'Provider 拒绝本次图像输入。', 422, mediaStatus);
+        return new LlmError('LLM_IMAGE_REJECTED', 'Provider 拒绝本次图像输入。', 422, upstream);
     }
     return new LlmError(
       'LLM_PROVIDER_ERROR',
@@ -250,14 +282,17 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       502,
       media
         ? {
-            upstreamStatus: response.status,
+            ...upstream,
             parameter: recognizedParameter,
           }
-        : undefined,
+        : upstream,
     );
   }
 
-  async complete(request: LlmCompletionRequest): Promise<LlmCompletion> {
+  async complete(
+    request: LlmCompletionRequest,
+    dispatch?: (send: () => Promise<LlmCompletion>) => Promise<LlmCompletion>,
+  ): Promise<LlmCompletion> {
     if (!this.config.baseUrl || !this.config.model || !this.config.apiKey) {
       throw new LlmError(
         'LLM_NOT_CONFIGURED',
@@ -312,14 +347,50 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       ];
     }
     if (request.signal?.aborted) throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
+    const send = () =>
+      this.send(request, url, model, userContent, {
+        defaultTemperature,
+        structured,
+        media,
+        mediaSchema,
+        officialReasoning,
+        constrainedFlash,
+      });
+    return dispatch ? dispatch(send) : send();
+  }
+
+  private async send(
+    request: LlmCompletionRequest,
+    url: string,
+    model: string,
+    userContent: string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }>,
+    {
+      defaultTemperature,
+      structured,
+      media,
+      mediaSchema,
+      officialReasoning,
+      constrainedFlash,
+    }: {
+      defaultTemperature: boolean;
+      structured: false | StructuredOutput | undefined;
+      media: LlmCompletionRequest['media'];
+      mediaSchema: false | StructuredOutput | undefined;
+      officialReasoning: boolean;
+      constrainedFlash: boolean;
+    },
+  ) {
+    const timeoutMs = request.timeoutMs ?? DEFAULT_LLM_TIMEOUT_MS;
+    if (request.signal?.aborted) throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
     const controller = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
       controller.abort();
-    }, request.timeoutMs);
+    }, timeoutMs);
     const cancel = () => controller.abort();
     request.signal?.addEventListener('abort', cancel, { once: true });
+    let upstreamStatus: number | undefined;
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -351,13 +422,17 @@ export class OpenAiCompatibleProvider implements LlmProvider {
               ? { response_format: { type: 'json_object' } }
               : {}),
         }),
+        redirect: 'manual',
         signal: controller.signal,
       });
-      if (!response.ok) throw await this.httpError(response, request.maxOutputBytes, !!media);
+      if (!response.ok) {
+        upstreamStatus = response.status;
+        throw await this.httpError(response, request.maxOutputBytes, !!media);
+      }
       const text = await readCapped(response, request.maxOutputBytes);
       let payload: {
         choices?: Array<{ message?: { content?: unknown; refusal?: unknown }; finish_reason?: unknown }>;
-        usage?: { prompt_tokens?: unknown; completion_tokens?: unknown };
+        usage?: WireUsage;
         error?: { message?: unknown };
       };
       try {
@@ -370,6 +445,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
           finishReason: null,
         });
       }
+      const usage = readUsage(payload.usage);
       if (payload.error)
         throw new LlmError(
           'LLM_PROVIDER_ERROR',
@@ -377,6 +453,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
             ? 'Provider 返回错误。'
             : `Provider 返回错误：${sanitizeProviderText(payload.error.message, this.secrets)}`,
           502,
+          usage ? { usage } : undefined,
         );
       const choice = payload.choices?.[0];
       const finishReason =
@@ -385,20 +462,6 @@ export class OpenAiCompatibleProvider implements LlmProvider {
           ? choice.finish_reason
           : null;
       const content = choice?.message?.content;
-      const usage: LlmCompletion['usage'] = {
-        promptTokens:
-          typeof payload.usage?.prompt_tokens === 'number' &&
-          Number.isFinite(payload.usage.prompt_tokens) &&
-          payload.usage.prompt_tokens >= 0
-            ? payload.usage.prompt_tokens
-            : undefined,
-        completionTokens:
-          typeof payload.usage?.completion_tokens === 'number' &&
-          Number.isFinite(payload.usage.completion_tokens) &&
-          payload.usage.completion_tokens >= 0
-            ? payload.usage.completion_tokens
-            : undefined,
-      };
       const responseDetails = {
         category: 'response_invalid',
         finishReason,
@@ -428,22 +491,24 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         ...(structured || mediaSchema ? { structuredOutputApplied: true as const } : {}),
       };
     } catch (error) {
-      if (error instanceof LlmError) throw error;
-      if (controller.signal.aborted) {
-        if (timedOut)
-          throw new LlmError('LLM_TIMEOUT', `调用 Provider 超过 ${request.timeoutMs} ms 超时上限，未产生草稿。`, 504);
-        throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
-      }
-      if (media) {
+      let failure: LlmError;
+      if (request.signal?.aborted) failure = new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
+      else if (error instanceof LlmError) failure = error;
+      else if (timedOut)
+        failure = new LlmError('LLM_TIMEOUT', `调用 Provider 超过 ${timeoutMs} ms 超时上限，未产生草稿。`, 504);
+      else if (media) {
         const cause = error instanceof Error ? (error.cause as { code?: unknown } | undefined) : undefined;
         const networkCause = llmNetworkCauses.find((code) => code === cause?.code);
-        throw new LlmError('LLM_NETWORK_ERROR', 'Provider 网络请求失败。', 502, { networkCause });
+        failure = new LlmError('LLM_NETWORK_ERROR', 'Provider 网络请求失败。', 502, { networkCause });
+      } else {
+        failure = new LlmError(
+          'LLM_NETWORK_ERROR',
+          `调用 Provider 失败：${sanitizeProviderText(error instanceof Error ? error.message : error, this.secrets)}`,
+          502,
+        );
       }
-      throw new LlmError(
-        'LLM_NETWORK_ERROR',
-        `调用 Provider 失败：${sanitizeProviderText(error instanceof Error ? error.message : error, this.secrets)}`,
-        502,
-      );
+      failure.upstreamStatus = upstreamStatus;
+      throw failure;
     } finally {
       clearTimeout(timer);
       request.signal?.removeEventListener('abort', cancel);

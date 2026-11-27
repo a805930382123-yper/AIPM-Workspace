@@ -2,6 +2,7 @@ import type express from 'express';
 import { LlmConfigManager } from '../services/llm/config-manager.ts';
 import { ConfigError } from '../services/llm/config.ts';
 import { assertNoKnownSecret, LlmError, type LlmProvider } from '../services/llm/provider.ts';
+import type { LlmAttemptLedger } from '../services/llm/provider-router.ts';
 
 const fail = (res: express.Response, status: number, code: string, message: string) =>
   res.status(status).json({ error: { code, message } });
@@ -38,7 +39,31 @@ export function registerLlmConfigRoutes(
   app: express.Express,
   manager: LlmConfigManager,
   provider: () => LlmProvider | undefined | Promise<LlmProvider | undefined>,
+  routing?: LlmAttemptLedger,
+  readRoutingConfig?: () => Promise<unknown>,
 ): void {
+  if (routing) {
+    app.get('/api/llm/routing', async (req, res, next) => {
+      if (!localHost(req.get('host')) || !allowedOrigin(req) || req.get('sec-fetch-site') === 'cross-site') {
+        fail(res, 403, 'CONFIG_ORIGIN_FORBIDDEN', '仅允许本机可信页面读取路由诊断。');
+        return;
+      }
+      const requestId = req.query.requestId;
+      if (
+        requestId !== undefined &&
+        (typeof requestId !== 'string' || !/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/u.test(requestId))
+      ) {
+        fail(res, 400, 'INVALID_REQUEST_ID', '路由诊断需要有效的请求标识。');
+        return;
+      }
+      try {
+        const [ledger, availableRoutes] = await Promise.all([routing.read(requestId), readRoutingConfig?.()]);
+        res.json({ ...ledger, availableRoutes });
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
   app.get('/api/llm/config', async (req, res, next) => {
     if (!localHost(req.get('host')) || !allowedOrigin(req) || req.get('sec-fetch-site') === 'cross-site') {
       fail(res, 403, 'CONFIG_ORIGIN_FORBIDDEN', '仅允许本机可信页面读取配置摘要。');
@@ -105,6 +130,7 @@ export function registerLlmConfigRoutes(
       const completion = await target.complete({
         system: 'You are a connectivity check. Return only the word OK.',
         user: 'Reply with OK.',
+        purpose: 'diagnostic',
         timeoutMs: 15000,
         maxOutputBytes: 4096,
       });

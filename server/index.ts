@@ -1,5 +1,6 @@
 import express from 'express';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { randomUUID } from 'node:crypto';
 import { access } from 'node:fs/promises';
 import multer from 'multer';
 import path from 'node:path';
@@ -25,18 +26,16 @@ import { WikiSearchIndexer } from '../services/search/indexer.ts';
 import { DraftStore } from '../services/wiki/drafts.ts';
 import { WikiCommitService } from '../services/wiki/commits.ts';
 import { validateBaseRevision, validateWikiInput } from './wiki-validation.ts';
-import {
-  LLM_ENV,
-  containsKnownSecret,
-  loadLlmConfig,
-  readLocalEnvFile,
-  safeBaseUrl,
-  validateApiKey,
-  validateModel,
-} from '../services/llm/config.ts';
+import { LLM_ENV, getRoutingSecrets, loadLlmConfig, readLocalEnvFile } from '../services/llm/config.ts';
 import { LlmConfigManager } from '../services/llm/config-manager.ts';
 import { ConfigError } from '../services/llm/config.ts';
-import { assertNoKnownSecret, OpenAiCompatibleProvider, type LlmProvider } from '../services/llm/provider.ts';
+import { assertNoKnownSecret, type LlmProvider } from '../services/llm/provider.ts';
+import {
+  LlmAttemptLedger,
+  llmRequestContext,
+  loadRouterConfig,
+  ProviderRouter,
+} from '../services/llm/provider-router.ts';
 import { LLMService } from '../services/llm/service.ts';
 import { ExtractionJobStore, ExtractionRunner } from '../services/llm/jobs.ts';
 import { loadExtractionRules } from '../services/llm/rules.ts';
@@ -65,7 +64,6 @@ import { NewsService } from '../services/news/service.ts';
 import { readNewsSources } from '../services/news/sources.ts';
 import { registerNewsRoutes } from './news-api.ts';
 import { acquireInstanceLock } from '../services/automation/instance-lock.ts';
-import { meterAutomationProvider } from '../services/automation/context.ts';
 import { AutomationScheduler } from '../services/automation/scheduler.ts';
 import { createSelfcheck } from '../services/automation/selfcheck.ts';
 import { NewsPipeline, organizeType } from '../services/automation/pipeline/service.ts';
@@ -100,14 +98,16 @@ if (production)
   });
 const lock = await acquireInstanceLock(root, port, production ? 'production' : 'development');
 process.once('exit', lock.releaseMetadata);
+const llmAttempts = new LlmAttemptLedger(root);
 const assertSafeEmbeddingQuery = async (query: unknown) => {
   const config = await loadConfig();
-  const secrets = [config.apiKey, ...(config.knownSecrets ?? [])];
-  // A complete environment configuration skips the local file in loadLlmConfig.
-  if (Object.values(LLM_ENV).every((name) => Boolean(process.env[name]?.trim()))) {
-    const local = await readLocalEnvFile(configFile);
-    secrets.push(local[LLM_ENV.apiKey] ?? '');
-  }
+  const local = await readLocalEnvFile(configFile);
+  const secrets = [
+    config.apiKey,
+    ...(config.knownSecrets ?? []),
+    local[LLM_ENV.apiKey] ?? '',
+    ...getRoutingSecrets(process.env, local),
+  ];
   assertNoKnownSecret(query, secrets);
 };
 const store: RawStore = new RawStore(root, (kind, raw) =>
@@ -126,8 +126,22 @@ const wikiSearch: WikiSearchIndexer | undefined =
               : await loadConfig().catch(() => undefined);
           const config = resolveEmbeddingConfig(process.env, main);
           return config
-            ? new OpenAiEmbeddingProvider(config, (usage, error) => {
+            ? new OpenAiEmbeddingProvider(config, async (usage, error) => {
                 console.info('[search-embedding-usage]', { ...usage, error });
+                await llmAttempts.append({
+                  callId: randomUUID(),
+                  fallback: false,
+                  tier: 'embedding',
+                  endpoint: 'embedding',
+                  label: 'Embedding',
+                  provider: usage.provider,
+                  model: usage.model,
+                  startedAt: new Date(Date.now() - usage.durationMs).toISOString(),
+                  latencyMs: Math.round(usage.durationMs),
+                  outcome: error ? 'failure' : 'success',
+                  errorCode: error,
+                  usage: { promptTokens: usage.promptTokens, totalTokens: usage.totalTokens },
+                });
               })
             : null;
         },
@@ -151,30 +165,20 @@ const demo = new DemoService(root, store, wikiStore, prompts);
 const meetings = new MeetingStore(root);
 const meetingRawBridge = new MeetingRawBridge(meetings, store);
 const recovery = new RecoveryRegistry(root);
-// B04: the product provider is built from server-side configuration only. No key, no provider
-// and no fallback exists in the browser bundle; an unconfigured server stays unconfigured.
 const loadConfig = () => loadLlmConfig({ filePath: configFile });
 const configManager = new LlmConfigManager(configFile);
+const loadRouting = async () => {
+  const local = await readLocalEnvFile(configFile).catch((error: unknown): Record<string, string> => {
+    // A complete startup override retains the legacy ability to run with an unreadable optional file.
+    if (Object.values(LLM_ENV).every((name) => Boolean(process.env[name]?.trim()))) return {};
+    throw error;
+  });
+  const config = await loadLlmConfig({ filePath: configFile, local });
+  return loadRouterConfig(config, process.env, local);
+};
 const providerFactory = async (): Promise<LlmProvider | undefined> => {
-  const config = await loadConfig();
-  if (!config.baseUrl || !config.model || !config.apiKey) return undefined;
-  try {
-    // With a complete environment config the local file must remain optional; when readable,
-    // still include its historical Key in the secret-scrubbing set for this operation.
-    if (config.source === 'env' && Object.values(LLM_ENV).every((name) => Boolean(process.env[name]?.trim()))) {
-      const local = await readLocalEnvFile(configFile).catch((): Record<string, string> => ({}));
-      config.knownSecrets = [...new Set([...(config.knownSecrets ?? []), local[LLM_ENV.apiKey] ?? ''].filter(Boolean))];
-    }
-    config.baseUrl = safeBaseUrl(config.baseUrl);
-    config.model = validateModel(config.model);
-    config.apiKey = validateApiKey(config.apiKey);
-    const secrets = [...new Set([config.apiKey, ...(config.knownSecrets ?? [])])];
-    const containsSecret = (value: string) => containsKnownSecret(value, secrets);
-    if (containsSecret(config.baseUrl) || containsSecret(config.model)) return undefined;
-    return meterAutomationProvider(new OpenAiCompatibleProvider(config));
-  } catch {
-    return undefined;
-  }
+  const routing = await loadRouting();
+  if (routing) return new ProviderRouter(routing, llmAttempts);
 };
 const media = new MediaVlmParserService(store, (work) => wikiStore.withLock(work));
 const runner = new ExtractionRunner({
@@ -256,6 +260,11 @@ try {
 }
 
 const app = express();
+app.use('/api', (_req, res, next) => {
+  const id = randomUUID();
+  res.set('X-FMCG-LLM-Request-Id', id);
+  llmRequestContext.run(id, next);
+});
 registerRecoveryRoutes(app, recovery);
 app.disable('x-powered-by');
 // Minute imports authorize before either JSON parsing or multipart buffering reads the body.
@@ -326,7 +335,7 @@ const automation: AutomationScheduler = new AutomationScheduler({
       root,
       lockIsCurrent: lock.isCurrent,
       scanRecovery: () => recovery.scan(),
-      isProviderConfigured: async () => (await configManager.get()).configured,
+      isProviderConfigured: async () => Boolean(await loadRouting()),
     }),
     createDailyNews(news, pipeline),
     createWikiLint(new WikiLint(root, store, audits, wikiStore), lintSnapshots, () =>
@@ -736,7 +745,28 @@ registerB04Routes(app, {
   rawStore: store,
   wikiStore,
 });
-registerLlmConfigRoutes(app, configManager, providerFactory);
+registerLlmConfigRoutes(
+  app,
+  configManager,
+  async () => {
+    const primary = (await loadRouting())?.primary;
+    if (primary) return new ProviderRouter({ primary, preferred: primary }, llmAttempts);
+  },
+  llmAttempts,
+  async () => {
+    const routing = await loadRouting().catch(() => undefined);
+    const view = (endpoint: NonNullable<typeof routing>['primary']) =>
+      endpoint
+        ? {
+            label: endpoint.label,
+            heavyModel: endpoint.heavy.model,
+            lightModel: endpoint.light.model,
+            timeoutMs: endpoint.timeoutMs,
+          }
+        : null;
+    return { primary: view(routing?.primary), backup: view(routing?.backup) };
+  },
+);
 registerKnowledgeRoutes(app, {
   root,
   raws: store,

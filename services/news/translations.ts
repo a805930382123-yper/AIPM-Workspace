@@ -96,6 +96,7 @@ export class NewsTranslations {
       let output: unknown;
       try {
         const { text, finishReason } = await provider.complete({
+          tier: 'light',
           system: SYSTEM,
           user: JSON.stringify({ items: input }),
           timeoutMs: 30_000,

@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
 import { lw02Fixture } from './lw02-fixture.ts';
-import { startFakeProvider } from './support/fake-llm.ts';
+import { startFakeProvider, type FakeReply, type FakeRequest } from './support/fake-llm.ts';
 
 test('formal entry carries provider context through answer and inspection operations', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'provider01-'));
@@ -24,7 +24,7 @@ test('formal entry carries provider context through answer and inspection operat
     f.seed('重复主题', '星桥2026直营网点目标100家。', [raw.id]),
     f.seed('重复主题副本', '星桥2026直营网点目标100家。', [raw.id]),
   ]);
-  const fake = await startFakeProvider((req) => {
+  const handle = (req: FakeRequest): FakeReply => {
     const p = JSON.parse(req.user);
     let result: any;
     if (p.stage === 'knowledge_inspection') {
@@ -108,7 +108,13 @@ test('formal entry carries provider context through answer and inspection operat
       }
     }
     return { kind: 'content', content: JSON.stringify(result) };
-  });
+  };
+  const primary = await startFakeProvider((req) =>
+    req.user === 'Reply with OK.' || JSON.parse(req.user).stage === 'knowledge_answer'
+      ? { kind: 'status', status: 503 }
+      : handle(req),
+  );
+  const backup = await startFakeProvider(handle);
   const socket = net.createServer();
   await new Promise<void>((r) => socket.listen(0, '127.0.0.1', r));
   const port = (socket.address() as net.AddressInfo).port;
@@ -126,9 +132,14 @@ test('formal entry carries provider context through answer and inspection operat
       FMCG_DATA_DIR: dir,
       FMCG_PORT: String(port),
       FMCG_LLM_CONFIG_FILE: cfg,
-      FMCG_LLM_BASE_URL: fake.url,
-      FMCG_LLM_MODEL: 'fake',
+      FMCG_LLM_BASE_URL: primary.url,
+      FMCG_LLM_MODEL: 'primary-heavy',
       FMCG_LLM_API_KEY: 'synthetic',
+      FMCG_LLM_LIGHT_MODEL: 'primary-light',
+      FMCG_LLM_BACKUP_ENABLED: 'true',
+      FMCG_LLM_BACKUP_BASE_URL: backup.url,
+      FMCG_LLM_BACKUP_API_KEY: 'synthetic-reserve',
+      FMCG_LLM_BACKUP_MODEL: 'backup-heavy',
     }),
     stdio: 'ignore',
   });
@@ -139,7 +150,7 @@ test('formal entry carries provider context through answer and inspection operat
       headers: { 'content-type': 'application/json' },
       body: body ? JSON.stringify(body) : undefined,
     });
-    return { status: r.status, json: (await r.json()) as any };
+    return { status: r.status, routeId: r.headers.get('x-fmcg-llm-request-id'), json: (await r.json()) as any };
   };
   try {
     for (let i = 0; i < 100; i++) {
@@ -153,6 +164,15 @@ test('formal entry carries provider context through answer and inspection operat
     assert.equal(a.json.wikiRetrieval.engine, 'sqlite_fts');
     assert.equal(a.json.wikiRetrieval.degraded, true);
     assert.equal(a.json.wikiRetrieval.degradeReason, 'embedding_unconfigured');
+    assert(a.routeId);
+    const answerRoute = await req('/api/llm/routing?requestId=' + a.routeId);
+    assert.deepEqual(
+      answerRoute.json.attempts.map((attempt: { model: string; outcome: string }) => [attempt.model, attempt.outcome]),
+      [
+        ['backup-heavy', 'success'],
+        ['primary-heavy', 'failure'],
+      ],
+    );
     const save = await req(`/api/knowledge/answers/${a.json.id}/save`, {
       resultRevision: a.json.revision,
       key: randomUUID(),
@@ -172,6 +192,8 @@ test('formal entry carries provider context through answer and inspection operat
       await new Promise((r) => setTimeout(r, 100));
     }
     assert.equal(check.status, 'completed', JSON.stringify(check));
+    const inspectRoute = await req('/api/llm/routing?requestId=' + start.routeId);
+    assert.equal(inspectRoute.json.attempts[0].model, 'primary-light');
     const draft = await req(`/api/knowledge/inspections/${check.id}/draft`, {
       baseRevision: check.revision,
       selectedFindingIds: [check.findings[0].id],
@@ -179,15 +201,37 @@ test('formal entry carries provider context through answer and inspection operat
     });
     assert.equal(draft.status, 200, JSON.stringify(draft));
     assert.deepEqual(
-      fake.requests.map((r) => JSON.parse(r.user).stage),
+      primary.requests.map((r) => JSON.parse(r.user).stage),
       ['knowledge_answer', 'answer_maintenance', 'knowledge_inspection', 'inspection_maintenance'],
+    );
+    assert.deepEqual(
+      backup.requests.map((r) => r.model),
+      ['backup-heavy'],
+    );
+    const config = await req('/api/llm/config');
+    const probe = await fetch(url + '/api/llm/config/test', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-fmcg-config-token': config.json.writeToken },
+      body: JSON.stringify({ revision: config.json.revision, confirm: true }),
+    });
+    assert.equal(probe.status, 502);
+    assert.equal(primary.requests.at(-1)?.user, 'Reply with OK.');
+    assert.equal(backup.requests.length, 1);
+    const probeRoute = await req('/api/llm/routing?requestId=' + probe.headers.get('x-fmcg-llm-request-id'));
+    assert.equal(probeRoute.json.attempts.length, 1);
+    assert.equal(probeRoute.json.attempts[0].purpose, 'diagnostic');
+    assert.equal(probeRoute.json.attempts[0].endpoint, 'primary');
+    assert.equal(probeRoute.json.attempts[0].upstreamStatus, 503);
+    assert.equal(
+      (await fetch(url + '/api/llm/routing', { headers: { origin: 'https://untrusted.invalid' } })).status,
+      403,
     );
   } finally {
     await new Promise<void>((resolve) => {
       child.once('exit', () => resolve());
       child.kill();
     });
-    await fake.close();
+    await Promise.all([primary.close(), backup.close()]);
     await rm(dir, { recursive: true, force: true });
   }
 });

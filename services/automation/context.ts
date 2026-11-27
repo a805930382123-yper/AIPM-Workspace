@@ -39,34 +39,45 @@ export function meterAutomationProvider(provider: LlmProvider): LlmProvider {
     model,
     cacheIdentity,
     secrets,
-    async complete(request) {
-      const run = getAutomationContext();
-      const usage = run?.usage;
-      if (!usage) return provider.complete(request);
-      usage.requests++;
-      usage.unknownUsageCount++;
-      await run.save?.();
-      let tokens: LlmCompletion['usage'];
-      let completed = false;
-      try {
-        const result = await provider.complete(request);
-        tokens = result.usage;
-        completed = true;
-        return result;
-      } catch (error) {
-        if (error instanceof LlmError)
-          tokens = (error.details as { usage?: LlmCompletion['usage'] } | undefined)?.usage;
-        throw error;
-      } finally {
-        const input = tokens?.promptTokens;
-        const output = tokens?.completionTokens;
-        const hasInput = typeof input === 'number' && Number.isFinite(input) && input >= 0;
-        const hasOutput = typeof output === 'number' && Number.isFinite(output) && output >= 0;
-        if (hasInput) usage.inputTokens += input;
-        if (hasOutput) usage.outputTokens += output;
-        if (completed && hasInput && hasOutput) usage.unknownUsageCount--;
-        await run.save?.();
-      }
-    },
+    complete: (request) => meterAutomationCall(() => provider.complete(request)),
   };
+}
+
+export async function meterAutomationCall(
+  send: () => Promise<LlmCompletion>,
+  signal?: AbortSignal,
+): Promise<LlmCompletion> {
+  if (signal?.aborted) throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
+  const run = getAutomationContext();
+  const usage = run?.usage;
+  if (!usage) return send();
+  usage.requests++;
+  usage.unknownUsageCount++;
+  await run.save?.();
+  if (signal?.aborted) {
+    usage.requests--;
+    usage.unknownUsageCount--;
+    await run.save?.();
+    throw new LlmError('LLM_CANCELLED', '调用已被取消。', 409);
+  }
+  let tokens: LlmCompletion['usage'];
+  let completed = false;
+  try {
+    const result = await send();
+    tokens = result.usage;
+    completed = true;
+    return result;
+  } catch (error) {
+    if (error instanceof LlmError) tokens = (error.details as { usage?: LlmCompletion['usage'] } | undefined)?.usage;
+    throw error;
+  } finally {
+    const input = tokens?.promptTokens;
+    const output = tokens?.completionTokens;
+    const hasInput = typeof input === 'number' && Number.isFinite(input) && input >= 0;
+    const hasOutput = typeof output === 'number' && Number.isFinite(output) && output >= 0;
+    if (hasInput) usage.inputTokens += input;
+    if (hasOutput) usage.outputTokens += output;
+    if (completed && hasInput && hasOutput) usage.unknownUsageCount--;
+    await run.save?.();
+  }
 }

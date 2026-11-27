@@ -58,6 +58,7 @@ export async function generateWeeklyReviewDraft(
   signal?.throwIfAborted();
   const structuredOutput = kb02StructuredOutput('weekly_review', weeklyReviewDraftSchema);
   const completion = provider.complete({
+    tier: 'light',
     purpose: 'knowledge',
     system: system + '\n' + JSON.stringify(weeklyReviewDraftSchema),
     user: JSON.stringify(input),

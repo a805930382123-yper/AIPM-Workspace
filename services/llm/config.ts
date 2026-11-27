@@ -2,6 +2,7 @@
 import { readFile } from 'node:fs/promises';
 
 export const LLM_ENV = { baseUrl: 'FMCG_LLM_BASE_URL', model: 'FMCG_LLM_MODEL', apiKey: 'FMCG_LLM_API_KEY' } as const;
+export const LLM_BACKUP_KEY_ENV = 'FMCG_LLM_BACKUP_API_KEY';
 export const LLM_PROVIDER_NAME = 'openai-compatible';
 export const KEY_MASK = '••••••••••••';
 const CONFIG_VALUE_PREFIX = '@fmcg-config-utf8-base64url-v1@';
@@ -54,6 +55,10 @@ function assertWellFormedUnicode(value: string, code: string, message: string): 
 }
 export function envValue(env: NodeJS.ProcessEnv, name: string): string {
   return typeof env[name] === 'string' ? env[name]!.trim() : '';
+}
+
+export function getRoutingSecrets(env: NodeJS.ProcessEnv, local: Record<string, string> = {}): string[] {
+  return [envValue(env, LLM_BACKUP_KEY_ENV), local[LLM_BACKUP_KEY_ENV] ?? ''].filter(Boolean);
 }
 
 function decodePercentEscapes(value: string): string {
@@ -119,7 +124,8 @@ export function parseLocalEnvText(text: string): Record<string, string> {
     if (at <= 0) continue;
     const key = trimmed.slice(0, at).trim();
     let value = trimmed.slice(at + 1).trim();
-    const isLlmConfigKey = key === LLM_ENV.baseUrl || key === LLM_ENV.model || key === LLM_ENV.apiKey;
+    const isLlmConfigKey =
+      key === LLM_ENV.baseUrl || key === LLM_ENV.model || key === LLM_ENV.apiKey || key === LLM_BACKUP_KEY_ENV;
     if (isLlmConfigKey && value.startsWith(CONFIG_VALUE_PREFIX)) {
       const encoded = value.slice(CONFIG_VALUE_PREFIX.length);
       if (!/^[A-Za-z0-9_-]*$/u.test(encoded))
@@ -136,15 +142,16 @@ export function parseLocalEnvText(text: string): Record<string, string> {
   }
   return result;
 }
-export async function loadLlmConfig(options: { env?: NodeJS.ProcessEnv; filePath: string }): Promise<LlmConfig> {
+export async function loadLlmConfig(options: {
+  env?: NodeJS.ProcessEnv;
+  filePath: string;
+  local?: Record<string, string>;
+}): Promise<LlmConfig> {
   const env = options.env ?? process.env;
   const names = [LLM_ENV.baseUrl, LLM_ENV.model, LLM_ENV.apiKey];
   const envValues = names.map((name) => envValue(env, name));
-  const fileValues = ['', '', ''];
-  if (!envValues.every(Boolean)) {
-    const local = await readLocalEnvFile(options.filePath);
-    for (let i = 0; i < names.length; i++) fileValues[i] = local[names[i]!] ?? '';
-  }
+  const local = options.local ?? (envValues.every(Boolean) ? {} : await readLocalEnvFile(options.filePath));
+  const fileValues = names.map((name) => local[name] ?? '');
   const values = envValues.map((value, i) => value || fileValues[i]!);
   const source: LlmConfigSource = envValues.some(Boolean) ? 'env' : fileValues.some(Boolean) ? 'local-file' : 'none';
   return {
@@ -152,7 +159,7 @@ export async function loadLlmConfig(options: { env?: NodeJS.ProcessEnv; filePath
     model: values[1]!,
     apiKey: values[2]!,
     source,
-    knownSecrets: [...new Set([envValues[2], fileValues[2]].filter((value) => Boolean(value)))],
+    knownSecrets: [...new Set([envValues[2], fileValues[2], ...getRoutingSecrets(env, local)].filter(Boolean))],
   };
 }
 export function hasEnvironmentOverride(env: NodeJS.ProcessEnv = process.env): boolean {

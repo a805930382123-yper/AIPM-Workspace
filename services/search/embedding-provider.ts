@@ -110,7 +110,7 @@ export class OpenAiEmbeddingProvider implements EmbeddingProvider {
 
   constructor(
     private readonly config: EmbeddingConfig,
-    private readonly recordUsage?: (usage: EmbeddingUsageMeta, error?: string) => void,
+    private readonly recordUsage?: (usage: EmbeddingUsageMeta, error?: string) => unknown,
   ) {
     this.providerName = config.provider;
     this.modelName = config.model;
@@ -259,7 +259,7 @@ export class OpenAiEmbeddingProvider implements EmbeddingProvider {
     } finally {
       if (timeout) {
         usage.durationMs = performance.now() - started;
-        this.recordUsage?.(usage, errorCode);
+        await this.recordUsage?.(usage, errorCode);
       }
     }
   }

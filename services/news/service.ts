@@ -633,6 +633,7 @@ export class NewsService {
         });
         const reply = await Promise.race([
           provider.complete({
+            tier: 'light',
             signal: controller.signal,
             system: '仅根据给定材料输出 JSON。不得补充未提供的事实、链接或日期。来源摘要并非原文。',
             user: JSON.stringify({

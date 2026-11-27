@@ -350,6 +350,7 @@ export class KnowledgeInspectionService {
     const structuredOutput = kb02StructuredOutput(stage, schema);
     const completion = provider.complete({
       purpose: 'knowledge',
+      tier: stage === 'knowledge_inspection' ? 'light' : 'heavy',
       signal,
       system: instruction + '只输出严格JSON。' + JSON.stringify(schema),
       user: JSON.stringify({ stage, ...(payload as object) }),

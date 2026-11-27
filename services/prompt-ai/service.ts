@@ -75,7 +75,7 @@ type CallDiagnostic = {
   status: 'success' | 'failed';
   finishReason: string | null;
   bytes: number;
-  usage?: { promptTokens?: number; completionTokens?: number };
+  usage?: { promptTokens?: number; completionTokens?: number; totalTokens?: number };
   category?: string;
 };
 type Draft = {
@@ -780,7 +780,7 @@ export class PromptAiService {
     let responseMeta: {
       finishReason: string | null;
       bytes: number;
-      usage?: { promptTokens?: number; completionTokens?: number };
+      usage?: CallDiagnostic['usage'];
     } = { finishReason: null, bytes: 0 };
     const wrap = (
       code: string,
@@ -849,6 +849,7 @@ export class PromptAiService {
                   ...(typeof details.usage.completionTokens === 'number'
                     ? { completionTokens: details.usage.completionTokens }
                     : {}),
+                  ...(typeof details.usage.totalTokens === 'number' ? { totalTokens: details.usage.totalTokens } : {}),
                 },
               }
             : {}),

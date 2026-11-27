@@ -640,7 +640,7 @@ test('strict cleanup still rejects invalid targets, cross-kind matches and disti
 test('PDF cleanup alone allows 120 seconds and still stops on timeout or cancellation', async () => {
   await withHttpProvider(async ({ provider }) => {
     const complete = provider.complete.bind(provider);
-    const requests: Array<{ stage: string; timeoutMs: number; signal?: AbortSignal }> = [];
+    const requests: Array<{ stage: string; timeoutMs?: number; signal?: AbortSignal }> = [];
     const entered = deferred();
     let outcome: 'normal' | 'timeout' | 'cancel' = 'normal';
     provider.complete = async (request) => {
