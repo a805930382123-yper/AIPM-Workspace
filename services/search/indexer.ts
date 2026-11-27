@@ -15,6 +15,7 @@ import {
   initSearchSchema,
   matchesEmbeddingProvider,
   openSearchIndex,
+  readBacklinkIds,
   readEmbeddingLock,
   readIndexedFiles,
   readReviewQueue,
@@ -111,6 +112,16 @@ export class WikiSearchIndexer {
     const state = await this.reviewTriggers.read();
     if (this.dirty) throw new Error('Wiki review index is stale');
     return this.read((db) => readReviewQueue(db, asOf, state, allowedPageIds));
+  }
+
+  backlinkIds(pageId: string): string[] | undefined {
+    if (this.availability !== 'ready') return undefined;
+    try {
+      return this.read((db) => readBacklinkIds(db, pageId));
+    } catch (error) {
+      this.markDirty('backlinkIds', error);
+      return undefined;
+    }
   }
 
   getEmbeddingStatus(): EmbeddingStatus {

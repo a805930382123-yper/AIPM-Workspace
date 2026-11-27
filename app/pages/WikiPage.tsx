@@ -415,6 +415,7 @@ export function WikiPage({
       ...fields
     } = item;
     delete fields.freshness;
+    delete fields.backlinks;
     setForm(fields);
   }
   const chooseItem = (id: string) => {
@@ -437,7 +438,9 @@ export function WikiPage({
   };
   const applyReview = (page: Wiki) => {
     setSelected((current) =>
-      current?.id === page.id && current.revision <= page.revision ? { ...page, links: current.links } : current,
+      current?.id === page.id && current.revision <= page.revision
+        ? { ...page, links: current.links, backlinks: current.backlinks }
+        : current,
     );
     setReviewChange((previous) => previous + 1);
     if (activeSubView === 'lint') void runLint();
@@ -1250,6 +1253,7 @@ function WikiDetail({
 }) {
   const [reading, setReading] = useState(true);
   const links = item.links ?? [];
+  const backlinks = item.backlinks ?? [];
   const bodyRef = useRef<HTMLPreElement>(null);
   const [anchor, setAnchor] = useState<{ before: string; text: string; after: string } | null>(null);
   const captureSelection = () => {
@@ -1461,6 +1465,20 @@ function WikiDetail({
                 ) : (
                   <span className="link-missing">未找到匹配页面</span>
                 )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+      {backlinks.length > 0 && (
+        <section className="wiki-section">
+          <h3>反向链接 · {backlinks.length}</h3>
+          <div className="link-status-list">
+            {backlinks.map(({ id, title }) => (
+              <div className="wiki-link-row" key={id}>
+                <button className="text-button" onClick={() => onOpenWiki(id)}>
+                  {title} ›
+                </button>
               </div>
             ))}
           </div>

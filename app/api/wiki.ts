@@ -52,6 +52,7 @@ export type Wiki = {
   body: string;
   isDemo?: boolean;
   freshness?: WikiReviewFreshness;
+  backlinks?: Array<{ id: string; title: string }>;
   links?: Array<{
     target: string;
     status: 'resolved' | 'missing' | 'ambiguous';

@@ -694,7 +694,8 @@ app.get('/api/wiki/:id', async (req, res, next) => {
       candidates: link.candidates,
     }));
     const freshness = (await readWikiFreshness(wikiStore, store, [item]))?.[item.id];
-    res.json({ ...item, links, ...(freshness ? { freshness } : {}) });
+    const backlinks = await wikiStore.backlinks(item);
+    res.json({ ...item, links, backlinks, ...(freshness ? { freshness } : {}) });
   } catch (error) {
     next(error);
   }

@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import { rankReviewQueue, type ReviewPage, type ReviewPageState } from '../wiki/freshness.ts';
+import { wikiLinkTitles } from '../wiki/link-titles.ts';
 import type { WikiRecord } from '../wiki/store.ts';
 import type { WikiChunk } from './chunking.ts';
 import { embeddingInput, type EmbeddingProvider } from './embedding-provider.ts';
@@ -12,7 +13,7 @@ export function openSearchDatabase(filename: string, options?: Database.Options)
 }
 
 const versions = {
-  schema_version: '3',
+  schema_version: '4',
   chunking_version: '1',
   tokenizer_version: TOKENIZER_VERSION,
 };
@@ -20,6 +21,23 @@ const versions = {
 const reviewQueueView = `CREATE VIEW review_queue AS
   SELECT page_id, title, wiki_type, category, last_verified_at, source_published_at, review_cycle_days,
     review_trigger_checkpoint FROM pages`;
+
+const relationSchema = `
+  CREATE INDEX idx_pages_link_title ON pages(link_title);
+  CREATE TABLE wiki_link_mentions (
+    source_page_id TEXT NOT NULL REFERENCES pages(page_id) ON DELETE CASCADE,
+    target_title TEXT NOT NULL,
+    PRIMARY KEY (source_page_id, target_title)
+  );
+  CREATE INDEX idx_wiki_link_mentions_title ON wiki_link_mentions(target_title);
+  CREATE TABLE relations (
+    source_page_id TEXT NOT NULL REFERENCES pages(page_id) ON DELETE CASCADE,
+    target_page_id TEXT NOT NULL REFERENCES pages(page_id) ON DELETE CASCADE,
+    CHECK (source_page_id <> target_page_id),
+    PRIMARY KEY (source_page_id, target_page_id)
+  );
+  CREATE INDEX idx_relations_target ON relations(target_page_id);
+`;
 
 export function openSearchIndex(filename: string, fileMustExist = false): SearchDatabase {
   // There is one owner. An external SQLite lock should fail promptly on the server thread.
@@ -53,6 +71,7 @@ export function initSearchSchema(db: SearchDatabase) {
       page_id TEXT PRIMARY KEY,
       file_path TEXT NOT NULL UNIQUE,
       title TEXT NOT NULL,
+      link_title TEXT NOT NULL,
       aliases_json TEXT NOT NULL DEFAULT '[]',
       tags_json TEXT NOT NULL DEFAULT '[]',
       wiki_type TEXT NOT NULL DEFAULT '',
@@ -87,6 +106,7 @@ export function initSearchSchema(db: SearchDatabase) {
       tokenize = "unicode61 remove_diacritics 0 tokenchars '-'"
     );
     ${reviewQueueView};
+    ${relationSchema}
   `);
   setIndexMeta(db, {
     ...versions,
@@ -117,7 +137,7 @@ export function searchIndexState(db: SearchDatabase): 'current' | 'upgrade' | 'r
   const schemaVersion = current.get('schema_version');
   return schemaVersion === versions.schema_version
     ? 'current'
-    : schemaVersion === '1' || schemaVersion === '2'
+    : schemaVersion === '1' || schemaVersion === '2' || schemaVersion === '3'
       ? 'upgrade'
       : 'rebuild';
 }
@@ -128,6 +148,15 @@ export function readIndexedFiles(db: SearchDatabase) {
       'SELECT file_path, page_id, file_hash FROM pages',
     )
     .all();
+}
+
+export function readBacklinkIds(db: SearchDatabase, pageId: string) {
+  return db
+    .prepare<[string], { id: string }>(
+      'SELECT source_page_id AS id FROM relations WHERE target_page_id = ? ORDER BY source_page_id',
+    )
+    .all(pageId)
+    .map(({ id }) => id);
 }
 
 export function readReviewQueue(
@@ -297,15 +326,20 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         ALTER TABLE pages ADD COLUMN source_published_at TEXT;
         ALTER TABLE pages ADD COLUMN review_cycle_days INTEGER;`);
       }
-      db.exec(`DROP VIEW IF EXISTS review_queue;
-      ALTER TABLE pages ADD COLUMN review_trigger_checkpoint INTEGER;
-      ${reviewQueueView};`);
+      if (previous?.value !== '3') {
+        db.exec(`DROP VIEW IF EXISTS review_queue;
+        ALTER TABLE pages ADD COLUMN review_trigger_checkpoint INTEGER;
+        ${reviewQueueView};`);
+      }
+      db.exec(`ALTER TABLE pages ADD COLUMN link_title TEXT NOT NULL DEFAULT '';
+        ${relationSchema}`);
       setIndexMeta(db, { schema_version: versions.schema_version });
     }
     const removeFts = db.prepare<[string]>('DELETE FROM chunks_fts WHERE page_id = ?');
     const removePage = db.prepare<[string]>('DELETE FROM pages WHERE page_id = ?');
     const putPage = db.prepare<
       [
+        string,
         string,
         string,
         string,
@@ -324,9 +358,9 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         number | null,
       ]
     >(
-      `INSERT INTO pages (page_id, file_path, title, aliases_json, tags_json, wiki_type, category, source_grade,
+      `INSERT INTO pages (page_id, file_path, title, link_title, aliases_json, tags_json, wiki_type, category, source_grade,
       file_hash, char_count, updated_at, indexed_at, last_verified_at, source_published_at,
-      review_cycle_days, review_trigger_checkpoint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      review_cycle_days, review_trigger_checkpoint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const putChunk = db.prepare<WikiChunk & { embedding: Buffer | null; embeddingVer: string | null }>(
       `INSERT INTO chunks (chunk_id, page_id, chunk_index, heading_path, section_kind,
@@ -336,6 +370,16 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
     );
     const putFts = db.prepare<[string, string, string, string, string]>(`INSERT INTO chunks_fts
     (chunk_id, page_id, title_tokens, meta_tokens, body_tokens) VALUES (?, ?, ?, ?, ?)`);
+    const putMention = db.prepare<[string, string]>('INSERT INTO wiki_link_mentions VALUES (?, ?)');
+    // Re-resolve inbound mentions for changed titles and outbound mentions of replaced pages.
+    const affected = new Set(
+      db
+        .prepare<[string], { link_title: string }>(
+          'SELECT link_title FROM pages WHERE page_id IN (SELECT value FROM json_each(?))',
+        )
+        .all(JSON.stringify(removeIds))
+        .map(({ link_title }) => link_title),
+    );
 
     const lock = readEmbeddingLock(db);
     const reusable = new Map<string, Map<string, Buffer>>();
@@ -363,10 +407,13 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
     }
     const now = new Date().toISOString();
     for (const { page, filePath, fileHash, chunks } of pages) {
+      const linkTitle = page.title.trim();
+      affected.add(linkTitle);
       putPage.run(
         page.id,
         filePath,
         page.title,
+        linkTitle,
         JSON.stringify(page.aliases ?? []),
         JSON.stringify(page.tags ?? []),
         page.type ?? '',
@@ -381,6 +428,10 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         page.review_cycle_days === null ? 0 : (page.review_cycle_days ?? null),
         page.review_trigger_checkpoint ?? null,
       );
+      for (const target of wikiLinkTitles(page.body)) {
+        putMention.run(page.id, target);
+        affected.add(target);
+      }
       const title = tokenizeForFts(page.title).join(' ');
       const meta = tokenizeForFts([...(page.aliases ?? []), ...(page.tags ?? [])].join(' ')).join(' ');
       const prior = reusable.get(page.id);
@@ -390,6 +441,23 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         putChunk.run({ ...chunk, embedding, embeddingVer: embedding ? lock.version : null });
         putFts.run(chunk.chunkId, page.id, title, meta, tokenizeForFts(chunk.rawText).join(' '));
       }
+    }
+    if (affected.size) {
+      const titles = JSON.stringify([...affected]);
+      db.prepare<[string]>(
+        `DELETE FROM relations WHERE target_page_id IN (
+        SELECT page_id FROM pages WHERE link_title IN (SELECT value FROM json_each(?))
+      )`,
+      ).run(titles);
+      db.prepare<[string]>(
+        `INSERT INTO relations (source_page_id, target_page_id)
+        SELECT m.source_page_id, target.page_id
+        FROM (SELECT link_title, min(page_id) AS page_id FROM pages
+          WHERE link_title IN (SELECT value FROM json_each(?))
+          GROUP BY link_title HAVING count(*) = 1) AS target
+        JOIN wiki_link_mentions AS m ON m.target_title = target.link_title
+        WHERE m.source_page_id <> target.page_id`,
+      ).run(titles);
     }
   })();
 }

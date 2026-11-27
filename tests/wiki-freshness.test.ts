@@ -151,7 +151,11 @@ test('schema 1 upgrades cached records, embedding vectors and UTF-16 coordinates
       version: 'test-v1',
     });
     db.prepare('UPDATE chunks SET embedding = ?, embedding_ver = ?').run(vector, 'test-v1');
-    db.exec(`DROP VIEW review_queue;
+    db.exec(`DROP TABLE relations;
+      DROP TABLE wiki_link_mentions;
+      DROP INDEX idx_pages_link_title;
+      ALTER TABLE pages DROP COLUMN link_title;
+      DROP VIEW review_queue;
       ALTER TABLE pages DROP COLUMN last_verified_at;
       ALTER TABLE pages DROP COLUMN source_published_at;
       ALTER TABLE pages DROP COLUMN review_cycle_days;
@@ -169,7 +173,7 @@ test('schema 1 upgrades cached records, embedding vectors and UTF-16 coordinates
   assert.equal(await index.reconcileOnStartup(), true);
   assert.equal(
     index.read((db) => db.prepare("SELECT value FROM meta WHERE key = 'schema_version'").pluck().get()),
-    '3',
+    '4',
   );
   assert.deepEqual(indexedContent(), before);
   assert.deepEqual(await readFile(file(first)), bytes);

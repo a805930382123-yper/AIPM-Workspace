@@ -89,7 +89,7 @@ test('clean and deleted indexes rebuild identical content, hashes, body coordina
   const { last_reconciled_at, ...versions } = meta();
   assert.equal(new Date(last_reconciled_at).toISOString(), last_reconciled_at);
   assert.deepEqual(versions, {
-    schema_version: '3',
+    schema_version: '4',
     chunking_version: '1',
     tokenizer_version: 'intl-zh-v2',
     embedding_provider: '',
@@ -165,9 +165,49 @@ test('startup reconciles metadata-only changes with unchanged mtime, disk additi
       db.prepare('INSERT INTO meta VALUES (?, ?)').run('old_generation', 'true');
     });
     assert.equal(await index.reconcileOnStartup(), true);
-    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : key === 'schema_version' ? '3' : '1');
+    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : key === 'schema_version' ? '4' : '1');
     assert.equal(meta().old_generation, undefined);
   }
+});
+
+test('schema 3 upgrade, deletion and clean rebuild derive the same relations without disturbing body offsets', async (t) => {
+  const { index, save, file, meta, query } = await fixture(t);
+  const body = '## 来源事实\r\n\r\nstartingterm 🧾见 [[明确目标]]。\r\n\r\n## 推断\r\n续段。';
+  await save(FIRST, undefined, '引用来源', body);
+  await save(SECOND, 'targetterm', '明确目标');
+  await save(THIRD, 'thirdterm', '另一个页面');
+  await index.rebuildAll();
+  const expected = query('startingterm');
+  assert.equal(expected[0].raw_text, body.slice(0, body.indexOf('## 推断')));
+  assert.deepEqual(index.backlinkIds(SECOND), [FIRST]);
+  const original = await readFile(file(FIRST));
+  index.read((db) =>
+    db.exec(`DROP TABLE relations;
+      DROP TABLE wiki_link_mentions;
+      DROP INDEX idx_pages_link_title;
+      ALTER TABLE pages DROP COLUMN link_title;
+      UPDATE meta SET value = '3' WHERE key = 'schema_version'`),
+  );
+  await index.close();
+  assert.equal(await index.reconcileOnStartup(), true);
+  assert.equal(meta().schema_version, '4');
+  assert.deepEqual(index.backlinkIds(SECOND), [FIRST]);
+  assert.deepEqual(query('startingterm'), expected);
+  assert.deepEqual(await readFile(file(FIRST)), original);
+
+  await rm(file(SECOND));
+  assert.equal(await index.removePage(SECOND), true);
+  assert.deepEqual(index.backlinkIds(SECOND), []);
+  await save(THIRD, 'thirdterm', '明确目标');
+  assert.equal(await index.syncPage(file(THIRD)), true);
+  assert.deepEqual(index.backlinkIds(THIRD), [FIRST]);
+  await index.close();
+  await rm(index.databaseFile);
+  assert.equal(await index.reconcileOnStartup(), true);
+  assert.deepEqual(index.backlinkIds(SECOND), []);
+  assert.deepEqual(index.backlinkIds(THIRD), [FIRST]);
+  assert.deepEqual(query('startingterm'), expected);
+  assert.deepEqual(await readFile(file(FIRST)), original);
 });
 
 test('incremental updates roll pages, chunks and FTS back together and dirty failures leave the Markdown in place', async (t) => {

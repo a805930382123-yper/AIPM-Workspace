@@ -11,6 +11,7 @@ import type { RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import type { WikiSearchIndexer } from '../search/indexer.ts';
 import { civilDate, readReviewCycleDays, wikiReviewDate, type WikiFreshnessFields } from './freshness.ts';
+import { wikiLinkTitles } from './link-titles.ts';
 import { ReviewTriggerStore } from './review-triggers.ts';
 import { assertWikiSourcesAllowed } from './source-lineage.ts';
 
@@ -559,6 +560,30 @@ export class WikiStore {
 
   async rebuildIndexLocked(): Promise<void> {
     await this.rebuildIndex();
+  }
+
+  async backlinks(target: WikiRecord): Promise<Array<Pick<WikiRecord, 'id' | 'title'>>> {
+    const ids = this.searchIndex?.backlinkIds(target.id);
+    let sources: Array<WikiRecord | undefined>;
+    if (ids) {
+      sources = await Promise.all(ids.map((id) => this.get(id)));
+    } else {
+      const pages = await this.records();
+      const title = target.title.trim();
+      const matches = pages.filter((page) => page.title.trim() === title);
+      if (matches.length !== 1 || matches[0].id !== target.id) return [];
+      sources = pages.filter((page) => page.id !== target.id && wikiLinkTitles(page.body).has(title));
+    }
+    const visible = await Promise.all(
+      sources.map(async (page) => {
+        if (page)
+          return assertWikiSourcesAllowed(this, this.rawStore, page).then(
+            () => ({ id: page.id, title: page.title }),
+            () => undefined,
+          );
+      }),
+    );
+    return visible.filter((page) => page !== undefined).sort((a, b) => a.id.localeCompare(b.id));
   }
 
   async references(id: string, visibleOnly = false): Promise<WikiReference[]> {

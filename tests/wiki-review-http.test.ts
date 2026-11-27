@@ -12,6 +12,7 @@ import test, { type TestContext } from 'node:test';
 import { setTimeout as delay } from 'node:timers/promises';
 import yaml from 'js-yaml';
 import { RawStore } from '../services/raw/store.ts';
+import { openSearchDatabase } from '../services/search/sqlite-store.ts';
 import { wikiReviewDate } from '../services/wiki/freshness.ts';
 import { parseWikiMarkdown, WikiStore, type WikiInput } from '../services/wiki/store.ts';
 import { startFakeProvider } from './support/fake-llm.ts';
@@ -118,6 +119,75 @@ async function restrictedWiki(wiki: WikiStore, raws: RawStore, title: string, bo
   await wiki.withLock(() => wiki.writePageLocked({ ...denied, sources: [record.id] }));
   return denied;
 }
+
+test('formal Wiki HTTP writes and details maintain resolved backlinks, including an index write failure', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-wiki-backlinks-http-'));
+  const api = await server(t, root, { WIKI_FRESHNESS_ENABLED: '0' });
+  const create = async (title: string, body: string, extra?: Partial<WikiInput>) => {
+    const result = await api('/api/wiki', wikiInput(title, body, extra));
+    assert.equal(result.status, 201, JSON.stringify(result.data));
+    return result.data;
+  };
+  const detail = async (id: string) => {
+    const result = await api(`/api/wiki/${id}`);
+    assert.equal(result.status, 200, JSON.stringify(result.data));
+    return result.data;
+  };
+  const update = async (id: string, baseRevision: number, title: string, body: string) => {
+    const result = await api(`/api/wiki/${id}`, { ...wikiInput(title, body), baseRevision }, 'PUT');
+    assert.equal(result.status, 200, JSON.stringify(result.data));
+  };
+  const remove = async (id: string) => {
+    const result = await api(`/api/wiki/${id}`, { baseRevision: 1 }, 'DELETE');
+    assert.equal(result.status, 200, JSON.stringify(result.data));
+  };
+  const body = [
+    '## 正文🧾',
+    '见 [[ 目标页 ]]、[[目标页]]、[[引用页]]。',
+    '\\[[示例页]]、`[[示例页]]`、[[[示例页]]]，以及 [[示例别名]]。',
+    '',
+    '> ~~~md',
+    '> [[示例页]]',
+    '> ~~~',
+    '',
+    '    [[示例页]]',
+  ].join('\r\n');
+  const source = await create('引用页', body);
+  const target = await create('目标页', '目标正文');
+  const example = await create('示例页', '示例正文', { aliases: ['示例别名'] });
+  const edge = [{ id: source.id, title: source.title }];
+  assert.deepEqual((await detail(target.id)).backlinks, edge);
+  assert.deepEqual((await detail(source.id)).backlinks, []);
+  assert.deepEqual((await detail(example.id)).backlinks, []);
+  assert.equal((await detail(source.id)).body, body);
+
+  const duplicate = await create('目标页', '同名正文');
+  assert.deepEqual((await detail(duplicate.id)).backlinks, []);
+  assert.deepEqual((await detail(target.id)).backlinks, []);
+  await remove(duplicate.id);
+  assert.deepEqual((await detail(target.id)).backlinks, edge);
+
+  await update(target.id, 1, '改名目标', '目标正文');
+  assert.deepEqual((await detail(target.id)).backlinks, []);
+  await update(source.id, 1, '改名引用', '迁移到 [[改名目标]]。');
+  assert.deepEqual((await detail(target.id)).backlinks, [{ id: source.id, title: '改名引用' }]);
+  await update(source.id, 2, '改名引用', '删除出边。');
+  assert.deepEqual((await detail(target.id)).backlinks, []);
+
+  const db = openSearchDatabase(path.join(root, 'state', 'search-index.sqlite'));
+  try {
+    db.exec("CREATE TRIGGER fail_relation BEFORE INSERT ON relations BEGIN SELECT RAISE(ABORT, 'test fault'); END");
+    const linked = await create('降级引用', '保存并引用 [[改名目标]]。');
+    assert.equal(db.prepare("SELECT value FROM meta WHERE key = 'index_dirty'").pluck().get(), '1');
+    assert.deepEqual(db.prepare('SELECT * FROM relations').all(), []);
+    assert.equal((await detail(linked.id)).body, linked.body);
+    assert.deepEqual((await detail(target.id)).backlinks, [{ id: linked.id, title: linked.title }]);
+    await remove(linked.id);
+    assert.deepEqual((await detail(target.id)).backlinks, []);
+  } finally {
+    db.close();
+  }
+});
 
 test(
   'review HTTP flows preserve original bytes, update only permitted metadata, and annotate real citations',
@@ -285,9 +355,9 @@ test(
       const detail = (await api(`/api/wiki/${pageId}`)).data;
       assert.deepEqual(found.items.find(({ id }: { id: string }) => id === pageId).freshness, detail.freshness);
     }
-    assert.deepEqual((await api(`/api/wiki/${weak.id}`)).data.links, [
-      { target: '受限链接别称', status: 'missing', candidates: [] },
-    ]);
+    const weakDetail = (await api(`/api/wiki/${weak.id}`)).data;
+    assert.deepEqual(weakDetail.links, [{ target: '受限链接别称', status: 'missing', candidates: [] }]);
+    assert.deepEqual(weakDetail.backlinks, []);
     assert.deepEqual((await api(`/api/wiki/${weak.id}/references`)).data.items, []);
     const weakRaw = await api('/api/raw', rawInput('市场情况', '市场渠道产品资料与经营数据。'));
     assert.equal(weakRaw.status, 201);
