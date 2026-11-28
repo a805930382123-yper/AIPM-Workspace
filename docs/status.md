@@ -3,11 +3,11 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **PB01 产品构想骨架整体 PASS（2026-11-29）**。主导航已支持产品构想和五区保存。PB01-01～06 独立验收通过，覆盖逐字引文、C1–C7、引用与版本冲突、Markdown 导出和新旧备份恢复。双视口实测通过，产品模型请求为 0。产品提交 `bd5e1d3` 的 Windows Node 22、24 均通过 1,232/1,232 项测试、三条离线评估及构建。PB02 未启动。[施工报告](reports/PB01-20261129-builder.md) · [独立验收](reports/PB01-20261129-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46167343859) · [路线图](batches/PB-ROADMAP-20261128.md)。
+
 - **FE07 整体 PASS，ENG04 波次 2 前端页面拆分全部收官（2026-11-29）**。AutomationPage 从 955 行缩至 720 行，8 组读取逻辑与原实现等价。定向 41/41、全量 1,225/1,225、三条离线 eval 及双尺寸真实 Edge 验收通过。产品提交 `7e36f48` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46166179238) · [Round 2 签发](reports/FE07-20261129-review.md) · [任务卡](handoffs/FE07-20261129-task.md)。
 
 - **FE06 工作事项页面拆分整体 PASS（2026-11-29）**。入口从 1,333 行缩至 172 行，分析面板源码与基线一致。两份新增测试先在原实现通过；定向 34/34、全量 1,223/1,223、三条离线 eval 和真实 Edge 双尺寸验收通过。产品提交 `ddb2199` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46163352565) · [Round 2 签发](reports/FE06-20261128-review.md) · [任务卡](handoffs/FE06-20261128-task.md)。
-
-- **产品构想（PB）规划完成，待授权 PB01（2026-11-28）**。用户批准放开范围：新增主导航「产品构想」，从内外部使用者出发推导价值、功能和整体构想，并做跨产品个人周计划。共分 PB01–PB05 五批，PB01 为手工骨架，不调用模型。本次只写需求调整、路线图和任务卡，未改产品代码，真实模型请求 0。[路线图](batches/PB-ROADMAP-20261128.md) · [PB01 任务卡](handoffs/PB01-20261128-task.md)。
 
 - **FE05 Wiki 页面拆分整体 PASS（2026-11-28）**。入口从 2,029 行缩至 223 行，公开接口与五个视图保持兼容。定向 58/58、全量 1,214/1,214、三条离线 eval 和桌面/窄屏真实 Edge 验收通过。产品提交 `2434828` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46159033764) · [Round 2 签发](reports/FE05-20261128-review.md) · [任务卡](handoffs/FE05-20261128-task.md)。
 

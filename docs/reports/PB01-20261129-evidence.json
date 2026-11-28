@@ -1,0 +1,884 @@
+{
+  "commands": [
+    {
+      "args": [
+        "export",
+        "--data-root",
+        "<TEMP>/data",
+        "--output",
+        "<TEMP>/old.json"
+      ],
+      "status": 0
+    },
+    {
+      "args": [
+        "export",
+        "--data-root",
+        "<TEMP>/data",
+        "--output",
+        "<TEMP>/new.json"
+      ],
+      "status": 0
+    },
+    {
+      "args": [
+        "restore",
+        "--input",
+        "<TEMP>/new.json",
+        "--data-root",
+        "<TEMP>/restored"
+      ],
+      "status": 0
+    },
+    {
+      "args": [
+        "restore",
+        "--input",
+        "<TEMP>/old.json",
+        "--data-root",
+        "<TEMP>/legacy"
+      ],
+      "status": 0
+    }
+  ],
+  "http": [
+    {
+      "method": "POST",
+      "route": "/api/raw",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "route": "/api/raw",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "route": "/api/work-items",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 409
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac/export",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac/export",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 400
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/99fcd375-dfa4-4a69-8842-53290b886fbd",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/99fcd375-dfa4-4a69-8842-53290b886fbd",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/99fcd375-dfa4-4a69-8842-53290b886fbd",
+      "status": 413
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/product-blueprints/99fcd375-dfa4-4a69-8842-53290b886fbd",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/abb81218-e1d6-40e6-9df0-dad4c3ca7cf9",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/05c1884b-2ea9-42db-9290-1d3aba3aaf9f",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/f82ac294-24cd-4b56-877a-7f75224b892b",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/dec93c7d-c033-4061-8a5d-bd1aa38dc0ae",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/30949842-6aba-474a-96c4-27f5993b86d9",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/30949842-6aba-474a-96c4-27f5993b86d9",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/30949842-6aba-474a-96c4-27f5993b86d9",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/2d477e90-32c3-44cf-beca-58d805d83d6b",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/e6a44fa8-46be-4441-a147-5147f3498466",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/e6a44fa8-46be-4441-a147-5147f3498466",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/067f26d8-d2d4-4a72-85cf-0c2557b50f07",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/0033865e-c432-43a0-994d-ce45e2a26e38",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/32e37569-ff0b-4df5-b4ea-c0011b27d376",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/b6b1b2ef-26aa-423a-ac32-06e5077f06af",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/db28443c-d8a2-4e5c-bf8e-b82a899d6fda",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/db28443c-d8a2-4e5c-bf8e-b82a899d6fda",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/db28443c-d8a2-4e5c-bf8e-b82a899d6fda",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/4c404057-7b4a-4b7a-943d-ae3bd718ee6e",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/product-blueprints",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/a95d7632-d542-43d6-b036-6f18fc6bcfc1",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "route": "/api/product-blueprints/a95d7632-d542-43d6-b036-6f18fc6bcfc1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/c9316a45-1b87-49cd-968e-ada8637acdc1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/abb81218-e1d6-40e6-9df0-dad4c3ca7cf9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/abb81218-e1d6-40e6-9df0-dad4c3ca7cf9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/05c1884b-2ea9-42db-9290-1d3aba3aaf9f",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/05c1884b-2ea9-42db-9290-1d3aba3aaf9f",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/f82ac294-24cd-4b56-877a-7f75224b892b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/f82ac294-24cd-4b56-877a-7f75224b892b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/dec93c7d-c033-4061-8a5d-bd1aa38dc0ae",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/dec93c7d-c033-4061-8a5d-bd1aa38dc0ae",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/30949842-6aba-474a-96c4-27f5993b86d9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/30949842-6aba-474a-96c4-27f5993b86d9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/2d477e90-32c3-44cf-beca-58d805d83d6b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/2d477e90-32c3-44cf-beca-58d805d83d6b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/e6a44fa8-46be-4441-a147-5147f3498466",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/e6a44fa8-46be-4441-a147-5147f3498466",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/1ab060aa-fa6d-4451-94ca-d0161cb765a7",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/067f26d8-d2d4-4a72-85cf-0c2557b50f07",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/067f26d8-d2d4-4a72-85cf-0c2557b50f07",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/0033865e-c432-43a0-994d-ce45e2a26e38",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/0033865e-c432-43a0-994d-ce45e2a26e38",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/32e37569-ff0b-4df5-b4ea-c0011b27d376",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/32e37569-ff0b-4df5-b4ea-c0011b27d376",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/b6b1b2ef-26aa-423a-ac32-06e5077f06af",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/b6b1b2ef-26aa-423a-ac32-06e5077f06af",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/db28443c-d8a2-4e5c-bf8e-b82a899d6fda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/db28443c-d8a2-4e5c-bf8e-b82a899d6fda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/4c404057-7b4a-4b7a-943d-ae3bd718ee6e",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/4c404057-7b4a-4b7a-943d-ae3bd718ee6e",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/a95d7632-d542-43d6-b036-6f18fc6bcfc1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/a95d7632-d542-43d6-b036-6f18fc6bcfc1",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/raw/eb627302-058a-43db-94fd-d0e6a738ed61",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac/export",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/product-blueprints/6c4987b6-8ae9-4cc9-9865-7d0b45b3c1ac",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/a95d7632-d542-43d6-b036-6f18fc6bcfc1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/4c404057-7b4a-4b7a-943d-ae3bd718ee6e",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/bc3d9344-50eb-456c-8265-9bd1175a3478",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/db28443c-d8a2-4e5c-bf8e-b82a899d6fda",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/b6b1b2ef-26aa-423a-ac32-06e5077f06af",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/32e37569-ff0b-4df5-b4ea-c0011b27d376",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/0033865e-c432-43a0-994d-ce45e2a26e38",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/067f26d8-d2d4-4a72-85cf-0c2557b50f07",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/1ab060aa-fa6d-4451-94ca-d0161cb765a7",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/e6a44fa8-46be-4441-a147-5147f3498466",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/2d477e90-32c3-44cf-beca-58d805d83d6b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/4d5538fb-c2e0-436f-86fc-56c1d1439240",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/30949842-6aba-474a-96c4-27f5993b86d9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/dec93c7d-c033-4061-8a5d-bd1aa38dc0ae",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/f82ac294-24cd-4b56-877a-7f75224b892b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/05c1884b-2ea9-42db-9290-1d3aba3aaf9f",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/abb81218-e1d6-40e6-9df0-dad4c3ca7cf9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints/c9316a45-1b87-49cd-968e-ada8637acdc1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/product-blueprints",
+      "status": 200
+    }
+  ],
+  "browser": [
+    "1440: actual Markdown download",
+    "1440: exact Raw eb627302-058a-43db-94fd-d0e6a738ed61 original opened",
+    "1440: five sections cleared and reloaded",
+    "1440: creation, five saves/reload, presets/edit, relation multiselect, scenario, errors retained, navigation cancel, archive/status/filter, C1-C7 and navigation passed",
+    "390: actual Markdown download",
+    "390: exact Raw eb627302-058a-43db-94fd-d0e6a738ed61 original opened",
+    "390: five sections cleared and reloaded",
+    "390: creation, five saves/reload, presets/edit, relation multiselect, scenario, errors retained, navigation cancel, archive/status/filter, C1-C7 and navigation passed"
+  ],
+  "expectedErrors": [
+    {
+      "status": 400,
+      "path": "/api/product-blueprints/c9316a45-1b87-49cd-968e-ada8637acdc1"
+    },
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    {
+      "status": 400,
+      "path": "/api/product-blueprints/c9316a45-1b87-49cd-968e-ada8637acdc1"
+    },
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    {
+      "status": 400,
+      "path": "/api/product-blueprints/1ab060aa-fa6d-4451-94ca-d0161cb765a7"
+    },
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    {
+      "status": 400,
+      "path": "/api/product-blueprints/1ab060aa-fa6d-4451-94ca-d0161cb765a7"
+    },
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "unexpectedErrors": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "external": [],
+  "modelRequests": [],
+  "bytes": [
+    "Raw/RawState/Wiki/work-items byte hashes unchanged after all blueprint reads/writes/export",
+    "2,097,152 UTF-8 bytes accepted; +1 rejected 413; previous file unchanged"
+  ],
+  "checks": [
+    "1440: C1 clicked, focused, fixed and disappeared",
+    "1440: C2 clicked, focused, fixed and disappeared",
+    "1440: C3 clicked, focused, fixed and disappeared",
+    "1440: C4 clicked, focused, fixed and disappeared",
+    "1440: C5 clicked, focused, fixed and disappeared",
+    "1440: C6 clicked, focused, fixed and disappeared",
+    "1440: C7m clicked, focused, fixed and disappeared",
+    "1440: C7f clicked, focused, fixed and disappeared",
+    "390: C1 clicked, focused, fixed and disappeared",
+    "390: C2 clicked, focused, fixed and disappeared",
+    "390: C3 clicked, focused, fixed and disappeared",
+    "390: C4 clicked, focused, fixed and disappeared",
+    "390: C5 clicked, focused, fixed and disappeared",
+    "390: C6 clicked, focused, fixed and disappeared",
+    "390: C7m clicked, focused, fixed and disappeared",
+    "390: C7f clicked, focused, fixed and disappeared"
+  ],
+  "sizes": [
+    {
+      "name": "five-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C1-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C2-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C3-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C4-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C5-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C6-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C7m-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "C7f-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "regression-1440",
+      "width": 1440,
+      "scroll": 1440
+    },
+    {
+      "name": "five-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C1-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C2-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C3-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C4-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C5-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C6-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C7m-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "C7f-390",
+      "width": 390,
+      "scroll": 390
+    },
+    {
+      "name": "regression-390",
+      "width": 390,
+      "scroll": 390
+    }
+  ],
+  "browserVersion": "158.0.4370.45",
+  "success": true
+}
