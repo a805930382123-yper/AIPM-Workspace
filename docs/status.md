@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **BE02 整体 PASS（2026-11-28）**。草稿存储与审阅拆为 7 个无环模块，保留 5 项运行时、11 项类型导出及全部 35 个公开方法。全仓 1,173/1,173，三条离线评测通过；33 份定向中的 PA01 八项历史失败与基线逐项一致，无新增失败。产品提交 `20f5a78` 的 Windows Node 22/24 CI 通过。[Round 2 独立签发](reports/BE02-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46133059890)。
+- **BE03** 已完成知识工作流拆分与首轮独立核对，整批待 CI 与最终签发。[任务卡](handoffs/BE03-20261128-task.md) · [验收](reports/BE03-20261128-review.md)。
+
+- **BE02 整体 PASS（2026-11-28）**。草稿存储与审阅拆为 7 个无环模块，全仓 1,173/1,173。PA01 八项历史失败与基线一致。产品提交 `20f5a78` 的 Windows Node 22/24 CI 通过。[Round 2 独立签发](reports/BE02-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46133059890)。
 
 - **LLM-Wiki 3-3 与 Batch 3 整体 PASS（2026-11-28）**。Wiki 列表、分类和首页 Wiki 统计读取可重建索引，沿用当前来源权限；索引失效时回退 Markdown。冻结 25 问的 100 条对照与 3-2 一致，本轮补充 5 问全部通过。全仓 1,163/1,163，产品提交 `f99edfe` 的 Windows Node 22/24 CI 通过。[整批独立验收](reports/3-3-review.md) · [逐题评测](reports/3-3-eval.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46128912910)。
 
@@ -23,7 +25,7 @@
 
 - **LLM-Wiki Batch 1A（PASS）**：A/B/C/D 7/7、3/5、5/5、3/3，E 4/5；长页 9/9，千页建库 1,584.05 ms、P95 32.29 ms，1,099/1,099；B1/B4 漏检与 4 负样本留档。[卡](handoffs/LLMWIKI-1A-4.md) · [快照](../evals/reports/batch-1a-baseline.md) · [验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [结项复核](reports/CLOSE01-review.md)）；`LLM-Wiki 3-2`、`FE03` 与波次 3 后端核心首发 **`BE01`（`commits.ts` 拆分，`83c4af4`）均已 `PASS`**，[LLM-Wiki 3-3](handoffs/LLMWIKI-3-3.md) 与 Batch 3 已签收，[BE02 草稿存储拆分](handoffs/BE02-20261128-task.md)已签收，下一批待用户授权。
+- 工作台结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [复核](reports/CLOSE01-review.md)）。LLM-Wiki Batch 3、FE03、BE01、[BE02](handoffs/BE02-20261128-task.md) 已签收。
 - **工程批次结论**：
   - **`BE01`（2026-11-28，PASS）**：B 模式单文件拆分 `commits.ts`（`68,163 B / 1,535 L → 606 B / 15 L`）为 5 份无环模块（`< 40 KiB / < 800 L`），导出与事务/锁/恢复 1:1 等价，ESLint `0/0`；23 份回归 `244/244`、3 条 `eval` 及 `83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) 双绿闭环（[施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)）。
   - **`FE03`（2026-11-26，PASS）**：Prompt 库与草稿审阅入口缩至 315/458 行，15 模块均 `< 40 KiB / 800 L`，隔离全量 1,143/1,143，`cf9ba5e` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887) 双绿（[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)）。

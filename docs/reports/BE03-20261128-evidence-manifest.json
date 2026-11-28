@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "batch": "BE03-20261128",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>",
+  "totalFiles": 14,
+  "entries": [
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/lint-baseline.log",
+      "bytes": 2231,
+      "sha256": "95b93328f32fcaa8bd8581f9155939a0d194ee9c1dafbc1700570dd209ae6458",
+      "purpose": "原文件 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/lint-before.log",
+      "bytes": 147845,
+      "sha256": "0a46a04fd8cd7d9b7cf302f989e6383c3488584dc967f7246253e4d6c3c18c89",
+      "purpose": "基线全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/boundary.log",
+      "bytes": 3218,
+      "sha256": "2b0ee0b4b765149cac0f870ebe3286cd07eac3f8cedc8176edf8c5c7bb460221",
+      "purpose": "历史用例基线"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/boundary-final.log",
+      "bytes": 3160,
+      "sha256": "6ab05832998510b2037472aa48b325828a87f9ee6e13f67de1bb0f9e4633f737",
+      "purpose": "历史用例最终版本差分"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/target21.log",
+      "bytes": 18955,
+      "sha256": "2703d6fab05e96959c29b315789dc5768a27a296327c4b111e23304890ef643c",
+      "purpose": "冻结的 21 份定向回归"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/typecheck.log",
+      "bytes": 54,
+      "sha256": "d3a31a41aa7bc379d78c83b18dd81dd39663f82c7d2271ce1a8f36221c1e562d",
+      "purpose": "类型检查"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/format-check.log",
+      "bytes": 137,
+      "sha256": "61888774eaee940b3da038272271a74df0ede76d7ece251bcf3464e72e251adf",
+      "purpose": "全仓格式"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/lint.log",
+      "bytes": 147869,
+      "sha256": "e43a09de31800f374d89a263bad965104f194a89b72baf2d17dda65e8e0f7f86",
+      "purpose": "候选全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/guard.log",
+      "bytes": 216,
+      "sha256": "71d95f5832185d3e592b96f72492af2acdf2d60b4df8f965811a6d28901b6d25",
+      "purpose": "仓库体积门禁"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/test.log",
+      "bytes": 132871,
+      "sha256": "50a70b2fe92061a13816a4029c84bf80f27646273b8813e623b2eb3aedabca10",
+      "purpose": "默认全量 npm test"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/build.log",
+      "bytes": 742,
+      "sha256": "f7a6c1f389d5c12c71d9d40f249e7f897d3d92864bbe80236a0766875fb01000",
+      "purpose": "生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/eval-standard-extract.log",
+      "bytes": 554,
+      "sha256": "2a12b588b887fc3ea8053f7a94ba4a9ccab8c64aada357dafc33e529a5641a7c",
+      "purpose": "标准提取回放"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/eval-news-relevance.log",
+      "bytes": 520,
+      "sha256": "3fce0804ae117ab13bc142b7f99382e8a435c145e398c1bccaf91c1b0bdcc581",
+      "purpose": "资讯相关性回放"
+    },
+    {
+      "archiveRelativePath": "evidence/BE03-20261128/eval-weekly-review.log",
+      "bytes": 382,
+      "sha256": "d454adea312175161fd217eafe4e8fcbdbf91a7ec540b34f83ecdcf1a4bcdfd8",
+      "purpose": "周回顾回放"
+    }
+  ]
+}
