@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **BE05 待远端 CI 与独立签发**。PDF 清理服务已拆为 7 个无环模块，八段提示词与基线逐字节一致。[任务卡](handoffs/BE05-20261128-task.md)。
+
 - **BE04 整体 PASS（2026-11-28）**。会议存储拆为 6 个无环模块，保留 17 个公开方法和 Raw 结算失败恢复行为。定向 68/68、全量 1,187/1,187、三条离线 eval 通过，全仓 ESLint 告警从 765 降至 754。产品提交 `625d8b2` 的 Windows Node 22/24 CI 双绿。[任务卡](handoffs/BE04-20261128-task.md) · [Round 2 签发](reports/BE04-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46142839190)。
 
 - **BE03 整体 PASS（2026-11-28）**。知识工作流拆为 7 个无环模块，14 个公开方法保持兼容。定向 173/173、全量 1,177/1,177、三条离线 eval 通过。历史 KB02 两例与基线一致。`61fd31c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46137473165) · [Round 2 签发](reports/BE03-20261128-review.md) · [任务卡](handoffs/BE03-20261128-task.md)。
@@ -29,7 +31,7 @@
 
 - 工作台结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [复核](reports/CLOSE01-review.md)）。LLM-Wiki Batch 3、FE03、BE01、[BE02](handoffs/BE02-20261128-task.md) 已签收。
 - **工程批次结论**：
-  - **`BE01`（2026-11-28，PASS）**：B 模式单文件拆分 `commits.ts`（`68,163 B / 1,535 L → 606 B / 15 L`）为 5 份无环模块（`< 40 KiB / < 800 L`），导出与事务/锁/恢复 1:1 等价，ESLint `0/0`；23 份回归 `244/244`、3 条 `eval` 及 `83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) 双绿闭环（[施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)）。
+  - **BE01 PASS**。正式 Wiki 提交拆为 5 个模块，保留事务、锁与恢复语义。`83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) · [独立验收](reports/BE01-20261128-review.md)。
   - **`FE03`（2026-11-26，PASS）**：Prompt 库与草稿审阅入口缩至 315/458 行，15 模块均 `< 40 KiB / 800 L`，隔离全量 1,143/1,143，`cf9ba5e` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887) 双绿（[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)）。
   - **`FE02`（2026-11-26，PASS）**：`InboxTab`/`MeetingPage` 拆为 8 份无环模块（`< 40 KiB / 800 L`），定向 44/44 与 Edge 冒烟通过，`ee02a10` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842)（1,126/1,126）双绿（[施工](reports/FE02-20261125-builder.md) · [验收](reports/FE02-20261125-review.md)）。
   - **`ENG05`（2026-11-24，PASS）**：清零 3 类 9 处疑点（`770 → 761`、`0` 错），6 规则升回 `error`，校准 `acceptance.md` 锚点，`fae6724` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
