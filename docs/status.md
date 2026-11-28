@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **BE03** 已完成知识工作流拆分与首轮独立核对，整批待 CI 与最终签发。[任务卡](handoffs/BE03-20261128-task.md) · [验收](reports/BE03-20261128-review.md)。
+- **BE03 整体 PASS（2026-11-28）**。知识工作流拆为 7 个无环模块，14 个公开方法保持兼容。定向 173/173、全量 1,177/1,177、三条离线 eval 通过。历史 KB02 两例与基线一致。`61fd31c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46137473165) · [Round 2 签发](reports/BE03-20261128-review.md) · [任务卡](handoffs/BE03-20261128-task.md)。
 
 - **BE02 整体 PASS（2026-11-28）**。草稿存储与审阅拆为 7 个无环模块，全仓 1,173/1,173。PA01 八项历史失败与基线一致。产品提交 `20f5a78` 的 Windows Node 22/24 CI 通过。[Round 2 独立签发](reports/BE02-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46133059890)。
 
