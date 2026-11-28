@@ -10,6 +10,7 @@ import yaml from 'js-yaml';
 import type { RawStore } from '../raw/store.ts';
 import { assertRawNotMeeting } from '../meeting/source-policy.ts';
 import type { WikiSearchIndexer } from '../search/indexer.ts';
+import { wikiCreatedText } from './creation.ts';
 import { civilDate, readReviewCycleDays, wikiReviewDate, type WikiFreshnessFields } from './freshness.ts';
 import { wikiLinkTitles } from './link-titles.ts';
 import { ReviewTriggerStore } from './review-triggers.ts';
@@ -67,6 +68,7 @@ export type WikiRecord = WikiFreshnessFields & {
   body: string;
   isDemo?: boolean;
 };
+export type WikiCatalogEntry = { page: WikiRecord; fileName: string; createdText?: string };
 export type WikiInput = Omit<
   WikiRecord,
   keyof WikiFreshnessFields | 'id' | 'domain' | 'created' | 'updated' | 'revision'
@@ -119,6 +121,9 @@ export class WikiError extends Error {
 
 function normalize(value: string) {
   return value.normalize('NFKC').toLocaleLowerCase('zh-CN').trim().replace(/\s+/gu, ' ');
+}
+function orderWikiRecords(a: WikiRecord, b: WikiRecord) {
+  return b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title, 'zh-CN');
 }
 function wikiDir(root: string) {
   return path.join(root, 'knowledge', 'wiki');
@@ -242,7 +247,7 @@ export class WikiStore {
     const records = await Promise.all(
       (await this.files()).map(async (file) => parseWikiMarkdown(await readFile(file, 'utf8'))),
     );
-    return records.sort((a, b) => b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title, 'zh-CN'));
+    return records.sort(orderWikiRecords);
   }
   async list(
     options: { q?: string; category?: string } = {},
@@ -490,10 +495,45 @@ export class WikiStore {
   }
 
   async allVisibleRecords(): Promise<WikiRecord[]> {
-    const records = await this.records();
+    return this.filterVisibleRecords(await this.records(), (page) => page);
+  }
+
+  async visibleCatalog(): Promise<WikiCatalogEntry[]> {
+    return this.withLock(async () => {
+      const indexed = await this.searchIndex?.catalogEntries();
+      const entries =
+        indexed ??
+        (await Promise.all(
+          (await this.files()).map(async (file) => {
+            const text = await readFile(file, 'utf8');
+            return { page: parseWikiMarkdown(text), fileName: path.basename(file), createdText: wikiCreatedText(text) };
+          }),
+        ));
+      entries.sort((a, b) => orderWikiRecords(a.page, b.page));
+      const byName = indexed && new Map(indexed.map(({ fileName, page }) => [fileName, page]));
+      const wiki: Pick<WikiStore, 'get'> = byName
+        ? { get: async (id) => byName.get(id + '.md') ?? this.get(id) }
+        : this;
+      const sources = new Map<string, ReturnType<RawStore['get']>>();
+      const raws = {
+        get: (id: string) => {
+          if (!sources.has(id)) sources.set(id, this.rawStore.get(id));
+          return sources.get(id)!;
+        },
+      };
+      return this.filterVisibleRecords(entries, ({ page }) => page, wiki, raws);
+    });
+  }
+
+  private async filterVisibleRecords<T>(
+    records: T[],
+    pageOf: (record: T) => WikiRecord,
+    wiki: Pick<WikiStore, 'get'> = this,
+    raws: Pick<RawStore, 'get'> = this.rawStore,
+  ): Promise<T[]> {
     const allowed = await Promise.all(
-      records.map((page) =>
-        assertWikiSourcesAllowed(this, this.rawStore, page).then(
+      records.map((record) =>
+        assertWikiSourcesAllowed(wiki, raws, pageOf(record)).then(
           () => true,
           () => false,
         ),

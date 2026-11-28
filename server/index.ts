@@ -388,7 +388,7 @@ registerNewsRoutes(app, news);
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/stats', async (_req, res, next) => {
   try {
-    res.json(await getStats(root, store, new Date(), prompts));
+    res.json(await getStats(root, store, new Date(), prompts, wikiStore));
   } catch (error) {
     next(error);
   }
@@ -642,7 +642,8 @@ app.get('/api/wiki', async (req, res, next) => {
   try {
     const q = typeof req.query.q === 'string' ? req.query.q : undefined;
     const category = typeof req.query.category === 'string' ? req.query.category : undefined;
-    const [pages, schema] = await Promise.all([wikiStore.allVisibleRecords(), wikiStore.schema()]);
+    const [catalog, schema] = await Promise.all([wikiStore.visibleCatalog(), wikiStore.schema()]);
+    const pages = catalog.map(({ page }) => page);
     if (category && !schema.categories.some((item) => item.id === category))
       throw new WikiError('INVALID_CATEGORY', 'Wiki 分类无效。');
     const [matches, categoryCounts] = await Promise.all([

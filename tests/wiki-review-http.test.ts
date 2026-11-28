@@ -18,13 +18,35 @@ import { parseWikiMarkdown, WikiStore, type WikiInput } from '../services/wiki/s
 import { startFakeProvider } from './support/fake-llm.ts';
 import { withoutInheritedEmbeddings } from './support/isolated-embedding-env.mjs';
 
-async function server(t: TestContext, root: string, env: Record<string, string> = {}) {
+async function server(t: TestContext, root: string, env: Record<string, string> = {}, observeWikiReads = false) {
   const portProbe = createServer().listen(0, '127.0.0.1');
   await once(portProbe, 'listening');
   const { port } = portProbe.address() as AddressInfo;
   await new Promise<void>((resolve) => portProbe.close(() => resolve()));
   const isolated = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^FMCG_LLM_/i.test(key)));
-  const child = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
+  const observer = [
+    "import { promises as fs } from 'node:fs';",
+    "import { ServerResponse } from 'node:http';",
+    "import { syncBuiltinESMExports } from 'node:module';",
+    "import path from 'node:path';",
+    'const wikiDir = path.join(process.env.FMCG_DATA_DIR, "knowledge", "wiki");',
+    'let reads = 0;',
+    'const { readFile } = fs;',
+    'fs.readFile = (file, ...args) => {',
+    "  if (typeof file === 'string' && path.dirname(file) === wikiDir && /^[0-9a-f-]{36}[.]md$/i.test(path.basename(file)))",
+    '    reads++;',
+    '  return readFile(file, ...args);',
+    '};',
+    'syncBuiltinESMExports();',
+    'const { end } = ServerResponse.prototype;',
+    'ServerResponse.prototype.end = function(...args) {',
+    '  if (!this.headersSent) this.setHeader("x-test-wiki-reads", reads);',
+    '  return end.apply(this, args);',
+    '};',
+  ].join('\n');
+  const args = ['--import', 'tsx'];
+  if (observeWikiReads) args.push('--import', 'data:text/javascript,' + encodeURIComponent(observer));
+  const child = spawn(process.execPath, [...args, 'server/index.ts'], {
     windowsHide: true,
     stdio: ['ignore', 'pipe', 'pipe'],
     env: {
@@ -46,6 +68,7 @@ async function server(t: TestContext, root: string, env: Record<string, string> 
     await rm(root, { recursive: true, force: true });
   });
   let logs = '';
+  let wikiReads = 0;
   child.stdout.on('data', (chunk) => {
     logs += chunk;
   });
@@ -59,12 +82,13 @@ async function server(t: TestContext, root: string, env: Record<string, string> 
         : { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
       signal: AbortSignal.timeout(5000),
     });
+    if (observeWikiReads) wikiReads = Number(response.headers.get('x-test-wiki-reads'));
     return { status: response.status, data: await response.json() };
   };
   for (let attempt = 0; attempt < 250; attempt++) {
     if (child.exitCode !== null) break;
     const health = await request('/api/health').catch(() => undefined);
-    if (health?.status === 200) return request;
+    if (health?.status === 200) return Object.assign(request, { wikiMarkdownReads: () => wikiReads });
     await delay(80);
   }
   throw new Error(logs);
@@ -119,6 +143,125 @@ async function restrictedWiki(wiki: WikiStore, raws: RawStore, title: string, bo
   await wiki.withLock(() => wiki.writePageLocked({ ...denied, sources: [record.id] }));
   return denied;
 }
+
+test('SQLite Wiki catalogue answers list and stats without Wiki Markdown reads, then safely falls back', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-wiki-catalog-http-'));
+  const raws = new RawStore(root);
+  const wiki = new WikiStore(root, raws);
+  await raws.initialize();
+  await wiki.initialize();
+  const raw = await raws.create(rawInput('公开合成资料', '公开正文。'));
+  const page = await wiki.create(
+    wikiInput('库内检索样本', '## 来源事实\r\n\r\n证据正文🧾。', {
+      aliases: ['ＳＫＵ'],
+      tags: ['端架'],
+      sources: [raw.id],
+    }),
+  );
+  const restricted = await restrictedWiki(wiki, raws, '受限页', '受限正文。');
+  const allowedChild = await wiki.create(wikiInput('曾经可见派生页', '公开派生正文。'));
+  const blockedChild = await wiki.create(wikiInput('间接受限页', '派生受限正文。'));
+  for (const [child, parent] of [
+    [allowedChild, page],
+    [blockedChild, restricted],
+  ]) {
+    await wiki.withLock(() =>
+      wiki.writePageLocked({
+        ...child,
+        answerDerivations: [
+          {
+            answerId: randomUUID(),
+            answerRevision: 1,
+            wikiIds: [parent.id],
+            rawIds: [],
+            manualWikiIds: [],
+            containsInference: false,
+          },
+        ],
+      }),
+    );
+  }
+  const publicPage = await wiki.create(wikiInput('独立公开页', '额外公开正文。', { category: 'company_business' }));
+  await writeFile(path.join(root, 'knowledge', 'wiki', 'sidebar.md'), '# 本地辅助 Markdown');
+  const api = await server(t, root, { WIKI_FRESHNESS_ENABLED: '0' }, true);
+  const afterStartup = api.wikiMarkdownReads();
+  // The detail path still reads Markdown.
+  assert.equal((await api('/api/wiki/' + page.id)).status, 200);
+  const before = api.wikiMarkdownReads();
+  assert(before > afterStartup);
+  const list = await api('/api/wiki');
+  const { categories } = (await api('/api/wiki/schema')).data;
+  const label = categories.find(({ id }: { id: string }) => id === 'channel').label;
+  const filtered = await api('/api/wiki?category=channel&q=' + encodeURIComponent('sku 端架 证据正文 ' + label));
+  const stats = await api('/api/stats');
+  assert.equal(list.status, 200);
+  assert.equal(filtered.status, 200);
+  assert.deepEqual(
+    new Set(list.data.items.map(({ id }: { id: string }) => id)),
+    new Set([page.id, allowedChild.id, publicPage.id]),
+  );
+  assert.deepEqual(filtered.data.items, [page]);
+  assert.deepEqual(filtered.data.categoryCounts, list.data.categoryCounts);
+  assert.equal(list.data.categoryCounts.channel, 2);
+  assert.equal(list.data.categoryCounts.company_business, 1);
+  assert.equal(stats.status, 200);
+  assert.equal(stats.data.wikiCount, 3);
+  assert.equal(stats.data.thisWeekNewCount, stats.data.rawCount + 3);
+  assert.deepEqual(
+    new Set(stats.data.recentChanges.map(({ id }: { id: string }) => id)),
+    new Set([page.id, allowedChild.id, publicPage.id]),
+  );
+  assert.equal(api.wikiMarkdownReads(), before);
+  assert.equal((await api('/api/wiki?category=not_a_category')).status, 400);
+
+  const created = await api('/api/wiki', wikiInput('同进程页面', '写入后立即可见。'));
+  assert.equal(created.status, 201);
+  const edited = await api(
+    '/api/wiki/' + created.data.id,
+    { ...wikiInput('同进程改名', '新写入正文。'), baseRevision: 1 },
+    'PUT',
+  );
+  assert.equal(edited.status, 200);
+  assert.deepEqual((await api('/api/wiki?q=' + encodeURIComponent('同进程改名'))).data.items, [edited.data]);
+  assert.equal((await api('/api/stats')).data.wikiCount, 4);
+  assert.equal((await api('/api/wiki/' + created.data.id, { baseRevision: 2 }, 'DELETE')).status, 200);
+
+  const beforeRawRemoval = api.wikiMarkdownReads();
+  await raws.delete(raw.id);
+  const afterRawRemoval = await api('/api/wiki');
+  assert.deepEqual(afterRawRemoval.data.items, [publicPage]);
+  const visibleStats = (await api('/api/stats')).data;
+  assert.equal(visibleStats.wikiCount, 1);
+  assert.equal(visibleStats.recentChanges.length, 1);
+  assert(visibleStats.recentChanges.every(({ id }: { id: string }) => id === publicPage.id));
+  assert.equal(api.wikiMarkdownReads(), beforeRawRemoval);
+
+  // An external edit is visible even before any reconciliation.
+  await wiki.writePageLocked({ ...publicPage, title: '盘外更新标题', type: 'entity', isDemo: true });
+  const fallback = await api('/api/wiki');
+  assert.equal(fallback.data.items[0].title, '盘外更新标题');
+  assert(api.wikiMarkdownReads() > beforeRawRemoval);
+  const retitledStats = {
+    ...visibleStats,
+    recentChanges: visibleStats.recentChanges.map((change: { title: string }) => ({
+      ...change,
+      title: '盘外更新标题',
+      type: 'entity',
+      isDemo: true,
+    })),
+  };
+  assert.deepEqual((await api('/api/stats')).data, retitledStats);
+
+  const db = openSearchDatabase(path.join(root, 'state', 'search-index.sqlite'));
+  try {
+    db.exec('DROP TABLE wiki_catalog');
+    assert.deepEqual((await api('/api/wiki')).data, fallback.data);
+    assert.deepEqual((await api('/api/stats')).data, retitledStats);
+    assert.equal(db.prepare("SELECT value FROM meta WHERE key = 'index_dirty'").pluck().get(), '1');
+  } finally {
+    db.close();
+  }
+});
 
 test('formal Wiki HTTP writes and details maintain resolved backlinks, including an index write failure', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'aipm-wiki-backlinks-http-'));

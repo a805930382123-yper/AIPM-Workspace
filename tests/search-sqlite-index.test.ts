@@ -9,7 +9,7 @@ import { setImmediate } from 'node:timers/promises';
 import { promisify } from 'node:util';
 import { acquireInstanceLock } from '../services/automation/instance-lock.ts';
 import { WikiSearchIndexer } from '../services/search/indexer.ts';
-import { openSearchDatabase } from '../services/search/sqlite-store.ts';
+import { openSearchDatabase, setEmbeddingLock } from '../services/search/sqlite-store.ts';
 import { parseWikiMarkdown } from '../services/wiki/store.ts';
 
 const FIRST = '00000000-0000-0000-0000-000000000001';
@@ -89,7 +89,7 @@ test('clean and deleted indexes rebuild identical content, hashes, body coordina
   const { last_reconciled_at, ...versions } = meta();
   assert.equal(new Date(last_reconciled_at).toISOString(), last_reconciled_at);
   assert.deepEqual(versions, {
-    schema_version: '4',
+    schema_version: '5',
     chunking_version: '1',
     tokenizer_version: 'intl-zh-v2',
     embedding_provider: '',
@@ -149,8 +149,10 @@ test('startup reconciles metadata-only changes with unchanged mtime, disk additi
   const indexed = () =>
     index.read((db) => db.prepare('SELECT indexed_at FROM pages WHERE page_id = ?').pluck().get(FIRST));
   const initialTime = indexed();
+  assert.equal(await index.catalogEntries(), undefined);
   assert.equal(await index.reconcileOnStartup(), true);
   assert.equal(indexed(), initialTime);
+  assert.equal((await index.catalogEntries())?.length, 2);
   await save(FIRST, 'retained', 'newtitle');
   await utimes(file(FIRST), fixed, fixed);
   await rm(file(SECOND));
@@ -165,9 +167,44 @@ test('startup reconciles metadata-only changes with unchanged mtime, disk additi
       db.prepare('INSERT INTO meta VALUES (?, ?)').run('old_generation', 'true');
     });
     assert.equal(await index.reconcileOnStartup(), true);
-    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : key === 'schema_version' ? '4' : '1');
+    assert.equal(meta()[key], key === 'tokenizer_version' ? 'intl-zh-v2' : key === 'schema_version' ? '5' : '1');
     assert.equal(meta().old_generation, undefined);
   }
+});
+
+test('schema 4 adds Wiki catalogue records without losing the existing vector or changing Markdown', async (t) => {
+  const { index, save, file, meta, query } = await fixture(t);
+  const body = '## 来源事实\r\nstartingterm 非索引页面副本🧾\r\n';
+  await save(FIRST, undefined, '可重建目录页', body);
+  await index.rebuildAll();
+  const vector = Buffer.from(new Float32Array([0.25, 0.75]).buffer);
+  index.read((db) => {
+    setEmbeddingLock(db, {
+      provider: 'test',
+      model: 'test',
+      identity: 'test',
+      configuredDimensions: 2,
+      dimensions: 2,
+      version: 'test-v1',
+    });
+    db.prepare('UPDATE chunks SET embedding = ?, embedding_ver = ?').run(vector, 'test-v1');
+    db.exec("DROP TABLE wiki_catalog; UPDATE meta SET value = '4' WHERE key = 'schema_version'");
+  });
+  const beforeHits = query('startingterm');
+  const beforeFile = await readFile(file(FIRST));
+  await index.close();
+  assert.equal(await index.reconcileOnStartup(), true);
+  assert.equal(meta().schema_version, '5');
+  const entries = await index.catalogEntries();
+  assert.equal(entries?.length, 1);
+  assert.equal(entries?.[0].page.body, body);
+  assert.equal(entries?.[0].page.title, '可重建目录页');
+  assert.deepEqual(query('startingterm'), beforeHits);
+  assert.deepEqual(
+    index.read((db) => db.prepare('SELECT embedding, embedding_ver FROM chunks').get()),
+    { embedding: vector, embedding_ver: 'test-v1' },
+  );
+  assert.deepEqual(await readFile(file(FIRST)), beforeFile);
 });
 
 test('schema 3 upgrade, deletion and clean rebuild derive the same relations without disturbing body offsets', async (t) => {
@@ -182,7 +219,8 @@ test('schema 3 upgrade, deletion and clean rebuild derive the same relations wit
   assert.deepEqual(index.backlinkIds(SECOND), [FIRST]);
   const original = await readFile(file(FIRST));
   index.read((db) =>
-    db.exec(`DROP TABLE relations;
+    db.exec(`DROP TABLE wiki_catalog;
+      DROP TABLE relations;
       DROP TABLE wiki_link_mentions;
       DROP INDEX idx_pages_link_title;
       ALTER TABLE pages DROP COLUMN link_title;
@@ -190,7 +228,7 @@ test('schema 3 upgrade, deletion and clean rebuild derive the same relations wit
   );
   await index.close();
   assert.equal(await index.reconcileOnStartup(), true);
-  assert.equal(meta().schema_version, '4');
+  assert.equal(meta().schema_version, '5');
   assert.deepEqual(index.backlinkIds(SECOND), [FIRST]);
   assert.deepEqual(query('startingterm'), expected);
   assert.deepEqual(await readFile(file(FIRST)), original);
@@ -250,6 +288,7 @@ test('the prior index answers queries throughout a rebuild, then the new index i
   await index.rebuildAll();
   await save(FIRST, 'replacement');
   assert.equal(query('startingterm').length, 1);
+  assert.equal(await index.catalogEntries(), undefined);
   const rebuild = index.rebuildAll();
   let switched = false;
   void rebuild.then(
@@ -271,6 +310,7 @@ test('the prior index answers queries throughout a rebuild, then the new index i
   assert.ok(oldReads > 1);
   assert.equal(query('startingterm').length, 0);
   assert.equal(query('replacement').length, 1);
+  assert.match((await index.catalogEntries())![0].page.body, /replacement/u);
   await index.close();
   assert.deepEqual(await readdir(path.dirname(index.databaseFile)), ['search-index.sqlite']);
 });

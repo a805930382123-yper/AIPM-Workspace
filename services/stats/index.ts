@@ -2,6 +2,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RawStore } from '../raw/store.ts';
 import { countActivePrompts } from '../prompt/store.ts';
+import { wikiCreatedText } from '../wiki/creation.ts';
+import type { WikiStore } from '../wiki/store.ts';
 
 async function filesUnder(dir: string): Promise<string[]> {
   const names = await readdir(dir, { withFileTypes: true }).catch(() => []);
@@ -13,13 +15,15 @@ async function filesUnder(dir: string): Promise<string[]> {
   return nested.flat();
 }
 
+const shanghaiCalendar = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Shanghai',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 function shanghaiDate(date: Date): string {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Shanghai',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(date);
+  const parts = shanghaiCalendar.formatToParts(date);
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
   return `${get('year')}-${get('month')}-${get('day')}`;
 }
@@ -63,11 +67,16 @@ export async function getStats(
   rawStore: RawStore,
   now = new Date(),
   prompts?: { count(): Promise<number> },
+  wiki?: Pick<WikiStore, 'visibleCatalog'>,
 ): Promise<Stats> {
   const raw = await rawStore.list();
-  const wikiFiles = (await filesUnder(path.join(root, 'knowledge', 'wiki'))).filter(
-    (f) => f.toLowerCase().endsWith('.md') && path.basename(f).toLowerCase() !== 'index.md',
-  );
+  const visibleWiki = await wiki?.visibleCatalog();
+  const visibleWikiById = visibleWiki && new Map(visibleWiki.map(({ page }) => [page.id, page]));
+  const wikiFiles = visibleWiki
+    ? []
+    : (await filesUnder(path.join(root, 'knowledge', 'wiki'))).filter(
+        (f) => f.toLowerCase().endsWith('.md') && path.basename(f).toLowerCase() !== 'index.md',
+      );
   const draftFiles = (await filesUnder(path.join(root, 'drafts'))).filter((f) => f.toLowerCase().endsWith('.json'));
   // B04: "待确认" counts drafts that are actually waiting for review, not every historical
   // JSON file (confirmed/discarded drafts must not keep the counter alive).
@@ -87,18 +96,13 @@ export async function getStats(
     const date = shanghaiDate(new Date(r.importedAt));
     return date >= start && date < end;
   }).length;
-  let wikiWeekCount = 0;
-  for (const file of wikiFiles) {
-    const text = await readFile(file, 'utf8');
-    const createdMatch = /^created:\s*["']?([^\r\n"']+)/m.exec(text);
-    const match = /^createdAt:\s*["']?([^\r\n"']+)/m.exec(text);
-    const dateMatch = /^created_at:\s*["']?([^\r\n"']+)/m.exec(text);
-    const value = createdMatch?.[1] ?? match?.[1] ?? dateMatch?.[1];
-    if (value) {
-      const date = shanghaiDate(new Date(value));
-      if (date >= start && date < end) wikiWeekCount++;
-    }
-  }
+  const thisWeek = (value: string | undefined) => {
+    if (!value) return false;
+    const date = shanghaiDate(new Date(value));
+    return date >= start && date < end;
+  };
+  let wikiWeekCount = visibleWiki?.filter(({ createdText }) => thisWeek(createdText)).length ?? 0;
+  for (const file of wikiFiles) if (thisWeek(wikiCreatedText(await readFile(file, 'utf8')))) wikiWeekCount++;
   let openAuditCount = 0;
   for (const file of auditFiles) {
     const text = await readFile(file, 'utf8');
@@ -118,15 +122,19 @@ export async function getStats(
           typeof item.action !== 'string'
         )
           return [];
+        const page = visibleWikiById?.get(item.id);
+        if (visibleWikiById && !page) return [];
+        // A historical title can reflect sources which were restricted at the time.
+        const type = page ? page.type : item.type;
         return [
           {
             time: item.time,
             action: item.action,
             id: item.id,
-            title: item.title,
-            type: typeof item.type === 'string' ? item.type : '',
+            title: page ? page.title : item.title,
+            type: typeof type === 'string' ? type : '',
             revision: typeof item.revision === 'number' ? item.revision : 0,
-            ...(item.isDemo === true ? { isDemo: true } : {}),
+            ...((page ? page.isDemo : item.isDemo) === true ? { isDemo: true } : {}),
           },
         ];
       } catch {
@@ -137,7 +145,7 @@ export async function getStats(
     .slice(0, 8);
   return {
     rawCount: raw.length,
-    wikiCount: wikiFiles.length,
+    wikiCount: visibleWiki?.length ?? wikiFiles.length,
     thisWeekNewCount: rawWeekCount + wikiWeekCount,
     pendingConfirmationCount,
     openAuditCount,

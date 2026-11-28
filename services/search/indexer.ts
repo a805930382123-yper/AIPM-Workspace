@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
 import { existsSync, renameSync, rmSync } from 'node:fs';
-import { mkdir, readFile, readdir, rm } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { SerialQueue } from '../storage/files.ts';
+import { wikiCreatedText } from '../wiki/creation.ts';
 import { ReviewTriggerStore } from '../wiki/review-triggers.ts';
-import { parseWikiMarkdown, wikiPageIdFromFilename, type WikiRecord } from '../wiki/store.ts';
+import { parseWikiMarkdown, wikiPageIdFromFilename, type WikiCatalogEntry, type WikiRecord } from '../wiki/store.ts';
 import { chunkWikiPage } from './chunking.ts';
 import { EmbeddingBackfill, type EmbeddingStatus } from './embedding-backfill.ts';
 import { EmbeddingError, type EmbeddingProvider } from './embedding-provider.ts';
@@ -20,6 +21,7 @@ import {
   readIndexedFiles,
   readRelatedWikiChunks,
   readReviewQueue,
+  readWikiCatalog,
   searchIndexState,
   setEmbeddingLock,
   setIndexMeta,
@@ -35,6 +37,16 @@ const SIDECARS = ['-wal', '-shm', '-journal'];
 export function wikiFileHash(contents: string | Buffer) {
   return createHash('sha256').update(contents).digest('hex');
 }
+
+async function wikiFileStamp(file: string) {
+  const { size, mtimeNs, ctimeNs, ino, dev } = await stat(file, { bigint: true });
+  return [size, mtimeNs, ctimeNs, ino, dev].join(':');
+}
+
+type ReconciledWikiFiles = {
+  hashes: ReadonlyMap<string, string>;
+  unchangedFiles: Map<string, string>;
+};
 
 export interface RebuildResult {
   pagesIndexed: number;
@@ -123,6 +135,46 @@ export class WikiSearchIndexer {
       this.markDirty('backlinkIds', error);
       return undefined;
     }
+  }
+
+  async catalogEntries(): Promise<WikiCatalogEntry[] | undefined> {
+    if (process.env.SEARCH_ENGINE === 'legacy_scan' || this.availability !== 'ready') return undefined;
+    const db = this.db;
+    let rows;
+    try {
+      rows = this.read(readWikiCatalog);
+    } catch (error) {
+      this.markDirty('wikiCatalog', error);
+      return undefined;
+    }
+    const files = await this.wikiFiles(false).catch(() => undefined);
+    if (!files || files.length !== rows.length) return undefined;
+    const byPath = new Map(rows.map((row) => [path.join(this.root, row.filePath), row]));
+    // Edits from outside the workbench can bypass the ordinary update hooks.
+    // Check file identity without reading the Markdown on the ready path.
+    const matches = await Promise.all(
+      files.map(async (file) => {
+        const row = byPath.get(file);
+        const fileStamp = row && (await wikiFileStamp(file).catch(() => undefined));
+        return row?.fileStamp === fileStamp ? row : undefined;
+      }),
+    );
+    if (db !== this.db || this.availability !== 'ready') return undefined;
+    const entries: WikiCatalogEntry[] = [];
+    try {
+      for (let i = 0; i < matches.length; i++) {
+        const row = matches[i];
+        if (!row) return undefined;
+        const page = JSON.parse(row.recordJson) as WikiRecord;
+        if (page.id !== wikiPageIdFromFilename(path.basename(files[i])))
+          throw new Error('Invalid Wiki catalog page ID');
+        entries.push({ page, fileName: path.basename(files[i]), createdText: row.createdText ?? undefined });
+      }
+    } catch (error) {
+      this.markDirty('wikiCatalog', error);
+      return undefined;
+    }
+    return entries;
   }
 
   relatedChunks(seedIds: string[], directIds: Set<string>, scope: SearchOptions) {
@@ -245,13 +297,14 @@ export class WikiSearchIndexer {
 
         const previous = readIndexedFiles(db);
         const hashes = new Map(state === 'upgrade' ? [] : previous.map((row) => [row.file_path, row.file_hash]));
+        const unchangedFiles = new Map<string, string>();
         const files = await this.wikiFiles();
         const present = new Set(files.map((file) => path.relative(this.root, file)));
         const replaced = new Set<string>();
         const changes: IndexedPage[] = [];
         for (let offset = 0; offset < files.length; offset += READ_BATCH) {
           const batch = await Promise.all(
-            files.slice(offset, offset + READ_BATCH).map((file) => this.readWiki(file, hashes)),
+            files.slice(offset, offset + READ_BATCH).map((file) => this.readWiki(file, { hashes, unchangedFiles })),
           );
           for (const page of batch) {
             if (!page) continue;
@@ -263,7 +316,7 @@ export class WikiSearchIndexer {
           db,
           changes,
           previous.filter((row) => replaced.has(row.page_id) || !present.has(row.file_path)).map((row) => row.page_id),
-          state === 'upgrade',
+          { upgrade: state === 'upgrade', unchangedFiles },
         );
         this.vectors.reloadFromStore(db);
         setIndexMeta(db, { last_reconciled_at: new Date().toISOString() });
@@ -341,28 +394,30 @@ export class WikiSearchIndexer {
     }
   }
 
-  private async wikiFiles() {
+  private async wikiFiles(sorted = true) {
     const names = await readdir(this.wikiDir).catch((error: NodeJS.ErrnoException) => {
       if (error.code === 'ENOENT') return [];
       throw error;
     });
-    return names
-      .filter(wikiPageIdFromFilename)
-      .sort()
-      .map((name) => path.join(this.wikiDir, name));
+    return (sorted ? names.sort() : names).filter(wikiPageIdFromFilename).map((name) => path.join(this.wikiDir, name));
   }
 
   private async readWiki(file: string): Promise<IndexedPage>;
-  private async readWiki(file: string, existing: Map<string, string>): Promise<IndexedPage | undefined>;
-  private async readWiki(file: string, existing?: Map<string, string>): Promise<IndexedPage | undefined> {
+  private async readWiki(file: string, existing: ReconciledWikiFiles): Promise<IndexedPage | undefined>;
+  private async readWiki(file: string, existing?: ReconciledWikiFiles): Promise<IndexedPage | undefined> {
+    const fileStamp = await wikiFileStamp(file);
     const bytes = await readFile(file);
     const fileHash = wikiFileHash(bytes);
     const filePath = path.relative(this.root, file);
-    if (existing?.get(filePath) === fileHash) return;
-    const page = parseWikiMarkdown(bytes.toString('utf8'));
+    if (existing?.hashes.get(filePath) === fileHash) {
+      existing.unchangedFiles.set(filePath, fileStamp);
+      return;
+    }
+    const markdown = bytes.toString('utf8');
+    const page = parseWikiMarkdown(markdown);
     if (page.id !== wikiPageIdFromFilename(path.basename(file)) || typeof page.title !== 'string')
       throw new Error('Invalid Wiki metadata for search index');
-    return { page, filePath, fileHash, chunks: chunkWikiPage(page) };
+    return { page, filePath, fileHash, fileStamp, createdText: wikiCreatedText(markdown), chunks: chunkWikiPage(page) };
   }
 
   private async buildAndSwap(): Promise<RebuildResult> {

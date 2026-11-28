@@ -14,7 +14,7 @@ export function openSearchDatabase(filename: string, options?: Database.Options)
 }
 
 const versions = {
-  schema_version: '4',
+  schema_version: '5',
   chunking_version: '1',
   tokenizer_version: TOKENIZER_VERSION,
 };
@@ -22,6 +22,13 @@ const versions = {
 const reviewQueueView = `CREATE VIEW review_queue AS
   SELECT page_id, title, wiki_type, category, last_verified_at, source_published_at, review_cycle_days,
     review_trigger_checkpoint FROM pages`;
+
+const wikiCatalogSchema = `CREATE TABLE wiki_catalog (
+  page_id TEXT PRIMARY KEY REFERENCES pages(page_id) ON DELETE CASCADE,
+  file_stamp TEXT NOT NULL,
+  record_json TEXT NOT NULL,
+  created_text TEXT
+)`;
 
 const relationSchema = `
   CREATE INDEX idx_pages_link_title ON pages(link_title);
@@ -108,6 +115,7 @@ export function initSearchSchema(db: SearchDatabase) {
     );
     ${reviewQueueView};
     ${relationSchema}
+    ${wikiCatalogSchema};
   `);
   setIndexMeta(db, {
     ...versions,
@@ -138,7 +146,7 @@ export function searchIndexState(db: SearchDatabase): 'current' | 'upgrade' | 'r
   const schemaVersion = current.get('schema_version');
   return schemaVersion === versions.schema_version
     ? 'current'
-    : schemaVersion === '1' || schemaVersion === '2' || schemaVersion === '3'
+    : schemaVersion && ['1', '2', '3', '4'].includes(schemaVersion)
       ? 'upgrade'
       : 'rebuild';
 }
@@ -147,6 +155,16 @@ export function readIndexedFiles(db: SearchDatabase) {
   return db
     .prepare<[], { file_path: string; page_id: string; file_hash: string }>(
       'SELECT file_path, page_id, file_hash FROM pages',
+    )
+    .all();
+}
+
+export function readWikiCatalog(db: SearchDatabase) {
+  return db
+    .prepare<[], { filePath: string; fileStamp: string; recordJson: string; createdText: string | null }>(
+      `SELECT pages.file_path AS filePath, wiki_catalog.file_stamp AS fileStamp,
+        wiki_catalog.record_json AS recordJson, wiki_catalog.created_text AS createdText
+       FROM pages JOIN wiki_catalog USING (page_id)`,
     )
     .all();
 }
@@ -250,6 +268,8 @@ export interface IndexedPage {
   page: WikiRecord;
   filePath: string;
   fileHash: string;
+  fileStamp: string;
+  createdText?: string;
   chunks: WikiChunk[];
 }
 
@@ -366,23 +386,38 @@ export function writeEmbeddings(
   })();
 }
 
-export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], removeIds: string[], upgrade = false) {
+export function writeIndexedPages(
+  db: SearchDatabase,
+  pages: IndexedPage[],
+  removeIds: string[],
+  reconcile?: { upgrade: boolean; unchangedFiles: ReadonlyMap<string, string> },
+) {
   db.transaction(() => {
-    if (upgrade) {
+    if (reconcile?.upgrade) {
       const previous = db.prepare<[], { value: string }>("SELECT value FROM meta WHERE key = 'schema_version'").get();
       if (previous?.value === '1') {
         db.exec(`ALTER TABLE pages ADD COLUMN last_verified_at TEXT;
         ALTER TABLE pages ADD COLUMN source_published_at TEXT;
         ALTER TABLE pages ADD COLUMN review_cycle_days INTEGER;`);
       }
-      if (previous?.value !== '3') {
+      if (previous?.value === '1' || previous?.value === '2') {
         db.exec(`DROP VIEW IF EXISTS review_queue;
         ALTER TABLE pages ADD COLUMN review_trigger_checkpoint INTEGER;
         ${reviewQueueView};`);
       }
-      db.exec(`ALTER TABLE pages ADD COLUMN link_title TEXT NOT NULL DEFAULT '';
-        ${relationSchema}`);
+      if (previous?.value !== '4') {
+        db.exec(`ALTER TABLE pages ADD COLUMN link_title TEXT NOT NULL DEFAULT '';
+          ${relationSchema}`);
+      }
+      db.exec(wikiCatalogSchema);
       setIndexMeta(db, { schema_version: versions.schema_version });
+    }
+    if (reconcile?.unchangedFiles.size) {
+      const updateStamp = db.prepare<{ filePath: string; fileStamp: string }>(
+        `UPDATE wiki_catalog SET file_stamp = @fileStamp
+         WHERE page_id = (SELECT page_id FROM pages WHERE file_path = @filePath) AND file_stamp <> @fileStamp`,
+      );
+      for (const [filePath, fileStamp] of reconcile.unchangedFiles) updateStamp.run({ filePath, fileStamp });
     }
     const removeFts = db.prepare<[string]>('DELETE FROM chunks_fts WHERE page_id = ?');
     const removePage = db.prepare<[string]>('DELETE FROM pages WHERE page_id = ?');
@@ -410,6 +445,9 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
       `INSERT INTO pages (page_id, file_path, title, link_title, aliases_json, tags_json, wiki_type, category, source_grade,
       file_hash, char_count, updated_at, indexed_at, last_verified_at, source_published_at,
       review_cycle_days, review_trigger_checkpoint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    const putCatalog = db.prepare<[string, string, string, string | null]>(
+      'INSERT INTO wiki_catalog (page_id, file_stamp, record_json, created_text) VALUES (?, ?, ?, ?)',
     );
     const putChunk = db.prepare<WikiChunk & { embedding: Buffer | null; embeddingVer: string | null }>(
       `INSERT INTO chunks (chunk_id, page_id, chunk_index, heading_path, section_kind,
@@ -455,7 +493,7 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
       removePage.run(id);
     }
     const now = new Date().toISOString();
-    for (const { page, filePath, fileHash, chunks } of pages) {
+    for (const { page, filePath, fileHash, fileStamp, createdText, chunks } of pages) {
       const linkTitle = page.title.trim();
       affected.add(linkTitle);
       putPage.run(
@@ -477,6 +515,7 @@ export function writeIndexedPages(db: SearchDatabase, pages: IndexedPage[], remo
         page.review_cycle_days === null ? 0 : (page.review_cycle_days ?? null),
         page.review_trigger_checkpoint ?? null,
       );
+      putCatalog.run(page.id, fileStamp, JSON.stringify(page), createdText ?? null);
       for (const target of wikiLinkTitles(page.body)) {
         putMention.run(page.id, target);
         affected.add(target);
