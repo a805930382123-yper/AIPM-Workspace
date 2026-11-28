@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **FE06 待远端 CI 和最终签发**。工作事项页面已拆分，分析面板保持原版。11 份定向回归 34/34，桌面与窄屏真实浏览器验收通过。[任务卡](handoffs/FE06-20261128-task.md)。
+
 - **产品构想（PB）规划完成，待授权 PB01（2026-11-28）**。用户批准放开范围：新增主导航「产品构想」，从内外部使用者出发推导价值、功能和整体构想，并做跨产品个人周计划。共分 PB01–PB05 五批，PB01 为手工骨架，不调用模型。本次只写需求调整、路线图和任务卡，未改产品代码，真实模型请求 0。[路线图](batches/PB-ROADMAP-20261128.md) · [PB01 任务卡](handoffs/PB01-20261128-task.md)。
 
 - **FE05 Wiki 页面拆分整体 PASS（2026-11-28）**。入口从 2,029 行缩至 223 行，公开接口与五个视图保持兼容。定向 58/58、全量 1,214/1,214、三条离线 eval 和桌面/窄屏真实 Edge 验收通过。产品提交 `2434828` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46159033764) · [Round 2 签发](reports/FE05-20261128-review.md) · [任务卡](handoffs/FE05-20261128-task.md)。
@@ -40,8 +42,8 @@
   - **BE01 PASS**。正式 Wiki 提交拆为 5 个模块，保留事务、锁与恢复语义。`83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) · [独立验收](reports/BE01-20261128-review.md)。
   - **FE03 PASS**。Prompt 与草稿页入口 315/458 行，1,143/1,143。[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)。
   - **FE02 PASS**。Inbox 与会议页拆为 8 模块，定向 44/44。[验收](reports/FE02-20261125-review.md)。
-  - **`ENG05`（2026-11-24，PASS）**：清零 3 类 9 处疑点（`770 → 761`、`0` 错），6 规则升回 `error`，校准 `acceptance.md` 锚点，`fae6724` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
-  - **`FE01`（2026-11-24，PASS）**：`api.ts` 按域拆为 8 模块、轻路由与异步 Hook 落地、6 文件告警 `55 → 0`，`check` 1,062/1,062，`e528039` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
+  - **ENG05 PASS**。6 条规则恢复 error，告警 770 → 761。[验收](reports/ENG05-20261124-review.md)。
+  - **FE01 PASS**。API 分域、轻路由与异步 Hook 已验收，1,062/1,062。[验收](reports/FE01-20261123-review.md)。
   - **`CLOSE01`（2026-11-23，PASS）**：63 A + 46 R 核对通过，恢复门禁通过（[复核](reports/CLOSE01-review.md)）。
 - **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续波次待用户决策。`tests/prompt-ai-http.mjs` B08 mock 漂移与 `docs-archive-check` 基线既有 `architecture:8` 10 B 漂移留档；62 页 PDF 草稿待决定入库，正式写入须人工确认。
 - **规范与归档索引**：[证据规范](evidence-policy.md) · [2026-10](archive/status-2026-10.md) · [2026-11 初](archive/status-2026-11a.md) · [2026-11 中](archive/status-2026-11b.md)

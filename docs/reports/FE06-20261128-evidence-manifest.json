@@ -1,0 +1,399 @@
+{
+  "schemaVersion": 1,
+  "batch": "FE06-20261128",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>",
+  "totalFiles": 65,
+  "entries": [
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-target.log",
+      "bytes": 3079,
+      "sha256": "07b7ecb5fa03fbd708e8c49835a3c69b4181d7a40399ea208a2d1911da8d1d85",
+      "purpose": "拆分前回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-lint.log",
+      "bytes": 145279,
+      "sha256": "d27fdc253dbd55f444cee7cd3efda3aeed194bdb907995dfa87e0f84a8d3d414",
+      "purpose": "全仓 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-work.log",
+      "bytes": 3703,
+      "sha256": "1a693da1c946598923905b30e2fe865165d358cd2413f11c956ed161f63251bf",
+      "purpose": "工作事项页面 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-archive.log",
+      "bytes": 1201,
+      "sha256": "296fc93566d427073afc60a355e40ae2ef83f7cc1caccee8ce10cec4c31efa11",
+      "purpose": "文档归档基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/scoped-eslint.log",
+      "bytes": 3759,
+      "sha256": "4942afa328957c5210bc35d9ff5bf1da8689a57b17ca62e4057ddfb8ecf1b1f5",
+      "purpose": "交付文件 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/target.log",
+      "bytes": 3892,
+      "sha256": "736e03508510323d60c8b7cbf5a3e54ecc164d7852d4873d377fbfbf519118a0",
+      "purpose": "冻结定向回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/typecheck.log",
+      "bytes": 54,
+      "sha256": "d3a31a41aa7bc379d78c83b18dd81dd39663f82c7d2271ce1a8f36221c1e562d",
+      "purpose": "类型检查"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/format-check.log",
+      "bytes": 137,
+      "sha256": "61888774eaee940b3da038272271a74df0ede76d7ece251bcf3464e72e251adf",
+      "purpose": "全仓格式"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/lint.log",
+      "bytes": 145335,
+      "sha256": "d67a6b06931a0bc7b1cd8371409eb51530a2eed143765d577d4166b433593e32",
+      "purpose": "候选全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/guard.log",
+      "bytes": 216,
+      "sha256": "91ed25630491419398d7e52220f0f785d25644a3c0ef0a1a78a140b7424ea29e",
+      "purpose": "仓库体积门禁"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/test.log",
+      "bytes": 138430,
+      "sha256": "36ce8e143c151bb2058ba79c5ddf41b996397a508237700db42b278c40d17309",
+      "purpose": "默认全量 npm test"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/build-final.log",
+      "bytes": 742,
+      "sha256": "e40a1e42bffffb179a74ad0072679cce000b7ac4cb86129d290a7732ea2793f7",
+      "purpose": "返修后生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/eval-standard-extract.log",
+      "bytes": 554,
+      "sha256": "c941c5f717234a4c013be02d61ded5725c4132cfbb57326b4f2f740aba59d8ba",
+      "purpose": "标准提取回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/eval-news-relevance.log",
+      "bytes": 520,
+      "sha256": "6b690931d7dac27cedbac16f0c7b3de70b00d463e0956709d0de0b8b79d87414",
+      "purpose": "资讯相关性回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/eval-weekly-review.log",
+      "bytes": 382,
+      "sha256": "ee6880a432723b832ed00f7560a61773a68aea89ff568d312c6a511cb1dead5b",
+      "purpose": "周回顾回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/aipm-fe06-baseline-final.log",
+      "bytes": 932,
+      "sha256": "df1f04fdb4ffa87853a309273a0b2f4e9db587b2ed818b0d79b7e7c2cab23a3f",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/aipm-fe06-candidate.log",
+      "bytes": 932,
+      "sha256": "a286ee22af3600f23f659fac80770ae83a75fc2cb4136e700ccadcfbdf372d59",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-api.log",
+      "bytes": 120,
+      "sha256": "ed450e1d280a392e45649d9db8d7df374dc71962e3af0dae5508170cdf0b0623",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-create-customer-1440.png",
+      "bytes": 43180,
+      "sha256": "0c5a60a7c74bbea907b4a840c16d58720f1e985d32c8be5391db57c79fc9abb0",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-create-customer-390.png",
+      "bytes": 29783,
+      "sha256": "392f1e57c152c65cdb1a66c8829c609fdce09a2a09dc4b4a30b061cf8aec3417",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-create-product-1440.png",
+      "bytes": 43000,
+      "sha256": "440b9cf977ae7abee3bb6e28d03010c683cc0b7ce6a81efd9225eb98577e2979",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-create-product-390.png",
+      "bytes": 27196,
+      "sha256": "3b65ba14792d49b731395934581e67a059038d680a8b502acc8f5eac72af2e97",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-customer-detail-1440.png",
+      "bytes": 68911,
+      "sha256": "72d41c0da698f0d02064835318d7b2e5857225d6eeb464df0553f362ebe3a8cf",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-customer-detail-390.png",
+      "bytes": 37649,
+      "sha256": "39e236b2cdefe8178ad194b13bacedd2e1a715ea12e9ac5d70406028c898aa83",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-delete-confirm-1440.png",
+      "bytes": 73555,
+      "sha256": "66df1533e5a5e4eb220da8ab2ed490f6f5725c93075e137e52462103f8c470e8",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-delete-confirm-390.png",
+      "bytes": 45951,
+      "sha256": "01f551f54a85fbe43df6589aa606ecd854efc4a523c2fb767af6c9efc31d1bbe",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-dirty-leave-1440.png",
+      "bytes": 69863,
+      "sha256": "4e84bc1ac035e110837ec7fd75fec9ad6a14b78ad763f2a3ca24b77326557820",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-dirty-leave-390.png",
+      "bytes": 43358,
+      "sha256": "1c3d86cabf63ec68a85032e8a6f1fdaa1ae61f93bb18ddb6a13df989f4f9ec82",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-list-1440.png",
+      "bytes": 39535,
+      "sha256": "49c455431b73c303dd606ada8c61a7cb8b5fbb33b84747a7d09e71f5b105e4a4",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-list-390.png",
+      "bytes": 29906,
+      "sha256": "76c2c7c3986943be80b54743464e84a2d88a17db709f997aa579c432438c8853",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-materials-screenshot-1440.png",
+      "bytes": 54608,
+      "sha256": "62bdda3e20db398a012e20a14a086a8afd6929990a56ada4e4d1197b75ea099d",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-materials-screenshot-390.png",
+      "bytes": 30194,
+      "sha256": "649717966cca19d07edf1aa967c09e063a4aa6a9fdffd10de7a1963be3742a1d",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-product-analysis-1440.png",
+      "bytes": 65215,
+      "sha256": "eef29a580a88b58801bf9bfde5f0cf7be8bbd72aa5eda8b745123c3c4126ce50",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-product-analysis-390.png",
+      "bytes": 33064,
+      "sha256": "aec21b0f4cfa6fb830b9c851489825fa9badf8191878678164496c2af8caa0d6",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-product-history-stage-1440.png",
+      "bytes": 67242,
+      "sha256": "9efdd74575f4c892d5076f84ad2abb0cb393b67c2f7aea822547fd2f93817ff1",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-product-history-stage-390.png",
+      "bytes": 39608,
+      "sha256": "5f0b926aa8b23e0bf1db9f3bea69632c28734339b5154f9ae9e90657d7c2c4f5",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/baseline-summary.json",
+      "bytes": 3188,
+      "sha256": "d806084ee58268304dba325a3e569cd33a0b48b8269a2482a1c6382e992ea56f",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-api.log",
+      "bytes": 120,
+      "sha256": "e425126b71cfad1c0db9f96961c6ae547747edf918e1499f325b2b8fd80766a6",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-create-customer-1440.png",
+      "bytes": 43180,
+      "sha256": "0c5a60a7c74bbea907b4a840c16d58720f1e985d32c8be5391db57c79fc9abb0",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-create-customer-390.png",
+      "bytes": 29783,
+      "sha256": "392f1e57c152c65cdb1a66c8829c609fdce09a2a09dc4b4a30b061cf8aec3417",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-create-product-1440.png",
+      "bytes": 43000,
+      "sha256": "440b9cf977ae7abee3bb6e28d03010c683cc0b7ce6a81efd9225eb98577e2979",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-create-product-390.png",
+      "bytes": 27196,
+      "sha256": "3b65ba14792d49b731395934581e67a059038d680a8b502acc8f5eac72af2e97",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-customer-detail-1440.png",
+      "bytes": 68648,
+      "sha256": "fb46aff2678be1a278141b1eb579779cfe396466c7309836d9397bf5663916ab",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-customer-detail-390.png",
+      "bytes": 37640,
+      "sha256": "c61061fc2859f10595b9c510ebfba8d94452b23e2d82b7cf1fc4f7c8bc581267",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-delete-confirm-1440.png",
+      "bytes": 73494,
+      "sha256": "fcb1327d1d19666b51e072674205b7c71e6b2e61c188bacbb7880d7a88a9fd2a",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-delete-confirm-390.png",
+      "bytes": 45943,
+      "sha256": "d25f86366ed25a7741217638a9cdf494da0594427a892e1545174156b97eeca4",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-dirty-leave-1440.png",
+      "bytes": 69800,
+      "sha256": "44a22a112d5e8b28f63535acc19976fa130524462fb9bf19c523e43ce2e5dec4",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-dirty-leave-390.png",
+      "bytes": 43311,
+      "sha256": "96b204e52377244f0f17e76379d565d952b2aa7be142ffa9ddb725c7dc982a02",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-list-1440.png",
+      "bytes": 39535,
+      "sha256": "49c455431b73c303dd606ada8c61a7cb8b5fbb33b84747a7d09e71f5b105e4a4",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-list-390.png",
+      "bytes": 29906,
+      "sha256": "76c2c7c3986943be80b54743464e84a2d88a17db709f997aa579c432438c8853",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-materials-screenshot-1440.png",
+      "bytes": 54608,
+      "sha256": "a0c460a4bec839bff44e44f2cdf5bbea0a9bc71c357399fc3d0fab4261a7ba80",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-materials-screenshot-390.png",
+      "bytes": 30197,
+      "sha256": "64d5f57f1dce1d0e735587180565b568c838f3717daeeec9b1d3a77793674e83",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-product-analysis-1440.png",
+      "bytes": 65215,
+      "sha256": "eef29a580a88b58801bf9bfde5f0cf7be8bbd72aa5eda8b745123c3c4126ce50",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-product-analysis-390.png",
+      "bytes": 33064,
+      "sha256": "aec21b0f4cfa6fb830b9c851489825fa9badf8191878678164496c2af8caa0d6",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-product-history-stage-1440.png",
+      "bytes": 67088,
+      "sha256": "6ae90fb23949b6cdc508b5a1e3036d68dab9c9bd673286cc13bc0e27ff9d7bd2",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-product-history-stage-390.png",
+      "bytes": 39535,
+      "sha256": "94dbe2d65cfe48a92cb6d9e3ff1bb0e9a1c1e7baffcfa911e3d21633f7190b7a",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/candidate-summary.json",
+      "bytes": 3189,
+      "sha256": "5b290a03de6b00078cf026d106e32330f0775fd6d22e5bc726526e7bd14590c8",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/compare-jsx-text.log",
+      "bytes": 70,
+      "sha256": "41c1c0db66800d9c9c795aa233803ea83788ba22f5305bd0cad48ac0fb37c546",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-browser.mjs",
+      "bytes": 20177,
+      "sha256": "e61f45ba082f4a1c61ce8ed99c3e98e88e0986bb3e41d4fd8fb9d9a0df1e2426",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-equivalence.log",
+      "bytes": 3341,
+      "sha256": "17869e4440d7595a854c6df5289a56fe62ba6e335d920e4433b3c07263b86344",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-equivalence.mjs",
+      "bytes": 9169,
+      "sha256": "b8f4ec662e217464d2981a4492a63003fecf71713e1330f7708dd3917470cc63",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-tests.log",
+      "bytes": 932,
+      "sha256": "e1af8edafedaed220622684513f43219e1328c65597cfaa857ffae45803b0581",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-archive.log",
+      "bytes": 1234,
+      "sha256": "0d650337ba8dd93cfb542e7bf7597be8007344ae898ec2cdb4570c60eb894ba4",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-hygiene.log",
+      "bytes": 315,
+      "sha256": "81aac96a649cec75567646e0a8f19ca81d79df982529ae5518e08f64732bc199",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    },
+    {
+      "archiveRelativePath": "evidence/FE06-20261128/fe06-review-links.log",
+      "bytes": 224,
+      "sha256": "9a82a686a569b13504267b0f894701b92e8b6573029c981dfabdc4a63b97d54f",
+      "purpose": "原实现与最终候选的行为、浏览器及等价性验收"
+    }
+  ]
+}
