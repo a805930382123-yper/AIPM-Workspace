@@ -17,6 +17,7 @@ import { PromptLibraryPage } from './pages/PromptLibraryPage';
 import { MeetingPage } from './pages/MeetingPage';
 import { WorkItemsPage } from './pages/WorkItemsPage';
 import { AutomationPage } from './pages/AutomationPage';
+import { ProductBlueprintPage } from './pages/ProductBlueprintPage';
 import type { AutomationTab } from './components/automation/automationMeta';
 import { Icon } from './components/Icon';
 import { Brand } from './components/Brand';
@@ -37,6 +38,38 @@ export function App() {
   const { page, pageTitle, navigationGeneration, getNavigationGeneration, navigate: navigateRoute } = useAppRoute();
   const [rawCitation, setRawCitation] = useState<RawCitationTarget | null>(null);
   const [rawOriginal, setRawOriginal] = useState(false);
+  const blueprintDirty = useRef(false);
+  const blueprintBusy = useRef(false);
+  const setBlueprintBusy = useCallback((busy: boolean) => {
+    blueprintBusy.current = busy;
+  }, []);
+  const blueprintUrl = useRef('');
+  const setBlueprintDirty = useCallback((dirty: boolean) => {
+    blueprintDirty.current = dirty;
+    if (dirty) blueprintUrl.current = window.location.pathname + window.location.search + window.location.hash;
+  }, []);
+  useEffect(() => {
+    const guard = (event: PopStateEvent) => {
+      if (page === 'blueprint' && blueprintBusy.current) {
+        event.stopImmediatePropagation();
+        window.history.pushState(
+          { ...window.history.state, appPage: 'blueprint' },
+          '',
+          blueprintUrl.current || window.location.pathname,
+        );
+        return;
+      }
+      if (page !== 'blueprint' || !blueprintDirty.current) return;
+      if (window.confirm('存在未保存的修改，确定离开产品构想吗？')) {
+        blueprintDirty.current = false;
+      } else {
+        event.stopImmediatePropagation();
+        window.history.pushState({ ...window.history.state, appPage: 'blueprint' }, '', blueprintUrl.current);
+      }
+    };
+    window.addEventListener('popstate', guard, true);
+    return () => window.removeEventListener('popstate', guard, true);
+  }, [page]);
   const [pipelineEntry, setPipelineEntry] = useState<CandidateFilter>();
   const [raws, setRaws] = useState<Raw[]>([]);
   const [stats, setStats] = useState<Stats>(emptyStats);
@@ -203,6 +236,15 @@ export function App() {
   }, [observedJobId, page, jobPollGeneration, refresh, getNavigationGeneration]);
 
   const nav = (destination: AppPage, preferredRawId?: string) => {
+    if (page === 'blueprint' && destination !== 'blueprint' && blueprintBusy.current) return;
+    if (
+      page === 'blueprint' &&
+      destination !== 'blueprint' &&
+      blueprintDirty.current &&
+      !window.confirm('存在未保存的修改，确定离开产品构想吗？')
+    )
+      return;
+    if (destination !== 'blueprint') blueprintDirty.current = false;
     navigateRoute(destination);
     setPipelineEntry(undefined);
     setRawCitation(null);
@@ -327,6 +369,10 @@ export function App() {
           <button className={`nav-item ${page === 'work' ? 'active' : ''}`} onClick={() => nav('work')}>
             <Icon name="work" />
             工作事项
+          </button>
+          <button className={`nav-item ${page === 'blueprint' ? 'active' : ''}`} onClick={() => nav('blueprint')}>
+            <Icon name="blueprint" />
+            产品构想
           </button>
           <button className={`nav-item ${page === 'automation' ? 'active' : ''}`} onClick={() => nav('automation')}>
             <Icon name="automation" />
@@ -518,6 +564,16 @@ export function App() {
                   setRawOriginal(true);
                 }}
                 onChanged={() => setWorkItemsRevision((value) => value + 1)}
+              />
+            )}
+            {page === 'blueprint' && (
+              <ProductBlueprintPage
+                onDirtyChange={setBlueprintDirty}
+                onBusyChange={setBlueprintBusy}
+                onOpenRaw={(id) => {
+                  nav('raw', id);
+                  setRawOriginal(true);
+                }}
               />
             )}
             {page === 'raw' && (

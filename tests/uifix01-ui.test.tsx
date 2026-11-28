@@ -350,14 +350,18 @@ test('U1-01 & U1-02: 侧栏图标去重、自动化打开草稿返回自动化�
     });
     await waitFor(() => !!container.querySelector('.home-action-row button'), '首页加载完成');
 
-    // U1-02: 侧栏 7 个主导航项图标互不重复（含设置共 8 个不同图标）
+    // U1-02: 侧栏 8 个主导航项图标互不重复（含设置共 9 个不同图标）
     const navIcons = [...container.querySelectorAll('.sidebar nav[aria-label="主导航"] svg')].map(
       (svg) => svg.innerHTML,
     );
-    assert.equal(navIcons.length, 7);
-    assert.equal(new Set(navIcons).size, 7, '主导航 7 个图标不得重复');
+    assert.equal(navIcons.length, 8);
+    assert.equal(new Set(navIcons).size, 8, '主导航 8 个图标不得重复');
     const allSidebarIcons = [...container.querySelectorAll('.sidebar svg.nav-icon')].map((svg) => svg.innerHTML);
-    assert.equal(new Set(allSidebarIcons).size, 8, '侧边栏全部 8 个图标必须互异');
+    assert.equal(new Set(allSidebarIcons).size, 9, '侧边栏全部 9 个图标必须互异');
+    const navLabels = [...container.querySelectorAll('.sidebar nav[aria-label="主导航"] button')].map((button) =>
+      button.textContent?.trim(),
+    );
+    assert.equal(navLabels[navLabels.indexOf('工作事项') + 1], '产品构想');
 
     // 主导航页的面包屑前缀为纯文本“工作空间”
     assert.equal(container.querySelector('.breadcrumb')?.textContent, '工作空间 / 首页');

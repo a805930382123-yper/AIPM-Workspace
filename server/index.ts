@@ -59,6 +59,8 @@ import { RecoveryRegistry } from '../services/storage/recovery.ts';
 import { registerRecoveryRoutes } from './recovery-api.ts';
 import { WorkItemStore } from '../services/work-items/store.ts';
 import { registerWorkItemRoutes } from './work-items-api.ts';
+import { ProductBlueprintStore } from '../services/product-blueprints/store.ts';
+import { registerProductBlueprintRoutes } from './product-blueprints-api.ts';
 import { WorkAnalysisRuns } from '../services/work-items/analysis-runs.ts';
 import { NewsService } from '../services/news/service.ts';
 import { readNewsSources } from '../services/news/sources.ts';
@@ -308,6 +310,7 @@ const knowledgeInspections = new KnowledgeInspectionService({
 const lintSnapshots = new WikiLintSnapshots(root);
 const wikiHealth = new WikiHealth(root, lintSnapshots, knowledgeInspections);
 const workItems = new WorkItemStore(root, store);
+const productBlueprints = new ProductBlueprintStore(root, store, wikiStore, workItems);
 const workAnalysis = new WorkAnalysisRuns(root, (id) => workItems.get(id), store, providerFactory);
 const reminders = new RemindersStore(root, createDesktopNotifier());
 const weeklyReviews = new WeeklyReviewStore(root);
@@ -733,6 +736,7 @@ app.delete('/api/wiki/:id', async (req, res, next) => {
 });
 registerHomeRoutes(app, { root, raws: store, wiki: wikiStore, runner, prompts });
 registerWorkItemRoutes(app, workItems, workAnalysis);
+registerProductBlueprintRoutes(app, productBlueprints);
 registerB04Routes(app, {
   root,
   rulesDir,

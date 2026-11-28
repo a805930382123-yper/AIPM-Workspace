@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const FORMAT = 'fmcg-workspace-backup';
 const VERSION = 1;
-const ROOTS = ['knowledge', 'prompts', 'drafts', 'state', 'meetings', 'work-items'];
+const ROOTS = ['knowledge', 'prompts', 'drafts', 'state', 'meetings', 'work-items', 'product-blueprints'];
 const MAX_FILE = 64 * 1024 * 1024;
 const MAX_TOTAL = 256 * 1024 * 1024;
 const MAX_FILES = 20000;

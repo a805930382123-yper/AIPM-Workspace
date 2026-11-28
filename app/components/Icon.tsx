@@ -44,6 +44,12 @@ const paths: Record<string, ReactNode> = {
       <path d="m4 6 1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17" />
     </>
   ),
+  blueprint: (
+    <>
+      <path d="M9 18h6M10 21h4M8.5 15.5c-.4-1.1-2.5-2.1-2.5-5a6 6 0 0 1 12 0c0 2.9-2.1 3.9-2.5 5z" />
+      <path d="M12 1v1M3 6l1 1M21 6l-1 1" />
+    </>
+  ),
   automation: (
     <>
       <path d="M21 12a9 9 0 1 1-2.64-6.36L21 8" />

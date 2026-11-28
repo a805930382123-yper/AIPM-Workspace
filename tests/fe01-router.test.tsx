@@ -39,8 +39,8 @@ test('routes pure helpers handle query stripping, hash building, and parseLocati
   assert.equal(routes.getPageTitle('meeting'), '会议档案');
   assert.equal(routes.getPageTitle('wiki'), '知识库');
 
-  assert.deepEqual(routes.getForeignQueryKeys('meeting'), []);
-  assert.deepEqual(routes.getForeignQueryKeys('wiki'), [...routes.MEETING_QUERY_KEYS]);
+  assert.deepEqual(routes.getForeignQueryKeys('meeting'), ['blueprint']);
+  assert.deepEqual(routes.getForeignQueryKeys('wiki'), [...routes.MEETING_QUERY_KEYS, 'blueprint']);
 
   const meetingSearch = '?meeting=m1&mq=q&mt=t&mg=g&mc=c&mp=p&ml=Sensitive&mo=asc&keep=yes';
   assert.deepEqual(routes.stripForeignQueryParams('meeting', meetingSearch), {
@@ -58,6 +58,14 @@ test('routes pure helpers handle query stripping, hash building, and parseLocati
   assert.deepEqual(routes.stripForeignQueryParams('raw', '?keep=yes'), {
     search: '?keep=yes',
     changed: false,
+  });
+  assert.deepEqual(routes.stripForeignQueryParams('blueprint', '?blueprint=b1&meeting=m1&mq=q&keep=yes'), {
+    search: '?blueprint=b1&keep=yes',
+    changed: true,
+  });
+  assert.deepEqual(routes.stripForeignQueryParams('wiki', '?blueprint=b1&keep=yes'), {
+    search: '?keep=yes',
+    changed: true,
   });
 
   const params = new URLSearchParams('keep=yes');

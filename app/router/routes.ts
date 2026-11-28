@@ -1,4 +1,5 @@
-export type AppPage = 'news' | 'home' | 'wiki' | 'raw' | 'prompt' | 'settings' | 'meeting' | 'work' | 'automation';
+export type AppPage =
+  'news' | 'home' | 'wiki' | 'raw' | 'prompt' | 'settings' | 'meeting' | 'work' | 'automation' | 'blueprint';
 
 export type AppRouteDefinition = {
   page: AppPage;
@@ -17,6 +18,7 @@ export const APP_ROUTES: Record<AppPage, AppRouteDefinition> = {
   settings: { page: 'settings', title: '设置', ownedQueryKeys: [] },
   meeting: { page: 'meeting', title: '会议档案', ownedQueryKeys: MEETING_QUERY_KEYS },
   work: { page: 'work', title: '工作事项', ownedQueryKeys: [] },
+  blueprint: { page: 'blueprint', title: '产品构想', ownedQueryKeys: ['blueprint'] },
   automation: { page: 'automation', title: '自动化', ownedQueryKeys: [] },
 };
 
