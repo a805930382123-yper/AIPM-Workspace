@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **FE04 待远端 CI 与最终签发**。Raw 页面入口缩至 289 行，17 份定向回归 85/85，桌面与窄屏真实浏览器通过。[任务卡](handoffs/FE04-20261128-task.md)。
+- **FE04 Raw 页面拆分整体 PASS（2026-11-28）**。入口从 2,513 行减至 289 行，保留 3 项公开导出。17 份定向回归 85/85、全量 1,210/1,210、三条离线 eval 和真实 Edge 桌面/窄屏验收通过。产品提交 `96e88ed` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46155209728) · [Round 2 签发](reports/FE04-20261128-review.md) · [任务卡](handoffs/FE04-20261128-task.md)。WikiPage 待另行授权。
 
 - **BE05 整体 PASS，波次 3 后端核心 BE01–BE05 五批全部收官（2026-11-28）。** PDF 清理拆为 7 个无环模块，8 段提示词逐字节一致；定向 78/78、全量 1,205/1,205、三条离线 eval 通过，全仓告警 754 → 750。`d186a7c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46151190883) · [Round 2 签发](reports/BE05-20261128-review.md) · [任务卡](handoffs/BE05-20261128-task.md)。
 
