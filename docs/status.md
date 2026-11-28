@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **BE05 待远端 CI 与独立签发**。PDF 清理服务已拆为 7 个无环模块，八段提示词与基线逐字节一致。[任务卡](handoffs/BE05-20261128-task.md)。
+- **BE05 整体 PASS，波次 3 后端核心 BE01–BE05 五批全部收官（2026-11-28）。** PDF 清理拆为 7 个无环模块，8 段提示词逐字节一致；定向 78/78、全量 1,205/1,205、三条离线 eval 通过，全仓告警 754 → 750。`d186a7c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46151190883) · [Round 2 签发](reports/BE05-20261128-review.md) · [任务卡](handoffs/BE05-20261128-task.md)。
 
 - **BE04 整体 PASS（2026-11-28）**。会议存储拆为 6 个无环模块，保留 17 个公开方法和 Raw 结算失败恢复行为。定向 68/68、全量 1,187/1,187、三条离线 eval 通过，全仓 ESLint 告警从 765 降至 754。产品提交 `625d8b2` 的 Windows Node 22/24 CI 双绿。[任务卡](handoffs/BE04-20261128-task.md) · [Round 2 签发](reports/BE04-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46142839190)。
 
