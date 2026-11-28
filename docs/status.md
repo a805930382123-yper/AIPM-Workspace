@@ -21,7 +21,7 @@
 
 - **LLM-Wiki Batch 1A（PASS）**：A/B/C/D 7/7、3/5、5/5、3/3，E 4/5；长页 9/9，千页建库 1,584.05 ms、P95 32.29 ms，1,099/1,099；B1/B4 漏检与 4 负样本留档。[卡](handoffs/LLMWIKI-1A-4.md) · [快照](../evals/reports/batch-1a-baseline.md) · [验收](reports/1A-4-review.md)
 
-- **当前阶段**：工作台已按承诺结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [结项复核](reports/CLOSE01-review.md)）；`LLM-Wiki 3-2`、`FE03` 与波次 3 后端核心首发 **`BE01`（`commits.ts` 拆分，`83c4af4`）均已 `PASS`**，[LLM-Wiki 3-3](handoffs/LLMWIKI-3-3.md) 与 Batch 3 已签收，下一批待用户授权。
+- **当前阶段**：工作台已按承诺结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [结项复核](reports/CLOSE01-review.md)）；`LLM-Wiki 3-2`、`FE03` 与波次 3 后端核心首发 **`BE01`（`commits.ts` 拆分，`83c4af4`）均已 `PASS`**，[LLM-Wiki 3-3](handoffs/LLMWIKI-3-3.md) 与 Batch 3 已签收，[BE02 草稿存储拆分](handoffs/BE02-20261128-task.md)已完成拆分和本地验证，等待 Windows Node 22/24 CI 及 Round 2 独立签发。
 - **工程批次结论**：
   - **`BE01`（2026-11-28，PASS）**：B 模式单文件拆分 `commits.ts`（`68,163 B / 1,535 L → 606 B / 15 L`）为 5 份无环模块（`< 40 KiB / < 800 L`），导出与事务/锁/恢复 1:1 等价，ESLint `0/0`；23 份回归 `244/244`、3 条 `eval` 及 `83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) 双绿闭环（[施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)）。
   - **`FE03`（2026-11-26，PASS）**：Prompt 库与草稿审阅入口缩至 315/458 行，15 模块均 `< 40 KiB / 800 L`，隔离全量 1,143/1,143，`cf9ba5e` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887) 双绿（[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)）。
@@ -29,7 +29,7 @@
   - **`ENG05`（2026-11-24，PASS）**：清零 3 类 9 处疑点（`770 → 761`、`0` 错），6 规则升回 `error`，校准 `acceptance.md` 锚点，`fae6724` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
   - **`FE01`（2026-11-24，PASS）**：`api.ts` 按域拆为 8 模块、轻路由与异步 Hook 落地、6 文件告警 `55 → 0`，`check` 1,062/1,062，`e528039` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
   - **`CLOSE01`（2026-11-23，PASS）**：63 A + 46 R 核对通过，恢复门禁通过（[复核](reports/CLOSE01-review.md)）。
-- **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续（波次 3 `BE02` `drafts.ts` 等）待用户决策。`tests/prompt-ai-http.mjs` B08 mock 漂移与 `docs-archive-check` 基线既有 `architecture:8` 10 B 漂移留档；62 页 PDF 草稿待决定入库，正式写入须人工确认。
+- **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续波次待用户决策。`tests/prompt-ai-http.mjs` B08 mock 漂移与 `docs-archive-check` 基线既有 `architecture:8` 10 B 漂移留档；62 页 PDF 草稿待决定入库，正式写入须人工确认。
 - **规范与归档索引**：[证据规范](evidence-policy.md) · [2026-10](archive/status-2026-10.md) · [2026-11 初](archive/status-2026-11a.md) · [2026-11 中](archive/status-2026-11b.md)
 
 ## BE01 正式 Wiki 提交服务拆分完成（PASS，2026-11-28）

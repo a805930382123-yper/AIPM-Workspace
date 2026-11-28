@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "batch": "BE02-20261128",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>",
+  "note": "日志来自隔离测试目录，未作为仓内文件产生。归档仅包含命令结果，历史 Raw 与候选夹具均未复制入此归档。",
+  "totalFiles": 13,
+  "entries": [
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/baseline32-lf.log",
+      "bytes": 43768,
+      "sha256": "c43e0431948b28548b849471ce51ce94a381454721e59bd65fdee9b758010c3c",
+      "purpose": "32 份既有测试的 LF 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/candidate33.log",
+      "bytes": 44940,
+      "sha256": "2b90ecdfeaaf1d9ff9bc4623739e63efc68757a3adc88a805da0aeeec454a701",
+      "purpose": "33 份候选测试及 PA01 逐项对照"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/full.log",
+      "bytes": 134031,
+      "sha256": "eccafe45c7651b5a871331ad1221b2335b2a912f5b666a538ada4b10ed066aa0",
+      "purpose": "首次隔离全量，临时副本缺少 Git 元信息"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/full-final.log",
+      "bytes": 133496,
+      "sha256": "206450492ffaccc737127ee8205c1e20d7a6b378ffcd460c3a63c63944a3f408",
+      "purpose": "补齐 Git 元信息后完整全量结果"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/lint-baseline.log",
+      "bytes": 160466,
+      "sha256": "cf1514ab9b3e44ac567ff56c9ac4197e8d6b78ee2ac925844a712157528baded",
+      "purpose": "基线 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/candidate-typecheck.log",
+      "bytes": 54,
+      "sha256": "d3a31a41aa7bc379d78c83b18dd81dd39663f82c7d2271ce1a8f36221c1e562d",
+      "purpose": "候选类型检查"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/candidate-format-check.log",
+      "bytes": 137,
+      "sha256": "61888774eaee940b3da038272271a74df0ede76d7ece251bcf3464e72e251adf",
+      "purpose": "候选格式检查"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/candidate-lint.log",
+      "bytes": 147845,
+      "sha256": "0a46a04fd8cd7d9b7cf302f989e6383c3488584dc967f7246253e4d6c3c18c89",
+      "purpose": "候选全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/candidate-guard.log",
+      "bytes": 216,
+      "sha256": "834dbe0a80858ad7877ed3d1c8f31c0bc60e1d4ff4a20579363385e7512ab15a",
+      "purpose": "仓库体积门禁"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/candidate-build.log",
+      "bytes": 742,
+      "sha256": "85e0783cbd6e390574830ca46efe5eb7285bff54d981b5337b7b5b631451ee11",
+      "purpose": "生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/eval-standard-extract.log",
+      "bytes": 610,
+      "sha256": "16d0612b8a80e6612bda73e7d69eda8c59127fc7c4bcc6108cc302e815b1b49d",
+      "purpose": "标准提取离线回放"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/eval-news-relevance.log",
+      "bytes": 576,
+      "sha256": "768c712dda837724975c531a78f9174bcb39c2c3145012d67f6ee49e4cd20a87",
+      "purpose": "资讯相关性离线回放"
+    },
+    {
+      "archiveRelativePath": "evidence/BE02-20261128/eval-weekly-review.log",
+      "bytes": 438,
+      "sha256": "e872bba80cd00c7979e8a3e747bd41cd376f81e496881aad09f21f615f541705",
+      "purpose": "周回顾离线回放"
+    }
+  ]
+}
