@@ -3,7 +3,7 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **BE04 待远端 CI 与最终签发**。会议存储已拆为 6 个模块，定向 68/68、全量 1,187/1,187、三条离线 eval 通过。[任务卡](handoffs/BE04-20261128-task.md)。
+- **BE04 整体 PASS（2026-11-28）**。会议存储拆为 6 个无环模块，保留 17 个公开方法和 Raw 结算失败恢复行为。定向 68/68、全量 1,187/1,187、三条离线 eval 通过，全仓 ESLint 告警从 765 降至 754。产品提交 `625d8b2` 的 Windows Node 22/24 CI 双绿。[任务卡](handoffs/BE04-20261128-task.md) · [Round 2 签发](reports/BE04-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46142839190)。
 
 - **BE03 整体 PASS（2026-11-28）**。知识工作流拆为 7 个无环模块，14 个公开方法保持兼容。定向 173/173、全量 1,177/1,177、三条离线 eval 通过。历史 KB02 两例与基线一致。`61fd31c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46137473165) · [Round 2 签发](reports/BE03-20261128-review.md) · [任务卡](handoffs/BE03-20261128-task.md)。
 
