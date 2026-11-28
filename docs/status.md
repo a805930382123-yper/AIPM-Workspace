@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **BE04 待远端 CI 与最终签发**。会议存储已拆为 6 个模块，定向 68/68、全量 1,187/1,187、三条离线 eval 通过。[任务卡](handoffs/BE04-20261128-task.md)。
+
 - **BE03 整体 PASS（2026-11-28）**。知识工作流拆为 7 个无环模块，14 个公开方法保持兼容。定向 173/173、全量 1,177/1,177、三条离线 eval 通过。历史 KB02 两例与基线一致。`61fd31c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46137473165) · [Round 2 签发](reports/BE03-20261128-review.md) · [任务卡](handoffs/BE03-20261128-task.md)。
 
 - **BE02 整体 PASS（2026-11-28）**。草稿存储与审阅拆为 7 个无环模块，全仓 1,173/1,173。PA01 八项历史失败与基线一致。产品提交 `20f5a78` 的 Windows Node 22/24 CI 通过。[Round 2 独立签发](reports/BE02-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46133059890)。
@@ -38,7 +40,7 @@
 
 ## BE01 正式 Wiki 提交服务拆分完成（PASS，2026-11-28）
 
-B 模式（7 分）单文件拆分 [commits.ts](../services/wiki/commits.ts)（`68,163 B / 1,535 L → 606 B / 15 L`）为 [commit-types.ts](../services/wiki/commit-types.ts)、[commit-freeze.ts](../services/wiki/commit-freeze.ts)、[commit-executor.ts](../services/wiki/commit-executor.ts)、[commit-service.ts](../services/wiki/commit-service.ts) 与门面 `commits.ts`（均 `< 40 KiB / < 800 L`，纯 LF、无环），保留精确 4 运行时 + 7 类型导出、单 `SerialQueue`、就地 `manifest` 闭包与全部错误码，新增 `be01-commit-split.test.ts`；6 交付文件 ESLint `0/0`，23 份核心/恢复回归 `244/244`、3 条离线 `eval` 通过，主交付 `83c4af4` 的[远端 Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) 双作业全绿闭环全量 `npm test`（含原生 `better-sqlite3`），Round 2 独立签发 `PASS`。见[任务卡](handoffs/BE01-20261128-task.md) · [施工](reports/BE01-20261128-builder.md) · [验收](reports/BE01-20261128-review.md)。
+BE01 保留正式写入的导出、事务、锁与恢复语义；定向回归 244/244、三条离线 eval 和双版本 CI 通过。[任务卡](handoffs/BE01-20261128-task.md) · [施工](reports/BE01-20261128-builder.md) · [独立验收](reports/BE01-20261128-review.md)。
 
 ## 工程整固历史完成摘要（ENG03–FE02，均 PASS）
 
