@@ -3,7 +3,9 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
-- **FE04 Raw 页面拆分整体 PASS（2026-11-28）**。入口从 2,513 行减至 289 行，保留 3 项公开导出。17 份定向回归 85/85、全量 1,210/1,210、三条离线 eval 和真实 Edge 桌面/窄屏验收通过。产品提交 `96e88ed` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46155209728) · [Round 2 签发](reports/FE04-20261128-review.md) · [任务卡](handoffs/FE04-20261128-task.md)。WikiPage 待另行授权。
+- **FE05 待远端 CI 与最终签发**。Wiki 页面入口缩至 223 行，14 份定向回归 58/58，真实浏览器桌面和窄屏验收通过。[任务卡](handoffs/FE05-20261128-task.md)。
+
+- **FE04 Raw 页面拆分整体 PASS（2026-11-28）**。入口从 2,513 行减至 289 行，保留 3 项公开导出。17 份定向回归 85/85、全量 1,210/1,210、三条离线 eval 和真实 Edge 桌面/窄屏验收通过。产品提交 `96e88ed` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46155209728) · [Round 2 签发](reports/FE04-20261128-review.md) · [任务卡](handoffs/FE04-20261128-task.md)。
 
 - **BE05 整体 PASS，波次 3 后端核心 BE01–BE05 五批全部收官（2026-11-28）。** PDF 清理拆为 7 个无环模块，8 段提示词逐字节一致；定向 78/78、全量 1,205/1,205、三条离线 eval 通过，全仓告警 754 → 750。`d186a7c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46151190883) · [Round 2 签发](reports/BE05-20261128-review.md) · [任务卡](handoffs/BE05-20261128-task.md)。
 
@@ -34,17 +36,13 @@
 - 工作台结项（`aff5b32`，109 项通过，[交付矩阵](delivery-matrix.md) · [复核](reports/CLOSE01-review.md)）。LLM-Wiki Batch 3、FE03、BE01、[BE02](handoffs/BE02-20261128-task.md) 已签收。
 - **工程批次结论**：
   - **BE01 PASS**。正式 Wiki 提交拆为 5 个模块，保留事务、锁与恢复语义。`83c4af4` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46039895051) · [独立验收](reports/BE01-20261128-review.md)。
-  - **`FE03`（2026-11-26，PASS）**：Prompt 库与草稿审阅入口缩至 315/458 行，15 模块均 `< 40 KiB / 800 L`，隔离全量 1,143/1,143，`cf9ba5e` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45842789887) 双绿（[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)）。
-  - **`FE02`（2026-11-26，PASS）**：`InboxTab`/`MeetingPage` 拆为 8 份无环模块（`< 40 KiB / 800 L`），定向 44/44 与 Edge 冒烟通过，`ee02a10` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842)（1,126/1,126）双绿（[施工](reports/FE02-20261125-builder.md) · [验收](reports/FE02-20261125-review.md)）。
+  - **FE03 PASS**。Prompt 与草稿页入口 315/458 行，1,143/1,143。[验收](reports/FE03-review.md) · [卡](handoffs/FE03-task.md)。
+  - **FE02 PASS**。Inbox 与会议页拆为 8 模块，定向 44/44。[验收](reports/FE02-20261125-review.md)。
   - **`ENG05`（2026-11-24，PASS）**：清零 3 类 9 处疑点（`770 → 761`、`0` 错），6 规则升回 `error`，校准 `acceptance.md` 锚点，`fae6724` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416) 全绿（[施工](reports/ENG05-20261124-builder.md) · [验收](reports/ENG05-20261124-review.md)）。
   - **`FE01`（2026-11-24，PASS）**：`api.ts` 按域拆为 8 模块、轻路由与异步 Hook 落地、6 文件告警 `55 → 0`，`check` 1,062/1,062，`e528039` [CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538) 全绿（[施工](reports/FE01-20261123-builder.md) · [验收](reports/FE01-20261123-review.md)）。
   - **`CLOSE01`（2026-11-23，PASS）**：63 A + 46 R 核对通过，恢复门禁通过（[复核](reports/CLOSE01-review.md)）。
 - **维护与业务待办**：[拆分清单](reports/ENG04-20261122-split-plan.md)后续波次待用户决策。`tests/prompt-ai-http.mjs` B08 mock 漂移与 `docs-archive-check` 基线既有 `architecture:8` 10 B 漂移留档；62 页 PDF 草稿待决定入库，正式写入须人工确认。
 - **规范与归档索引**：[证据规范](evidence-policy.md) · [2026-10](archive/status-2026-10.md) · [2026-11 初](archive/status-2026-11a.md) · [2026-11 中](archive/status-2026-11b.md)
-
-## BE01 正式 Wiki 提交服务拆分完成（PASS，2026-11-28）
-
-BE01 保留正式写入的导出、事务、锁与恢复语义；定向回归 244/244、三条离线 eval 和双版本 CI 通过。[任务卡](handoffs/BE01-20261128-task.md) · [施工](reports/BE01-20261128-builder.md) · [独立验收](reports/BE01-20261128-review.md)。
 
 ## 工程整固历史完成摘要（ENG03–FE02，均 PASS）
 

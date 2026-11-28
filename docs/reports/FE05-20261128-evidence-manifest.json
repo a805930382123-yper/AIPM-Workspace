@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "batch": "FE05-20261128",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>",
+  "totalFiles": 20,
+  "entries": [
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/baseline-target.log",
+      "bytes": 6399,
+      "sha256": "c6bee273eb35c48498dffaaf86689101639e235af5b2707ce1910f72c5dab3bc",
+      "purpose": "拆分前回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/baseline-lint.log",
+      "bytes": 145334,
+      "sha256": "db7c2ccfecf3cec40c2cb5e1bedb0650ea56056e612b7c61b7b4d1daeda6745f",
+      "purpose": "全仓 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/baseline-wiki.log",
+      "bytes": 22249,
+      "sha256": "a344a87fbaf00fcab3edad2f0552de36b72302074378c030b154f0d6a9604ede",
+      "purpose": "Wiki 页面 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/baseline-archive.log",
+      "bytes": 1201,
+      "sha256": "296fc93566d427073afc60a355e40ae2ef83f7cc1caccee8ce10cec4c31efa11",
+      "purpose": "文档归档基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/scoped-eslint.log",
+      "bytes": 22194,
+      "sha256": "be387e5e7335afbbacf0c973e248ee304f7c9504dcedbd568b1e72ee3dfc0069",
+      "purpose": "交付文件 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/target.log",
+      "bytes": 6860,
+      "sha256": "2ee58cd4548e1e50988c06933ff4a5a20e822e8abe0484265d2022701ad62988",
+      "purpose": "冻结定向回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/typecheck.log",
+      "bytes": 54,
+      "sha256": "d3a31a41aa7bc379d78c83b18dd81dd39663f82c7d2271ce1a8f36221c1e562d",
+      "purpose": "类型检查"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/format-check.log",
+      "bytes": 137,
+      "sha256": "61888774eaee940b3da038272271a74df0ede76d7ece251bcf3464e72e251adf",
+      "purpose": "全仓格式"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/lint.log",
+      "bytes": 145279,
+      "sha256": "d27fdc253dbd55f444cee7cd3efda3aeed194bdb907995dfa87e0f84a8d3d414",
+      "purpose": "候选全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/guard.log",
+      "bytes": 216,
+      "sha256": "c3086309e6ea6356c5e1f4d6ea646ca6f32769a14df7abf6bc8fcd42656b27b4",
+      "purpose": "仓库体积门禁"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/test.log",
+      "bytes": 137246,
+      "sha256": "498d12eb48cf68f1ef345c719a674f8919c54ebbbc2ce93102cb379b538c5205",
+      "purpose": "默认全量 npm test"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/build.log",
+      "bytes": 742,
+      "sha256": "039bcf84cb14e8f9860f725d9d18eaaa46dc4b7d971ce293314566511a48900d",
+      "purpose": "生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/eval-standard-extract.log",
+      "bytes": 554,
+      "sha256": "32fa2f54925113d9d9482076f93ce5499f40607db7230eb87881ebfafb71c3d3",
+      "purpose": "标准提取回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/eval-news-relevance.log",
+      "bytes": 520,
+      "sha256": "aa3678c0fed6d5c89d4177b4d51805f615569316a6a43798e082a196af340379",
+      "purpose": "资讯相关性回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/eval-weekly-review.log",
+      "bytes": 382,
+      "sha256": "79ba5a97294d92d2deccd9a3a0ac2e039b92f4d3ac6942c3ec0f590db77d0345",
+      "purpose": "周回顾回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/baseline-tests.log",
+      "bytes": 589,
+      "sha256": "6a4ab6833401c46da5c3c1dd05c1d65bd1b9f2d4c51d25a67d84ad3dc0b1073c",
+      "purpose": "原实现行为测试与迁移等价性验证"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/baseline-final-tests.log",
+      "bytes": 589,
+      "sha256": "9c3542271f5549d45aa3e68594e51c7acd01ca2da7bd1b79b948c3188aee5fd8",
+      "purpose": "原实现行为测试与迁移等价性验证"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/equivalence.log",
+      "bytes": 551,
+      "sha256": "6f227af1e0c8b00b1713b28fdb34b739f7111a881de90d1dff9ee78fa08a8d36",
+      "purpose": "原实现行为测试与迁移等价性验证"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/browser-baseline.json",
+      "bytes": 1598,
+      "sha256": "a9add36b56ce0aaf1276efef743b0d10f87f770f60031e6235b6e157c9ed9fbf",
+      "purpose": "真实浏览器独立验收摘要"
+    },
+    {
+      "archiveRelativePath": "evidence/FE05-20261128/browser-candidate.json",
+      "bytes": 1599,
+      "sha256": "0daaea2fe53ea3a6a402910ceb7465eb841c1bdc9e0da501bd99f65644063b3e",
+      "purpose": "真实浏览器独立验收摘要"
+    }
+  ]
+}
