@@ -1,38 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import type {
-  AutomationList,
-  AutomationRun,
-  AutomationRunStatus,
-  AutomationSchedule,
-  AutomationStatus,
-  CandidateFilter,
-  CandidateList,
-  KnowledgeHealth,
-  PipelineSettings,
-  ReminderView,
-  WeeklyReviewList,
-} from '../api';
+import type { AutomationRun, AutomationRunStatus, AutomationSchedule, CandidateFilter } from '../api';
 import {
   ApiError,
-  automationCandidates,
-  automationKnowledgeHealth,
-  automationReminders,
-  automationRun,
-  automationRuns,
-  automationSchedules,
-  automationStatus,
-  automationTime,
   cancelAutomationRun,
   changeAutomationPause,
   editAutomationSchedule,
-  readPipelineSettings,
   runAutomationTask,
   savePipelineSettings,
   testReminderNotification,
   updateReminderSettings,
   updateWeeklyReviewSettings,
-  weeklyReviews,
 } from '../api';
 import {
   PipelineSettingsDialog,
@@ -54,21 +32,9 @@ import {
   type ReminderEditor,
   type ScheduleEditorState,
 } from '../components/automation/automationMeta';
+import { useAutomationPolling } from './automation/useAutomationPolling';
+import { AutomationSummaryBar } from './automation/AutomationSummaryBar';
 import '../automation.css';
-
-function poll(load: (signal: AbortSignal) => Promise<void>) {
-  const controller = new AbortController();
-  let timer: ReturnType<typeof setTimeout>;
-  const read = async () => {
-    await load(controller.signal);
-    if (!controller.signal.aborted) timer = setTimeout(() => void read(), 3000);
-  };
-  void read();
-  return () => {
-    controller.abort();
-    clearTimeout(timer);
-  };
-}
 
 const tabOrder: AutomationTab[] = ['workflows', 'inbox', 'runs'];
 
@@ -109,27 +75,7 @@ export function AutomationPage({
   );
   const [inboxFocusTick, setInboxFocusTick] = useState(() => (focusReminders || candidateFilter ? 1 : 0));
 
-  const [status, setStatus] = useState<AutomationStatus | null>(null);
-  const [schedules, setSchedules] = useState<AutomationList<AutomationSchedule> | null>(null);
-  const [history, setHistory] = useState<AutomationList<AutomationRun> | null>(null);
-  const [health, setHealth] = useState<KnowledgeHealth | null>(null);
-  const [remindersView, setRemindersView] = useState<ReminderView | null>(null);
   const [candidateDate, setCandidateDate] = useState<string>();
-  const [candidates, setCandidates] = useState<CandidateList>();
-  const [pipelineSettings, setPipelineSettings] = useState<PipelineSettings>();
-  const [weeklyList, setWeeklyList] = useState<WeeklyReviewList | null>(null);
-
-  const [readErrors, setReadErrors] = useState({
-    status: '',
-    schedules: '',
-    history: '',
-    detail: '',
-    health: '',
-    reminders: '',
-    candidates: '',
-    pipelineSettings: '',
-    weekly: '',
-  });
   const [refresh, setRefresh] = useState(0);
   const [remindersRevision, setRemindersRevision] = useState(0);
   const [pipelineRevision, setPipelineRevision] = useState(0);
@@ -140,7 +86,6 @@ export function AutomationPage({
   const [statusFilter, setStatusFilter] = useState<AutomationRunStatus | ''>('');
   const [limit, setLimit] = useState(50);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(initialRunId ?? null);
-  const [detail, setDetail] = useState<AutomationRun | null>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
   const runTriggerRef = useRef<HTMLElement | null>(null);
 
@@ -166,9 +111,6 @@ export function AutomationPage({
 
   const showHealth = Boolean(onOpenLint || onOpenInspection);
   const showReminders = Boolean(onOpenWorkItem);
-  const tasks = schedules?.items ?? [];
-  const hasPipeline = tasks.some((task) => task.type === 'news.daily');
-  const hasWeeklyReview = tasks.some((task) => task.type === 'review.weekly');
 
   const prevDeepLink = useRef({ candidateFilter, focusReminders, initialRunId });
   useEffect(() => {
@@ -191,130 +133,41 @@ export function AutomationPage({
     }
   }, [candidateFilter, focusReminders, initialRunId]);
 
-  useEffect(
-    () =>
-      poll(async (signal) => {
-        const [service, taskList] = await Promise.allSettled([automationStatus(signal), automationSchedules(signal)]);
-        if (signal.aborted) return;
-        if (service.status === 'fulfilled') setStatus(service.value);
-        if (taskList.status === 'fulfilled') setSchedules(taskList.value);
-        setReadErrors((current) => ({
-          ...current,
-          status: service.status === 'rejected' ? describeError(service.reason) : '',
-          schedules: taskList.status === 'rejected' ? describeError(taskList.reason) : '',
-        }));
-      }),
-    [refresh],
-  );
-
-  useEffect(() => {
-    if (!showHealth) return;
-    return poll(async (signal) => {
-      try {
-        const result = await automationKnowledgeHealth(signal);
-        if (!signal.aborted) {
-          setHealth(result);
-          setReadErrors((current) => ({ ...current, health: '' }));
-        }
-      } catch (error) {
-        if (!signal.aborted) setReadErrors((current) => ({ ...current, health: describeError(error) }));
-      }
-    });
-  }, [showHealth, refresh]);
-
-  useEffect(() => {
-    if (!showReminders) return;
-    return poll(async (signal) => {
-      try {
-        const result = await automationReminders(signal);
-        if (!signal.aborted) {
-          setRemindersView(result);
-          setReadErrors((current) => ({ ...current, reminders: '' }));
-        }
-      } catch (error) {
-        if (!signal.aborted) setReadErrors((current) => ({ ...current, reminders: describeError(error) }));
-      }
-    });
-  }, [showReminders, refresh, remindersRevision]);
-
-  useEffect(() => {
-    if (!hasPipeline) return;
-    return poll(async (signal) => {
-      try {
-        const result = await automationCandidates(candidateDate, signal);
-        if (!signal.aborted) {
-          setCandidates(result);
-          setReadErrors((current) => ({ ...current, candidates: '' }));
-        }
-      } catch (error) {
-        if (!signal.aborted) setReadErrors((current) => ({ ...current, candidates: describeError(error) }));
-      }
-    });
-  }, [hasPipeline, candidateDate, refresh, pipelineRevision]);
-
-  useEffect(() => {
-    if (!hasPipeline) return;
-    const controller = new AbortController();
-    void readPipelineSettings(controller.signal)
-      .then((value) => {
-        if (!controller.signal.aborted) {
-          setPipelineSettings(value);
-          setReadErrors((current) => ({ ...current, pipelineSettings: '' }));
-        }
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) {
-          setReadErrors((current) => ({ ...current, pipelineSettings: describeError(error) }));
-        }
-      });
-    return () => controller.abort();
-  }, [hasPipeline, refresh, pipelineSettingsRevision]);
-
-  useEffect(() => {
-    if (!hasWeeklyReview) return;
-    return poll(async (signal) => {
-      try {
-        const result = await weeklyReviews(signal);
-        if (!signal.aborted) {
-          setWeeklyList(result);
-          setReadErrors((current) => ({ ...current, weekly: '' }));
-        }
-      } catch (error) {
-        if (!signal.aborted) setReadErrors((current) => ({ ...current, weekly: describeError(error) }));
-      }
-    });
-  }, [hasWeeklyReview, refresh, weeklyRevision]);
-
-  useEffect(
-    () =>
-      poll(async (signal) => {
-        try {
-          const runs = await automationRuns({ type: typeFilter, status: statusFilter, limit }, signal);
-          if (!signal.aborted) {
-            setHistory(runs);
-            setReadErrors((current) => ({ ...current, history: '' }));
-          }
-        } catch (error) {
-          if (!signal.aborted) setReadErrors((current) => ({ ...current, history: describeError(error) }));
-        }
-      }),
-    [typeFilter, statusFilter, limit, refresh],
-  );
-
-  useEffect(() => {
-    if (!selectedRunId) return;
-    return poll(async (signal) => {
-      try {
-        const run = await automationRun(selectedRunId, signal);
-        if (!signal.aborted) {
-          setDetail(run);
-          setReadErrors((current) => ({ ...current, detail: '' }));
-        }
-      } catch (error) {
-        if (!signal.aborted) setReadErrors((current) => ({ ...current, detail: describeError(error) }));
-      }
-    });
-  }, [selectedRunId, refresh]);
+  const {
+    status,
+    setStatus,
+    schedules,
+    history,
+    setHistory,
+    health,
+    remindersView,
+    setRemindersView,
+    candidates,
+    setCandidates,
+    pipelineSettings,
+    setPipelineSettings,
+    weeklyList,
+    setWeeklyList,
+    readErrors,
+    setReadErrors,
+    detail,
+    setDetail,
+    tasks,
+    hasPipeline,
+  } = useAutomationPolling({
+    showHealth,
+    showReminders,
+    refresh,
+    remindersRevision,
+    pipelineRevision,
+    pipelineSettingsRevision,
+    weeklyRevision,
+    candidateDate,
+    typeFilter,
+    statusFilter,
+    limit,
+    selectedRunId,
+  });
 
   useEffect(() => {
     if (!selectedRunId) return;
@@ -542,13 +395,6 @@ export function AutomationPage({
   const currentDetail = detail?.id === selectedRunId ? detail : null;
   const editorTask = editor ? (tasks.find((task) => task.type === editor.type) ?? null) : null;
 
-  const bannerTone = !status
-    ? 'muted'
-    : !status.scheduler.healthy || status.failuresLast24Hours > 0
-      ? 'danger'
-      : status.paused
-        ? 'warning'
-        : 'ok';
   const pendingCandidates = hasPipeline ? (candidates?.counts.pending ?? 0) : 0;
   const unreadReminders = showReminders ? (remindersView?.unreadCount ?? 0) : 0;
   const pendingTotal = pendingCandidates + unreadReminders;
@@ -567,107 +413,26 @@ export function AutomationPage({
         </button>
       </div>
 
-      <section className="panel automation-banner" aria-labelledby="automation-status" data-tone={bannerTone}>
-        <div className="automation-banner-main">
-          <div className="automation-banner-summary">
-            <div className="automation-banner-title">
-              <span className="automation-dot" aria-hidden="true" />
-              <h2 id="automation-status">调度状态</h2>
-              {status && (
-                <span className="automation-banner-state">
-                  {status.paused ? '全局暂停' : '任务可触发'} · {status.scheduler.healthy ? '调度器正常' : '调度器异常'}
-                </span>
-              )}
-            </div>
-            {readErrors.status && (
-              <p className="form-error" role="alert">
-                调度状态读取失败：{readErrors.status}
-              </p>
-            )}
-            {!status && !readErrors.status && <p role="status">正在读取调度状态…</p>}
-            {status && (
-              <>
-                <dl className="automation-facts">
-                  <div>
-                    <dt>下次运行（上海时间）</dt>
-                    <dd>{automationTime(status.nextRunAt)}</dd>
-                  </div>
-                  <div>
-                    <dt>最近 24 小时失败</dt>
-                    <dd>{status.failuresLast24Hours} 次</dd>
-                  </div>
-                  <div>
-                    <dt>当前待处理</dt>
-                    <dd>{pendingTotal} 项</dd>
-                  </div>
-                </dl>
-                {status.scheduler.error && (
-                  <p className="form-error" role="alert">
-                    {status.scheduler.error}
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-          {status && pauseConfirmation === null && (
-            <div className="automation-banner-controls">
-              <button
-                type="button"
-                className="secondary-button"
-                disabled={pending}
-                onClick={() => setPauseConfirmation(!status.paused)}
-              >
-                {status.paused ? '恢复全部自动化' : '暂停全部自动化'}
-              </button>
-            </div>
-          )}
-        </div>
-        {pauseConfirmation !== null && (
-          <div className="automation-confirm" role="group" aria-label="确认更改全局暂停设置">
-            <p>
-              {pauseConfirmation
-                ? '暂停后，新触发会记录为跳过。正在运行的任务会继续。'
-                : '恢复后按当前计划触发，暂停期间跳过的记录会保留。'}
-            </p>
-            <div className="automation-actions">
-              <button
-                type="button"
-                className="primary-button"
-                disabled={pending}
-                onClick={() =>
-                  void write('pause', async (token) => {
-                    setStatus(await changeAutomationPause(pauseConfirmation, token));
-                    setPauseConfirmation(null);
-                  })
-                }
-              >
-                {pauseConfirmation ? '确认暂停' : '确认恢复'}
-              </button>
-              <button
-                type="button"
-                className="secondary-button"
-                disabled={pending}
-                onClick={() => {
-                  setPauseConfirmation(null);
-                  setActionError(null);
-                }}
-              >
-                取消
-              </button>
-            </div>
-          </div>
-        )}
-        {showError('pause')}
-        {status && (
-          <details className="automation-process-info">
-            <summary>进程信息</summary>
-            <p>
-              {status.instance.mode === 'production' ? '生产' : '开发'} · PID {status.instance.pid} · 端口{' '}
-              {status.instance.port}
-            </p>
-          </details>
-        )}
-      </section>
+      <AutomationSummaryBar
+        status={status}
+        statusError={readErrors.status}
+        pendingTotal={pendingTotal}
+        pending={pending}
+        pauseConfirmation={pauseConfirmation}
+        onRequestPause={setPauseConfirmation}
+        onConfirmPause={() => {
+          if (pauseConfirmation === null) return;
+          void write('pause', async (token) => {
+            setStatus(await changeAutomationPause(pauseConfirmation, token));
+            setPauseConfirmation(null);
+          });
+        }}
+        onCancelPause={() => {
+          setPauseConfirmation(null);
+          setActionError(null);
+        }}
+        pauseError={showError('pause')}
+      />
 
       <div
         className="automation-tabs"

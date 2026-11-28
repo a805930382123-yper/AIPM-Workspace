@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "batch": "FE07-20261129",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>",
+  "totalFiles": 45,
+  "entries": [
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-build.log",
+      "bytes": 742,
+      "sha256": "d037a0495d8c4f3c75a48577e90858365d08b0f7ae6a524c3cab810e797fb5ed",
+      "purpose": "基线生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-target.log",
+      "bytes": 4841,
+      "sha256": "886674c8886095cbc909996a9c4d80cc5fe93084a29fe6209c6e854320556b4c",
+      "purpose": "拆分前回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-lint.log",
+      "bytes": 149109,
+      "sha256": "630b8fe1782e741e7c9529c84e9e67a851c28ff7fa37cdb951c06b96cff54975",
+      "purpose": "全仓 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-automation.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "purpose": "自动化页面 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-archive.log",
+      "bytes": 1269,
+      "sha256": "2492bd705116b50e7b47871471691dc1bf2fda02d60b532c3cf09345c267ed0e",
+      "purpose": "文档归档基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/scoped-eslint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "purpose": "交付文件 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/target.log",
+      "bytes": 5049,
+      "sha256": "5891067e9395eb7605eb1f12432c4c09e3b4b29ef6be7afb6f416caf00d091ab",
+      "purpose": "冻结定向回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/typecheck.log",
+      "bytes": 54,
+      "sha256": "d3a31a41aa7bc379d78c83b18dd81dd39663f82c7d2271ce1a8f36221c1e562d",
+      "purpose": "类型检查"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/format-check.log",
+      "bytes": 137,
+      "sha256": "61888774eaee940b3da038272271a74df0ede76d7ece251bcf3464e72e251adf",
+      "purpose": "全仓格式"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/lint.log",
+      "bytes": 149109,
+      "sha256": "630b8fe1782e741e7c9529c84e9e67a851c28ff7fa37cdb951c06b96cff54975",
+      "purpose": "候选全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/guard.log",
+      "bytes": 216,
+      "sha256": "4baeaf6e2553374ad3cf698d2961626205f329fc31e4cd0c6d18e08debf5679a",
+      "purpose": "仓库体积门禁"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/test.log",
+      "bytes": 137090,
+      "sha256": "a6222f2f0a76961c7c945c8ec332d0eec72b7fc2ec2dc857d984d4f9df7a65fc",
+      "purpose": "默认全量 npm test"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/build.log",
+      "bytes": 742,
+      "sha256": "57a1d0e95d299b633159da3db9ea64aa2fc99d711ab9fef0d74faa44597699df",
+      "purpose": "生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/eval-standard-extract.log",
+      "bytes": 571,
+      "sha256": "17703b8b7a93bc1399f37f4d2475bb282d2c9e7cf116705bd09fb230e2fb27db",
+      "purpose": "标准提取回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/eval-news-relevance.log",
+      "bytes": 537,
+      "sha256": "f2ec69908e481f6c13dc14b778a27ebc518adab83db9f87c01fb26f1ad22fe67",
+      "purpose": "资讯相关性回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/eval-weekly-review.log",
+      "bytes": 399,
+      "sha256": "8c2dcd37acb97f5ffb38ca32e40e59e818d35680613c7d6117c3f64827a95ca8",
+      "purpose": "周回顾回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/fe07-baseline-result.json",
+      "bytes": 3652,
+      "sha256": "767441947f1b44858ae4d6dced636f7892e33f7bc13b84a15bc811d266749775",
+      "purpose": "浏览器结果（已去除临时写令牌）"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/fe07-candidate-result.json",
+      "bytes": 3653,
+      "sha256": "13e02dbd1594b983228c3522185b746627f8896eb1bdf52d4110a706af764475",
+      "purpose": "浏览器结果（已去除临时写令牌）"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-desktop-workflows.png",
+      "bytes": 98424,
+      "sha256": "983b50fee11dd0eef7c63c9e2efd9852af4cf3b7742c19a7bc361e532fca8424",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-external-requests.ndjson",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-confirm.png",
+      "bytes": 49547,
+      "sha256": "629359757c3819880a30152f1f5a3c1be99e74dbca7526c8db3791166dcf157f",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-drawer.png",
+      "bytes": 41576,
+      "sha256": "0d92c85ae424232968673a007bdbb16871e6f80c9c2d14ded02bed99ff82f428",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-inbox.png",
+      "bytes": 45658,
+      "sha256": "a83d8bbcce5ed5fc45b265c4add806c6b6891846a4874fae41e119a7d01bd5e3",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-pause.png",
+      "bytes": 42120,
+      "sha256": "2f755384f81c297c21be619e5f40aefc5c8d022298b0d924f9b35feb06ea8742",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-runs.png",
+      "bytes": 47282,
+      "sha256": "4b8f02939576f4985db33ec1e8d886503c4efd70b153b2c613b978ddc4ab27eb",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-schedule.png",
+      "bytes": 34509,
+      "sha256": "3e8fc42b532551279ae7bb9767bd0b9f1163b9b30e98d923357c42fd684453be",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-mobile-workflows.png",
+      "bytes": 41667,
+      "sha256": "cf04698232b47f04c6039f8b3a1cf164cd1d9ce9ceec98ab350f6b6b218f34ec",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/baseline-server.log",
+      "bytes": 121,
+      "sha256": "f2df7e7f5955729273d6e362bf2faebd57bf32f6fd0af968c4ca68bd704e3589",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/builder-baseline-sha.txt",
+      "bytes": 440,
+      "sha256": "00e0d786510678fda7bc88103c798edcf827d240ab626a3e5ac74c9016fe20d7",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/builder-baseline-test.log",
+      "bytes": 325,
+      "sha256": "78e5149f924c4dce372a2de912ca6d7c3fa4ee2b5f813d2d7f43e3fddddc5dfd",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/builder-compare.cjs",
+      "bytes": 1010,
+      "sha256": "f3bf0676a7980217d329af96192c1e426fb6f14739394adeebdea4d8212d3240",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/builder-effects-compare.log",
+      "bytes": 205,
+      "sha256": "7fed4874e4c83ca7226d46091e7bf356946bc6aec23835898e68a150aafca2a0",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-desktop-workflows.png",
+      "bytes": 98487,
+      "sha256": "22ec25f05fbee3346426ffdc4e9d501fd4af2f8adecb0da2bccaefcea460a61e",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-external-requests.ndjson",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-confirm.png",
+      "bytes": 49547,
+      "sha256": "629359757c3819880a30152f1f5a3c1be99e74dbca7526c8db3791166dcf157f",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-drawer.png",
+      "bytes": 42007,
+      "sha256": "48ed09bfe1557d8c0014c7b2de3fa6ff126dce1323747f8956dbfeabb63a88b7",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-inbox.png",
+      "bytes": 45658,
+      "sha256": "a83d8bbcce5ed5fc45b265c4add806c6b6891846a4874fae41e119a7d01bd5e3",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-pause.png",
+      "bytes": 42120,
+      "sha256": "2f755384f81c297c21be619e5f40aefc5c8d022298b0d924f9b35feb06ea8742",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-runs.png",
+      "bytes": 47616,
+      "sha256": "2b5ca12be42f77d7ad503bdbee73a84a8d473ffbcf4754cb7b70913e9e3ab87d",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-schedule.png",
+      "bytes": 34565,
+      "sha256": "3421381a16fe8c0437d75f55359b873e6869fdfb2118c5ea51f83868ad68b675",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-mobile-workflows.png",
+      "bytes": 41667,
+      "sha256": "cf04698232b47f04c6039f8b3a1cf164cd1d9ce9ceec98ab350f6b6b218f34ec",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/candidate-server.log",
+      "bytes": 121,
+      "sha256": "80c98bcfc8f11d6c1b30d9e27e7601b2bd6b9bc26e7006614f47da542c7bea8c",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/fe07-browser.mjs",
+      "bytes": 40606,
+      "sha256": "1953dd45bcfd37741e726c805a3be6f4e952ee42c78acea446478e1f43c30ea9",
+      "purpose": "拆前测试、迁移等价性或独立浏览器实测"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/fe07-review-equivalence.cjs",
+      "bytes": 2344,
+      "sha256": "f9516f9d95103a4f4e3e5380a96db6f990820ea37fbd4de7507c4fbe386188bd",
+      "purpose": "独立验收源码等价核验"
+    },
+    {
+      "archiveRelativePath": "evidence/FE07-20261129/fe07-review-equivalence.log",
+      "bytes": 225,
+      "sha256": "32a38fb202ce4dbad0f6c854940ee3dbb4e277883326e23eeb3ee0fc4e6554f6",
+      "purpose": "独立验收源码等价核验"
+    }
+  ]
+}

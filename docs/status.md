@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **FE07 待远端 CI 与最终签发**。自动化页面拆分完成，定向 41/41、全量 1,225/1,225、三条离线 eval 与桌面/窄屏真实浏览器通过。[任务卡](handoffs/FE07-20261129-task.md)。
+
 - **FE06 工作事项页面拆分整体 PASS（2026-11-29）**。入口从 1,333 行缩至 172 行，分析面板源码与基线一致。两份新增测试先在原实现通过；定向 34/34、全量 1,223/1,223、三条离线 eval 和真实 Edge 双尺寸验收通过。产品提交 `ddb2199` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46163352565) · [Round 2 签发](reports/FE06-20261128-review.md) · [任务卡](handoffs/FE06-20261128-task.md)。
 
 - **产品构想（PB）规划完成，待授权 PB01（2026-11-28）**。用户批准放开范围：新增主导航「产品构想」，从内外部使用者出发推导价值、功能和整体构想，并做跨产品个人周计划。共分 PB01–PB05 五批，PB01 为手工骨架，不调用模型。本次只写需求调整、路线图和任务卡，未改产品代码，真实模型请求 0。[路线图](batches/PB-ROADMAP-20261128.md) · [PB01 任务卡](handoffs/PB01-20261128-task.md)。
@@ -13,9 +15,9 @@
 
 - **BE05 整体 PASS，波次 3 后端核心 BE01–BE05 五批全部收官（2026-11-28）。** PDF 清理拆为 7 个无环模块，8 段提示词逐字节一致；定向 78/78、全量 1,205/1,205、三条离线 eval 通过，全仓告警 754 → 750。`d186a7c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46151190883) · [Round 2 签发](reports/BE05-20261128-review.md) · [任务卡](handoffs/BE05-20261128-task.md)。
 
-- **BE04 整体 PASS（2026-11-28）**。会议存储拆为 6 个无环模块，保留 17 个公开方法和 Raw 结算失败恢复行为。定向 68/68、全量 1,187/1,187、三条离线 eval 通过，全仓 ESLint 告警从 765 降至 754。产品提交 `625d8b2` 的 Windows Node 22/24 CI 双绿。[任务卡](handoffs/BE04-20261128-task.md) · [Round 2 签发](reports/BE04-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46142839190)。
+- **BE04 PASS**。会议存储拆为 6 个模块，全量 1,187/1,187，`625d8b2` 双版本 CI 通过。[签发与 CI](reports/BE04-20261128-review.md)。
 
-- **BE03 整体 PASS（2026-11-28）**。知识工作流拆为 7 个无环模块，14 个公开方法保持兼容。定向 173/173、全量 1,177/1,177、三条离线 eval 通过。历史 KB02 两例与基线一致。`61fd31c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46137473165) · [Round 2 签发](reports/BE03-20261128-review.md) · [任务卡](handoffs/BE03-20261128-task.md)。
+- **BE03 PASS**。知识工作流拆为 7 个模块，全量 1,177/1,177，KB02 两项与基线等价。[签发与 CI](reports/BE03-20261128-review.md)。
 
 - **BE02 整体 PASS（2026-11-28）**。草稿存储与审阅拆为 7 个无环模块，全仓 1,173/1,173。PA01 八项历史失败与基线一致。产品提交 `20f5a78` 的 Windows Node 22/24 CI 通过。[Round 2 独立签发](reports/BE02-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46133059890)。
 
