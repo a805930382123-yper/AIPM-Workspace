@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "batch": "FE04-20261128",
+  "policyRef": "docs/evidence-policy.md",
+  "archiveRootPlaceholder": "<ARCHIVE_ROOT>",
+  "totalFiles": 15,
+  "entries": [
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/baseline-target.log",
+      "bytes": 8796,
+      "sha256": "95f1847ab21bd83a1171d8aceeb8ef8dbc16403dbfbf359b698ad9da434e7043",
+      "purpose": "拆分前 16 份回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/baseline-lint.log",
+      "bytes": 145859,
+      "sha256": "04f6404fc775868195d7cb5adcb216fe19cffad353989ad1bb392b23e92b428f",
+      "purpose": "全仓 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/baseline-raw.log",
+      "bytes": 11206,
+      "sha256": "8e7914def419afbbfb4569ac5d49e11925112c7f6fae1478273247c1e7b7401b",
+      "purpose": "Raw 页面 ESLint 基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/baseline-archive.log",
+      "bytes": 1201,
+      "sha256": "296fc93566d427073afc60a355e40ae2ef83f7cc1caccee8ce10cec4c31efa11",
+      "purpose": "文档归档基线"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/scoped-eslint.log",
+      "bytes": 10681,
+      "sha256": "5b02a490196d21fae19687a928ad1e6b8ec4f9a9ee4a7dc120c7a6d23471aad2",
+      "purpose": "交付文件 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/target.log",
+      "bytes": 9337,
+      "sha256": "6c61a87af0613e7fd1c17bb991859c47692c43d021f5228889c4c6c8a9001f69",
+      "purpose": "冻结定向回归"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/typecheck.log",
+      "bytes": 54,
+      "sha256": "d3a31a41aa7bc379d78c83b18dd81dd39663f82c7d2271ce1a8f36221c1e562d",
+      "purpose": "类型检查"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/format-check.log",
+      "bytes": 137,
+      "sha256": "61888774eaee940b3da038272271a74df0ede76d7ece251bcf3464e72e251adf",
+      "purpose": "全仓格式"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/lint.log",
+      "bytes": 145334,
+      "sha256": "db7c2ccfecf3cec40c2cb5e1bedb0650ea56056e612b7c61b7b4d1daeda6745f",
+      "purpose": "候选全仓 ESLint"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/guard.log",
+      "bytes": 216,
+      "sha256": "23e1a601efab5781229103495799e2484c9bf76c2d8ed2cf4fae019ebc5fba78",
+      "purpose": "仓库体积门禁"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/test.log",
+      "bytes": 136810,
+      "sha256": "8684b66e6630f417ae56e0c3122fe1221b9cffef1fbe20054b0fa48600ab9c52",
+      "purpose": "默认全量 npm test"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/build.log",
+      "bytes": 742,
+      "sha256": "5aa71d5d3ad60949b3fc19e1e055da848360bbbd1f5045a21d9a3671de08348b",
+      "purpose": "生产构建"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/eval-standard-extract.log",
+      "bytes": 554,
+      "sha256": "297c75a0078b81fd0bd2c472837c3201ad08abd9790893a95e9e7976f0f49e48",
+      "purpose": "标准提取回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/eval-news-relevance.log",
+      "bytes": 520,
+      "sha256": "19bbaee6fa8a76ffb60c2745cd7505db402995a2fcb94ef830e928eedf63d367",
+      "purpose": "资讯相关性回放"
+    },
+    {
+      "archiveRelativePath": "evidence/FE04-20261128/eval-weekly-review.log",
+      "bytes": 382,
+      "sha256": "80ce19bc3466bdc9f0717be61466e4dccdae6b0c7d5dabe30cfca8f4282db901",
+      "purpose": "周回顾回放"
+    }
+  ]
+}

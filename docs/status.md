@@ -3,6 +3,8 @@
 <!-- ENG03 inserted:start -->
 ## 当前状态摘要
 
+- **FE04 待远端 CI 与最终签发**。Raw 页面入口缩至 289 行，17 份定向回归 85/85，桌面与窄屏真实浏览器通过。[任务卡](handoffs/FE04-20261128-task.md)。
+
 - **BE05 整体 PASS，波次 3 后端核心 BE01–BE05 五批全部收官（2026-11-28）。** PDF 清理拆为 7 个无环模块，8 段提示词逐字节一致；定向 78/78、全量 1,205/1,205、三条离线 eval 通过，全仓告警 754 → 750。`d186a7c` [Windows Node 22/24 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46151190883) · [Round 2 签发](reports/BE05-20261128-review.md) · [任务卡](handoffs/BE05-20261128-task.md)。
 
 - **BE04 整体 PASS（2026-11-28）**。会议存储拆为 6 个无环模块，保留 17 个公开方法和 Raw 结算失败恢复行为。定向 68/68、全量 1,187/1,187、三条离线 eval 通过，全仓 ESLint 告警从 765 降至 754。产品提交 `625d8b2` 的 Windows Node 22/24 CI 双绿。[任务卡](handoffs/BE04-20261128-task.md) · [Round 2 签发](reports/BE04-20261128-review.md) · [产品 CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/46142839190)。
@@ -46,7 +48,7 @@ BE01 保留正式写入的导出、事务、锁与恢复语义；定向回归 24
 
 ## 工程整固历史完成摘要（ENG03–FE02，均 PASS）
 
-`FE02`（2026-11-26，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45635248842)，[验收](reports/FE02-20261125-review.md)）；`ENG05`（2026-11-24，`fae6724`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45420321416)，[验收](reports/ENG05-20261124-review.md)）；`FE01`（2026-11-24，`e528039`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45213208538)，[验收](reports/FE01-20261123-review.md)）；`ENG04`（2026-11-23，`6a5eff6`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45050613788)，[施工](reports/ENG04-20261122-builder.md) · [验收](reports/ENG04-20261122-review.md)）；`ENG03`（2026-11-22，`3c9c273`，[CI](https://github.com/a805930382123-yper/AIPM-Workspace/actions/runs/45036760169)，[施工](reports/ENG03-20261122-builder.md) · [验收](reports/ENG03-20261122-review.md)）。
+FE02、ENG05 与 FE01 详见上表。ENG04 拆分计划（`6a5eff6`）和 ENG03 状态归档（`3c9c273`）已通过独立验收。[ENG04](reports/ENG04-20261122-review.md) · [ENG03](reports/ENG03-20261122-review.md)。
 <!-- ENG03 inserted:end -->
 ## ENG02 工作区清理与同步核实完成（PASS，2026-11-22）
 
